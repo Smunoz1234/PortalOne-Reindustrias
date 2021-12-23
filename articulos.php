@@ -469,12 +469,12 @@ while ($row_ListaPrecio = sqlsrv_fetch_array($SQL_ListaPrecio)) {?>
 		<div class="form-group">
 		<div class="col-lg-4">
 				<label class="control-label">Servicio vehículo <span class="text-danger">*</span></label>
-				<select name="CDU_Concesionario" class="form-control select2" required="required" id="CDU_Concesionario">
+				<select name="CDU_ServicioVehiculo" class="form-control select2" required="required" id="CDU_ServicioVehiculo">
 						<option value="" disabled selected>Seleccione...</option>
-					<?php while ($row_Concesionario = sqlsrv_fetch_array($SQL_ServicioVehiculo)) {?>
-						<option value="<?php echo $row_Concesionario['NombreConcesionario']; //['CodigoConcesionario'];                            ?>"
-						<?php if (isset($row['CDU_Concesionario']) && (strcmp($row_Concesionario['NombreConcesionario'], $row['CDU_Concesionario']) == 0)) {echo "selected=\"selected\"";}?>>
-							<?php echo $row_Concesionario['NombreConcesionario']; ?>
+					<?php while ($row_ServicioVehiculo = sqlsrv_fetch_array($SQL_ServicioVehiculo)) {?>
+						<option value="<?php echo $row_ServicioVehiculo['CodigoServicioVehiculo']; ?>"
+						<?php if (isset($row['CDU_ServicioVehiculo']) && (strcmp($row_ServicioVehiculo['CodigoServicioVehiculo'], $row['CDU_ServicioVehiculo']) == 0)) {echo "selected=\"selected\"";}?>>
+							<?php echo $row_ServicioVehiculo['NombreServicioVehiculo']; ?>
 						</option>
 					<?php }?>
 				</select>
