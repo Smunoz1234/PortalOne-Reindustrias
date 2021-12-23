@@ -434,7 +434,7 @@ while ($row_ListaPrecio = sqlsrv_fetch_array($SQL_ListaPrecio)) {?>
 				<select name="CDU_Marca" class="form-control select2" required="required" id="CDU_Marca">
 					<option value="" disabled selected disabled selected>Seleccione...</option>
 					<?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) {?>
-					<option value="<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; //['IdMarcaVehiculo'];       ?>"
+					<option value="<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; //['IdMarcaVehiculo'];        ?>"
 					<?php if ((isset($row['CDU_Marca'])) && (strcmp($row_MarcaVehiculo['DeMarcaVehiculo'], $row['CDU_Marca']) == 0)) {echo "selected=\"selected\"";}?>>
 						<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
 					</option>
@@ -446,9 +446,9 @@ while ($row_ListaPrecio = sqlsrv_fetch_array($SQL_ListaPrecio)) {?>
 				<select name="CDU_Linea" class="form-control select2" required="required" id="CDU_Linea">
 						<option value="" disabled selected>Seleccione...</option>
 					<?php while ($row_LineaVehiculo = sqlsrv_fetch_array($SQL_LineaVehiculo)) {?>
-						<option value="<?php echo $row_LineaVehiculo['LineaModeloVehiculo']; //['Codigo'];   ?>"
+						<option value="<?php echo $row_LineaVehiculo['LineaModeloVehiculo']; //['Codigo'];    ?>"
 						<?php if ((isset($row['CDU_Linea'])) && (strcmp($row_LineaVehiculo['LineaModeloVehiculo'], $row['CDU_Linea']) == 0)) {echo "selected=\"selected\"";}?>>
-							<?php echo $row_LineaVehiculo['LineaModeloVehiculo']; //. " - " . $row_LineaVehiculo['MarcaVehiculo'];   ?>
+							<?php echo $row_LineaVehiculo['LineaModeloVehiculo']; //. " - " . $row_LineaVehiculo['MarcaVehiculo'];    ?>
 						</option>
 					<?php }?>
 				</select>
@@ -481,24 +481,24 @@ while ($row_ListaPrecio = sqlsrv_fetch_array($SQL_ListaPrecio)) {?>
 			</div>
 			<div class="col-lg-4">
 				<label class="control-label">Tipo de carrocería <span class="text-danger">*</span></label>
-				<select name="CDU_Color" class="form-control select2" required="required" id="CDU_Color">
+				<select name="CDU_TipoCarroceria" class="form-control select2" required="required" id="CDU_TipoCarroceria">
 						<option value="" disabled selected>Seleccione...</option>
-					<?php while ($row_ColorVehiculo = sqlsrv_fetch_array($SQL_TipoCarroceria)) {?>
-						<option value="<?php echo $row_ColorVehiculo['NombreColorVehiculo']; //['CodigoColorVehiculo'];                  ?>"
-						<?php if (isset($row['CDU_Color']) && (strcmp($row_ColorVehiculo['NombreColorVehiculo'], $row['CDU_Color']) == 0)) {echo "selected=\"selected\"";}?>>
-							<?php echo $row_ColorVehiculo['NombreColorVehiculo']; ?>
+					<?php while ($row_TipoCarroceriaVehiculo = sqlsrv_fetch_array($SQL_TipoCarroceria)) {?>
+						<option value="<?php echo $row_TipoCarroceriaVehiculo['CodigoTipoCarroceriaVehiculo']; ?>"
+						<?php if (isset($row['CDU_TipoCarroceria']) && (strcmp($row_TipoCarroceriaVehiculo['CodigoTipoCarroceriaVehiculo'], $row['CDU_TipoCarroceria']) == 0)) {echo "selected=\"selected\"";}?>>
+							<?php echo $row_TipoCarroceriaVehiculo['NombreTipoCarroceriaVehiculo']; ?>
 						</option>
 					<?php }?>
 				</select>
 			</div>
 			<div class="col-lg-4">
 				<label class="control-label">Número de puertas <span class="text-danger">*</span></label>
-				<select name="CDU_Cilindraje" class="form-control select2" required="required" id="CDU_Cilindraje">
+				<select name="CDU_NumPuertas" class="form-control select2" required="required" id="CDU_NumPuertas">
 						<option value="" disabled selected>Seleccione...</option>
-					<?php while ($row_Cilindraje = sqlsrv_fetch_array($SQL_NumPuertas)) {?>
-						<option value="<?php echo $row_Cilindraje['DescripcionCilindraje']; //['CodigoCilindraje'];               ?>"
-						<?php if (isset($row['CDU_Cilindraje']) && (strcmp($row_Cilindraje['DescripcionCilindraje'], $row['CDU_Cilindraje']) == 0)) {echo "selected=\"selected\"";}?>>
-							<?php echo $row_Cilindraje['DescripcionCilindraje']; ?>
+					<?php while ($row_NumPuertas = sqlsrv_fetch_array($SQL_NumPuertas)) {?>
+						<option value="<?php echo $row_NumPuertas['CodigoNumPuertasVehiculo']; ?>"
+						<?php if (isset($row['CDU_NumPuertas']) && (strcmp($row_NumPuertas['CodigoNumPuertasVehiculo'], $row['CDU_NumPuertas']) == 0)) {echo "selected=\"selected\"";}?>>
+							<?php echo $row_NumPuertas['NombreNumPuertasVehiculo']; ?>
 						</option>
 					<?php }?>
 				</select>
@@ -507,12 +507,12 @@ while ($row_ListaPrecio = sqlsrv_fetch_array($SQL_ListaPrecio)) {?>
 		<div class="form-group">
 			<div class="col-lg-4">
 				<label class="control-label">Capacidad de pasajeros <span class="text-danger">*</span></label>
-				<select name="CDU_TipoServicio" class="form-control select2" required="required" id="CDU_TipoServicio">
+				<select name="CDU_CapaPasajeros" class="form-control select2" required="required" id="CDU_CapaPasajeros">
 						<option value="" disabled selected>Seleccione...</option>
-					<?php while ($row_TipoServicio = sqlsrv_fetch_array($SQL_CapaPasajeros)) {?>
-						<option value="<?php echo $row_TipoServicio['NombreTipoServicio']; //['CodigoTipoServicio'];                           ?>"
-						<?php if (isset($row['CDU_TipoServicio']) && (strcmp($row_TipoServicio['NombreTipoServicio'], $row['CDU_TipoServicio']) == 0)) {echo "selected=\"selected\"";}?>>
-							<?php echo $row_TipoServicio['NombreTipoServicio']; ?>
+					<?php while ($row_CapaPasajeros = sqlsrv_fetch_array($SQL_CapaPasajeros)) {?>
+						<option value="<?php echo $row_CapaPasajeros['CodigoCapPasajerosVehiculo']; ?>"
+						<?php if (isset($row['CDU_CapaPasajeros']) && (strcmp($row_CapaPasajeros['CodigoCapPasajerosVehiculo'], $row['CDU_CapaPasajeros']) == 0)) {echo "selected=\"selected\"";}?>>
+							<?php echo $row_CapaPasajeros['NombreCapPasajerosVehiculo']; ?>
 						</option>
 					<?php }?>
 				</select>
@@ -521,92 +521,93 @@ while ($row_ListaPrecio = sqlsrv_fetch_array($SQL_ListaPrecio)) {?>
 	</div>
 </div>
 <!-- FIN, información del vehículo -->
-								   </div>
-								   <?php if ($edit == 1) {?>
-								   <div id="tabSN-2" class="tab-pane">
-										<div class="panel-body">
-											<div class="form-group">
-												<div class="col-lg-12">
-													<div class="table-responsive">
-													<table class="table table-striped table-bordered">
-														<thead>
-														<tr>
-															<th>Código almacén</th>
-															<th>Nombre almacén</th>
-															<th>Stock</th>
-															<th>Comprometido</th>
-															<th>Pedido</th>
-															<th>Disponible</th>
-															<th>Costo del artículo</th>
-														</tr>
-														</thead>
-														<tbody>
-														<?php while ($row_DtInvent = sqlsrv_fetch_array($SQL_DtInvent)) {?>
-															 <tr style="<?php if ($row_DtInvent['OnHand'] > 0) {
-    echo "background-color: #1ab394; color:white;";
-}
-    ?>">
-																<td><?php echo $row_DtInvent['WhsCode']; ?></td>
-																<td><?php echo $row_DtInvent['WhsName']; ?></td>
-																<td>
-																	<?php echo number_format($row_DtInvent['OnHand'], 2); ?>
-																</td>
-																<td><?php echo number_format($row_DtInvent['Comprometido'], 2); ?></td>
-																<td><?php echo number_format($row_DtInvent['Pedido'], 2); ?></td>
-																<td><?php echo number_format($row_DtInvent['Disponible'], 2); ?></td>
-																<td>
-	<?php
-if (PermitirFuncion(1004)) {
-        echo "$" . number_format($row_DtInvent['CostoArticulo'], 2);
-    } else {
-        echo "*****";
-    }
-    ?>
-																</td>
-															</tr>
-														<?php }?>
-														</tbody>
-													</table>
-													</div>
-												</div>
-											</div>
-										</div>
-								   </div>
-								   <?php }?>
-								   <?php if ($edit == 1) {?>
-									<div id="tabSN-3" class="tab-pane">
-										<div id="dv_ListaMateriales" class="panel-body">
 
-										</div>
-									</div>
-								   <?php }?>
-								   </form>
-								   <div id="tabSN-5" class="tab-pane">
-										<div class="panel-body">
-											<?php if ($edit == 1) {
-    if ($row['IdAnexoArticulo'] != 0) {?>
-													<div class="form-group">
-														<div class="col-xs-12">
-															<?php while ($row_AnexoArticulos = sqlsrv_fetch_array($SQL_AnexoArticulos)) {
-        $Icon = IconAttach($row_AnexoArticulos['FileExt']);?>
-																<div class="file-box">
-																	<div class="file">
-																		<a href="attachdownload.php?file=<?php echo base64_encode($row_AnexoArticulos['AbsEntry']); ?>&line=<?php echo base64_encode($row_AnexoArticulos['Line']); ?>" target="_blank">
-																			<div class="icon">
-																				<i class="<?php echo $Icon; ?>"></i>
-																			</div>
-																			<div class="file-name">
-																				<?php echo $row_AnexoArticulos['NombreArchivo']; ?>
-																				<br/>
-																				<small><?php echo $row_AnexoArticulos['Fecha']; ?></small>
-																			</div>
-																		</a>
-																	</div>
-																</div>
-															<?php }?>
-														</div>
-													</div>
-										<?php } else {echo "<p>Sin anexos.</p>";}
+</div>
+<?php if ($edit == 1) {?>
+<div id="tabSN-2" class="tab-pane">
+<div class="panel-body">
+<div class="form-group">
+<div class="col-lg-12">
+	<div class="table-responsive">
+	<table class="table table-striped table-bordered">
+		<thead>
+		<tr>
+			<th>Código almacén</th>
+			<th>Nombre almacén</th>
+			<th>Stock</th>
+			<th>Comprometido</th>
+			<th>Pedido</th>
+			<th>Disponible</th>
+			<th>Costo del artículo</th>
+		</tr>
+		</thead>
+		<tbody>
+		<?php while ($row_DtInvent = sqlsrv_fetch_array($SQL_DtInvent)) {?>
+				<tr style="<?php if ($row_DtInvent['OnHand'] > 0) {
+echo "background-color: #1ab394; color:white;";
+}
+?>">
+				<td><?php echo $row_DtInvent['WhsCode']; ?></td>
+				<td><?php echo $row_DtInvent['WhsName']; ?></td>
+				<td>
+					<?php echo number_format($row_DtInvent['OnHand'], 2); ?>
+				</td>
+				<td><?php echo number_format($row_DtInvent['Comprometido'], 2); ?></td>
+				<td><?php echo number_format($row_DtInvent['Pedido'], 2); ?></td>
+				<td><?php echo number_format($row_DtInvent['Disponible'], 2); ?></td>
+				<td>
+<?php
+if (PermitirFuncion(1004)) {
+echo "$" . number_format($row_DtInvent['CostoArticulo'], 2);
+} else {
+echo "*****";
+}
+?>
+				</td>
+			</tr>
+		<?php }?>
+		</tbody>
+	</table>
+	</div>
+</div>
+</div>
+</div>
+</div>
+<?php }?>
+<?php if ($edit == 1) {?>
+<div id="tabSN-3" class="tab-pane">
+<div id="dv_ListaMateriales" class="panel-body">
+
+</div>
+</div>
+<?php }?>
+</form>
+<div id="tabSN-5" class="tab-pane">
+<div class="panel-body">
+<?php if ($edit == 1) {
+if ($row['IdAnexoArticulo'] != 0) {?>
+	<div class="form-group">
+		<div class="col-xs-12">
+			<?php while ($row_AnexoArticulos = sqlsrv_fetch_array($SQL_AnexoArticulos)) {
+$Icon = IconAttach($row_AnexoArticulos['FileExt']);?>
+				<div class="file-box">
+					<div class="file">
+						<a href="attachdownload.php?file=<?php echo base64_encode($row_AnexoArticulos['AbsEntry']); ?>&line=<?php echo base64_encode($row_AnexoArticulos['Line']); ?>" target="_blank">
+							<div class="icon">
+								<i class="<?php echo $Icon; ?>"></i>
+							</div>
+							<div class="file-name">
+								<?php echo $row_AnexoArticulos['NombreArchivo']; ?>
+								<br/>
+								<small><?php echo $row_AnexoArticulos['Fecha']; ?></small>
+							</div>
+						</a>
+					</div>
+				</div>
+			<?php }?>
+		</div>
+	</div>
+<?php } else {echo "<p>Sin anexos.</p>";}
 }?>
 											<?php if (($edit == 0) || (($edit == 1) && ($row['Estado'] != 'N') && (PermitirFuncion(1003)))) {?>
 											<div class="row">
