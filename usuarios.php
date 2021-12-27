@@ -339,6 +339,7 @@ if ($edit == 1) { //Editar usuario
 
     //Proyetos asociados
     $SQL_ProyectosUsuario = Seleccionar("uvw_tbl_UsuariosProyectos", "*", "[ID_Usuario]='" . $IdUsuario . "'", 'DeProyecto');
+	// $SQL_ProyectosUsuario = Seleccionar("uvw_tbl_UsuariosProyectos", "*", "[ID_Usuario]='" . $IdUsuario . "'", 'DeProyecto', 'ASC', 1, 1);
     $row_ProyectosUsuario = sqlsrv_fetch_array($SQL_ProyectosUsuario);
 }
 
@@ -894,9 +895,13 @@ while ($row_TiposDocumentos = sqlsrv_fetch_array($SQL_TiposDocumentos)) {
 									 <div class="col-lg-4">
 										 <select data-placeholder="Digite para buscar..." name="Proyecto[]" class="form-control select2" id="Proyecto" multiple>
 										  <?php while ($row_Proyectos = sqlsrv_fetch_array($SQL_Proyectos)) {?>
-												<!--option value="<?php echo $row_Proyectos['IdProyecto']; ?>" <?php if ($edit == 1) {if ((strcmp($row_Proyectos['IdProyecto'], $row_ProyectosUsuario['IdProyecto']) == 0)) {echo "selected=\"selected\"";
-    $row_ProyectosUsuario = sqlsrv_fetch_array($SQL_ProyectosUsuario);}}?>><?php echo $row_Proyectos['DeProyecto']; ?></option-->
-												<option>
+												<option value="<?php echo $row_Proyectos['IdProyecto']; ?>"
+												<?php if ($edit == 1) {
+														if (isset($row_ProyectosUsuario['IdProyecto']) && (strcmp($row_Proyectos['IdProyecto'], $row_ProyectosUsuario['IdProyecto']) == 0)) {
+															echo "selected=\"selected\""; 
+															$row_ProyectosUsuario = sqlsrv_fetch_array($SQL_ProyectosUsuario);
+														}
+													}?>>
 													<?php echo $row_Proyectos['DeProyecto']; ?>
 												</option>
 										  <?php }?>
