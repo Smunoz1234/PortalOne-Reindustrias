@@ -91,9 +91,9 @@ if(isset($_POST['P'])&&($_POST['P']!="")){//Grabar Devolucion de venta
 			"'".$_POST['SucursalDestino']."'",
 			"'".$_POST['DireccionDestino']."'",
 			"'".$_POST['CondicionPago']."'",
-			"'".$_POST['CentroCosto']."'",
-			"'".$_POST['UnidadNegocio']."'",
-			"'".$_POST['Sucursal']."'",
+			"'".$_POST['Dim1']."'",
+			"'".$_POST['Dim2']."'",
+			"'".$_POST['Dim3']."'",
 			"'".$_POST['PrjCode']."'",
 			"'".$_POST['Autorizacion']."'",
 			"'".$_POST['Almacen']."'",
@@ -349,6 +349,9 @@ $SQL_Dim1=Seleccionar('uvw_Sap_tbl_DimensionesReparto','*','DimCode=1');
 //Normas de reparte (Unidad negocio)
 $SQL_Dim2=Seleccionar('uvw_Sap_tbl_DimensionesReparto','*','DimCode=2');
 
+//Normas de reparto
+$SQL_Dim3=Seleccionar('uvw_Sap_tbl_DimensionesReparto','*','DimCode=3');
+
 //Condiciones de pago
 $SQL_CondicionPago=Seleccionar('uvw_Sap_tbl_CondicionPago','*','','IdCondicionPago');
 
@@ -434,7 +437,7 @@ function BuscarArticulo(dato){
 	var cardcode= document.getElementById("CardCode").value;
 	var dim1= document.getElementById("Dim1").value;
 	var dim2= document.getElementById("Dim2").value;
-	var dim3= document.getElementById("Sucursal").value;
+	var dim3= document.getElementById("Dim3").value;
 	var posicion_x; 
 	var posicion_y;  
 	posicion_x=(screen.width/2)-(1200/2);  
@@ -575,7 +578,7 @@ function ConsultarDatosCliente(){
 			});
 		});
 		$("#Serie").change(function(){
-			$('.ibox-content').toggleClass('sk-loading',true);
+			/*$('.ibox-content').toggleClass('sk-loading',true);
 			var Serie=document.getElementById('Serie').value;
 			$.ajax({
 				type: "POST",
@@ -585,15 +588,15 @@ function ConsultarDatosCliente(){
 					$('.ibox-content').toggleClass('sk-loading',false);
 					$('#Sucursal').trigger('change');
 				}
-			});		
+			});*/	
 		});
-		$("#Sucursal").change(function(){
+		$("#Dim3").change(function(){
 			$('.ibox-content').toggleClass('sk-loading',true);
-			var Sucursal=document.getElementById('Sucursal').value;
+			var Dim3=document.getElementById('Dim3').value;
 			var Serie=document.getElementById('Serie').value;
 			$.ajax({
 				type: "POST",
-				url: "ajx_cbo_select.php?type=20&id="+Sucursal+"&serie="+Serie+"&tdoc=16",
+				url: "ajx_cbo_select.php?type=20&id="+Dim3+"&serie="+Serie+"&tdoc=16",
 				success: function(response){
 					$('#Almacen').html(response).fadeIn();
 					$('.ibox-content').toggleClass('sk-loading',false);
@@ -601,7 +604,7 @@ function ConsultarDatosCliente(){
 				}
 			});
 			
-			if(Sucursal!=""&&document.getElementById('CardCode').value!=""&&document.getElementById('TotalItems').value!="0"){
+			if(Dim3!=""&&document.getElementById('CardCode').value!=""&&document.getElementById('TotalItems').value!="0"){
 				Swal.fire({
 					title: "¿Desea actualizar las lineas de la dimensión 3?",
 					icon: "question",
@@ -614,7 +617,7 @@ function ConsultarDatosCliente(){
 							<?php if($edit==0){?>
 						$.ajax({
 							type: "GET",
-							url: "registro.php?P=36&doctype=7&type=1&name=OcrCode3&value="+Base64.encode(Sucursal)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
+							url: "registro.php?P=36&doctype=7&type=1&name=OcrCode3&value="+Base64.encode(Dim3)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
 							success: function(response){
 								frame.src="detalle_devolucion_venta.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser'];?>&cardcode="+document.getElementById('CardCode').value;
 								$('.ibox-content').toggleClass('sk-loading',false);
@@ -623,7 +626,7 @@ function ConsultarDatosCliente(){
 						<?php }else{?>
 						$.ajax({
 							type: "GET",
-							url: "registro.php?P=36&doctype=7&type=2&name=OcrCode3&value="+Base64.encode(Sucursal)+"&line=0&id=<?php echo $row['ID_DevolucionVenta'];?>&evento=<?php echo $IdEvento;?>&actodos=1",
+							url: "registro.php?P=36&doctype=7&type=2&name=OcrCode3&value="+Base64.encode(Dim3)+"&line=0&id=<?php echo $row['ID_DevolucionVenta'];?>&evento=<?php echo $IdEvento;?>&actodos=1",
 							success: function(response){
 								frame.src="detalle_devolucion_venta.php?id=<?php echo base64_encode($row['ID_DevolucionVenta']);?>&evento=<?php echo base64_encode($IdEvento);?>&type=2";
 								$('.ibox-content').toggleClass('sk-loading',false);
@@ -1021,13 +1024,11 @@ function ConsultarDatosCliente(){
 					<?php $row_DimReparto=sqlsrv_fetch_array($SQL_DimReparto);?>
 					<label class="col-lg-1 control-label"><?php echo $row_DimReparto['NombreDim']; ?> <span class="text-danger">*</span></label>
 					<div class="col-lg-3">
-                    	<select name="Sucursal" class="form-control" id="Sucursal" required="required" <?php if(($edit==1)&&($row['Cod_Estado']=='C')){echo "disabled='disabled'";}?>>
+						<select name="Dim3" class="form-control" id="Dim3" required="required" <?php if(($edit==1)&&($row['Cod_Estado']=='C')){echo "disabled='disabled'";}?>>
 							<option value="">Seleccione...</option>
-                          <?php if($edit==1){
-									while($row_Sucursal=sqlsrv_fetch_array($SQL_Sucursal)){?>
-									<option value="<?php echo $row_Sucursal['IdSucursal'];?>" <?php if(($edit==1)&&(isset($row['OcrCode3']))&&(strcmp($row_Sucursal['IdSucursal'],$row['OcrCode3'])==0)){ echo "selected=\"selected\"";}?>><?php echo $row_Sucursal['DeSucursal'];?></option>
-							<?php 	}
-								}?>
+                          <?php while($row_Dim3=sqlsrv_fetch_array($SQL_Dim3)){?>
+									<option value="<?php echo $row_Dim3['OcrCode'];?>" <?php if((isset($row['OcrCode3'])&&($row['OcrCode3']!=""))&&(strcmp($row_Dim3['OcrCode'],$row['OcrCode3'])==0)){echo "selected=\"selected\"";}elseif(($edit==0)&&(!isset($_GET['CCosto']))&&($row_DatosEmpleados['CentroCosto3']!="")&&(strcmp($row_DatosEmpleados['CentroCosto3'],$row_Dim2['OcrCode'])==0)){echo "selected=\"selected\"";}elseif(isset($_GET['CCosto'])&&(strcmp($row_Dim3['OcrCode'],base64_decode($_GET['CCosto']))==0)){ echo "selected=\"selected\"";}?>><?php echo $row_Dim3['OcrName'];?></option>
+							<?php 	}?>
 						</select>
                	  	</div>
 				</div>
