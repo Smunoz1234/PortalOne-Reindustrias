@@ -464,11 +464,11 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=176 and VerEnD
 									<option value="R" <?php if ((isset($row['TipoEquipo'])) && (strcmp("R", $row['TipoEquipo']) == 0)) {echo "selected=\"selected\"";}?>>Ventas</option>
 								</select>
 							</div>
-							<label class="col-lg-1 control-label">Número de serie <span class="text-danger">*</span></label>
+							<label class="col-lg-1 control-label">Serial Interno (Placa) <span class="text-danger">*</span></label>
 							<div class="col-lg-3">
 								<input autocomplete="off" name="SerialInterno" type="text" required="required" class="form-control" id="SerialInterno" maxlength="150" value="<?php if (isset($row['SerialInterno'])) {echo $row['SerialInterno'];}?>">
 							</div>
-							<label class="col-lg-1 control-label">No. Placa <span class="text-danger">*</span></label>
+							<label class="col-lg-1 control-label">Serial Fabricante (VIN) <span class="text-danger">*</span></label>
 							<div class="col-lg-3">
 								<input autocomplete="off" name="SerialFabricante" type="text" required="required" class="form-control" id="SerialFabricante" maxlength="150" value="<?php if (isset($row['SerialFabricante'])) {echo $row['SerialFabricante'];}?>">
 							</div>
