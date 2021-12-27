@@ -592,15 +592,20 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
             }
         }
     } elseif ($_GET['type'] == 28) { //Numeros de series dependiendo del Articulo de la llamada
-        if (!isset($_GET['id']) || ($_GET['id'] == "")) {
+        if (!isset($_GET['id'])) {
             echo "<option value=''>Seleccione...</option>";
         } else {
             //$SQL = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', '*', "ItemCode='" . $_GET['id'] . "'", 'SerialFabricante');
             $codigoArticulo = "'" . $_GET['id'] . "'";
             $cliente = "'" . $_GET['clt'] . "'";
-            $Consulta = "SELECT SerialInterno, SerialFabricante FROM uvw_Sap_tbl_TarjetasEquipos WHERE ItemCode=$codigoArticulo AND CardCode=$cliente";
-            // echo $Consulta;
-            $SQL=sqlsrv_query($conexion,$Consulta,array(),array( "Scrollable" => 'Static' ));
+            
+           if($codigoArticulo=="''"){
+                $Consulta = "SELECT SerialInterno, SerialFabricante FROM uvw_Sap_tbl_TarjetasEquipos WHERE CardCode=$cliente";
+           }else{
+                $Consulta = "SELECT SerialInterno, SerialFabricante FROM uvw_Sap_tbl_TarjetasEquipos WHERE ItemCode=$codigoArticulo AND CardCode=$cliente";
+           }            
+             //echo $Consulta;
+            $SQL = sqlsrv_query($conexion, $Consulta, array(), array("Scrollable" => 'Static'));
             $Num = sqlsrv_num_rows($SQL);
             if ($Num) {
                 echo "<option value=''>Seleccione...</option>";
@@ -652,10 +657,11 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
                 while ($row = sqlsrv_fetch_array($SQL)) {
                     $SQL_Data = Seleccionar('tbl_Parametros_Asistentes_Detalle', '*', "ID_Campo='" . $row['ID_Campo'] . "' and TipoObjeto='" . $_GET['obj'] . "' and IdSerie='" . $_GET['id'] . "'");
                     $row_Data = sqlsrv_fetch_array($SQL_Data);
+                    $valor = isset($row_Data['Valor']) ? $row_Data['Valor'] : "";
                     echo "<div class='form-group'>
 						<label class='col-lg-2 control-label'>" . $row['LabelCampo'] . "<br><span class='text-muted'>" . $row['NombreCampo'] . "</span></label>
 						<div class='col-lg-3'>
-							<input name='" . $row['NombreCampo'] . "' type='text' class='form-control' id='" . $row['NombreCampo'] . "' maxlength='100' autocomplete='off' value='" . $row_Data['Valor'] . "' onChange='ActualizarDatos(\"" . $_GET['id'] . "\");'>
+							<input name='" . $row['NombreCampo'] . "' type='text' class='form-control' id='" . $row['NombreCampo'] . "' maxlength='100' autocomplete='off' value='" . $valor . "' onChange='ActualizarDatos(\"" . $_GET['id'] . "\");'>
 							<input name='" . $row['ID_Campo'] . "' type='hidden' id='" . $row['ID_Campo'] . "' value='" . $row['ID_Campo'] . "'>
 						</div>
 					</div>";

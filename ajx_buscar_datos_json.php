@@ -604,13 +604,15 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
     }
 
     // Stiven Muño Murillo, 22/12/2021
-    elseif ($type == 44) { // Consultar los datos en los parametros de la creación de OT
+    elseif ($type == 44) {
         $SerialInterno = "'" . $_GET['id'] . "'";
         $SQL = Seleccionar("uvw_Sap_tbl_TarjetasEquipos", "*", "SerialInterno=" . $SerialInterno);
         $records = array();
         $row = sqlsrv_fetch_array($SQL);
         $records = array(
+            'ItemCode' => $row['ItemCode'],
             'CDU_Marca' => $row['CDU_Marca'],
+            'IdLineaModeloVehiculo' => $row['IdLineaModeloVehiculo'],
             'CDU_Linea' => $row['CDU_Linea'],
             'CDU_Ano' => $row['CDU_Ano'],
             'CDU_Concesionario' => $row['CDU_Concesionario'],
