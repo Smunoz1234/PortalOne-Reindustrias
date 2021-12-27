@@ -1184,7 +1184,6 @@ function ConsultarContrato(){
 				</div>
 			</div>
 			<?php }?>
-			<?php if ($type_llmd == 1) {?>
 				<div class="ibox-content">
 				<?php include "includes/spinner.php";?>
 					<div class="row">
@@ -1198,6 +1197,7 @@ function ConsultarContrato(){
 								</div>
 								<div class="ibox-content">
 									<div class="form-group">
+										<?php if ($type_llmd == 1) {?>	
 										<div class="col-lg-6">
 											<div class="btn-group">
 												<button data-toggle="dropdown" class="btn btn-outline btn-success dropdown-toggle"><i class="fa fa-download"></i> Descargar formato <i class="fa fa-caret-down"></i></button>
@@ -1214,6 +1214,10 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 											<a href="#" class="btn btn-outline btn-primary"><i class="fa fa-envelope"></i> Enviar correo</a>
 											<a href="#" class="btn btn-outline btn-info" onClick="VerMapaRel('<?php echo base64_encode($row['ID_LlamadaServicio']); ?>','<?php echo base64_encode('191'); ?>');"><i class="fa fa-sitemap"></i> Mapa de relaciones</a>
 										</div>
+										<?php } else if (PermitirFuncion(508)) {?>
+											<a href="socios_negocios.php" class="btn btn-outline btn-primary"><i class="fa fa-user-circle"></i> Crear Prospecto</a>
+											<a href="tarjeta_equipo.php" class="btn btn-outline btn-info"><i class="fa fa-plus-circle"></i> Crear nueva tarjeta de equipo</a>
+										<?php }?>
 									</div>
 								</div>
 							</div>
@@ -1222,7 +1226,6 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 					</div>
 				</div>
 			<br>
-			<?php }?>
 			 <div class="ibox-content">
 				  <?php include "includes/spinner.php";?>
           <div class="row">
