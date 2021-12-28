@@ -1019,9 +1019,8 @@ if (isset($sw_error) && ($sw_error == 1)) {
 						document.getElementById('CDU_Marca').value = data.CDU_Marca;
 						$('#CDU_Marca').trigger('change');
 
-						// console.log(data.CDU_Linea);
 						borrarLineaModeloVehiculo = false;
-						document.getElementById('CDU_Linea').value = data.IdLineaModeloVehiculo;
+						document.getElementById('CDU_Linea').value = data.CDU_IdLinea;
 						$('#CDU_Linea').trigger('change');
 
             			document.getElementById('CDU_Ano').value = data.CDU_Ano;
