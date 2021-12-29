@@ -2221,7 +2221,13 @@ elseif($P==35){//Insertar articulos en el carrito
 				"'".$Item."'",
 				"'".$WhsCode."'",
 				"'".$CardCode."'",
-				"'".$_SESSION['CodUser']."'"
+				"'".$_SESSION['CodUser']."'",
+				"'".$_REQUEST['dim1']."'",
+				"'".$_REQUEST['dim2']."'",
+				"'".$_REQUEST['dim3']."'",
+				"''",//dim4
+				"''",//dim5
+				"''"//prjcode
 			);
 			$SQL_Insert=EjecutarSP('sp_tbl_OfertaVentaDetalleCarritoInsert',$ParametrosInsert,35);
 			if($SQL_Insert){
@@ -2254,7 +2260,13 @@ elseif($P==35){//Insertar articulos en el carrito
 				"'".$WhsCode."'",
 				"'".$id."'",
 				"'".$evento."'",
-				"'".$_SESSION['CodUser']."'"
+				"'".$_SESSION['CodUser']."'",
+				"'".$_REQUEST['dim1']."'",
+				"'".$_REQUEST['dim2']."'",
+				"'".$_REQUEST['dim3']."'",
+				"''",//dim4
+				"''",//dim5
+				"''"//prjcode
 			);
 			$SQL_Insert=EjecutarSP('sp_tbl_OfertaVentaDetalleInsert',$ParametrosInsert,35);
 			if($SQL_Insert){
@@ -3100,11 +3112,12 @@ elseif($P==36){//Actualizar los datos del detalle de los documentos de SAP
 			if($_GET['type']==1){//Actualiza campos en carrito
 				$Parametros=array(
 					"'".$_GET['name']."'",
-					"'".$_GET['value']."'",
+					"'".base64_decode($_GET['value'])."'",
 					"'".$_GET['line']."'",
 					"'".$_GET['cardcode']."'",
 					"'".$_GET['whscode']."'",
-					"'".$_SESSION['CodUser']."'"
+					"'".$_SESSION['CodUser']."'",
+					"'".$_GET['actodos']."'"
 				);
 				$SQL=EjecutarSP('sp_tbl_OfertaVentaDetalleCarritoUpdCampos',$Parametros,36);
 				if($SQL){
@@ -3119,11 +3132,12 @@ elseif($P==36){//Actualizar los datos del detalle de los documentos de SAP
 			if($_GET['type']==2){//Actualiza campos en detalle editando
 				$Parametros=array(
 					"'".$_GET['name']."'",
-					"'".$_GET['value']."'",
+					"'".base64_decode($_GET['value'])."'",
 					"'".$_GET['line']."'",
 					"'".$_GET['id']."'",
 					"'".$_GET['evento']."'",
-					"'".$_SESSION['CodUser']."'"
+					"'".$_SESSION['CodUser']."'",
+					"'".$_GET['actodos']."'"
 				);
 				$SQL=EjecutarSP('sp_tbl_OfertaVentaDetalleUpdCampos',$Parametros,36);
 				if($SQL){

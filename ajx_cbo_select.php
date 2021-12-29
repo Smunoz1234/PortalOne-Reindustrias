@@ -888,6 +888,22 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
                 echo "<option value=''>Seleccione...</option>";
             }
         }
+    } elseif ($_GET['type'] == 41) { // Linea dependiendo de la marca (Reindustria - Lista de materiales)
+        if (!isset($_GET['id']) || ($_GET['id'] == "")) {
+            echo "<option value=''>Seleccione...</option>";
+        } else {
+            $marcaVehiculo = "'" . $_GET['id'] . "'";
+            $SQL = Seleccionar('uvw_Sap_tbl_ListaMateriales_LineaVehiculo', '*', "IdMarcaVehiculo=$marcaVehiculo");
+            $Num = sqlsrv_num_rows($SQL);
+            if ($Num) {
+                echo "<option value=''>Seleccione...</option>";
+                while ($row = sqlsrv_fetch_array($SQL)) {
+                    echo "<option value=\"" . $row['IdLineaModeloVehiculo'] . "\">" . $row['DeLineaModeloVehiculo'] . "</option>";
+                }
+            } else {
+                echo "<option value=''>Seleccione...</option>";
+            }
+        }
     }
 
     sqlsrv_close($conexion);

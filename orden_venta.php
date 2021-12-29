@@ -622,7 +622,6 @@ function ConsultarDatosCliente(){
 			});
 		});
 		$("#Dim3").change(function(){
-			$('.ibox-content').toggleClass('sk-loading',true);
 			var Dim3=document.getElementById('Dim3').value;
 			var Serie=document.getElementById('Serie').value;
 			var frame=document.getElementById('DataGrid'); 
@@ -1072,7 +1071,7 @@ function ConsultarDatosCliente(){
 						<select name="Dim3" class="form-control" id="Dim3" required="required" <?php if(($edit==1)&&($row['Cod_Estado']=='C')){echo "disabled='disabled'";}?>>
 							<option value="">Seleccione...</option>
                           <?php while($row_Dim3=sqlsrv_fetch_array($SQL_Dim3)){?>
-									<option value="<?php echo $row_Dim3['OcrCode'];?>" <?php if((isset($row['OcrCode3'])&&($row['OcrCode3']!=""))&&(strcmp($row_Dim3['OcrCode'],$row['OcrCode3'])==0)){echo "selected=\"selected\"";}elseif(($edit==0)&&(!isset($_GET['CCosto']))&&($row_DatosEmpleados['CentroCosto3']!="")&&(strcmp($row_DatosEmpleados['CentroCosto3'],$row_Dim2['OcrCode'])==0)){echo "selected=\"selected\"";}elseif(isset($_GET['CCosto'])&&(strcmp($row_Dim3['OcrCode'],base64_decode($_GET['CCosto']))==0)){ echo "selected=\"selected\"";}?>><?php echo $row_Dim3['OcrName'];?></option>
+									<option value="<?php echo $row_Dim3['OcrCode'];?>" <?php if((isset($row['OcrCode3'])&&($row['OcrCode3']!=""))&&(strcmp($row_Dim3['OcrCode'],$row['OcrCode3'])==0)){echo "selected=\"selected\"";}elseif(($edit==0)&&(!isset($_GET['CCosto']))&&($row_DatosEmpleados['CentroCosto3']!="")&&(strcmp($row_DatosEmpleados['CentroCosto3'],$row_Dim3['OcrCode'])==0)){echo "selected=\"selected\"";}elseif(isset($_GET['CCosto'])&&(strcmp($row_Dim3['OcrCode'],base64_decode($_GET['CCosto']))==0)){ echo "selected=\"selected\"";}?>><?php echo $row_Dim3['OcrName'];?></option>
 							<?php 	}?>
 						</select>
                	  	</div>

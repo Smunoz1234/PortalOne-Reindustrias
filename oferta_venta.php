@@ -5,6 +5,7 @@ $dt_OF=0;//sw para saber si vienen datos de una Oferta de venta.
 $msg_error="";//Mensaje del error
 $IdOferta=0;
 $IdPortal=0;//Id del portal para las ordenes que fueron creadas en el portal, para eliminar el registro antes de cargar al editar
+$ObjType=23;
 
 if(isset($_GET['id'])&&($_GET['id']!="")){
 	$IdOferta=base64_decode($_GET['id']);
@@ -89,9 +90,9 @@ if(isset($_POST['P'])&&($_POST['P']!="")){//Grabar Oferta de venta
 			"'".$_POST['SucursalDestino']."'",
 			"'".$_POST['DireccionDestino']."'",
 			"'".$_POST['CondicionPago']."'",
-			"'".$_POST['CentroCosto']."'",
-			"'".$_POST['UnidadNegocio']."'",
-			"'".$_POST['Sucursal']."'",
+			"'".$_POST['Dim1']."'",
+			"'".$_POST['Dim2']."'",
+			"'".$_POST['Dim3']."'",
 			"'".$_POST['PrjCode']."'",
 			"'".$_POST['Autorizacion']."'",
 			"'".$_POST['Almacen']."'",
@@ -126,7 +127,7 @@ if(isset($_POST['P'])&&($_POST['P']!="")){//Grabar Oferta de venta
 
 						//Registrar archivo en la BD
 						$ParamInsAnex=array(
-							"'23'",
+							"'".$ObjType."'",
 							"'".$IdOfertaVenta."'",
 							"'".$OnlyName."'",
 							"'".$Ext."'",
@@ -153,7 +154,7 @@ if(isset($_POST['P'])&&($_POST['P']!="")){//Grabar Oferta de venta
 					'id_evento' => intval($IdEvento)
 				);
 				$Metodo="OfertasVentas";
-				$Resultado=EnviarWebServiceSAP($Metodo,$Parametros,true,true);		
+				$Resultado=EnviarWebServiceSAP($Metodo,$Parametros,true,true);
 				
 				if($Resultado->Success==0){
 					//InsertarLog(1, 0, 'Error al generar el informe');
@@ -276,17 +277,23 @@ if($sw_error==1){
 
 }
 
+//Dimensiones de reparto
+$SQL_DimReparto=Seleccionar('uvw_Sap_tbl_NombresDimensionesReparto','*',"CodDim IN (1,2,3)","CodDim");
+
 //Normas de reparte (centros de costos)
-$SQL_ControCosto=Seleccionar('uvw_Sap_tbl_DimensionesReparto','*','DimCode=1');
+$SQL_Dim1=Seleccionar('uvw_Sap_tbl_DimensionesReparto','*','DimCode=1');
 
 //Normas de reparte (Unidad negocio)
-$SQL_UnidadNegocio=Seleccionar('uvw_Sap_tbl_DimensionesReparto','*','DimCode=2');
+$SQL_Dim2=Seleccionar('uvw_Sap_tbl_DimensionesReparto','*','DimCode=2');
+
+//Normas de reparto
+$SQL_Dim3=Seleccionar('uvw_Sap_tbl_DimensionesReparto','*','DimCode=3');
 
 //Condiciones de pago
 $SQL_CondicionPago=Seleccionar('uvw_Sap_tbl_CondicionPago','*','','IdCondicionPago');
 
 //Datos de dimensiones del usuario actual
-$SQL_DatosEmpleados=Seleccionar('uvw_tbl_Usuarios','CentroCosto1,CentroCosto2',"ID_Usuario='".$_SESSION['CodUser']."'");
+$SQL_DatosEmpleados=Seleccionar('uvw_Sap_tbl_Empleados','CentroCosto1,CentroCosto2,CentroCosto3',"ID_Empleado='".$_SESSION['CodigoSAP']."'");
 $row_DatosEmpleados=sqlsrv_fetch_array($SQL_DatosEmpleados);
 
 //Estado documento
@@ -301,7 +308,7 @@ $SQL_EmpleadosVentas=Seleccionar('uvw_Sap_tbl_EmpleadosVentas','*','','DE_EmpVen
 //Series de documento
 $ParamSerie=array(
 	"'".$_SESSION['CodUser']."'",
-	"'23'"
+	"'".$ObjType."'"
 );
 $SQL_Series=EjecutarSP('sp_ConsultarSeriesDocumentos',$ParamSerie);
 
@@ -312,7 +319,7 @@ $SQL_Series=EjecutarSP('sp_ConsultarSeriesDocumentos',$ParamSerie);
 <head>
 <?php include_once("includes/cabecera.php"); ?>
 <!-- InstanceBeginEditable name="doctitle" -->
-<title> Oferta de venta | <?php echo NOMBRE_PORTAL;?></title>
+<title>Oferta de venta | <?php echo NOMBRE_PORTAL;?></title>
 <?php 
 if(isset($_GET['a'])&&$_GET['a']==base64_encode("OK_OFertAdd")){
 	echo "<script>
@@ -398,17 +405,20 @@ if(isset($sw_error)&&($sw_error==1)){
 function BuscarArticulo(dato){
 	var almacen= document.getElementById("Almacen").value;
 	var cardcode= document.getElementById("CardCode").value;
+	var dim1= document.getElementById("Dim1").value;
+	var dim2= document.getElementById("Dim2").value;
+	var dim3= document.getElementById("Dim3").value;
 	var posicion_x; 
 	var posicion_y;  
 	posicion_x=(screen.width/2)-(1200/2);  
 	posicion_y=(screen.height/2)-(500/2);
 	if(dato!=""){
 		if((cardcode!="")&&(almacen!="")){
-			remote=open('buscar_articulo.php?dato='+dato+'&cardcode='+cardcode+'&whscode='+almacen+'&doctype=<?php if($edit==0){echo "3";}else{echo "4";}?>&idofertaventa=<?php if($edit==1){echo base64_encode($row['ID_OfertaVenta']);}else{echo "0";}?>&evento=<?php if($edit==1){echo base64_encode($row['IdEvento']);}else{echo "0";}?>&tipodoc=2','remote',"width=1200,height=500,location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=no,fullscreen=no,directories=no,status=yes,left="+posicion_x+",top="+posicion_y+"");
+			remote=open('buscar_articulo.php?dato='+dato+'&cardcode='+cardcode+'&whscode='+almacen+'&doctype=<?php if($edit==0){echo "3";}else{echo "4";}?>&idofertaventa=<?php if($edit==1){echo base64_encode($row['ID_OfertaVenta']);}else{echo "0";}?>&evento=<?php if($edit==1){echo base64_encode($row['IdEvento']);}else{echo "0";}?>&tipodoc=2&dim1='+dim1+'&dim2='+dim2+'&dim3='+dim3,'remote',"width=1200,height=500,location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=no,fullscreen=no,directories=no,status=yes,left="+posicion_x+",top="+posicion_y+"");
 			remote.focus();
 		}else{
 			Swal.fire({
-				title: "¡Error!",
+				title: "¡Advertencia!",
 				text: "Debe seleccionar un cliente y un almacén",
 				icon: "warning",
 				confirmButtonText: "OK"
@@ -489,7 +499,7 @@ function CrearLead(){
 			<?php }?>
 			<?php if($edit==0){?>
 				if(carcode!="" && almacen!=""){
-					frame.src="detalle_oferta_venta.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser'];?>&cardcode="+carcode+"&whscode="+almacen;
+					frame.src="detalle_oferta_venta.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser'];?>&cardcode="+carcode;
 				}else{
 					frame.src="detalle_oferta_venta.php";
 				}
@@ -499,7 +509,7 @@ function CrearLead(){
 				}else{
 					frame.src="detalle_oferta_venta.php";
 				}
-			<?php }?>	
+			<?php }?>
 			$.ajax({
 				url:"ajx_buscar_datos_json.php",
 				data:{type:31,CardCode:carcode},
@@ -507,7 +517,7 @@ function CrearLead(){
 				success: function(data){
 					document.getElementById('PrjCode').value=data.IdProyecto;
 				}
-			});			
+			});
 			$('.ibox-content').toggleClass('sk-loading',false);
 		});	
 		$("#SucursalDestino").change(function(){
@@ -545,45 +555,196 @@ function CrearLead(){
 				type: "POST",
 				url: "ajx_cbo_select.php?type=19&id="+Serie,
 				success: function(response){
-					$('#Sucursal').html(response).fadeIn();
+					$('#Dim2').html(response).fadeIn();
 					$('.ibox-content').toggleClass('sk-loading',false);
-					$('#Sucursal').trigger('change');
+					$('#Dim2').trigger('change');
 				}
 			});		
 		});
-		$("#Sucursal").change(function(){
-			$('.ibox-content').toggleClass('sk-loading',true);
-			var Sucursal=document.getElementById('Sucursal').value;
+		$("#Dim3").change(function(){
+			var Dim3=document.getElementById('Dim3').value;
 			var Serie=document.getElementById('Serie').value;
+			var frame=document.getElementById('DataGrid'); 
+			// $.ajax({
+			// 	type: "POST",
+			// 	url: "ajx_cbo_select.php?type=20&id="+Dim3+"&serie="+Serie+"&tdoc=23",
+			// 	success: function(response){
+			// 		$('#Almacen').html(response).fadeIn();
+			// 		$('.ibox-content').toggleClass('sk-loading',false);
+			// 		// $('#Almacen').trigger('change');
+			// 	}
+			// });
+			
+			if(Dim3!=""&&document.getElementById('CardCode').value!=""&&document.getElementById('TotalItems').value!="0"){
+				Swal.fire({
+					title: "¿Desea actualizar las lineas?",
+					icon: "question",
+					showCancelButton: true,
+					confirmButtonText: "Si, confirmo",
+					cancelButtonText: "No"
+				}).then((result) => {
+					if (result.isConfirmed) {
+						$('.ibox-content').toggleClass('sk-loading',true);
+							<?php if($edit==0){?>
+						$.ajax({
+							type: "GET",					
+							url: "registro.php?P=36&doctype=2&type=1&name=OcrCode3&value="+Base64.encode(Dim3)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
+							success: function(response){
+								frame.src="detalle_oferta_venta.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser'];?>&cardcode="+document.getElementById('CardCode').value;
+								$('.ibox-content').toggleClass('sk-loading',false);
+							}
+						});
+						<?php }else{?>
+						$.ajax({
+							type: "GET",
+							url: "registro.php?P=36&doctype=2&type=2&name=OcrCode3&value="+Base64.encode(Dim3)+"&line=0&id=<?php echo $row['ID_OfertaVenta'];?>&evento=<?php echo $IdEvento;?>&actodos=1",
+							success: function(response){
+								frame.src="detalle_oferta_venta.php?id=<?php echo base64_encode($row['ID_OfertaVenta']);?>&evento=<?php echo base64_encode($IdEvento);?>&type=2";
+								$('.ibox-content').toggleClass('sk-loading',false);
+							}
+						});
+						<?php }?>
+					}
+				});
+			}
+		});
+		$("#Almacen").change(function(){
+			var frame=document.getElementById('DataGrid');
+			if(document.getElementById('Almacen').value!=""&&document.getElementById('CardCode').value!=""&&document.getElementById('TotalItems').value!="0"){
+				Swal.fire({
+					title: "¿Desea actualizar las lineas?",
+					icon: "question",
+					showCancelButton: true,
+					confirmButtonText: "Si, confirmo",
+					cancelButtonText: "No"
+				}).then((result) => {
+					if (result.isConfirmed) {
+						$('.ibox-content').toggleClass('sk-loading',true);
+							<?php if($edit==0){?>
+						$.ajax({
+							type: "GET",					
+							url: "registro.php?P=36&doctype=2&type=1&name=WhsCode&value="+Base64.encode(document.getElementById('Almacen').value)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
+							success: function(response){
+								frame.src="detalle_oferta_venta.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser'];?>&cardcode="+document.getElementById('CardCode').value;
+								$('.ibox-content').toggleClass('sk-loading',false);
+							}
+						});
+						<?php }else{?>
+						$.ajax({
+							type: "GET",
+							url: "registro.php?P=36&doctype=2&type=2&name=WhsCode&value="+Base64.encode(document.getElementById('Almacen').value)+"&line=0&id=<?php echo $row['ID_OfertaVenta'];?>&evento=<?php echo $IdEvento;?>&actodos=1",
+							success: function(response){
+								frame.src="detalle_oferta_venta.php?id=<?php echo base64_encode($row['ID_OfertaVenta']);?>&evento=<?php echo base64_encode($IdEvento);?>&type=2";
+								$('.ibox-content').toggleClass('sk-loading',false);
+							}
+						});
+						<?php }?>
+					}
+				});
+			}
+			
+//			$('.ibox-content').toggleClass('sk-loading',true);
+//			var carcode=document.getElementById('CardCode').value;
+//			var almacen=document.getElementById('Almacen').value;
+//			var frame=document.getElementById('DataGrid');
+//			<?php //if($edit==0){?>
+//				if(carcode!="" && almacen!=""){
+//					frame.src="detalle_oferta_venta.php?id=0&type=1&usr=<?php //echo $_SESSION['CodUser'];?>&cardcode="+carcode+"&whscode="+almacen;
+//				}else{
+//					frame.src="detalle_oferta_venta.php";
+//				}
+//			<?php //}else{?>
+//				if(carcode!="" && almacen!=""){
+//					frame.src="detalle_oferta_venta.php?id=<?php //echo base64_encode($row['ID_OfertaVenta']);?>&evento=<?php //echo base64_encode($row['IdEvento']);?>&type=2";
+//				}else{
+//					frame.src="detalle_oferta_venta.php";
+//				}
+//			<?php //}?>	
+//			$('.ibox-content').toggleClass('sk-loading',false);
+		});
+		
+		$("#Dim1").change(function(){
+			var frame=document.getElementById('DataGrid');
+			if(document.getElementById('Dim1').value!=""&&document.getElementById('CardCode').value!=""&&document.getElementById('TotalItems').value!="0"){
+				Swal.fire({
+					title: "¿Desea actualizar las lineas?",
+					icon: "question",
+					showCancelButton: true,
+					confirmButtonText: "Si, confirmo",
+					cancelButtonText: "No"
+				}).then((result) => {
+					if (result.isConfirmed) {
+						$('.ibox-content').toggleClass('sk-loading',true);
+							<?php if($edit==0){?>
+						$.ajax({
+							type: "GET",					
+							url: "registro.php?P=36&doctype=2&type=1&name=OcrCode&value="+Base64.encode(document.getElementById('Dim1').value)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
+							success: function(response){
+								frame.src="detalle_oferta_venta.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser'];?>&cardcode="+document.getElementById('CardCode').value;
+								$('.ibox-content').toggleClass('sk-loading',false);
+							}
+						});
+						<?php }else{?>
+						$.ajax({
+							type: "GET",
+							url: "registro.php?P=36&doctype=2&type=2&name=OcrCode&value="+Base64.encode(document.getElementById('Dim1').value)+"&line=0&id=<?php echo $row['ID_OfertaVenta'];?>&evento=<?php echo $IdEvento;?>&actodos=1",
+							success: function(response){
+								frame.src="detalle_oferta_venta.php?id=<?php echo base64_encode($row['ID_OfertaVenta']);?>&evento=<?php echo base64_encode($IdEvento);?>&type=2";
+								$('.ibox-content').toggleClass('sk-loading',false);
+							}
+						});
+						<?php }?>
+					}
+				});
+			}
+		});
+		
+		$("#Dim2").change(function(){
+			var Dim2=document.getElementById('Dim2').value;
+			var Serie=document.getElementById('Serie').value;
+			var frame=document.getElementById('DataGrid'); 
 			$.ajax({
 				type: "POST",
-				url: "ajx_cbo_select.php?type=20&id="+Sucursal+"&serie="+Serie+"&tdoc=23",
+				url: "ajx_cbo_select.php?type=20&id="+Dim2+"&serie="+Serie+"&tdoc=23",
 				success: function(response){
 					$('#Almacen').html(response).fadeIn();
 					$('.ibox-content').toggleClass('sk-loading',false);
-					$('#Almacen').trigger('change');
+					// $('#Almacen').trigger('change');
 				}
-			});		
-		});
-		$("#Almacen").change(function(){
-			$('.ibox-content').toggleClass('sk-loading',true);
-			var carcode=document.getElementById('CardCode').value;
-			var almacen=document.getElementById('Almacen').value;
-			var frame=document.getElementById('DataGrid');
-			<?php if($edit==0){?>
-				if(carcode!="" && almacen!=""){
-					frame.src="detalle_oferta_venta.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser'];?>&cardcode="+carcode+"&whscode="+almacen;
-				}else{
-					frame.src="detalle_oferta_venta.php";
-				}
-			<?php }else{?>
-				if(carcode!="" && almacen!=""){
-					frame.src="detalle_oferta_venta.php?id=<?php echo base64_encode($row['ID_OfertaVenta']);?>&evento=<?php echo base64_encode($row['IdEvento']);?>&type=2";
-				}else{
-					frame.src="detalle_oferta_venta.php";
-				}
-			<?php }?>	
-			$('.ibox-content').toggleClass('sk-loading',false);
+			});
+
+			if(document.getElementById('Dim2').value!=""&&document.getElementById('CardCode').value!=""&&document.getElementById('TotalItems').value!="0"){
+				Swal.fire({
+					title: "¿Desea actualizar las lineas?",
+					icon: "question",
+					showCancelButton: true,
+					confirmButtonText: "Si, confirmo",
+					cancelButtonText: "No"
+				}).then((result) => {
+					if (result.isConfirmed) {
+						$('.ibox-content').toggleClass('sk-loading',true);
+							<?php if($edit==0){?>
+						$.ajax({
+							type: "GET",					
+							url: "registro.php?P=36&doctype=2&type=1&name=OcrCode2&value="+Base64.encode(document.getElementById('Dim2').value)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
+							success: function(response){
+								frame.src="detalle_oferta_venta.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser'];?>&cardcode="+document.getElementById('CardCode').value;
+								$('.ibox-content').toggleClass('sk-loading',false);
+							}
+						});
+						<?php }else{?>
+						$.ajax({
+							type: "GET",
+							url: "registro.php?P=36&doctype=2&type=2&name=OcrCode2&value="+Base64.encode(document.getElementById('Dim2').value)+"&line=0&id=<?php echo $row['ID_OfertaVenta'];?>&evento=<?php echo $IdEvento;?>&actodos=1",
+							success: function(response){
+								frame.src="detalle_oferta_venta.php?id=<?php echo base64_encode($row['ID_OfertaVenta']);?>&evento=<?php echo base64_encode($IdEvento);?>&type=2";
+								$('.ibox-content').toggleClass('sk-loading',false);
+							}
+						});
+						<?php }?>
+					}
+				});
+			}
 		});
 		
 	});
@@ -616,7 +777,6 @@ function CrearLead(){
                     </ol>
                 </div>
             </div>
-           
          <div class="wrapper wrapper-content">
 		 <?php if($edit==1){?>
 			<div class="row">
@@ -674,7 +834,7 @@ function CrearLead(){
 							<?php if($edit==1){?>
 								<a href="sapdownload.php?id=<?php echo base64_encode('15');?>&type=<?php echo base64_encode('2');?>&DocKey=<?php echo base64_encode($row['DocEntry']);?>&ObType=<?php echo base64_encode('23');?>&IdFrm=<?php echo base64_encode($row['IdSeries']);?>" target="_blank" class="btn btn-outline btn-success"><i class="fa fa-download"></i> Descargar formato</a>
 								<a href="#" class="btn btn-outline btn-info" onClick="VerMapaRel('<?php echo base64_encode($row['DocEntry']);?>','<?php echo base64_encode('23');?>');"><i class="fa fa-sitemap"></i> Mapa de relaciones</a>
-							<?php }else if(PermitirFuncion(508)) {?>
+							<?php }else{?>
 								<button type="button" onClick="CrearLead();" class="btn btn-outline btn-primary"><i class="fa fa-user-circle"></i> Crear Prospecto</button>
 							<?php }?>
 						</div>
@@ -696,7 +856,7 @@ function CrearLead(){
           <div class="row"> 
            <div class="col-lg-12">
               <form action="oferta_venta.php" method="post" class="form-horizontal" enctype="multipart/form-data" id="CrearOfertaVenta">
-			   <?php 
+				   <?php 
 				  	$_GET['obj']="23";
 				  	include_once('md_frm_campos_adicionales.php');
 				  ?>
@@ -706,17 +866,17 @@ function CrearLead(){
 				</div>
 				<div class="col-lg-8">
 					<div class="form-group">
-						<label class="col-lg-1 control-label"><i onClick="ConsultarDatosCliente();" title="Consultar cliente" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Cliente</label>
+						<label class="col-lg-1 control-label"><i onClick="ConsultarDatosCliente();" title="Consultar cliente" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Cliente <span class="text-danger">*</span></label>
 						<div class="col-lg-9">
 							<input name="CardCode" type="hidden" id="CardCode" value="<?php if(($edit==1)||($sw_error==1)){echo $row['CardCode'];}elseif($dt_LS==1||$dt_OF==1){echo $row_Cliente['CodigoCliente'];}?>">
 							
-							<input name="CardName" type="text" required="required" class="form-control" id="CardName" placeholder="Digite para buscar..." value="<?php if(($edit==1)||($sw_error==1)){echo $row['NombreCliente'];}elseif($dt_LS==1||$dt_OF==1){echo $row_Cliente['NombreCliente'];}?>" <?php if((($edit==1)&&($row['Cod_Estado']=='C'))||($dt_LS==1||$dt_OF==1)){echo "readonly";}?>>
+							<input name="CardName" type="text" required="required" class="form-control" id="CardName" placeholder="Digite para buscar..." value="<?php if(($edit==1)||($sw_error==1)){echo $row['NombreCliente'];}elseif($dt_LS==1||$dt_OF==1){echo $row_Cliente['NombreCliente'];}?>" <?php if((($edit==1)&&($row['Cod_Estado']=='C'))||($dt_LS==1||$dt_OF==1)||($edit==1)){echo "readonly";}?>>
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-lg-1 control-label">Contacto</label>
+						<label class="col-lg-1 control-label">Contacto <span class="text-danger">*</span></label>
 						<div class="col-lg-5">
-							<select name="ContactoCliente" class="form-control m-b" id="ContactoCliente" required <?php if(($edit==1)&&($row['Cod_Estado']=='C')){echo "disabled='disabled'";}?>>
+							<select name="ContactoCliente" class="form-control" id="ContactoCliente" required <?php if(($edit==1)&&($row['Cod_Estado']=='C')){echo "disabled='disabled'";}?>>
 									<option value="">Seleccione...</option>
 							<?php
 								if($edit==1||$sw_error==1){
@@ -730,7 +890,7 @@ function CrearLead(){
 					<div class="form-group">
 						<label class="col-lg-1 control-label">Sucursal destino</label>
 						<div class="col-lg-5">
-							<select name="SucursalDestino" class="form-control m-b select2" id="SucursalDestino" <?php if(($edit==1)&&($row['Cod_Estado']=='C')){echo "disabled='disabled'";}?>>
+							<select name="SucursalDestino" class="form-control select2" id="SucursalDestino" <?php if(($edit==1)&&($row['Cod_Estado']=='C')){echo "disabled='disabled'";}?>>
 							  <?php if(($edit==0)&&($dt_LS==0)&&($dt_OF==0)){?><option value="">Seleccione...</option><?php }?>
 							  <?php if(($edit==1)||($dt_LS==1)||($sw_error==1)){while($row_SucursalDestino=sqlsrv_fetch_array($SQL_SucursalDestino)){?>
 									<option value="<?php echo $row_SucursalDestino['NombreSucursal'];?>" <?php if((isset($row['SucursalDestino']))&&(strcmp($row_SucursalDestino['NombreSucursal'],$row['SucursalDestino'])==0)){ echo "selected=\"selected\"";}elseif(isset($_GET['Sucursal'])&&(strcmp($row_SucursalDestino['NombreSucursal'],base64_decode($_GET['Sucursal']))==0)){ echo "selected=\"selected\"";}?>><?php echo $row_SucursalDestino['NombreSucursal'];?></option>
@@ -739,7 +899,7 @@ function CrearLead(){
 						</div>
 						<label class="col-lg-1 control-label">Sucursal facturación</label>
 						<div class="col-lg-5">
-							<select name="SucursalFacturacion" class="form-control m-b select2" id="SucursalFacturacion" <?php if(($edit==1)&&($row['Cod_Estado']=='C')){echo "disabled='disabled'";}?>>
+							<select name="SucursalFacturacion" class="form-control select2" id="SucursalFacturacion" <?php if(($edit==1)&&($row['Cod_Estado']=='C')){echo "disabled='disabled'";}?>>
 							  <option value="">Seleccione...</option>
 							  <?php if($edit==1||$sw_error==1){while($row_SucursalFacturacion=sqlsrv_fetch_array($SQL_SucursalFacturacion)){?>
 									<option value="<?php echo $row_SucursalFacturacion['NombreSucursal'];?>" <?php if((isset($row['SucursalFacturacion']))&&(strcmp($row_SucursalFacturacion['NombreSucursal'],$row['SucursalFacturacion'])==0)){ echo "selected=\"selected\"";}?>><?php echo $row_SucursalFacturacion['NombreSucursal'];?></option>
@@ -760,7 +920,7 @@ function CrearLead(){
 					<div class="form-group">
 					<label class="col-lg-1 control-label"><?php if(($edit==1)&&($row['ID_LlamadaServicio']!=0)){?><a href="llamada_servicio.php?id=<?php echo base64_encode($row['ID_LlamadaServicio']);?>&tl=1" target="_blank" title="Consultar Llamada de servicio" class="btn-xs btn-success fa fa-search"></a> <?php }?>Orden servicio</label>
 				  	<div class="col-lg-11">
-                    	<select name="OrdenServicioCliente" class="form-control m-b select2" id="OrdenServicioCliente" <?php if(($edit==1)&&($row['Cod_Estado']=='C')){echo "disabled='disabled'";}?>>
+                    	<select name="OrdenServicioCliente" class="form-control select2" id="OrdenServicioCliente" <?php if(($edit==1)&&($row['Cod_Estado']=='C')){echo "disabled='disabled'";}?>>
                          	<?php if($dt_LS==0){?><option value="">(Ninguna)</option><?php }?>
 							<?php
 								if($edit==1||$dt_LS==1||$sw_error==1){
@@ -774,25 +934,31 @@ function CrearLead(){
 				</div>
 				<div class="col-lg-4">
 					<div class="form-group">
-						<label class="col-lg-5">Fecha de contabilización</label>
+						<label class="col-lg-5">Número</label>
+						<div class="col-lg-7">
+							<input type="text" name="DocNum" id="DocNum" class="form-control" value="<?php if($edit==1||$sw_error==1){echo $row['DocNum'];}?>" readonly>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-lg-5">Fecha de contabilización <span class="text-danger">*</span></label>
 						<div class="col-lg-7 input-group date">
 							 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="DocDate" type="text" required="required" class="form-control" id="DocDate" value="<?php if($edit==1||$sw_error==1){echo $row['DocDate'];}else{echo date('Y-m-d');}?>" readonly="readonly" <?php if(($edit==1)&&($row['Cod_Estado']=='C')){echo "readonly";}?>>
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-lg-5">Fecha de entrega/servicio</label>
+						<label class="col-lg-5">Fecha de entrega/servicio <span class="text-danger">*</span></label>
 						<div class="col-lg-7 input-group date">
 							 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="DocDueDate" type="text" required="required" class="form-control" id="DocDueDate" value="<?php if($edit==1||$sw_error==1){echo $row['DocDueDate'];}else{echo date('Y-m-d');}?>" readonly="readonly" <?php if(($edit==1)&&($row['Cod_Estado']=='C')){echo "readonly";}?>>
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-lg-5">Fecha del documento</label>
+						<label class="col-lg-5">Fecha del documento <span class="text-danger">*</span></label>
 						<div class="col-lg-7 input-group date">
 							 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="TaxDate" type="text" required="required" class="form-control" id="TaxDate" value="<?php if($edit==1||$sw_error==1){echo $row['TaxDate'];}else{echo date('Y-m-d');}?>" readonly="readonly" <?php if(($edit==1)&&($row['Cod_Estado']=='C')){echo "readonly";}?>>
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-lg-5">Estado</label>
+						<label class="col-lg-5">Estado <span class="text-danger">*</span></label>
 						<div class="col-lg-7">
 							<select name="EstadoDoc" class="form-control" id="EstadoDoc" <?php if(($edit==1)&&($row['Cod_Estado']=='C')){echo "disabled='disabled'";}?>>
 							  <?php while($row_EstadoDoc=sqlsrv_fetch_array($SQL_EstadoDoc)){?>
@@ -806,7 +972,7 @@ function CrearLead(){
 					<label class="col-xs-12"><h3 class="bg-success p-xs b-r-sm"><i class="fa fa-info-circle"></i> Datos de la oferta</h3></label>
 				</div>
 				<div class="form-group">
-					<label class="col-lg-1 control-label">Serie</label>
+					<label class="col-lg-1 control-label">Serie <span class="text-danger">*</span></label>
 					<div class="col-lg-3">
                     	<select name="Serie" class="form-control" id="Serie" <?php if(($edit==1)&&($row['Cod_Estado']=='C')){echo "disabled='disabled'";}?>>
                           <?php while($row_Series=sqlsrv_fetch_array($SQL_Series)){?>
@@ -814,48 +980,54 @@ function CrearLead(){
 						  <?php }?>
 						</select>
                	  	</div>
-					<label class="col-lg-1 control-label">Número</label>
-					<div class="col-lg-3">
-                    	<input type="text" name="DocNum" id="DocNum" class="form-control" value="<?php if($edit==1||$sw_error==1){echo $row['DocNum'];}?>" readonly>
-               	  	</div>
 					<label class="col-lg-1 control-label">Referencia</label>
 					<div class="col-lg-3">
                     	<input type="text" name="Referencia" id="Referencia" class="form-control" value="<?php if($edit==1||$sw_error==1){echo $row['NumAtCard'];}?>" <?php if(($edit==1)&&($row['Cod_Estado']=='C')){echo "readonly";}?>>
-               	  	</div>					
+               	  	</div>
+					<label class="col-lg-1 control-label">Condición de pago <span class="text-danger">*</span></label>
+					<div class="col-lg-3">
+						<select name="CondicionPago" class="form-control" id="CondicionPago" required="required" <?php if(($edit==1)&&($row['Cod_Estado']=='C')){echo "disabled='disabled'";}?>>
+							<option value="">Seleccione...</option>
+						  <?php while($row_CondicionPago=sqlsrv_fetch_array($SQL_CondicionPago)){?>
+								<option value="<?php echo $row_CondicionPago['IdCondicionPago'];?>" <?php if($edit==1||$sw_error==1){if(($row['IdCondicionPago']!="")&&(strcmp($row_CondicionPago['IdCondicionPago'],$row['IdCondicionPago'])==0)){ echo "selected=\"selected\"";}}?>><?php echo $row_CondicionPago['NombreCondicion'];?></option>
+						  <?php }?>
+						</select>
+				  	</div>
 				</div>
 				<div class="form-group">
-					<label class="col-lg-1 control-label">Centro de costo</label>
+					<?php $row_DimReparto=sqlsrv_fetch_array($SQL_DimReparto);?>
+					<label class="col-lg-1 control-label"><?php echo $row_DimReparto['NombreDim']; ?> <span class="text-danger">*</span></label>
 					<div class="col-lg-3">
-                    	<select name="UnidadNegocio" class="form-control" id="UnidadNegocio" required="required" <?php if(($edit==1)&&($row['Cod_Estado']=='C')){echo "disabled='disabled'";}?>>
+						<select name="Dim1" class="form-control" id="Dim1" required="required" <?php if(($edit==1)&&($row['Cod_Estado']=='C')){echo "disabled='disabled'";}?>>
 							<option value="">Seleccione...</option>
-                         <?php while($row_UnidadNegocio=sqlsrv_fetch_array($SQL_UnidadNegocio)){?>
-									<option value="<?php echo $row_UnidadNegocio['OcrCode'];?>" <?php if((isset($row['OcrCode2'])&&($row['OcrCode2']!=""))&&(strcmp($row_UnidadNegocio['OcrCode'],$row['OcrCode2'])==0)){echo "selected=\"selected\"";}elseif(($edit==0)&&(!isset($_GET['CCosto']))&&($row_DatosEmpleados['CentroCosto2']!="")&&(strcmp($row_DatosEmpleados['CentroCosto2'],$row_UnidadNegocio['OcrCode'])==0)){echo "selected=\"selected\"";}elseif(isset($_GET['CCosto'])&&(strcmp($row_UnidadNegocio['OcrCode'],base64_decode($_GET['CCosto']))==0)){ echo "selected=\"selected\"";}?>><?php echo $row_UnidadNegocio['OcrName'];?></option>
-							<?php 	}?>
-						</select>
-               	  	</div>
-					<label class="col-lg-1 control-label">Área</label>
-					<div class="col-lg-3">
-						<select name="CentroCosto" class="form-control" id="CentroCosto" required="required" <?php if(($edit==1)&&($row['Cod_Estado']=='C')){echo "disabled='disabled'";}?>>
-							<option value="">Seleccione...</option>
-						  <?php while($row_ControCosto=sqlsrv_fetch_array($SQL_ControCosto)){?>
-								<option value="<?php echo $row_ControCosto['OcrCode'];?>" <?php if((isset($row['OcrCode'])&&($row['OcrCode']!=""))&&(strcmp($row_ControCosto['OcrCode'],$row['OcrCode'])==0)){echo "selected=\"selected\"";}elseif(($edit==0)&&($row_DatosEmpleados['CentroCosto1']!="")&&(strcmp($row_DatosEmpleados['CentroCosto1'],$row_ControCosto['OcrCode'])==0)){echo "selected=\"selected\"";}?>><?php echo $row_ControCosto['OcrName'];?></option>
+						  <?php while($row_Dim1=sqlsrv_fetch_array($SQL_Dim1)){?>
+								<option value="<?php echo $row_Dim1['OcrCode'];?>" <?php if((isset($row['OcrCode'])&&($row['OcrCode']!=""))&&(strcmp($row_Dim1['OcrCode'],$row['OcrCode'])==0)){echo "selected=\"selected\"";}elseif(($edit==0)&&(!isset($_GET['Dim1']))&&(isset($row_DatosEmpleados['CentroCosto1'])&&$row_DatosEmpleados['CentroCosto1']!="")&&(strcmp($row_DatosEmpleados['CentroCosto1'],$row_Dim1['OcrCode'])==0)){echo "selected=\"selected\"";}elseif(isset($_GET['Dim1'])&&(strcmp($row_Dim1['OcrCode'],base64_decode($_GET['Dim1']))==0)){ echo "selected=\"selected\"";}?>><?php echo $row_Dim1['OcrName'];?></option>
 						  <?php }?>
 						</select>
 					</div>
-					<label class="col-lg-1 control-label">Sucursal</label>
+					<?php $row_DimReparto=sqlsrv_fetch_array($SQL_DimReparto);?>
+					<label class="col-lg-1 control-label"><?php echo $row_DimReparto['NombreDim']; ?> <span class="text-danger">*</span></label>
 					<div class="col-lg-3">
-                    	<select name="Sucursal" class="form-control" id="Sucursal" required="required" <?php if(($edit==1)&&($row['Cod_Estado']=='C')){echo "disabled='disabled'";}?>>
+                    	<select name="Dim2" class="form-control" id="Dim2" required="required" <?php if(($edit==1)&&($row['Cod_Estado']=='C')){echo "disabled='disabled'";}?>>
 							<option value="">Seleccione...</option>
-                           <?php if($edit==1){
-									while($row_Sucursal=sqlsrv_fetch_array($SQL_Sucursal)){?>
-									<option value="<?php echo $row_Sucursal['IdSucursal'];?>" <?php if(($edit==1)&&(isset($row['OcrCode3']))&&(strcmp($row_Sucursal['IdSucursal'],$row['OcrCode3'])==0)){ echo "selected=\"selected\"";}?>><?php echo $row_Sucursal['DeSucursal'];?></option>
-							<?php 	}
-								}?>
+                          <?php while($row_Dim2=sqlsrv_fetch_array($SQL_Dim2)){?>
+									<option value="<?php echo $row_Dim2['OcrCode'];?>" <?php if((isset($row['OcrCode2'])&&($row['OcrCode2']!=""))&&(strcmp($row_Dim2['OcrCode'],$row['OcrCode2'])==0)){echo "selected=\"selected\"";}elseif(($edit==0)&&(!isset($_GET['Dim2']))&&(isset($row_DatosEmpleados['CentroCosto2'])&&$row_DatosEmpleados['CentroCosto2']!="")&&(strcmp($row_DatosEmpleados['CentroCosto2'],$row_Dim2['OcrCode'])==0)){echo "selected=\"selected\"";}elseif(isset($_GET['Dim2'])&&(strcmp($row_Dim2['OcrCode'],base64_decode($_GET['Dim2']))==0)){ echo "selected=\"selected\"";}?>><?php echo $row_Dim2['OcrName'];?></option>
+							<?php 	}?>
+						</select>
+               	  	</div>					
+					<?php $row_DimReparto=sqlsrv_fetch_array($SQL_DimReparto);?>
+					<label class="col-lg-1 control-label"><?php echo $row_DimReparto['NombreDim']; ?> <span class="text-danger">*</span></label>
+					<div class="col-lg-3">
+						<select name="Dim3" class="form-control" id="Dim3" required="required" <?php if(($edit==1)&&($row['Cod_Estado']=='C')){echo "disabled='disabled'";}?>>
+							<option value="">Seleccione...</option>
+                          <?php while($row_Dim3=sqlsrv_fetch_array($SQL_Dim3)){?>
+									<option value="<?php echo $row_Dim3['OcrCode'];?>" <?php if((isset($row['OcrCode3'])&&($row['OcrCode3']!=""))&&(strcmp($row_Dim3['OcrCode'],$row['OcrCode3'])==0)){echo "selected=\"selected\"";}elseif(($edit==0)&&(!isset($_GET['Dim3']))&&(isset($row_DatosEmpleados['CentroCosto3'])&&$row_DatosEmpleados['CentroCosto3']!="")&&(strcmp($row_DatosEmpleados['CentroCosto3'],$row_Dim3['OcrCode'])==0)){echo "selected=\"selected\"";}elseif(isset($_GET['Dim3'])&&(strcmp($row_Dim3['OcrCode'],base64_decode($_GET['Dim3']))==0)){ echo "selected=\"selected\"";}?>><?php echo $row_Dim3['OcrName'];?></option>
+							<?php 	}?>
 						</select>
                	  	</div>
 				</div>
 				<div class="form-group">					
-					<label class="col-lg-1 control-label">Almacén</label>
+					<label class="col-lg-1 control-label">Almacén <span class="text-danger">*</span></label>
 					<div class="col-lg-3">
 						<select name="Almacen" class="form-control" id="Almacen" required="required" <?php if(($edit==1)&&($row['Cod_Estado']=='C')){echo "disabled='disabled'";}?>>
 							<option value="">Seleccione...</option>
@@ -865,18 +1037,9 @@ function CrearLead(){
 						  <?php 	}
 								}?>
 						</select>
-					</div>
-					<label class="col-lg-1 control-label">Condición de pago</label>
-					<div class="col-lg-3">
-						<select name="CondicionPago" class="form-control" id="CondicionPago" required="required" <?php if(($edit==1)&&($row['Cod_Estado']=='C')){echo "disabled='disabled'";}?>>
-							<option value="">Seleccione...</option>
-						  <?php while($row_CondicionPago=sqlsrv_fetch_array($SQL_CondicionPago)){?>
-								<option value="<?php echo $row_CondicionPago['IdCondicionPago'];?>" <?php if($edit==1||$sw_error==1){if(($row['IdCondicionPago']!="")&&(strcmp($row_CondicionPago['IdCondicionPago'],$row['IdCondicionPago'])==0)){ echo "selected=\"selected\"";}}?>><?php echo $row_CondicionPago['NombreCondicion'];?></option>
-						  <?php }?>
-						</select>
-				  	</div>
+					</div>					
 					<label class="col-lg-1 control-label">Autorización</label>
-					<div class="col-lg-3">
+					<div class="col-lg-2">
                     	<select name="Autorizacion" class="form-control" id="Autorizacion" <?php if(($edit==1)&&($row['Cod_Estado']=='C')){echo "disabled='disabled'";}?>>
                           <?php while($row_EstadoAuth=sqlsrv_fetch_array($SQL_EstadoAuth)){?>
 								<option value="<?php echo $row_EstadoAuth['IdAuth'];?>" <?php if(($edit==1||$sw_error==1)&&(isset($row['AuthPortal']))&&(strcmp($row_EstadoAuth['IdAuth'],$row['AuthPortal'])==0)){ echo "selected=\"selected\"";}elseif(($edit==0&&$sw_error==0)&&($row_EstadoAuth['IdAuth']=='N')){echo "selected=\"selected\"";}?>><?php echo $row_EstadoAuth['DeAuth'];?></option>
@@ -946,7 +1109,7 @@ function CrearLead(){
 				<div class="form-group">&nbsp;</div>
 				<div class="col-lg-8">
 					<div class="form-group">
-						<label class="col-lg-2">Empleado de ventas</label>
+						<label class="col-lg-2">Empleado de ventas <span class="text-danger">*</span></label>
 						<div class="col-lg-5">
 							<select name="EmpleadoVentas" class="form-control" id="EmpleadoVentas" form="CrearOfertaVenta" required="required" <?php if(($edit==1)&&($row['Cod_Estado']=='C')){echo "disabled='disabled'";}?>>
 							  <?php while($row_EmpleadosVentas=sqlsrv_fetch_array($SQL_EmpleadosVentas)){?>
@@ -958,7 +1121,7 @@ function CrearLead(){
 					<div class="form-group">
 						<label class="col-lg-2">Comentarios</label>
 						<div class="col-lg-10">
-							<textarea name="Comentarios" form="CrearOfertaVenta" rows="4" class="form-control" id="Comentarios" <?php if(($edit==1)&&($row['Cod_Estado']=='C')){echo "readonly";}?>><?php if($edit==1||$sw_error==1){echo $row['Comentarios'];}?></textarea>
+							<textarea name="Comentarios" form="CrearOfertaVenta" rows="4" class="form-control" id="Comentarios" <?php if(($edit==1)&&($row['Cod_Estado']=='C')){echo "readonly";}?>><?php if($edit==1){echo $row['Comentarios'];}?></textarea>
 						</div>
 					</div>
 					<div class="form-group">
@@ -1054,7 +1217,7 @@ function CrearLead(){
 	 $(document).ready(function(){
 		 $("#CrearOfertaVenta").validate({
 			 submitHandler: function(form) {
-				if(Validar()){
+				 if(Validar()){
 					Swal.fire({
 						title: "¿Está seguro que desea guardar los datos?",
 						icon: "question",
@@ -1069,7 +1232,7 @@ function CrearLead(){
 					});
 				}else{
 					$('.ibox-content').toggleClass('sk-loading',false);
-				}	
+				}				
 			  }
 		 });
 		  $(".alkin").on('click', function(){
@@ -1135,7 +1298,9 @@ function CrearLead(){
 				  }
 			  }
 		 };
+		  <?php if($edit==0){?>
 		 $("#CardName").easyAutocomplete(options);
+	 	 <?php }?>
 		<?php if($dt_LS==1||$dt_OF==1){?>
 		 $('#CardCode').trigger('change');		 
 		 //$('#Almacen').trigger('change');
@@ -1150,6 +1315,26 @@ function Validar(){
 	var result=true;
 	
 	var TotalItems = document.getElementById("TotalItems");
+	
+	//Validar si fue actualizado por otro usuario
+	$.ajax({
+		url:"ajx_buscar_datos_json.php",
+		data:{type:15,
+			  docentry:'<?php if($edit==1){echo base64_encode($row['DocEntry']);}?>',
+			  objtype:23,
+			  date:'<?php echo FormatoFecha(date('Y-m-d'),date('H:i:s'));?>'},
+		dataType:'json',
+		success: function(data){
+			if(data.Result!=1){
+				result=false;
+				Swal.fire({
+					title: '¡Lo sentimos!',
+					text: 'Este documento ya fue actualizado por otro usuario. Debe recargar la página para volver a cargar los datos.',
+					icon: 'error'
+				});
+			}
+		}
+	 });
 	
 	if(TotalItems.value=="0"){
 		result=false;

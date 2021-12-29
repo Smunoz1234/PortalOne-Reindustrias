@@ -564,32 +564,32 @@ function MostrarRet(){
 			});
 		});
 		$("#Serie").change(function(){
-			/*$('.ibox-content').toggleClass('sk-loading',true);
+			$('.ibox-content').toggleClass('sk-loading',true);
 			var Serie=document.getElementById('Serie').value;
 			$.ajax({
 				type: "POST",
 				url: "ajx_cbo_select.php?type=19&id="+Serie,
 				success: function(response){
-					$('#Sucursal').html(response).fadeIn();
+					$('#Dim2').html(response).fadeIn();
 					$('.ibox-content').toggleClass('sk-loading',false);
-					$('#Sucursal').trigger('change');
+					$('#Dim2').trigger('change');
 				}
-			});*/	
+			});
 		});
 		$("#Dim3").change(function(){
 			$('.ibox-content').toggleClass('sk-loading',true);
 			var Dim3=document.getElementById('Dim3').value;
 			var Serie=document.getElementById('Serie').value;
 			var frame=document.getElementById('DataGrid');
-			$.ajax({
-				type: "POST",
-				url: "ajx_cbo_select.php?type=20&id="+Dim3+"&serie="+Serie+"&tdoc=13",
-				success: function(response){
-					$('#Almacen').html(response).fadeIn();
-					$('.ibox-content').toggleClass('sk-loading',false);
-					//$('#Almacen').trigger('change');
-				}
-			});
+			// $.ajax({
+			// 	type: "POST",
+			// 	url: "ajx_cbo_select.php?type=20&id="+Dim3+"&serie="+Serie+"&tdoc=13",
+			// 	success: function(response){
+			// 		$('#Almacen').html(response).fadeIn();
+			// 		$('.ibox-content').toggleClass('sk-loading',false);
+			// 		//$('#Almacen').trigger('change');
+			// 	}
+			// });
 			
 			if(Dim3!=""&&document.getElementById('CardCode').value!=""&&document.getElementById('TotalItems').value!="0"){
 				Swal.fire({
@@ -707,7 +707,21 @@ function MostrarRet(){
 		});
 		
 		$("#Dim2").change(function(){
+			$('.ibox-content').toggleClass('sk-loading',true);
+			var Dim2=document.getElementById('Dim2').value;
+			var Serie=document.getElementById('Serie').value;
 			var frame=document.getElementById('DataGrid');
+
+			$.ajax({
+				type: "POST",
+				url: "ajx_cbo_select.php?type=20&id="+Dim2+"&serie="+Serie+"&tdoc=13",
+				success: function(response){
+					$('#Almacen').html(response).fadeIn();
+					$('.ibox-content').toggleClass('sk-loading',false);
+					//$('#Almacen').trigger('change');
+				}
+			});
+			
 			if(document.getElementById('Dim2').value!=""&&document.getElementById('CardCode').value!=""&&document.getElementById('TotalItems').value!="0"){
 				Swal.fire({
 					title: "¿Desea actualizar las lineas?",

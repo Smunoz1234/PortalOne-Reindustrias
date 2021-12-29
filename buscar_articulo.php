@@ -179,7 +179,7 @@ else if(doctype==3){//Oferta de venta crear
   	};
 	  xhttp.open("POST", "registro.php", true);
 	  xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	  xhttp.send("P=35&doctype=3&item="+str+"&whscode="+whscode+"&cardcode=<?php echo $CardCode;?>");
+	  xhttp.send("P=35&doctype=3&item="+str+"&whscode="+whscode+"&cardcode=<?php echo $CardCode;?>&dim1=<?php echo $dim1;?>&dim2=<?php echo $dim2;?>&dim3=<?php echo $dim3;?>");
   }
 else if(doctype==4){//Oferta de venta editar
 	  var xhttp;
@@ -199,7 +199,7 @@ else if(doctype==4){//Oferta de venta editar
   	};
 	  xhttp.open("POST", "registro.php", true);
 	  xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	  xhttp.send("P=35&doctype=4&item="+str+"&whscode="+whscode+"&cardcode=<?php echo $CardCode;?>&id=<?php echo $ID_OfertaVenta;?>&evento=<?php echo $ID_Evento;?>");
+	  xhttp.send("P=35&doctype=4&item="+str+"&whscode="+whscode+"&cardcode=<?php echo $CardCode;?>&id=<?php echo $ID_OfertaVenta;?>&evento=<?php echo $ID_Evento;?>&dim1=<?php echo $dim1;?>&dim2=<?php echo $dim2;?>&dim3=<?php echo $dim3;?>");
   }
 else if(doctype==5){//Entrega de venta crear
 	  var xhttp;

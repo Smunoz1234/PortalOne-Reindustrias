@@ -50,6 +50,8 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar lista de materiales
             "'" . $_POST['CodigoPlantilla'] . "'",
             "'" . $_SESSION['CodUser'] . "'",
             "'" . $_SESSION['CodUser'] . "'",
+			"'" . $_POST['CDU_IdMarca'] . "'",
+            "'" . $_POST['CDU_IdLinea'] . "'",
             $Type,
         );
         $SQL_CabeceraListaMateriales = EjecutarSP('sp_tbl_ListaMateriales', $ParametrosCabListaMateriales, $_POST['P']);
@@ -359,15 +361,15 @@ function ConsultarPlantilla(){
 			});
 		});
 		// Stiven Muñoz Murillo, 28/12/2021
-		$("#CDU_Marca").change(function(){
+		$("#CDU_IdMarca").change(function(){
 			$('.ibox-content').toggleClass('sk-loading',true);
-			var marcaVehiculo=document.getElementById('CDU_Marca').value;
+			var marcaVehiculo=document.getElementById('CDU_IdMarca').value;
 			$.ajax({
 				type: "POST",
-				url: "ajx_cbo_select.php?type=39&id="+marcaVehiculo,
+				url: "ajx_cbo_select.php?type=41&id="+marcaVehiculo,
 				success: function(response){
-					$('#CDU_Linea').html(response).fadeIn();
-					$('#CDU_Linea').trigger('change');
+					$('#CDU_IdLinea').html(response).fadeIn();
+					$('#CDU_IdLinea').trigger('change');
 					$('.ibox-content').toggleClass('sk-loading',false);
 				}
 			});
@@ -528,11 +530,11 @@ while ($row_Plantilla = sqlsrv_fetch_array($SQL_Plantilla)) {?>
 				<div class="form-group">
 					<label class="col-lg-1 control-label">MARCA <span class="text-danger">*</span></label>
 					<div class="col-lg-3">
-						<select name="CDU_Marca" class="form-control select2" required="required" id="CDU_Marca">
+						<select name="CDU_IdMarca" class="form-control select2" required="required" id="CDU_IdMarca">
 							<option value="" disabled selected disabled selected>Seleccione...</option>
 							<?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) {?>
-							<option value="<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; //['IdMarcaVehiculo'];    ?>"
-							<?php if ((isset($row['CDU_Marca'])) && (strcmp($row_MarcaVehiculo['DeMarcaVehiculo'], $row['CDU_Marca']) == 0)) {echo "selected=\"selected\"";}?>>
+							<option value="<?php echo $row_MarcaVehiculo['IdMarcaVehiculo']; ?>"
+							<?php if ((isset($row['CDU_IdMarca'])) && (strcmp($row_MarcaVehiculo['IdMarcaVehiculo'], $row['CDU_IdMarca']) == 0)) {echo "selected=\"selected\"";}?>>
 								<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
 							</option>
 							<?php }?>
@@ -540,12 +542,12 @@ while ($row_Plantilla = sqlsrv_fetch_array($SQL_Plantilla)) {?>
 					</div>
 					<label class="col-lg-1 control-label">LINEA <span class="text-danger">*</span></label>
 					<div class="col-lg-3">
-						<select name="CDU_Linea" class="form-control select2" required="required" id="CDU_Linea">
+						<select name="CDU_IdLinea" class="form-control select2" required="required" id="CDU_IdLinea">
 								<option value="" disabled selected>Seleccione...</option>
 							<?php while ($row_LineaVehiculo = sqlsrv_fetch_array($SQL_LineaVehiculo)) {?>
-								<option value="<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; //['IdLineaModeloVehiculo'];   ?>"
-								<?php if ((isset($row['CDU_Linea'])) && (strcmp($row_LineaVehiculo['DeLineaModeloVehiculo'], $row['CDU_Linea']) == 0)) {echo "selected=\"selected\"";}?>>
-									<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; //. " - " . $row_LineaVehiculo['MarcaVehiculo'];           ?>
+								<option value="<?php echo $row_LineaVehiculo['IdLineaModeloVehiculo']; ?>"
+								<?php if ((isset($row['CDU_IdLinea'])) && (strcmp($row_LineaVehiculo['IdLineaModeloVehiculo'], $row['CDU_IdLinea']) == 0)) {echo "selected=\"selected\"";}?>>
+									<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; ?>
 								</option>
 							<?php }?>
 						</select>
