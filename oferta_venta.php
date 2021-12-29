@@ -1187,7 +1187,7 @@ function CrearLead(){
 						<div class="btn-group pull-right">
                             <button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i class="fa fa-mail-forward"></i> Copiar a <i class="fa fa-caret-down"></i></button>
                             <ul class="dropdown-menu">
-                                <li><a class="alkin dropdown-item" href="orden_venta.php?dt_OF=1&Cardcode=<?php echo base64_encode($row['CardCode']);?>&CCosto=<?php echo base64_encode($row['OcrCode2']);?>&Area=<?php echo base64_encode($row['OcrCode']);?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']);?>&Direccion=<?php echo base64_encode($row['DireccionDestino']);?>&Almacen=<?php echo base64_encode($row['WhsCode']);?>&Contacto=<?php echo base64_encode($row['CodigoContacto']);?>&Empleado=<?php echo base64_encode($row['SlpCode']);?>&OF=<?php echo base64_encode($row['ID_OfertaVenta']);?>&Evento=<?php echo base64_encode($row['IdEvento']);?>&">Orden de venta</a></li>
+                                <li><a class="alkin dropdown-item" href="orden_venta.php?dt_OF=1&Cardcode=<?php echo base64_encode($row['CardCode']);?>&Dim1=<?php echo base64_encode($row['OcrCode']);?>&Dim2=<?php echo base64_encode($row['OcrCode2']);?>&Dim3=<?php echo base64_encode($row['OcrCode3']);?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']);?>&Direccion=<?php echo base64_encode($row['DireccionDestino']);?>&Almacen=<?php echo base64_encode($row['WhsCode']);?>&Contacto=<?php echo base64_encode($row['CodigoContacto']);?>&Empleado=<?php echo base64_encode($row['SlpCode']);?>&OF=<?php echo base64_encode($row['ID_OfertaVenta']);?>&Evento=<?php echo base64_encode($row['IdEvento']);?>&">Orden de venta</a></li>
                             </ul>
                         </div>
 					</div>
@@ -1274,7 +1274,7 @@ function CrearLead(){
 		 if($edit==1){?>
 		 $('#Serie option:not(:selected)').attr('disabled',true);
 		 //$('#Sucursal option:not(:selected)').attr('disabled',true);
-		 $('#Almacen option:not(:selected)').attr('disabled',true);
+		 //$('#Almacen option:not(:selected)').attr('disabled',true);
 	 	 <?php }?>
 		 
 		 <?php 
