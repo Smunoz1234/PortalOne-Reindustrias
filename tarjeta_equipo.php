@@ -627,90 +627,90 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=176 and VerEnD
 						</div>
 						<div class="form-group">
 							<div class="col-lg-4">
-								<label class="control-label">Fecha Matricula <span class="text-danger">*</span></label>
+								<label class="control-label">Fecha Matricula</label>
 								<div class="input-group date">
-									<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="CDU_FechaMatricula" id="CDU_FechaMatricula" required="required" type="text" class="form-control"
-									value="<?php if (isset($row['CDU_FechaMatricula'])) {echo date_format($row['CDU_FechaMatricula'], 'Y-m-d');} else {echo date('Y-m-d');}?>">
+									<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="CDU_FechaMatricula" id="CDU_FechaMatricula" type="text" class="form-control"
+									value="<?php if (isset($row['CDU_FechaMatricula'])) {echo date_format($row['CDU_FechaMatricula'], 'Y-m-d');} else {echo 'AAAA-mm-dd';}?>">
 								</div>
 							</div>
 							<div class="col-lg-4">
-								<label class="control-label">Fecha SOAT <span class="text-danger">*</span></label>
+								<label class="control-label">Fecha SOAT</label>
 								<div class="input-group date">
-									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="CDU_Fecha_SOAT" id="CDU_Fecha_SOAT" required="required" type="text" class="form-control"
-									 value="<?php if (isset($row['CDU_Fecha_SOAT'])) {echo date_format($row['CDU_Fecha_SOAT'], 'Y-m-d');} else {echo date('Y-m-d');}?>">
-								</div>
-							</div>
-						</div>
-						<div class="form-group">
-							<div class="col-lg-4">
-								<label class="control-label">Fecha Tecnicomecanica <span class="text-danger">*</span></label>
-								<div class="input-group date">
-									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="CDU_Fecha_Tecno" id="CDU_Fecha_Tecno" required="required" type="text" class="form-control"
-									 value="<?php if (isset($row['CDU_Fecha_Tecno'])) {echo date_format($row['CDU_Fecha_Tecno'], 'Y-m-d');} else {echo date('Y-m-d');}?>">
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="CDU_Fecha_SOAT" id="CDU_Fecha_SOAT" type="text" class="form-control"
+									 value="<?php if (isset($row['CDU_Fecha_SOAT'])) {echo date_format($row['CDU_Fecha_SOAT'], 'Y-m-d');} else {echo 'AAAA-mm-dd';}?>">
 								</div>
 							</div>
 						</div>
 						<div class="form-group">
 							<div class="col-lg-4">
-								<label class="control-label">Fecha Ult. Cambio de Aceite <span class="text-danger">*</span></label>
+								<label class="control-label">Fecha Tecnicomecanica</label>
 								<div class="input-group date">
-									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="CDU_FechaUlt_CambAceite" id="CDU_FechaUlt_CambAceite" required="required" type="text" class="form-control"
-									 value="<?php if (isset($row['CDU_FechaUlt_CambAceite'])) {echo date_format($row['CDU_FechaUlt_CambAceite'], 'Y-m-d');} else {echo date('Y-m-d');}?>">
-								</div>
-							</div>
-							<div class="col-lg-4">
-								<label class="control-label">Fecha Prox. Cambio de Aceite <span class="text-danger">*</span></label>
-								<div class="input-group date">
-									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="CDU_FechaProx_CambAceite" id="CDU_FechaProx_CambAceite" required="required" type="text" class="form-control"
-									 value="<?php if (isset($row['CDU_FechaProx_CambAceite'])) {echo date_format($row['CDU_FechaProx_CambAceite'], 'Y-m-d');} else {echo date('Y-m-d');}?>">
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="CDU_Fecha_Tecno" id="CDU_Fecha_Tecno" type="text" class="form-control"
+									 value="<?php if (isset($row['CDU_Fecha_Tecno'])) {echo date_format($row['CDU_Fecha_Tecno'], 'Y-m-d');} else {echo 'AAAA-mm-dd';}?>">
 								</div>
 							</div>
 						</div>
 						<div class="form-group">
 							<div class="col-lg-4">
-								<label class="control-label">Fecha Ult. Mantenimiento <span class="text-danger">*</span></label>
+								<label class="control-label">Fecha Ult. Cambio de Aceite</label>
 								<div class="input-group date">
-									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="CDU_FechaUlt_Mant" id="CDU_FechaUlt_Mant" required="required" type="text" class="form-control"
-									 value="<?php if (isset($row['CDU_FechaUlt_Mant'])) {echo date_format($row['CDU_FechaUlt_Mant'], 'Y-m-d');} else {echo date('Y-m-d');}?>">
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="CDU_FechaUlt_CambAceite" id="CDU_FechaUlt_CambAceite" type="text" class="form-control"
+									 value="<?php if (isset($row['CDU_FechaUlt_CambAceite'])) {echo date_format($row['CDU_FechaUlt_CambAceite'], 'Y-m-d');} else {echo 'AAAA-mm-dd';}?>">
 								</div>
 							</div>
 							<div class="col-lg-4">
-								<label class="control-label">Fecha Prox. Mantenimiento <span class="text-danger">*</span></label>
+								<label class="control-label">Fecha Prox. Cambio de Aceite</label>
 								<div class="input-group date">
-									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="CDU_FechaProx_Mant" id="CDU_FechaProx_Mant" required="required" type="text" class="form-control"
-									 value="<?php if (isset($row['CDU_FechaProx_Mant'])) {echo date_format($row['CDU_FechaProx_Mant'], 'Y-m-d');} else {echo date('Y-m-d');}?>">
-								</div>
-							</div>
-						</div>
-						<div class="form-group">
-							<div class="col-lg-4">
-								<label class="control-label">Fecha Ult. Cambio de Llantas <span class="text-danger">*</span></label>
-								<div class="input-group date">
-									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="CDU_FechaUlt_CambLlantas" id="CDU_FechaUlt_CambLlantas" required="required" type="text" class="form-control"
-									 value="<?php if (isset($row['CDU_FechaUlt_CambLlantas'])) {echo date_format($row['CDU_FechaUlt_CambLlantas'], 'Y-m-d');} else {echo date('Y-m-d');}?>">
-								</div>
-							</div>
-							<div class="col-lg-4">
-								<label class="control-label">Fecha Prox. Cambio de Llantas <span class="text-danger">*</span></label>
-								<div class="input-group date">
-									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="CDU_FechaProx_CambLlantas" id="CDU_FechaProx_CambLlantas" required="required" type="text" class="form-control"
-									 value="<?php if (isset($row['CDU_FechaProx_CambLlantas'])) {echo date_format($row['CDU_FechaProx_CambLlantas'], 'Y-m-d');} else {echo date('Y-m-d');}?>">
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input readonly name="CDU_FechaProx_CambAceite" id="CDU_FechaProx_CambAceite" type="text" class="form-control"
+									 value="<?php if (isset($row['CDU_FechaProx_CambAceite'])) {echo date_format($row['CDU_FechaProx_CambAceite'], 'Y-m-d');} else {echo 'AAAA-mm-dd';}?>">
 								</div>
 							</div>
 						</div>
 						<div class="form-group">
 							<div class="col-lg-4">
-								<label class="control-label">Fecha Ult. Alineación y Balanceo <span class="text-danger">*</span></label>
+								<label class="control-label">Fecha Ult. Mantenimiento</label>
 								<div class="input-group date">
-									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="CDU_FechaUlt_AlinBalan" id="CDU_FechaUlt_AlinBalan" required="required" type="text" class="form-control"
-									 value="<?php if (isset($row['CDU_FechaUlt_AlinBalan'])) {echo date_format($row['CDU_FechaUlt_AlinBalan'], 'Y-m-d');} else {echo date('Y-m-d');}?>">
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="CDU_FechaUlt_Mant" id="CDU_FechaUlt_Mant" type="text" class="form-control"
+									 value="<?php if (isset($row['CDU_FechaUlt_Mant'])) {echo date_format($row['CDU_FechaUlt_Mant'], 'Y-m-d');} else {echo 'AAAA-mm-dd';}?>">
 								</div>
 							</div>
 							<div class="col-lg-4">
-								<label class="control-label">Fecha Prox. Alineación y Balanceo <span class="text-danger">*</span></label>
+								<label class="control-label">Fecha Prox. Mantenimiento</label>
 								<div class="input-group date">
-									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="CDU_FechaProx_AlinBalan" id="CDU_FechaProx_AlinBalan" required="required" type="text" class="form-control"
-									 value="<?php if (isset($row['CDU_FechaProx_AlinBalan'])) {echo date_format($row['CDU_FechaProx_AlinBalan'], 'Y-m-d');} else {echo date('Y-m-d');}?>">
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input readonly name="CDU_FechaProx_Mant" id="CDU_FechaProx_Mant" type="text" class="form-control"
+									 value="<?php if (isset($row['CDU_FechaProx_Mant'])) {echo date_format($row['CDU_FechaProx_Mant'], 'Y-m-d');} else {echo 'AAAA-mm-dd';}?>">
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-lg-4">
+								<label class="control-label">Fecha Ult. Cambio de Llantas</label>
+								<div class="input-group date">
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="CDU_FechaUlt_CambLlantas" id="CDU_FechaUlt_CambLlantas" type="text" class="form-control"
+									 value="<?php if (isset($row['CDU_FechaUlt_CambLlantas'])) {echo date_format($row['CDU_FechaUlt_CambLlantas'], 'Y-m-d');} else {echo 'AAAA-mm-dd';}?>">
+								</div>
+							</div>
+							<div class="col-lg-4">
+								<label class="control-label">Fecha Prox. Cambio de Llantas</label>
+								<div class="input-group date">
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input readonly name="CDU_FechaProx_CambLlantas" id="CDU_FechaProx_CambLlantas" type="text" class="form-control"
+									 value="<?php if (isset($row['CDU_FechaProx_CambLlantas'])) {echo date_format($row['CDU_FechaProx_CambLlantas'], 'Y-m-d');} else {echo 'AAAA-mm-dd';}?>">
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-lg-4">
+								<label class="control-label">Fecha Ult. Alineación y Balanceo</label>
+								<div class="input-group date">
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="CDU_FechaUlt_AlinBalan" id="CDU_FechaUlt_AlinBalan" type="text" class="form-control"
+									 value="<?php if (isset($row['CDU_FechaUlt_AlinBalan'])) {echo date_format($row['CDU_FechaUlt_AlinBalan'], 'Y-m-d');} else {echo 'AAAA-mm-dd';}?>">
+								</div>
+							</div>
+							<div class="col-lg-4">
+								<label class="control-label">Fecha Prox. Alineación y Balanceo</label>
+								<div class="input-group date">
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input readonly name="CDU_FechaProx_AlinBalan" id="CDU_FechaProx_AlinBalan" type="text" class="form-control"
+									 value="<?php if (isset($row['CDU_FechaProx_AlinBalan'])) {echo date_format($row['CDU_FechaProx_AlinBalan'], 'Y-m-d');} else {echo 'AAAA-mm-dd';}?>">
 								</div>
 							</div>
 						</div>

@@ -11,6 +11,58 @@ if (isset($_POST['swError']) && ($_POST['swError'] != "")) { //Para saber si ha 
 
 if (isset($_POST['P']) && ($_POST['P'] != "")) {
     try {
+		
+        //Carpeta de archivos anexos
+        $i = 0; //Archivos
+        $RutaAttachSAP = ObtenerDirAttach();
+        $dir = CrearObtenerDirTemp();
+        $dir_new = CrearObtenerDirAnx("socios_negocios");
+
+        $route = opendir($dir);
+        $DocFiles = array();
+        while ($archivo = readdir($route)) { //obtenemos un archivo y luego otro sucesivamente
+            if (($archivo == ".") || ($archivo == "..")) {
+                continue;
+            }
+
+            if (!is_dir($archivo)) { //verificamos si es o no un directorio
+                $DocFiles[$i] = $archivo;
+                $i++;
+            }
+        }
+        closedir($route);
+        $CantFiles = count($DocFiles);
+
+		$Anexos=array();
+
+		//Mover los anexos a la carpeta de archivos de SAP
+		$j = 0;
+		while ($j < $CantFiles) {
+			$Archivo = FormatoNombreAnexo($DocFiles[$j]);
+			$NuevoNombre = $Archivo[0];
+			$OnlyName = $Archivo[1];
+			$Ext = $Archivo[2];
+
+			if (file_exists($dir_new)) {
+				copy($dir . $DocFiles[$j], $dir_new . $NuevoNombre);
+				copy($dir_new . $NuevoNombre, $RutaAttachSAP[0] . $NuevoNombre);
+
+				//Anexos
+				array_push($Anexos,array(
+					"id_anexo" => $j,
+					"tipo_documento" => 2,//ObjType de Socios de negocios
+					"id_documento" => null,
+					"archivo" => $OnlyName,
+					"ext_archivo" => $Ext,
+					"metodo" => 1,
+					"fecha" => FormatoFechaToSAP(date('Y-m-d')),
+					"id_usuario" => intval($_SESSION['CodUser']),
+					"comentarios" => ""
+				));
+			}
+			$j++;
+		}
+
         //Dividir el nombre en Nombre y Segundo nombre
         $Nombres = explode(" ", $_POST['PNNombres']);
 
@@ -128,6 +180,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
                     "metodo" => 1,
                 ),
             ),
+			"documentos_Anexos" => $Anexos,
             "metodo" => 1,
             "prop1" => (isset($_POST['Prop1']) && ($_POST['Prop1'] == "Y")) ? $_POST['Prop1'] : "N",
             "prop2" => (isset($_POST['Prop2']) && ($_POST['Prop2'] == "Y")) ? $_POST['Prop2'] : "N",
@@ -142,18 +195,18 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
         );
 
         // Para probar
-        $Cabecera_json=json_encode($Cabecera);
+        $Cabecera_json = json_encode($Cabecera);
         echo $Cabecera_json;
         // Comentar esto
         /*$Metodo = "SociosNegocios/Asistente";
-        $Resultado = EnviarWebServiceSAP($Metodo, $Cabecera, true, true);
+    $Resultado = EnviarWebServiceSAP($Metodo, $Cabecera, true, true);
 
-        if ($Resultado->Success == 0) {
-            $sw_error = 1;
-            $msg_error = $Resultado->Mensaje;
-        } else {
-            header('Location:popup_crear_lead.php?a=' . base64_encode("OK_SNAdd"));
-        }*/
+    if ($Resultado->Success == 0) {
+    $sw_error = 1;
+    $msg_error = $Resultado->Mensaje;
+    } else {
+    header('Location:popup_crear_lead.php?a=' . base64_encode("OK_SNAdd"));
+    }*/
     } catch (Exception $e) {
         echo 'Excepcion capturada: ', $e->getMessage(), "\n";
     }
@@ -263,6 +316,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 						<ul class="nav nav-tabs">
 							<li class="active"><a data-toggle="tab" href="#tabcl-1"><i class="fa fa-info-circle"></i> Información general</a></li>
 							<li><a data-toggle="tab" href="#tabcl-2"><i class="fa fa-list"></i> Propiedades</a></li>
+							<li><a data-toggle="tab" href="#tabcl-3"><i class="fa fa-paperclip"></i> Anexos</a></li>
 						</ul>
 						<div class="tab-content">
 							<div id="tabcl-1" class="tab-pane active">
@@ -474,7 +528,7 @@ while ($row_MedioPago = sqlsrv_fetch_array($SQL_MedioPago)) {?>
 											</thead>
 											<tbody>
 											<?php
-while ($row = sqlsrv_fetch_array($SQL_Prop)) {?>
+												while ($row = sqlsrv_fetch_array($SQL_Prop)) {?>
 													<tr>
 														<td><?php echo $row['CodigoGrupo']; ?></td>
 														<td><?php echo $row['NombreGrupo']; ?></td>
@@ -491,9 +545,21 @@ while ($row = sqlsrv_fetch_array($SQL_Prop)) {?>
 									</div>
 								</div>
 							</div>
+							</form>
+							<div id="tabcl-3" class="tab-pane">
+								<div class="panel-body">
+									<div class="row">
+										<form action="upload.php" class="dropzone" id="dropzoneForm" name="dropzoneForm">
+											<?php if($sw_error==0){LimpiarDirTemp();}?>
+											<div class="fallback">
+												<input name="File" id="File" type="file" form="dropzoneForm" />
+											</div>
+										</form>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
-				</form>
 			</div>
 		</div>
 	</div>
@@ -675,6 +741,28 @@ function CrearProyecto(){
 
 	document.getElementById("NomProyecto").value=document.getElementById("CardName").value
 }
+</script>
+<script>
+ Dropzone.options.dropzoneForm = {
+		paramName: "File", // The name that will be used to transfer the file
+		maxFilesize: "<?php echo ObtenerVariable("MaxSizeFile");?>", // MB
+	 	maxFiles: "<?php echo ObtenerVariable("CantidadArchivos");?>",
+		uploadMultiple: true,
+		addRemoveLinks: true,
+		dictRemoveFile: "Quitar",
+	 	acceptedFiles: "<?php echo ObtenerVariable("TiposArchivos");?>",
+		dictDefaultMessage: "<strong>Haga clic aqui para cargar anexos</strong><br>Tambien puede arrastrarlos hasta aqui<br><h4><small>(máximo <?php echo ObtenerVariable("CantidadArchivos");?> archivos a la vez)<small></h4>",
+		dictFallbackMessage: "Tu navegador no soporta cargue de archivos mediante arrastrar y soltar",
+	 	removedfile: function(file) {
+		  $.get( "includes/procedimientos.php", {
+			type: "3",
+		  	nombre: file.name
+		  }).done(function( data ) {
+		 	var _ref;
+		  	return (_ref = file.previewElement) !== null ? _ref.parentNode.removeChild(file.previewElement) : void 0;
+		 	});
+		 }
+	};
 </script>
 </body>
 </html>

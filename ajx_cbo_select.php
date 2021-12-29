@@ -598,13 +598,13 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
             //$SQL = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', '*', "ItemCode='" . $_GET['id'] . "'", 'SerialFabricante');
             $codigoArticulo = "'" . $_GET['id'] . "'";
             $cliente = "'" . $_GET['clt'] . "'";
-            
-           if($codigoArticulo=="''"){
+
+            if ($codigoArticulo == "''") {
                 $Consulta = "SELECT SerialInterno, SerialFabricante FROM uvw_Sap_tbl_TarjetasEquipos WHERE CardCode=$cliente";
-           }else{
+            } else {
                 $Consulta = "SELECT SerialInterno, SerialFabricante FROM uvw_Sap_tbl_TarjetasEquipos WHERE ItemCode=$codigoArticulo AND CardCode=$cliente";
-           }            
-             //echo $Consulta;
+            }
+            //echo $Consulta;
             $SQL = sqlsrv_query($conexion, $Consulta, array(), array("Scrollable" => 'Static'));
             $Num = sqlsrv_num_rows($SQL);
             if ($Num) {
@@ -849,17 +849,40 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
                 echo "<option value=''>(NINGUNO)</option>";
             }
         }
-    } elseif ($_GET['type'] == 39) { //Linea dependiendo de marca (Reindustria - Llamada de servicio)
+    } elseif ($_GET['type'] == 39) { // Linea dependiendo de marca (Reindustria - Llamada de servicio)
         if (!isset($_GET['id']) || ($_GET['id'] == "")) {
             echo "<option value=''>Seleccione...</option>";
         } else {
             $marcaVehiculo = "'" . $_GET['id'] . "'";
-            $SQL = Seleccionar('uvw_Sap_tbl_LlamadasServicios_LineaVehiculo', '*', "MarcaVehiculo=$marcaVehiculo"); //Colocar estado Abierto
+            $SQL = Seleccionar('uvw_Sap_tbl_LlamadasServicios_LineaVehiculo', '*', "MarcaVehiculo=$marcaVehiculo");
             $Num = sqlsrv_num_rows($SQL);
             if ($Num) {
                 echo "<option value=''>Seleccione...</option>";
                 while ($row = sqlsrv_fetch_array($SQL)) {
                     echo "<option value=\"" . $row['IdLineaModeloVehiculo'] . "\">" . $row['DeLineaModeloVehiculo'] . "</option>";
+                }
+            } else {
+                echo "<option value=''>Seleccione...</option>";
+            }
+        }
+    } elseif ($_GET['type'] == 40) { // Lista de materiales dependiendo de la marca y la linea en la tarjeta de equipo (Reindustria - Llamada de servicio)
+        if (!isset($_GET['id']) || ($_GET['id'] == "")) {
+            echo "<option value=''>Seleccione...</option>";
+        } else {
+            $SerialInterno = "'" . $_GET['id'] . "'";
+            $SQL = Seleccionar("uvw_Sap_tbl_TarjetasEquipos", "CDU_IdMarca,CDU_IdLinea", "SerialInterno=" . $SerialInterno);
+            $records = array();
+            $row = sqlsrv_fetch_array($SQL);
+            
+            $marca = $row['CDU_IdMarca'];
+            $linea = $row['CDU_IdLinea'];
+
+            $SQL = Seleccionar('uvw_Sap_tbl_ListaMateriales', '*', "CDU_IdMarca=$marca AND CDU_IdLinea=$linea");
+            $Num = sqlsrv_num_rows($SQL);
+            if ($Num) {
+                echo "<option value=''>Seleccione...</option>";
+                while ($row = sqlsrv_fetch_array($SQL)) {
+                    echo "<option value=\"" . $row['ItemCode'] . "\">" . $row['ItemName'] . "</option>";
                 }
             } else {
                 echo "<option value=''>Seleccione...</option>";
