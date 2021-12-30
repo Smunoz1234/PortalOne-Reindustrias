@@ -431,11 +431,11 @@ while ($row_ListaPrecio = sqlsrv_fetch_array($SQL_ListaPrecio)) {?>
 		<div class="form-group">
 			<div class="col-lg-4">
 				<label class="control-label">Marca del vehículo <span class="text-danger">*</span></label>
-				<select name="CDU_Marca" class="form-control select2" required="required" id="CDU_Marca">
+				<select name="CDU_IdMarca" class="form-control select2" required="required" id="CDU_IdMarca">
 					<option value="" disabled selected disabled selected>Seleccione...</option>
 					<?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) {?>
-					<option value="<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; //['IdMarcaVehiculo'];        ?>"
-					<?php if ((isset($row['CDU_Marca'])) && (strcmp($row_MarcaVehiculo['DeMarcaVehiculo'], $row['CDU_Marca']) == 0)) {echo "selected=\"selected\"";}?>>
+					<option value="<?php echo $row_MarcaVehiculo['IdMarcaVehiculo']; ?>"
+					<?php if ((isset($row['CDU_IdMarca'])) && (strcmp($row_MarcaVehiculo['IdMarcaVehiculo'], $row['CDU_IdMarca']) == 0)) {echo "selected=\"selected\"";}?>>
 						<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
 					</option>
 					<?php }?>
