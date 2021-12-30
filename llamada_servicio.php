@@ -1109,6 +1109,15 @@ function ConsultarMateriales(){
 		remote.focus();
 	}
 }
+function CrearLead(){
+	self.name='opener';
+	var altura=720;
+	var anchura=1240;
+	var posicion_y=parseInt((window.screen.height/2)-(altura/2));
+	var posicion_x=parseInt((window.screen.width/2)-(anchura/2));
+	remote=open('popup_crear_lead.php','remote','width='+anchura+',height='+altura+',location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=no,status=yes,left='+posicion_x+',top='+posicion_y);
+	remote.focus();
+}
 </script>
 
 <!-- InstanceEndEditable -->
@@ -1224,7 +1233,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 											<a href="#" class="btn btn-outline btn-info" onClick="VerMapaRel('<?php echo base64_encode($row['ID_LlamadaServicio']); ?>','<?php echo base64_encode('191'); ?>');"><i class="fa fa-sitemap"></i> Mapa de relaciones</a>
 										</div>
 										<?php } else if (PermitirFuncion(508)) {?>
-											<a href="socios_negocios.php" class="btn btn-outline btn-primary" target="_blank"><i class="fa fa-user-circle"></i> Crear Prospecto</a>
+											<button onClick="CrearLead();" class="btn btn-outline btn-primary"><i class="fa fa-user-circle"></i> Crear Prospecto</button>
 											<a href="tarjeta_equipo.php" class="btn btn-outline btn-info" target="_blank"><i class="fa fa-plus-circle"></i> Crear nueva tarjeta de equipo</a>
 										<?php }?>
 									</div>
