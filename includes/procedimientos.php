@@ -6,7 +6,7 @@ if (isset($_GET['type']) && $_GET['type'] != "") {
         $Cons = "Select Usuario From tbl_Usuarios Where Usuario='" . $_GET['Usuario'] . "'";
         $SQL_Cons = sqlsrv_query($conexion, $Cons);
         $row_Cons = sqlsrv_fetch_array($SQL_Cons);
-        if ($row_Cons['Usuario'] != "") {
+        if (isset($row_Cons['Usuario']) && $row_Cons['Usuario'] != "") {
             echo "<p class='text-danger'><i class='fa fa-times-circle-o'></i> No disponible</p>";
         } else {
             echo "<p class='text-info'><i class='fa fa-thumbs-up'></i> Disponible</p>";

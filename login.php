@@ -46,6 +46,9 @@ if(isset($_POST['User'])||isset($_POST['Password'])){
 					$_SESSION['SetCookie']=$row['SetCookie'];
 					$_SESSION['CodigoSAPProv']=$row['CodigoSAPProv'];
 					$_SESSION['NITProv']=$row['NITProv'];
+					$_SESSION['CentroCosto1']=$row['CentroCosto1'];
+					$_SESSION['CentroCosto2']=$row['CentroCosto2'];
+					$_SESSION['CentroCosto3']=$row['CentroCosto3'];
 					//$_SESSION['Sucursal']=$row['BranchName'];
 					//$_SESSION['CodSucursal']=$row['Branch'];
 					//$_SESSION['Dpto']=$row['DeptName'];

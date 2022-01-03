@@ -876,12 +876,7 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
             $marca = $row['CDU_IdMarca'];
             $linea = $row['CDU_IdLinea'];
 
-            $SQL = Seleccionar("uvw_tbl_Usuarios", "CentroCosto2", "ID_Usuario=" . $_SESSION['CodUser']);
-            $row = sqlsrv_fetch_array($SQL);
-            
-            $Dim2 = $row['CentroCosto2'];
-
-            $SQL = Seleccionar('uvw_Sap_tbl_ListaMateriales', '*', "CDU_IdMarca=$marca AND CDU_IdLinea=$linea AND OcrCode2=$Dim2");
+            $SQL = Seleccionar('uvw_Sap_tbl_ListaMateriales', '*', "CDU_IdMarca=$marca AND CDU_IdLinea=$linea AND OcrCode2='".$_SESSION['CentroCosto2']."'");
             $Num = sqlsrv_num_rows($SQL);
             if ($Num) {
                 echo "<option value=''>Seleccione...</option>";
