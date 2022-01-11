@@ -833,7 +833,7 @@ function Eliminar(){
 						<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Marca" class="form-control select2" required="required" id="CDU_Marca">
 							<option value="" disabled selected>Seleccione...</option>
 							<?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) {?>
-							<option value="<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; //['IdMarcaVehiculo'];                         ?>"
+							<option value="<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; //['IdMarcaVehiculo'];                                          ?>"
 							<?php if ((isset($row['CDU_Marca'])) && (strcmp($row_MarcaVehiculo['DeMarcaVehiculo'], $row['CDU_Marca']) == 0)) {echo "selected=\"selected\"";}?>>
 								<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
 							</option>
@@ -845,9 +845,9 @@ function Eliminar(){
 						<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Linea" class="form-control select2" required="required" id="CDU_Linea">
 								<option value="" disabled selected>Seleccione...</option>
 							<?php while ($row_LineaVehiculo = sqlsrv_fetch_array($SQL_LineaVehiculo)) {?>
-								<option value="<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; //['IdLineaModeloVehiculo'];                        ?>"
+								<option value="<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; //['IdLineaModeloVehiculo'];                                         ?>"
 								<?php if ((isset($row['CDU_Linea'])) && (strcmp($row_LineaVehiculo['DeLineaModeloVehiculo'], $row['CDU_Linea']) == 0)) {echo "selected=\"selected\"";}?>>
-									<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; //. " - " . $row_LineaVehiculo['MarcaVehiculo'];                                ?>
+									<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; //. " - " . $row_LineaVehiculo['MarcaVehiculo'];                                                 ?>
 								</option>
 							<?php }?>
 						</select>
@@ -857,7 +857,7 @@ function Eliminar(){
 						<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Ano" class="form-control select2" id="CDU_Ano">
 								<option value="" disabled selected>Seleccione...</option>
 							<?php while ($row_ModeloVehiculo = sqlsrv_fetch_array($SQL_ModeloVehiculo)) {?>
-								<option value="<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; //['CodigoModeloVehiculo'];                                       ?>"
+								<option value="<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; //['CodigoModeloVehiculo'];                                                        ?>"
 								<?php if (isset($row['CDU_Ano']) && ((strcmp($row_ModeloVehiculo['CodigoModeloVehiculo'], $row['CDU_Ano']) == 0) || (strcmp($row_ModeloVehiculo['AñoModeloVehiculo'], $row['CDU_Ano']) == 0))) {echo "selected=\"selected\"";}?>>
 									<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; ?>
 								</option>
@@ -1010,21 +1010,6 @@ function Eliminar(){
 				<!-- Inicio, Foto 1 -->
 				<div class="form-group">
 					<label class="col-lg-1 control-label">Frente</label>
-					<?php if ($type_frm == 1 && $row['ImgEvidencia1'] != "") {?>
-					<div class="col-lg-2 lightBoxGallery">
-						<a href="<?php echo $dir_new . $row['ImgEvidencia1']; ?>" title="Foto evidencia" data-gallery=""><img src="<?php echo $dir_new . $row['ImgEvidencia1']; ?>" width="100" height="100"></a>
-						<div id="blueimp-gallery" class="blueimp-gallery">
-							<div class="slides"></div>
-							<h3 class="title"></h3>
-							<a class="prev">‹</a>
-							<a class="next">›</a>
-							<a class="close">×</a>
-							<a class="play-pause"></a>
-							<ol class="indicator"></ol>
-						</div>
-					</div>
-					<?php }?>
-					<?php if (($type_frm == 0) || (($type_frm == 1) && ($row['Cod_Estado'] != '-1'))) {?>
 					<div class="col-lg-5">
                     	<div class="fileinput fileinput-new input-group" data-provides="fileinput">
 							<div class="form-control" data-trigger="fileinput">
@@ -1034,32 +1019,16 @@ function Eliminar(){
 							<span class="input-group-addon btn btn-default btn-file">
 								<span class="fileinput-new">Seleccionar</span>
 								<span class="fileinput-exists">Cambiar</span>
-								<input name="ImgEvidencia1" type="file" id="ImgEvidencia1" class="upload"/>
+								<input name="Img1" type="file" id="Img1" onchange="uploadImage('Img1')"/>
 							</span>
 							<a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Quitar</a>
 						</div>
                	  	</div>
-					<?php }?>
 				</div>
 				<!-- Inicio, Foto 1 -->
 				<!-- Inicio, Foto 2 -->
 				<div class="form-group">
 					<label class="col-lg-1 control-label">Lateral Izquierdo</label>
-					<?php if ($type_frm == 1 && $row['ImgEvidencia2'] != "") {?>
-					<div class="col-lg-2 lightBoxGallery">
-						<a href="<?php echo $dir_new . $row['ImgEvidencia2']; ?>" title="Foto evidencia" data-gallery=""><img src="<?php echo $dir_new . $row['ImgEvidencia2']; ?>" width="100" height="100"></a>
-						<div id="blueimp-gallery" class="blueimp-gallery">
-							<div class="slides"></div>
-							<h3 class="title"></h3>
-							<a class="prev">‹</a>
-							<a class="next">›</a>
-							<a class="close">×</a>
-							<a class="play-pause"></a>
-							<ol class="indicator"></ol>
-						</div>
-					</div>
-					<?php }?>
-					<?php if (($type_frm == 0) || (($type_frm == 1) && ($row['Cod_Estado'] != '-1'))) {?>
 					<div class="col-lg-5">
                     	<div class="fileinput fileinput-new input-group" data-provides="fileinput">
 							<div class="form-control" data-trigger="fileinput">
@@ -1069,32 +1038,16 @@ function Eliminar(){
 							<span class="input-group-addon btn btn-default btn-file">
 								<span class="fileinput-new">Seleccionar</span>
 								<span class="fileinput-exists">Cambiar</span>
-								<input name="ImgEvidencia2" type="file" id="ImgEvidencia2" />
+								<input name="Img2" type="file" id="Img2" onchange="uploadImage('Img2')"/>
 							</span>
 							<a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Quitar</a>
 						</div>
                	  	</div>
-					<?php }?>
 				</div>
 				<!-- Fin, Foto 2 -->
 				<!-- Inicio, Foto 3 -->
 				<div class="form-group">
 					<label class="col-lg-1 control-label">Lateral Derecho</label>
-					<?php if ($type_frm == 1 && $row['ImgEvidencia2'] != "") {?>
-					<div class="col-lg-2 lightBoxGallery">
-						<a href="<?php echo $dir_new . $row['ImgEvidencia2']; ?>" title="Foto evidencia" data-gallery=""><img src="<?php echo $dir_new . $row['ImgEvidencia2']; ?>" width="100" height="100"></a>
-						<div id="blueimp-gallery" class="blueimp-gallery">
-							<div class="slides"></div>
-							<h3 class="title"></h3>
-							<a class="prev">‹</a>
-							<a class="next">›</a>
-							<a class="close">×</a>
-							<a class="play-pause"></a>
-							<ol class="indicator"></ol>
-						</div>
-					</div>
-					<?php }?>
-					<?php if (($type_frm == 0) || (($type_frm == 1) && ($row['Cod_Estado'] != '-1'))) {?>
 					<div class="col-lg-5">
                     	<div class="fileinput fileinput-new input-group" data-provides="fileinput">
 							<div class="form-control" data-trigger="fileinput">
@@ -1104,32 +1057,16 @@ function Eliminar(){
 							<span class="input-group-addon btn btn-default btn-file">
 								<span class="fileinput-new">Seleccionar</span>
 								<span class="fileinput-exists">Cambiar</span>
-								<input name="ImgEvidencia2" type="file" id="ImgEvidencia2" />
+								<input name="Img3" type="file" id="Img3" onchange="uploadImage('Img3')"/>
 							</span>
 							<a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Quitar</a>
 						</div>
                	  	</div>
-					<?php }?>
 				</div>
 				<!-- Fin, Foto 3 -->
 				<!-- Inicio, Foto 4 -->
 				<div class="form-group">
 					<label class="col-lg-1 control-label">Trasero</label>
-					<?php if ($type_frm == 1 && $row['ImgEvidencia2'] != "") {?>
-					<div class="col-lg-2 lightBoxGallery">
-						<a href="<?php echo $dir_new . $row['ImgEvidencia2']; ?>" title="Foto evidencia" data-gallery=""><img src="<?php echo $dir_new . $row['ImgEvidencia2']; ?>" width="100" height="100"></a>
-						<div id="blueimp-gallery" class="blueimp-gallery">
-							<div class="slides"></div>
-							<h3 class="title"></h3>
-							<a class="prev">‹</a>
-							<a class="next">›</a>
-							<a class="close">×</a>
-							<a class="play-pause"></a>
-							<ol class="indicator"></ol>
-						</div>
-					</div>
-					<?php }?>
-					<?php if (($type_frm == 0) || (($type_frm == 1) && ($row['Cod_Estado'] != '-1'))) {?>
 					<div class="col-lg-5">
                     	<div class="fileinput fileinput-new input-group" data-provides="fileinput">
 							<div class="form-control" data-trigger="fileinput">
@@ -1139,32 +1076,16 @@ function Eliminar(){
 							<span class="input-group-addon btn btn-default btn-file">
 								<span class="fileinput-new">Seleccionar</span>
 								<span class="fileinput-exists">Cambiar</span>
-								<input name="ImgEvidencia2" type="file" id="ImgEvidencia2" />
+								<input name="Img4" type="file" id="Img4" onchange="uploadImage('Img4')"/>
 							</span>
 							<a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Quitar</a>
 						</div>
                	  	</div>
-					<?php }?>
 				</div>
 				<!-- Fin, Foto 4 -->
 				<!-- Inicio, Foto 5 -->
 				<div class="form-group">
 					<label class="col-lg-1 control-label">Capot</label>
-					<?php if ($type_frm == 1 && $row['ImgEvidencia2'] != "") {?>
-					<div class="col-lg-2 lightBoxGallery">
-						<a href="<?php echo $dir_new . $row['ImgEvidencia2']; ?>" title="Foto evidencia" data-gallery=""><img src="<?php echo $dir_new . $row['ImgEvidencia2']; ?>" width="100" height="100"></a>
-						<div id="blueimp-gallery" class="blueimp-gallery">
-							<div class="slides"></div>
-							<h3 class="title"></h3>
-							<a class="prev">‹</a>
-							<a class="next">›</a>
-							<a class="close">×</a>
-							<a class="play-pause"></a>
-							<ol class="indicator"></ol>
-						</div>
-					</div>
-					<?php }?>
-					<?php if (($type_frm == 0) || (($type_frm == 1) && ($row['Cod_Estado'] != '-1'))) {?>
 					<div class="col-lg-5">
                     	<div class="fileinput fileinput-new input-group" data-provides="fileinput">
 							<div class="form-control" data-trigger="fileinput">
@@ -1174,12 +1095,11 @@ function Eliminar(){
 							<span class="input-group-addon btn btn-default btn-file">
 								<span class="fileinput-new">Seleccionar</span>
 								<span class="fileinput-exists">Cambiar</span>
-								<input name="ImgEvidencia2" type="file" id="ImgEvidencia2" />
+								<input name="Img5" type="file" id="Img5" onchange="uploadImage('Img5')"/>
 							</span>
 							<a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Quitar</a>
 						</div>
                	  	</div>
-					<?php }?>
 				</div>
 				<!-- Fin, Foto 5 -->
 				<div class="form-group">
@@ -1293,52 +1213,60 @@ if (isset($_GET['return'])) {
 <!-- InstanceBeginEditable name="EditRegion4" -->
 
 <script>
- Dropzone.options.dropzoneForm = {
-		paramName: "File", // The name that will be used to transfer the file
-		maxFilesize: "<?php echo ObtenerVariable("MaxSizeFile"); ?>", // MB
-	 	maxFiles: "<?php echo ObtenerVariable("CantidadArchivos"); ?>",
-		uploadMultiple: true,
-		addRemoveLinks: true,
-		dictRemoveFile: "Quitar",
-	 	acceptedFiles: "<?php echo ObtenerVariable("TiposArchivos"); ?>",
-		dictDefaultMessage: "<strong>Haga clic aqui para cargar anexos</strong><br>Tambien puede arrastrarlos hasta aqui<br><h4><small>(máximo <?php echo ObtenerVariable("CantidadArchivos"); ?> archivos a la vez)<small></h4>",
-		dictFallbackMessage: "Tu navegador no soporta cargue de archivos mediante arrastrar y soltar",
-	 	removedfile: function(file) {
-		  $.get( "includes/procedimientos.php", {
-			type: "3",
-		  	nombre: file.name
-		  }).done(function( data ) {
-		 	var _ref;
-		  	return (_ref = file.previewElement) !== null ? _ref.parentNode.removeChild(file.previewElement) : void 0;
-		 	});
-		 }
-	};
+// Stiven Muñoz Murillo, 11/01/2022
+Dropzone.options.dropzoneForm = {
+	paramName: "File", // The name that will be used to transfer the file
+	maxFilesize: "<?php echo ObtenerVariable("MaxSizeFile"); ?>", // MB
+	maxFiles: "<?php echo ObtenerVariable("CantidadArchivos"); ?>",
+	uploadMultiple: true,
+	addRemoveLinks: true,
+	dictRemoveFile: "Quitar",
+	acceptedFiles: "<?php echo ObtenerVariable("TiposArchivos"); ?>",
+	dictDefaultMessage: "<strong>Haga clic aqui para cargar anexos</strong><br>Tambien puede arrastrarlos hasta aqui<br><h4><small>(máximo <?php echo ObtenerVariable("CantidadArchivos"); ?> archivos a la vez)<small></h4>",
+	dictFallbackMessage: "Tu navegador no soporta cargue de archivos mediante arrastrar y soltar",
+	removedfile: function(file) {
+		$.get( "includes/procedimientos.php", {
+		type: "3",
+		nombre: file.name
+		}).done(function( data ) {
+		var _ref;
+		return (_ref = file.previewElement) !== null ? _ref.parentNode.removeChild(file.previewElement) : void 0;
+		});
+		}
+};
 </script>
 
 <script>
-$(document).ready(function() {
-    $(".upload").on('change', function() {
-        var formData = new FormData();
-        var files = $('#ImgEvidencia1')[0].files[0];
-        formData.append('image',files);
-        $.ajax({
-            url: 'upload_image.php',
-            type: 'post',
-            data: formData,
-            contentType: false,
-            processData: false,
-            success: function(response) {
-                if (response != 0) {
-                    $(".card-img-top").attr("src", response);
+// Stiven Muñoz Murillo, 11/01/2022
+function uploadImage(refImage) {
+	var formData = new FormData();
+	var files = $(`#${refImage}`)[0].files[0];
+
+	if(typeof files !== 'undefined'){
+		// console.log(files);
+		formData.append('image',files);
+
+		$.ajax({
+			url: 'upload_image.php',
+			type: 'post',
+			data: formData,
+			contentType: false,
+			processData: false,
+			success: function(response) {
+				if (response != 0) {
 					console.log(response);
-                } else {
-                    alert('Formato de imagen incorrecto.');
-                }
-            }
-        });
-        return false;
-    });
-});
+				} else {
+					swal({
+						title: '¡Ha ocurrido un error!',
+						text: 'Formato de imagen incorrecto.',
+						type: 'error'
+					});
+				}
+			}
+		});
+	}
+	return false;
+}
 </script>
 
 <script>
