@@ -536,6 +536,17 @@ $SQL_EstadoCriticidad = Seleccionar('uvw_tbl_EstadoCriticidad', '*');
 //Condiciones
 $SQL_Condicion = Seleccionar('uvw_tbl_Areas_Condicion', '*');
 
+// @author Stiven Muñoz Murillo
+// @version 10/01/2022
+
+// Marcas de vehiculo en la llamada de servicio
+$SQL_MarcaVehiculo = Seleccionar('uvw_Sap_tbl_LlamadasServicios_MarcaVehiculo', '*');
+
+// Lineas de vehiculo en la llamada de servicio
+$SQL_LineaVehiculo = Seleccionar('uvw_Sap_tbl_LlamadasServicios_LineaVehiculo', '*');
+
+// Modelo o año de fabricación de vehiculo en la llamada de servicio
+$SQL_ModeloVehiculo = Seleccionar('uvw_Sap_tbl_LlamadasServicios_AñoModeloVehiculo', '*');
 ?>
 <!DOCTYPE html>
 <html><!-- InstanceBegin template="/Templates/PlantillaPrincipal.dwt.php" codeOutsideHTMLIsLocked="false" -->
@@ -645,6 +656,21 @@ if (isset($sw_error) && ($sw_error == 1)) {
 				}
 			});
 		});
+
+		// Stiven Muñoz Murillo, 10/01/2021
+		$("#CDU_Marca").change(function(){
+			$('.ibox-content').toggleClass('sk-loading',true);
+			var marcaVehiculo=document.getElementById('CDU_Marca').value;
+			$.ajax({
+				type: "POST",
+				url: "ajx_cbo_select.php?type=39&id="+marcaVehiculo,
+				success: function(response){
+					$('#CDU_Linea').html(response).fadeIn();
+					$('#CDU_Linea').trigger('change');
+					$('.ibox-content').toggleClass('sk-loading',false);
+				}
+			});
+		});
 	});
 
 function ConsultarDatosCliente(){
@@ -739,7 +765,7 @@ function Eliminar(){
 					<label class="col-xs-12"><h3 class="bg-muted p-xs b-r-sm"><i class="fa fa-user"></i> Datos del propietario</h3></label>
 				</div>
 				<div class="form-group">
-					<label class="col-lg-1 control-label"><i onClick="ConsultarDatosCliente();" title="Consultar cliente" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Cliente</label>
+					<label class="col-lg-1 control-label"><i onClick="ConsultarDatosCliente();" title="Consultar cliente" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Cliente <span class="text-danger">*</span></label>
 					<div class="col-lg-3">
 						<input name="Cliente" type="hidden" id="Cliente" value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['ID_CodigoCliente'];} elseif ($dt_LS == 1) {echo $row_Cliente['CodigoCliente'];}?>">
 						<input name="NombreCliente" type="text" required="required" class="form-control" id="NombreCliente" placeholder="Digite para buscar..." <?php if ((($type_frm == 1) && ($row['Cod_Estado'] == '-1')) || ($dt_LS == 1)) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['NombreCliente'];} elseif ($dt_LS == 1) {echo $row_Cliente['NombreCliente'];}?>">
@@ -768,13 +794,13 @@ function Eliminar(){
 					<div class="col-lg-3">
                     	<input name="Direccion" type="text" required="required" class="form-control" id="Direccion" maxlength="100" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['Direccion'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Direccion']);}?>">
                	  	</div>
-					<label class="col-lg-1 control-label">Barrio</label>
-					<div class="col-lg-3">
-                    	<input name="Barrio" type="text" class="form-control" id="Barrio" maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['Barrio'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Barrio']);}?>">
-               	  	</div>
 					<label class="col-lg-1 control-label">Teléfono</label>
 					<div class="col-lg-3">
                     	<input name="Telefono" type="text" class="form-control" id="Telefono" maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['TelefonoContacto'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Telefono']);}?>">
+               	  	</div>
+					<label class="col-lg-1 control-label">Celular</label>
+					<div class="col-lg-3">
+                    	<input name="Celular" type="text" class="form-control" id="Celular" maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['CelularContacto'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Celular']);}?>">
                	  	</div>
 				</div>
 				<div class="form-group">
@@ -793,6 +819,59 @@ function Eliminar(){
 				</div>
 				<div class="form-group">
 					<label class="col-xs-12"><h3 class="bg-muted p-xs b-r-sm"><i class="fa fa-info-circle"></i> Datos del vehículo</h3></label>
+				</div>
+				<div class="form-group">
+					<label class="col-lg-1 control-label">Serial Interno (Placa) <span class="text-danger">*</span></label>
+					<div class="col-lg-3">
+						<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="SerialInterno" type="text" required="required" class="form-control" id="SerialInterno" maxlength="150" value="<?php if (isset($row['SerialInterno'])) {echo $row['SerialInterno'];}?>">
+					</div>
+					<label class="col-lg-1 control-label">Serial Fabricante (VIN) <span class="text-danger">*</span></label>
+					<div class="col-lg-3">
+						<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="SerialFabricante" type="text" required="required" class="form-control" id="SerialFabricante" maxlength="150" value="<?php if (isset($row['SerialFabricante'])) {echo $row['SerialFabricante'];}?>">
+					</div>
+					<label class="col-lg-1 control-label">No_Motor</label>
+					<div class="col-lg-3">
+						<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="CDU_No_Motor" type="text" class="form-control" id="CDU_No_Motor" maxlength="100"
+						value="<?php if (isset($row['CDU_No_Motor'])) {echo $row['CDU_No_Motor'];}?>">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-lg-1 control-label">Marca del vehículo <span class="text-danger">*</span></label>
+					<div class="col-lg-3">
+						<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Marca" class="form-control select2" required="required" id="CDU_Marca">
+							<option value="" disabled selected>Seleccione...</option>
+							<?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) {?>
+							<option value="<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; //['IdMarcaVehiculo'];                   ?>"
+							<?php if ((isset($row['CDU_Marca'])) && (strcmp($row_MarcaVehiculo['DeMarcaVehiculo'], $row['CDU_Marca']) == 0)) {echo "selected=\"selected\"";}?>>
+								<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
+							</option>
+							<?php }?>
+						</select>
+					</div>
+					<label class="col-lg-1 control-label">Línea del vehículo <span class="text-danger">*</span></label>
+					<div class="col-lg-3">
+						<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Linea" class="form-control select2" required="required" id="CDU_Linea">
+								<option value="" disabled selected>Seleccione...</option>
+							<?php while ($row_LineaVehiculo = sqlsrv_fetch_array($SQL_LineaVehiculo)) {?>
+								<option value="<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; //['IdLineaModeloVehiculo'];                  ?>"
+								<?php if ((isset($row['CDU_Linea'])) && (strcmp($row_LineaVehiculo['DeLineaModeloVehiculo'], $row['CDU_Linea']) == 0)) {echo "selected=\"selected\"";}?>>
+									<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; //. " - " . $row_LineaVehiculo['MarcaVehiculo'];                          ?>
+								</option>
+							<?php }?>
+						</select>
+					</div>
+					<label class="col-lg-1 control-label">Modelo del vehículo <span class="text-danger">*</span></label>
+					<div class="col-lg-3">
+						<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Ano" class="form-control select2" required="required" id="CDU_Ano">
+								<option value="" disabled selected>Seleccione...</option>
+							<?php while ($row_ModeloVehiculo = sqlsrv_fetch_array($SQL_ModeloVehiculo)) {?>
+								<option value="<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; //['CodigoModeloVehiculo'];                                 ?>"
+								<?php if (isset($row['CDU_Ano']) && ((strcmp($row_ModeloVehiculo['CodigoModeloVehiculo'], $row['CDU_Ano']) == 0) || (strcmp($row_ModeloVehiculo['AñoModeloVehiculo'], $row['CDU_Ano']) == 0))) {echo "selected=\"selected\"";}?>>
+									<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; ?>
+								</option>
+							<?php }?>
+						</select>
+					</div>
 				</div>
 				<div class="form-group">
 					<label class="col-xs-12"><h3 class="bg-muted p-xs b-r-sm"><i class="fa fa-info-circle"></i> Información del panorama de riesgo</h3></label>
@@ -1158,107 +1237,63 @@ $Cont++;
 					</div>
 				</div>
 				</div>
-			   	<div class="form-group">
-					<label class="col-lg-12"><h3 class="bg-muted p-xs b-r-sm"><i class="fa fa-pencil-square-o"></i> Firmas</h3></label>
-				</div>
-				<div class="form-group">
-					<label class="col-lg-1 control-label">Responsable del cliente</label>
-					<div class="col-lg-4">
-                    	<input autocomplete="off" name="ResponsableCliente" type="text" required="required" class="form-control" id="ResponsableCliente" maxlength="150" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['ResponsableCliente'];}?>">
-               	  	</div>
-				</div>
-			  	<div class="form-group">
-					<label class="col-lg-1 control-label">Firma del cliente</label>
-					<?php if ($type_frm == 1 && $row['FirmaCliente'] != "") {?>
-					<div class="col-lg-4 lightBoxGallery">
-						<a href="<?php echo $dir_new . $row['FirmaCliente']; ?>" title="Firma cliente" data-gallery=""><img src="<?php echo $dir_new . $row['FirmaCliente']; ?>" width="500" height="150"></a>
-						<div id="blueimp-gallery" class="blueimp-gallery">
-							<div class="slides"></div>
-							<h3 class="title"></h3>
-							<a class="prev">‹</a>
-							<a class="next">›</a>
-							<a class="close">×</a>
-							<a class="play-pause"></a>
-							<ol class="indicator"></ol>
+
+				<input type="hidden" id="P" name="P" value="<?php echo base64_encode('MM_frmHallazgos') ?>" />
+				<input type="hidden" id="swTipo" name="swTipo" value="0" />
+				<input type="hidden" id="swError" name="swError" value="<?php echo $sw_error; ?>" />
+				<input type="hidden" id="tl" name="tl" value="<?php echo $type_frm; ?>" />
+				<input type="hidden" id="d_LS" name="d_LS" value="<?php echo $dt_LS; ?>" />
+				<input type="hidden" id="IdFrm" name="IdFrm" value="<?php echo base64_encode($IdFrm); ?>" />
+				<input type="hidden" id="return" name="return" value="<?php echo base64_encode($return); ?>" />
+				<input type="hidden" id="frm" name="frm" value="<?php echo $frm; ?>" />
+			</form>
+
+
+			<!-- Stiven Muñoz Murillo, 10/01/2022 -->
+			<div class="ibox">
+					<div class="ibox-title bg-success">
+						<h5 class="collapse-link"><i class="fa fa-paperclip"></i> Anexos</h5>
+						 <a class="collapse-link pull-right">
+							<i class="fa fa-chevron-up"></i>
+						</a>
+					</div>
+					<div class="ibox-content">
+						<?php if ( /*$row['IdAnexoLlamada'] != 0*/false) {?>
+								<div class="form-group">
+									<div class="col-xs-12">
+										<?php while ($row_AnexoLlamada = sqlsrv_fetch_array($SQL_AnexoLlamada)) {
+    $Icon = IconAttach($row_AnexoLlamada['FileExt']);?>
+											<div class="file-box">
+												<div class="file">
+													<a href="attachdownload.php?file=<?php echo base64_encode($row_AnexoLlamada['AbsEntry']); ?>&line=<?php echo base64_encode($row_AnexoLlamada['Line']); ?>" target="_blank">
+														<div class="icon">
+															<i class="<?php echo $Icon; ?>"></i>
+														</div>
+														<div class="file-name">
+															<?php echo $row_AnexoLlamada['NombreArchivo']; ?>
+															<br/>
+															<small><?php echo $row_AnexoLlamada['Fecha']; ?></small>
+														</div>
+													</a>
+												</div>
+											</div>
+										<?php }?>
+									</div>
+								</div>
+						<?php } else {echo "<p>Sin anexos.</p>";}?>
+
+						<div class="row">
+							<form action="upload.php" class="dropzone" id="dropzoneForm" name="dropzoneForm">
+								<?php if ($sw_error == 0) {LimpiarDirTemp();}?>
+								<div class="fallback">
+									<input name="File" id="File" type="file" form="dropzoneForm" />
+								</div>
+							 </form>
 						</div>
 					</div>
-					<?php } else {LimpiarDirTempFirma();?>
-					<div class="col-lg-5">
-						<button class="btn btn-primary" type="button" id="FirmaCliente" onClick="AbrirFirma('SigCliente');"><i class="fa fa-pencil-square-o"></i> Realizar firma</button>
-						<input type="hidden" id="SigCliente" name="SigCliente" value="" />
-						<div id="msgInfoSigCliente" style="display: none;" class="alert alert-info"><i class="fa fa-info-circle"></i> El documento ya ha sido firmado.</div>
-					</div>
-					<div class="col-lg-5">
-						<img id="ImgSigCliente" style="display: none; max-width: 100%; height: auto;" src="" alt="" />
-					</div>
-					<?php }?>
 				</div>
-				<div class="form-group">
-					<label class="col-lg-1 control-label">Firma del técnico</label>
-					<?php if ($type_frm == 1 && $row['FirmaTecnico'] != "") {?>
-					<div class="col-lg-4 lightBoxGallery">
-						<a href="<?php echo $dir_new . $row['FirmaTecnico']; ?>" title="Firma tecnico" data-gallery=""><img src="<?php echo $dir_new . $row['FirmaTecnico']; ?>" width="500" height="150"></a>
-						<div id="blueimp-gallery" class="blueimp-gallery">
-							<div class="slides"></div>
-							<h3 class="title"></h3>
-							<a class="prev">‹</a>
-							<a class="next">›</a>
-							<a class="close">×</a>
-							<a class="play-pause"></a>
-							<ol class="indicator"></ol>
-						</div>
-					</div>
-					<?php } else {?>
-					<div class="col-lg-5">
-						<button class="btn btn-primary" type="button" id="FirmaTecnico" onClick="AbrirFirma('SigTecnico');"><i class="fa fa-pencil-square-o"></i> Realizar firma</button>
-						<input type="hidden" id="SigTecnico" name="SigTecnico" value="" />
-						<div id="msgInfoSigTecnico" style="display: none;" class="alert alert-info"><i class="fa fa-info-circle"></i> El documento ya ha sido firmado.</div>
-					</div>
-					<div class="col-lg-5">
-						<img id="ImgSigTecnico" style="display: none; max-width: 100%; height: auto;" src="" alt="" />
-					</div>
-					<?php }?>
-				</div>
-				<?php if ($type_frm == 0) {?>
-				<div class="form-group">
-					<label class="col-lg-1 control-label">Email</label>
-					<div class="col-lg-4">
-						<label class="checkbox-inline i-checks"><input name="chkEnvioMail" id="chkEnvioMail" type="checkbox" value="1"> Enviar correo electronico al contacto de la sucursal</label>
-					</div>
-				</div>
-				<?php }?>
-				<?php if ($type_frm == 1) {?>
-				<div class="form-group">
-					<label class="col-xs-12"><h3 class="bg-muted p-xs b-r-sm"><i class="fa fa-retweet"></i> Recurrencia del panorama de riesgo</h3></label>
-				</div>
-				<?php $c = 1;
-    while ($row_Recurrencias = sqlsrv_fetch_array($SQL_Recurrencias)) {?>
-					<div class="form-group">
-						<label class="col-lg-1 control-label"><?php echo $c; ?> - Fecha</label>
-						<div class="col-lg-2">
-							<p><?php echo $row_Recurrencias['FechaRegistro']->format('Y-m-d'); ?></p>
-						</div>
-						<label class="col-lg-1 control-label">Realizado por</label>
-						<div class="col-lg-2">
-							<p><?php echo $row_Recurrencias['NombreUsuario']; ?></p>
-						</div>
-						<label class="col-lg-1 control-label">Observaciones</label>
-						<div class="col-lg-3">
-							<p><?php echo $row_Recurrencias['Comentarios']; ?></p>
-						</div>
-					</div>
-				<?php $c++;}?>
-				<div class="form-group">
-					<label class="col-lg-1 control-label">Agregar nuevo</label>
-					<div class="col-lg-2 input-group date">
-						 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaRec" type="text" class="form-control" id="FechaRec" value="" readonly='readonly' placeholder="YYYY-MM-DD">
-					</div>
-					<label class="col-lg-1 control-label">Observaciones</label>
-					<div class="col-lg-4">
-						<input autocomplete="off" name="ComentariosRec" type="text" class="form-control" id="ComentariosRec" maxlength="150" value="">
-					</div>
-				</div>
-				<?php }?>
+				<!-- Fin Anexos -->
+			<!-- Botones de acción al final del formulario, SMM -->
 			   <div class="form-group">
 				   <?php
 $EliminaMsg = array("&a=" . base64_encode("OK_FrmAdd"), "&a=" . base64_encode("OK_FrmUpd"), "&a=" . base64_encode("OK_FrmDel")); //Eliminar mensajes
@@ -1289,16 +1324,7 @@ if (isset($_GET['return'])) {
 						<a href="<?php echo $return; ?>" class="alkin btn btn-outline btn-default"><i class="fa fa-arrow-circle-o-left"></i> Regresar</a>
 					</div>
 				</div>
-
-				<input type="hidden" id="P" name="P" value="<?php echo base64_encode('MM_frmHallazgos') ?>" />
-				<input type="hidden" id="swTipo" name="swTipo" value="0" />
-				<input type="hidden" id="swError" name="swError" value="<?php echo $sw_error; ?>" />
-				<input type="hidden" id="tl" name="tl" value="<?php echo $type_frm; ?>" />
-				<input type="hidden" id="d_LS" name="d_LS" value="<?php echo $dt_LS; ?>" />
-				<input type="hidden" id="IdFrm" name="IdFrm" value="<?php echo base64_encode($IdFrm); ?>" />
-				<input type="hidden" id="return" name="return" value="<?php echo base64_encode($return); ?>" />
-				<input type="hidden" id="frm" name="frm" value="<?php echo $frm; ?>" />
-			</form>
+			<!-- Pendiente a agregar al formulario, SMM -->
 		   </div>
 			</div>
           </div>
@@ -1310,6 +1336,30 @@ if (isset($_GET['return'])) {
 </div>
 <?php include "includes/pie.php";?>
 <!-- InstanceBeginEditable name="EditRegion4" -->
+
+<script>
+ Dropzone.options.dropzoneForm = {
+		paramName: "File", // The name that will be used to transfer the file
+		maxFilesize: "<?php echo ObtenerVariable("MaxSizeFile"); ?>", // MB
+	 	maxFiles: "<?php echo ObtenerVariable("CantidadArchivos"); ?>",
+		uploadMultiple: true,
+		addRemoveLinks: true,
+		dictRemoveFile: "Quitar",
+	 	acceptedFiles: "<?php echo ObtenerVariable("TiposArchivos"); ?>",
+		dictDefaultMessage: "<strong>Haga clic aqui para cargar anexos</strong><br>Tambien puede arrastrarlos hasta aqui<br><h4><small>(máximo <?php echo ObtenerVariable("CantidadArchivos"); ?> archivos a la vez)<small></h4>",
+		dictFallbackMessage: "Tu navegador no soporta cargue de archivos mediante arrastrar y soltar",
+	 	removedfile: function(file) {
+		  $.get( "includes/procedimientos.php", {
+			type: "3",
+		  	nombre: file.name
+		  }).done(function( data ) {
+		 	var _ref;
+		  	return (_ref = file.previewElement) !== null ? _ref.parentNode.removeChild(file.previewElement) : void 0;
+		 	});
+		 }
+	};
+</script>
+
 <script>
 	 $(document).ready(function(){
 		 $("#CrearFrm").validate({
