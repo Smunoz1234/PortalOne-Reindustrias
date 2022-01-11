@@ -7,9 +7,13 @@ $dt_LS = 0; //sw para saber si vienen datos del SN. 0 no vienen. 1 si vienen.
 //Nombre del formulario
 if (isset($_REQUEST['frm']) && ($_REQUEST['frm'] != "")) {
     $frm = $_REQUEST['frm'];
+
+    // Stiven Muñoz Murillo, 10/01/2022
+    $SQL_Cat = Seleccionar("uvw_tbl_Categorias", "ID_Categoria, NombreCategoria, NombreCategoriaPadre, URL", "ID_Categoria = '" . base64_decode($frm) . "'");
 }
-$SQL_Cat = Seleccionar("uvw_tbl_Categorias", "ID_Categoria, NombreCategoria, NombreCategoriaPadre, URL", "ID_Categoria = '" . base64_decode($frm) . "'");
-$row_Cat = sqlsrv_fetch_array($SQL_Cat);
+
+// Stiven Muñoz Murillo, 10/01/2022
+$row_Cat = isset($SQL_Cat) ? sqlsrv_fetch_array($SQL_Cat) : [];
 
 if (isset($_GET['id']) && ($_GET['id'] != "")) {
     $IdFrm = base64_decode($_GET['id']);
@@ -713,10 +717,10 @@ function Eliminar(){
                             <a href="index1.php">Inicio</a>
                         </li>
                         <li>
-                            <a href="#"><?php echo $row_Cat['NombreCategoriaPadre']; ?></a>
+                            <a href="#"><?php echo isset($row_Cat['NombreCategoriaPadre']) ? $row_Cat['NombreCategoriaPadre'] : ""; ?></a>
                         </li>
                         <li class="active">
-                            <a href="<?php echo $row_Cat['URL'] . "?id=" . $frm; ?>"><?php echo $row_Cat['NombreCategoria']; ?></a>
+                            <a href="<?php echo isset($row_Cat['URL']) ? $row_Cat['URL'] : "" . "?id=" . $frm; ?>"><?php echo isset($row_Cat['NombreCategoria']) ? $row_Cat['NombreCategoria'] : ""; ?></a>
                         </li>
 						<li class="active">
                             <strong><?php echo $Title; ?></strong>
@@ -732,7 +736,7 @@ function Eliminar(){
            <div class="col-lg-12">
               <form action="frm_hallazgos.php" method="post" class="form-horizontal" enctype="multipart/form-data" id="CrearFrm">
 				<div class="form-group">
-					<label class="col-xs-12"><h3 class="bg-muted p-xs b-r-sm"><i class="fa fa-group"></i> Información de cliente</h3></label>
+					<label class="col-xs-12"><h3 class="bg-muted p-xs b-r-sm"><i class="fa fa-user"></i> Datos del propietario</h3></label>
 				</div>
 				<div class="form-group">
 					<label class="col-lg-1 control-label"><i onClick="ConsultarDatosCliente();" title="Consultar cliente" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Cliente</label>
@@ -786,6 +790,9 @@ function Eliminar(){
 					<div class="col-lg-3">
                     	<input name="ContactoSucursal" type="text" class="form-control" id="ContactoSucursal" maxlength="100" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['ContactoSucursal'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['ContactoSucursal']);}?>">
                	  	</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12"><h3 class="bg-muted p-xs b-r-sm"><i class="fa fa-info-circle"></i> Datos del vehículo</h3></label>
 				</div>
 				<div class="form-group">
 					<label class="col-xs-12"><h3 class="bg-muted p-xs b-r-sm"><i class="fa fa-info-circle"></i> Información del panorama de riesgo</h3></label>
@@ -1262,7 +1269,8 @@ if (isset($_GET['return'])) {
 if (isset($_GET['return'])) {
     $return = base64_decode($_GET['pag']) . "?" . $_GET['return'];
 } else {
-    $return = "gestionar_hallazgos.php?id=" . $frm;
+    // Stiven Muñoz Murillo, 10/01/2022
+    // $return = "gestionar_hallazgos.php?id=" . $frm;
 }?>
 					<div class="col-lg-9">
 						 <br><br>

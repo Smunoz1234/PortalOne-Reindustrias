@@ -57,7 +57,7 @@ $SQL_Supervisor = Seleccionar('uvw_tbl_EvaluacionTecnicos', 'DISTINCT id_emplead
 <head>
 <?php include_once "includes/cabecera.php";?>
 <!-- InstanceBeginEditable name="doctitle" -->
-<title>Recepción de vehículos | <?php echo NOMBRE_PORTAL; ?></title>
+<title>Recepción de vehículos</title>
 <!-- InstanceEndEditable -->
 <!-- InstanceBeginEditable name="head" -->
 <script type="text/javascript">
@@ -162,7 +162,7 @@ function SeleccionarTodos(){
         <!-- InstanceBeginEditable name="Contenido" -->
         <div class="row wrapper border-bottom white-bg page-heading">
                 <div class="col-sm-8">
-                    <h2>Evaluación de técnicos</h2>
+                    <h2>Recepción de vehículos</h2>
                     <ol class="breadcrumb">
                         <li>
                             <a href="index1.php">Inicio</a>
@@ -174,7 +174,14 @@ function SeleccionarTodos(){
                             <strong>Evaluación de técnicos</strong>
                         </li>
                     </ol>
-                </div>
+				</div>
+				<?php //if(PermitirFuncion(304)) { ?>
+                <div class="col-sm-4">
+					<div class="title-action">
+						<a href="frm_recepcion_vehiculo.php" class="alkin btn btn-primary"><i class="fa fa-plus-circle"></i> Crear nueva recepción de vehículo</a>
+					</div>
+				</div>
+				<?php //} ?>
             </div>
          <div class="wrapper wrapper-content">
 			 <div class="modal inmodal fade" id="myModal" tabindex="1" role="dialog" aria-hidden="true">
