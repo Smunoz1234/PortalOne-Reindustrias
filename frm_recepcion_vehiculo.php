@@ -624,9 +624,9 @@ if (isset($sw_error) && ($sw_error == 1)) {
 				dataType:'json',
 				success: function(data){
 					document.getElementById('Direccion').value=data.Direccion;
-					document.getElementById('Barrio').value=data.Barrio;
-					document.getElementById('Ciudad').value=data.Ciudad;
-					document.getElementById('ContactoSucursal').value=data.NombreContacto;
+					// document.getElementById('Barrio').value=data.Barrio;
+					// document.getElementById('Ciudad').value=data.Ciudad;
+					// document.getElementById('ContactoSucursal').value=data.NombreContacto;
 					document.getElementById('Telefono').value=data.TelefonoContacto;
 					document.getElementById('Correo').value=data.CorreoContacto;
 				}
@@ -804,17 +804,9 @@ function Eliminar(){
                	  	</div>
 				</div>
 				<div class="form-group">
-					<label class="col-lg-1 control-label">Ciudad</label>
-					<div class="col-lg-3">
-                    	<input name="Ciudad" type="text" class="form-control" id="Ciudad" maxlength="100" value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['Ciudad'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Ciudad']);}?>" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?>>
-               	  	</div>
 					<label class="col-lg-1 control-label">Correo</label>
 					<div class="col-lg-3">
                     	<input name="Correo" type="text" class="form-control" id="Correo" maxlength="100" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['CorreoContacto'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Correo']);}?>">
-               	  	</div>
-					<label class="col-lg-1 control-label">Contacto en sucursal</label>
-					<div class="col-lg-3">
-                    	<input name="ContactoSucursal" type="text" class="form-control" id="ContactoSucursal" maxlength="100" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['ContactoSucursal'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['ContactoSucursal']);}?>">
                	  	</div>
 				</div>
 				<div class="form-group">
@@ -841,7 +833,7 @@ function Eliminar(){
 						<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Marca" class="form-control select2" required="required" id="CDU_Marca">
 							<option value="" disabled selected>Seleccione...</option>
 							<?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) {?>
-							<option value="<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; //['IdMarcaVehiculo'];                   ?>"
+							<option value="<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; //['IdMarcaVehiculo'];                       ?>"
 							<?php if ((isset($row['CDU_Marca'])) && (strcmp($row_MarcaVehiculo['DeMarcaVehiculo'], $row['CDU_Marca']) == 0)) {echo "selected=\"selected\"";}?>>
 								<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
 							</option>
@@ -853,19 +845,19 @@ function Eliminar(){
 						<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Linea" class="form-control select2" required="required" id="CDU_Linea">
 								<option value="" disabled selected>Seleccione...</option>
 							<?php while ($row_LineaVehiculo = sqlsrv_fetch_array($SQL_LineaVehiculo)) {?>
-								<option value="<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; //['IdLineaModeloVehiculo'];                  ?>"
+								<option value="<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; //['IdLineaModeloVehiculo'];                      ?>"
 								<?php if ((isset($row['CDU_Linea'])) && (strcmp($row_LineaVehiculo['DeLineaModeloVehiculo'], $row['CDU_Linea']) == 0)) {echo "selected=\"selected\"";}?>>
-									<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; //. " - " . $row_LineaVehiculo['MarcaVehiculo'];                          ?>
+									<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; //. " - " . $row_LineaVehiculo['MarcaVehiculo'];                              ?>
 								</option>
 							<?php }?>
 						</select>
 					</div>
-					<label class="col-lg-1 control-label">Modelo del vehículo <span class="text-danger">*</span></label>
+					<label class="col-lg-1 control-label">Modelo del vehículo</label>
 					<div class="col-lg-3">
-						<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Ano" class="form-control select2" required="required" id="CDU_Ano">
+						<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Ano" class="form-control select2" id="CDU_Ano">
 								<option value="" disabled selected>Seleccione...</option>
 							<?php while ($row_ModeloVehiculo = sqlsrv_fetch_array($SQL_ModeloVehiculo)) {?>
-								<option value="<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; //['CodigoModeloVehiculo'];                                 ?>"
+								<option value="<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; //['CodigoModeloVehiculo'];                                     ?>"
 								<?php if (isset($row['CDU_Ano']) && ((strcmp($row_ModeloVehiculo['CodigoModeloVehiculo'], $row['CDU_Ano']) == 0) || (strcmp($row_ModeloVehiculo['AñoModeloVehiculo'], $row['CDU_Ano']) == 0))) {echo "selected=\"selected\"";}?>>
 									<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; ?>
 								</option>
@@ -874,10 +866,10 @@ function Eliminar(){
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="col-xs-12"><h3 class="bg-muted p-xs b-r-sm"><i class="fa fa-info-circle"></i> Información del panorama de riesgo</h3></label>
+					<label class="col-xs-12"><h3 class="bg-muted p-xs b-r-sm"><i class="fa fa-info-circle"></i> Datos de recepción</h3></label>
 				</div>
 				<div class="form-group">
-					<label class="col-lg-1 control-label">Fecha de creación</label>
+					<label class="col-lg-1 control-label">Fecha y hora de ingreso</label>
 					<div class="col-lg-2 input-group date">
 						 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaCreacion" type="text" class="form-control" id="FechaCreacion" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('Y-m-d');} else {echo date('Y-m-d');}?>" readonly='readonly' placeholder="YYYY-MM-DD" required>
 					</div>
@@ -887,115 +879,137 @@ function Eliminar(){
 							<span class="fa fa-clock-o"></span>
 						</span>
 					</div>
-					<?php if ($type_frm == 1) {?>
-					<label class="col-lg-1"><span class="pull-right">No. Panorama</span></label>
-					<div class="col-lg-2">
-                    	<p><?php echo $row['ID_Frm']; ?></p>
-               	  	</div>
-					<label class="col-lg-1"><span class="pull-right">Creada por</span></label>
-					<div class="col-lg-2">
-                    	<p><?php echo $row['NombreUsuario']; ?></p>
-               	  	</div>
-					<?php }?>
+
+					<label class="col-lg-1 control-label">Fecha y hora Aprox. Entrega</label>
+					<div class="col-lg-2 input-group date">
+						 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaCreacion" type="text" class="form-control" id="FechaCreacion" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('Y-m-d');} else {echo date('Y-m-d');}?>" readonly='readonly' placeholder="YYYY-MM-DD" required>
+					</div>
+					<div class="col-lg-2 input-group clockpicker2" data-autoclose="true">
+						<input name="HoraCreacion" id="HoraCreacion" type="text" class="form-control" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('H:i');} else {echo date('H:i');}?>" readonly='readonly' placeholder="hh:mm" required>
+						<span class="input-group-addon">
+							<span class="fa fa-clock-o"></span>
+						</span>
+					</div>
 				</div>
 				<div class="form-group">
-					<label class="col-lg-1 control-label">Tipo visita</label>
-					<div class="col-lg-2">
-                    	<select name="TipoVisita" class="form-control" required="required" id="TipoVisita" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
-								<option value="">Seleccione...</option>
-                          <?php while ($row_TipoVisita = sqlsrv_fetch_array($SQL_TipoVisita)) {?>
-								<option value="<?php echo $row_TipoVisita['IdTipoLlamada']; ?>" <?php if ((isset($row['IdTipoVisita'])) && (strcmp($row_TipoVisita['IdTipoLlamada'], $row['IdTipoVisita']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_TipoVisita['DeTipoLlamada']; ?></option>
-						  <?php }?>
-						</select>
-               	  	</div>
-					<label class="col-lg-1 control-label">Estado</label>
+					<label class="col-lg-1 control-label">KM actual</label>
+					<div class="col-lg-3">
+						<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="CDU_No_Motor" type="text" class="form-control" id="CDU_No_Motor" maxlength="100"
+						value="<?php if (isset($row['CDU_No_Motor'])) {echo $row['CDU_No_Motor'];}?>">
+					</div>
+					<label class="col-lg-1 control-label">Nivel de combustible</label>
 					<div class="col-lg-2">
                     	<select name="Estado" class="form-control" id="Estado" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
-                          <?php while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) {?>
-								<option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['Cod_Estado'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['Cod_Estado']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option>
-						  <?php }?>
+								<option value="si">SI</option>
+								<option value="no">NO</option>
+						<?php //while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) {?>
+								<!--option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['Cod_Estado'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['Cod_Estado']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option -->
+						  <?php //}?>
 						</select>
                	  	</div>
-					<label class="col-lg-1 control-label">Revisión</label>
+					<label class="col-lg-1 control-label">Campaña autorizada por cliente</label>
 					<div class="col-lg-2">
-                    	<select name="Revision" class="form-control" id="Revision" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
-							<option value="No revisado" <?php if (($type_frm == 1 || $sw_error == 1) && (isset($row['Revisado'])) && ($row['Revisado'] == 'No revisado')) {echo "selected=\"selected\"";}?>>No revisado</option>
-							<?php if ($type_frm == 1) {?>
-							<option value="Revisado" <?php if (($type_frm == 1 || $sw_error == 1) && (isset($row['Revisado'])) && ($row['Revisado'] == 'Revisado')) {echo "selected=\"selected\"";}?>>Revisado</option>
-							<?php }?>
+                    	<select name="Estado" class="form-control" id="Estado" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
+								<option value="si">SI</option>
+								<option value="no">NO</option>
+						<?php //while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) {?>
+								<!--option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['Cod_Estado'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['Cod_Estado']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option -->
+						  <?php //}?>
 						</select>
                	  	</div>
 				</div>
 				<div class="form-group">
-					<label class="col-lg-1 control-label"><?php if (($type_frm == 1) && ($row['ID_LlamadaServicio'] != 0)) {?><a href="llamada_servicio.php?id=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&tl=1" target="_blank" title="Consultar Llamada de servicio" class="btn-xs btn-success fa fa-search"></a> <?php }?>Orden servicio</label>
-				  	<div class="col-lg-4">
-						<select name="OrdenServicio" class="form-control select2" id="OrdenServicio" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
-							<?php if ($dt_LS != 1) {?><option value="">(Ninguna)</option><?php }?>
-                          	<?php if (($type_frm == 1) || ($sw_error == 1) || ($dt_LS == 1)) {while ($row_OrdenServicioCliente = sqlsrv_fetch_array($SQL_OrdenServicioCliente)) {?>
-								<option value="<?php echo $row_OrdenServicioCliente['ID_LlamadaServicio']; ?>" <?php if ((isset($row['ID_LlamadaServicio'])) && (strcmp($row_OrdenServicioCliente['ID_LlamadaServicio'], $row['ID_LlamadaServicio']) == 0)) {echo "selected=\"selected\"";} elseif (isset($_GET['LS']) && (strcmp($row_OrdenServicioCliente['ID_LlamadaServicio'], base64_decode($_GET['LS'])) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_OrdenServicioCliente['DocNum'] . " - " . $row_OrdenServicioCliente['AsuntoLlamada']; ?></option>
-						  <?php }}?>
-						</select>
-               	  	</div>
-				</div>
-				<div class="form-group">
-					<label class="col-lg-1 control-label">Técnico</label>
+					<label class="col-lg-1 control-label">No. Campaña</label>
 					<div class="col-lg-3">
-                    	<select name="Empleado" class="form-control select2" id="Empleado" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
-								<option value="">(Sin asignar)</option>
-                          <?php while ($row_EmpleadoLlamada = sqlsrv_fetch_array($SQL_EmpleadoLlamada)) {?>
-								<option value="<?php echo $row_EmpleadoLlamada['ID_Empleado']; ?>" <?php if ((isset($row['ID_Empleado'])) && (strcmp($row_EmpleadoLlamada['ID_Empleado'], $row['ID_Empleado']) == 0)) {echo "selected=\"selected\"";} elseif (($type_frm == 0) && (isset($_SESSION['CodigoSAP'])) && (strcmp($row_EmpleadoLlamada['ID_Empleado'], $_SESSION['CodigoSAP']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_EmpleadoLlamada['NombreEmpleado']; ?></option>
-						  <?php }?>
-						</select>
-               	  	</div>
-					<label class="col-lg-1 control-label">Estado criticidad</label>
-					<div class="col-lg-1 p-xxs">
-                    	<span class="text-success">BAJO</span>
-           	  	  </div>
-				</div>
-				<div class="form-group">
-					<label class="col-xs-12"><h3 class="bg-muted p-xs b-r-sm"><i class="fa fa-list"></i> Detalle del panorama de riesgo</h3></label>
-				</div>
-				<?php $Cont = 1;?>
-				<div id="divHallazgo<?php echo $Cont; ?>" class="bg-muted p-sm m-t-md m-b-md">
-				<div class="form-group">
-					<label class="col-lg-1 control-label">Área</label>
-				  	<div class="col-lg-3">
-                    	<select name="Area[]" class="form-control select2" required="required" id="Area<?php echo $Cont; ?>" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
-								<option value="">Seleccione...</option>
-                          <?php if ($type_frm == 1) {while ($row_Areas = sqlsrv_fetch_array($SQL_Areas)) {?>
-								<option value="<?php echo $row_Areas['IdArea']; ?>" <?php if ((isset($row['IdArea'])) && (strcmp($row_Areas['IdArea'], $row['IdArea']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Areas['DeArea']; ?></option>
-						  <?php }}?>
-						</select>
-               	  	</div>
-					<?php if (($type_frm == 0) && (PermitirFuncion(213))) {?>
-					<div id="dv_btnAgregarArea" class="col-lg-1">
-						<button title="Agregar área" type="button" class="btn btn-success" onClick="AgregarArea();"><i class="fa fa-plus"></i></button>
+						<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="CDU_No_Motor" type="text" class="form-control" id="CDU_No_Motor" maxlength="100"
+						value="<?php if (isset($row['CDU_No_Motor'])) {echo $row['CDU_No_Motor'];}?>">
 					</div>
-					<?php }?>
-					<label class="col-lg-1 control-label">Condición</label>
-				  	<div class="col-lg-2">
-                    	<select name="Condicion" class="form-control" required="required" id="Condicion" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
-								<option value="">Seleccione...</option>
-                          <?php while ($row_Condicion = sqlsrv_fetch_array($SQL_Condicion)) {?>
-								<option value="<?php echo $row_Condicion['IdCondicion']; ?>" <?php if ((isset($row['IdCondicion'])) && (strcmp($row_Condicion['IdCondicion'], $row['IdArea']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Condicion['DeCondicion']; ?></option>
-						  <?php }?>
+					<label class="col-lg-1 control-label">Medio por el cual se informo campaña</label>
+					<div class="col-lg-2">
+                    	<select name="Estado" class="form-control" id="Estado" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
+								<option value="si">SI</option>
+								<option value="no">NO</option>
+						<?php //while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) {?>
+								<!--option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['Cod_Estado'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['Cod_Estado']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option -->
+						  <?php //}?>
 						</select>
                	  	</div>
 				</div>
 				<div class="form-group">
-					<label class="col-lg-1 control-label">Hallazgos</label>
-				  	<div class="col-lg-8">
-                    	<textarea name="Hallazgo" rows="4" required="required" class="form-control" id="Hallazgo" type="text" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?>><?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['Hallazgo'];}?></textarea>
+					<label class="col-lg-1 control-label">Fecha hora propietario autoriza campaña</label>
+					<div class="col-lg-2 input-group date">
+						 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaCreacion" type="text" class="form-control" id="FechaCreacion" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('Y-m-d');} else {echo date('Y-m-d');}?>" readonly='readonly' placeholder="YYYY-MM-DD" required>
+					</div>
+					<div class="col-lg-2 input-group clockpicker2" data-autoclose="true">
+						<input name="HoraCreacion" id="HoraCreacion" type="text" class="form-control" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('H:i');} else {echo date('H:i');}?>" readonly='readonly' placeholder="hh:mm" required>
+						<span class="input-group-addon">
+							<span class="fa fa-clock-o"></span>
+						</span>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-lg-1 control-label">Servicio de movilidad ofrecido</label>
+					<div class="col-lg-2">
+                    	<select name="Estado" class="form-control" id="Estado" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
+								<option value="si">SI</option>
+								<option value="no">NO</option>
+						<?php //while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) {?>
+								<!--option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['Cod_Estado'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['Cod_Estado']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option -->
+						  <?php //}?>
+						</select>
+               	  	</div>
+					<label class="col-lg-1 control-label">Se hizo prueba de ruta</label>
+					<div class="col-lg-2">
+                    	<select name="Estado" class="form-control" id="Estado" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
+								<option value="si">SI</option>
+								<option value="no">NO</option>
+						<?php //while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) {?>
+								<!--option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['Cod_Estado'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['Cod_Estado']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option -->
+						  <?php //}?>
+						</select>
                	  	</div>
 				</div>
 				<div class="form-group">
-					<label class="col-lg-1 control-label">Recomendaciones</label>
-				  	<div class="col-lg-8">
-                    	<textarea name="Recomendaciones" rows="4" required="required" class="form-control" id="Recomendaciones" type="text" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?>><?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['Recomendaciones'];}?></textarea>
+					<label class="col-xs-12"><h3 class="bg-muted p-xs b-r-sm"><i class="fa fa-list"></i> Datos piezas de vehículo</h3></label>
+				</div>
+				<div class="form-group">
+					<label class="col-lg-1 control-label">Descripción de la pieza de vehículo (pieza)</label>
+					<div class="col-lg-2">
+                    	<select name="Estado" class="form-control" id="Estado" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
+								<option value="si">SI</option>
+								<option value="no">NO</option>
+						<?php //while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) {?>
+								<!--option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['Cod_Estado'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['Cod_Estado']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option -->
+						  <?php //}?>
+						</select>
+               	  	</div>
+					<label class="col-lg-1 control-label">Disponibilidad</label>
+					<div class="col-lg-2">
+                    	<select name="Estado" class="form-control" id="Estado" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
+								<option value="si">SI</option>
+								<option value="no">NO</option>
+						<?php //while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) {?>
+								<!--option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['Cod_Estado'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['Cod_Estado']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option -->
+						  <?php //}?>
+						</select>
+               	  	</div>
+						 <label class="col-lg-1 control-label">Estado</label>
+					<div class="col-lg-2">
+                    	<select name="Estado" class="form-control" id="Estado" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
+								<option value="bueno">Bueno</option>
+								<option value="malo">Malo</option>
+						<?php //while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) {?>
+								<!--option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['Cod_Estado'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['Cod_Estado']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option -->
+						  <?php //}?>
+						</select>
                	  	</div>
 				</div>
 				<div class="form-group">
-					<label class="col-lg-1 control-label">Foto panorama 1</label>
+					<label class="col-xs-12"><h3 class="bg-muted p-xs b-r-sm"><i class="fa fa-list"></i> Registros fotográficos</h3></label>
+				</div>
+				<!-- Inicio, Foto 1 -->
+				<div class="form-group">
+					<label class="col-lg-1 control-label">Frente</label>
 					<?php if ($type_frm == 1 && $row['ImgEvidencia1'] != "") {?>
 					<div class="col-lg-2 lightBoxGallery">
 						<a href="<?php echo $dir_new . $row['ImgEvidencia1']; ?>" title="Foto evidencia" data-gallery=""><img src="<?php echo $dir_new . $row['ImgEvidencia1']; ?>" width="100" height="100"></a>
@@ -1027,8 +1041,10 @@ function Eliminar(){
                	  	</div>
 					<?php }?>
 				</div>
+				<!-- Inicio, Foto 1 -->
+				<!-- Inicio, Foto 2 -->
 				<div class="form-group">
-					<label class="col-lg-1 control-label">Foto panorama 2</label>
+					<label class="col-lg-1 control-label">Lateral Izquierdo</label>
 					<?php if ($type_frm == 1 && $row['ImgEvidencia2'] != "") {?>
 					<div class="col-lg-2 lightBoxGallery">
 						<a href="<?php echo $dir_new . $row['ImgEvidencia2']; ?>" title="Foto evidencia" data-gallery=""><img src="<?php echo $dir_new . $row['ImgEvidencia2']; ?>" width="100" height="100"></a>
@@ -1060,11 +1076,13 @@ function Eliminar(){
                	  	</div>
 					<?php }?>
 				</div>
+				<!-- Fin, Foto 2 -->
+				<!-- Inicio, Foto 3 -->
 				<div class="form-group">
-					<label class="col-lg-1 control-label">Foto panorama 3</label>
-					<?php if ($type_frm == 1 && $row['ImgEvidencia3'] != "") {?>
+					<label class="col-lg-1 control-label">Lateral Derecho</label>
+					<?php if ($type_frm == 1 && $row['ImgEvidencia2'] != "") {?>
 					<div class="col-lg-2 lightBoxGallery">
-						<a href="<?php echo $dir_new . $row['ImgEvidencia3']; ?>" title="Foto evidencia" data-gallery=""><img src="<?php echo $dir_new . $row['ImgEvidencia3']; ?>" width="100" height="100"></a>
+						<a href="<?php echo $dir_new . $row['ImgEvidencia2']; ?>" title="Foto evidencia" data-gallery=""><img src="<?php echo $dir_new . $row['ImgEvidencia2']; ?>" width="100" height="100"></a>
 						<div id="blueimp-gallery" class="blueimp-gallery">
 							<div class="slides"></div>
 							<h3 class="title"></h3>
@@ -1086,39 +1104,20 @@ function Eliminar(){
 							<span class="input-group-addon btn btn-default btn-file">
 								<span class="fileinput-new">Seleccionar</span>
 								<span class="fileinput-exists">Cambiar</span>
-								<input name="ImgEvidencia3" type="file" id="ImgEvidencia3" />
+								<input name="ImgEvidencia2" type="file" id="ImgEvidencia2" />
 							</span>
 							<a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Quitar</a>
 						</div>
                	  	</div>
 					<?php }?>
 				</div>
-				<div id="dvPlagas" style="display: none;">
+				<!-- Fin, Foto 3 -->
+				<!-- Inicio, Foto 4 -->
 				<div class="form-group">
-					<label class="col-xs-12"><h3 class="bg-muted p-xs b-r-sm"><i class="fa fa-bug"></i> Registro de plagas</h3></label>
-				</div>
-		 <?php $Cont = 1;
-if ($type_frm == 1 && $Num_Plagas > 0) {
-    $row_Plagas = sqlsrv_fetch_array($SQL_Plagas);
-    do {?>
-				<div id="div_<?php echo $Cont; ?>" class="form-group">
-					<label class="col-lg-1 control-label">Tipo plaga</label>
-					<div class="col-lg-3">
-						<select name="TipoPlaga1[]" class="form-control m-b" id="TipoPlaga1_<?php echo $Cont; ?>" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
-								<option value="">Seleccione...</option>
-						  <?php while ($row_TipoPlaga = sqlsrv_fetch_array($SQL_TipoPlaga)) {?>
-								<option value="<?php echo $row_TipoPlaga['ID_Plaga']; ?>" <?php if ((isset($row_Plagas['ID_Plaga'])) && (strcmp($row_TipoPlaga['ID_Plaga'], $row_Plagas['ID_Plaga']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_TipoPlaga['NombrePlaga']; ?></option>
-						  <?php }?>
-						</select>
-					</div>
-					<label class="col-lg-1 control-label">Cantidad</label>
-					<div class="col-lg-2">
-                    	<input autocomplete="off" name="Cantidad1[]" type="text" class="form-control" onKeyPress="return justNumbers(event,this.value);" id="Cantidad1_<?php echo $Cont; ?>" maxlength="10" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row_Plagas['Cantidad'];}?>">
-               	  	</div>
-					<label class="col-lg-1 control-label">Foto evidencia</label>
+					<label class="col-lg-1 control-label">Trasero</label>
+					<?php if ($type_frm == 1 && $row['ImgEvidencia2'] != "") {?>
 					<div class="col-lg-2 lightBoxGallery">
-						<?php if ($row_Plagas['Foto'] != "") {?>
-						<a href="<?php echo $dir_new . $row_Plagas['Foto']; ?>" title="Foto evidencia" data-gallery=""><img src="<?php echo $dir_new . $row_Plagas['Foto']; ?>" width="100" height="100"></a>
+						<a href="<?php echo $dir_new . $row['ImgEvidencia2']; ?>" title="Foto evidencia" data-gallery=""><img src="<?php echo $dir_new . $row['ImgEvidencia2']; ?>" width="100" height="100"></a>
 						<div id="blueimp-gallery" class="blueimp-gallery">
 							<div class="slides"></div>
 							<h3 class="title"></h3>
@@ -1128,35 +1127,10 @@ if ($type_frm == 1 && $Num_Plagas > 0) {
 							<a class="play-pause"></a>
 							<ol class="indicator"></ol>
 						</div>
-						<?php } else {?>
-						<span class="text-primary">Sin foto</span>
-						<?php }?>
 					</div>
-					<?php /*?><div class="col-lg-1">
-    <button type="button" id="<?php echo $Cont;?>" class="btn btn-warning btn-xs btn_del"><i class="fa fa-minus"></i> Remover</button>
-    </div><?php */?>
-				</div>
-				<?php
-$Cont++;
-        $SQL_TipoPlaga = Seleccionar('uvw_tbl_Plagas', '*', '', 'NombrePlaga');
-    } while ($row_Plagas = sqlsrv_fetch_array($SQL_Plagas));
-}?>
-				<div id="div_<?php echo $Cont; ?>" class="form-group">
-					<label class="col-lg-1 control-label">Tipo plaga</label>
-					<div class="col-lg-3">
-						<select name="TipoPlaga[]" class="form-control m-b" id="TipoPlaga_<?php echo $Cont; ?>" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
-								<option value="">Seleccione...</option>
-						  <?php while ($row_TipoPlaga = sqlsrv_fetch_array($SQL_TipoPlaga)) {?>
-								<option value="<?php echo $row_TipoPlaga['ID_Plaga']; ?>"><?php echo $row_TipoPlaga['NombrePlaga']; ?></option>
-						  <?php }?>
-						</select>
-					</div>
-					<label class="col-lg-1 control-label">Cantidad</label>
-					<div class="col-lg-2">
-                    	<input autocomplete="off" name="Cantidad[]" type="text" class="form-control" onKeyPress="return justNumbers(event,this.value);" id="Cantidad_<?php echo $Cont; ?>" maxlength="10" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="">
-               	  	</div>
-					<label class="col-lg-1 control-label">Foto evidencia</label>
-				  	<div class="col-lg-3">
+					<?php }?>
+					<?php if (($type_frm == 0) || (($type_frm == 1) && ($row['Cod_Estado'] != '-1'))) {?>
+					<div class="col-lg-5">
                     	<div class="fileinput fileinput-new input-group" data-provides="fileinput">
 							<div class="form-control" data-trigger="fileinput">
 								<i class="glyphicon glyphicon-file fileinput-exists"></i>
@@ -1165,79 +1139,60 @@ $Cont++;
 							<span class="input-group-addon btn btn-default btn-file">
 								<span class="fileinput-new">Seleccionar</span>
 								<span class="fileinput-exists">Cambiar</span>
-								<input name="FotoPlaga[]" type="file" id="FotoPlaga_<?php echo $Cont; ?>" />
+								<input name="ImgEvidencia2" type="file" id="ImgEvidencia2" />
 							</span>
 							<a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Quitar</a>
 						</div>
                	  	</div>
-					<div class="col-lg-1">
-						<button type="button" id="<?php echo $Cont; ?>" class="btn btn-success btn-xs" onClick="addField(this);"><i class="fa fa-plus"></i> Añadir</button>
+					<?php }?>
+				</div>
+				<!-- Fin, Foto 4 -->
+				<!-- Inicio, Foto 5 -->
+				<div class="form-group">
+					<label class="col-lg-1 control-label">Capot</label>
+					<?php if ($type_frm == 1 && $row['ImgEvidencia2'] != "") {?>
+					<div class="col-lg-2 lightBoxGallery">
+						<a href="<?php echo $dir_new . $row['ImgEvidencia2']; ?>" title="Foto evidencia" data-gallery=""><img src="<?php echo $dir_new . $row['ImgEvidencia2']; ?>" width="100" height="100"></a>
+						<div id="blueimp-gallery" class="blueimp-gallery">
+							<div class="slides"></div>
+							<h3 class="title"></h3>
+							<a class="prev">‹</a>
+							<a class="next">›</a>
+							<a class="close">×</a>
+							<a class="play-pause"></a>
+							<ol class="indicator"></ol>
+						</div>
 					</div>
+					<?php }?>
+					<?php if (($type_frm == 0) || (($type_frm == 1) && ($row['Cod_Estado'] != '-1'))) {?>
+					<div class="col-lg-5">
+                    	<div class="fileinput fileinput-new input-group" data-provides="fileinput">
+							<div class="form-control" data-trigger="fileinput">
+								<i class="glyphicon glyphicon-file fileinput-exists"></i>
+							<span class="fileinput-filename"></span>
+							</div>
+							<span class="input-group-addon btn btn-default btn-file">
+								<span class="fileinput-new">Seleccionar</span>
+								<span class="fileinput-exists">Cambiar</span>
+								<input name="ImgEvidencia2" type="file" id="ImgEvidencia2" />
+							</span>
+							<a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Quitar</a>
+						</div>
+               	  	</div>
+					<?php }?>
 				</div>
-				</div>
-
-
+				<!-- Fin, Foto 5 -->
 				<div class="form-group">
-					<label class="col-xs-12"><h3 class="bg-muted p-xs b-r-sm"><i class="fa fa-check-circle"></i> Información de cierre</h3></label>
+					<label class="col-xs-12"><h3 class="bg-muted p-xs b-r-sm"><i class="fa fa-check-circle"></i> Fotos adicionales</h3></label>
 				</div>
 				<div class="form-group">
-					<label class="col-lg-1 control-label">Comentarios de cierre</label>
+					<label class="col-lg-1 control-label">Texto de condiciones</label>
 					<div class="col-lg-8">
 						<textarea name="ComentariosCierre" rows="5" type="text" class="form-control" id="ComentariosCierre" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?>><?php if (($type_frm == 1) || ($sw_error == 1)) {echo utf8_decode($row['ComentariosCierre']);}?></textarea>
 					</div>
 				</div>
-				<div class="form-group">
-					<label class="col-lg-1 control-label">Fecha de cierre</label>
-					<div class="col-lg-2 input-group date">
-						 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaCierre" type="text" class="form-control" id="FechaCierre" value="<?php if (($type_frm == 1) && ($row['FechaCierre']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCierre']->format('Y-m-d');} else {echo date('Y-m-d');}?>" readonly='readonly' placeholder="YYYY-MM-DD">
-					</div>
-					<div class="col-lg-2 input-group clockpicker" data-autoclose="true">
-						<input name="HoraCierre" id="HoraCierre" type="text" class="form-control" value="<?php if (($type_frm == 1) && ($row['FechaCierre']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCierre']->format('H:i');} else {echo date('H:i');}?>" readonly='readonly' placeholder="hh:mm">
-						<span class="input-group-addon">
-							<span class="fa fa-clock-o"></span>
-						</span>
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="col-lg-1 control-label">Foto cierre</label>
-					<?php if ($type_frm == 1 && $row['ImgCierre'] != "") {?>
-					<div class="col-lg-2 lightBoxGallery">
-						<a href="<?php echo $dir_new . $row['ImgCierre']; ?>" title="Foto cierre" data-gallery=""><img src="<?php echo $dir_new . $row['ImgCierre']; ?>" width="100" height="100"></a>
-						<div id="blueimp-gallery" class="blueimp-gallery">
-							<div class="slides"></div>
-							<h3 class="title"></h3>
-							<a class="prev">‹</a>
-							<a class="next">›</a>
-							<a class="close">×</a>
-							<a class="play-pause"></a>
-							<ol class="indicator"></ol>
-						</div>
-					</div>
-					<?php }?>
-					<?php if (($type_frm == 0) || (($type_frm == 1) && ($row['Cod_Estado'] != '-1'))) {?>
-					<div class="col-lg-5">
-						<div class="fileinput fileinput-new input-group" data-provides="fileinput">
-							<div class="form-control" data-trigger="fileinput">
-								<i class="glyphicon glyphicon-file fileinput-exists"></i>
-							<span class="fileinput-filename"></span>
-							</div>
-							<span class="input-group-addon btn btn-default btn-file">
-								<span class="fileinput-new">Seleccionar</span>
-								<span class="fileinput-exists">Cambiar</span>
-								<input name="ImgCierre" type="file" id="ImgCierre" />
-							</span>
-							<a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Quitar</a>
-						</div>
-					</div>
-					<?php }?>
-				</div>
-				<div class="form-group">
-					<div class="col-lg-12">
-						<button type="button" class="btn btn-success pull-right" onClick="addHallazgo(this);"><i class="fa fa-plus-circle"></i> Añadir otro</button>
-					</div>
-				</div>
-				</div>
 
+				<!-- Esto es otra cosa -->
 				<input type="hidden" id="P" name="P" value="<?php echo base64_encode('MM_frmHallazgos') ?>" />
 				<input type="hidden" id="swTipo" name="swTipo" value="0" />
 				<input type="hidden" id="swError" name="swError" value="<?php echo $sw_error; ?>" />
