@@ -818,62 +818,100 @@ function Eliminar(){
 					</div>
 				</div>
 				<!-- IBOX, Fin -->
-				<div class="form-group">
-					<label class="col-xs-12"><h3 class="bg-muted p-xs b-r-sm"><i class="fa fa-info-circle"></i> Datos del vehículo</h3></label>
+				<!-- IBOX, Inicio -->
+				<div class="ibox">
+					<div class="ibox-title bg-success">
+						<h5 class="collapse-link"><i class="fa fa-info-circle"></i> Datos del vehículo</h5>
+						 <a class="collapse-link pull-right" style="color: white;">
+							<i class="fa fa-chevron-up"></i>
+						</a>
+					</div>
+					<div class="ibox-content">
+						<div class="form-group">
+							<div class="col-lg-4">	
+								<label class="control-label">Serial Interno (Placa) <span class="text-danger">*</span></label>
+								<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="SerialInterno" type="text" required="required" class="form-control" id="SerialInterno" maxlength="150" value="<?php if (isset($row['SerialInterno'])) {echo $row['SerialInterno'];}?>">
+							</div>
+							<div class="col-lg-4">
+								<label class="control-label">Serial Fabricante (VIN) <span class="text-danger">*</span></label>
+								<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="SerialFabricante" type="text" required="required" class="form-control" id="SerialFabricante" maxlength="150" value="<?php if (isset($row['SerialFabricante'])) {echo $row['SerialFabricante'];}?>">
+							</div>
+							<div class="col-lg-4">
+								<label class="control-label">No_Motor</label>
+								<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="CDU_No_Motor" type="text" class="form-control" id="CDU_No_Motor" maxlength="100"
+								value="<?php if (isset($row['CDU_No_Motor'])) {echo $row['CDU_No_Motor'];}?>">
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-lg-4">
+								<label class="control-label">Marca del vehículo <span class="text-danger">*</span></label>
+								<select name="CDU_Marca" class="form-control select2" required="required" id="CDU_Marca"
+								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
+									<option value="" disabled selected>Seleccione...</option>
+								  <?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) {?>
+									<option value="<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; //['IdMarcaVehiculo'];                                        ?>"
+									<?php if ((isset($row['CDU_Marca'])) && (strcmp($row_MarcaVehiculo['DeMarcaVehiculo'], $row['CDU_Marca']) == 0)) {echo "selected=\"selected\"";}?>>
+										<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
+									</option>
+								  <?php }?>
+								</select>
+							</div>
+							<div class="col-lg-4">
+								<label class="control-label">Línea del vehículo <span class="text-danger">*</span></label>
+								<select name="CDU_Linea" class="form-control select2" required="required" id="CDU_Linea"
+								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
+										<option value="" disabled selected>Seleccione...</option>
+								  <?php while ($row_LineaVehiculo = sqlsrv_fetch_array($SQL_LineaVehiculo)) {?>
+										<option value="<?php echo $row_LineaVehiculo['IdLineaModeloVehiculo']; ?>"
+										<?php if ((isset($row['CDU_Linea'])) && (strcmp($row_LineaVehiculo['IdLineaModeloVehiculo'], $row['CDU_Linea']) == 0)) {echo "selected=\"selected\"";}?>>
+											<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; //. " - " . $row_LineaVehiculo['MarcaVehiculo'];                                               ?>
+										</option>
+								  <?php }?>
+								</select>
+							</div>
+							<div class="col-lg-4">
+								<label class="control-label">Modelo del vehículo <span class="text-danger">*</span></label>
+								<select name="CDU_Ano" class="form-control select2" required="required" id="CDU_Ano"
+								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
+										<option value="" disabled selected>Seleccione...</option>
+								  <?php while ($row_ModeloVehiculo = sqlsrv_fetch_array($SQL_ModeloVehiculo)) {?>
+										<option value="<?php echo $row_ModeloVehiculo['CodigoModeloVehiculo']; ?>"
+										<?php if ((isset($row['CDU_Ano'])) && ((strcmp($row_ModeloVehiculo['CodigoModeloVehiculo'], $row['CDU_Ano']) == 0) || (strcmp($row_ModeloVehiculo['AñoModeloVehiculo'], $row['CDU_Ano']) == 0))) {echo "selected=\"selected\"";}?>>
+											<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; ?>
+										</option>
+								  <?php }?>
+								</select>
+							</div>
+						</div>
+					</div>
 				</div>
-				<div class="form-group">
-					<label class="col-lg-1 control-label">Serial Interno (Placa) <span class="text-danger">*</span></label>
-					<div class="col-lg-3">
-						<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="SerialInterno" type="text" required="required" class="form-control" id="SerialInterno" maxlength="150" value="<?php if (isset($row['SerialInterno'])) {echo $row['SerialInterno'];}?>">
+				<!-- IBOX, Fin -->
+				<!-- IBOX, Inicio -->
+				<div class="ibox">
+					<div class="ibox-title bg-success">
+						<h5 class="collapse-link"><i class="fa fa-info-circle"></i> Datos del vehículo</h5>
+						 <a class="collapse-link pull-right" style="color: white;">
+							<i class="fa fa-chevron-up"></i>
+						</a>
 					</div>
-					<label class="col-lg-1 control-label">Serial Fabricante (VIN) <span class="text-danger">*</span></label>
-					<div class="col-lg-3">
-						<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="SerialFabricante" type="text" required="required" class="form-control" id="SerialFabricante" maxlength="150" value="<?php if (isset($row['SerialFabricante'])) {echo $row['SerialFabricante'];}?>">
-					</div>
-					<label class="col-lg-1 control-label">No_Motor</label>
-					<div class="col-lg-3">
-						<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="CDU_No_Motor" type="text" class="form-control" id="CDU_No_Motor" maxlength="100"
-						value="<?php if (isset($row['CDU_No_Motor'])) {echo $row['CDU_No_Motor'];}?>">
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="col-lg-1 control-label">Marca del vehículo <span class="text-danger">*</span></label>
-					<div class="col-lg-3">
-						<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Marca" class="form-control select2" required="required" id="CDU_Marca">
-							<option value="" disabled selected>Seleccione...</option>
-							<?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) {?>
-							<option value="<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; //['IdMarcaVehiculo'];                                            ?>"
-							<?php if ((isset($row['CDU_Marca'])) && (strcmp($row_MarcaVehiculo['DeMarcaVehiculo'], $row['CDU_Marca']) == 0)) {echo "selected=\"selected\"";}?>>
-								<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
-							</option>
-							<?php }?>
-						</select>
-					</div>
-					<label class="col-lg-1 control-label">Línea del vehículo <span class="text-danger">*</span></label>
-					<div class="col-lg-3">
-						<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Linea" class="form-control select2" required="required" id="CDU_Linea">
-								<option value="" disabled selected>Seleccione...</option>
-							<?php while ($row_LineaVehiculo = sqlsrv_fetch_array($SQL_LineaVehiculo)) {?>
-								<option value="<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; //['IdLineaModeloVehiculo'];                                           ?>"
-								<?php if ((isset($row['CDU_Linea'])) && (strcmp($row_LineaVehiculo['DeLineaModeloVehiculo'], $row['CDU_Linea']) == 0)) {echo "selected=\"selected\"";}?>>
-									<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; //. " - " . $row_LineaVehiculo['MarcaVehiculo'];                                                   ?>
-								</option>
-							<?php }?>
-						</select>
-					</div>
-					<label class="col-lg-1 control-label">Modelo del vehículo</label>
-					<div class="col-lg-3">
-						<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Ano" class="form-control select2" id="CDU_Ano">
-								<option value="" disabled selected>Seleccione...</option>
-							<?php while ($row_ModeloVehiculo = sqlsrv_fetch_array($SQL_ModeloVehiculo)) {?>
-								<option value="<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; //['CodigoModeloVehiculo'];                                                          ?>"
-								<?php if (isset($row['CDU_Ano']) && ((strcmp($row_ModeloVehiculo['CodigoModeloVehiculo'], $row['CDU_Ano']) == 0) || (strcmp($row_ModeloVehiculo['AñoModeloVehiculo'], $row['CDU_Ano']) == 0))) {echo "selected=\"selected\"";}?>>
-									<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; ?>
-								</option>
-							<?php }?>
-						</select>
+					<div class="ibox-content">
+						<div class="form-group">
+							<label class="col-lg-1 control-label">Dirección</label>
+							<div class="col-lg-3">
+								<input name="Direccion" type="text" required="required" class="form-control" id="Direccion" maxlength="100" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['Direccion'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Direccion']);}?>">
+							</div>
+							<label class="col-lg-1 control-label">Teléfono</label>
+							<div class="col-lg-3">
+								<input name="Telefono" type="text" class="form-control" id="Telefono" maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['TelefonoContacto'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Telefono']);}?>">
+							</div>
+							<label class="col-lg-1 control-label">Celular</label>
+							<div class="col-lg-3">
+								<input name="Celular" type="text" class="form-control" id="Celular" maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['CelularContacto'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Celular']);}?>">
+							</div>
+						</div>
 					</div>
 				</div>
+				<!-- IBOX, Fin -->
 				<div class="form-group">
 					<label class="col-xs-12"><h3 class="bg-muted p-xs b-r-sm"><i class="fa fa-info-circle"></i> Datos de recepción</h3></label>
 				</div>
@@ -978,6 +1016,31 @@ function Eliminar(){
 						</select>
                	  	</div>
 				</div>
+				<div class="ibox">
+					<div class="ibox-title bg-success">
+						<h5 class="collapse-link"><i class="fa fa-info-circle"></i> Datos del vehículo</h5>
+						 <a class="collapse-link pull-right" style="color: white;">
+							<i class="fa fa-chevron-up"></i>
+						</a>
+					</div>
+					<div class="ibox-content">
+						<div class="form-group">
+							<label class="col-lg-1 control-label">Dirección</label>
+							<div class="col-lg-3">
+								<input name="Direccion" type="text" required="required" class="form-control" id="Direccion" maxlength="100" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['Direccion'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Direccion']);}?>">
+							</div>
+							<label class="col-lg-1 control-label">Teléfono</label>
+							<div class="col-lg-3">
+								<input name="Telefono" type="text" class="form-control" id="Telefono" maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['TelefonoContacto'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Telefono']);}?>">
+							</div>
+							<label class="col-lg-1 control-label">Celular</label>
+							<div class="col-lg-3">
+								<input name="Celular" type="text" class="form-control" id="Celular" maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['CelularContacto'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Celular']);}?>">
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- IBOX, Fin -->
 				<div class="form-group">
 					<label class="col-xs-12"><h3 class="bg-muted p-xs b-r-sm"><i class="fa fa-list"></i> Datos piezas de vehículo</h3></label>
 				</div>
@@ -1013,6 +1076,31 @@ function Eliminar(){
 						</select>
                	  	</div>
 				</div>
+				<div class="ibox">
+					<div class="ibox-title bg-success">
+						<h5 class="collapse-link"><i class="fa fa-info-circle"></i> Datos del vehículo</h5>
+						 <a class="collapse-link pull-right" style="color: white;">
+							<i class="fa fa-chevron-up"></i>
+						</a>
+					</div>
+					<div class="ibox-content">
+						<div class="form-group">
+							<label class="col-lg-1 control-label">Dirección</label>
+							<div class="col-lg-3">
+								<input name="Direccion" type="text" required="required" class="form-control" id="Direccion" maxlength="100" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['Direccion'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Direccion']);}?>">
+							</div>
+							<label class="col-lg-1 control-label">Teléfono</label>
+							<div class="col-lg-3">
+								<input name="Telefono" type="text" class="form-control" id="Telefono" maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['TelefonoContacto'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Telefono']);}?>">
+							</div>
+							<label class="col-lg-1 control-label">Celular</label>
+							<div class="col-lg-3">
+								<input name="Celular" type="text" class="form-control" id="Celular" maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['CelularContacto'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Celular']);}?>">
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- IBOX, Fin -->
 				<div class="form-group">
 					<label class="col-xs-12"><h3 class="bg-muted p-xs b-r-sm"><i class="fa fa-list"></i> Registros fotográficos</h3></label>
 				</div>
