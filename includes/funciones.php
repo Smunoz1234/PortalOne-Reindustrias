@@ -475,16 +475,15 @@ function CrearObtenerDirRuta($pRuta)
 { //Crear y retornar la carpeta de la ruta que se pe pase
     $carp_anexos = $pRuta;
     if (!file_exists($carp_anexos)) {
-        if(!mkdir($carp_anexos, 0777, true)){
+        if (!mkdir($carp_anexos, 0777, true)) {
             return false;
-        }else{
+        } else {
             return $carp_anexos;
         }
-    }else{
+    } else {
         return $carp_anexos;
     }
-    
-    
+
 }
 
 function LimpiarDirTempFirma()
@@ -952,6 +951,15 @@ function NormalizarNombreArchivo($NombreArchivo)
     $NombreArchivo = strtr($NombreArchivo, utf8_decode($originales), $modificadas);
     //$NombreArchivo = strtolower($NombreArchivo);
     return utf8_encode($NombreArchivo);
+}
+
+function NormalizarNombreImagen($IdImagen, $NombreImagen, $ExtImagen)
+{
+    $NombreImagen = str_replace(" ", "_", $NombreImagen);
+    $NombreImagen = str_replace(".", "_", $NombreImagen);
+    $NombreImagen = str_replace("-", "_", $NombreImagen);
+    $NombreImagen = NormalizarNombreArchivo($NombreImagen);
+    return $IdImagen . "_" . "$NombreImagen.$ExtImagen";
 }
 
 function ValidarEstadoArchivoCargue($NombreCliente, $NombreCategoria, $Sucursal, $Archivo)
