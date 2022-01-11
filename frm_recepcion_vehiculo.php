@@ -760,55 +760,64 @@ function Eliminar(){
 				  <?php include "includes/spinner.php";?>
           <div class="row">
            <div class="col-lg-12">
-              <form action="frm_hallazgos.php" method="post" class="form-horizontal" enctype="multipart/form-data" id="CrearFrm">
-				<div class="form-group">
-					<label class="col-xs-12"><h3 class="bg-muted p-xs b-r-sm"><i class="fa fa-user"></i> Datos del propietario</h3></label>
+              <form action="frm_recepcion_vehiculo.php" method="post" class="form-horizontal" enctype="multipart/form-data" id="CrearFrm">
+				<!-- IBOX, Inicio -->
+				<div class="ibox">
+					<div class="ibox-title bg-success">
+						<h5 class="collapse-link"><i class="fa fa-user"></i> Datos del propietario</h5>
+						 <a class="collapse-link pull-right" style="color: white;">
+							<i class="fa fa-chevron-up"></i>
+						</a>
+					</div>
+					<div class="ibox-content">
+						<div class="form-group">
+							<label class="col-lg-1 control-label"><i onClick="ConsultarDatosCliente();" title="Consultar cliente" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Cliente <span class="text-danger">*</span></label>
+							<div class="col-lg-3">
+								<input name="Cliente" type="hidden" id="Cliente" value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['ID_CodigoCliente'];} elseif ($dt_LS == 1) {echo $row_Cliente['CodigoCliente'];}?>">
+								<input name="NombreCliente" type="text" required="required" class="form-control" id="NombreCliente" placeholder="Digite para buscar..." <?php if ((($type_frm == 1) && ($row['Cod_Estado'] == '-1')) || ($dt_LS == 1)) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['NombreCliente'];} elseif ($dt_LS == 1) {echo $row_Cliente['NombreCliente'];}?>">
+							</div>
+							<label class="col-lg-1 control-label">Contacto</label>
+							<div class="col-lg-3">
+								<select name="ContactoCliente" class="form-control" id="ContactoCliente" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
+								<?php if ((($type_frm == 0) || ($sw_error == 1)) && ($dt_LS != 1)) {?><option value="">Seleccione...</option><?php }?>
+								<?php if (($type_frm == 1) || ($sw_error == 1) || ($dt_LS == 1)) {while ($row_ContactoCliente = sqlsrv_fetch_array($SQL_ContactoCliente)) {?>
+										<option value="<?php echo $row_ContactoCliente['CodigoContacto']; ?>" <?php if ((isset($row['ID_Contacto'])) && (strcmp($row_ContactoCliente['CodigoContacto'], $row['ID_Contacto']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_ContactoCliente['ID_Contacto']; ?></option>
+								<?php }}?>
+								</select>
+							</div>
+							<label class="col-lg-1 control-label">Sucursal</label>
+							<div class="col-lg-3">
+								<select name="SucursalCliente" class="form-control select2" id="SucursalCliente" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
+								<?php if ((($type_frm == 0) || ($sw_error == 1)) && ($dt_LS != 1)) {?><option value="">Seleccione...</option><?php }?>
+								<?php if (($type_frm == 1) || ($sw_error == 1) || ($dt_LS == 1)) {while ($row_SucursalCliente = sqlsrv_fetch_array($SQL_SucursalCliente)) {?>
+										<option value="<?php echo $row_SucursalCliente['NombreSucursal']; ?>" <?php if ((isset($row['NombreSucursal'])) && (strcmp($row_SucursalCliente['NombreSucursal'], $row['NombreSucursal']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_SucursalCliente['NombreSucursal']; ?></option>
+								<?php }}?>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-lg-1 control-label">Dirección</label>
+							<div class="col-lg-3">
+								<input name="Direccion" type="text" required="required" class="form-control" id="Direccion" maxlength="100" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['Direccion'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Direccion']);}?>">
+							</div>
+							<label class="col-lg-1 control-label">Teléfono</label>
+							<div class="col-lg-3">
+								<input name="Telefono" type="text" class="form-control" id="Telefono" maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['TelefonoContacto'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Telefono']);}?>">
+							</div>
+							<label class="col-lg-1 control-label">Celular</label>
+							<div class="col-lg-3">
+								<input name="Celular" type="text" class="form-control" id="Celular" maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['CelularContacto'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Celular']);}?>">
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-lg-1 control-label">Correo</label>
+							<div class="col-lg-3">
+								<input name="Correo" type="text" class="form-control" id="Correo" maxlength="100" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['CorreoContacto'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Correo']);}?>">
+							</div>
+						</div>
+					</div>
 				</div>
-				<div class="form-group">
-					<label class="col-lg-1 control-label"><i onClick="ConsultarDatosCliente();" title="Consultar cliente" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Cliente <span class="text-danger">*</span></label>
-					<div class="col-lg-3">
-						<input name="Cliente" type="hidden" id="Cliente" value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['ID_CodigoCliente'];} elseif ($dt_LS == 1) {echo $row_Cliente['CodigoCliente'];}?>">
-						<input name="NombreCliente" type="text" required="required" class="form-control" id="NombreCliente" placeholder="Digite para buscar..." <?php if ((($type_frm == 1) && ($row['Cod_Estado'] == '-1')) || ($dt_LS == 1)) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['NombreCliente'];} elseif ($dt_LS == 1) {echo $row_Cliente['NombreCliente'];}?>">
-               	  	</div>
-					<label class="col-lg-1 control-label">Contacto</label>
-					<div class="col-lg-3">
-                    	<select name="ContactoCliente" class="form-control" id="ContactoCliente" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
-						  <?php if ((($type_frm == 0) || ($sw_error == 1)) && ($dt_LS != 1)) {?><option value="">Seleccione...</option><?php }?>
-                          <?php if (($type_frm == 1) || ($sw_error == 1) || ($dt_LS == 1)) {while ($row_ContactoCliente = sqlsrv_fetch_array($SQL_ContactoCliente)) {?>
-								<option value="<?php echo $row_ContactoCliente['CodigoContacto']; ?>" <?php if ((isset($row['ID_Contacto'])) && (strcmp($row_ContactoCliente['CodigoContacto'], $row['ID_Contacto']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_ContactoCliente['ID_Contacto']; ?></option>
-						  <?php }}?>
-						</select>
-               	  	</div>
-					<label class="col-lg-1 control-label">Sucursal</label>
-				  	<div class="col-lg-3">
-                    	<select name="SucursalCliente" class="form-control select2" id="SucursalCliente" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
-						  <?php if ((($type_frm == 0) || ($sw_error == 1)) && ($dt_LS != 1)) {?><option value="">Seleccione...</option><?php }?>
-                          <?php if (($type_frm == 1) || ($sw_error == 1) || ($dt_LS == 1)) {while ($row_SucursalCliente = sqlsrv_fetch_array($SQL_SucursalCliente)) {?>
-								<option value="<?php echo $row_SucursalCliente['NombreSucursal']; ?>" <?php if ((isset($row['NombreSucursal'])) && (strcmp($row_SucursalCliente['NombreSucursal'], $row['NombreSucursal']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_SucursalCliente['NombreSucursal']; ?></option>
-						  <?php }}?>
-						</select>
-               	  	</div>
-				</div>
-				<div class="form-group">
-					<label class="col-lg-1 control-label">Dirección</label>
-					<div class="col-lg-3">
-                    	<input name="Direccion" type="text" required="required" class="form-control" id="Direccion" maxlength="100" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['Direccion'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Direccion']);}?>">
-               	  	</div>
-					<label class="col-lg-1 control-label">Teléfono</label>
-					<div class="col-lg-3">
-                    	<input name="Telefono" type="text" class="form-control" id="Telefono" maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['TelefonoContacto'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Telefono']);}?>">
-               	  	</div>
-					<label class="col-lg-1 control-label">Celular</label>
-					<div class="col-lg-3">
-                    	<input name="Celular" type="text" class="form-control" id="Celular" maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['CelularContacto'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Celular']);}?>">
-               	  	</div>
-				</div>
-				<div class="form-group">
-					<label class="col-lg-1 control-label">Correo</label>
-					<div class="col-lg-3">
-                    	<input name="Correo" type="text" class="form-control" id="Correo" maxlength="100" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['CorreoContacto'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Correo']);}?>">
-               	  	</div>
-				</div>
+				<!-- IBOX, Fin -->
 				<div class="form-group">
 					<label class="col-xs-12"><h3 class="bg-muted p-xs b-r-sm"><i class="fa fa-info-circle"></i> Datos del vehículo</h3></label>
 				</div>
@@ -833,7 +842,7 @@ function Eliminar(){
 						<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Marca" class="form-control select2" required="required" id="CDU_Marca">
 							<option value="" disabled selected>Seleccione...</option>
 							<?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) {?>
-							<option value="<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; //['IdMarcaVehiculo'];                                          ?>"
+							<option value="<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; //['IdMarcaVehiculo'];                                            ?>"
 							<?php if ((isset($row['CDU_Marca'])) && (strcmp($row_MarcaVehiculo['DeMarcaVehiculo'], $row['CDU_Marca']) == 0)) {echo "selected=\"selected\"";}?>>
 								<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
 							</option>
@@ -845,9 +854,9 @@ function Eliminar(){
 						<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Linea" class="form-control select2" required="required" id="CDU_Linea">
 								<option value="" disabled selected>Seleccione...</option>
 							<?php while ($row_LineaVehiculo = sqlsrv_fetch_array($SQL_LineaVehiculo)) {?>
-								<option value="<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; //['IdLineaModeloVehiculo'];                                         ?>"
+								<option value="<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; //['IdLineaModeloVehiculo'];                                           ?>"
 								<?php if ((isset($row['CDU_Linea'])) && (strcmp($row_LineaVehiculo['DeLineaModeloVehiculo'], $row['CDU_Linea']) == 0)) {echo "selected=\"selected\"";}?>>
-									<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; //. " - " . $row_LineaVehiculo['MarcaVehiculo'];                                                 ?>
+									<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; //. " - " . $row_LineaVehiculo['MarcaVehiculo'];                                                   ?>
 								</option>
 							<?php }?>
 						</select>
@@ -857,7 +866,7 @@ function Eliminar(){
 						<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Ano" class="form-control select2" id="CDU_Ano">
 								<option value="" disabled selected>Seleccione...</option>
 							<?php while ($row_ModeloVehiculo = sqlsrv_fetch_array($SQL_ModeloVehiculo)) {?>
-								<option value="<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; //['CodigoModeloVehiculo'];                                                        ?>"
+								<option value="<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; //['CodigoModeloVehiculo'];                                                          ?>"
 								<?php if (isset($row['CDU_Ano']) && ((strcmp($row_ModeloVehiculo['CodigoModeloVehiculo'], $row['CDU_Ano']) == 0) || (strcmp($row_ModeloVehiculo['AñoModeloVehiculo'], $row['CDU_Ano']) == 0))) {echo "selected=\"selected\"";}?>>
 									<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; ?>
 								</option>
