@@ -781,13 +781,15 @@ function Eliminar(){
 					</div>
 					<div class="ibox-content">
 						<div class="form-group">
-							<label class="col-lg-1 control-label"><i onClick="ConsultarDatosCliente();" title="Consultar cliente" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Cliente <span class="text-danger">*</span></label>
-							<div class="col-lg-3">
+							<div class="col-lg-4">
+								<label class="control-label"><i onClick="ConsultarDatosCliente();" title="Consultar cliente" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Cliente <span class="text-danger">*</span></label>
+
 								<input name="Cliente" type="hidden" id="Cliente" value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['ID_CodigoCliente'];} elseif ($dt_LS == 1) {echo $row_Cliente['CodigoCliente'];}?>">
 								<input name="NombreCliente" type="text" required="required" class="form-control" id="NombreCliente" placeholder="Digite para buscar..." <?php if ((($type_frm == 1) && ($row['Cod_Estado'] == '-1')) || ($dt_LS == 1)) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['NombreCliente'];} elseif ($dt_LS == 1) {echo $row_Cliente['NombreCliente'];}?>">
 							</div>
-							<label class="col-lg-1 control-label">Contacto</label>
-							<div class="col-lg-3">
+							<div class="col-lg-4">
+								<label class="control-label">Contacto</label>
+
 								<select name="ContactoCliente" class="form-control" id="ContactoCliente" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
 								<?php if ((($type_frm == 0) || ($sw_error == 1)) && ($dt_LS != 1)) {?><option value="">Seleccione...</option><?php }?>
 								<?php if (($type_frm == 1) || ($sw_error == 1) || ($dt_LS == 1)) {while ($row_ContactoCliente = sqlsrv_fetch_array($SQL_ContactoCliente)) {?>
@@ -795,8 +797,9 @@ function Eliminar(){
 								<?php }}?>
 								</select>
 							</div>
-							<label class="col-lg-1 control-label">Sucursal</label>
-							<div class="col-lg-3">
+							<div class="col-lg-4">
+								<label class="control-label">Sucursal</label>
+
 								<select name="SucursalCliente" class="form-control select2" id="SucursalCliente" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
 								<?php if ((($type_frm == 0) || ($sw_error == 1)) && ($dt_LS != 1)) {?><option value="">Seleccione...</option><?php }?>
 								<?php if (($type_frm == 1) || ($sw_error == 1) || ($dt_LS == 1)) {while ($row_SucursalCliente = sqlsrv_fetch_array($SQL_SucursalCliente)) {?>
@@ -806,30 +809,36 @@ function Eliminar(){
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-lg-1 control-label">Teléfono</label>
-							<div class="col-lg-3">
+							<div class="col-lg-4">
+								<label class="control-label">Teléfono</label>
+
 								<input name="Telefono" type="text" class="form-control" id="Telefono" maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['TelefonoContacto'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Telefono']);}?>">
 							</div>
-							<label class="col-lg-1 control-label">Celular</label>
-							<div class="col-lg-3">
+							<div class="col-lg-4">
+								<label class="control-label">Celular</label>
+
 								<input name="Celular" type="text" class="form-control" id="Celular" maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['CelularContacto'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Celular']);}?>">
 							</div>
-							<label class="col-lg-1 control-label">Correo</label>
-							<div class="col-lg-3">
+							<div class="col-lg-4">
+								<label class="control-label">Correo</label>
+
 								<input name="Correo" type="text" class="form-control" id="Correo" maxlength="100" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['CorreoContacto'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Correo']);}?>">
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-lg-1 control-label">Dirección</label>
-							<div class="col-lg-3">
+							<div class="col-lg-4">
+								<label class="control-label">Dirección</label>
+
 								<input name="Direccion" type="text" required="required" class="form-control" id="Direccion" maxlength="100" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['Direccion'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Direccion']);}?>">
 							</div>
-							<label class="col-lg-1 control-label">Barrio</label>
-							<div class="col-lg-3">
+							<div class="col-lg-4">
+								<label class="control-label">Barrio</label>
+
 								<input name="Barrio" type="text" class="form-control" id="Barrio" maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['Barrio'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Barrio']);}?>">
 							</div>
-							<label class="col-lg-1 control-label">Ciudad</label>
-							<div class="col-lg-3">
+							<div class="col-lg-4">
+								<label class="control-label">Ciudad</label>
+
 								<input name="Ciudad" type="text" class="form-control" id="Ciudad" maxlength="100" value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['Ciudad'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Ciudad']);}?>" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?>>
 							</div>
 						</div>
@@ -839,8 +848,9 @@ function Eliminar(){
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-lg-1 control-label"><i onClick="ConsultarServicio();" title="Consultar llamada de servicio" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Orden servicio</label>
-							<div class="col-lg-4">
+						<div class="col-lg-4">
+						<label class="control-label"><i onClick="ConsultarServicio();" title="Consultar llamada de servicio" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Orden servicio</label>
+
 								<select name="OrdenServicio" class="form-control select2" id="OrdenServicio" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 										<option value="">Seleccione...</option>
 									<?php if (($type_llmd == 1) || ($sw_error == 1)) {while ($row_NumeroSerie = sqlsrv_fetch_array($SQL_NumeroSerie)) {?>
@@ -855,7 +865,7 @@ function Eliminar(){
 				<!-- IBOX, Inicio -->
 				<div class="ibox">
 					<div class="ibox-title bg-success">
-						<h5 class="collapse-link"><i class="fa fa-info-circle"></i> Datos del vehículo</h5>
+						<h5 class="collapse-link"><i class="fa fa-car"></i> Datos del vehículo</h5>
 						 <a class="collapse-link pull-right" style="color: white;">
 							<i class="fa fa-chevron-up"></i>
 						</a>
@@ -883,7 +893,7 @@ function Eliminar(){
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 									<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) {?>
-									<option value="<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; //['IdMarcaVehiculo'];                                                   ?>"
+									<option value="<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; //['IdMarcaVehiculo'];                                                         ?>"
 									<?php if ((isset($row['CDU_Marca'])) && (strcmp($row_MarcaVehiculo['DeMarcaVehiculo'], $row['CDU_Marca']) == 0)) {echo "selected=\"selected\"";}?>>
 										<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
 									</option>
@@ -898,7 +908,7 @@ function Eliminar(){
 								  <?php while ($row_LineaVehiculo = sqlsrv_fetch_array($SQL_LineaVehiculo)) {?>
 										<option value="<?php echo $row_LineaVehiculo['IdLineaModeloVehiculo']; ?>"
 										<?php if ((isset($row['CDU_Linea'])) && (strcmp($row_LineaVehiculo['IdLineaModeloVehiculo'], $row['CDU_Linea']) == 0)) {echo "selected=\"selected\"";}?>>
-											<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; //. " - " . $row_LineaVehiculo['MarcaVehiculo'];                                                          ?>
+											<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; //. " - " . $row_LineaVehiculo['MarcaVehiculo'];                                                                ?>
 										</option>
 								  <?php }?>
 								</select>
@@ -930,7 +940,7 @@ function Eliminar(){
 					</div>
 					<div class="ibox-content">
 						<div class="form-group">
-							<div class="col-lg-4">	
+							<div class="col-lg-4">
 								<label class="control-label">Servicio de movilidad ofrecido</label>
 								<select name="Estado" class="form-control" id="Estado" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
 										<option value="si">SI</option>
@@ -984,12 +994,12 @@ function Eliminar(){
 							</div>
 						</div>
 						<div class="form-group">
-							<div class="col-lg-4">	
+							<div class="col-lg-4">
 								<label class="control-label">KM actual</label>
 								<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="CDU_No_Motor" type="text" class="form-control" id="CDU_No_Motor" maxlength="100"
 								value="<?php if (isset($row['CDU_No_Motor'])) {echo $row['CDU_No_Motor'];}?>">
 							</div>
-							<div class="col-lg-4">	
+							<div class="col-lg-4">
 								<label class="control-label">No. Campaña</label>
 								<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="CDU_No_Motor" type="text" class="form-control" id="CDU_No_Motor" maxlength="100"
 								value="<?php if (isset($row['CDU_No_Motor'])) {echo $row['CDU_No_Motor'];}?>">
@@ -1002,48 +1012,80 @@ function Eliminar(){
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-lg-1 control-label">Fecha y hora de creación <span class="text-danger">*</span></label>
-							<div class="col-lg-2 input-group date">
-								<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaCreacion" type="text" class="form-control" id="FechaCreacion" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('Y-m-d');} else {echo date('Y-m-d');}?>" readonly='readonly' placeholder="YYYY-MM-DD" required>
+							<!-- Inicio, Componente Fecha y Hora -->
+							<div class="col-lg-6">
+								<div class="row">
+									<label class="col-lg-6 control-label" style="text-align: left !important;">Fecha y hora de creación <span class="text-danger">*</span></label>
+								</div>
+								<div class="row">
+									<div class="col-lg-6 input-group date">
+										<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaCreacion" type="text" class="form-control" id="FechaCreacion" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('Y-m-d');} else {echo date('Y-m-d');}?>" readonly='readonly' placeholder="YYYY-MM-DD" required>
+									</div>
+									<div class="col-lg-6 input-group clockpicker2" data-autoclose="true">
+										<input name="HoraCreacion" id="HoraCreacion" type="text" class="form-control" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('H:i');} else {echo date('H:i');}?>" readonly='readonly' placeholder="hh:mm" required>
+										<span class="input-group-addon">
+											<span class="fa fa-clock-o"></span>
+										</span>
+									</div>
+								</div>
 							</div>
-							<div class="col-lg-2 input-group clockpicker2" data-autoclose="true">
-								<input name="HoraCreacion" id="HoraCreacion" type="text" class="form-control" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('H:i');} else {echo date('H:i');}?>" readonly='readonly' placeholder="hh:mm" required>
-								<span class="input-group-addon">
-									<span class="fa fa-clock-o"></span>
-								</span>
+							<!-- Fin, Componente Fecha y Hora -->
+							<!-- Inicio, Componente Fecha y Hora -->
+							<div class="col-lg-6">
+								<div class="row">
+									<label class="col-lg-6 control-label" style="text-align: left !important;">Fecha hora propietario autoriza campaña <span class="text-danger">*</span></label>
+								</div>
+								<div class="row">
+									<div class="col-lg-6 input-group date">
+										<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaCreacion" type="text" class="form-control" id="FechaCreacion" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('Y-m-d');} else {echo date('Y-m-d');}?>" placeholder="YYYY-MM-DD" required>
+									</div>
+									<div class="col-lg-6 input-group clockpicker2" data-autoclose="true">
+										<input name="HoraCreacion" id="HoraCreacion" type="text" class="form-control" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('H:i');} else {echo date('H:i');}?>" placeholder="hh:mm" required>
+										<span class="input-group-addon">
+											<span class="fa fa-clock-o"></span>
+										</span>
+									</div>
+								</div>
 							</div>
-							<label class="col-lg-1 control-label">Fecha hora propietario autoriza campaña <span class="text-danger">*</span></label>
-							<div class="col-lg-2 input-group date">
-								<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaCreacion" type="text" class="form-control" id="FechaCreacion" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('Y-m-d');} else {echo date('Y-m-d');}?>" placeholder="YYYY-MM-DD" required>
-							</div>
-							<div class="col-lg-2 input-group clockpicker2" data-autoclose="true">
-								<input name="HoraCreacion" id="HoraCreacion" type="text" class="form-control" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('H:i');} else {echo date('H:i');}?>" placeholder="hh:mm" required>
-								<span class="input-group-addon">
-									<span class="fa fa-clock-o"></span>
-								</span>
-							</div>
+							<!-- Fin, Componente Fecha y Hora -->
 						</div>
 						<div class="form-group">
-							<label class="col-lg-1 control-label">Fecha y hora de ingreso <span class="text-danger">*</span></label>
-							<div class="col-lg-2 input-group date">
-								<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaCreacion" type="text" class="form-control" id="FechaCreacion" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('Y-m-d');} else {echo date('Y-m-d');}?>" placeholder="YYYY-MM-DD" required>
+							<!-- Inicio, Componente Fecha y Hora -->
+							<div class="col-lg-6">
+								<div class="row">
+									<label class="col-lg-6 control-label" style="text-align: left !important;">Fecha y hora Aprox. Entrega <span class="text-danger">*</span></label>
+								</div>
+								<div class="row">
+									<div class="col-lg-6 input-group date">
+										<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaCreacion" type="text" class="form-control" id="FechaCreacion" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('Y-m-d');} else {echo date('Y-m-d');}?>" readonly='readonly' placeholder="YYYY-MM-DD" required>
+									</div>
+									<div class="col-lg-6 input-group clockpicker2" data-autoclose="true">
+										<input name="HoraCreacion" id="HoraCreacion" type="text" class="form-control" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('H:i');} else {echo date('H:i');}?>" readonly='readonly' placeholder="hh:mm" required>
+										<span class="input-group-addon">
+											<span class="fa fa-clock-o"></span>
+										</span>
+									</div>
+								</div>
 							</div>
-							<div class="col-lg-2 input-group clockpicker2" data-autoclose="true">
-								<input name="HoraCreacion" id="HoraCreacion" type="text" class="form-control" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('H:i');} else {echo date('H:i');}?>" placeholder="hh:mm" required>
-								<span class="input-group-addon">
-									<span class="fa fa-clock-o"></span>
-								</span>
+							<!-- Fin, Componente Fecha y Hora -->
+							<!-- Inicio, Componente Fecha y Hora -->
+							<div class="col-lg-6">
+								<div class="row">
+									<label class="col-lg-6 control-label" style="text-align: left !important;">Fecha y hora de ingreso <span class="text-danger">*</span></label>
+								</div>
+								<div class="row">
+									<div class="col-lg-6 input-group date">
+										<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaCreacion" type="text" class="form-control" id="FechaCreacion" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('Y-m-d');} else {echo date('Y-m-d');}?>" placeholder="YYYY-MM-DD" required>
+									</div>
+									<div class="col-lg-6 input-group clockpicker2" data-autoclose="true">
+										<input name="HoraCreacion" id="HoraCreacion" type="text" class="form-control" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('H:i');} else {echo date('H:i');}?>" placeholder="hh:mm" required>
+										<span class="input-group-addon">
+											<span class="fa fa-clock-o"></span>
+										</span>
+									</div>
+								</div>
 							</div>
-							<label class="col-lg-1 control-label">Fecha y hora Aprox. Entrega <span class="text-danger">*</span></label>
-							<div class="col-lg-2 input-group date">
-								<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaCreacion" type="text" class="form-control" id="FechaCreacion" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('Y-m-d');} else {echo date('Y-m-d');}?>" readonly='readonly' placeholder="YYYY-MM-DD" required>
-							</div>
-							<div class="col-lg-2 input-group clockpicker2" data-autoclose="true">
-								<input name="HoraCreacion" id="HoraCreacion" type="text" class="form-control" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('H:i');} else {echo date('H:i');}?>" readonly='readonly' placeholder="hh:mm" required>
-								<span class="input-group-addon">
-									<span class="fa fa-clock-o"></span>
-								</span>
-							</div>
+							<!-- Fin, Componente Fecha y Hora -->
 						</div>
 						<!-- Fin, crono-info -->
 					</div>
@@ -1052,15 +1094,20 @@ function Eliminar(){
 				<!-- IBOX, Inicio -->
 				<div class="ibox">
 					<div class="ibox-title bg-success">
-						<h5 class="collapse-link"><i class="fa fa-info-circle"></i> Datos piezas de vehículo</h5>
+						<h5 class="collapse-link"><i class="fa fa-list"></i> Datos piezas de vehículo</h5>
 						 <a class="collapse-link pull-right" style="color: white;">
 							<i class="fa fa-chevron-up"></i>
 						</a>
 					</div>
 					<div class="ibox-content">
 						<div class="form-group">
-							<label class="col-lg-1 control-label">Descripción de la pieza de vehículo (pieza)</label>
-							<div class="col-lg-4">
+							<div class="col-lg-4 border-bottom ">
+								<label class="control-label text-danger">Descripción de la pieza de vehículo (pieza)</label>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-lg-1 control-label">Disponibilidad</label>
+							<div class="col-lg-2">
 								<select name="Estado" class="form-control" id="Estado" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
 										<option value="si">SI</option>
 										<option value="no">NO</option>
@@ -1069,6 +1116,23 @@ function Eliminar(){
 								<?php //}?>
 								</select>
 							</div>
+								<label class="col-lg-1 control-label">Estado</label>
+							<div class="col-lg-2">
+								<select name="Estado" class="form-control" id="Estado" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
+										<option value="bueno">Bueno</option>
+										<option value="malo">Malo</option>
+								<?php //while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) {?>
+										<!--option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['Cod_Estado'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['Cod_Estado']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option -->
+								<?php //}?>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-lg-4 border-bottom ">
+								<label class="control-label text-danger">Descripción de la pieza de vehículo (pieza)</label>
+							</div>
+						</div>
+						<div class="form-group">
 							<label class="col-lg-1 control-label">Disponibilidad</label>
 							<div class="col-lg-2">
 								<select name="Estado" class="form-control" id="Estado" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
@@ -1096,7 +1160,7 @@ function Eliminar(){
 				<!-- IBOX, Inicio -->
 				<div class="ibox">
 					<div class="ibox-title bg-success">
-						<h5 class="collapse-link"><i class="fa fa-list"></i> Registros fotográficos</h5>
+						<h5 class="collapse-link"><i class="fa fa-image"></i> Registros fotográficos</h5>
 						 <a class="collapse-link pull-right" style="color: white;">
 							<i class="fa fa-chevron-up"></i>
 						</a>
@@ -1206,6 +1270,77 @@ function Eliminar(){
 					</div>
 				</div>
 				<!-- IBOX, Fin -->
+				<!-- IBOX, Inicio -->
+				<div class="ibox">
+					<div class="ibox-title bg-success">
+						<h5 class="collapse-link"><i class="fa fa-pencil-square-o"></i> Firmas</h5>
+						 <a class="collapse-link pull-right" style="color: white;">
+							<i class="fa fa-chevron-up"></i>
+						</a>
+					</div>
+					<div class="ibox-content">
+						<div class="form-group">
+							<label class="col-lg-1 control-label">Responsable del cliente</label>
+							<div class="col-lg-4">
+								<input autocomplete="off" name="ResponsableCliente" type="text" required="required" class="form-control" id="ResponsableCliente" maxlength="150" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['ResponsableCliente'];}?>">
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-lg-1 control-label">Firma del cliente</label>
+							<?php if ($type_frm == 1 && $row['FirmaCliente'] != "") {?>
+							<div class="col-lg-4 lightBoxGallery">
+								<a href="<?php echo $dir_new . $row['FirmaCliente']; ?>" title="Firma cliente" data-gallery=""><img src="<?php echo $dir_new . $row['FirmaCliente']; ?>" width="500" height="150"></a>
+								<div id="blueimp-gallery" class="blueimp-gallery">
+									<div class="slides"></div>
+									<h3 class="title"></h3>
+									<a class="prev">‹</a>
+									<a class="next">›</a>
+									<a class="close">×</a>
+									<a class="play-pause"></a>
+									<ol class="indicator"></ol>
+								</div>
+							</div>
+							<?php } else {LimpiarDirTempFirma();?>
+							<div class="col-lg-5">
+								<button class="btn btn-primary" type="button" id="FirmaCliente" onClick="AbrirFirma('SigCliente');"><i class="fa fa-pencil-square-o"></i> Realizar firma</button>
+								<input type="hidden" id="SigCliente" name="SigCliente" value="" />
+								<div id="msgInfoSigCliente" style="display: none;" class="alert alert-info"><i class="fa fa-info-circle"></i> El documento ya ha sido firmado.</div>
+							</div>
+							<div class="col-lg-5">
+								<img id="ImgSigCliente" style="display: none; max-width: 100%; height: auto;" src="" alt="" />
+							</div>
+							<?php }?>
+						</div>
+						<div class="form-group">
+							<label class="col-lg-1 control-label">Firma del técnico</label>
+							<?php if ($type_frm == 1 && $row['FirmaTecnico'] != "") {?>
+							<div class="col-lg-4 lightBoxGallery">
+								<a href="<?php echo $dir_new . $row['FirmaTecnico']; ?>" title="Firma tecnico" data-gallery=""><img src="<?php echo $dir_new . $row['FirmaTecnico']; ?>" width="500" height="150"></a>
+								<div id="blueimp-gallery" class="blueimp-gallery">
+									<div class="slides"></div>
+									<h3 class="title"></h3>
+									<a class="prev">‹</a>
+									<a class="next">›</a>
+									<a class="close">×</a>
+									<a class="play-pause"></a>
+									<ol class="indicator"></ol>
+								</div>
+							</div>
+							<?php } else {?>
+							<div class="col-lg-5">
+								<button class="btn btn-primary" type="button" id="FirmaTecnico" onClick="AbrirFirma('SigTecnico');"><i class="fa fa-pencil-square-o"></i> Realizar firma</button>
+								<input type="hidden" id="SigTecnico" name="SigTecnico" value="" />
+								<div id="msgInfoSigTecnico" style="display: none;" class="alert alert-info"><i class="fa fa-info-circle"></i> El documento ya ha sido firmado.</div>
+							</div>
+							<div class="col-lg-5">
+								<img id="ImgSigTecnico" style="display: none; max-width: 100%; height: auto;" src="" alt="" />
+							</div>
+							<?php }?>
+						</div>
+					</div>
+				</div>
+				<!-- IBOX, Fin -->
+				
 
 				<!-- Esto es otra cosa -->
 				<input type="hidden" id="P" name="P" value="<?php echo base64_encode('MM_frmHallazgos') ?>" />
@@ -1222,7 +1357,7 @@ function Eliminar(){
 			<!-- Stiven Muñoz Murillo, 10/01/2022 -->
 			<div class="ibox">
 					<div class="ibox-title bg-success">
-						<h5 class="collapse-link"><i class="fa fa-paperclip"></i> Anexos</h5>
+						<h5 class="collapse-link"><i class="fa fa-paperclip"></i> Fotos adicionales</h5>
 						<a class="collapse-link pull-right" style="color: white;">
 							<i class="fa fa-chevron-up"></i>
 						</a>
@@ -1250,7 +1385,7 @@ function Eliminar(){
 										<?php }?>
 									</div>
 								</div>
-						<?php } else {echo "<p>Sin anexos.</p>";}?>
+						<?php } else {echo "<!--p>Sin anexos.</p-->";}?>
 
 						<div class="row">
 							<form action="upload.php" class="dropzone" id="dropzoneForm" name="dropzoneForm">
