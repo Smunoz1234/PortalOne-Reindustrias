@@ -27,6 +27,16 @@ if (isset($_REQUEST['tl']) && ($_REQUEST['tl'] != "")) { //0 Si se está creando
     $edit = 0;
 }
 
+// Stiven Muñoz Murillo
+if (isset($_GET['ext']) && ($_GET['ext'] == 1)) {
+    $sw_ext = 1; //Se está abriendo como pop-up
+} elseif (isset($_POST['ext']) && ($_POST['ext'] == 1)) {
+    $sw_ext = 1; //Se está abriendo como pop-up
+} else {
+    $sw_ext = 0;
+}
+// 12/01/2022
+
 if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar lista de materiales
 
     try {
@@ -50,7 +60,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar lista de materiales
             "'" . $_POST['CodigoPlantilla'] . "'",
             "'" . $_SESSION['CodUser'] . "'",
             "'" . $_SESSION['CodUser'] . "'",
-			"'" . $_POST['CDU_IdMarca'] . "'",
+            "'" . $_POST['CDU_IdMarca'] . "'",
             "'" . $_POST['CDU_IdLinea'] . "'",
             $Type,
         );
@@ -379,14 +389,14 @@ function ConsultarPlantilla(){
 <!-- InstanceEndEditable -->
 </head>
 
-<body>
-
+<!-- Stiven Muñoz Murillo -->
+<body <?php if ($sw_ext == 1) {echo "class='mini-navbar'";}?>>
 <div id="wrapper">
-
-    <?php include_once "includes/menu.php";?>
-
+	<?php if ($sw_ext != 1) {include "includes/menu.php";}?>
     <div id="page-wrapper" class="gray-bg">
-        <?php include_once "includes/menu_superior.php";?>
+		<?php if ($sw_ext != 1) {include "includes/menu_superior.php";}?>
+<!-- 12/01/2022 -->
+
         <!-- InstanceBeginEditable name="Contenido" -->
         <div class="row wrapper border-bottom white-bg page-heading">
                 <div class="col-sm-8">

@@ -612,6 +612,16 @@ if (isset($sw_error) && ($sw_error == 1)) {
 					$('#Area1').html(response).fadeIn();
 				}
 			});
+			// Stiven Muñoz Murillo, 10/01/2022
+			$.ajax({
+				type: "POST",
+				url: "ajx_cbo_select.php?type=6&id="+Cliente,
+				success: function(response){
+					$('#OrdenServicio').html(response).fadeIn();
+					$('#OrdenServicio').val(null).trigger('change');
+					$('.ibox-content').toggleClass('sk-loading',false);
+				}
+			});
 			$('.ibox-content').toggleClass('sk-loading',false);
 		});
 		$("#SucursalCliente").change(function(){
@@ -624,23 +634,13 @@ if (isset($sw_error) && ($sw_error == 1)) {
 				dataType:'json',
 				success: function(data){
 					document.getElementById('Direccion').value=data.Direccion;
-					// document.getElementById('Barrio').value=data.Barrio;
-					// document.getElementById('Ciudad').value=data.Ciudad;
+					document.getElementById('Barrio').value=data.Barrio;
+					document.getElementById('Ciudad').value=data.Ciudad;
 					// document.getElementById('ContactoSucursal').value=data.NombreContacto;
 					document.getElementById('Telefono').value=data.TelefonoContacto;
 					document.getElementById('Correo').value=data.CorreoContacto;
 				}
 			});
-			$.ajax({
-				type: "POST",
-				url: "ajx_cbo_select.php?type=4&id="+Cliente+"&suc="+Sucursal,
-				success: function(response){
-					$('#OrdenServicio').html(response).fadeIn();
-					$('#OrdenServicio').val(null).trigger('change');
-					$('.ibox-content').toggleClass('sk-loading',false);
-				}
-			});
-			$('.ibox-content').toggleClass('sk-loading',false);
 		});
 		$("#ContactoCliente").change(function(){
 			$('.ibox-content').toggleClass('sk-loading',true);
@@ -678,6 +678,16 @@ function ConsultarDatosCliente(){
 	if(Cliente.value!=""){
 		self.name='opener';
 		remote=open('socios_negocios.php?id='+Base64.encode(Cliente.value)+'&ext=1&tl=1','remote','location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
+		remote.focus();
+	}
+}
+
+// Stiven Muñoz Murillo, 12/01/2022
+function ConsultarServicio(){
+	var llamada=document.getElementById('OrdenServicio');
+	if(llamada.value!=""){
+		self.name='opener';
+		remote=open('llamada_servicio.php?id='+Base64.encode(llamada.value)+'&ext=1&tl=1','remote','location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
 		remote.focus();
 	}
 }
@@ -796,10 +806,6 @@ function Eliminar(){
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-lg-1 control-label">Dirección</label>
-							<div class="col-lg-3">
-								<input name="Direccion" type="text" required="required" class="form-control" id="Direccion" maxlength="100" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['Direccion'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Direccion']);}?>">
-							</div>
 							<label class="col-lg-1 control-label">Teléfono</label>
 							<div class="col-lg-3">
 								<input name="Telefono" type="text" class="form-control" id="Telefono" maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['TelefonoContacto'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Telefono']);}?>">
@@ -808,11 +814,39 @@ function Eliminar(){
 							<div class="col-lg-3">
 								<input name="Celular" type="text" class="form-control" id="Celular" maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['CelularContacto'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Celular']);}?>">
 							</div>
-						</div>
-						<div class="form-group">
 							<label class="col-lg-1 control-label">Correo</label>
 							<div class="col-lg-3">
 								<input name="Correo" type="text" class="form-control" id="Correo" maxlength="100" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['CorreoContacto'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Correo']);}?>">
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-lg-1 control-label">Dirección</label>
+							<div class="col-lg-3">
+								<input name="Direccion" type="text" required="required" class="form-control" id="Direccion" maxlength="100" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['Direccion'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Direccion']);}?>">
+							</div>
+							<label class="col-lg-1 control-label">Barrio</label>
+							<div class="col-lg-3">
+								<input name="Barrio" type="text" class="form-control" id="Barrio" maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['Barrio'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Barrio']);}?>">
+							</div>
+							<label class="col-lg-1 control-label">Ciudad</label>
+							<div class="col-lg-3">
+								<input name="Ciudad" type="text" class="form-control" id="Ciudad" maxlength="100" value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['Ciudad'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Ciudad']);}?>" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?>>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-lg-8 border-bottom">
+								<label class="control-label text-danger">Información del servicio</label>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-lg-1 control-label"><i onClick="ConsultarServicio();" title="Consultar llamada de servicio" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Orden servicio</label>
+							<div class="col-lg-4">
+								<select name="OrdenServicio" class="form-control select2" id="OrdenServicio" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
+										<option value="">Seleccione...</option>
+									<?php if (($type_llmd == 1) || ($sw_error == 1)) {while ($row_NumeroSerie = sqlsrv_fetch_array($SQL_NumeroSerie)) {?>
+										<option value="<?php echo $row_NumeroSerie['SerialInterno']; ?>" <?php if ((isset($row_NumeroSerie['SerialInterno'])) && (strcmp($row_NumeroSerie['SerialInterno'], $row['IdNumeroSerie']) == 0)) {echo "selected=\"selected\"";}?>><?php echo "SN Fabricante: " . $row_NumeroSerie['SerialFabricante'] . " - Núm. Serie: " . $row_NumeroSerie['SerialInterno']; ?></option>
+									<?php }}?>
+								</select>
 							</div>
 						</div>
 					</div>
@@ -849,7 +883,7 @@ function Eliminar(){
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 									<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) {?>
-									<option value="<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; //['IdMarcaVehiculo'];                                          ?>"
+									<option value="<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; //['IdMarcaVehiculo'];                                                ?>"
 									<?php if ((isset($row['CDU_Marca'])) && (strcmp($row_MarcaVehiculo['DeMarcaVehiculo'], $row['CDU_Marca']) == 0)) {echo "selected=\"selected\"";}?>>
 										<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
 									</option>
@@ -864,7 +898,7 @@ function Eliminar(){
 								  <?php while ($row_LineaVehiculo = sqlsrv_fetch_array($SQL_LineaVehiculo)) {?>
 										<option value="<?php echo $row_LineaVehiculo['IdLineaModeloVehiculo']; ?>"
 										<?php if ((isset($row['CDU_Linea'])) && (strcmp($row_LineaVehiculo['IdLineaModeloVehiculo'], $row['CDU_Linea']) == 0)) {echo "selected=\"selected\"";}?>>
-											<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; //. " - " . $row_LineaVehiculo['MarcaVehiculo'];                                                 ?>
+											<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; //. " - " . $row_LineaVehiculo['MarcaVehiculo'];                                                       ?>
 										</option>
 								  <?php }?>
 								</select>

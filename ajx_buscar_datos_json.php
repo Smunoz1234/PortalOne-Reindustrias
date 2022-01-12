@@ -23,15 +23,6 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
             'CargoContacto' => $row['CargoContacto'],
             'CorreoContacto' => $row['CorreoContacto'],
         );
-//        $records=array(
-        //            'Direccion' => $row['Direccion'],
-        //            'Ciudad' => $row['Ciudad'],
-        //            'Barrio' => $row['Barrio']
-        //            //'NombreContacto' => $row['NombreContacto'],
-        //            //'TelefonoContacto' => $row['TelefonoContacto'],
-        //            //'CargoContacto' => $row['CargoContacto'],
-        //            //'CorreoContacto' => $row['CorreoContacto']
-        //        );
         echo json_encode($records);
     } elseif ($type == 2) { //Buscar datos internos cuando la actividad es de tipo Interna
         $Consulta = "Select Top 1 * From uvw_Sap_tbl_Clientes_Sucursales Where CodigoCliente='" . NIT_EMPRESA . "'";
