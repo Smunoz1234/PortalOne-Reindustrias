@@ -883,7 +883,7 @@ function Eliminar(){
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 									<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) {?>
-									<option value="<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; //['IdMarcaVehiculo'];                                                ?>"
+									<option value="<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; //['IdMarcaVehiculo'];                                                   ?>"
 									<?php if ((isset($row['CDU_Marca'])) && (strcmp($row_MarcaVehiculo['DeMarcaVehiculo'], $row['CDU_Marca']) == 0)) {echo "selected=\"selected\"";}?>>
 										<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
 									</option>
@@ -898,7 +898,7 @@ function Eliminar(){
 								  <?php while ($row_LineaVehiculo = sqlsrv_fetch_array($SQL_LineaVehiculo)) {?>
 										<option value="<?php echo $row_LineaVehiculo['IdLineaModeloVehiculo']; ?>"
 										<?php if ((isset($row['CDU_Linea'])) && (strcmp($row_LineaVehiculo['IdLineaModeloVehiculo'], $row['CDU_Linea']) == 0)) {echo "selected=\"selected\"";}?>>
-											<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; //. " - " . $row_LineaVehiculo['MarcaVehiculo'];                                                       ?>
+											<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; //. " - " . $row_LineaVehiculo['MarcaVehiculo'];                                                          ?>
 										</option>
 								  <?php }?>
 								</select>
@@ -930,73 +930,111 @@ function Eliminar(){
 					</div>
 					<div class="ibox-content">
 						<div class="form-group">
-							<label class="col-lg-1 control-label">Fecha y hora de ingreso</label>
-							<div class="col-lg-2 input-group date">
-								<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaCreacion" type="text" class="form-control" id="FechaCreacion" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('Y-m-d');} else {echo date('Y-m-d');}?>" readonly='readonly' placeholder="YYYY-MM-DD" required>
+							<div class="col-lg-4">	
+								<label class="control-label">Servicio de movilidad ofrecido</label>
+								<select name="Estado" class="form-control" id="Estado" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
+										<option value="si">SI</option>
+										<option value="no">NO</option>
+								<?php //while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) {?>
+										<!--option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['Cod_Estado'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['Cod_Estado']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option -->
+								<?php //}?>
+								</select>
 							</div>
-							<div class="col-lg-2 input-group clockpicker2" data-autoclose="true">
-								<input name="HoraCreacion" id="HoraCreacion" type="text" class="form-control" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('H:i');} else {echo date('H:i');}?>" readonly='readonly' placeholder="hh:mm" required>
-								<span class="input-group-addon">
-									<span class="fa fa-clock-o"></span>
-								</span>
+							<div class="col-lg-4">
+								<label class="control-label">Se hizo prueba de ruta</label>
+								<select name="Estado" class="form-control" id="Estado" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
+										<option value="si">SI</option>
+										<option value="no">NO</option>
+								<?php //while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) {?>
+										<!--option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['Cod_Estado'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['Cod_Estado']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option -->
+								<?php //}?>
+								</select>
 							</div>
-							<label class="col-lg-1 control-label">Fecha y hora Aprox. Entrega</label>
-							<div class="col-lg-2 input-group date">
-								<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaCreacion" type="text" class="form-control" id="FechaCreacion" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('Y-m-d');} else {echo date('Y-m-d');}?>" readonly='readonly' placeholder="YYYY-MM-DD" required>
-							</div>
-							<div class="col-lg-2 input-group clockpicker2" data-autoclose="true">
-								<input name="HoraCreacion" id="HoraCreacion" type="text" class="form-control" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('H:i');} else {echo date('H:i');}?>" readonly='readonly' placeholder="hh:mm" required>
-								<span class="input-group-addon">
-									<span class="fa fa-clock-o"></span>
-								</span>
+							<div class="col-lg-4">
+								<label class="control-label">Campaña autorizada por cliente</label>
+								<select name="Estado" class="form-control" id="Estado" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
+										<option value="si">SI</option>
+										<option value="no">NO</option>
+								<?php //while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) {?>
+										<!--option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['Cod_Estado'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['Cod_Estado']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option -->
+								<?php //}?>
+								</select>
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-lg-1 control-label">KM actual</label>
-							<div class="col-lg-3">
+							<div class="col-lg-4">
+								<label class="control-label">Nivel de combustible</label>
+								<select name="Estado" class="form-control" id="Estado" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
+										<option value="si">SI</option>
+										<option value="no">NO</option>
+								<?php //while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) {?>
+										<!--option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['Cod_Estado'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['Cod_Estado']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option -->
+								<?php //}?>
+								</select>
+							</div>
+							<div class="col-lg-4">
+								<label class="control-label">Medio por el cual se informo campaña</label>
+								<select name="Estado" class="form-control" id="Estado" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
+										<option value="si">SI</option>
+										<option value="no">NO</option>
+								<?php //while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) {?>
+										<!--option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['Cod_Estado'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['Cod_Estado']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option -->
+								<?php //}?>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-lg-4">	
+								<label class="control-label">KM actual</label>
 								<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="CDU_No_Motor" type="text" class="form-control" id="CDU_No_Motor" maxlength="100"
 								value="<?php if (isset($row['CDU_No_Motor'])) {echo $row['CDU_No_Motor'];}?>">
 							</div>
-							<label class="col-lg-1 control-label">Nivel de combustible</label>
-							<div class="col-lg-2">
-								<select name="Estado" class="form-control" id="Estado" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
-										<option value="si">SI</option>
-										<option value="no">NO</option>
-								<?php //while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) {?>
-										<!--option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['Cod_Estado'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['Cod_Estado']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option -->
-								<?php //}?>
-								</select>
-							</div>
-							<label class="col-lg-1 control-label">Campaña autorizada por cliente</label>
-							<div class="col-lg-2">
-								<select name="Estado" class="form-control" id="Estado" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
-										<option value="si">SI</option>
-										<option value="no">NO</option>
-								<?php //while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) {?>
-										<!--option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['Cod_Estado'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['Cod_Estado']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option -->
-								<?php //}?>
-								</select>
-							</div>
-						</div>
-						<div class="form-group">
-							<label class="col-lg-1 control-label">No. Campaña</label>
-							<div class="col-lg-3">
+							<div class="col-lg-4">	
+								<label class="control-label">No. Campaña</label>
 								<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="CDU_No_Motor" type="text" class="form-control" id="CDU_No_Motor" maxlength="100"
 								value="<?php if (isset($row['CDU_No_Motor'])) {echo $row['CDU_No_Motor'];}?>">
 							</div>
-							<label class="col-lg-1 control-label">Medio por el cual se informo campaña</label>
-							<div class="col-lg-2">
-								<select name="Estado" class="form-control" id="Estado" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
-										<option value="si">SI</option>
-										<option value="no">NO</option>
-								<?php //while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) {?>
-										<!--option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['Cod_Estado'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['Cod_Estado']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option -->
-								<?php //}?>
-								</select>
+						</div>
+						<!-- Inicio, crono-info -->
+						<div class="form-group">
+							<div class="col-lg-4 border-bottom ">
+								<label class="control-label text-danger">Información cronológica de la recepción</label>
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-lg-1 control-label">Fecha hora propietario autoriza campaña</label>
+							<label class="col-lg-1 control-label">Fecha y hora de creación <span class="text-danger">*</span></label>
+							<div class="col-lg-2 input-group date">
+								<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaCreacion" type="text" class="form-control" id="FechaCreacion" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('Y-m-d');} else {echo date('Y-m-d');}?>" readonly='readonly' placeholder="YYYY-MM-DD" required>
+							</div>
+							<div class="col-lg-2 input-group clockpicker2" data-autoclose="true">
+								<input name="HoraCreacion" id="HoraCreacion" type="text" class="form-control" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('H:i');} else {echo date('H:i');}?>" readonly='readonly' placeholder="hh:mm" required>
+								<span class="input-group-addon">
+									<span class="fa fa-clock-o"></span>
+								</span>
+							</div>
+							<label class="col-lg-1 control-label">Fecha hora propietario autoriza campaña <span class="text-danger">*</span></label>
+							<div class="col-lg-2 input-group date">
+								<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaCreacion" type="text" class="form-control" id="FechaCreacion" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('Y-m-d');} else {echo date('Y-m-d');}?>" placeholder="YYYY-MM-DD" required>
+							</div>
+							<div class="col-lg-2 input-group clockpicker2" data-autoclose="true">
+								<input name="HoraCreacion" id="HoraCreacion" type="text" class="form-control" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('H:i');} else {echo date('H:i');}?>" placeholder="hh:mm" required>
+								<span class="input-group-addon">
+									<span class="fa fa-clock-o"></span>
+								</span>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-lg-1 control-label">Fecha y hora de ingreso <span class="text-danger">*</span></label>
+							<div class="col-lg-2 input-group date">
+								<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaCreacion" type="text" class="form-control" id="FechaCreacion" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('Y-m-d');} else {echo date('Y-m-d');}?>" placeholder="YYYY-MM-DD" required>
+							</div>
+							<div class="col-lg-2 input-group clockpicker2" data-autoclose="true">
+								<input name="HoraCreacion" id="HoraCreacion" type="text" class="form-control" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('H:i');} else {echo date('H:i');}?>" placeholder="hh:mm" required>
+								<span class="input-group-addon">
+									<span class="fa fa-clock-o"></span>
+								</span>
+							</div>
+							<label class="col-lg-1 control-label">Fecha y hora Aprox. Entrega <span class="text-danger">*</span></label>
 							<div class="col-lg-2 input-group date">
 								<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaCreacion" type="text" class="form-control" id="FechaCreacion" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('Y-m-d');} else {echo date('Y-m-d');}?>" readonly='readonly' placeholder="YYYY-MM-DD" required>
 							</div>
@@ -1007,28 +1045,7 @@ function Eliminar(){
 								</span>
 							</div>
 						</div>
-						<div class="form-group">
-							<label class="col-lg-1 control-label">Servicio de movilidad ofrecido</label>
-							<div class="col-lg-2">
-								<select name="Estado" class="form-control" id="Estado" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
-										<option value="si">SI</option>
-										<option value="no">NO</option>
-								<?php //while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) {?>
-										<!--option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['Cod_Estado'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['Cod_Estado']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option -->
-								<?php //}?>
-								</select>
-							</div>
-							<label class="col-lg-1 control-label">Se hizo prueba de ruta</label>
-							<div class="col-lg-2">
-								<select name="Estado" class="form-control" id="Estado" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
-										<option value="si">SI</option>
-										<option value="no">NO</option>
-								<?php //while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) {?>
-										<!--option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['Cod_Estado'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['Cod_Estado']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option -->
-								<?php //}?>
-								</select>
-							</div>
-						</div>
+						<!-- Fin, crono-info -->
 					</div>
 				</div>
 				<!-- IBOX, Fin -->
@@ -1043,7 +1060,7 @@ function Eliminar(){
 					<div class="ibox-content">
 						<div class="form-group">
 							<label class="col-lg-1 control-label">Descripción de la pieza de vehículo (pieza)</label>
-							<div class="col-lg-2">
+							<div class="col-lg-4">
 								<select name="Estado" class="form-control" id="Estado" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
 										<option value="si">SI</option>
 										<option value="no">NO</option>
