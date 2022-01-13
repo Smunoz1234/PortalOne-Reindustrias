@@ -893,7 +893,7 @@ function Eliminar(){
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 									<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) {?>
-									<option value="<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; //['IdMarcaVehiculo'];                                                                                                               ?>"
+									<option value="<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>"
 									<?php if ((isset($row['CDU_Marca'])) && (strcmp($row_MarcaVehiculo['DeMarcaVehiculo'], $row['CDU_Marca']) == 0)) {echo "selected=\"selected\"";}?>>
 										<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
 									</option>
@@ -908,7 +908,7 @@ function Eliminar(){
 								  <?php while ($row_LineaVehiculo = sqlsrv_fetch_array($SQL_LineaVehiculo)) {?>
 										<option value="<?php echo $row_LineaVehiculo['IdLineaModeloVehiculo']; ?>"
 										<?php if ((isset($row['CDU_Linea'])) && (strcmp($row_LineaVehiculo['IdLineaModeloVehiculo'], $row['CDU_Linea']) == 0)) {echo "selected=\"selected\"";}?>>
-											<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; //. " - " . $row_LineaVehiculo['MarcaVehiculo'];                                                                                                                      ?>
+											<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; ?>
 										</option>
 								  <?php }?>
 								</select>
@@ -1184,7 +1184,7 @@ function Eliminar(){
 								</div>
 								<div class="row">
 									<div id="msgImg1" style="display:none" class="alert alert-info">
-										<i class="fa fa-info-circle"></i> <span class="info">Imagen cargada éxitosamente.<span>
+										<i class="fa fa-info-circle"></i> <span>Imagen cargada éxitosamente.<span>
 									</div>
 								</div>
 							</div>
@@ -1211,7 +1211,7 @@ function Eliminar(){
 								</div>
 								<div class="row">
 									<div id="msgImg2" style="display:none" class="alert alert-info">
-										<i class="fa fa-info-circle"></i> <span class="info">Imagen cargada éxitosamente.<span>
+										<i class="fa fa-info-circle"></i> <span>Imagen cargada éxitosamente.<span>
 									</div>
 								</div>
 							</div>
@@ -1238,7 +1238,7 @@ function Eliminar(){
 								</div>
 								<div class="row">
 									<div id="msgImg3" style="display:none" class="alert alert-info">
-										<i class="fa fa-info-circle"></i> <span class="info">Imagen cargada éxitosamente.<span>
+										<i class="fa fa-info-circle"></i> <span>Imagen cargada éxitosamente.<span>
 									</div>
 								</div>
 							</div>
@@ -1265,7 +1265,7 @@ function Eliminar(){
 								</div>
 								<div class="row">
 									<div id="msgImg4" style="display:none" class="alert alert-info">
-										<i class="fa fa-info-circle"></i> <span class="info">Imagen cargada éxitosamente.<span>
+										<i class="fa fa-info-circle"></i> <span>Imagen cargada éxitosamente.<span>
 									</div>
 								</div>
 							</div>
@@ -1292,7 +1292,7 @@ function Eliminar(){
 								</div>
 								<div class="row">
 									<div id="msgImg5" style="display:none" class="alert alert-info">
-										<i class="fa fa-info-circle"></i> <span class="info">Imagen cargada éxitosamente.<span>
+										<i class="fa fa-info-circle"></i> <span>Imagen cargada éxitosamente.<span>
 									</div>
 								</div>
 							</div>
@@ -1509,6 +1509,8 @@ Dropzone.options.dropzoneForm = {
 <script>
 // Stiven Muñoz Murillo, 11/01/2022
 function uploadImage(refImage) {
+	$('.ibox-content').toggleClass('sk-loading', true); // Carga iniciada.
+
 	var formData = new FormData();
 	var file = $(`#${refImage}`)[0].files[0];
 
@@ -1521,8 +1523,8 @@ function uploadImage(refImage) {
 		if(fileSize.heavy) {
 			console.error("Heavy");
 
-			$(`#msg${refImage} span.info`).text(`La imagen no puede superar los 2MB, actualmente pesa ${fileSize.size}`);
-			$(`#msg${refImage}`).css("display", "inherit");
+			mostrarAlerta(`msg${refImage}`, 'danger', `La imagen no puede superar los 2MB, actualmente pesa ${fileSize.size}`);
+			$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
 		} else {
 			// Inicio, AJAX
 			$.ajax({
@@ -1536,24 +1538,24 @@ function uploadImage(refImage) {
 						console.log(success);
 						console.log(response);
 
-						$(`#msg${refImage} span.info`).text(`Imagen cargada éxitosamente con un peso de ${fileSize.size}`);
-						$(`#msg${refImage}`).css("display", "inherit");
 						$(`#view${refImage}`).attr("src", response);
+						mostrarAlerta(`msg${refImage}`, 'info', `Imagen cargada éxitosamente con un peso de ${fileSize.size}`);
 					})
 					.catch(error => {
 						console.error(error);
 						console.error(response);
 
-						$(`#msg${refImage} span.info`).text('Error al cargar la imagen.');
-						$(`#msg${refImage}`).css("display", "inherit");
+						mostrarAlerta(`msg${refImage}`, 'danger', 'Error al cargar la imagen.');
 					});
+
+					$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
 				},
 				error: function(response) {
 					console.error("server error")
 					console.error(response);
 
-					$(`#msg${refImage} span.info`).text('Error al cargar la imagen en el servidor.');
-					$(`#msg${refImage}`).css("display", "inherit");
+					mostrarAlerta(`msg${refImage}`, 'danger', 'Error al cargar la imagen en el servidor.');
+					$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
 				}
 			});
 			// Fin, AJAX
@@ -1563,11 +1565,19 @@ function uploadImage(refImage) {
 
 		$(`#msg${refImage}`).css("display", "none");
 		$(`#view${refImage}`).attr("src", "");
+
+		$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
 	}
 	return false;
 }
 
 // Stiven Muñoz Murillo, 13/01/2022
+function mostrarAlerta(id, tipo, mensaje) {
+	$(`#${id}`).attr("class", `alert alert-${tipo}`);
+	$(`#${id} span`).text(mensaje);
+	$(`#${id}`).css("display", "inherit");
+}
+
 function returnFileSize(number) {
 	if (number < 1024) {
         return { heavy: false, size: (number + 'bytes') };
