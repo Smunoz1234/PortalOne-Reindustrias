@@ -893,7 +893,7 @@ function Eliminar(){
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 									<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) {?>
-									<option value="<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; //['IdMarcaVehiculo'];                                                                        ?>"
+									<option value="<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; //['IdMarcaVehiculo'];                                                                                                               ?>"
 									<?php if ((isset($row['CDU_Marca'])) && (strcmp($row_MarcaVehiculo['DeMarcaVehiculo'], $row['CDU_Marca']) == 0)) {echo "selected=\"selected\"";}?>>
 										<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
 									</option>
@@ -908,7 +908,7 @@ function Eliminar(){
 								  <?php while ($row_LineaVehiculo = sqlsrv_fetch_array($SQL_LineaVehiculo)) {?>
 										<option value="<?php echo $row_LineaVehiculo['IdLineaModeloVehiculo']; ?>"
 										<?php if ((isset($row['CDU_Linea'])) && (strcmp($row_LineaVehiculo['IdLineaModeloVehiculo'], $row['CDU_Linea']) == 0)) {echo "selected=\"selected\"";}?>>
-											<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; //. " - " . $row_LineaVehiculo['MarcaVehiculo'];                                                                               ?>
+											<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; //. " - " . $row_LineaVehiculo['MarcaVehiculo'];                                                                                                                      ?>
 										</option>
 								  <?php }?>
 								</select>
@@ -1344,7 +1344,7 @@ function Eliminar(){
 							<div class="col-lg-5">
 								<button class="btn btn-primary" type="button" id="FirmaCliente" onClick="AbrirFirma('SigCliente');"><i class="fa fa-pencil-square-o"></i> Realizar firma</button>
 								<input type="hidden" id="SigCliente" name="SigCliente" value="" />
-								<div id="msgInfoSigCliente" style="display: none;" class="alert alert-info"><i class="fa fa-info-circle"></i> spanEl documento ya ha sido firmado.</div>
+								<div id="msgInfoSigCliente" style="display: none;" class="alert alert-info"><i class="fa fa-info-circle"></i> El documento ya ha sido firmado.</div>
 							</div>
 							<div class="col-lg-5">
 								<img id="ImgSigCliente" style="display: none; max-width: 100%; height: auto;" src="" alt="" />
@@ -1510,36 +1510,103 @@ Dropzone.options.dropzoneForm = {
 // Stiven Muñoz Murillo, 11/01/2022
 function uploadImage(refImage) {
 	var formData = new FormData();
-	var files = $(`#${refImage}`)[0].files[0];
+	var file = $(`#${refImage}`)[0].files[0];
 
-	if(typeof files !== 'undefined'){
-		// console.log(files);
-		formData.append('image',files);
+	console.log(file);
+	formData.append('image', file);
 
-		$.ajax({
-			url: 'upload_image.php',
-			type: 'post',
-			data: formData,
-			contentType: false,
-			processData: false,
-			success: function(response) {
-				if (response != 0) {
-					$(`#msg${refImage}`).css("display", "inherit");
-					$(`#view${refImage}`).attr("src", response);
-				} else {
-					swal({
-						title: '¡Ha ocurrido un error!',
-						text: 'Formato de imagen incorrecto.',
-						type: 'error'
+	if(typeof file !== 'undefined'){
+		fileSize = returnFileSize(file.size)
+
+		if(fileSize.heavy) {
+			console.error("Heavy");
+
+			$(`#msg${refImage} span.info`).text(`La imagen no puede superar los 2MB, actualmente pesa ${fileSize.size}`);
+			$(`#msg${refImage}`).css("display", "inherit");
+		} else {
+			// Inicio, AJAX
+			$.ajax({
+				url: 'upload_image.php',
+				type: 'post',
+				data: formData,
+				contentType: false,
+				processData: false,
+				success: function(response) {
+					testImage(response).then(success => {
+						console.log(success);
+						console.log(response);
+
+						$(`#msg${refImage} span.info`).text(`Imagen cargada éxitosamente con un peso de ${fileSize.size}`);
+						$(`#msg${refImage}`).css("display", "inherit");
+						$(`#view${refImage}`).attr("src", response);
+					})
+					.catch(error => {
+						console.error(error);
+						console.error(response);
+
+						$(`#msg${refImage} span.info`).text('Error al cargar la imagen.');
+						$(`#msg${refImage}`).css("display", "inherit");
 					});
+				},
+				error: function(response) {
+					console.error("server error")
+					console.error(response);
+
+					$(`#msg${refImage} span.info`).text('Error al cargar la imagen en el servidor.');
+					$(`#msg${refImage}`).css("display", "inherit");
 				}
-			}
-		});
+			});
+			// Fin, AJAX
+		}
 	} else {
+		console.log("Ninguna imagen seleccionada");
+
 		$(`#msg${refImage}`).css("display", "none");
 		$(`#view${refImage}`).attr("src", "");
 	}
 	return false;
+}
+
+// Stiven Muñoz Murillo, 13/01/2022
+function returnFileSize(number) {
+	if (number < 1024) {
+        return { heavy: false, size: (number + 'bytes') };
+    } else if (number >= 1024 && number < 1048576) {
+		number = (number / 1024).toFixed(1);
+        return { heavy: false, size: (number + 'KB') };
+    } else if (number >= 1048576) {
+		number = (number / 1048576).toFixed(1);
+		if(number > 2) {
+			return { heavy: true, size: (number + 'MB') };
+		} else {
+			return { heavy: false, size: (number + 'MB') };
+		}
+    } else {
+		return { heavy: true, size: Infinity }
+	}
+}
+
+// Reference, https://stackoverflow.com/questions/9714525/javascript-image-url-verify
+function testImage(url, timeoutT) {
+    return new Promise(function (resolve, reject) {
+        var timeout = timeoutT || 5000;
+        var timer, img = new Image();
+        img.onerror = img.onabort = function () {
+            clearTimeout(timer);
+            reject("error loading image");
+        };
+        img.onload = function () {
+            clearTimeout(timer);
+            resolve("image loaded successfully");
+        };
+        timer = setTimeout(function () {
+            // reset .src to invalid URL so it stops previous
+            // loading, but doesn't trigger new load
+            img.src = "//!!!!/test.jpg";
+            reject("timeout");
+        }, timeout);
+        img.src = url;
+    });
 }
 </script>
 
