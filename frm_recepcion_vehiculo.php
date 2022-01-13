@@ -893,7 +893,7 @@ function Eliminar(){
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 									<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) {?>
-									<option value="<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; //['IdMarcaVehiculo'];                                                         ?>"
+									<option value="<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; //['IdMarcaVehiculo'];                                                                        ?>"
 									<?php if ((isset($row['CDU_Marca'])) && (strcmp($row_MarcaVehiculo['DeMarcaVehiculo'], $row['CDU_Marca']) == 0)) {echo "selected=\"selected\"";}?>>
 										<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
 									</option>
@@ -908,7 +908,7 @@ function Eliminar(){
 								  <?php while ($row_LineaVehiculo = sqlsrv_fetch_array($SQL_LineaVehiculo)) {?>
 										<option value="<?php echo $row_LineaVehiculo['IdLineaModeloVehiculo']; ?>"
 										<?php if ((isset($row['CDU_Linea'])) && (strcmp($row_LineaVehiculo['IdLineaModeloVehiculo'], $row['CDU_Linea']) == 0)) {echo "selected=\"selected\"";}?>>
-											<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; //. " - " . $row_LineaVehiculo['MarcaVehiculo'];                                                                ?>
+											<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; //. " - " . $row_LineaVehiculo['MarcaVehiculo'];                                                                               ?>
 										</option>
 								  <?php }?>
 								</select>
@@ -1182,6 +1182,14 @@ function Eliminar(){
 									</span>
 									<a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Quitar</a>
 								</div>
+								<div class="row">
+									<div id="msgImg1" style="display:none" class="alert alert-info">
+										<i class="fa fa-info-circle"></i> <span class="info">Imagen cargada éxitosamente.<span>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-5">
+								<img id="viewImg1" style="max-width: 100%; height: 100px;" src="">
 							</div>
 						</div>
 						<!-- Inicio, Foto 1 -->
@@ -1201,6 +1209,14 @@ function Eliminar(){
 									</span>
 									<a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Quitar</a>
 								</div>
+								<div class="row">
+									<div id="msgImg2" style="display:none" class="alert alert-info">
+										<i class="fa fa-info-circle"></i> <span class="info">Imagen cargada éxitosamente.<span>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-5">
+								<img id="viewImg2" style="max-width: 100%; height: 100px;" src="">
 							</div>
 						</div>
 						<!-- Fin, Foto 2 -->
@@ -1220,6 +1236,14 @@ function Eliminar(){
 									</span>
 									<a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Quitar</a>
 								</div>
+								<div class="row">
+									<div id="msgImg3" style="display:none" class="alert alert-info">
+										<i class="fa fa-info-circle"></i> <span class="info">Imagen cargada éxitosamente.<span>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-5">
+								<img id="viewImg3" style="max-width: 100%; height: 100px;" src="">
 							</div>
 						</div>
 						<!-- Fin, Foto 3 -->
@@ -1239,6 +1263,14 @@ function Eliminar(){
 									</span>
 									<a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Quitar</a>
 								</div>
+								<div class="row">
+									<div id="msgImg4" style="display:none" class="alert alert-info">
+										<i class="fa fa-info-circle"></i> <span class="info">Imagen cargada éxitosamente.<span>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-5">
+								<img id="viewImg4" style="max-width: 100%; height: 100px;" src="">
 							</div>
 						</div>
 						<!-- Fin, Foto 4 -->
@@ -1258,6 +1290,14 @@ function Eliminar(){
 									</span>
 									<a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Quitar</a>
 								</div>
+								<div class="row">
+									<div id="msgImg5" style="display:none" class="alert alert-info">
+										<i class="fa fa-info-circle"></i> <span class="info">Imagen cargada éxitosamente.<span>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-5">
+								<img id="viewImg5" style="max-width: 100%; height: 100px;" src="">
 							</div>
 						</div>
 						<!-- Fin, Foto 5 -->
@@ -1304,7 +1344,7 @@ function Eliminar(){
 							<div class="col-lg-5">
 								<button class="btn btn-primary" type="button" id="FirmaCliente" onClick="AbrirFirma('SigCliente');"><i class="fa fa-pencil-square-o"></i> Realizar firma</button>
 								<input type="hidden" id="SigCliente" name="SigCliente" value="" />
-								<div id="msgInfoSigCliente" style="display: none;" class="alert alert-info"><i class="fa fa-info-circle"></i> El documento ya ha sido firmado.</div>
+								<div id="msgInfoSigCliente" style="display: none;" class="alert alert-info"><i class="fa fa-info-circle"></i> spanEl documento ya ha sido firmado.</div>
 							</div>
 							<div class="col-lg-5">
 								<img id="ImgSigCliente" style="display: none; max-width: 100%; height: auto;" src="" alt="" />
@@ -1340,7 +1380,7 @@ function Eliminar(){
 					</div>
 				</div>
 				<!-- IBOX, Fin -->
-				
+
 
 				<!-- Esto es otra cosa -->
 				<input type="hidden" id="P" name="P" value="<?php echo base64_encode('MM_frmHallazgos') ?>" />
@@ -1484,7 +1524,8 @@ function uploadImage(refImage) {
 			processData: false,
 			success: function(response) {
 				if (response != 0) {
-					console.log(response);
+					$(`#msg${refImage}`).css("display", "inherit");
+					$(`#view${refImage}`).attr("src", response);
 				} else {
 					swal({
 						title: '¡Ha ocurrido un error!',
@@ -1494,6 +1535,9 @@ function uploadImage(refImage) {
 				}
 			}
 		});
+	} else {
+		$(`#msg${refImage}`).css("display", "none");
+		$(`#view${refImage}`).attr("src", "");
 	}
 	return false;
 }

@@ -12,7 +12,9 @@ $imgEXT = pathinfo($path, PATHINFO_EXTENSION);
 $nombreArchivo = NormalizarNombreImagen($imgID, $imgFN, $imgEXT);
 sqlsrv_close($conexion);
 
-$route = $temp . "/" . $_SESSION['CodUser'] . "/images/";
+// Los archivos se borraban solos
+// $route = $temp . "/" . $_SESSION['CodUser'] . "/images/";
+$route = $temp . "/images/" . $_SESSION['CodUser'] . "/";
 
 if (!file_exists($route)) {
     mkdir($route, 0777);
