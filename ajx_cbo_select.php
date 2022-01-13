@@ -123,7 +123,7 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
         if (!isset($_GET['id']) || ($_GET['id'] == "")) {
             echo "<option value=''>(Ninguna)</option>";
         } else {
-            $SQL = Seleccionar('uvw_Sap_tbl_LlamadasServicios', 'ID_LlamadaServicio, DocNum, AsuntoLlamada, DeTipoLlamada', "ID_CodigoCliente='" . $_GET['id'] . "'", 'AsuntoLlamada'); //Colocar estado Abierto
+            $SQL = Seleccionar('uvw_Sap_tbl_LlamadasServicios', 'ID_LlamadaServicio, DocNum, AsuntoLlamada, DeTipoLlamada', "IdEstadoLlamada <> -1 AND ID_CodigoCliente='" . $_GET['id'] . "'", 'AsuntoLlamada'); //Colocar estado Abierto
             $Num = sqlsrv_num_rows($SQL);
             if ($Num) {
                 echo "<option value=''>(Ninguna)</option>";
