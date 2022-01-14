@@ -753,10 +753,10 @@ function Eliminar(){
                             <a href="index1.php">Inicio</a>
                         </li>
                         <li>
-                            <a href="#"><?php echo isset($row_Cat['NombreCategoriaPadre']) ? $row_Cat['NombreCategoriaPadre'] : ""; ?></a>
+                            <a href="#"><?php echo isset($row_Cat['NombreCategoriaPadre']) ? $row_Cat['NombreCategoriaPadre'] : " Formularios"; ?></a>
                         </li>
                         <li class="active">
-                            <a href="<?php echo isset($row_Cat['URL']) ? $row_Cat['URL'] : "" . "?id=" . $frm; ?>"><?php echo isset($row_Cat['NombreCategoria']) ? $row_Cat['NombreCategoria'] : ""; ?></a>
+                            <a href="<?php echo isset($row_Cat['URL']) ? $row_Cat['URL'] . "?id=" . $frm : "consultar_frm_recepcion_vehiculo.php" ?>"><?php echo isset($row_Cat['NombreCategoria']) ? $row_Cat['NombreCategoria'] : "Recepción de vehículos"; ?></a>
                         </li>
 						<li class="active">
                             <strong><?php echo $Title; ?></strong>

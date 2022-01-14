@@ -171,7 +171,7 @@ function SeleccionarTodos(){
                             <a href="#">Formularios</a>
                         </li>
                         <li class="active">
-                            <strong>Evaluación de técnicos</strong>
+                            <strong>Recepción de vehículos</strong>
                         </li>
                     </ol>
 				</div>
