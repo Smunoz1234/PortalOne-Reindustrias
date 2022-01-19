@@ -1351,7 +1351,7 @@ function Eliminar(){
 							</div>
 							<?php }?>
 						</div>
-						<div class="form-group">
+						<!-- div class="form-group">
 							<label class="col-lg-1 control-label">Firma del técnico</label>
 							<?php if ($type_frm == 1 && $row['FirmaTecnico'] != "") {?>
 							<div class="col-lg-4 lightBoxGallery">
@@ -1376,7 +1376,7 @@ function Eliminar(){
 								<img id="ImgSigTecnico" style="display: none; max-width: 100%; height: auto;" src="" alt="" />
 							</div>
 							<?php }?>
-						</div>
+						</div -->
 					</div>
 				</div>
 				<!-- IBOX, Fin -->

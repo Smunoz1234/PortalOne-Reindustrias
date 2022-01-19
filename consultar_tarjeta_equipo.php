@@ -167,7 +167,7 @@ if($sw==1){
                         </li>
                     </ol>
                 </div>
-			<?php if(PermitirFuncion(304)){?>
+			<?php if(PermitirFuncion(1602)){?>
                 <div class="col-sm-4">
                     <div class="title-action">
                         <a href="tarjeta_equipo.php" class="alkin btn btn-primary"><i class="fa fa-plus-circle"></i> Crear nueva tarjeta de equipo</a>

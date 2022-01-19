@@ -458,7 +458,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=176 and VerEnD
 						<div class="form-group">
 							<label class="col-lg-1 control-label">Tipo de equipo <span class="text-danger">*</span></label>
 							<div class="col-lg-3">
-								<select <?php if(!PermitirFuncion(1602)){echo "disabled='disabled'";} ?> name="TipoEquipo" class="form-control" id="TipoEquipo" required>
+								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="TipoEquipo" class="form-control" id="TipoEquipo" required>
 									<option value="">Seleccione...</option>
 									<option value="P" <?php if ((isset($row['TipoEquipo'])) && (strcmp("P", $row['TipoEquipo']) == 0)) {echo "selected=\"selected\"";}?>>Compras</option>
 									<option value="R" <?php if ((isset($row['TipoEquipo'])) && (strcmp("R", $row['TipoEquipo']) == 0)) {echo "selected=\"selected\"";}?>>Ventas</option>
@@ -466,25 +466,25 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=176 and VerEnD
 							</div>
 							<label class="col-lg-1 control-label">Serial Interno (Placa) <span class="text-danger">*</span></label>
 							<div class="col-lg-3">
-								<input <?php if(!PermitirFuncion(1602)){echo "readonly='readonly'";} ?> autocomplete="off" name="SerialInterno" type="text" required="required" class="form-control" id="SerialInterno" maxlength="150" value="<?php if (isset($row['SerialInterno'])) {echo $row['SerialInterno'];}?>">
+								<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="SerialInterno" type="text" required="required" class="form-control" id="SerialInterno" maxlength="150" value="<?php if (isset($row['SerialInterno'])) {echo $row['SerialInterno'];}?>">
 							</div>
 							<label class="col-lg-1 control-label">Serial Fabricante (VIN) <span class="text-danger">*</span></label>
 							<div class="col-lg-3">
-								<input <?php if(!PermitirFuncion(1602)){echo "readonly='readonly'";} ?> autocomplete="off" name="SerialFabricante" type="text" required="required" class="form-control" id="SerialFabricante" maxlength="150" value="<?php if (isset($row['SerialFabricante'])) {echo $row['SerialFabricante'];}?>">
+								<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="SerialFabricante" type="text" required="required" class="form-control" id="SerialFabricante" maxlength="150" value="<?php if (isset($row['SerialFabricante'])) {echo $row['SerialFabricante'];}?>">
 							</div>
 						</div>
 						<div class="form-group">
 							<label class="col-lg-1 control-label">Número de artículo <span class="text-danger">*</span></label>
 							<div class="col-lg-3">
-								<input <?php if(!PermitirFuncion(1602)){echo "readonly='readonly'";} ?> autocomplete="off" placeholder="Digite para buscar..." name="ItemCode" type="text" required="required" class="form-control" id="ItemCode" maxlength="150" value="<?php if (isset($row['ItemCode'])) {echo $row['ItemCode'];}?>">
+								<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" placeholder="Digite para buscar..." name="ItemCode" type="text" required="required" class="form-control" id="ItemCode" maxlength="150" value="<?php if (isset($row['ItemCode'])) {echo $row['ItemCode'];}?>">
 							</div>
 							<label class="col-lg-1 control-label">Descripción del artículo <span class="text-danger">*</span></label>
 							<div class="col-lg-3">
-								<input <?php if(!PermitirFuncion(1602)){echo "readonly='readonly'";} ?> autocomplete="off" name="ItemName" type="text" required="required" class="form-control" id="ItemName" maxlength="150" value="<?php if (isset($row['ItemName'])) {echo $row['ItemName'];}?>">
+								<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="ItemName" type="text" required="required" class="form-control" id="ItemName" maxlength="150" value="<?php if (isset($row['ItemName'])) {echo $row['ItemName'];}?>">
 							</div>
 							<label class="col-lg-1 control-label">Estado <span class="text-danger">*</span></label>
 							<div class="col-lg-3">
-								<select <?php if(!PermitirFuncion(1602)){echo "disabled='disabled'";} ?> name="CodEstado" class="form-control" id="CodEstado" required>
+								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CodEstado" class="form-control" id="CodEstado" required>
 									<option value="">Seleccione...</option>
 									<option value="A" <?php if ((isset($row['CodEstado'])) && (strcmp("A", $row['CodEstado']) == 0)) {echo "selected=\"selected\"";}?>>Activo</option>
 									<option value="R" <?php if ((isset($row['CodEstado'])) && (strcmp("R", $row['CodEstado']) == 0)) {echo "selected=\"selected\"";}?>>Devuelto</option>
@@ -497,16 +497,69 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=176 and VerEnD
 						<div class="form-group">
 							<label class="col-lg-1 control-label">Número de serie anterior</label>
 							<div class="col-lg-3">
-								<input <?php if(!PermitirFuncion(1602)){echo "readonly='readonly'";} ?> autocomplete="off" name="SerieAnterior" type="text" class="form-control" id="SerieAnterior" maxlength="150" value="<?php if (isset($row['SerieAnterior'])) {echo $row['SerieAnterior'];}?>">
+								<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="SerieAnterior" type="text" class="form-control" id="SerieAnterior" maxlength="150" value="<?php if (isset($row['SerieAnterior'])) {echo $row['SerieAnterior'];}?>">
 							</div>
 							<label class="col-lg-1 control-label">Número de serie nuevo</label>
 							<div class="col-lg-3">
-								<input <?php if(!PermitirFuncion(1602)){echo "readonly='readonly'";} ?> autocomplete="off" name="SerieNueva" type="text" class="form-control" id="SerieNueva" maxlength="150" value="<?php if (isset($row['SerieNueva'])) {echo $row['SerieNueva'];}?>">
+								<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="SerieNueva" type="text" class="form-control" id="SerieNueva" maxlength="150" value="<?php if (isset($row['SerieNueva'])) {echo $row['SerieNueva'];}?>">
 							</div>
 						</div>
 					</div>
 				</div>
+				<!-- INICIO, InfoSN -->
+				<div class="ibox">
+					<div class="ibox-title bg-success">
+						<h5 class="collapse-link"><i class="fa fa-group"></i> Información de socio de negocio</h5>
+						 <a class="collapse-link pull-right">
+							<i class="fa fa-chevron-up"></i>
+						</a>
+					</div>
+					<div class="ibox-content">
+						<div class="form-group">
+							<label class="col-lg-1 control-label"><i onClick="ConsultarDatosCliente();" title="Consultar cliente" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Socio de negocio <span class="text-danger">*</span></label>
+							<div class="col-lg-3">
+								<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> name="ClienteEquipo" type="hidden" id="ClienteEquipo" value="<?php if (($edit == 1) || ($sw_error == 1)) {echo $row['CardCode'];}?>">
 
+								<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> name="NombreClienteEquipo" type="text" required="required" class="form-control" id="NombreClienteEquipo" placeholder="Digite para buscar..." value="<?php if (($edit == 1) || ($sw_error == 1)) {echo $row['CardName'];}?>">
+							</div>
+							<label class="col-lg-1 control-label">Persona de contacto</label>
+							<div class="col-lg-3">
+								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="ContactoCliente" class="form-control" id="ContactoCliente">
+									<option value="">Seleccione...</option>
+									<?php if (($edit == 1) || ($sw_error == 1)) {while ($row_ContactoCliente = sqlsrv_fetch_array($SQL_ContactoCliente)) {?>
+										<option value="<?php echo $row_ContactoCliente['CodigoContacto']; ?>" <?php if ((isset($row['CodigoContacto'])) && (strcmp($row_ContactoCliente['CodigoContacto'], $row['CodigoContacto']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_ContactoCliente['ID_Contacto']; ?></option>
+								  <?php }}?>
+								</select>
+							</div>
+							<label class="col-lg-1 control-label">Número de contacto</label>
+							<div class="col-lg-3">
+								<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="TelefonoCliente" type="text" class="form-control" id="TelefonoCliente" maxlength="150" value="<?php if (isset($row['TelefonoCliente'])) {echo $row['TelefonoCliente'];}?>" readonly="readonly">
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-lg-1 control-label">Técnico</label>
+							<div class="col-lg-3">
+								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="IdTecnico" class="form-control select2" id="IdTecnico">
+										<option value="">Seleccione...</option>
+								  <?php while ($row_Tecnicos = sqlsrv_fetch_array($SQL_Tecnicos)) {?>
+										<option value="<?php echo $row_Tecnicos['ID_Empleado']; ?>" <?php if ((isset($row['IdTecnico'])) && (strcmp($row_Tecnicos['ID_Empleado'], $row['IdTecnico']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Tecnicos['NombreEmpleado']; ?></option>
+								  <?php }?>
+								</select>
+							</div>
+							<label class="col-lg-1 control-label">Territorio <span class="text-danger">*</span></label>
+							<div class="col-lg-3">
+								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="IdTerritorio" class="form-control" id="IdTerritorio" required>
+									<option value="">(Ninguno)</option>
+								<?php
+while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
+										<option value="<?php echo $row_Territorio['IdTerritorio']; ?>" <?php if ((isset($row['IdTerritorio'])) && (strcmp($row_Territorio['IdTerritorio'], $row['IdTerritorio']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Territorio['DeTerritorio']; ?></option>
+								<?php }?>
+								</select>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- FIN, InfoSN -->
 				<!-- INICIO, información del vehículo y de la cita -->
 				<div class="ibox">
 					<div class="ibox-title bg-success">
@@ -526,17 +579,17 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=176 and VerEnD
 						<div class="form-group">
 							<div class="col-lg-4">
 								<label class="control-label">No_Motor</label>
-								<input <?php if(!PermitirFuncion(1602)){echo "readonly='readonly'";} ?> autocomplete="off" name="CDU_No_Motor" type="text" class="form-control" id="CDU_No_Motor" maxlength="100"
+								<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="CDU_No_Motor" type="text" class="form-control" id="CDU_No_Motor" maxlength="100"
 								value="<?php if (isset($row['CDU_No_Motor'])) {echo $row['CDU_No_Motor'];}?>">
 							</div>
 						</div>
 						<div class="form-group">
 							<div class="col-lg-4">
 								<label class="control-label">Marca del vehículo <span class="text-danger">*</span></label>
-								<select <?php if(!PermitirFuncion(1602)){echo "disabled='disabled'";} ?> name="CDU_Marca" class="form-control select2" required="required" id="CDU_Marca">
+								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Marca" class="form-control select2" required="required" id="CDU_Marca">
 									<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) {?>
-									<option value="<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; //['IdMarcaVehiculo'];   ?>"
+									<option value="<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; //['IdMarcaVehiculo'];    ?>"
 									<?php if ((isset($row['CDU_Marca'])) && (strcmp($row_MarcaVehiculo['DeMarcaVehiculo'], $row['CDU_Marca']) == 0)) {echo "selected=\"selected\"";}?>>
 										<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
 									</option>
@@ -545,22 +598,22 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=176 and VerEnD
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">Línea del vehículo <span class="text-danger">*</span></label>
-								<select <?php if(!PermitirFuncion(1602)){echo "disabled='disabled'";} ?> name="CDU_Linea" class="form-control select2" required="required" id="CDU_Linea">
+								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Linea" class="form-control select2" required="required" id="CDU_Linea">
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_LineaVehiculo = sqlsrv_fetch_array($SQL_LineaVehiculo)) {?>
-										<option value="<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; //['IdLineaModeloVehiculo'];  ?>"
+										<option value="<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; //['IdLineaModeloVehiculo'];   ?>"
 										<?php if ((isset($row['CDU_Linea'])) && (strcmp($row_LineaVehiculo['DeLineaModeloVehiculo'], $row['CDU_Linea']) == 0)) {echo "selected=\"selected\"";}?>>
-											<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; //. " - " . $row_LineaVehiculo['MarcaVehiculo'];          ?>
+											<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; //. " - " . $row_LineaVehiculo['MarcaVehiculo'];           ?>
 										</option>
 								  <?php }?>
 								</select>
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">Modelo del vehículo <span class="text-danger">*</span></label>
-								<select <?php if(!PermitirFuncion(1602)){echo "disabled='disabled'";} ?> name="CDU_Ano" class="form-control select2" required="required" id="CDU_Ano">
+								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Ano" class="form-control select2" required="required" id="CDU_Ano">
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_ModeloVehiculo = sqlsrv_fetch_array($SQL_ModeloVehiculo)) {?>
-										<option value="<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; //['CodigoModeloVehiculo'];                 ?>"
+										<option value="<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; //['CodigoModeloVehiculo'];                  ?>"
 										<?php if (isset($row['CDU_Ano']) && ((strcmp($row_ModeloVehiculo['CodigoModeloVehiculo'], $row['CDU_Ano']) == 0) || (strcmp($row_ModeloVehiculo['AñoModeloVehiculo'], $row['CDU_Ano']) == 0))) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; ?>
 										</option>
@@ -571,10 +624,10 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=176 and VerEnD
 						<div class="form-group">
 						<div class="col-lg-4">
 								<label class="control-label">Concesionario <span class="text-danger">*</span></label>
-								<select <?php if(!PermitirFuncion(1602)){echo "disabled='disabled'";} ?> name="CDU_Concesionario" class="form-control select2" required="required" id="CDU_Concesionario">
+								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Concesionario" class="form-control select2" required="required" id="CDU_Concesionario">
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_Concesionario = sqlsrv_fetch_array($SQL_Concesionario)) {?>
-										<option value="<?php echo $row_Concesionario['NombreConcesionario']; //['CodigoConcesionario'];                        ?>"
+										<option value="<?php echo $row_Concesionario['NombreConcesionario']; //['CodigoConcesionario'];                         ?>"
 										<?php if (isset($row['CDU_Concesionario']) && (strcmp($row_Concesionario['NombreConcesionario'], $row['CDU_Concesionario']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_Concesionario['NombreConcesionario']; ?>
 										</option>
@@ -583,10 +636,10 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=176 and VerEnD
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">Color <span class="text-danger">*</span></label>
-								<select <?php if(!PermitirFuncion(1602)){echo "disabled='disabled'";} ?> name="CDU_Color" class="form-control select2" required="required" id="CDU_Color">
+								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Color" class="form-control select2" required="required" id="CDU_Color">
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_ColorVehiculo = sqlsrv_fetch_array($SQL_ColorVehiculo)) {?>
-										<option value="<?php echo $row_ColorVehiculo['NombreColorVehiculo']; //['CodigoColorVehiculo'];              ?>"
+										<option value="<?php echo $row_ColorVehiculo['NombreColorVehiculo']; //['CodigoColorVehiculo'];               ?>"
 										<?php if (isset($row['CDU_Color']) && (strcmp($row_ColorVehiculo['NombreColorVehiculo'], $row['CDU_Color']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_ColorVehiculo['NombreColorVehiculo']; ?>
 										</option>
@@ -597,10 +650,10 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=176 and VerEnD
 						<div class="form-group">
 							<div class="col-lg-4">
 								<label class="control-label">Cilindraje <span class="text-danger">*</span></label>
-								<select <?php if(!PermitirFuncion(1602)){echo "disabled='disabled'";} ?> name="CDU_Cilindraje" class="form-control select2" required="required" id="CDU_Cilindraje">
+								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Cilindraje" class="form-control select2" required="required" id="CDU_Cilindraje">
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_Cilindraje = sqlsrv_fetch_array($SQL_CilindrajeVehiculo)) {?>
-										<option value="<?php echo $row_Cilindraje['DescripcionCilindraje']; //['CodigoCilindraje'];           ?>"
+										<option value="<?php echo $row_Cilindraje['DescripcionCilindraje']; //['CodigoCilindraje'];            ?>"
 										<?php if (isset($row['CDU_Cilindraje']) && (strcmp($row_Cilindraje['DescripcionCilindraje'], $row['CDU_Cilindraje']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_Cilindraje['DescripcionCilindraje']; ?>
 										</option>
@@ -609,10 +662,10 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=176 and VerEnD
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">Tipo servicio <span class="text-danger">*</span></label>
-								<select <?php if(!PermitirFuncion(1602)){echo "disabled='disabled'";} ?> name="CDU_TipoServicio" class="form-control select2" required="required" id="CDU_TipoServicio">
+								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_TipoServicio" class="form-control select2" required="required" id="CDU_TipoServicio">
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_TipoServicio = sqlsrv_fetch_array($SQL_TipoServicio)) {?>
-										<option value="<?php echo $row_TipoServicio['NombreTipoServicio']; //['CodigoTipoServicio'];                       ?>"
+										<option value="<?php echo $row_TipoServicio['NombreTipoServicio']; //['CodigoTipoServicio'];                        ?>"
 										<?php if (isset($row['CDU_TipoServicio']) && (strcmp($row_TipoServicio['NombreTipoServicio'], $row['CDU_TipoServicio']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_TipoServicio['NombreTipoServicio']; ?>
 										</option>
@@ -629,14 +682,14 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=176 and VerEnD
 							<div class="col-lg-4">
 								<label class="control-label">Fecha Matricula</label>
 								<div class="input-group date">
-									<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input <?php if(!PermitirFuncion(1602)){echo "readonly='readonly'";} ?> name="CDU_FechaMatricula" id="CDU_FechaMatricula" type="text" class="form-control"
+									<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> name="CDU_FechaMatricula" id="CDU_FechaMatricula" type="text" class="form-control"
 									value="<?php if (isset($row['CDU_FechaMatricula'])) {echo date_format($row['CDU_FechaMatricula'], 'Y-m-d');} else {echo 'AAAA-mm-dd';}?>">
 								</div>
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">Fecha SOAT</label>
 								<div class="input-group date">
-									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input <?php if(!PermitirFuncion(1602)){echo "readonly='readonly'";} ?> name="CDU_Fecha_SOAT" id="CDU_Fecha_SOAT" type="text" class="form-control"
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> name="CDU_Fecha_SOAT" id="CDU_Fecha_SOAT" type="text" class="form-control"
 									 value="<?php if (isset($row['CDU_Fecha_SOAT'])) {echo date_format($row['CDU_Fecha_SOAT'], 'Y-m-d');} else {echo 'AAAA-mm-dd';}?>">
 								</div>
 							</div>
@@ -645,7 +698,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=176 and VerEnD
 							<div class="col-lg-4">
 								<label class="control-label">Fecha Tecnicomecanica</label>
 								<div class="input-group date">
-									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input <?php if(!PermitirFuncion(1602)){echo "readonly='readonly'";} ?> name="CDU_Fecha_Tecno" id="CDU_Fecha_Tecno" type="text" class="form-control"
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> name="CDU_Fecha_Tecno" id="CDU_Fecha_Tecno" type="text" class="form-control"
 									 value="<?php if (isset($row['CDU_Fecha_Tecno'])) {echo date_format($row['CDU_Fecha_Tecno'], 'Y-m-d');} else {echo 'AAAA-mm-dd';}?>">
 								</div>
 							</div>
@@ -654,7 +707,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=176 and VerEnD
 							<div class="col-lg-4">
 								<label class="control-label">Fecha Ult. Cambio de Aceite</label>
 								<div class="input-group date">
-									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input <?php if(!PermitirFuncion(1602)){echo "readonly='readonly'";} ?> name="CDU_FechaUlt_CambAceite" id="CDU_FechaUlt_CambAceite" type="text" class="form-control"
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> name="CDU_FechaUlt_CambAceite" id="CDU_FechaUlt_CambAceite" type="text" class="form-control"
 									 value="<?php if (isset($row['CDU_FechaUlt_CambAceite'])) {echo date_format($row['CDU_FechaUlt_CambAceite'], 'Y-m-d');} else {echo 'AAAA-mm-dd';}?>">
 								</div>
 							</div>
@@ -670,7 +723,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=176 and VerEnD
 							<div class="col-lg-4">
 								<label class="control-label">Fecha Ult. Mantenimiento</label>
 								<div class="input-group date">
-									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input <?php if(!PermitirFuncion(1602)){echo "readonly='readonly'";} ?> name="CDU_FechaUlt_Mant" id="CDU_FechaUlt_Mant" type="text" class="form-control"
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> name="CDU_FechaUlt_Mant" id="CDU_FechaUlt_Mant" type="text" class="form-control"
 									 value="<?php if (isset($row['CDU_FechaUlt_Mant'])) {echo date_format($row['CDU_FechaUlt_Mant'], 'Y-m-d');} else {echo 'AAAA-mm-dd';}?>">
 								</div>
 							</div>
@@ -686,7 +739,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=176 and VerEnD
 							<div class="col-lg-4">
 								<label class="control-label">Fecha Ult. Cambio de Llantas</label>
 								<div class="input-group date">
-									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input <?php if(!PermitirFuncion(1602)){echo "readonly='readonly'";} ?> name="CDU_FechaUlt_CambLlantas" id="CDU_FechaUlt_CambLlantas" type="text" class="form-control"
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> name="CDU_FechaUlt_CambLlantas" id="CDU_FechaUlt_CambLlantas" type="text" class="form-control"
 									 value="<?php if (isset($row['CDU_FechaUlt_CambLlantas'])) {echo date_format($row['CDU_FechaUlt_CambLlantas'], 'Y-m-d');} else {echo 'AAAA-mm-dd';}?>">
 								</div>
 							</div>
@@ -702,7 +755,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=176 and VerEnD
 							<div class="col-lg-4">
 								<label class="control-label">Fecha Ult. Alineación y Balanceo</label>
 								<div class="input-group date">
-									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input <?php if(!PermitirFuncion(1602)){echo "readonly='readonly'";} ?> name="CDU_FechaUlt_AlinBalan" id="CDU_FechaUlt_AlinBalan" type="text" class="form-control"
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> name="CDU_FechaUlt_AlinBalan" id="CDU_FechaUlt_AlinBalan" type="text" class="form-control"
 									 value="<?php if (isset($row['CDU_FechaUlt_AlinBalan'])) {echo date_format($row['CDU_FechaUlt_AlinBalan'], 'Y-m-d');} else {echo 'AAAA-mm-dd';}?>">
 								</div>
 							</div>
@@ -718,59 +771,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=176 and VerEnD
 					</div>
 				</div>
 				<!-- FIN, información del vehículo y de la cita -->
-
-				<div class="ibox">
-					<div class="ibox-title bg-success">
-						<h5 class="collapse-link"><i class="fa fa-group"></i> Información de socio de negocio</h5>
-						 <a class="collapse-link pull-right">
-							<i class="fa fa-chevron-up"></i>
-						</a>
-					</div>
-					<div class="ibox-content">
-						<div class="form-group">
-							<label class="col-lg-1 control-label"><i onClick="ConsultarDatosCliente();" title="Consultar cliente" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Socio de negocio <span class="text-danger">*</span></label>
-							<div class="col-lg-3">
-								<input <?php if(!PermitirFuncion(1602)){echo "readonly='readonly'";} ?> name="ClienteEquipo" type="hidden" id="ClienteEquipo" value="<?php if (($edit == 1) || ($sw_error == 1)) {echo $row['CardCode'];}?>">
-
-								<input <?php if(!PermitirFuncion(1602)){echo "readonly='readonly'";} ?> name="NombreClienteEquipo" type="text" required="required" class="form-control" id="NombreClienteEquipo" placeholder="Digite para buscar..." value="<?php if (($edit == 1) || ($sw_error == 1)) {echo $row['CardName'];}?>">
-							</div>
-							<label class="col-lg-1 control-label">Persona de contacto</label>
-							<div class="col-lg-3">
-								<select <?php if(!PermitirFuncion(1602)){echo "disabled='disabled'";} ?> name="ContactoCliente" class="form-control" id="ContactoCliente">
-									<option value="">Seleccione...</option>
-									<?php if (($edit == 1) || ($sw_error == 1)) {while ($row_ContactoCliente = sqlsrv_fetch_array($SQL_ContactoCliente)) {?>
-										<option value="<?php echo $row_ContactoCliente['CodigoContacto']; ?>" <?php if ((isset($row['CodigoContacto'])) && (strcmp($row_ContactoCliente['CodigoContacto'], $row['CodigoContacto']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_ContactoCliente['ID_Contacto']; ?></option>
-								  <?php }}?>
-								</select>
-							</div>
-							<label class="col-lg-1 control-label">Número de contacto</label>
-							<div class="col-lg-3">
-								<input <?php if(!PermitirFuncion(1602)){echo "readonly='readonly'";} ?> autocomplete="off" name="TelefonoCliente" type="text" class="form-control" id="TelefonoCliente" maxlength="150" value="<?php if (isset($row['TelefonoCliente'])) {echo $row['TelefonoCliente'];}?>" readonly="readonly">
-							</div>
-						</div>
-						<div class="form-group">
-							<label class="col-lg-1 control-label">Técnico</label>
-							<div class="col-lg-3">
-								<select <?php if(!PermitirFuncion(1602)){echo "disabled='disabled'";} ?> name="IdTecnico" class="form-control select2" id="IdTecnico">
-										<option value="">Seleccione...</option>
-								  <?php while ($row_Tecnicos = sqlsrv_fetch_array($SQL_Tecnicos)) {?>
-										<option value="<?php echo $row_Tecnicos['ID_Empleado']; ?>" <?php if ((isset($row['IdTecnico'])) && (strcmp($row_Tecnicos['ID_Empleado'], $row['IdTecnico']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Tecnicos['NombreEmpleado']; ?></option>
-								  <?php }?>
-								</select>
-							</div>
-							<label class="col-lg-1 control-label">Territorio <span class="text-danger">*</span></label>
-							<div class="col-lg-3">
-								<select <?php if(!PermitirFuncion(1602)){echo "disabled='disabled'";} ?> name="IdTerritorio" class="form-control" id="IdTerritorio" required>
-									<option value="">(Ninguno)</option>
-								<?php
-while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
-										<option value="<?php echo $row_Territorio['IdTerritorio']; ?>" <?php if ((isset($row['IdTerritorio'])) && (strcmp($row_Territorio['IdTerritorio'], $row['IdTerritorio']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Territorio['DeTerritorio']; ?></option>
-								<?php }?>
-								</select>
-							</div>
-						</div>
-					</div>
-				</div>
+				<!-- Inicio, TABS -->
 				<div class="tabs-container">
 					<ul class="nav nav-tabs">
 						<li class="active"><a data-toggle="tab" href="#tab-address"><i class="fa fa-address-book-o"></i> Dirección</a></li>
@@ -788,27 +789,27 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 									<div class="form-group">
 										<label class="col-lg-1 control-label">Calle</label>
 										<div class="col-lg-3">
-											<input <?php if(!PermitirFuncion(1602)){echo "readonly='readonly'";} ?> autocomplete="off" name="Calle" type="text" required="required" class="form-control" id="Calle" maxlength="150" value="<?php if (isset($row['Calle'])) {echo $row['Calle'];}?>">
+											<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="Calle" type="text" required="required" class="form-control" id="Calle" maxlength="150" value="<?php if (isset($row['Calle'])) {echo $row['Calle'];}?>">
 										</div>
 										<label class="col-lg-1 control-label">Código postal</label>
 										<div class="col-lg-3">
-											<input <?php if(!PermitirFuncion(1602)){echo "readonly='readonly'";} ?> autocomplete="off" name="CodigoPostal" type="text" required="required" class="form-control" id="CodigoPostal" maxlength="150" value="<?php if (isset($row['CodigoPostal'])) {echo $row['CodigoPostal'];}?>">
+											<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="CodigoPostal" type="text" required="required" class="form-control" id="CodigoPostal" maxlength="150" value="<?php if (isset($row['CodigoPostal'])) {echo $row['CodigoPostal'];}?>">
 										</div>
 										<label class="col-lg-1 control-label">Ciudad</label>
 										<div class="col-lg-3">
-											<input <?php if(!PermitirFuncion(1602)){echo "readonly='readonly'";} ?> autocomplete="off" name="Ciudad" type="text" required="required" class="form-control" id="Ciudad" maxlength="150" value="<?php if (isset($row['Ciudad'])) {echo $row['Ciudad'];}?>">
+											<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="Ciudad" type="text" required="required" class="form-control" id="Ciudad" maxlength="150" value="<?php if (isset($row['Ciudad'])) {echo $row['Ciudad'];}?>">
 										</div>
 									</div>
 
 									<div class="form-group">
-										<input <?php if(!PermitirFuncion(1602)){echo "readonly='readonly'";} ?> type="hidden" name="EstadoPais" id="EstadoPais" value="<?php if (isset($row['EstadoPais'])) {echo $row['EstadoPais'];}?>" />
+										<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> type="hidden" name="EstadoPais" id="EstadoPais" value="<?php if (isset($row['EstadoPais'])) {echo $row['EstadoPais'];}?>" />
 										<label class="col-lg-1 control-label">Distrito</label>
 										<div class="col-lg-3">
-											<input <?php if(!PermitirFuncion(1602)){echo "readonly='readonly'";} ?> autocomplete="off" name="Distrito" type="text" required="required" class="form-control" id="Distrito" maxlength="150" value="<?php if (isset($row['Distrito'])) {echo $row['Distrito'];}?>">
+											<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="Distrito" type="text" required="required" class="form-control" id="Distrito" maxlength="150" value="<?php if (isset($row['Distrito'])) {echo $row['Distrito'];}?>">
 										</div>
 										<label class="col-lg-1 control-label">País</label>
 										<div class="col-lg-3">
-											<select <?php if(!PermitirFuncion(1602)){echo "disabled='disabled'";} ?> name="Pais" class="form-control" id="Pais" required>
+											<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="Pais" class="form-control" id="Pais" required>
 												<option value="">(Ninguno)</option>
 												<option value="CO" <?php if ((isset($row['Pais'])) && (strcmp("CO", $row['Pais']) == 0)) {echo "selected=\"selected\"";}?>>Colombia</option>
 											</select>
@@ -925,22 +926,22 @@ while ($row_ContratoServicio = sqlsrv_fetch_array($SQL_ContratosServicio)) {?>
 									<div class="form-group">
 										<label class="col-lg-1 control-label">Código</label>
 										<div class="col-lg-3">
-											<input <?php if(!PermitirFuncion(1602)){echo "readonly='readonly'";} ?> autocomplete="off" name="CardCodeCompras" type="text" required="required" class="form-control" id="CardCodeCompras" maxlength="150" value="<?php if (isset($row['CardCodeCompras'])) {echo $row['CardCodeCompras'];}?>">
+											<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="CardCodeCompras" type="text" required="required" class="form-control" id="CardCodeCompras" maxlength="150" value="<?php if (isset($row['CardCodeCompras'])) {echo $row['CardCodeCompras'];}?>">
 										</div>
 										<label class="col-lg-1 control-label">Nombre</label>
 										<div class="col-lg-3">
-											<input <?php if(!PermitirFuncion(1602)){echo "readonly='readonly'";} ?> autocomplete="off" name="CardNameCompras" type="text" required="required" class="form-control" id="CardNameCompras" maxlength="150" value="<?php if (isset($row['CardNameCompras'])) {echo $row['CardNameCompras'];}?>">
+											<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="CardNameCompras" type="text" required="required" class="form-control" id="CardNameCompras" maxlength="150" value="<?php if (isset($row['CardNameCompras'])) {echo $row['CardNameCompras'];}?>">
 										</div>
 									</div>
 									<label style="margin-bottom: 10px; color: darkgray;"><u>Entrega y Factura</u></label>
 									<div class="form-group">
 										<label class="col-lg-1 control-label">Entrega</label>
 										<div class="col-lg-3">
-											<input <?php if(!PermitirFuncion(1602)){echo "readonly='readonly'";} ?> autocomplete="off" name="DocNumEntrega" type="text" required="required" class="form-control" id="DocNumEntrega" maxlength="150" value="<?php if (isset($row['DocNumEntrega'])) {echo $row['DocNumEntrega'];}?>">
+											<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="DocNumEntrega" type="text" required="required" class="form-control" id="DocNumEntrega" maxlength="150" value="<?php if (isset($row['DocNumEntrega'])) {echo $row['DocNumEntrega'];}?>">
 										</div>
 										<label class="col-lg-1 control-label">Factura</label>
 										<div class="col-lg-3">
-											<input <?php if(!PermitirFuncion(1602)){echo "readonly='readonly'";} ?> autocomplete="off" name="DocNumFactura" type="text" required="required" class="form-control" id="DocNumFactura" maxlength="150" value="<?php if (isset($row['DocNumFactura'])) {echo $row['DocNumFactura'];}?>">
+											<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="DocNumFactura" type="text" required="required" class="form-control" id="DocNumFactura" maxlength="150" value="<?php if (isset($row['DocNumFactura'])) {echo $row['DocNumFactura'];}?>">
 										</div>
 									</div>
 								</div>
