@@ -652,26 +652,28 @@ if (isset($sw_error) && ($sw_error == 1)) {
 		});
 		$("#SucursalCliente").change(function(){
 			$('.ibox-content').toggleClass('sk-loading',true);
+
 			var Cliente=document.getElementById('Cliente').value;
 			var Sucursal=document.getElementById('SucursalCliente').value;
-			$.ajax({
-				url:"ajx_buscar_datos_json.php",
-				data:{type:1,CardCode:Cliente,Sucursal:Sucursal},
-				dataType:'json',
-				success: function(data){
-					document.getElementById('Direccion').value=data.Direccion;
-					document.getElementById('Barrio').value=data.Barrio;
-					document.getElementById('Ciudad').value=data.Ciudad;
-					document.getElementById('Telefono').value=data.TelefonoContacto;
-					document.getElementById('Correo').value=data.CorreoContacto;
+			
+			if(Sucursal !== "" && Sucursal !== null && Sucursal*1 !== -1) {
+				$.ajax({
+					url:"ajx_buscar_datos_json.php",
+					data:{type:1,CardCode:Cliente,Sucursal:Sucursal},
+					dataType:'json',
+					success: function(data){
+						document.getElementById('Direccion').value=data.Direccion;
+						document.getElementById('Barrio').value=data.Barrio;
+						document.getElementById('Ciudad').value=data.Ciudad;
+						document.getElementById('Telefono').value=data.TelefonoContacto;
+						document.getElementById('Correo').value=data.CorreoContacto;
+					},
+					error: function(error) {
+						console.error("#SucursalCliente", error.responseText);
+					}
+				});
+			}
 
-					$('.ibox-content').toggleClass('sk-loading',false);
-				},
-				error: function(error) {
-					console.error(error.responseText);
-					$('.ibox-content').toggleClass('sk-loading',false);
-				}
-			});
 			$('.ibox-content').toggleClass('sk-loading',false);
 		});
 		$("#ContactoCliente").change(function(){
@@ -717,7 +719,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 					$('.ibox-content').toggleClass('sk-loading',false);
 				},
 				error: function(error) {
-					console.error(error.responseText);
+					console.error("#CDU_Marca", error.responseText);
 					$('.ibox-content').toggleClass('sk-loading',false);
 				}
 			});
@@ -758,7 +760,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 					$('.ibox-content').toggleClass('sk-loading',false);
 				},
 				error: function(error) {
-					console.error(error.responseText);
+					console.error("#OrdenServicio", error.responseText);
 					$('.ibox-content').toggleClass('sk-loading',false);
 				}
 			});
@@ -939,29 +941,20 @@ function Eliminar(){
 								<label class="control-label text-danger">Información del servicio</label>
 							</div>
 						</div>
-						<!--div class="form-group">
-							<div class="col-lg-4">
-								<label class="control-label"><i onClick="ConsultarServicio();" title="Consultar llamada de servicio" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Orden servicio <span class="text-danger">*</span></label>
-								<select name="OrdenServicio" class="form-control select2" required="required" id="OrdenServicio" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
-										<option value="">Seleccione...</option>
-									<?php if (($type_llmd == 1) || ($sw_error == 1)) {while ($row_NumeroSerie = sqlsrv_fetch_array($SQL_NumeroSerie)) {?>
-										<option value="<?php echo $row_NumeroSerie['SerialInterno']; ?>" <?php if ((isset($row_NumeroSerie['SerialInterno'])) && (strcmp($row_NumeroSerie['SerialInterno'], $row['IdNumeroSerie']) == 0)) {echo "selected=\"selected\"";}?>><?php echo "SN Fabricante: " . $row_NumeroSerie['SerialFabricante'] . " - Núm. Serie: " . $row_NumeroSerie['SerialInterno']; ?></option>
-									<?php }}?>
-								</select>
-							</div>
-						</div-->
+						<!-- Orden de servicio, Inicio -->
 						<div class="form-group">
 							<div class="col-lg-8">
 								<label class="control-label"><i onClick="ConsultarServicio();" title="Consultar llamada de servicio" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Orden servicio <span class="text-danger">*</span></label>
 
-								<select name="OrdenServicio" class="form-control select2" id="OrdenServicio" <?php if (($type_act == 1) && (!PermitirFuncion(304) || ($row['IdEstadoActividad'] == 'Y'))) {echo "disabled='disabled'";}?>>
+								<select name="OrdenServicio" class="form-control select2" id="OrdenServicio" <?php if ($dt_LS == 1) {echo "disabled='disabled'";}?>>
 									<?php if ($dt_LS != 1) {?><option value="">(Ninguna)</option><?php }?>
-									<?php if (($type_act == 1) || ($sw_error == 1) || ($dt_LS == 1) || ($dt_DM == 1)) {while ($row_OrdenServicioCliente = sqlsrv_fetch_array($SQL_OrdenServicioCliente)) {?>
+									<?php if ($sw_error == 1 || $dt_LS == 1 || $type_llmd == 1) {while ($row_OrdenServicioCliente = sqlsrv_fetch_array($SQL_OrdenServicioCliente)) {?>
 										<option value="<?php echo $row_OrdenServicioCliente['ID_LlamadaServicio']; ?>" <?php if ((isset($row['ID_OrdenServicioActividad'])) && (strcmp($row_OrdenServicioCliente['ID_LlamadaServicio'], $row['ID_LlamadaServicio']) == 0)) {echo "selected=\"selected\"";} elseif (isset($_GET['LS']) && (strcmp($row_OrdenServicioCliente['ID_LlamadaServicio'], base64_decode($_GET['LS'])) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_OrdenServicioCliente['DocNum'] . " - " . $row_OrdenServicioCliente['AsuntoLlamada']; ?></option>
 								  <?php }}?>
 								</select>
 							</div>
 						</div>
+						<!-- Orden de servicio, Fin -->
 					</div>
 				</div>
 				<!-- IBOX, Fin -->
@@ -977,15 +970,15 @@ function Eliminar(){
 						<div class="form-group">
 							<div class="col-lg-4">
 								<label class="control-label">Serial Interno (Placa) <span class="text-danger">*</span></label>
-								<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="SerialInterno" type="text" required="required" class="form-control" id="SerialInterno" maxlength="150" value="<?php if (isset($row['SerialInterno'])) {echo $row['SerialInterno'];}?>">
+								<input <?php if ($dt_LS == 1) {echo "readonly='readonly'";}?> autocomplete="off" name="SerialInterno" type="text" required="required" class="form-control" id="SerialInterno" maxlength="150" value="<?php if (isset($row['SerialInterno'])) {echo $row['SerialInterno'];}?>">
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">Serial Fabricante (VIN) <span class="text-danger">*</span></label>
-								<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="SerialFabricante" type="text" required="required" class="form-control" id="SerialFabricante" maxlength="150" value="<?php if (isset($row['SerialFabricante'])) {echo $row['SerialFabricante'];}?>">
+								<input <?php if ($dt_LS == 1) {echo "readonly='readonly'";}?> autocomplete="off" name="SerialFabricante" type="text" required="required" class="form-control" id="SerialFabricante" maxlength="150" value="<?php if (isset($row['SerialFabricante'])) {echo $row['SerialFabricante'];}?>">
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">No_Motor</label>
-								<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="No_Motor" type="text" class="form-control" id="No_Motor" maxlength="100"
+								<input <?php if ($dt_LS == 1) {echo "readonly='readonly'";}?> autocomplete="off" name="No_Motor" type="text" class="form-control" id="No_Motor" maxlength="100"
 								value="<?php if (isset($row['No_Motor'])) {echo $row['No_Motor'];}?>">
 							</div>
 						</div>
@@ -1816,7 +1809,7 @@ function testImage(url, timeoutT) {
 
 		$("#NombreCliente").easyAutocomplete(options);
 		$("#Ciudad").easyAutocomplete(options2);
-		
+
 		<?php if ($dt_LS == 1) {?>
 			$('#Cliente').trigger('change');
 
