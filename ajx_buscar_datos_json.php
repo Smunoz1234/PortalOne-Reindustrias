@@ -644,5 +644,20 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
         }
     }
 
+    // Stiven Muñoz Murillo, 20/01/2022
+    elseif ($_GET['type'] == 45) { // Datos del cliente por CodigoCliente
+        $CardCode = "'" . $_GET['id'] . "'";
+        $SQL = Seleccionar("uvw_Sap_tbl_SociosNegocios", "*", "CodigoCliente=" . $CardCode);
+        $row = sqlsrv_fetch_array($SQL);
+        $records = array(
+            'Direccion' => $row['Address'],
+            'Ciudad' => $row['City'],
+            'Celular' => $row['Celular'],
+            'Telefono' => $row['Telefono'],
+            'Correo' => $row['Email'],
+        );
+        echo json_encode($records);
+    }
+
     sqlsrv_close($conexion);
 }

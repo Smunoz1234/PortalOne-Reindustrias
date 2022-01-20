@@ -243,7 +243,7 @@ if (isset($_GET['Cliente']) && ($_GET['Cliente'] != "")) { //Cuando se ha selecc
 								  <?php }?>
 								</select>
 							</div>
-							<label class="col-lg-1 control-label">Técnico</label>
+							<label class="col-lg-1 control-label">Empleado</label>
 							<div class="col-lg-3">
 								<select data-placeholder="(Todos)" name="Empleado[]" class="form-control select2" id="Empleado" multiple>
 								  <?php $j = 0;

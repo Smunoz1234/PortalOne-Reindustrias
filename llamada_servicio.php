@@ -1934,36 +1934,38 @@ $return = QuitarParametrosURL($return, array("a"));?>
 							</div>
 							<div id="tab-2" class="tab-pane">
 								<div class="panel-body">
+									<!-- Agregar documento, Inicio -->
 									<div class="row">
-									<?php if (PermitirFuncion(302) && ($row['IdEstadoLlamada'] != '-1')) {
-    if (PermitirFuncion(402)) {?>
+										<?php if (PermitirFuncion(302) && ($row['IdEstadoLlamada'] != '-1')) {
+											if (PermitirFuncion(402)) {?>
 												<div class="btn-group">
-												<button data-toggle="dropdown" class="btn btn-outline btn-success dropdown-toggle"><i class="fa fa-plus-circle"></i> Agregar documento <i class="fa fa-caret-down"></i></button>
-												<ul class="dropdown-menu">
-													<li>
-														<a class="dropdown-item alkin" href="orden_venta.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&LS=<?php echo base64_encode($IdLlamada); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('llamada_servicio.php'); ?>">Orden de venta con LMT</a>
-													</li>
-													<li>
-														<a class="dropdown-item alkin" href="orden_venta.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&LS=<?php echo base64_encode($IdLlamada); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('llamada_servicio.php'); ?>&LMT=false">Orden de venta sin LMT</a>
-													</li>
-													<li>
-														<a class="dropdown-item alkin" href="entrega_venta.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&LS=<?php echo base64_encode($IdLlamada); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('llamada_servicio.php'); ?>">Entrega de venta con LMT</a>
-													</li>
-													<li>
-														<a class="dropdown-item alkin" href="entrega_venta.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&LS=<?php echo base64_encode($IdLlamada); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('llamada_servicio.php'); ?>&LMT=false">Entrega de venta sin LMT</a>
-													</li>
-													<li>
-														<a class="dropdown-item alkin" href="devolucion_venta.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&LS=<?php echo base64_encode($IdLlamada); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('llamada_servicio.php'); ?>">Devolución de venta con LMT</a>
-													</li>
-													<li>
-														<a class="dropdown-item alkin" href="devolucion_venta.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&LS=<?php echo base64_encode($IdLlamada); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('llamada_servicio.php'); ?>&LMT=false">Devolución de venta sin LMT</a>
-													</li>
-												</ul>
-											</div>
-									<?php }
-}?>
+													<button data-toggle="dropdown" class="btn btn-outline btn-success dropdown-toggle"><i class="fa fa-plus-circle"></i> Agregar documento <i class="fa fa-caret-down"></i></button>
+													<ul class="dropdown-menu">
+														<li>
+															<a class="dropdown-item alkin" href="orden_venta.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&LS=<?php echo base64_encode($IdLlamada); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('llamada_servicio.php'); ?>">Orden de venta con LMT</a>
+														</li>
+														<li>
+															<a class="dropdown-item alkin" href="orden_venta.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&LS=<?php echo base64_encode($IdLlamada); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('llamada_servicio.php'); ?>&LMT=false">Orden de venta sin LMT</a>
+														</li>
+														<li>
+															<a class="dropdown-item alkin" href="entrega_venta.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&LS=<?php echo base64_encode($IdLlamada); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('llamada_servicio.php'); ?>">Entrega de venta con LMT</a>
+														</li>
+														<li>
+															<a class="dropdown-item alkin" href="entrega_venta.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&LS=<?php echo base64_encode($IdLlamada); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('llamada_servicio.php'); ?>&LMT=false">Entrega de venta sin LMT</a>
+														</li>
+														<li>
+															<a class="dropdown-item alkin" href="devolucion_venta.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&LS=<?php echo base64_encode($IdLlamada); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('llamada_servicio.php'); ?>">Devolución de venta con LMT</a>
+														</li>
+														<li>
+															<a class="dropdown-item alkin" href="devolucion_venta.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&LS=<?php echo base64_encode($IdLlamada); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('llamada_servicio.php'); ?>&LMT=false">Devolución de venta sin LMT</a>
+														</li>
+													</ul>
+												</div>
+											<?php }
+										}?>
 									</div>
 									<br>
+									<!-- Agregar documento, Fin -->
 									<div class="table-responsive">
 										<table class="table table-striped table-bordered table-hover dataTables-example" >
 											<thead>
@@ -2003,44 +2005,61 @@ $return = QuitarParametrosURL($return, array("a"));?>
 							</div>
 							<div id="tab-3" class="tab-pane">
 								<div class="panel-body">
-								<div class="table-responsive">
-										<table class="table table-striped table-bordered table-hover dataTables-example" >
-											<thead>
-											<tr>
-												<th>Tipo de documento</th>
-												<th>Número de documento</th>
-												<th>Fecha de documento</th>
-												<th>Observaciones</th>
-												<th>Comentarios de cierre</th>
-												<th>Fecha cierre</th>
-												<th>Creado por</th>
-												<th>Estado de documento</th>
-												<th>Acciones</th>
-											</tr>
-											</thead>
-											<tbody>
-											<?php while ($row_Formularios = sqlsrv_fetch_array($SQL_Formularios)) {?>
-												 <tr class="gradeX">
-													<td><?php echo $row_Formularios['tipo_objeto']; ?></td>
-													<td><?php echo $row_Formularios['id_formulario']; ?></td>
-													<td><?php echo $row_Formularios['fecha_hora']->format('Y-m-d H:i'); ?></td>
-													<td><?php echo SubComent($row_Formularios['observaciones'], 140); ?></td>
-													<td id="comentCierre<?php echo $row_Formularios['id_formulario']; ?>"><?php echo SubComent($row_Formularios['comentarios_cierre'], 140); ?></td>
-													<td><?php echo ($row_Formularios['fecha_cierre'] != "") ? $row_Formularios['fecha_cierre']->format('Y-m-d H:i') : ""; ?></td>
-													<td><?php echo $row_Formularios['nombre_usuario_creacion']; ?></td>
-													<td><span id="lblEstado<?php echo $row_Formularios['id_formulario']; ?>" <?php if ($row_Formularios['estado'] == 'O') {echo "class='label label-info'";} elseif ($row_Formularios['estado'] == 'A') {echo "class='label label-danger'";} else {echo "class='label label-primary'";}?>><?php echo $row_Formularios['nombre_estado']; ?></span></td>
-													<td class="text-center form-inline w-80">
-														<?php if ($row_Formularios['estado'] == 'O') {?>
-															<button id="btnEstado<?php echo $row_Formularios['id_formulario']; ?>" class="btn btn-success btn-xs" onClick="CambiarEstado('<?php echo $row_Formularios['id_formulario']; ?>','<?php echo $row_Formularios['nombre_servicio']; ?>','<?php echo $row_Formularios['columna_id']; ?>');" title="Cambiar estado"><i class="fa fa-pencil"></i></button>
-														<?php }?>
-														<a href="filedownload.php?file=<?php echo base64_encode($row_Formularios['nombre_servicio'] . "/DescargarFormatos/" . $row_Formularios['id_formulario'] . "/" . $_SESSION['User']); ?>&api=1" target="_blank" class="btn btn-warning btn-xs" title="Descargar"><i class="fa fa-download"></i></a>
-													</td>
-												</tr>
-											<?php }?>
-											</tbody>
-										</table>
+									<!-- Agregar formato, Inicio -->
+									<div class="row">
+										<?php if (PermitirFuncion(302) && ($row['IdEstadoLlamada'] != '-1')) {
+											if (PermitirFuncion(402)) {?>
+												<div class="btn-group">
+													<button data-toggle="dropdown" class="btn btn-outline btn-success dropdown-toggle"><i class="fa fa-plus-circle"></i> Agregar formato <i class="fa fa-caret-down"></i></button>
+													<ul class="dropdown-menu">
+														<li>
+															<a class="dropdown-item alkin" href="frm_recepcion_vehiculo.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&LS=<?php echo base64_encode($IdLlamada); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('llamada_servicio.php'); ?>">Recepción vehículo</a>
+														</li>
+													</ul>
+												</div>
+											<?php }
+										}?>
 									</div>
-								</div>
+									<br>
+									<!-- Agregar formato, Fin -->
+									<div class="table-responsive">
+											<table class="table table-striped table-bordered table-hover dataTables-example" >
+												<thead>
+												<tr>
+													<th>Tipo de documento</th>
+													<th>Número de documento</th>
+													<th>Fecha de documento</th>
+													<th>Observaciones</th>
+													<th>Comentarios de cierre</th>
+													<th>Fecha cierre</th>
+													<th>Creado por</th>
+													<th>Estado de documento</th>
+													<th>Acciones</th>
+												</tr>
+												</thead>
+												<tbody>
+												<?php while ($row_Formularios = sqlsrv_fetch_array($SQL_Formularios)) {?>
+													<tr class="gradeX">
+														<td><?php echo $row_Formularios['tipo_objeto']; ?></td>
+														<td><?php echo $row_Formularios['id_formulario']; ?></td>
+														<td><?php echo $row_Formularios['fecha_hora']->format('Y-m-d H:i'); ?></td>
+														<td><?php echo SubComent($row_Formularios['observaciones'], 140); ?></td>
+														<td id="comentCierre<?php echo $row_Formularios['id_formulario']; ?>"><?php echo SubComent($row_Formularios['comentarios_cierre'], 140); ?></td>
+														<td><?php echo ($row_Formularios['fecha_cierre'] != "") ? $row_Formularios['fecha_cierre']->format('Y-m-d H:i') : ""; ?></td>
+														<td><?php echo $row_Formularios['nombre_usuario_creacion']; ?></td>
+														<td><span id="lblEstado<?php echo $row_Formularios['id_formulario']; ?>" <?php if ($row_Formularios['estado'] == 'O') {echo "class='label label-info'";} elseif ($row_Formularios['estado'] == 'A') {echo "class='label label-danger'";} else {echo "class='label label-primary'";}?>><?php echo $row_Formularios['nombre_estado']; ?></span></td>
+														<td class="text-center form-inline w-80">
+															<?php if ($row_Formularios['estado'] == 'O') {?>
+																<button id="btnEstado<?php echo $row_Formularios['id_formulario']; ?>" class="btn btn-success btn-xs" onClick="CambiarEstado('<?php echo $row_Formularios['id_formulario']; ?>','<?php echo $row_Formularios['nombre_servicio']; ?>','<?php echo $row_Formularios['columna_id']; ?>');" title="Cambiar estado"><i class="fa fa-pencil"></i></button>
+															<?php }?>
+															<a href="filedownload.php?file=<?php echo base64_encode($row_Formularios['nombre_servicio'] . "/DescargarFormatos/" . $row_Formularios['id_formulario'] . "/" . $_SESSION['User']); ?>&api=1" target="_blank" class="btn btn-warning btn-xs" title="Descargar"><i class="fa fa-download"></i></a>
+														</td>
+													</tr>
+												<?php }?>
+												</tbody>
+											</table>
+										</div>
+									</div>
 							</div>
 						</div>
 						</div>

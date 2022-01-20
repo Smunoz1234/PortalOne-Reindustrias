@@ -588,6 +588,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 		$("#Cliente").change(function(){
 			$('.ibox-content').toggleClass('sk-loading',true);
 			var Cliente=document.getElementById('Cliente').value;
+
 			$.ajax({
 				type: "POST",
 				url: "ajx_cbo_select.php?type=2&id="+Cliente,
@@ -625,6 +626,29 @@ if (isset($sw_error) && ($sw_error == 1)) {
 					$('.ibox-content').toggleClass('sk-loading',false);
 				}
 			});
+
+			// Stiven Muñoz Murillo, 20/01/2022
+			$.ajax({
+				url:"ajx_buscar_datos_json.php",
+				data: {
+					type: 45,
+					id: Cliente
+				},
+				dataType:'json',
+				success: function(data){
+					console.log(data);
+
+					document.getElementById('Direccion').value=data.Direccion;
+					document.getElementById('Celular').value=data.Celular;
+					document.getElementById('Ciudad').value=data.Ciudad;
+					document.getElementById('Telefono').value=data.Telefono;
+					document.getElementById('Correo').value=data.Correo;
+				},
+				error: function(error) {
+					console.error(error.responseText);
+				}
+			});
+
 			$('.ibox-content').toggleClass('sk-loading',false);
 		});
 		$("#SucursalCliente").change(function(){
@@ -639,11 +663,11 @@ if (isset($sw_error) && ($sw_error == 1)) {
 					document.getElementById('Direccion').value=data.Direccion;
 					document.getElementById('Barrio').value=data.Barrio;
 					document.getElementById('Ciudad').value=data.Ciudad;
-					// document.getElementById('ContactoSucursal').value=data.NombreContacto;
 					document.getElementById('Telefono').value=data.TelefonoContacto;
 					document.getElementById('Correo').value=data.CorreoContacto;
 				}
 			});
+			$('.ibox-content').toggleClass('sk-loading',false);
 		});
 		$("#ContactoCliente").change(function(){
 			$('.ibox-content').toggleClass('sk-loading',true);
@@ -653,8 +677,8 @@ if (isset($sw_error) && ($sw_error == 1)) {
 				data:{type:5,Contacto:Contacto},
 				dataType:'json',
 				success: function(data){
-					//document.getElementById('Telefono').value=data.TelefonoContacto;
-					//document.getElementById('Correo').value=data.Correo;
+					document.getElementById('Telefono').value=data.Telefono;
+					document.getElementById('Correo').value=data.Correo;
 					$('.ibox-content').toggleClass('sk-loading',false);
 				}
 			});
@@ -863,29 +887,29 @@ function Eliminar(){
 							<div class="col-lg-4">
 								<label class="control-label">Teléfono</label>
 
-								<input name="Telefono" type="text" class="form-control" id="Telefono" maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['TelefonoContacto'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Telefono']);}?>">
+								<input name="Telefono" type="text" class="form-control" id="Telefono" maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['TelefonoContacto'];} elseif ($dt_LS == 1) { echo isset($_GET['Telefono']) ? base64_decode($_GET['Telefono']) : ""; } ?>">
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">Celular</label>
 
-								<input name="Celular" type="text" class="form-control" id="Celular" maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['CelularContacto'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Celular']);}?>">
+								<input name="Celular" type="text" class="form-control" id="Celular" maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['CelularContacto'];} elseif ($dt_LS == 1) { echo isset($_GET['Celular']) ? base64_decode($_GET['Celular']) : ""; } ?>">
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">Correo</label>
 
-								<input name="Correo" type="text" class="form-control" id="Correo" maxlength="100" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['CorreoContacto'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Correo']);}?>">
+								<input name="Correo" type="text" class="form-control" id="Correo" maxlength="100" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['CorreoContacto'];} elseif ($dt_LS == 1) { echo isset($_GET['Correo']) ? base64_decode($_GET['Correo']) : ""; } ?>">
 							</div>
 						</div>
 						<div class="form-group">
 							<div class="col-lg-4">
 								<label class="control-label">Dirección</label>
 
-								<input name="Direccion" type="text" class="form-control" id="Direccion" maxlength="100" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['Direccion'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Direccion']);}?>">
+								<input name="Direccion" type="text" class="form-control" id="Direccion" maxlength="100" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['Direccion'];} elseif ($dt_LS == 1) { echo isset($_GET['Direccion']) ? base64_decode($_GET['Direccion']) : ""; } ?>">
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">Barrio</label>
 
-								<input name="Barrio" type="text" class="form-control" id="Barrio" maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['Barrio'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Barrio']);}?>">
+								<input name="Barrio" type="text" class="form-control" id="Barrio" maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['Barrio'];} elseif ($dt_LS == 1) { echo isset($_GET['Barrio']) ? base64_decode($_GET['Barrio']) : ""; } ?>">
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">Ciudad</label>
