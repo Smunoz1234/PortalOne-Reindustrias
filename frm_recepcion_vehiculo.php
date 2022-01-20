@@ -547,6 +547,9 @@ $SQL_LineaVehiculo = Seleccionar('uvw_Sap_tbl_LlamadasServicios_LineaVehiculo', 
 
 // Modelo o año de fabricación de vehiculo en la llamada de servicio
 $SQL_ModeloVehiculo = Seleccionar('uvw_Sap_tbl_LlamadasServicios_AñoModeloVehiculo', '*');
+
+// Preguntas en la recepción de vehículo
+$SQL_Preguntas = Seleccionar('tbl_RecepcionVehiculos_Preguntas', '*');
 ?>
 <!DOCTYPE html>
 <html><!-- InstanceBegin template="/Templates/PlantillaPrincipal.dwt.php" codeOutsideHTMLIsLocked="false" -->
@@ -655,7 +658,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 
 			var Cliente=document.getElementById('Cliente').value;
 			var Sucursal=document.getElementById('SucursalCliente').value;
-			
+
 			if(Sucursal !== "" && Sucursal !== null && Sucursal*1 !== -1) {
 				$.ajax({
 					url:"ajx_buscar_datos_json.php",
@@ -1196,60 +1199,39 @@ function Eliminar(){
 						</a>
 					</div>
 					<div class="ibox-content">
-						<div class="form-group">
-							<div class="col-lg-4 border-bottom ">
-								<label class="control-label text-danger">Descripción de la pieza de vehículo (pieza)</label>
+						<?php while ($row_Pregunta = sqlsrv_fetch_array($SQL_Preguntas)) {?>
+							<?php $id_rp = $row_Pregunta['id_recepcion_pregunta'];?>
+
+							<div class="form-group">
+								<div class="col-lg-4 border-bottom ">
+									<label class="control-label text-danger"><?php echo $row_Pregunta['recepcion_pregunta']; ?></label>
+								</div>
 							</div>
-						</div>
-						<div class="form-group">
-							<label class="col-lg-1 control-label">Disponibilidad</label>
-							<div class="col-lg-2">
-								<select name="Estado" class="form-control" id="Estado" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
-										<option value="si">SI</option>
-										<option value="no">NO</option>
-								<?php //while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) {?>
-										<!--option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['Cod_Estado'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['Cod_Estado']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option -->
-								<?php //}?>
-								</select>
-							</div>
+							<div class="form-group">
+								<label class="col-lg-1 control-label">Disponibilidad</label>
+								<div class="col-lg-2">
+									<select class="form-control" name="<?php echo "Disponibilidad" . $id_rp; ?>" id="<?php echo "Disponibilidad" . $id_rp; ?>" <?php if (false) {echo "disabled='disabled'";}?>>
+										<option value="SI" <?php if ((isset($row["Disponibilidad" . $id_rp])) && (strcmp("si", $row["Disponibilidad" . $id_rp]) == 0)) {echo "selected=\"selected\"";}?>>
+											Si
+										</option>
+										<option value="NO" <?php if ((isset($row["Disponibilidad" . $id_rp])) && (strcmp("no", $row["Disponibilidad" . $id_rp]) == 0)) {echo "selected=\"selected\"";}?>>
+											No
+										</option>
+									</select>
+								</div>
 								<label class="col-lg-1 control-label">Estado</label>
-							<div class="col-lg-2">
-								<select name="Estado" class="form-control" id="Estado" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
-										<option value="bueno">Bueno</option>
-										<option value="malo">Malo</option>
-								<?php //while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) {?>
-										<!--option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['Cod_Estado'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['Cod_Estado']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option -->
-								<?php //}?>
-								</select>
+								<div class="col-lg-2">
+									<select class="form-control" name="<?php echo "Estado" . $id_rp; ?>" id="<?php echo "Estado" . $id_rp; ?>" <?php if (false) {echo "disabled='disabled'";}?>>
+										<option value="BUENO" <?php if ((isset($row["Estado" . $id_rp])) && (strcmp("BUENO", $row["Estado" . $id_rp]) == 0)) {echo "selected=\"selected\"";}?>>
+											Bueno
+										</option>
+										<option value="MALO" <?php if ((isset($row["Estado" . $id_rp])) && (strcmp("MALO", $row["Estado" . $id_rp]) == 0)) {echo "selected=\"selected\"";}?>>
+											Malo
+										</option>
+									</select>
+								</div>
 							</div>
-						</div>
-						<div class="form-group">
-							<div class="col-lg-4 border-bottom ">
-								<label class="control-label text-danger">Descripción de la pieza de vehículo (pieza)</label>
-							</div>
-						</div>
-						<div class="form-group">
-							<label class="col-lg-1 control-label">Disponibilidad</label>
-							<div class="col-lg-2">
-								<select name="Estado" class="form-control" id="Estado" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
-										<option value="si">SI</option>
-										<option value="no">NO</option>
-								<?php //while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) {?>
-										<!--option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['Cod_Estado'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['Cod_Estado']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option -->
-								<?php //}?>
-								</select>
-							</div>
-								<label class="col-lg-1 control-label">Estado</label>
-							<div class="col-lg-2">
-								<select name="Estado" class="form-control" id="Estado" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
-										<option value="bueno">Bueno</option>
-										<option value="malo">Malo</option>
-								<?php //while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) {?>
-										<!--option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['Cod_Estado'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['Cod_Estado']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option -->
-								<?php //}?>
-								</select>
-							</div>
-						</div>
+						<?php }?>
 					</div>
 				</div>
 				<!-- IBOX, Fin -->
