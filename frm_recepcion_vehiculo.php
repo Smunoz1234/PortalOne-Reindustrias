@@ -607,14 +607,6 @@ if (isset($sw_error) && ($sw_error == 1)) {
 					$('#SucursalCliente').trigger('change');
 				}
 			});
-			<?php }?>
-			$.ajax({
-				type: "POST",
-				url: "ajx_cbo_select.php?type=16&id="+Cliente,
-				success: function(response){
-					$('#Area1').html(response).fadeIn();
-				}
-			});
 
 			// Stiven Muñoz Murillo, 10/01/2022
 			$.ajax({
@@ -623,7 +615,14 @@ if (isset($sw_error) && ($sw_error == 1)) {
 				success: function(response){
 					$('#OrdenServicio').html(response).fadeIn();
 					$('#OrdenServicio').trigger('change');
-					$('.ibox-content').toggleClass('sk-loading',false);
+				}
+			});
+			<?php }?>
+			$.ajax({
+				type: "POST",
+				url: "ajx_cbo_select.php?type=16&id="+Cliente,
+				success: function(response){
+					$('#Area1').html(response).fadeIn();
 				}
 			});
 
@@ -665,6 +664,12 @@ if (isset($sw_error) && ($sw_error == 1)) {
 					document.getElementById('Ciudad').value=data.Ciudad;
 					document.getElementById('Telefono').value=data.TelefonoContacto;
 					document.getElementById('Correo').value=data.CorreoContacto;
+
+					$('.ibox-content').toggleClass('sk-loading',false);
+				},
+				error: function(error) {
+					console.error(error.responseText);
+					$('.ibox-content').toggleClass('sk-loading',false);
 				}
 			});
 			$('.ibox-content').toggleClass('sk-loading',false);
@@ -672,22 +677,30 @@ if (isset($sw_error) && ($sw_error == 1)) {
 		$("#ContactoCliente").change(function(){
 			$('.ibox-content').toggleClass('sk-loading',true);
 			var Contacto=document.getElementById('ContactoCliente').value;
-			$.ajax({
-				url:"ajx_buscar_datos_json.php",
-				data:{type:5,Contacto:Contacto},
-				dataType:'json',
-				success: function(data){
-					document.getElementById('Telefono').value=data.Telefono;
-					document.getElementById('Correo').value=data.Correo;
-					$('.ibox-content').toggleClass('sk-loading',false);
-				}
-			});
+
+			if(Contacto !== "" && Contacto !== null) {
+				$.ajax({
+					url:"ajx_buscar_datos_json.php",
+					data:{type:5,Contacto:Contacto},
+					dataType:'json',
+					success: function(data){
+						document.getElementById('Telefono').value=data.Telefono;
+						document.getElementById('Correo').value=data.Correo;
+					},
+					error: function(error) {
+						console.error("#ContactoCliente", error.responseText);
+					}
+				});
+			}
+
+			$('.ibox-content').toggleClass('sk-loading',false);
 		});
 
 		// Stiven Muñoz Murillo, 10/01/2021
 		$("#CDU_Marca").change(function(){
 			$('.ibox-content').toggleClass('sk-loading',true);
 			var marcaVehiculo=document.getElementById('CDU_Marca').value;
+
 			$.ajax({
 				type: "POST",
 				url: "ajx_cbo_select.php?type=39&id="+marcaVehiculo,
@@ -701,6 +714,10 @@ if (isset($sw_error) && ($sw_error == 1)) {
 						borrarLineaModeloVehiculo = true;
 					}
 
+					$('.ibox-content').toggleClass('sk-loading',false);
+				},
+				error: function(error) {
+					console.error(error.responseText);
 					$('.ibox-content').toggleClass('sk-loading',false);
 				}
 			});
@@ -887,29 +904,29 @@ function Eliminar(){
 							<div class="col-lg-4">
 								<label class="control-label">Teléfono</label>
 
-								<input name="Telefono" type="text" class="form-control" id="Telefono" maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['TelefonoContacto'];} elseif ($dt_LS == 1) { echo isset($_GET['Telefono']) ? base64_decode($_GET['Telefono']) : ""; } ?>">
+								<input name="Telefono" type="text" class="form-control" id="Telefono" maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['TelefonoContacto'];} elseif ($dt_LS == 1) {echo isset($_GET['Telefono']) ? base64_decode($_GET['Telefono']) : "";}?>">
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">Celular</label>
 
-								<input name="Celular" type="text" class="form-control" id="Celular" maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['CelularContacto'];} elseif ($dt_LS == 1) { echo isset($_GET['Celular']) ? base64_decode($_GET['Celular']) : ""; } ?>">
+								<input name="Celular" type="text" class="form-control" id="Celular" maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['CelularContacto'];} elseif ($dt_LS == 1) {echo isset($_GET['Celular']) ? base64_decode($_GET['Celular']) : "";}?>">
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">Correo</label>
 
-								<input name="Correo" type="text" class="form-control" id="Correo" maxlength="100" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['CorreoContacto'];} elseif ($dt_LS == 1) { echo isset($_GET['Correo']) ? base64_decode($_GET['Correo']) : ""; } ?>">
+								<input name="Correo" type="text" class="form-control" id="Correo" maxlength="100" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['CorreoContacto'];} elseif ($dt_LS == 1) {echo isset($_GET['Correo']) ? base64_decode($_GET['Correo']) : "";}?>">
 							</div>
 						</div>
 						<div class="form-group">
 							<div class="col-lg-4">
 								<label class="control-label">Dirección</label>
 
-								<input name="Direccion" type="text" class="form-control" id="Direccion" maxlength="100" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['Direccion'];} elseif ($dt_LS == 1) { echo isset($_GET['Direccion']) ? base64_decode($_GET['Direccion']) : ""; } ?>">
+								<input name="Direccion" type="text" class="form-control" id="Direccion" maxlength="100" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['Direccion'];} elseif ($dt_LS == 1) {echo isset($_GET['Direccion']) ? base64_decode($_GET['Direccion']) : "";}?>">
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">Barrio</label>
 
-								<input name="Barrio" type="text" class="form-control" id="Barrio" maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['Barrio'];} elseif ($dt_LS == 1) { echo isset($_GET['Barrio']) ? base64_decode($_GET['Barrio']) : ""; } ?>">
+								<input name="Barrio" type="text" class="form-control" id="Barrio" maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['Barrio'];} elseif ($dt_LS == 1) {echo isset($_GET['Barrio']) ? base64_decode($_GET['Barrio']) : "";}?>">
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">Ciudad</label>
@@ -922,14 +939,26 @@ function Eliminar(){
 								<label class="control-label text-danger">Información del servicio</label>
 							</div>
 						</div>
-						<div class="form-group">
-						<div class="col-lg-4">
-						<label class="control-label"><i onClick="ConsultarServicio();" title="Consultar llamada de servicio" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Orden servicio <span class="text-danger">*</span></label>
+						<!--div class="form-group">
+							<div class="col-lg-4">
+								<label class="control-label"><i onClick="ConsultarServicio();" title="Consultar llamada de servicio" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Orden servicio <span class="text-danger">*</span></label>
 								<select name="OrdenServicio" class="form-control select2" required="required" id="OrdenServicio" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 										<option value="">Seleccione...</option>
 									<?php if (($type_llmd == 1) || ($sw_error == 1)) {while ($row_NumeroSerie = sqlsrv_fetch_array($SQL_NumeroSerie)) {?>
 										<option value="<?php echo $row_NumeroSerie['SerialInterno']; ?>" <?php if ((isset($row_NumeroSerie['SerialInterno'])) && (strcmp($row_NumeroSerie['SerialInterno'], $row['IdNumeroSerie']) == 0)) {echo "selected=\"selected\"";}?>><?php echo "SN Fabricante: " . $row_NumeroSerie['SerialFabricante'] . " - Núm. Serie: " . $row_NumeroSerie['SerialInterno']; ?></option>
 									<?php }}?>
+								</select>
+							</div>
+						</div-->
+						<div class="form-group">
+							<div class="col-lg-8">
+								<label class="control-label"><i onClick="ConsultarServicio();" title="Consultar llamada de servicio" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Orden servicio <span class="text-danger">*</span></label>
+
+								<select name="OrdenServicio" class="form-control select2" id="OrdenServicio" <?php if (($type_act == 1) && (!PermitirFuncion(304) || ($row['IdEstadoActividad'] == 'Y'))) {echo "disabled='disabled'";}?>>
+									<?php if ($dt_LS != 1) {?><option value="">(Ninguna)</option><?php }?>
+									<?php if (($type_act == 1) || ($sw_error == 1) || ($dt_LS == 1) || ($dt_DM == 1)) {while ($row_OrdenServicioCliente = sqlsrv_fetch_array($SQL_OrdenServicioCliente)) {?>
+										<option value="<?php echo $row_OrdenServicioCliente['ID_LlamadaServicio']; ?>" <?php if ((isset($row['ID_OrdenServicioActividad'])) && (strcmp($row_OrdenServicioCliente['ID_LlamadaServicio'], $row['ID_LlamadaServicio']) == 0)) {echo "selected=\"selected\"";} elseif (isset($_GET['LS']) && (strcmp($row_OrdenServicioCliente['ID_LlamadaServicio'], base64_decode($_GET['LS'])) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_OrdenServicioCliente['DocNum'] . " - " . $row_OrdenServicioCliente['AsuntoLlamada']; ?></option>
+								  <?php }}?>
 								</select>
 							</div>
 						</div>
@@ -1787,8 +1816,12 @@ function testImage(url, timeoutT) {
 
 		$("#NombreCliente").easyAutocomplete(options);
 		$("#Ciudad").easyAutocomplete(options2);
+		
 		<?php if ($dt_LS == 1) {?>
-		$('#Cliente').trigger('change');
+			$('#Cliente').trigger('change');
+
+			// Stiven Muñoz Murillo, 20/01/2022
+			$('#OrdenServicio').trigger('change');
 	 	<?php }?>
 
 		$(".btn_del").each(function (el){
