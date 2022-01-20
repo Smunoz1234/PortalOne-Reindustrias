@@ -121,7 +121,7 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
         }
     } elseif ($_GET['type'] == 6) { //Orden de servicio, traer todas las de un cliente en particular
         if (!isset($_GET['id']) || ($_GET['id'] == "")) {
-            echo "<option value=''>(Ninguna)</option>";
+            echo "<option value='-1'>(Ninguna)</option>";
         } else {
             $SQL = Seleccionar('uvw_Sap_tbl_LlamadasServicios', 'ID_LlamadaServicio, DocNum, AsuntoLlamada, DeTipoLlamada', "IdEstadoLlamada <> -1 AND ID_CodigoCliente='" . $_GET['id'] . "'", 'AsuntoLlamada'); //Colocar estado Abierto
             $Num = sqlsrv_num_rows($SQL);
@@ -131,7 +131,7 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
                     echo "<option value=\"" . $row['ID_LlamadaServicio'] . "\">" . $row['DocNum'] . " - " . $row['AsuntoLlamada'] . " (" . $row['DeTipoLlamada'] . ")</option>";
                 }
             } else {
-                echo "<option value=''>(Ninguna)</option>";
+                echo "<option value='-1'>(Ninguna)</option>";
             }
         }
     } elseif ($_GET['type'] == 7) { //Condiciones de pago dependiendo del cliente

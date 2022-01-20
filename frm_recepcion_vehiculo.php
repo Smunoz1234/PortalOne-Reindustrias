@@ -583,6 +583,8 @@ if (isset($sw_error) && ($sw_error == 1)) {
 ?>
 <script type="text/javascript">
 	$(document).ready(function() {//Cargar los combos dependiendo de otros
+		var borrarLineaModeloVehiculo = true;
+
 		$("#Cliente").change(function(){
 			$('.ibox-content').toggleClass('sk-loading',true);
 			var Cliente=document.getElementById('Cliente').value;
@@ -612,13 +614,14 @@ if (isset($sw_error) && ($sw_error == 1)) {
 					$('#Area1').html(response).fadeIn();
 				}
 			});
+
 			// Stiven Muñoz Murillo, 10/01/2022
 			$.ajax({
 				type: "POST",
 				url: "ajx_cbo_select.php?type=6&id="+Cliente,
 				success: function(response){
 					$('#OrdenServicio').html(response).fadeIn();
-					$('#OrdenServicio').val(null).trigger('change');
+					$('#OrdenServicio').trigger('change');
 					$('.ibox-content').toggleClass('sk-loading',false);
 				}
 			});
@@ -665,8 +668,56 @@ if (isset($sw_error) && ($sw_error == 1)) {
 				type: "POST",
 				url: "ajx_cbo_select.php?type=39&id="+marcaVehiculo,
 				success: function(response){
-					$('#CDU_Linea').html(response).fadeIn();
-					$('#CDU_Linea').trigger('change');
+					// console.log(response);
+
+					if(borrarLineaModeloVehiculo) {
+						$('#CDU_Linea').html(response).fadeIn();
+						$('#CDU_Linea').trigger('change');
+					} else {
+						borrarLineaModeloVehiculo = true;
+					}
+
+					$('.ibox-content').toggleClass('sk-loading',false);
+				}
+			});
+		});
+
+		// Stiven Muñoz Murillo, 19/01/2021
+		$("#OrdenServicio").change(function() {
+			$('.ibox-content').toggleClass('sk-loading',true);
+
+			$.ajax({
+				url: "ajx_buscar_datos_json.php",
+				data: {
+					type: 44,
+					id: '',
+					ot: document.getElementById('OrdenServicio').value
+				},
+				dataType: 'json',
+				success: function(data){
+					// console.log(data);
+
+					document.getElementById('SerialInterno').value = data.SerialInterno;
+					document.getElementById('SerialFabricante').value = data.SerialFabricante;
+					document.getElementById('No_Motor').value = data.No_Motor;
+
+					if(data.CDU_Marca !== null) {
+						// document.getElementById('CDU_IdMarca').value = data.CDU_IdMarca;
+						document.getElementById('CDU_Marca').value = data.CDU_Marca;
+						$('#CDU_Marca').trigger('change');
+
+						borrarLineaModeloVehiculo = false;
+						document.getElementById('CDU_Linea').value = data.CDU_IdLinea;
+						$('#CDU_Linea').trigger('change');
+
+						document.getElementById('CDU_Ano').value = data.CDU_Ano;
+						$('#CDU_Ano').trigger('change');
+					}
+
+					$('.ibox-content').toggleClass('sk-loading',false);
+				},
+				error: function(error) {
+					console.error(error.responseText);
 					$('.ibox-content').toggleClass('sk-loading',false);
 				}
 			});
@@ -829,7 +880,7 @@ function Eliminar(){
 							<div class="col-lg-4">
 								<label class="control-label">Dirección</label>
 
-								<input name="Direccion" type="text" required="required" class="form-control" id="Direccion" maxlength="100" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['Direccion'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Direccion']);}?>">
+								<input name="Direccion" type="text" class="form-control" id="Direccion" maxlength="100" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['Direccion'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Direccion']);}?>">
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">Barrio</label>
@@ -849,9 +900,8 @@ function Eliminar(){
 						</div>
 						<div class="form-group">
 						<div class="col-lg-4">
-						<label class="control-label"><i onClick="ConsultarServicio();" title="Consultar llamada de servicio" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Orden servicio</label>
-
-								<select name="OrdenServicio" class="form-control select2" id="OrdenServicio" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
+						<label class="control-label"><i onClick="ConsultarServicio();" title="Consultar llamada de servicio" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Orden servicio <span class="text-danger">*</span></label>
+								<select name="OrdenServicio" class="form-control select2" required="required" id="OrdenServicio" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 										<option value="">Seleccione...</option>
 									<?php if (($type_llmd == 1) || ($sw_error == 1)) {while ($row_NumeroSerie = sqlsrv_fetch_array($SQL_NumeroSerie)) {?>
 										<option value="<?php echo $row_NumeroSerie['SerialInterno']; ?>" <?php if ((isset($row_NumeroSerie['SerialInterno'])) && (strcmp($row_NumeroSerie['SerialInterno'], $row['IdNumeroSerie']) == 0)) {echo "selected=\"selected\"";}?>><?php echo "SN Fabricante: " . $row_NumeroSerie['SerialFabricante'] . " - Núm. Serie: " . $row_NumeroSerie['SerialInterno']; ?></option>
@@ -882,8 +932,8 @@ function Eliminar(){
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">No_Motor</label>
-								<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="CDU_No_Motor" type="text" class="form-control" id="CDU_No_Motor" maxlength="100"
-								value="<?php if (isset($row['CDU_No_Motor'])) {echo $row['CDU_No_Motor'];}?>">
+								<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="No_Motor" type="text" class="form-control" id="No_Motor" maxlength="100"
+								value="<?php if (isset($row['No_Motor'])) {echo $row['No_Motor'];}?>">
 							</div>
 						</div>
 						<div class="form-group">

@@ -594,23 +594,54 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
         echo json_encode($records);
     }
 
-    // Stiven Muño Murillo, 22/12/2021
+    // Stiven Muñoz Murillo, 22/12/2021
     elseif ($type == 44) {
         $SerialInterno = "'" . $_GET['id'] . "'";
-        $SQL = Seleccionar("uvw_Sap_tbl_TarjetasEquipos", "*", "SerialInterno=" . $SerialInterno);
-        $records = array();
-        $row = sqlsrv_fetch_array($SQL);
-        $records = array(
-            'ItemCode' => $row['ItemCode'],
-            'CDU_IdMarca' => $row['CDU_IdMarca'],
-            'CDU_Marca' => $row['CDU_Marca'],
-            'CDU_IdLinea' => $row['CDU_IdLinea'],
-            'CDU_Linea' => $row['CDU_Linea'],
-            'CDU_Ano' => $row['CDU_Ano'],
-            'CDU_Concesionario' => $row['CDU_Concesionario'],
-            'CDU_TipoServicio' => $row['CDU_TipoServicio'],
-        );
-        echo json_encode($records);
+
+        if ($SerialInterno == "''") {
+            $ID_LlamadaServicio = "'" . $_GET['ot'] . "'";
+
+            $SQL = Seleccionar("uvw_Sap_tbl_LlamadasServicios", "IdNumeroSerie", "ID_LlamadaServicio=" . $ID_LlamadaServicio);
+            $row = sqlsrv_fetch_array($SQL);
+
+            if (isset($row['IdNumeroSerie'])) {
+                $SerialInterno = $row['IdNumeroSerie'];
+                $SerialInterno = "'" . $SerialInterno . "'";
+            }
+        }
+
+        if ($SerialInterno != "''") {
+            $SQL = Seleccionar("uvw_Sap_tbl_TarjetasEquipos", "*", "SerialInterno=" . $SerialInterno);
+            $row = sqlsrv_fetch_array($SQL);
+            $records = array(
+                'SerialInterno' => $row['SerialInterno'],
+                'SerialFabricante' => $row['SerialFabricante'],
+                'No_Motor' => $row['CDU_No_Motor'],
+                'ItemCode' => $row['ItemCode'],
+                'CDU_IdMarca' => $row['CDU_IdMarca'],
+                'CDU_Marca' => $row['CDU_Marca'],
+                'CDU_IdLinea' => $row['CDU_IdLinea'],
+                'CDU_Linea' => $row['CDU_Linea'],
+                'CDU_Ano' => $row['CDU_Ano'],
+                'CDU_Concesionario' => $row['CDU_Concesionario'],
+                'CDU_TipoServicio' => $row['CDU_TipoServicio'],
+            );
+            echo json_encode($records);
+        } else {
+            $records = array(
+                'SerialInterno' => null,
+                'SerialFabricante' => null,
+                'No_Motor' => null,
+                'ItemCode' => null,
+                'CDU_IdMarca' => null,
+                'CDU_Marca' => null,
+                'CDU_IdLinea' => null,
+                'CDU_Linea' => null,
+                'CDU_Ano' => null,
+                'CDU_Concesionario' => null,
+                'CDU_TipoServicio' => null);
+            echo json_encode($records);
+        }
     }
 
     sqlsrv_close($conexion);
