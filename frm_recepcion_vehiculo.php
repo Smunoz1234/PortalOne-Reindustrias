@@ -37,8 +37,8 @@ if (isset($_GET['dt_LS']) && ($_GET['dt_LS']) == 1) { //Verificar que viene de u
     //Contacto cliente
     $SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreContacto');
 
-    //Sucursal cliente
-    $SQL_SucursalCliente = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreSucursal');
+    //Sucursal cliente, (Se agrego "TipoDireccion='S' AND ...")
+    $SQL_SucursalCliente = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', '*', "TipoDireccion='S' AND CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreSucursal');
 
     //Orden de servicio
     $SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . base64_decode($_GET['LS']) . "'");
@@ -602,29 +602,27 @@ if (isset($sw_error) && ($sw_error == 1)) {
 				}
 			});
 
-			// Esto estaba en el condicional de abajo, RECARGAR SUCURSAL
-			$.ajax({
-				type: "POST",
-				url: "ajx_cbo_select.php?type=3&id="+Cliente,
-				success: function(response){
-					$('#SucursalCliente').html(response).fadeIn();
-					$('#SucursalCliente').trigger('change');
-				}
-			});
+			<?php if ($dt_LS == 0) { //Para que no recargue las listas cuando vienen de una llamada de servicio. ?>
+				$.ajax({
+					type: "POST",
+					url: "ajx_cbo_select.php?type=3&id="+Cliente,
+					success: function(response){
+						$('#SucursalCliente').html(response).fadeIn();
+						$('#SucursalCliente').trigger('change');
+					}
+				});
 
-			<?php if ($dt_LS == 0) { //Para que no recargue las listas cuando vienen de una llamada de servicio.?>
-			// RECARGAR SUCURSAL, estaba aquí
-
-			// Stiven Muñoz Murillo, 10/01/2022
-			$.ajax({
-				type: "POST",
-				url: "ajx_cbo_select.php?type=6&id="+Cliente,
-				success: function(response){
-					$('#OrdenServicio').html(response).fadeIn();
-					$('#OrdenServicio').trigger('change');
-				}
-			});
+				// Stiven Muñoz Murillo, 10/01/2022
+				$.ajax({
+					type: "POST",
+					url: "ajx_cbo_select.php?type=6&id="+Cliente,
+					success: function(response){
+						$('#OrdenServicio').html(response).fadeIn();
+						$('#OrdenServicio').trigger('change');
+					}
+				});
 			<?php }?>
+
 			$.ajax({
 				type: "POST",
 				url: "ajx_cbo_select.php?type=16&id="+Cliente,
