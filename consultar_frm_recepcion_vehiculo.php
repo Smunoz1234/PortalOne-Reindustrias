@@ -253,15 +253,6 @@ while ($row_Empleados = sqlsrv_fetch_array($SQL_Empleados)) {?>
 								  <?php }?>
 								</select>
 							</div>
-							<label class="col-lg-1 control-label">Supervisor</label>
-							<div class="col-lg-3">
-								<select name="Supervisor" class="form-control select2" id="Supervisor">
-									<option value="">(Todos)</option>
-								  <?php while ($row_Supervisor = sqlsrv_fetch_array($SQL_Supervisor)) {?>
-										<option value="<?php echo $row_Supervisor['id_empleado_supervisor']; ?>" <?php if ((isset($_GET['Supervisor'])) && (strcmp($row_Supervisor['id_empleado_supervisor'], $_GET['Supervisor']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Supervisor['empleado_supervisor']; ?></option>
-								  <?php }?>
-								</select>
-							</div>
 						</div>
 					  	<div class="form-group">
 							<div class="col-lg-4 pull-right">
