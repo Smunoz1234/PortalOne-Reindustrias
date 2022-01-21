@@ -601,7 +601,8 @@ if (isset($sw_error) && ($sw_error == 1)) {
 					//$('.ibox-content').toggleClass('sk-loading',false);
 				}
 			});
-			<?php if ($dt_LS == 0) { //Para que no recargue las listas cuando vienen de una llamada de servicio.?>
+
+			// Esto estaba en el condicional de abajo, RECARGAR SUCURSAL
 			$.ajax({
 				type: "POST",
 				url: "ajx_cbo_select.php?type=3&id="+Cliente,
@@ -610,6 +611,9 @@ if (isset($sw_error) && ($sw_error == 1)) {
 					$('#SucursalCliente').trigger('change');
 				}
 			});
+
+			<?php if ($dt_LS == 0) { //Para que no recargue las listas cuando vienen de una llamada de servicio.?>
+			// RECARGAR SUCURSAL, estaba aquí
 
 			// Stiven Muñoz Murillo, 10/01/2022
 			$.ajax({
