@@ -617,7 +617,8 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
                 'SerialInterno' => $row['SerialInterno'],
                 'SerialFabricante' => $row['SerialFabricante'],
                 'No_Motor' => $row['CDU_No_Motor'],
-                'ItemCode' => $row['ItemCode'],
+                'IdArticuloLlamada' => $row['ItemCode'], // SMM, 24/01/2022
+                'DeArticuloLlamada' => $row['ItemCode'] . " - " . $row['ItemName'], // SMM, 24/01/2022
                 'CDU_IdMarca' => $row['CDU_IdMarca'],
                 'CDU_Marca' => $row['CDU_Marca'],
                 'CDU_IdLinea' => $row['CDU_IdLinea'],
@@ -632,7 +633,8 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
                 'SerialInterno' => null,
                 'SerialFabricante' => null,
                 'No_Motor' => null,
-                'ItemCode' => null,
+                'IdArticuloLlamada' => null,
+                'DeArticuloLlamada' => null,
                 'CDU_IdMarca' => null,
                 'CDU_Marca' => null,
                 'CDU_IdLinea' => null,
@@ -671,9 +673,9 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
                 'IdArticuloLlamada' => $row['ItemCode'],
                 'DeArticuloLlamada' => $row['ItemCode'] . " - " . $row['ItemName'],
                 /*
-                'DeArticuloLlamada' => $row['ItemCode'] . " - " . $row['ItemName'] . 
-                " (SERV: " . substr($row['Servicios'], 0, 20) . " - ÁREA: " . substr($row['Areas'], 0, 20) . ")"
-                */
+            'DeArticuloLlamada' => $row['ItemCode'] . " - " . $row['ItemName'] .
+            " (SERV: " . substr($row['Servicios'], 0, 20) . " - ÁREA: " . substr($row['Areas'], 0, 20) . ")"
+             */
             );
             $j++;
         }
