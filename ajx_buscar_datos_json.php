@@ -669,7 +669,11 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
         while ($row = sqlsrv_fetch_array($SQL)) {
             $records[$j] = array(
                 'IdArticuloLlamada' => $row['ItemCode'],
-                'DeArticuloLlamada' => $row['ItemName'],
+                'DeArticuloLlamada' => $row['ItemCode'] . " - " . $row['ItemName'],
+                /*
+                'DeArticuloLlamada' => $row['ItemCode'] . " - " . $row['ItemName'] . 
+                " (SERV: " . substr($row['Servicios'], 0, 20) . " - ÁREA: " . substr($row['Areas'], 0, 20) . ")"
+                */
             );
             $j++;
         }

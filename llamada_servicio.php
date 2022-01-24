@@ -489,6 +489,9 @@ if ($type_llmd == 1 && $sw_error == 0) {
     //Contratos de servicio
     $SQL_Contrato = Seleccionar('uvw_Sap_tbl_Contratos', '*', "CodigoCliente='" . $row['ID_CodigoCliente'] . "'", 'ID_Contrato');
 
+    // Stiven Muñoz Murillo, 24/01/2022
+    $SQL_Articulo = Seleccionar('uvw_Sap_tbl_ArticulosLlamadas', '*', "ItemCode='" . $row['IdArticuloLlamada'] . "'");
+    $row_Articulo = sqlsrv_fetch_array($SQL_Articulo);
 }
 
 if ($sw_error == 1) {
@@ -527,6 +530,10 @@ if ($sw_error == 1) {
 
     //Contratos de servicio
     $SQL_Contrato = Seleccionar('uvw_Sap_tbl_Contratos', '*', "CodigoCliente='" . $row['ID_CodigoCliente'] . "'", 'ID_Contrato');
+
+    // Stiven Muñoz Murillo, 24/01/2022
+    $SQL_Articulo = Seleccionar('uvw_Sap_tbl_ArticulosLlamadas', '*', "ItemCode='" . $row['IdArticuloLlamada'] . "'");
+    $row_Articulo = sqlsrv_fetch_array($SQL_Articulo);
 }
 
 //Tipo de llamada
@@ -1028,7 +1035,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 						document.getElementById('ArticuloLlamada').value = data.ItemCode;
 						$('#ArticuloLlamada').trigger('change');
 
-						document.getElementById('CDU_Marca').value = data.CDU_Marca;
+						document.getElementById('CDU_Marca').value = data.CDU_IdMarca;
 						$('#CDU_Marca').trigger('change');
 
 						borrarLineaModeloVehiculo = false;
@@ -1332,12 +1339,12 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 						<div class="form-group">
 							<div class="col-lg-8">
 								<label class="control-label"><i onClick="ConsultarArticulo();" title="Consultar ID Servicio" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> ID servicio <span class="text-danger">*</span></label>
-								<select name="ArticuloLlamada" required class="form-control select2" id="ArticuloLlamada" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
-										<option value="">Seleccione...</option>
-									<?php if (($type_llmd == 1) || ($sw_error == 1)) {while ($row_Articulos = sqlsrv_fetch_array($SQL_Articulos)) {?>
-										<option value="<?php echo $row_Articulos['ItemCode']; ?>" <?php if ((isset($row['IdArticuloLlamada'])) && (strcmp($row_Articulos['ItemCode'], $row['IdArticuloLlamada']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Articulos['ItemCode'] . " - " . $row_Articulos['ItemName'] . " (SERV: " . substr($row_Articulos['Servicios'], 0, 20) . " - ÁREA: " . substr($row_Articulos['Areas'], 0, 20) . ")"; ?></option>
-									<?php }}?>
-								</select>
+								<input name="IdArticuloLlamada" type="hidden" id="IdArticuloLlamada" value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['IdArticuloLlamada'];} elseif ($dt_LS == 1) {echo $row_Articulo['ItemCode'];}?>?>">
+
+								<!-- Descripción del Item -->
+								<input name="DeArticuloLlamada" type="text" required="required" class="form-control" id="DeArticuloLlamada" placeholder="Digite para buscar..."
+								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>
+								value="<?php if (($type_llmd == 1) || ($sw_error == 1) || ($dt_LS == 1)) {echo $row_Articulo['ItemCode'] . " - " . $row_Articulo['ItemName'];}?>">
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label"><i onClick="ConsultarEquipo();" title="Consultar tarjeta de equipo" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Tarjeta de equipo</label>
@@ -1588,8 +1595,8 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 									<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) {?>
-									<option value="<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; //['IdMarcaVehiculo'];                                           ?>"
-									<?php if ((isset($row['CDU_Marca'])) && (strcmp($row_MarcaVehiculo['DeMarcaVehiculo'], $row['CDU_Marca']) == 0)) {echo "selected=\"selected\"";}?>>
+									<option value="<?php echo $row_MarcaVehiculo['IdMarcaVehiculo']; ?>"
+									<?php if ((isset($row['CDU_Marca'])) && (strcmp($row_MarcaVehiculo['IdMarcaVehiculo'], $row['CDU_IdMarca']) == 0)) {echo "selected=\"selected\"";}?>>
 										<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
 									</option>
 								  <?php }?>
@@ -1602,8 +1609,8 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_LineaVehiculo = sqlsrv_fetch_array($SQL_LineaVehiculo)) {?>
 										<option value="<?php echo $row_LineaVehiculo['IdLineaModeloVehiculo']; ?>"
-										<?php if ((isset($row['CDU_Linea'])) && (strcmp($row_LineaVehiculo['IdLineaModeloVehiculo'], $row['CDU_Linea']) == 0)) {echo "selected=\"selected\"";}?>>
-											<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; //. " - " . $row_LineaVehiculo['MarcaVehiculo'];                                                  ?>
+										<?php if ((isset($row['CDU_Linea'])) && (strcmp($row_LineaVehiculo['IdLineaModeloVehiculo'], $row['CDU_IdLinea']) == 0)) {echo "selected=\"selected\"";}?>>
+											<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; ?>
 										</option>
 								  <?php }?>
 								</select>
@@ -1629,7 +1636,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_Concesionario = sqlsrv_fetch_array($SQL_Concesionario)) {?>
-										<option value="<?php echo $row_Concesionario['NombreConcesionario']; //['CodigoConcesionario'];                                                          ?>"
+										<option value="<?php echo $row_Concesionario['NombreConcesionario']; //['CodigoConcesionario'];                                                                          ?>"
 										<?php if ((isset($row['CDU_Concesionario'])) && (strcmp($row_Concesionario['NombreConcesionario'], $row['CDU_Concesionario']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_Concesionario['NombreConcesionario']; ?>
 										</option>
@@ -1642,7 +1649,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_Aseguradora = sqlsrv_fetch_array($SQL_Aseguradora)) {?>
-										<option value="<?php echo $row_Aseguradora['NombreAseguradora']; //['CodigoAseguradora'];                                                         ?>"
+										<option value="<?php echo $row_Aseguradora['NombreAseguradora']; //['CodigoAseguradora'];                                                                         ?>"
 										<?php if ((isset($row['CDU_Aseguradora'])) && (strcmp($row_Aseguradora['NombreAseguradora'], $row['CDU_Aseguradora']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_Aseguradora['NombreAseguradora']; ?>
 										</option>
@@ -1670,7 +1677,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_TipoServicio = sqlsrv_fetch_array($SQL_TipoServicio)) {?>
-										<option value="<?php echo $row_TipoServicio['NombreTipoServicio']; //['CodigoTipoServicio'];                                                         ?>"
+										<option value="<?php echo $row_TipoServicio['NombreTipoServicio']; //['CodigoTipoServicio'];                                                                         ?>"
 										<?php if ((isset($row['CDU_TipoServicio'])) && (strcmp($row_TipoServicio['NombreTipoServicio'], $row['CDU_TipoServicio']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_TipoServicio['NombreTipoServicio']; ?>
 										</option>
@@ -1683,7 +1690,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_Contrato = sqlsrv_fetch_array($SQL_ContratosLlamada)) {?>
-										<option value="<?php echo $row_Contrato['NombreContrato']; //['CodigoContrato'];                                                       ?>"
+										<option value="<?php echo $row_Contrato['NombreContrato']; //['CodigoContrato'];                                                                       ?>"
 										<?php if ((isset($row['CDU_Contrato'])) && (strcmp($row_Contrato['NombreContrato'], $row['CDU_Contrato']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_Contrato['NombreContrato']; ?>
 										</option>
@@ -1695,7 +1702,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								<select name="CDU_Asesor" class="form-control select2" required="required" id="CDU_Asesor"
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 								  <?php while ($row_Asesor = sqlsrv_fetch_array($SQL_EmpleadosVentas)) {?>
-										<option value="<?php echo $row_Asesor['DE_EmpVentas']; //['ID_EmpVentas'];                                                      ?>"
+										<option value="<?php echo $row_Asesor['DE_EmpVentas']; //['ID_EmpVentas'];                                                                      ?>"
 										<?php if ((isset($row['CDU_Asesor'])) && (strcmp($row_Asesor['DE_EmpVentas'], $row['CDU_Asesor']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_Asesor['DE_EmpVentas']; ?>
 										</option>
@@ -2208,11 +2215,33 @@ $return = QuitarParametrosURL($return, array("a"));?>
 			}
 		};
 
+		// Stiven Muñoz Murillo, 24/01/2022
+		var options3 = {
+			url: function(phrase) {
+				return "ajx_buscar_datos_json.php?type=46&id="+phrase;
+			},
+			getValue: "DeArticuloLlamada",
+			requestDelay: 400,
+			list: {
+				match: {
+					enabled: true
+				},
+				onClickEvent: function() {
+					var value = $("#DeArticuloLlamada").getSelectedItemData().IdArticuloLlamada;
+					$("#IdArticuloLlamada").val(value).trigger("change");
+				}
+			}
+		};
+
 		<?php
 if ($type_llmd == 0) {?>
 		$("#NombreClienteLlamada").easyAutocomplete(options);
 		<?php }?>
 		$("#CiudadLlamada").easyAutocomplete(options2);
+
+		// Stiven Muñoz Murillo, 24/01/2022
+		$("#DeArticuloLlamada").easyAutocomplete(options3);
+		
 		<?php if ($dt_LS == 1) {?>
 		$('#ClienteLlamada').trigger('change');
 	 	<?php }?>
