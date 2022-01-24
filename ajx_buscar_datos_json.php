@@ -659,5 +659,24 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
         echo json_encode($records);
     }
 
+    // Stiven Muñoz Murillo, 24/01/22
+    elseif ($type == 46) { // Buscar articulos en la llamada por código o descripción
+        $Consulta = "SELECT TOP(10) ItemCode, ItemName FROM uvw_Sap_tbl_ArticulosLlamadas WHERE ItemCode LIKE '%" . $_GET['id'] . "%' OR ItemName LIKE '%" . $_GET['id'] . "%'";
+        $SQL = sqlsrv_query($conexion, $Consulta);
+
+        $j = 0;
+        $records = array();
+        while ($row = sqlsrv_fetch_array($SQL)) {
+            $records[$j] = array(
+                'IdArticuloLlamada' => $row['ItemCode'],
+                'DeArticuloLlamada' => $row['ItemName'],
+            );
+            $j++;
+        }
+        echo json_encode($records);
+    }
+
+    // Después de los condicionales
+    // Se cierra la conexión a la BD
     sqlsrv_close($conexion);
 }

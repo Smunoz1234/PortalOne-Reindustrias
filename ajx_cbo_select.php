@@ -855,7 +855,7 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
             echo "<option value=''>Seleccione...</option>";
         } else {
             $marcaVehiculo = "'" . $_GET['id'] . "'";
-            $SQL = Seleccionar('uvw_Sap_tbl_LlamadasServicios_LineaVehiculo', '*', "MarcaVehiculo=$marcaVehiculo");
+            $SQL = Seleccionar('uvw_Sap_tbl_LlamadasServicios_LineaVehiculo', '*', "IdMarcaVehiculo=$marcaVehiculo");
             $Num = sqlsrv_num_rows($SQL);
             if ($Num) {
                 echo "<option value=''>Seleccione...</option>";
