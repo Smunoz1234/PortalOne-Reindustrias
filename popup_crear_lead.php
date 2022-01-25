@@ -79,7 +79,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
         if ($_POST['CardType'] == "L") { //Si es Lead
             $IdSN = "LD-" . $IdNum;
         } else {
-            $IdSN = "CN-" . $IdNum;
+            $IdSN = "CL-" . $IdNum;
         }
 
         $Cabecera = array(

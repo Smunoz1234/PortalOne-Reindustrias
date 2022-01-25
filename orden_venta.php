@@ -198,7 +198,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Orden de venta
 if (isset($_GET['dt_LS']) && ($_GET['dt_LS']) == 1) { //Verificar que viene de una Llamada de servicio (Datos Llamada servicio).
     $dt_LS = 1;
 
-    if (!isset($_GET['LMT'])) {
+    if (!isset($_GET['LMT']) && $_GET['ItemCode'] != "" && isset($_GET['ItemCode'])) {
         //Consultar datos de la LMT
         $SQL_LMT = Seleccionar('uvw_Sap_tbl_ArticulosLlamadas', '*', "ItemCode='" . base64_decode($_GET['ItemCode']) . "'");
         $row_LMT = sqlsrv_fetch_array($SQL_LMT);

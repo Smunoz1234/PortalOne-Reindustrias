@@ -1906,14 +1906,14 @@ function Validar(){
 		});
 	}
 
-	if(Proyecto.value==""){
-		result=false;
-		Swal.fire({
-			title: '¡Advertencia!',
-			text: 'Debe seleccionar el proyecto del cliente.',
-			icon: 'warning'
-		});
-	}
+	// if(Proyecto.value==""){
+		// result=false;
+		// Swal.fire({
+			// title: '¡Advertencia!',
+			// text: 'Debe seleccionar el proyecto del cliente.',
+			// icon: 'warning'
+		// });
+	//}
 
 //	if(VigenciaCont.value==""){
 //		result=false;
