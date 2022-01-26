@@ -472,7 +472,7 @@ if ($type_llmd == 1 && $sw_error == 0) {
     $SQL_Articulos = EjecutarSP('sp_ConsultarArticulosLlamadas', $ParamArt);
 
     //Numero de series -> Tarjeta de equipo
-    // $SQL_NumeroSerie = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', '*', "ItemCode='" . $row['IdArticuloLlamada'] . "' AND CardCode='" . $row['ID_CodigoCliente'] . "'", 'SerialFabricante');
+    $SQL_NumeroSerie = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', '*', "ItemCode='" . $row['IdArticuloLlamada'] . "' AND CardCode='" . $row['ID_CodigoCliente'] . "'", 'SerialFabricante');
 
     //Lista de materiales
     $SQL_ListaMateriales = Seleccionar('uvw_Sap_tbl_ListaMateriales', '*', "CDU_IdMarca='" . $row['CDU_IdMarca_TarjetaEquipo'] . "' AND CDU_IdLinea='" . $row['CDU_IdLinea_TarjetaEquipo'] . "' AND OcrCode2='" . $_SESSION['CentroCosto2'] . "'");
@@ -517,7 +517,7 @@ if ($sw_error == 1) {
     $SQL_Articulos = EjecutarSP('sp_ConsultarArticulosLlamadas', $ParamArt);
 
     //Numero de series -> Tarjeta de equipo
-    // $SQL_NumeroSerie = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', '*', "ItemCode='" . $row['IdArticuloLlamada'] . "'", 'SerialFabricante');
+    $SQL_NumeroSerie = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', '*', "ItemCode='" . $row['IdArticuloLlamada'] . "'", 'SerialFabricante');
 
     //Activides relacionadas
     $SQL_Actividad = Seleccionar('uvw_Sap_tbl_Actividades', 'IdEstadoActividad,FechaFinActividad,ID_Actividad,DeAsignadoPor,NombreEmpleado,TituloActividad,FechaHoraInicioActividad,FechaHoraFinActividad,DeEstadoActividad', "ID_LlamadaServicio='" . $row['DocEntry'] . "'", 'ID_Actividad');

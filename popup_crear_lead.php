@@ -77,8 +77,10 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
         $IdNum = reset($exp); //Obtengo la primera parte del array
 
         if ($_POST['CardType'] == "L") { //Si es Lead
-            $IdSN = "LD-" . $IdNum;
+			$IdSN = ObtenerVariable("PrefijoAsistenteProspecto") . $IdNum;
+			$IdSN = "LD-" . $IdNum;
         } else {
+            $IdSN = ObtenerVariable("PrefijoAsistenteCliente") . $IdNum;
             $IdSN = "CL-" . $IdNum;
         }
 

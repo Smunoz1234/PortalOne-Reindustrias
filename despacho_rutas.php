@@ -109,6 +109,8 @@ if($sw==1){
 		"'".$SeriesOT."'",
 		"'".$_SESSION['CodUser']."'"
 	);
+//	echo $NomSP;
+//	print_r($Param);
 	$SQL=EjecutarSP($NomSP,$Param);
 //	sqlsrv_next_result($SQL);
 //	print_r($row);
