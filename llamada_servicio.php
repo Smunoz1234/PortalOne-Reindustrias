@@ -121,11 +121,11 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
             "'" . $_POST['CDU_Ano'] . "'",
             "'" . $_POST['CDU_Concesionario'] . "'",
             "'" . $_POST['CDU_Aseguradora'] . "'",
-            "'" . $_POST['CDU_TipoPreventivo'] . "'",
+            "NULL",
             "'" . $_POST['CDU_TipoServicio'] . "'",
             isset($_POST['CDU_Kilometros']) ? $_POST['CDU_Kilometros'] : 0, // int
             "'" . $_POST['CDU_Contrato'] . "'",
-            "'" . $_POST['CDU_Asesor'] . "'",
+            "NULL",
             "'" . $_POST['CDU_ListaMateriales'] . "'",
         );
         $SQL_InsLlamada = EjecutarSP('sp_tbl_LlamadaServicios', $ParamInsLlamada, 32);
@@ -303,7 +303,7 @@ if (isset($_POST['P']) && ($_POST['P'] == 33)) { //Actualizar llamada de servici
             "'" . $_POST['CDU_TipoServicio'] . "'",
             isset($_POST['CDU_Kilometros']) ? $_POST['CDU_Kilometros'] : 0, // int
             "'" . $_POST['CDU_Contrato'] . "'",
-            "'" . $_POST['CDU_Asesor'] . "'",
+            "NULL",
             "'" . $_POST['CDU_ListaMateriales'] . "'",
         );
         $SQL_UpdLlamada = EjecutarSP('sp_tbl_LlamadaServicios', $ParamUpdLlamada, 33);
@@ -599,7 +599,7 @@ $SQL_Concesionario = Seleccionar('uvw_Sap_tbl_LlamadasServicios_Concesionario', 
 $SQL_Aseguradora = Seleccionar('uvw_Sap_tbl_LlamadasServicios_Aseguradoras', '*');
 
 // Tipos preventivos en la llamada de servicio
-$SQL_TipoPreventivo = Seleccionar('uvw_Sap_tbl_LlamadasServicios_TipoPreventivo', '*');
+// $SQL_TipoPreventivo = Seleccionar('uvw_Sap_tbl_LlamadasServicios_TipoPreventivo', '*');
 
 // Tipos de servicio en la llamada de servicio
 $SQL_TipoServicio = Seleccionar('uvw_Sap_tbl_LlamadasServicios_TipoServicio', '*');
@@ -608,7 +608,7 @@ $SQL_TipoServicio = Seleccionar('uvw_Sap_tbl_LlamadasServicios_TipoServicio', '*
 $SQL_ContratosLlamada = Seleccionar('uvw_Sap_tbl_LlamadasServicios_Contratos_TBUsuario', '*');
 
 // Asesores (Empleados de venta) en la llamada de servicio
-$SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*');
+// $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*');
 ?>
 <!DOCTYPE html>
 <html><!-- InstanceBegin template="/Templates/PlantillaPrincipal.dwt.php" codeOutsideHTMLIsLocked="false" -->
@@ -1106,6 +1106,7 @@ function ConsultarDatosCliente(){
 }
 function ConsultarArticulo(){
 	var Articulo=document.getElementById('IdArticuloLlamada');
+	console.log(Articulo.value);
 	if(Articulo.value!=""){
 		self.name='opener';
 		remote=open('articulos.php?id='+Base64.encode(Articulo.value)+'&ext=1&tl=1','remote','location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
@@ -1349,7 +1350,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 						<div class="form-group">
 							<div class="col-lg-8">
 								<label class="control-label"><i onClick="ConsultarArticulo();" title="Consultar ID Servicio" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> ID servicio <span class="text-danger">*</span></label>
-								<input name="IdArticuloLlamada" type="hidden" id="IdArticuloLlamada" value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['IdArticuloLlamada'];} elseif ($dt_LS == 1) {echo $row_Articulo['ItemCode'];}?>?>">
+								<input name="IdArticuloLlamada" type="hidden" id="IdArticuloLlamada" value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['IdArticuloLlamada'];} elseif ($dt_LS == 1) {echo $row_Articulo['ItemCode'];} ?>">
 
 								<!-- Descripción del Item -->
 								<input name="DeArticuloLlamada" type="text" required="required" class="form-control" id="DeArticuloLlamada" placeholder="Digite para buscar..."
@@ -1666,19 +1667,6 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								  <?php }?>
 								</select>
 							</div>
-							<div class="col-lg-4">
-								<label class="control-label">Tipo preventivo <span class="text-danger">*</span></label>
-								<select name="CDU_TipoPreventivo" class="form-control select2" required="required" id="CDU_TipoPreventivo"
-								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
-										<option value="" disabled selected>Seleccione...</option>
-								  <?php while ($row_TipoPreventivo = sqlsrv_fetch_array($SQL_TipoPreventivo)) {?>
-										<option value="<?php echo $row_TipoPreventivo['CodigoTipoPreventivo']; ?>"
-										<?php if ((isset($row['CDU_TipoPreventivo'])) && (strcmp($row_TipoPreventivo['CodigoTipoPreventivo'], $row['CDU_TipoPreventivo']) == 0)) {echo "selected=\"selected\"";}?>>
-											<?php echo $row_TipoPreventivo['TipoPreventivo']; ?>
-										</option>
-								  <?php }?>
-								</select>
-							</div>
 						</div>
 						<div class="form-group">
 							<div class="col-lg-4">
@@ -1703,18 +1691,6 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 										<option value="<?php echo $row_Contrato['NombreContrato']; //['CodigoContrato']; ?>"
 										<?php if ((isset($row['CDU_Contrato'])) && (strcmp($row_Contrato['NombreContrato'], $row['CDU_Contrato']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_Contrato['NombreContrato']; ?>
-										</option>
-								  <?php }?>
-								</select>
-							</div>
-							<div class="col-lg-4">
-								<label class="control-label">Asesor <span class="text-danger">*</span></label>
-								<select name="CDU_Asesor" class="form-control select2" required="required" id="CDU_Asesor"
-								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
-								  <?php while ($row_Asesor = sqlsrv_fetch_array($SQL_EmpleadosVentas)) {?>
-										<option value="<?php echo $row_Asesor['DE_EmpVentas']; //['ID_EmpVentas']; ?>"
-										<?php if ((isset($row['CDU_Asesor'])) && (strcmp($row_Asesor['DE_EmpVentas'], $row['CDU_Asesor']) == 0)) {echo "selected=\"selected\"";}?>>
-											<?php echo $row_Asesor['DE_EmpVentas']; ?>
 										</option>
 								  <?php }?>
 								</select>
