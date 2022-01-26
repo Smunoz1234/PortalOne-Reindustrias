@@ -1320,7 +1320,7 @@ while ($row_ResponsabilidadFiscal = sqlsrv_fetch_array($SQL_ResponsabilidadFisca
 			</div>
 		</div>
 		<div id="tab-7" class="tab-pane">
-			<div id="dv_tarjeta" class="panel-body">
+			<div id="dv_tarjetas" class="panel-body">
 				<!-- Stiven Muñoz Murillo, 26/01/2022 -->
 			</div>
 		</div>
@@ -2481,7 +2481,7 @@ function ConsultarTab(type){
 				type: "POST",
 				url: "sn_tarjetas_equipo.php?id=<?php if ($edit == 1) {echo base64_encode($row['CodigoCliente']);}?>",
 				success: function(response){
-					$('#dv_tarjeta').html(response).fadeIn();
+					$('#dv_tarjetas').html(response).fadeIn();
 					$('.ibox-content').toggleClass('sk-loading',false);
 					tab_7=1;
 				}
