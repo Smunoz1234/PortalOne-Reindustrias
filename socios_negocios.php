@@ -1277,6 +1277,7 @@ while ($row_ResponsabilidadFiscal = sqlsrv_fetch_array($SQL_ResponsabilidadFisca
 <div class="tabs-container">
 	<ul class="nav nav-tabs">
 		<li class="active"><a data-toggle="tab" href="#tab-1"><i class="fa fa-laptop"></i> Listas de materiales</a></li>
+		<li><a data-toggle="tab" href="#tab-7" onClick="ConsultarTab('7');"><i class="fa fa-car"></i> Tarjetas de equipo</a></li>
 		<li><a data-toggle="tab" href="#tab-2" onClick="ConsultarTab('2');"><i class="fa fa-phone"></i> Llamadas de servicios</a></li>
 		<li><a data-toggle="tab" href="#tab-3" onClick="ConsultarTab('3');"><i class="fa fa-calendar"></i> Actividades</a></li>
 		<li><a data-toggle="tab" href="#tab-4"><i class="fa fa-file-text"></i> Facturas pendientes</a></li>
@@ -1316,6 +1317,11 @@ while ($row_ResponsabilidadFiscal = sqlsrv_fetch_array($SQL_ResponsabilidadFisca
 					</tbody>
 				</table>
 				</div>
+			</div>
+		</div>
+		<div id="tab-7" class="tab-pane">
+			<div id="dv_tarjeta" class="panel-body">
+				<!-- Stiven Muñoz Murillo, 26/01/2022 -->
 			</div>
 		</div>
 		<div id="tab-2" class="tab-pane">
@@ -2326,6 +2332,7 @@ function delRow2(btn){//Eliminar div
  var tab_4=0;
  var tab_5=0;
  var tab_6=0;
+ var tab_7=0;
  var tab_501=0;
  var tab_601=0;
 
@@ -2463,6 +2470,22 @@ function ConsultarTab(type){
 					}
 				});
 			}
+		}
+	} 
+
+	// Stiven Muñoz Murillo, 26/01/2022
+	else if(type==7){ // Tarjetas de equipo
+		if(tab_7==0){
+			$('.ibox-content').toggleClass('sk-loading',true);
+			$.ajax({
+				type: "POST",
+				url: "sn_tarjetas_equipo.php?id=<?php if ($edit == 1) {echo base64_encode($row['CodigoCliente']);}?>",
+				success: function(response){
+					$('#dv_tarjeta').html(response).fadeIn();
+					$('.ibox-content').toggleClass('sk-loading',false);
+					tab_7=1;
+				}
+			});
 		}
 	}
 }

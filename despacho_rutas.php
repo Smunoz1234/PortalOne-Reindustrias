@@ -109,7 +109,7 @@ if($sw==1){
 		"'".$SeriesOT."'",
 		"'".$_SESSION['CodUser']."'"
 	);
-//	echo $NomSP;
+//  echo $NomSP;
 //	print_r($Param);
 	$SQL=EjecutarSP($NomSP,$Param);
 //	sqlsrv_next_result($SQL);
@@ -471,6 +471,8 @@ function ExportarEntregas(){
 									<th>Cliente</th>
 									<th>Sucursal cliente</th> 
 									<th>Fecha llamada</th>
+									<th>Estado llamada</th>
+									<th>Serial Interno</th>
 									<th>Fecha actividad</th>	
 									<th>Estado actividad</th>
 									<th>Técnico</th>
@@ -483,7 +485,7 @@ function ExportarEntregas(){
 								</thead>
 								<tbody>
 								<?php $i=0;
-									while($row=sql_fetch_array($SQL)){?>
+									while($row=sql_fetch_array($SQL)) {?>
 									 <tr id="tr_<?php echo $i;?>">
 										<td><a href="llamada_servicio.php?id=<?php echo base64_encode($row['ID_LlamadaServicio']);?>&tl=1" target="_blank"><?php echo $row['DocNum'];?></a></td>
 										<td><?php echo $row['NombreSerie'];?></td>
@@ -491,6 +493,8 @@ function ExportarEntregas(){
 										<td><?php echo $row['NombreCliente'];?></td>
 										<td><?php echo $row['NombreSucursalCliente'];?></td>
 										<td><?php echo $row['FechaCreacionLLamada'];?></td>
+										<td><?php echo $row['DeEstadoLlamada'];?></td>
+										<td><?php echo $row['SerialArticuloLlamada'];?></td>
 										<td><?php echo is_object($row['FechaActividad']) ? $row['FechaActividad']->format('Y-m-d H:i') : $row['FechaActividad'];?></td>
 										<td><?php echo $row['EstadoActividad'];?></td>
 										<td><?php echo $row['NombreEmpleadoActividad'];?></td>

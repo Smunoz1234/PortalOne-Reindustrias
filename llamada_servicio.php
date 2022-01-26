@@ -1350,12 +1350,12 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 						<div class="form-group">
 							<div class="col-lg-8">
 								<label class="control-label"><i onClick="ConsultarArticulo();" title="Consultar ID Servicio" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> ID servicio <span class="text-danger">*</span></label>
-								<input name="IdArticuloLlamada" type="hidden" id="IdArticuloLlamada" value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['IdArticuloLlamada'];} elseif ($dt_LS == 1) {echo $row_Articulo['ItemCode'];} ?>">
+								<input name="IdArticuloLlamada" type="hidden" id="IdArticuloLlamada" value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['IdArticuloLlamada'];} elseif ($dt_LS == 1 && isset($row_Articulo['ItemCode'])) {echo $row_Articulo['ItemCode'];} ?>">
 
 								<!-- Descripción del Item -->
 								<input name="DeArticuloLlamada" type="text" required="required" class="form-control" id="DeArticuloLlamada" placeholder="Digite para buscar..."
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>
-								value="<?php if (($type_llmd == 1) || ($sw_error == 1) || ($dt_LS == 1)) {echo $row_Articulo['ItemCode'] . " - " . $row_Articulo['ItemName'];}?>">
+								value="<?php if (($type_llmd == 1 || $sw_error == 1 || $dt_LS == 1) && isset($row_Articulo['ItemCode'])) {echo $row_Articulo['ItemCode'] . " - " . $row_Articulo['ItemName'];}?>">
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label"><i onClick="ConsultarEquipo();" title="Consultar tarjeta de equipo" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Tarjeta de equipo</label>

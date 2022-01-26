@@ -213,7 +213,9 @@ if(isset($_GET['EstadoServicio'])&&$_GET['EstadoServicio']!=""){
 	$sw=1;
 }*/
 if(isset($_GET['BuscarDato'])&&$_GET['BuscarDato']!=""){
-	$Filtro.=" and ([DocNum] LIKE '%".$_GET['BuscarDato']."%' OR [NombreContactoLlamada] LIKE '%".$_GET['BuscarDato']."%' OR [TelefonoContactoLlamada] LIKE '%".$_GET['BuscarDato']."%' OR [CorreoContactoLlamada] LIKE '%".$_GET['BuscarDato']."%' OR [AsuntoLlamada] LIKE '%".$_GET['BuscarDato']."%' OR [ComentarioLlamada] LIKE '%".$_GET['BuscarDato']."%' OR [ResolucionLlamada] LIKE '%".$_GET['BuscarDato']."%' OR [DeTipoLlamada] LIKE '%".$_GET['BuscarDato']."%' OR [NombreClienteLlamada] LIKE '%".$_GET['BuscarDato']."%')";
+	// Stiven Muñoz Murillo, 26/01/2022
+	// ."%' OR [IdNumeroSerie] LIKE '%".$_GET['BuscarDato']
+	$Filtro.=" and ([DocNum] LIKE '%".$_GET['BuscarDato']."%' OR [IdNumeroSerie] LIKE '%".$_GET['BuscarDato']."%' OR [NombreContactoLlamada] LIKE '%".$_GET['BuscarDato']."%' OR [TelefonoContactoLlamada] LIKE '%".$_GET['BuscarDato']."%' OR [CorreoContactoLlamada] LIKE '%".$_GET['BuscarDato']."%' OR [AsuntoLlamada] LIKE '%".$_GET['BuscarDato']."%' OR [ComentarioLlamada] LIKE '%".$_GET['BuscarDato']."%' OR [ResolucionLlamada] LIKE '%".$_GET['BuscarDato']."%' OR [DeTipoLlamada] LIKE '%".$_GET['BuscarDato']."%' OR [NombreClienteLlamada] LIKE '%".$_GET['BuscarDato']."%')";
 	$sw=1;
 }
 
@@ -485,14 +487,14 @@ if(isset($_GET['a'])&&($_GET['a']==base64_encode("OK_ClosLlam"))){
                     <thead>
                     <tr>
                         <th>Ticket</th>
-						<th>Placa</th>
 						<th>Asignado por</th>
 						<th>Estado servicio</th>
 						<th>Asunto</th>
                         <th>Tipo problema</th>
 						<th>Tipo llamada</th>
 						<th>Cliente</th>   
-						<th>Sucursal</th>   
+						<th>Sucursal</th>
+						<th>Serial Interno</th>   
                         <th>Fecha creación</th>
 						<th>Estado</th>
 						<th>Acciones</th>
@@ -503,7 +505,6 @@ if(isset($_GET['a'])&&($_GET['a']==base64_encode("OK_ClosLlam"))){
                     <?php while($row=sql_fetch_array($SQL)){ ?>
 						<tr class="gradeX">
 							<td><?php echo $row['DocNum'];?></td>
-							<td><?php echo $row['IdNumeroSerie'];?></td>
 							<td><?php echo $row['DeAsignadoPor'];?></td>
 							<td><span <?php if($row['CDU_EstadoServicio']=='0'){echo "class='label label-warning'";}elseif($row['CDU_EstadoServicio']=='1'){echo "class='label label-primary'";}else{echo "class='label label-danger'";}?>><?php echo $row['DeEstadoServicio'];?></span></td>
 							<td><?php echo $row['AsuntoLlamada'];?></td>
@@ -511,6 +512,7 @@ if(isset($_GET['a'])&&($_GET['a']==base64_encode("OK_ClosLlam"))){
 							<td><?php echo $row['DeTipoLlamada'];?></td>
 							<td><?php echo $row['NombreClienteLlamada'];?></td>
 							<td><?php echo $row['NombreSucursal'];?></td>
+							<td><?php echo $row['IdNumeroSerie'];?></td>
 							<td><?php echo $row['FechaHoraCreacionLLamada']->format('Y-m-d H:i');?></td>							
 							<td><span <?php if($row['IdEstadoLlamada']=='-3'){echo "class='label label-info'";}elseif($row['IdEstadoLlamada']=='-2'){echo "class='label label-warning'";}else{echo "class='label label-danger'";}?>><?php echo $row['DeEstadoLlamada'];?></span></td>	
 							<td>
