@@ -485,6 +485,7 @@ if(isset($_GET['a'])&&($_GET['a']==base64_encode("OK_ClosLlam"))){
                     <thead>
                     <tr>
                         <th>Ticket</th>
+						<th>Placa</th>
 						<th>Asignado por</th>
 						<th>Estado servicio</th>
 						<th>Asunto</th>
@@ -502,6 +503,7 @@ if(isset($_GET['a'])&&($_GET['a']==base64_encode("OK_ClosLlam"))){
                     <?php while($row=sql_fetch_array($SQL)){ ?>
 						<tr class="gradeX">
 							<td><?php echo $row['DocNum'];?></td>
+							<td><?php echo $row['IdNumeroSerie'];?></td>
 							<td><?php echo $row['DeAsignadoPor'];?></td>
 							<td><span <?php if($row['CDU_EstadoServicio']=='0'){echo "class='label label-warning'";}elseif($row['CDU_EstadoServicio']=='1'){echo "class='label label-primary'";}else{echo "class='label label-danger'";}?>><?php echo $row['DeEstadoServicio'];?></span></td>
 							<td><?php echo $row['AsuntoLlamada'];?></td>

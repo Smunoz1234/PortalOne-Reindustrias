@@ -40,7 +40,7 @@ $Sede = isset($_GET['Sede']) ? $_GET['Sede'] : "";
 $Grupo = isset($_GET['Grupo']) ? $_GET['Grupo'] : "";
 $Recurso = isset($_GET['Recursos']) ? implode(',', $_GET['Recursos']) : "";
 // SMM
-print_r($Recurso);
+// print_r($Recurso);
 $Cliente = isset($_GET['Cliente']) ? $_GET['Cliente'] : "";
 $NomSucursal = isset($_GET['Sucursal']) ? $_GET['Sucursal'] : "";
 
