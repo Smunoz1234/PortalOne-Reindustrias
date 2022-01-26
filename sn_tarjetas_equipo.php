@@ -31,8 +31,6 @@ $SQL_Tarjetas=Seleccionar('uvw_Sap_tbl_TarjetasEquipos','*',$Where);
 		<thead>
 		<tr>
 			<th>Núm.</th>
-			<th>Código cliente</th>
-			<th>Cliente</th>
 			<th>Serial fabricante</th>                                         
 			<th>Serial interno</th>
 			<th>Código de artículo</th>
@@ -46,8 +44,6 @@ $SQL_Tarjetas=Seleccionar('uvw_Sap_tbl_TarjetasEquipos','*',$Where);
 		<?php while($row_Tarjeta=sqlsrv_fetch_array($SQL_Tarjetas)){?>
 						 <tr class="gradeX tooltip-demo">
 							<td><?php echo $row_Tarjeta['IdTarjetaEquipo'];?></td>
-							<td><?php echo $row_Tarjeta['CardCode'];?></td>
-							<td><?php echo $row_Tarjeta['CardName'];?></td>
 							<td><?php echo $row_Tarjeta['SerialFabricante'];?></td>
 							<td><?php echo $row_Tarjeta['SerialInterno'];?></td>
 							<td><?php echo $row_Tarjeta['ItemCode'];?></td>

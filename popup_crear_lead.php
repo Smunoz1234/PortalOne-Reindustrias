@@ -77,8 +77,8 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
         $IdNum = reset($exp); //Obtengo la primera parte del array
 
         if ($_POST['CardType'] == "L") { //Si es Lead
-			$IdSN = ObtenerVariable("PrefijoAsistenteProspecto") . $IdNum;
-			$IdSN = "LD-" . $IdNum;
+            $IdSN = ObtenerVariable("PrefijoAsistenteProspecto") . $IdNum;
+            $IdSN = "LD-" . $IdNum;
         } else {
             $IdSN = ObtenerVariable("PrefijoAsistenteCliente") . $IdNum;
             $IdSN = "CL-" . $IdNum;
@@ -208,7 +208,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
         } else {
             header('Location:popup_crear_lead.php?a=' . base64_encode("OK_SNAdd"));
         }
-		// Hasta aquí
+        // Hasta aquí
     } catch (Exception $e) {
         echo 'Excepcion capturada: ', $e->getMessage(), "\n";
     }
@@ -688,6 +688,7 @@ function ValidarPrj(){
 	});
 }
 
+<?php if (PermitirFuncion(510)) {?>
 function CrearNombre(){
 	var TipoEntidad=document.getElementById("TipoEntidad");
 	var Nombre=document.getElementById("PNNombres");
@@ -703,6 +704,24 @@ function CrearNombre(){
 		}
 	}
 }
+<?php } else {?>
+// Stiven Muñoz Murillo, 26/01/2022
+function CrearNombre(){
+	var TipoEntidad=document.getElementById("TipoEntidad");
+	var Nombre=document.getElementById("PNNombres");
+	var PrimerApellido=document.getElementById("PNApellido1");
+	var SegundoApellido=document.getElementById("PNApellido2");
+	var CardName=document.getElementById("CardName");
+
+	if(TipoEntidad.value==1){//Natural
+		if(Nombre.value!=""&&PrimerApellido.value!=""){
+			CardName.value=Nombre.value + ' ' + PrimerApellido.value + ' ' + SegundoApellido.value;
+		}else{
+			CardName.value="";
+		}
+	}
+}
+<?php }?>
 
 function BuscarCiudad(){
 	$('.ibox-content').toggleClass('sk-loading',true);
