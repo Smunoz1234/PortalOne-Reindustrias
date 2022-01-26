@@ -1707,14 +1707,17 @@ function Validar(){
 		}
 	}
 
-	if(DirPrincipal==0){
-		result=false;
-		Swal.fire({
-			title: '¡Advertencia!',
-			text: 'Debe tener una dirección PRINCIPAL en la dirección de facturación',
-			icon: 'warning'
-		});
-	}
+	// Stiven Muñoz Murillo, 26/01/2022
+	<?php if (!PermitirFuncion(509)) {?>
+		if(DirPrincipal==0){
+			result=false;
+			Swal.fire({
+				title: '¡Advertencia!',
+				text: 'Debe tener una dirección PRINCIPAL en la dirección de facturación',
+				icon: 'warning'
+			});
+		}
+	<?php }?>
 
 	if(countNomDireccionLleno==0){
 		result=false;
