@@ -77,8 +77,8 @@ $SQL_Dim3 = Seleccionar('uvw_Sap_tbl_DimensionesReparto', '*', 'DimCode=3');
 
 //Proyectos
 $SQL_Proyecto = Seleccionar('uvw_Sap_tbl_Proyectos', '*', '', 'DeProyecto');
-
 ?>
+
 <!doctype html>
 <html>
 <head>
@@ -103,11 +103,12 @@ $SQL_Proyecto = Seleccionar('uvw_Sap_tbl_Proyectos', '*', '', 'DeProyecto');
 <script>
 function Totalizar(num){
 	//alert(num);
+
 	var SubTotal=0;
 	var Descuentos=0;
 	var Iva=0;
 	var Total=0;
-	var i=1;
+
 	for(i=1;i<=num;i++){
 		var TotalLinea=document.getElementById('LineTotal'+i);
 		var PrecioLinea=document.getElementById('Price'+i);
@@ -211,6 +212,24 @@ function BorrarLinea(){
 	}
 }
 
+// Stiven Muñoz Murillo, 27/01/2022
+function BorrarLineaPrincipal(){
+	$.ajax({
+		type: "GET",
+		<?php if ($type == 1) {?>
+		url: "includes/procedimientos.php?type=4&edit=<?php echo $type; ?>&linenum=0&cardcode=<?php echo $CardCode; ?>",
+		<?php } else {?>
+		url: "includes/procedimientos.php?type=4&edit=<?php echo $type; ?>&linenum=0&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
+		<?php }?>
+		success: function(response){
+			console.log(response);
+		},
+		error: function(error){
+			console.error(error);
+		}
+	});
+}
+
 function Seleccionar(ID){
 	var btnBorrarLineas=document.getElementById('btnBorrarLineas');
 	var btnDuplicarLineas=document.getElementById('btnDuplicarLineas');
@@ -277,11 +296,11 @@ function SeleccionarTodos(){
 				<th>Dosificación</th>
 				<th>Stock almacén</th>
 				<?php $row_DimReparto = sqlsrv_fetch_array($SQL_DimReparto);?>
-				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 1    ?></th>
+				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 1                 ?></th>
 				<?php $row_DimReparto = sqlsrv_fetch_array($SQL_DimReparto);?>
-				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 2    ?></th>
+				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 2                 ?></th>
 				<?php $row_DimReparto = sqlsrv_fetch_array($SQL_DimReparto);?>
-				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 3    ?></th>
+				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 3                 ?></th>
 				<th>Proyecto</th>
 				<th>Servicio</th>
 				<th>Método aplicación</th>
@@ -298,7 +317,12 @@ function SeleccionarTodos(){
 		<tbody>
 		<?php
 if ($sw == 1) {
-    $i = 1;
+    $i = 1; // Totalizar
+    
+	// Stiven Muñoz Murillo, 27/01/2022
+    $flag = PermitirFuncion(416);
+
+    // Inicia el ciclo
     while ($row = sqlsrv_fetch_array($SQL)) {
         /**** Campos definidos por el usuario ****/
         sqlsrv_fetch($SQL_Servicios, SQLSRV_SCROLL_ABSOLUTE, -1);
@@ -309,18 +333,20 @@ if ($sw == 1) {
         sqlsrv_fetch($SQL_Dim2, SQLSRV_SCROLL_ABSOLUTE, -1);
         sqlsrv_fetch($SQL_Dim3, SQLSRV_SCROLL_ABSOLUTE, -1);
         sqlsrv_fetch($SQL_Proyecto, SQLSRV_SCROLL_ABSOLUTE, -1);
-
         ?>
 		<tr>
+		<?php // Inicio, comprobando permiso 416. 
+        if ($flag || ($row['LineNum'] != 0)) {?>
+
 			<td class="text-center">
 				<div class="checkbox checkbox-success no-margins">
-					<input type="checkbox" class="chkSel" id="chkSel<?php echo $row['LineNum']; ?>" value="" onChange="Seleccionar('<?php echo $row['LineNum']; ?>');" aria-label="Single checkbox One" <?php if (($row['TreeType'] == "T") && ($row['LineStatus'] != "O") || ($row['LineNum'] == 0)) {echo "disabled='disabled'";}?>><label></label>
+					<input type="checkbox" class="chkSel" id="chkSel<?php echo $row['LineNum']; ?>" value="" onChange="Seleccionar('<?php echo $row['LineNum']; ?>');" aria-label="Single checkbox One" <?php if ($flag && ($row['TreeType'] == "T")) {echo "disabled='disabled'";}?>><label></label>
 				</div>
 			</td>
 
 			<td>
 				<input type="hidden" name="LineNum[]" id="LineNum<?php echo $i; ?>" value="<?php echo $row['LineNum']; ?>">
-				<input size="20" type="text" id="ItemCode<?php echo $i; ?>" name="ItemCode[]" class="form-control" readonly value="<?php echo $row['TreeType'] . $row['LineStatus'] . "-" . $row['ItemCode']; ?>">
+				<input size="20" type="text" id="ItemCode<?php echo $i; ?>" name="ItemCode[]" class="form-control" readonly value="<?php echo $row['ItemCode']; ?>">
 			</td>
 			<td><input size="50" type="text" autocomplete="off" id="ItemName<?php echo $i; ?>" name="ItemName[]" class="form-control" value="<?php echo $row['ItemName']; ?>" maxlength="100" onChange="ActualizarDatos('ItemName',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402))) {echo "readonly";}?>></td>
 			<td><input size="15" type="text" id="UnitMsr<?php echo $i; ?>" name="UnitMsr[]" class="form-control" readonly value="<?php echo $row['UnitMsr']; ?>"></td>
@@ -415,16 +441,19 @@ if ($sw == 1) {
 			<td><input size="15" type="text" id="DiscPrcnt<?php echo $i; ?>" name="DiscPrcnt[]" class="form-control" value="<?php echo number_format($row['DiscPrcnt'], 2); ?>" onChange="ActualizarDatos('DiscPrcnt',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402))) {echo "readonly";}?>></td>
 			<td><input size="15" type="text" id="LineTotal<?php echo $i; ?>" name="LineTotal[]" class="form-control" readonly value="<?php echo number_format($row['LineTotal'], 2); ?>"></td>
 
-
-
 			<td><?php if ($row['Metodo'] == 0) {?><i class="fa fa-check-circle text-info" title="Sincronizado con SAP"></i><?php } else {?><i class="fa fa-times-circle text-danger" title="Aún no enviado a SAP"></i><?php }?></td>
+
+		<?php // Fin, comprobando permiso 416.
+            $i++; // Totalizar
+        }?>
 		</tr>
-		<?php
-$i++;}
-    echo "<script>
-			Totalizar(" . ($i - 1) . ");
-			</script>";
-}
+
+	<?php } // Termina el ciclo
+    echo "<script>Totalizar(" . ($i - 1) . "); </script>";
+
+    // Stiven Muñoz Murillo, 27/01/2022
+    if (!$flag) {echo "<script>BorrarLineaPrincipal(); </script>";}
+} // Termina el "if ($sw == 1)"
 ?>
 		<?php if ($Estado == 1) {?>
 		<tr>
