@@ -39,7 +39,10 @@ if (isset($_GET['type']) && $_GET['type'] != "") {
         //echo json_encode($result);
     } elseif ($_GET['type'] == 4) { //Eliminar una linea del carrito en la Orden de venta
         if ($_GET['edit'] == 1) {
-            $Cons = "Delete From tbl_OrdenVentaDetalleCarrito Where LineNum='" . $_GET['linenum'] . "' And CardCode='" . $_GET['cardcode'] . "' And Usuario='" . $_SESSION['CodUser'] . "'";
+            $linenum = $_GET['linenum'];
+            $cardcode = $_GET['cardcode'];
+            $coduser = $_SESSION['CodUser'];
+            $Cons = "DELETE FROM tbl_OrdenVentaDetalleCarrito WHERE LineNum IN (SELECT VALUE FROM STRING_SPLIT('$linenum', ',')) AND CardCode='$cardcode' AND Usuario='$coduser'";
             $SQL_Cons = sqlsrv_query($conexion, $Cons);
             if ($SQL_Cons) {
                 echo "*Ok*";
