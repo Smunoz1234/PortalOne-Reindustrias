@@ -23,7 +23,7 @@ $SQL_Actividades = Seleccionar('uvw_tbl_Actividades_Rutas','*',$Where);
 $row=sql_fetch_array($SQL_Actividades);
 
 //Asunto actividad
-$SQL_AsuntoActividad=Seleccionar('uvw_Sap_tbl_AsuntosActividad','*',"Id_TipoActividad=3",'DE_AsuntoActividad');
+$SQL_AsuntoActividad=Seleccionar('uvw_Sap_tbl_AsuntosActividad','*',"Id_TipoActividad=2",'DE_AsuntoActividad');
 
 //Empleados
 $SQL_EmpleadoActividad=Seleccionar('uvw_Sap_tbl_Empleados','*',"IdUsuarioSAP=0",'NombreEmpleado');

@@ -381,6 +381,8 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
                 if ($Todos == 1) {
                     echo "<option value=''>(Todos)</option>";
                 }
+
+                echo "<option value=''>Seleccione...</option>"; // SMM, 27/01/22
                 while ($row = sqlsrv_fetch_array($SQL)) {
                     echo "<option value=\"" . $row['IdSucursal'] . "\">" . $row['DeSucursal'] . "</option>";
                 }
@@ -404,6 +406,7 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
                 $SQL = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'WhsCode, WhsName', "IdSeries='" . $_GET['serie'] . "' and IdSucursal='" . $_GET['id'] . "' and IdTipoDocumento='" . $_GET['tdoc'] . "'", "WhsCode, WhsName", 'WhsName');
                 $Num = sqlsrv_num_rows($SQL);
                 if ($Num) {
+                    echo "<option value=''>Seleccione...</option>"; // SMM, 27/01/22
                     while ($row = sqlsrv_fetch_array($SQL)) {
                         echo "<option value=\"" . $row['WhsCode'] . "\">" . $row['WhsName'] . "</option>";
                     }

@@ -599,16 +599,6 @@ function ConsultarDatosCliente(){
 			var Dim3=document.getElementById('Dim3').value;
 			var Serie=document.getElementById('Serie').value;
 
-			// $.ajax({
-			// 	type: "POST",
-			// 	url: "ajx_cbo_select.php?type=20&id="+Dim3+"&serie="+Serie+"&tdoc=15",
-			// 	success: function(response){
-			// 		$('#Almacen').html(response).fadeIn();
-			// 		$('.ibox-content').toggleClass('sk-loading',false);
-			// 		//$('#Almacen').trigger('change');
-			// 	}
-			// });
-
 			let CardCode = document.getElementById('CardCode').value;
 			let TotalItems = document.getElementById('TotalItems').value;
 
@@ -753,7 +743,7 @@ function ConsultarDatosCliente(){
 				success: function(response){
 					$('#Almacen').html(response).fadeIn();
 					$('.ibox-content').toggleClass('sk-loading',false);
-					$('#Almacen').trigger('change');
+					// $('#Almacen').trigger('change');
 				}
 			});
 

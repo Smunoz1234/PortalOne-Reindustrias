@@ -629,16 +629,6 @@ function ConsultarDatosCliente(){
 			var Dim3=document.getElementById('Dim3').value;
 			var Serie=document.getElementById('Serie').value;
 
-			// $.ajax({
-			// 	type: "POST",
-			// 	url: "ajx_cbo_select.php?type=20&id="+Dim3+"&serie="+Serie+"&tdoc=15",
-			// 	success: function(response){
-			// 		$('#Almacen').html(response).fadeIn();
-			// 		$('.ibox-content').toggleClass('sk-loading',false);
-			// 		//$('#Almacen').trigger('change');
-			// 	}
-			// });
-
 			let CardCode = document.getElementById('CardCode').value;
 			let TotalItems = document.getElementById('TotalItems').value;
 
@@ -665,7 +655,7 @@ function ConsultarDatosCliente(){
 								$('.ibox-content').toggleClass('sk-loading',false);
 							}
 						});
-						<?php } else {?>
+					<?php } else {?>
 						$.ajax({
 							type: "GET",
 							url: "registro.php?P=36&doctype=1&type=2&name=OcrCode3&value="+Base64.encode(Dim3)+"&line=0&id=<?php echo $row['ID_OrdenVenta']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
@@ -775,13 +765,14 @@ function ConsultarDatosCliente(){
 			var Dim2=document.getElementById('Dim2').value;
 			var Serie=document.getElementById('Serie').value;
 			var frame=document.getElementById('DataGrid');
+
 			$.ajax({
 				type: "POST",
 				url: "ajx_cbo_select.php?type=20&id="+Dim2+"&serie="+Serie+"&tdoc=17",
 				success: function(response){
 					$('#Almacen').html(response).fadeIn();
 					$('.ibox-content').toggleClass('sk-loading',false);
-					//$('#Almacen').trigger('change');
+					// $('#Almacen').trigger('change');
 				}
 			});
 
