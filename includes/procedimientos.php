@@ -42,7 +42,10 @@ if (isset($_GET['type']) && $_GET['type'] != "") {
             $linenum = $_GET['linenum'];
             $cardcode = $_GET['cardcode'];
             $coduser = $_SESSION['CodUser'];
+
+            // Stiven Muñoz Murillo, 27/01/2022
             $Cons = "DELETE FROM tbl_OrdenVentaDetalleCarrito WHERE LineNum IN (SELECT VALUE FROM STRING_SPLIT('$linenum', ',')) AND CardCode='$cardcode' AND Usuario='$coduser'";
+            
             $SQL_Cons = sqlsrv_query($conexion, $Cons);
             if ($SQL_Cons) {
                 echo "*Ok*";
@@ -182,7 +185,13 @@ if (isset($_GET['type']) && $_GET['type'] != "") {
 
     } elseif ($_GET['type'] == 8) { //Eliminar una linea del carrito en la Entrega de venta
         if ($_GET['edit'] == 1) {
-            $Cons = "Delete From tbl_EntregaVentaDetalleCarrito Where LineNum='" . $_GET['linenum'] . "' And CardCode='" . $_GET['cardcode'] . "' And Usuario='" . $_SESSION['CodUser'] . "'";
+            $linenum = $_GET['linenum'];
+            $cardcode = $_GET['cardcode'];
+            $coduser = $_SESSION['CodUser'];
+
+            // Stiven Muñoz Murillo, 27/01/2022
+            $Cons = "DELETE FROM tbl_EntregaVentaDetalleCarrito WHERE LineNum IN (SELECT VALUE FROM STRING_SPLIT('$linenum', ',')) AND CardCode='$cardcode' AND Usuario='$coduser'";
+
             $SQL_Cons = sqlsrv_query($conexion, $Cons);
             if ($SQL_Cons) {
                 echo "*Ok*";
@@ -322,7 +331,13 @@ if (isset($_GET['type']) && $_GET['type'] != "") {
         }
     } elseif ($_GET['type'] == 17) { //Eliminar una linea del carrito en la Devolucion de venta
         if ($_GET['edit'] == 1) {
-            $Cons = "Delete From tbl_DevolucionVentaDetalleCarrito Where LineNum='" . $_GET['linenum'] . "' And CardCode='" . $_GET['cardcode'] . "' And Usuario='" . $_SESSION['CodUser'] . "'";
+            $linenum = $_GET['linenum'];
+            $cardcode = $_GET['cardcode'];
+            $coduser = $_SESSION['CodUser'];
+
+            // Stiven Muñoz Murillo, 27/01/2022
+            $Cons = "DELETE FROM tbl_DevolucionVentaDetalleCarrito WHERE LineNum IN (SELECT VALUE FROM STRING_SPLIT('$linenum', ',')) AND CardCode='$cardcode' AND Usuario='$coduser'";
+
             $SQL_Cons = sqlsrv_query($conexion, $Cons);
             if ($SQL_Cons) {
                 echo "*Ok*";
