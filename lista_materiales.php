@@ -60,11 +60,12 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar lista de materiales
             "'" . $_POST['CodigoPlantilla'] . "'",
             "'" . $_SESSION['CodUser'] . "'",
             "'" . $_SESSION['CodUser'] . "'",
-            "'" . $_POST['CDU_IdMarca'] . "'",
+			// Campos nuevos
+			"'" . $_POST['CDU_IdMarca'] . "'",
             "'" . $_POST['CDU_IdLinea'] . "'",
 			isset($_POST['CDU_TiempoTarea']) ? $_POST['CDU_TiempoTarea'] : 0, // int
-            $Type,
-        );
+            // Tipo de método
+			$Type);
         $SQL_CabeceraListaMateriales = EjecutarSP('sp_tbl_ListaMateriales', $ParametrosCabListaMateriales, $_POST['P']);
         if ($SQL_CabeceraListaMateriales) {
             $ItemCode = $_POST['ItemCode'];
@@ -537,7 +538,7 @@ while ($row_Plantilla = sqlsrv_fetch_array($SQL_Plantilla)) {?>
 						<textarea name="CDU_Areas" rows="5" class="form-control" id="CDU_Areas" type="text"><?php if (($edit == 1) || ($sw_error == 1)) {echo $row['CDU_Areas'];}?></textarea>
 					</div>
 					<div class="col-lg-4">
-						<label class="control-label">Tiempo tarea</label>
+						<label class="control-label">Tiempo tarea (Minutos)</label>
 						<input name="CDU_TiempoTarea" type="text" class="form-control" id="CDU_TiempoTarea" maxlength="100" value="<?php if (($edit == 1) || ($sw_error == 1)) {echo $row['CDU_TiempoTarea'];}?>">
 					</div>
 				</div>

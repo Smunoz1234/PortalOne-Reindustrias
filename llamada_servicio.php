@@ -1395,7 +1395,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								</select>
 							</div>
 							<div class="col-lg-4">
-								<label class="control-label">Tiempo tarea</label>
+								<label class="control-label">Tiempo tarea (Minutos)</label>
 								<input name="CDU_TiempoTarea" type="text" class="form-control" id="CDU_TiempoTarea" maxlength="100" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "readonly='readonly'";}?> value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['CDU_TiempoTarea'];}?>">
 							</div>
 						</div>
