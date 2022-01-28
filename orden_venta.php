@@ -1,3 +1,10 @@
+<script>
+	// Stiven Muñoz Murillo, 28/01/2022
+	function ajustarCadena(cadena) {
+		return JSON.parse(cadena.replace(/\n|\r/g, ""));
+	}
+</script>
+
 <?php require_once "includes/conexion.php";
 PermitirAcceso(406);
 $dt_LS = 0; //sw para saber si vienen datos de la llamada de servicio. 0 no vienen. 1 si vienen.
@@ -404,6 +411,10 @@ $ParamSerie = array(
 );
 $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 
+// Stiven Muñoz Murillo, 28/01/2022
+$row_encode = isset($row) ? json_encode($row) : "";
+$cadena = isset($row) ? "ajustarCadena('$row_encode')" : "'Not Found'";
+echo "<script> console.log($cadena); </script>";
 ?>
 <!DOCTYPE html>
 <html><!-- InstanceBegin template="/Templates/PlantillaPrincipal.dwt.php" codeOutsideHTMLIsLocked="false" -->
