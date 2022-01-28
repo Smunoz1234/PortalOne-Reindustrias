@@ -1,3 +1,10 @@
+<script>
+	// Stiven Muñoz Murillo, 28/01/2022
+	function ajustarCadena(cadena) {
+		return JSON.parse(cadena.replace(/\n|\r/g, ""));
+	}
+</script>
+
 <?php require_once "includes/conexion.php";
 PermitirAcceso(407);
 $dt_LS = 0; //sw para saber si vienen datos de la llamada de servicio. 0 no vienen. 1 si vienen.
@@ -386,6 +393,10 @@ $ParamSerie = array(
 );
 $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 
+// Stiven Muñoz Murillo, 28/01/2022
+$row_encode = isset($row) ? json_encode($row) : "";
+$cadena = isset($row) ? "ajustarCadena('$row_encode')" : "'Not Found'";
+echo "<script> console.log($cadena); </script>";
 ?>
 <!DOCTYPE html>
 <html><!-- InstanceBegin template="/Templates/PlantillaPrincipal.dwt.php" codeOutsideHTMLIsLocked="false" -->
@@ -1046,9 +1057,9 @@ if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
 					<div class="col-lg-3">
 						<select name="Dim1" class="form-control" id="Dim1" required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "disabled='disabled'";}?>>
 							<option value="">Seleccione...</option>
-						  <?php while ($row_Dim1 = sqlsrv_fetch_array($SQL_Dim1)) {?>
+						  	<?php while ($row_Dim1 = sqlsrv_fetch_array($SQL_Dim1)) {?>
 								<option value="<?php echo $row_Dim1['OcrCode']; ?>" <?php if ((isset($row['OcrCode']) && ($row['OcrCode'] != "")) && (strcmp($row_Dim1['OcrCode'], $row['OcrCode']) == 0)) {echo "selected=\"selected\"";} elseif (($edit == 0) && (!isset($_GET['Dim1'])) && ($row_DatosEmpleados['CentroCosto1'] != "") && (strcmp($row_DatosEmpleados['CentroCosto1'], $row_Dim1['OcrCode']) == 0)) {echo "selected=\"selected\"";} elseif (isset($_GET['Dim1']) && (strcmp($row_Dim1['OcrCode'], base64_decode($_GET['Dim1'])) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Dim1['OcrName']; ?></option>
-						  <?php }?>
+						 	<?php }?>
 						</select>
 					</div>
 					<?php $row_DimReparto = sqlsrv_fetch_array($SQL_DimReparto);?>
@@ -1056,7 +1067,7 @@ if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
 					<div class="col-lg-3">
                     	<select name="Dim2" class="form-control" id="Dim2" required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "disabled='disabled'";}?>>
 							<option value="">Seleccione...</option>
-                          <?php while ($row_Dim2 = sqlsrv_fetch_array($SQL_Dim2)) {?>
+                          	<?php while ($row_Dim2 = sqlsrv_fetch_array($SQL_Dim2)) {?>
 									<option value="<?php echo $row_Dim2['OcrCode']; ?>" <?php if ((isset($row['OcrCode2']) && ($row['OcrCode2'] != "")) && (strcmp($row_Dim2['OcrCode'], $row['OcrCode2']) == 0)) {echo "selected=\"selected\"";} elseif (($edit == 0) && (!isset($_GET['Dim2'])) && ($row_DatosEmpleados['CentroCosto2'] != "") && (strcmp($row_DatosEmpleados['CentroCosto2'], $row_Dim2['OcrCode']) == 0)) {echo "selected=\"selected\"";} elseif (isset($_GET['Dim2']) && (strcmp($row_Dim2['OcrCode'], base64_decode($_GET['Dim2'])) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Dim2['OcrName']; ?></option>
 							<?php }?>
 						</select>
@@ -1066,8 +1077,8 @@ if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
 					<div class="col-lg-3">
 						<select name="Dim3" class="form-control" id="Dim3" required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "disabled='disabled'";}?>>
 							<option value="">Seleccione...</option>
-                          <?php while ($row_Dim3 = sqlsrv_fetch_array($SQL_Dim3)) {?>
-									<option value="<?php echo $row_Dim3['OcrCode']; ?>" <?php if ((isset($row['OcrCode3']) && ($row['OcrCode3'] != "")) && (strcmp($row_Dim3['OcrCode'], $row['OcrCode3']) == 0)) {echo "selected=\"selected\"";} elseif (($edit == 0) && (!isset($_GET['Dim3'])) && ($row_DatosEmpleados['CentroCosto3'] != "") && (strcmp($row_DatosEmpleados['CentroCosto3'], $row_Dim3['OcrCode']) == 0)) {echo "selected=\"selected\"";} elseif (isset($_GET['Dim3']) && (strcmp($row_Dim3['OcrCode'], base64_decode($_GET['Dim3'])) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Dim3['OcrName']; ?></option>
+                          	<?php while ($row_Dim3 = sqlsrv_fetch_array($SQL_Dim3)) {?>
+								<option value="<?php echo $row_Dim3['OcrCode']; ?>" <?php if ((isset($row['OcrCode3']) && ($row['OcrCode3'] != "")) && (strcmp($row_Dim3['OcrCode'], $row['OcrCode3']) == 0)) {echo "selected=\"selected\"";} elseif (($edit == 0) && (!isset($_GET['Dim3'])) && ($row_DatosEmpleados['CentroCosto3'] != "") && (strcmp($row_DatosEmpleados['CentroCosto3'], $row_Dim3['OcrCode']) == 0)) {echo "selected=\"selected\"";} elseif (isset($_GET['Dim3']) && (strcmp($row_Dim3['OcrCode'], base64_decode($_GET['Dim3'])) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Dim3['OcrName']; ?></option>
 							<?php }?>
 						</select>
                	  	</div>
