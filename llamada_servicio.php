@@ -127,6 +127,7 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
             "'" . $_POST['CDU_Contrato'] . "'",
             "NULL",
             "'" . $_POST['CDU_ListaMateriales'] . "'",
+			isset($_POST['CDU_TiempoTarea']) ? $_POST['CDU_TiempoTarea'] : 0, // int
         );
         $SQL_InsLlamada = EjecutarSP('sp_tbl_LlamadaServicios', $ParamInsLlamada, 32);
         if ($SQL_InsLlamada) {
@@ -305,6 +306,7 @@ if (isset($_POST['P']) && ($_POST['P'] == 33)) { //Actualizar llamada de servici
             "'" . $_POST['CDU_Contrato'] . "'",
             "NULL",
             "'" . $_POST['CDU_ListaMateriales'] . "'",
+			isset($_POST['CDU_TiempoTarea']) ? $_POST['CDU_TiempoTarea'] : 0, // int
         );
         $SQL_UpdLlamada = EjecutarSP('sp_tbl_LlamadaServicios', $ParamUpdLlamada, 33);
         if ($SQL_UpdLlamada) {
@@ -1391,6 +1393,10 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 										<option value="<?php echo $row_ListaMateriales['ItemCode']; ?>" <?php if ((isset($row['CDU_ListaMateriales'])) && (strcmp($row_ListaMateriales['ItemCode'], $row['CDU_ListaMateriales']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_ListaMateriales['ItemName']; ?></option>
 									<?php }}?>
 								</select>
+							</div>
+							<div class="col-lg-4">
+								<label class="control-label">Tiempo tarea</label>
+								<input name="CDU_TiempoTarea" type="text" class="form-control" id="CDU_TiempoTarea" maxlength="100" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "readonly='readonly'";}?> value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['CDU_TiempoTarea'];}?>">
 							</div>
 						</div>
 					</div>
