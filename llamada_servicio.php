@@ -300,7 +300,7 @@ if (isset($_POST['P']) && ($_POST['P'] == 33)) { //Actualizar llamada de servici
             "'" . $_POST['CDU_Ano'] . "'",
             "'" . $_POST['CDU_Concesionario'] . "'",
             "'" . $_POST['CDU_Aseguradora'] . "'",
-            "'" . $_POST['CDU_TipoPreventivo'] . "'",
+            "NULL",
             "'" . $_POST['CDU_TipoServicio'] . "'",
             isset($_POST['CDU_Kilometros']) ? $_POST['CDU_Kilometros'] : 0, // int
             "'" . $_POST['CDU_Contrato'] . "'",
@@ -308,6 +308,8 @@ if (isset($_POST['P']) && ($_POST['P'] == 33)) { //Actualizar llamada de servici
             "'" . $_POST['CDU_ListaMateriales'] . "'",
 			isset($_POST['CDU_TiempoTarea']) ? $_POST['CDU_TiempoTarea'] : 0, // int
         );
+
+		// Actualizar la llamada de servicio.
         $SQL_UpdLlamada = EjecutarSP('sp_tbl_LlamadaServicios', $ParamUpdLlamada, 33);
         if ($SQL_UpdLlamada) {
             if (base64_decode($_POST['IdLlamadaPortal']) == "") {
@@ -611,6 +613,11 @@ $SQL_ContratosLlamada = Seleccionar('uvw_Sap_tbl_LlamadasServicios_Contratos_TBU
 
 // Asesores (Empleados de venta) en la llamada de servicio
 // $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*');
+
+// Stiven Muñoz Murillo, 28/01/2022
+$row_encode = isset($row) ? json_encode($row) : "";
+$cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'Not Found'";
+// echo "<script> console.log($cadena); </script>";
 ?>
 <!DOCTYPE html>
 <html><!-- InstanceBegin template="/Templates/PlantillaPrincipal.dwt.php" codeOutsideHTMLIsLocked="false" -->
