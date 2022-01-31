@@ -60,12 +60,14 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar lista de materiales
             "'" . $_POST['CodigoPlantilla'] . "'",
             "'" . $_SESSION['CodUser'] . "'",
             "'" . $_SESSION['CodUser'] . "'",
-			// Campos nuevos
-			"'" . $_POST['CDU_IdMarca'] . "'",
+            // Campos nuevos
+            "'" . $_POST['CDU_IdMarca'] . "'",
             "'" . $_POST['CDU_IdLinea'] . "'",
-			isset($_POST['CDU_TiempoTarea']) ? $_POST['CDU_TiempoTarea'] : 0, // int
+            isset($_POST['CDU_TiempoTarea']) ? $_POST['CDU_TiempoTarea'] : 0, // int
             // Tipo de método
-			$Type);
+            $Type);
+
+        // Insertar a la tabla de PortalOne
         $SQL_CabeceraListaMateriales = EjecutarSP('sp_tbl_ListaMateriales', $ParametrosCabListaMateriales, $_POST['P']);
         if ($SQL_CabeceraListaMateriales) {
             $ItemCode = $_POST['ItemCode'];

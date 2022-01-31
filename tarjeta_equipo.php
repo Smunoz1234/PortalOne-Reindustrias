@@ -34,7 +34,7 @@ if (isset($_POST['swError']) && ($_POST['swError'] != "")) { //Para saber si ha 
 
 $Title = ($edit == 0) ? "Crear tarjeta de equipo" : "Editar tarjeta de equipo";
 
-if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Orden de venta
+if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
     //*** Carpeta temporal ***
     $i = 0; //Archivos
     $RutaAttachSAP = ObtenerDirAttach();
@@ -60,8 +60,8 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Orden de venta
 
         //Armar array de parámetros que se enviaran al procedimiento almacenado
         $ParametrosTarjetaEquipo = array(
-            "NULL",
-            "NULL",
+            "NULL", // ID_Equipo
+            "NULL", // IdEvento
             "'" . base64_decode($_POST['ID_TarjetaEquipo']) . "'",
             "'" . $_POST['TipoEquipo'] . "'",
             "'" . $_POST['SerialFabricante'] . "'",
@@ -117,6 +117,8 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Orden de venta
             "'" . FormatoFecha($_POST['CDU_FechaProx_AlinBalan']) . "'",
             "'" . $_POST['CDU_TipoServicio'] . "'",
         );
+
+        // Insertar a la tabla de PortalOne
         $SQL_CabeceraTarjetaEquipo = EjecutarSP('sp_tbl_TarjetaEquipo', $ParametrosTarjetaEquipo, $_POST['P']);
         if ($SQL_CabeceraTarjetaEquipo) {
             $row_CabeceraTarjetaEquipo = sqlsrv_fetch_array($SQL_CabeceraTarjetaEquipo);
@@ -125,6 +127,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Orden de venta
             try {
                 //Mover los anexos a la carpeta de archivos de SAP
                 $j = 0;
+                $Anexos = array(); // Anexos (WebService)
                 while ($j < $CantFiles) {
                     $Archivo = FormatoNombreAnexo($DocFiles[$j]);
                     $NuevoNombre = $Archivo[0];
@@ -133,7 +136,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Orden de venta
 
                     if (file_exists($dir_new)) {
                         copy($dir . $DocFiles[$j], $dir_new . $NuevoNombre);
-                        //copy($dir_new.$NuevoNombre,$RutaAttachSAP[0].$NuevoNombre);
+                        copy($dir_new . $NuevoNombre, $RutaAttachSAP[0] . $NuevoNombre);
 
                         //Registrar archivo en la BD
                         $ParamInsAnex = array(
@@ -145,11 +148,26 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Orden de venta
                             "'" . $_SESSION['CodUser'] . "'",
                             "1",
                         );
+
                         $SQL_InsAnex = EjecutarSP('sp_tbl_DocumentosSAP_Anexos', $ParamInsAnex, $_POST['P']);
                         if (!$SQL_InsAnex) {
                             $sw_error = 1;
                             $msg_error = "Error al insertar los anexos.";
                         }
+
+                        // Anexos
+                        array_push($Anexos, array(
+                            "id_anexo" => $j,
+                            "tipo_documento" => 0,
+                            "id_documento" => null,
+                            "archivo" => $OnlyName,
+                            "ext_archivo" => $Ext,
+                            "metodo" => 1,
+                            "fecha" => FormatoFechaToSAP(date('Y-m-d')),
+                            "id_usuario" => intval($_SESSION['CodUser']),
+                            "comentarios" => "",
+                            "id_destino_evidencia" => "",
+                        ));
                     }
                     $j++;
                 }
@@ -157,11 +175,88 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Orden de venta
                 echo 'Excepcion capturada: ', $e->getMessage(), "\n";
             }
 
-            if ($sw_error == 0) {
-                $Msg = ($edit == 1) ? "OK_TarjetaEquipoUpdate" : "OK_TarjetaEquipoAdd";
-                header('Location:tarjeta_equipo.php?id=' . $_POST['ID_TarjetaEquipo'] . '&tl=1&a=' . base64_encode($Msg));
-            }
+            // Inicio, Insertar en WebService
 
+            //Consultar cabecera
+            $SQL_json = Seleccionar("tbl_TarjetaEquipo", '*', "ID_Equipo=" . $IdNewTarjetaEquipo);
+            $row_json = sqlsrv_fetch_array($SQL_json);
+
+            $Cabecera = array(
+                // "id_tarjeta_equipo" => $row_json['IdTarjetaEquipo'],
+                "id_tipo_equipo" => $_POST['TipoEquipo'],
+                "id_estado" => $_POST['CodEstado'],
+                "id_contacto" => $row_json['CodigoContacto'],
+                "telefono_contacto" => $_POST['TelefonoCliente'],
+                "numero_serial_interno" => $_POST['SerialInterno'],
+                "numero_serial_fabricante" => $_POST['SerialFabricante'],
+                "id_articulo" => $_POST['ItemCode'],
+                "articulo" => $_POST['ItemName'],
+                "id_socio_negocio" => $_POST['ClienteEquipo'],
+                "socio_negocio" => $_POST['NombreClienteEquipo'],
+                "direccion" => $_POST['Calle'] . " " . $_POST['CalleNum'],
+                "id_postal" => $_POST['CodigoPostal'],
+                "barrio" => "",
+                "distrito" => $_POST['Distrito'],
+                "ciudad" => $_POST['Ciudad'],
+                "id_pais" => $_POST['Pais'],
+                "id_territorio" => $row_json['IdTerritorio'],
+                "id_tecnico_responsable" => $row_json['IdTecnico'],
+                "id_anexo" => $row_json['IdAnexo'],
+                "id_doc_portal" => "",
+                "usuario_creacion" => $_SESSION['User'],
+                // "usuario_actualizacion" => $_SESSION['User'],
+                // "fecha_actualizacion" => ($row_json['FechaActualizacion']->format('Y-m-d') . "T" . $row_json['FechaActualizacion']->format('H:i:s')),
+                // "hora_actualizacion" => ($row_json['FechaActualizacion']->format('Y-m-d') . "T" . $row_json['FechaActualizacion']->format('H:i:s')),
+                // "seg_actualizacion" => intval($row_json['FechaActualizacion']->format('s')),
+                // "metodo" => $Metodo,
+                "CDU_id_marca" => $_POST['CDU_Marca'],
+                "CDU_id_linea" => $_POST['CDU_Linea'],
+                "CDU_annio" => $_POST['CDU_Ano'],
+                "CDU_id_concesionario" => $_POST['CDU_Concesionario'],
+                "CDU_id_color" => $_POST['CDU_Color'],
+                "CDU_id_cilindraje" => $_POST['CDU_Cilindraje'],
+                "CDU_id_tipo_servicio" => $_POST['CDU_TipoServicio'],
+                "CDU_fecha_matricula" => ($row_json['CDU_FechaMatricula']->format('Y-m-d') . "T" . $row_json['CDU_FechaMatricula']->format('H:i:s')),
+                "CDU_fecha_tecnicomecanica" => ($row_json['CDU_Fecha_Tecno']->format('Y-m-d') . "T" . $row_json['CDU_Fecha_Tecno']->format('H:i:s')),
+                "CDU_fecha_soat" => ($row_json['CDU_Fecha_SOAT']->format('Y-m-d') . "T" . $row_json['CDU_Fecha_SOAT']->format('H:i:s')),
+                "CDU_fecha_ult_cambio_aceite" => ($row_json['CDU_FechaUlt_CambAceite']->format('Y-m-d') . "T" . $row_json['CDU_FechaUlt_CambAceite']->format('H:i:s')),
+                "CDU_fecha_ult_mantenimiento" => ($row_json['CDU_FechaUlt_Mant']->format('Y-m-d') . "T" . $row_json['CDU_FechaUlt_Mant']->format('H:i:s')),
+                "CDU_fecha_ult_cambio_llanta" => ($row_json['CDU_FechaUlt_CambLlantas']->format('Y-m-d') . "T" . $row_json['CDU_FechaUlt_CambLlantas']->format('H:i:s')),
+                "CDU_fecha_ult_alineacion_balanceo" => ($row_json['CDU_FechaUlt_AlinBalan']->format('Y-m-d') . "T" . $row_json['CDU_FechaUlt_AlinBalan']->format('H:i:s')),
+                "anexos" => $Anexos,
+            );
+
+            /*
+            $Cabecera_json = json_encode($Cabecera);
+            echo $Cabecera_json;
+            exit();
+             */
+
+            //Enviar datos al WebServices
+            try {
+                if ($_POST['tl'] == 0) { //Creando
+                    $Metodo = "TarjetaEquipos";
+                    $Resultado = EnviarWebServiceSAP($Metodo, $Cabecera, true, true);
+                } else { //Editando
+                    $Metodo = "TarjetaEquipos/" . base64_decode($_POST['ID_TarjetaEquipo']);
+                    $Resultado = EnviarWebServiceSAP($Metodo, $Cabecera, true, true, "PUT");
+                }
+
+                if ($Resultado->Success == 0) {
+                    $sw_error = 1;
+                    $msg_error = $Resultado->Mensaje;
+                    $Cabecera_json = json_encode($Cabecera);
+                } else {
+                    $Msg = ($_POST['tl'] == 1) ? "OK_TarjetaEquipoUpdate" : "OK_TarjetaEquipoAdd";
+                    // sqlsrv_close($conexion);
+                    header('Location:tarjeta_equipo.php?id=' . $_POST['ID_TarjetaEquipo'] . '&tl=1&a=' . base64_encode($Msg));
+                    $edit = 1;
+                    $_GET['a'] = base64_encode($Msg);
+                }
+            } catch (Exception $e) {
+                echo 'Excepcion capturada: ', $e->getMessage(), "\n";
+            }
+            // Fin, Insertar en WebService
         } else {
             $sw_error = 1;
             $msg_error = "Ha ocurrido un error al crear la orden de venta";
@@ -179,7 +274,7 @@ if ($edit == 1 && $sw_error == 0) { //Editando la tarjeta de equipo
         $SQL = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', '*', "IdTarjetaEquipo='" . $IdTarjetaEquipo . "'");
     }
 
-    var_dump($IdTarjetaEquipo);
+    // var_dump($IdTarjetaEquipo);
     $row = sqlsrv_fetch_array($SQL);
 
     //Clientes
@@ -297,7 +392,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 		$(document).ready(function() {
 			Swal.fire({
                 title: '¡Ha ocurrido un error!',
-                text: '" . LSiqmlObs($msg_error) . "',
+                text: `" . LSiqmlObs($msg_error) . "`,
                 icon: 'warning'
             });
 		});
@@ -619,7 +714,7 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Ano" class="form-control select2" required="required" id="CDU_Ano">
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_ModeloVehiculo = sqlsrv_fetch_array($SQL_ModeloVehiculo)) {?>
-										<option value="<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; //['CodigoModeloVehiculo'];                       ?>"
+										<option value="<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; //['CodigoModeloVehiculo'];                                                               ?>"
 										<?php if (isset($row['CDU_Ano']) && ((strcmp($row_ModeloVehiculo['CodigoModeloVehiculo'], $row['CDU_Ano']) == 0) || (strcmp($row_ModeloVehiculo['AñoModeloVehiculo'], $row['CDU_Ano']) == 0))) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; ?>
 										</option>
@@ -633,7 +728,7 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Concesionario" class="form-control select2" required="required" id="CDU_Concesionario">
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_Concesionario = sqlsrv_fetch_array($SQL_Concesionario)) {?>
-										<option value="<?php echo $row_Concesionario['NombreConcesionario']; //['CodigoConcesionario'];                              ?>"
+										<option value="<?php echo $row_Concesionario['NombreConcesionario']; //['CodigoConcesionario'];                                                                      ?>"
 										<?php if (isset($row['CDU_Concesionario']) && (strcmp($row_Concesionario['NombreConcesionario'], $row['CDU_Concesionario']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_Concesionario['NombreConcesionario']; ?>
 										</option>
@@ -645,7 +740,7 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Color" class="form-control select2" required="required" id="CDU_Color">
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_ColorVehiculo = sqlsrv_fetch_array($SQL_ColorVehiculo)) {?>
-										<option value="<?php echo $row_ColorVehiculo['NombreColorVehiculo']; //['CodigoColorVehiculo'];                    ?>"
+										<option value="<?php echo $row_ColorVehiculo['NombreColorVehiculo']; //['CodigoColorVehiculo'];                                                            ?>"
 										<?php if (isset($row['CDU_Color']) && (strcmp($row_ColorVehiculo['NombreColorVehiculo'], $row['CDU_Color']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_ColorVehiculo['NombreColorVehiculo']; ?>
 										</option>
@@ -659,7 +754,7 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Cilindraje" class="form-control select2" required="required" id="CDU_Cilindraje">
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_Cilindraje = sqlsrv_fetch_array($SQL_CilindrajeVehiculo)) {?>
-										<option value="<?php echo $row_Cilindraje['DescripcionCilindraje']; //['CodigoCilindraje'];                 ?>"
+										<option value="<?php echo $row_Cilindraje['DescripcionCilindraje']; //['CodigoCilindraje'];                                                         ?>"
 										<?php if (isset($row['CDU_Cilindraje']) && (strcmp($row_Cilindraje['DescripcionCilindraje'], $row['CDU_Cilindraje']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_Cilindraje['DescripcionCilindraje']; ?>
 										</option>
@@ -671,7 +766,7 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_TipoServicio" class="form-control select2" required="required" id="CDU_TipoServicio">
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_TipoServicio = sqlsrv_fetch_array($SQL_TipoServicio)) {?>
-										<option value="<?php echo $row_TipoServicio['NombreTipoServicio']; //['CodigoTipoServicio'];                             ?>"
+										<option value="<?php echo $row_TipoServicio['NombreTipoServicio']; //['CodigoTipoServicio'];                                                                     ?>"
 										<?php if (isset($row['CDU_TipoServicio']) && (strcmp($row_TipoServicio['NombreTipoServicio'], $row['CDU_TipoServicio']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_TipoServicio['NombreTipoServicio']; ?>
 										</option>

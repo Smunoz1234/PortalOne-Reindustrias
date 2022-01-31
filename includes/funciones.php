@@ -565,6 +565,9 @@ function ObtenerDirAttach()
 
 function EnviarWebServiceSAP($pNombreWS, $pParametros, $pJSON = false, $pAPI = false, $method = 'POST')
 {
+    // Stiven Muñoz Murillo, 31/01/2022
+    // console.log(localStorage.getItem("WebServiceDate"));
+    echo "<script> localStorage.setItem('WebServiceDate', new Date()); </script>";
 
     if (!$pJSON) {
         $result = array();
@@ -615,7 +618,7 @@ function EnviarWebServiceSAP($pNombreWS, $pParametros, $pJSON = false, $pAPI = f
             //Meto en result solo los atributos obtenidos al sacar el atributo padre
             $result = $result->$Objeto;
             curl_close($curl);
-            //echo json_encode($json);
+            echo json_encode($json);
             //print($json);
             //$jsonnew=json_decode($json);
             //echo "Success: ".$jsonnew['Success'];
@@ -627,6 +630,10 @@ function EnviarWebServiceSAP($pNombreWS, $pParametros, $pJSON = false, $pAPI = f
             $apiUrl = $Url . $pNombreWS;
             $payload = json_encode($pParametros);
             $JWT = "";
+
+            // Stiven Muñoz Murillo, 31/01/2022
+            // JSON.parse(localStorage.getItem("WebServiceBody"));
+            echo "<script> localStorage.setItem('WebServiceBody', JSON.stringify($payload)); </script>";
 
             if ((isset($_SESSION['JWT'])) && ($_SESSION['JWT'] != "")) {
                 $JWT = "Authorization: Bearer " . $_SESSION['JWT'];
@@ -661,6 +668,11 @@ function EnviarWebServiceSAP($pNombreWS, $pParametros, $pJSON = false, $pAPI = f
             //Decodifico el JSON en la variable $result
             $result = json_decode($json);
             curl_close($curl);
+
+            // Stiven Muñoz Murillo, 31/01/2022
+            // JSON.parse(localStorage.getItem("WebServiceResponse"));
+            echo "<script> localStorage.setItem('WebServiceResponse', JSON.stringify($json));  </script>";
+
             return $result;
         }
 
