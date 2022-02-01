@@ -110,6 +110,7 @@ $(document).ready(function() {
 
 });
 function Reload(){
+	console.log("entre")
 	blockUI();
 	let RecursosList=window.sessionStorage.getItem('ResourceList')
 	let Param='';

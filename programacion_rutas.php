@@ -735,7 +735,7 @@ function Validar(){
 }
 
 function EjecutarProceso(){
-	blockUI();
+	blockUI(); // Cargando.
 	var Evento=document.getElementById("IdEvento").value;
 	$.ajax({
 		url:"ajx_ejecutar_json.php",
@@ -776,6 +776,11 @@ function EjecutarProceso(){
 //					$('#ModalAct').modal("show");
 //				}
 //			});
+		},
+		// Stiven Muñoz Murillo, 01/02/2022
+		error: function(error) {
+			blockUI(false); // Quita el cargando.
+			console.error(error.responseText);
 		}
 	});
 }

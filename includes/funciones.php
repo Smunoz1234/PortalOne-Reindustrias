@@ -565,9 +565,8 @@ function ObtenerDirAttach()
 
 function EnviarWebServiceSAP($pNombreWS, $pParametros, $pJSON = false, $pAPI = false, $method = 'POST')
 {
-    // Stiven Muñoz Murillo, 31/01/2022
-    // console.log(localStorage.getItem("WebServiceDate"));
-    echo "<script> localStorage.setItem('WebServiceDate', new Date()); </script>";
+    // Stiven Muñoz Murillo, 01/02/2022
+    InsertarLogWS('', json_encode($pParametros));
 
     if (!$pJSON) {
         $result = array();
@@ -615,14 +614,14 @@ function EnviarWebServiceSAP($pNombreWS, $pParametros, $pJSON = false, $pAPI = f
             $result = json_decode($json);
             //Como el primer atributo del JSON en el nombre del parametro mas la palabra Result, los concateno para que devuelva solo los atributos necesarios
             $Objeto = $pNombreWS . 'Result';
+
             //Meto en result solo los atributos obtenidos al sacar el atributo padre
             $result = $result->$Objeto;
             curl_close($curl);
-            echo json_encode($json);
-            //print($json);
-            //$jsonnew=json_decode($json);
-            //echo "Success: ".$jsonnew['Success'];
-            //var_dump(json_decode($json, true));
+
+            // Stiven Muñoz Murillo, 01/02/2022
+            InsertarLogWS(json_encode($result), json_encode($pParametros));
+
             return $result;
         } else {
             //PARA CONECTARSE A UNA API QUE DEVUELVE UN OBJETO EN JSON
@@ -630,10 +629,6 @@ function EnviarWebServiceSAP($pNombreWS, $pParametros, $pJSON = false, $pAPI = f
             $apiUrl = $Url . $pNombreWS;
             $payload = json_encode($pParametros);
             $JWT = "";
-
-            // Stiven Muñoz Murillo, 31/01/2022
-            // JSON.parse(localStorage.getItem("WebServiceBody"));
-            echo "<script> localStorage.setItem('WebServiceBody', JSON.stringify($payload)); </script>";
 
             if ((isset($_SESSION['JWT'])) && ($_SESSION['JWT'] != "")) {
                 $JWT = "Authorization: Bearer " . $_SESSION['JWT'];
@@ -665,13 +660,13 @@ function EnviarWebServiceSAP($pNombreWS, $pParametros, $pJSON = false, $pAPI = f
                     $json = json_encode($json_array);
                 }
             }
+
             //Decodifico el JSON en la variable $result
             $result = json_decode($json);
             curl_close($curl);
 
-            // Stiven Muñoz Murillo, 31/01/2022
-            // JSON.parse(localStorage.getItem("WebServiceResponse"));
-            echo "<script> localStorage.setItem('WebServiceResponse', JSON.stringify($json));  </script>";
+            // Stiven Muñoz Murillo, 01/02/2022
+            InsertarLogWS(json_encode($result), json_encode($pParametros));
 
             return $result;
         }
@@ -1415,4 +1410,29 @@ function EnviarMail($email_destino, $nombre_destino = "", $tipo_email = 0, $asun
 $InsertLog="Insert Into tbl_Log Values ('".date('Y-m-d H:i:s')."','".$_SESSION['CodUser']."','Success',50,'Send Email: ".$email_destino."')";
 sqlsrv_query($conexion,$InsertLog);
 }*/
+}
+
+// Stiven Muñoz Murillo, 01/02/2022
+function InsertarLogWS($respuesta = '', $cuerpo = '')
+{
+    global $conexion;
+
+    $respuesta = str_replace("'", "''", $respuesta);
+    $cuerpo = str_replace("'", "''", $cuerpo);
+    $usuario = isset($_SESSION['CodUser']) ? $_SESSION['CodUser'] : 0;
+    $consulta = "EXEC sp_tbl_LogWS $usuario, '$respuesta', '$cuerpo'";
+
+    if (!sqlsrv_query($conexion, $consulta)) {
+        $respuesta = utf8_encode($respuesta);
+        $cuerpo = utf8_encode($cuerpo);
+        $consulta = "EXEC sp_tbl_LogWS $usuario, '$respuesta', '$cuerpo'";
+
+        if (!sqlsrv_query($conexion, $consulta)) {
+            echo "Error al insertar LogWS";
+            echo "<br>";
+            echo $consulta;
+
+            exit();
+        }
+    }
 }

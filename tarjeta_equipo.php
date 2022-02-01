@@ -201,7 +201,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
                 "id_pais" => $_POST['Pais'],
                 "id_territorio" => $row_json['IdTerritorio'],
                 "id_tecnico_responsable" => $row_json['IdTecnico'],
-                "id_anexo" => $row_json['IdAnexo'],
+                "id_anexo" => null,
                 "id_doc_portal" => "",
                 "usuario_creacion" => $_SESSION['User'],
                 // "usuario_actualizacion" => $_SESSION['User'],
@@ -223,7 +223,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
                 "CDU_fecha_ult_mantenimiento" => ($row_json['CDU_FechaUlt_Mant']->format('Y-m-d') . "T" . $row_json['CDU_FechaUlt_Mant']->format('H:i:s')),
                 "CDU_fecha_ult_cambio_llanta" => ($row_json['CDU_FechaUlt_CambLlantas']->format('Y-m-d') . "T" . $row_json['CDU_FechaUlt_CambLlantas']->format('H:i:s')),
                 "CDU_fecha_ult_alineacion_balanceo" => ($row_json['CDU_FechaUlt_AlinBalan']->format('Y-m-d') . "T" . $row_json['CDU_FechaUlt_AlinBalan']->format('H:i:s')),
-                "anexos" => $Anexos,
+                "anexos" => (count($Anexos) > 0) ? $Anexos : null,
             );
 
             /*
@@ -353,7 +353,7 @@ $SQL_TipoServicio = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_TipoServicio', '*')
 // Stiven Muñoz Murillo, 28/01/2022
 $row_encode = isset($row) ? json_encode($row) : "";
 $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'Not Found'";
-// echo "<script> console.log($cadena); </script>";
+echo "<script> console.log($cadena); </script>";
 ?>
 <!DOCTYPE html>
 <html><!-- InstanceBegin template="/Templates/PlantillaPrincipal.dwt.php" codeOutsideHTMLIsLocked="false" -->
@@ -634,7 +634,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=176 and VerEnD
 							</div>
 							<label class="col-lg-1 control-label">Número de contacto</label>
 							<div class="col-lg-3">
-								<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="TelefonoCliente" type="text" class="form-control" id="TelefonoCliente" maxlength="150" value="<?php if (isset($row['TelefonoCliente'])) {echo $row['TelefonoCliente'];}?>" readonly="readonly">
+								<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="TelefonoCliente" type="text" class="form-control" id="TelefonoCliente" maxlength="150" value="<?php if (isset($row['TelefonoCliente'])) {echo $row['TelefonoCliente'];}?>">
 							</div>
 						</div>
 						<div class="form-group">
@@ -691,7 +691,7 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 									<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) {?>
 									<option value="<?php echo $row_MarcaVehiculo['IdMarcaVehiculo']; ?>"
-									<?php if ((isset($row['CDU_Marca'])) && (strcmp($row_MarcaVehiculo['IdMarcaVehiculo'], $row['CDU_Marca']) == 0)) {echo "selected=\"selected\"";}?>>
+									<?php if ((isset($row['CDU_IdMarca'])) && (strcmp($row_MarcaVehiculo['IdMarcaVehiculo'], $row['CDU_IdMarca']) == 0)) {echo "selected=\"selected\"";}?>>
 										<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
 									</option>
 								  <?php }?>
@@ -703,7 +703,7 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_LineaVehiculo = sqlsrv_fetch_array($SQL_LineaVehiculo)) {?>
 										<option value="<?php echo $row_LineaVehiculo['IdLineaModeloVehiculo']; ?>"
-										<?php if ((isset($row['CDU_Linea'])) && (strcmp($row_LineaVehiculo['IdLineaModeloVehiculo'], $row['CDU_Linea']) == 0)) {echo "selected=\"selected\"";}?>>
+										<?php if ((isset($row['CDU_IdLinea'])) && (strcmp($row_LineaVehiculo['IdLineaModeloVehiculo'], $row['CDU_IdLinea']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; ?>
 										</option>
 								  <?php }?>
@@ -714,7 +714,7 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Ano" class="form-control select2" required="required" id="CDU_Ano">
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_ModeloVehiculo = sqlsrv_fetch_array($SQL_ModeloVehiculo)) {?>
-										<option value="<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; //['CodigoModeloVehiculo'];                                                               ?>"
+										<option value="<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; //['CodigoModeloVehiculo'];                                                                 ?>"
 										<?php if (isset($row['CDU_Ano']) && ((strcmp($row_ModeloVehiculo['CodigoModeloVehiculo'], $row['CDU_Ano']) == 0) || (strcmp($row_ModeloVehiculo['AñoModeloVehiculo'], $row['CDU_Ano']) == 0))) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; ?>
 										</option>
@@ -728,7 +728,7 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Concesionario" class="form-control select2" required="required" id="CDU_Concesionario">
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_Concesionario = sqlsrv_fetch_array($SQL_Concesionario)) {?>
-										<option value="<?php echo $row_Concesionario['NombreConcesionario']; //['CodigoConcesionario'];                                                                      ?>"
+										<option value="<?php echo $row_Concesionario['NombreConcesionario']; //['CodigoConcesionario'];                                                                        ?>"
 										<?php if (isset($row['CDU_Concesionario']) && (strcmp($row_Concesionario['NombreConcesionario'], $row['CDU_Concesionario']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_Concesionario['NombreConcesionario']; ?>
 										</option>
@@ -740,7 +740,7 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Color" class="form-control select2" required="required" id="CDU_Color">
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_ColorVehiculo = sqlsrv_fetch_array($SQL_ColorVehiculo)) {?>
-										<option value="<?php echo $row_ColorVehiculo['NombreColorVehiculo']; //['CodigoColorVehiculo'];                                                            ?>"
+										<option value="<?php echo $row_ColorVehiculo['NombreColorVehiculo']; //['CodigoColorVehiculo'];                                                              ?>"
 										<?php if (isset($row['CDU_Color']) && (strcmp($row_ColorVehiculo['NombreColorVehiculo'], $row['CDU_Color']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_ColorVehiculo['NombreColorVehiculo']; ?>
 										</option>
@@ -754,7 +754,7 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Cilindraje" class="form-control select2" required="required" id="CDU_Cilindraje">
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_Cilindraje = sqlsrv_fetch_array($SQL_CilindrajeVehiculo)) {?>
-										<option value="<?php echo $row_Cilindraje['DescripcionCilindraje']; //['CodigoCilindraje'];                                                         ?>"
+										<option value="<?php echo $row_Cilindraje['DescripcionCilindraje']; //['CodigoCilindraje'];                                                           ?>"
 										<?php if (isset($row['CDU_Cilindraje']) && (strcmp($row_Cilindraje['DescripcionCilindraje'], $row['CDU_Cilindraje']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_Cilindraje['DescripcionCilindraje']; ?>
 										</option>
@@ -766,7 +766,7 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_TipoServicio" class="form-control select2" required="required" id="CDU_TipoServicio">
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_TipoServicio = sqlsrv_fetch_array($SQL_TipoServicio)) {?>
-										<option value="<?php echo $row_TipoServicio['NombreTipoServicio']; //['CodigoTipoServicio'];                                                                     ?>"
+										<option value="<?php echo $row_TipoServicio['NombreTipoServicio']; //['CodigoTipoServicio'];                                                                       ?>"
 										<?php if (isset($row['CDU_TipoServicio']) && (strcmp($row_TipoServicio['NombreTipoServicio'], $row['CDU_TipoServicio']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_TipoServicio['NombreTipoServicio']; ?>
 										</option>
