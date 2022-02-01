@@ -246,10 +246,13 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
                     $sw_error = 1;
                     $msg_error = $Resultado->Mensaje;
                     $Cabecera_json = json_encode($Cabecera);
+					//echo "<script>alert('$msg_error'); location = 'tarjeta_equipo.php';</script>";
                 } else {
                     $Msg = ($_POST['tl'] == 1) ? "OK_TarjetaEquipoUpdate" : "OK_TarjetaEquipoAdd";
                     // sqlsrv_close($conexion);
-                    header('Location:tarjeta_equipo.php?id=' . $_POST['ID_TarjetaEquipo'] . '&tl=1&a=' . base64_encode($Msg));
+                    // header('Location:tarjeta_equipo.php?id=' . $_POST['ID_TarjetaEquipo'] . '&tl=1&a=' . base64_encode($Msg));
+					//header('Location:tarjeta_equipo.php');
+					//echo "<script>alert('Almacenado correctamente.');</script>";
                     $edit = 1;
                     $_GET['a'] = base64_encode($Msg);
                 }
@@ -259,7 +262,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
             // Fin, Insertar en WebService
         } else {
             $sw_error = 1;
-            $msg_error = "Ha ocurrido un error al crear la orden de venta";
+            $msg_error = "Ha ocurrido un error al crear la tarjeta de equipo";
         }
     } catch (Exception $e) {
         echo 'Excepcion capturada: ', $e->getMessage(), "\n";
@@ -353,7 +356,7 @@ $SQL_TipoServicio = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_TipoServicio', '*')
 // Stiven Muñoz Murillo, 28/01/2022
 $row_encode = isset($row) ? json_encode($row) : "";
 $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'Not Found'";
-echo "<script> console.log($cadena); </script>";
+// echo "<script> console.log($cadena); </script>";
 ?>
 <!DOCTYPE html>
 <html><!-- InstanceBegin template="/Templates/PlantillaPrincipal.dwt.php" codeOutsideHTMLIsLocked="false" -->

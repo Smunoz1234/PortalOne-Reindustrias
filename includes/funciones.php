@@ -1420,19 +1420,19 @@ function InsertarLogWS($respuesta = '', $cuerpo = '')
     $respuesta = str_replace("'", "''", $respuesta);
     $cuerpo = str_replace("'", "''", $cuerpo);
     $usuario = isset($_SESSION['CodUser']) ? $_SESSION['CodUser'] : 0;
+
     $consulta = "EXEC sp_tbl_LogWS $usuario, '$respuesta', '$cuerpo'";
 
+    // Hace la consulta y en caso de error vuelve a consultar utilizando
+    // el método que almacena un registro de los procedimientos ejecutados.
     if (!sqlsrv_query($conexion, $consulta)) {
-        $respuesta = utf8_encode($respuesta);
-        $cuerpo = utf8_encode($cuerpo);
-        $consulta = "EXEC sp_tbl_LogWS $usuario, '$respuesta', '$cuerpo'";
 
-        if (!sqlsrv_query($conexion, $consulta)) {
-            echo "Error al insertar LogWS";
-            echo "<br>";
-            echo $consulta;
+        $params = array(
+            $usuario,
+            "'" . utf8_encode($respuesta) . "'",
+            "'" . utf8_encode($cuerpo) . "'",
+        );
 
-            exit();
-        }
+        EjecutarSP('sp_tbl_LogWS', $params);
     }
 }
