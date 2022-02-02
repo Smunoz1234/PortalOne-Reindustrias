@@ -28,6 +28,8 @@ if (isset($_GET['ext']) && ($_GET['ext'] == 1)) {
 
 if (isset($_POST['swError']) && ($_POST['swError'] != "")) { //Para saber si ha ocurrido un error.
     $sw_error = $_POST['swError'];
+} elseif (isset($_GET['swError']) && ($_GET['swError'] != "")) {
+    $sw_error = $_GET['swError'];
 } else {
     $sw_error = 0;
 }
@@ -68,8 +70,8 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
             "'" . $_POST['SerialInterno'] . "'",
             "'" . $_POST['ItemCode'] . "'",
             "'" . $_POST['ItemName'] . "'",
-            "'" . $_POST['ClienteEquipo'] . "'",
-            "'" . $_POST['NombreClienteEquipo'] . "'",
+            "'" . $_POST['ClienteEquipo'] . "'", // CardCode
+            "'" . $_POST['NombreClienteEquipo'] . "'", // CardName
             "'" . $_POST['ContactoCliente'] . "'",
             "'" . $_POST['IdTecnico'] . "'",
             "'" . $_POST['IdTerritorio'] . "'",
@@ -78,43 +80,43 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
             "'" . $_POST['SerieNueva'] . "'",
             "'" . $_POST['CardCodeCompras'] . "'",
             "'" . $_POST['CardNameCompras'] . "'",
-            "'" . $_POST['DocEntryEntrega'] . "'",
+            isset($_POST['DocEntryEntrega']) ? $_POST['DocEntryEntrega'] : "''",
             "'" . $_POST['DocNumEntrega'] . "'",
-            "'" . $_POST['DocEntryFactura'] . "'",
+            isset($_POST['DocEntryFactura']) ? $_POST['DocEntryFactura'] : "''",
             "'" . $_POST['DocNumFactura'] . "'",
             "'" . $_POST['Calle'] . "'",
-            "'" . $_POST['CalleNum'] . "'",
-            "'" . $_POST['Edificio'] . "'",
+            isset($_POST['CalleNum']) ? $_POST['CalleNum'] : "''",
+            isset($_POST['Edificio']) ? $_POST['Edificio'] : "''",
             "'" . $_POST['CodigoPostal'] . "'",
-            "'" . $_POST['Barrio'] . "'",
+            isset($_POST['Barrio']) ? $_POST['Barrio'] : "''",
             "'" . $_POST['Ciudad'] . "'",
             "'" . $_POST['EstadoPais'] . "'",
             "'" . $_POST['Distrito'] . "'",
-            "'" . $_POST['Pais'] . "'",
-            "'" . $_POST['IdAnexo'] . "'",
+            isset($_POST['Pais']) ? $_POST['Pais'] : "''",
+            isset($_POST['IdAnexo']) ? $_POST['IdAnexo'] : "''",
             $Metodo,
             "'" . $_SESSION['CodUser'] . "'",
             "'" . $_SESSION['CodUser'] . "'",
             "1",
             // Nuevos campos
-            "'" . $_POST['CDU_Marca'] . "'",
-            "'" . $_POST['CDU_Linea'] . "'",
+            "'" . $_POST['CDU_IdMarca'] . "'",
+            "'" . $_POST['CDU_IdLinea'] . "'",
             "'" . $_POST['CDU_Ano'] . "'",
             "'" . $_POST['CDU_Concesionario'] . "'",
             "'" . $_POST['CDU_No_Motor'] . "'",
             "'" . $_POST['CDU_Color'] . "'",
             "'" . $_POST['CDU_Cilindraje'] . "'",
-            "'" . FormatoFecha($_POST['CDU_FechaUlt_CambAceite']) . "'",
-            "'" . FormatoFecha($_POST['CDU_FechaProx_CambAceite']) . "'",
-            "'" . FormatoFecha($_POST['CDU_FechaUlt_Mant']) . "'",
-            "'" . FormatoFecha($_POST['CDU_FechaProx_Mant']) . "'",
-            "'" . FormatoFecha($_POST['CDU_FechaMatricula']) . "'",
-            "'" . FormatoFecha($_POST['CDU_FechaUlt_CambLlantas']) . "'",
-            "'" . FormatoFecha($_POST['CDU_FechaProx_CambLlantas']) . "'",
-            "'" . FormatoFecha($_POST['CDU_Fecha_SOAT']) . "'",
-            "'" . FormatoFecha($_POST['CDU_Fecha_Tecno']) . "'",
-            "'" . FormatoFecha($_POST['CDU_FechaUlt_AlinBalan']) . "'",
-            "'" . FormatoFecha($_POST['CDU_FechaProx_AlinBalan']) . "'",
+            strtotime($_POST['CDU_FechaUlt_CambAceite']) ? ("'" . FormatoFecha($_POST['CDU_FechaUlt_CambAceite']) . "'") : "NULL",
+            strtotime($_POST['CDU_FechaProx_CambAceite']) ? ("'" . FormatoFecha($_POST['CDU_FechaProx_CambAceite']) . "'") : "NULL",
+            strtotime($_POST['CDU_FechaUlt_Mant']) ? ("'" . FormatoFecha($_POST['CDU_FechaUlt_Mant']) . "'") : "NULL",
+            strtotime($_POST['CDU_FechaProx_Mant']) ? ("'" . FormatoFecha($_POST['CDU_FechaProx_Mant']) . "'") : "NULL",
+            strtotime($_POST['CDU_FechaMatricula']) ? ("'" . FormatoFecha($_POST['CDU_FechaMatricula']) . "'") : "NULL",
+            strtotime($_POST['CDU_FechaUlt_CambLlantas']) ? ("'" . FormatoFecha($_POST['CDU_FechaUlt_CambLlantas']) . "'") : "NULL",
+            strtotime($_POST['CDU_FechaProx_CambLlantas']) ? ("'" . FormatoFecha($_POST['CDU_FechaProx_CambLlantas']) . "'") : "NULL",
+            strtotime($_POST['CDU_Fecha_SOAT']) ? ("'" . FormatoFecha($_POST['CDU_Fecha_SOAT']) . "'") : "NULL",
+            strtotime($_POST['CDU_Fecha_Tecno']) ? ("'" . FormatoFecha($_POST['CDU_Fecha_Tecno']) . "'") : "NULL",
+            strtotime($_POST['CDU_FechaUlt_AlinBalan']) ? ("'" . FormatoFecha($_POST['CDU_FechaUlt_AlinBalan']) . "'") : "NULL",
+            strtotime($_POST['CDU_FechaProx_AlinBalan']) ? ("'" . FormatoFecha($_POST['CDU_FechaProx_AlinBalan']) . "'") : "NULL",
             "'" . $_POST['CDU_TipoServicio'] . "'",
         );
 
@@ -122,7 +124,9 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
         $SQL_CabeceraTarjetaEquipo = EjecutarSP('sp_tbl_TarjetaEquipo', $ParametrosTarjetaEquipo, $_POST['P']);
         if ($SQL_CabeceraTarjetaEquipo) {
             $row_CabeceraTarjetaEquipo = sqlsrv_fetch_array($SQL_CabeceraTarjetaEquipo);
-            $IdNewTarjetaEquipo = $row_CabeceraTarjetaEquipo[0];
+            $IdTarjetaEquipo = $row_CabeceraTarjetaEquipo[0]; // Nuevo ID de TE
+            
+			echo "<script> console.log($IdTarjetaEquipo); </script>";
 
             try {
                 //Mover los anexos a la carpeta de archivos de SAP
@@ -141,7 +145,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
                         //Registrar archivo en la BD
                         $ParamInsAnex = array(
                             "'176'",
-                            "'" . $IdNewTarjetaEquipo . "'",
+                            "'" . $IdTarjetaEquipo . "'",
                             "'" . $OnlyName . "'",
                             "'" . $Ext . "'",
                             "1",
@@ -178,7 +182,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
             // Inicio, Insertar en WebService
 
             //Consultar cabecera
-            $SQL_json = Seleccionar("tbl_TarjetaEquipo", '*', "ID_Equipo=" . $IdNewTarjetaEquipo);
+            $SQL_json = Seleccionar("tbl_TarjetaEquipo", '*', "ID_Equipo=" . $IdTarjetaEquipo);
             $row_json = sqlsrv_fetch_array($SQL_json);
 
             $Cabecera = array(
@@ -193,7 +197,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
                 "articulo" => $_POST['ItemName'],
                 "id_socio_negocio" => $_POST['ClienteEquipo'],
                 "socio_negocio" => $_POST['NombreClienteEquipo'],
-                "direccion" => $_POST['Calle'] . " " . $_POST['CalleNum'],
+                "direccion" => $_POST['Calle'],
                 "id_postal" => $_POST['CodigoPostal'],
                 "barrio" => "",
                 "distrito" => $_POST['Distrito'],
@@ -209,20 +213,20 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
                 // "hora_actualizacion" => ($row_json['FechaActualizacion']->format('Y-m-d') . "T" . $row_json['FechaActualizacion']->format('H:i:s')),
                 // "seg_actualizacion" => intval($row_json['FechaActualizacion']->format('s')),
                 // "metodo" => $Metodo,
-                "CDU_id_marca" => $_POST['CDU_Marca'],
-                "CDU_id_linea" => $_POST['CDU_Linea'],
+                "CDU_id_marca" => $_POST['CDU_IdMarca'],
+                "CDU_id_linea" => $_POST['CDU_IdLinea'],
                 "CDU_annio" => $_POST['CDU_Ano'],
                 "CDU_id_concesionario" => $_POST['CDU_Concesionario'],
                 "CDU_id_color" => $_POST['CDU_Color'],
                 "CDU_id_cilindraje" => $_POST['CDU_Cilindraje'],
                 "CDU_id_tipo_servicio" => $_POST['CDU_TipoServicio'],
-                "CDU_fecha_matricula" => ($row_json['CDU_FechaMatricula']->format('Y-m-d') . "T" . $row_json['CDU_FechaMatricula']->format('H:i:s')),
-                "CDU_fecha_tecnicomecanica" => ($row_json['CDU_Fecha_Tecno']->format('Y-m-d') . "T" . $row_json['CDU_Fecha_Tecno']->format('H:i:s')),
-                "CDU_fecha_soat" => ($row_json['CDU_Fecha_SOAT']->format('Y-m-d') . "T" . $row_json['CDU_Fecha_SOAT']->format('H:i:s')),
-                "CDU_fecha_ult_cambio_aceite" => ($row_json['CDU_FechaUlt_CambAceite']->format('Y-m-d') . "T" . $row_json['CDU_FechaUlt_CambAceite']->format('H:i:s')),
-                "CDU_fecha_ult_mantenimiento" => ($row_json['CDU_FechaUlt_Mant']->format('Y-m-d') . "T" . $row_json['CDU_FechaUlt_Mant']->format('H:i:s')),
-                "CDU_fecha_ult_cambio_llanta" => ($row_json['CDU_FechaUlt_CambLlantas']->format('Y-m-d') . "T" . $row_json['CDU_FechaUlt_CambLlantas']->format('H:i:s')),
-                "CDU_fecha_ult_alineacion_balanceo" => ($row_json['CDU_FechaUlt_AlinBalan']->format('Y-m-d') . "T" . $row_json['CDU_FechaUlt_AlinBalan']->format('H:i:s')),
+                "CDU_fecha_matricula" => isset($row_json['CDU_FechaMatricula']) ? ($row_json['CDU_FechaMatricula']->format('Y-m-d') . "T" . $row_json['CDU_FechaMatricula']->format('H:i:s')) : null,
+                "CDU_fecha_tecnicomecanica" => isset($row_json['CDU_Fecha_Tecno']) ? ($row_json['CDU_Fecha_Tecno']->format('Y-m-d') . "T" . $row_json['CDU_Fecha_Tecno']->format('H:i:s')) : null,
+                "CDU_fecha_soat" => isset($row_json['CDU_Fecha_SOAT']) ? ($row_json['CDU_Fecha_SOAT']->format('Y-m-d') . "T" . $row_json['CDU_Fecha_SOAT']->format('H:i:s')) : null,
+                "CDU_fecha_ult_cambio_aceite" => isset($row_json['CDU_FechaUlt_CambAceite']) ? ($row_json['CDU_FechaUlt_CambAceite']->format('Y-m-d') . "T" . $row_json['CDU_FechaUlt_CambAceite']->format('H:i:s')) : null,
+                "CDU_fecha_ult_mantenimiento" => isset($row_json['CDU_FechaUlt_Mant']) ? ($row_json['CDU_FechaUlt_Mant']->format('Y-m-d') . "T" . $row_json['CDU_FechaUlt_Mant']->format('H:i:s')) : null,
+                "CDU_fecha_ult_cambio_llanta" => isset($row_json['CDU_FechaUlt_CambLlantas']) ? ($row_json['CDU_FechaUlt_CambLlantas']->format('Y-m-d') . "T" . $row_json['CDU_FechaUlt_CambLlantas']->format('H:i:s')) : null,
+                "CDU_fecha_ult_alineacion_balanceo" => isset($row_json['CDU_FechaUlt_AlinBalan']) ? ($row_json['CDU_FechaUlt_AlinBalan']->format('Y-m-d') . "T" . $row_json['CDU_FechaUlt_AlinBalan']->format('H:i:s')) : null,
                 "anexos" => (count($Anexos) > 0) ? $Anexos : null,
             );
 
@@ -246,13 +250,14 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
                     $sw_error = 1;
                     $msg_error = $Resultado->Mensaje;
                     $Cabecera_json = json_encode($Cabecera);
-					//echo "<script>alert('$msg_error'); location = 'tarjeta_equipo.php';</script>";
+                    //header("Location:tarjeta_equipo.php?id=$IdTarjetaEquipo&swError=1&a=" . base64_encode($Msg));
+                    //echo "<script>alert('$msg_error'); location = 'tarjeta_equipo.php';</script>";
                 } else {
                     $Msg = ($_POST['tl'] == 1) ? "OK_TarjetaEquipoUpdate" : "OK_TarjetaEquipoAdd";
                     // sqlsrv_close($conexion);
                     // header('Location:tarjeta_equipo.php?id=' . $_POST['ID_TarjetaEquipo'] . '&tl=1&a=' . base64_encode($Msg));
-					//header('Location:tarjeta_equipo.php');
-					//echo "<script>alert('Almacenado correctamente.');</script>";
+                    //header('Location:tarjeta_equipo.php');
+                    //echo "<script>alert('Almacenado correctamente.');</script>";
                     $edit = 1;
                     $_GET['a'] = base64_encode($Msg);
                 }
@@ -301,7 +306,7 @@ if ($edit == 1 && $sw_error == 0) { //Editando la tarjeta de equipo
 
 if ($sw_error == 1) {
     //Si ocurre un error, vuelvo a consultar los datos insertados desde la base de datos.
-    $SQL = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', '*', "IdTarjetaEquipo='" . $IdTarjetaEquipo . "'");
+    $SQL = Seleccionar('tbl_TarjetaEquipo', '*', "ID_Equipo='" . $IdTarjetaEquipo . "'");
     $row = sqlsrv_fetch_array($SQL);
 
     //Clientes
@@ -356,7 +361,7 @@ $SQL_TipoServicio = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_TipoServicio', '*')
 // Stiven Muñoz Murillo, 28/01/2022
 $row_encode = isset($row) ? json_encode($row) : "";
 $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'Not Found'";
-// echo "<script> console.log($cadena); </script>";
+echo "<script> console.log($cadena); </script>";
 ?>
 <!DOCTYPE html>
 <html><!-- InstanceBegin template="/Templates/PlantillaPrincipal.dwt.php" codeOutsideHTMLIsLocked="false" -->
@@ -445,15 +450,15 @@ if (isset($sw_error) && ($sw_error == 1)) {
 			$('.ibox-content').toggleClass('sk-loading',false);
 		});
 		// Stiven Muñoz Murillo, 20/12/2021
-		$("#CDU_Marca").change(function(){
+		$("#CDU_IdMarca").change(function(){
 			$('.ibox-content').toggleClass('sk-loading',true);
-			var marcaVehiculo=document.getElementById('CDU_Marca').value;
+			var marcaVehiculo=document.getElementById('CDU_IdMarca').value;
 			$.ajax({
 				type: "POST",
 				url: "ajx_cbo_select.php?type=39&id="+marcaVehiculo,
 				success: function(response){
-					$('#CDU_Linea').html(response).fadeIn();
-					$('#CDU_Linea').trigger('change');
+					$('#CDU_IdLinea').html(response).fadeIn();
+					$('#CDU_IdLinea').trigger('change');
 					$('.ibox-content').toggleClass('sk-loading',false);
 				}
 			});
@@ -690,7 +695,7 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 						<div class="form-group">
 							<div class="col-lg-4">
 								<label class="control-label">Marca del vehículo <span class="text-danger">*</span></label>
-								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Marca" class="form-control select2" required="required" id="CDU_Marca">
+								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_IdMarca" class="form-control select2" required="required" id="CDU_IdMarca">
 									<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) {?>
 									<option value="<?php echo $row_MarcaVehiculo['IdMarcaVehiculo']; ?>"
@@ -702,7 +707,7 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">Línea del vehículo <span class="text-danger">*</span></label>
-								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Linea" class="form-control select2" required="required" id="CDU_Linea">
+								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_IdLinea" class="form-control select2" required="required" id="CDU_IdLinea">
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_LineaVehiculo = sqlsrv_fetch_array($SQL_LineaVehiculo)) {?>
 										<option value="<?php echo $row_LineaVehiculo['IdLineaModeloVehiculo']; ?>"
@@ -717,7 +722,7 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Ano" class="form-control select2" required="required" id="CDU_Ano">
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_ModeloVehiculo = sqlsrv_fetch_array($SQL_ModeloVehiculo)) {?>
-										<option value="<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; //['CodigoModeloVehiculo'];                                                                 ?>"
+										<option value="<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; //['CodigoModeloVehiculo'];                                                                             ?>"
 										<?php if (isset($row['CDU_Ano']) && ((strcmp($row_ModeloVehiculo['CodigoModeloVehiculo'], $row['CDU_Ano']) == 0) || (strcmp($row_ModeloVehiculo['AñoModeloVehiculo'], $row['CDU_Ano']) == 0))) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; ?>
 										</option>
@@ -731,7 +736,7 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Concesionario" class="form-control select2" required="required" id="CDU_Concesionario">
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_Concesionario = sqlsrv_fetch_array($SQL_Concesionario)) {?>
-										<option value="<?php echo $row_Concesionario['NombreConcesionario']; //['CodigoConcesionario'];                                                                        ?>"
+										<option value="<?php echo $row_Concesionario['NombreConcesionario']; //['CodigoConcesionario'];                                                                                    ?>"
 										<?php if (isset($row['CDU_Concesionario']) && (strcmp($row_Concesionario['NombreConcesionario'], $row['CDU_Concesionario']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_Concesionario['NombreConcesionario']; ?>
 										</option>
@@ -743,7 +748,7 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Color" class="form-control select2" required="required" id="CDU_Color">
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_ColorVehiculo = sqlsrv_fetch_array($SQL_ColorVehiculo)) {?>
-										<option value="<?php echo $row_ColorVehiculo['NombreColorVehiculo']; //['CodigoColorVehiculo'];                                                              ?>"
+										<option value="<?php echo $row_ColorVehiculo['NombreColorVehiculo']; //['CodigoColorVehiculo'];                                                                          ?>"
 										<?php if (isset($row['CDU_Color']) && (strcmp($row_ColorVehiculo['NombreColorVehiculo'], $row['CDU_Color']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_ColorVehiculo['NombreColorVehiculo']; ?>
 										</option>
@@ -757,7 +762,7 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Cilindraje" class="form-control select2" required="required" id="CDU_Cilindraje">
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_Cilindraje = sqlsrv_fetch_array($SQL_CilindrajeVehiculo)) {?>
-										<option value="<?php echo $row_Cilindraje['DescripcionCilindraje']; //['CodigoCilindraje'];                                                           ?>"
+										<option value="<?php echo $row_Cilindraje['DescripcionCilindraje']; //['CodigoCilindraje'];                                                                       ?>"
 										<?php if (isset($row['CDU_Cilindraje']) && (strcmp($row_Cilindraje['DescripcionCilindraje'], $row['CDU_Cilindraje']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_Cilindraje['DescripcionCilindraje']; ?>
 										</option>
@@ -769,7 +774,7 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_TipoServicio" class="form-control select2" required="required" id="CDU_TipoServicio">
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_TipoServicio = sqlsrv_fetch_array($SQL_TipoServicio)) {?>
-										<option value="<?php echo $row_TipoServicio['NombreTipoServicio']; //['CodigoTipoServicio'];                                                                       ?>"
+										<option value="<?php echo $row_TipoServicio['NombreTipoServicio']; //['CodigoTipoServicio'];                                                                                   ?>"
 										<?php if (isset($row['CDU_TipoServicio']) && (strcmp($row_TipoServicio['NombreTipoServicio'], $row['CDU_TipoServicio']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_TipoServicio['NombreTipoServicio']; ?>
 										</option>
