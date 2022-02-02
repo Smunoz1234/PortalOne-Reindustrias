@@ -250,7 +250,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
             // Agregar fechas, fin.
 
             // Agregar campos de actualización, inicio.
-            if ($Metodo != 0) {
+            if ($Metodo == 2) {
                 $Cabecera["id_tarjeta_equipo"] = $row_json['IdTarjetaEquipo'];
                 $Cabecera["usuario_actualizacion"] = $_SESSION['User'];
                 $Cabecera["fecha_actualizacion"] = ($row_json['FechaActualizacion']->format('Y-m-d') . "T" . $row_json['FechaActualizacion']->format('H:i:s'));
@@ -262,7 +262,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
 
             //Enviar datos al WebServices
             try {
-                if ($Metodo == 0) { //Creando
+                if ($Metodo == 1) { //Creando
                     $Metodo = "TarjetaEquipos";
                     $Resultado = EnviarWebServiceSAP($Metodo, $Cabecera, true, true);
                 } else { //Editando
