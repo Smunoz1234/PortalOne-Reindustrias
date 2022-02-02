@@ -566,7 +566,7 @@ function ObtenerDirAttach()
 function EnviarWebServiceSAP($pNombreWS, $pParametros, $pJSON = false, $pAPI = false, $method = 'POST')
 {
     // Stiven Muñoz Murillo, 01/02/2022
-    InsertarLogWS('', json_encode($pParametros));
+    InsertarLogWS('', json_encode($pParametros), '', $method);
 
     if (!$pJSON) {
         $result = array();
@@ -610,6 +610,11 @@ function EnviarWebServiceSAP($pNombreWS, $pParametros, $pJSON = false, $pAPI = f
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
             //La respuesta la devuelve en JSON
             $json = curl_exec($curl);
+
+            // Stiven Muñoz Murillo, 02/02/2022
+            $detalles = json_encode(curl_getinfo($curl));
+            InsertarLogWS($json, $payload, $detalles, $method);
+
             //Decodifico el JSON en la variable $result
             $result = json_decode($json);
             //Como el primer atributo del JSON en el nombre del parametro mas la palabra Result, los concateno para que devuelva solo los atributos necesarios
@@ -618,9 +623,6 @@ function EnviarWebServiceSAP($pNombreWS, $pParametros, $pJSON = false, $pAPI = f
             //Meto en result solo los atributos obtenidos al sacar el atributo padre
             $result = $result->$Objeto;
             curl_close($curl);
-
-            // Stiven Muñoz Murillo, 01/02/2022
-            InsertarLogWS(json_encode($result), json_encode($pParametros));
 
             return $result;
         } else {
@@ -645,11 +647,12 @@ function EnviarWebServiceSAP($pNombreWS, $pParametros, $pJSON = false, $pAPI = f
             curl_setopt($curl, CURLOPT_ENCODING, "");
             curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type:application/json', $JWT));
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
             //La respuesta la devuelve en JSON
             $json = curl_exec($curl);
             //echo "json: ".$json;
+
             $cod_http = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-            //echo "Codigo HTTP:".$cod_http;
             if ($cod_http != 200) { //Ocurrio un error
                 $result = json_decode($json);
                 if (!isset($result->Success)) {
@@ -661,12 +664,13 @@ function EnviarWebServiceSAP($pNombreWS, $pParametros, $pJSON = false, $pAPI = f
                 }
             }
 
+            // Stiven Muñoz Murillo, 02/02/2022
+            $detalles = json_encode(curl_getinfo($curl));
+            InsertarLogWS($json, $payload, $detalles, $method);
+
             //Decodifico el JSON en la variable $result
             $result = json_decode($json);
             curl_close($curl);
-
-            // Stiven Muñoz Murillo, 01/02/2022
-            InsertarLogWS(json_encode($result), json_encode($pParametros));
 
             return $result;
         }
@@ -1413,15 +1417,17 @@ sqlsrv_query($conexion,$InsertLog);
 }
 
 // Stiven Muñoz Murillo, 01/02/2022
-function InsertarLogWS($respuesta = '', $cuerpo = '')
+function InsertarLogWS($respuesta = '', $cuerpo = '', $detalles = '', $procedimiento = '')
 {
     global $conexion;
+    $usuario = isset($_SESSION['CodUser']) ? $_SESSION['CodUser'] : 0;
 
     $respuesta = str_replace("'", "''", $respuesta);
     $cuerpo = str_replace("'", "''", $cuerpo);
-    $usuario = isset($_SESSION['CodUser']) ? $_SESSION['CodUser'] : 0;
+    $detalles = str_replace("'", "''", $detalles);
+    $procedimiento = str_replace("'", "''", $procedimiento);
 
-    $consulta = "EXEC sp_tbl_LogWS $usuario, '$respuesta', '$cuerpo'";
+    $consulta = "EXEC sp_tbl_LogWS $usuario, '$respuesta', '$cuerpo', '$detalles', '$procedimiento'";
 
     // Hace la consulta y en caso de error vuelve a consultar utilizando
     // el método que almacena un registro de los procedimientos ejecutados.
@@ -1431,6 +1437,8 @@ function InsertarLogWS($respuesta = '', $cuerpo = '')
             $usuario,
             "'" . utf8_encode($respuesta) . "'",
             "'" . utf8_encode($cuerpo) . "'",
+            "'" . utf8_encode($detalles) . "'",
+            "'" . utf8_encode($procedimiento) . "'",
         );
 
         EjecutarSP('sp_tbl_LogWS', $params);
