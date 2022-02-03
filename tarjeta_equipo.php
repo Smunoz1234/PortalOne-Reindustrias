@@ -308,6 +308,7 @@ if ($edit == 1 && $sw_error == 0) { //Editando la tarjeta de equipo
     if ($sw_ext == 1) {
         $SQL = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', '*', "SerialInterno='" . $IdTarjetaEquipo . "'");
     } else {
+        // Ruta normal
         $SQL = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', '*', "IdTarjetaEquipo='" . $IdTarjetaEquipo . "'");
     }
 
@@ -755,7 +756,7 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Ano" class="form-control select2" required="required" id="CDU_Ano">
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_ModeloVehiculo = sqlsrv_fetch_array($SQL_ModeloVehiculo)) {?>
-										<option value="<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; //['CodigoModeloVehiculo'];                                                                                              ?>"
+										<option value="<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; //['CodigoModeloVehiculo'];                                                                                                                ?>"
 										<?php if (isset($row['CDU_Ano']) && ((strcmp($row_ModeloVehiculo['CodigoModeloVehiculo'], $row['CDU_Ano']) == 0) || (strcmp($row_ModeloVehiculo['AñoModeloVehiculo'], $row['CDU_Ano']) == 0))) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; ?>
 										</option>
@@ -769,7 +770,7 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Concesionario" class="form-control select2" required="required" id="CDU_Concesionario">
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_Concesionario = sqlsrv_fetch_array($SQL_Concesionario)) {?>
-										<option value="<?php echo $row_Concesionario['NombreConcesionario']; //['CodigoConcesionario'];                                                                                                     ?>"
+										<option value="<?php echo $row_Concesionario['NombreConcesionario']; //['CodigoConcesionario'];                                                                                                                       ?>"
 										<?php if (isset($row['CDU_Concesionario']) && (strcmp($row_Concesionario['NombreConcesionario'], $row['CDU_Concesionario']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_Concesionario['NombreConcesionario']; ?>
 										</option>
@@ -795,7 +796,7 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Cilindraje" class="form-control select2" required="required" id="CDU_Cilindraje">
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_Cilindraje = sqlsrv_fetch_array($SQL_CilindrajeVehiculo)) {?>
-										<option value="<?php echo $row_Cilindraje['DescripcionCilindraje']; //['CodigoCilindraje'];                                                                                        ?>"
+										<option value="<?php echo $row_Cilindraje['DescripcionCilindraje']; //['CodigoCilindraje'];                                                                                                          ?>"
 										<?php if (isset($row['CDU_Cilindraje']) && (strcmp($row_Cilindraje['DescripcionCilindraje'], $row['CDU_Cilindraje']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_Cilindraje['DescripcionCilindraje']; ?>
 										</option>
@@ -807,7 +808,7 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_TipoServicio" class="form-control select2" required="required" id="CDU_TipoServicio">
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_TipoServicio = sqlsrv_fetch_array($SQL_TipoServicio)) {?>
-										<option value="<?php echo $row_TipoServicio['NombreTipoServicio']; //['CodigoTipoServicio'];                                                                                                    ?>"
+										<option value="<?php echo $row_TipoServicio['NombreTipoServicio']; //['CodigoTipoServicio'];                                                                                                                      ?>"
 										<?php if (isset($row['CDU_TipoServicio']) && (strcmp($row_TipoServicio['NombreTipoServicio'], $row['CDU_TipoServicio']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_TipoServicio['NombreTipoServicio']; ?>
 										</option>
@@ -1108,14 +1109,8 @@ while ($row_ContratoServicio = sqlsrv_fetch_array($SQL_ContratosServicio)) {?>
 						<div id="tab-annexes" class="tab-pane">
 							<!-- Anexos -->
 							<div class="ibox-content">
-								<?php
-if (isset($_GET['return'])) {
-    $return = base64_decode($_GET['pag']) . "?" . base64_decode($_GET['return']);
-} else {
-    $return = "consultar_tarjeta_equipo.php?";
-}
-$return = QuitarParametrosURL($return, array("a"));?>
-
+								<?php $return = (isset($_GET['return'])) ? (base64_decode($_GET['pag']) . "?" . base64_decode($_GET['return'])) : "consultar_tarjeta_equipo.php?";?>
+								<?php $return = QuitarParametrosURL($return, array("a"));?>
 									<input type="hidden" id="P" name="P" value="<?php if ($edit == 0) {echo "27";} else {echo "29";}?>" />
 									<input type="hidden" id="swTipo" name="swTipo" value="0" />
 									<input type="hidden" id="swError" name="swError" value="<?php echo $sw_error; ?>" />
@@ -1127,13 +1122,10 @@ $return = QuitarParametrosURL($return, array("a"));?>
 									<input type="hidden" id="IdAnexos" name="IdAnexos" value="<?php if ($edit == 1) {echo $row['IdAnexo'];}?>" />
 								</form>
 
-								<?php if ($edit == 1) {
-    if ($row['ID_Documento'] != 0) {?>
+								<?php if (($edit == 1) && ($row['IdAnexo'] != 0)) {?>
 									<div class="form-group">
 										<div class="col-xs-12">
-											<?php while ($row_Anexo = sqlsrv_fetch_array($SQL_Anexos)) {
-        $Icon = IconAttach($row_Anexo['FileExt']);
-        ?>
+											<?php while ($row_Anexo = sqlsrv_fetch_array($SQL_Anexos)) {$Icon = IconAttach($row_Anexo['FileExt']);?>
 												<div class="file-box">
 													<div class="file">
 														<a href="attachdownload.php?file=<?php echo base64_encode($row_Anexo['AbsEntry']); ?>&line=<?php echo base64_encode($row_Anexo['Line']); ?>" target="_blank">
@@ -1151,8 +1143,7 @@ $return = QuitarParametrosURL($return, array("a"));?>
 											<?php }?>
 										</div>
 									</div>
-									<?php } else {echo "<p>Sin anexos.</p>";}
-}?>
+								<?php } else {echo "<p>Sin anexos.</p>";}?>
 								<?php if (($edit == 0) || ($edit == 1)) {?>
 								<div class="row">
 									<form action="upload.php" class="dropzone" id="dropzoneForm" name="dropzoneForm">
