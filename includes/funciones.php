@@ -606,14 +606,16 @@ function EnviarWebServiceSAP($pNombreWS, $pParametros, $pJSON = false, $pAPI = f
             }
             curl_setopt($curl, CURLOPT_POSTFIELDS, $payload);
             curl_setopt($curl, CURLOPT_ENCODING, "");
-            curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+
+            $encabezado = array('Content-Type:application/json');
+            curl_setopt($curl, CURLOPT_HTTPHEADER, $encabezado);
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
             //La respuesta la devuelve en JSON
             $json = curl_exec($curl);
 
             // Stiven Muñoz Murillo, 02/02/2022
             $detalles = json_encode(curl_getinfo($curl));
-            InsertarLogWS($json, $payload, $detalles, $method);
+            InsertarLogWS($json, $payload, $detalles, $method, json_encode($encabezado));
 
             //Decodifico el JSON en la variable $result
             $result = json_decode($json);
@@ -645,7 +647,9 @@ function EnviarWebServiceSAP($pNombreWS, $pParametros, $pJSON = false, $pAPI = f
             }
             curl_setopt($curl, CURLOPT_POSTFIELDS, $payload);
             curl_setopt($curl, CURLOPT_ENCODING, "");
-            curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type:application/json', $JWT));
+
+            $encabezado = array('Content-Type:application/json', $JWT);
+            curl_setopt($curl, CURLOPT_HTTPHEADER, $encabezado);
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 
             //La respuesta la devuelve en JSON
@@ -666,7 +670,7 @@ function EnviarWebServiceSAP($pNombreWS, $pParametros, $pJSON = false, $pAPI = f
 
             // Stiven Muñoz Murillo, 02/02/2022
             $detalles = json_encode(curl_getinfo($curl));
-            InsertarLogWS($json, $payload, $detalles, $method);
+            InsertarLogWS($json, $payload, $detalles, $method, json_encode($encabezado));
 
             //Decodifico el JSON en la variable $result
             $result = json_decode($json);
@@ -1417,7 +1421,7 @@ sqlsrv_query($conexion,$InsertLog);
 }
 
 // Stiven Muñoz Murillo, 01/02/2022
-function InsertarLogWS($respuesta = '', $cuerpo = '', $detalles = '', $procedimiento = '')
+function InsertarLogWS($respuesta = '', $cuerpo = '', $detalles = '', $procedimiento = '', $encabezado = '')
 {
     global $conexion;
     $usuario = isset($_SESSION['CodUser']) ? $_SESSION['CodUser'] : 0;
@@ -1426,8 +1430,9 @@ function InsertarLogWS($respuesta = '', $cuerpo = '', $detalles = '', $procedimi
     $cuerpo = str_replace("'", "''", $cuerpo);
     $detalles = str_replace("'", "''", $detalles);
     $procedimiento = str_replace("'", "''", $procedimiento);
+    $encabezado = str_replace("'", "''", $encabezado);
 
-    $consulta = "EXEC sp_tbl_LogWS $usuario, '$respuesta', '$cuerpo', '$detalles', '$procedimiento'";
+    $consulta = "EXEC sp_tbl_LogWS $usuario, '$respuesta', '$cuerpo', '$detalles', '$procedimiento', , '$encabezado'";
 
     // Hace la consulta y en caso de error vuelve a consultar utilizando
     // el método que almacena un registro de los procedimientos ejecutados.
@@ -1439,6 +1444,7 @@ function InsertarLogWS($respuesta = '', $cuerpo = '', $detalles = '', $procedimi
             "'" . utf8_encode($cuerpo) . "'",
             "'" . utf8_encode($detalles) . "'",
             "'" . utf8_encode($procedimiento) . "'",
+            "'" . utf8_encode($encabezado) . "'",
         );
 
         EjecutarSP('sp_tbl_LogWS', $params);
