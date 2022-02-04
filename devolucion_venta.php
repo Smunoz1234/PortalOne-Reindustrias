@@ -1,3 +1,10 @@
+<!-- script>
+	// Stiven Muñoz Murillo, 28/01/2022
+	function ajustarCadena(cadena) {
+		return JSON.parse(cadena.replace(/\n|\r/g, ""));
+	}
+</script -->
+
 <?php require_once "includes/conexion.php";
 PermitirAcceso(410);
 $dt_LS = 0; //sw para saber si vienen datos de la llamada de servicio. 0 no vienen. 1 si vienen.
@@ -32,7 +39,8 @@ if (isset($_REQUEST['tl']) && ($_REQUEST['tl'] != "")) { //0 Si se está creando
     $edit = 0;
 }
 
-if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Devolucion de venta
+// Inicio, Grabar Devolución de Venta
+if (isset($_POST['P']) && ($_POST['P'] != "")) {
     //*** Carpeta temporal ***
     $i = 0; //Archivos
     $RutaAttachSAP = ObtenerDirAttach();
@@ -194,10 +202,22 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Devolucion de venta
     } catch (Exception $e) {
         echo 'Excepcion capturada: ', $e->getMessage(), "\n";
     }
-
 }
+// Fin, Grabar Devolución de Venta
 
-if (isset($_GET['dt_ET']) && ($_GET['dt_ET']) == 1) { //Verificar que viene de una Entrega de ventas
+//
+//
+//
+//
+//
+//
+// "Ajuste del número de línea con respecto a la entrega"
+//
+//
+//
+//
+// Inicio, Verificar que viene de una Entrega de Ventas
+if (isset($_GET['dt_ET']) && ($_GET['dt_ET']) == 1) {
     $dt_ET = 1;
 
     //Clientes
@@ -229,14 +249,15 @@ if (isset($_GET['dt_ET']) && ($_GET['dt_ET']) == 1) { //Verificar que viene de u
 		});
 		</script>";
     }
-
 }
+// Fin, Verificar que viene de una Entrega de Ventas
 
-if (isset($_GET['dt_LS']) && ($_GET['dt_LS']) == 1) { //Verificar que viene de una Llamada de servicio (Datos Llamada servicio).
+// Inicio, Verificar que viene de una Llamada de servicio (Datos Llamada servicio).
+if (isset($_GET['dt_LS']) && ($_GET['dt_LS']) == 1) {
     $dt_LS = 1;
 
     if ($dt_ET == 0) {
-        if (!isset($_GET['LMT'])  && $_GET['ItemCode'] != "" && isset($_GET['ItemCode'])) {
+        if (!isset($_GET['LMT']) && $_GET['ItemCode'] != "" && isset($_GET['ItemCode'])) {
             //Consultar datos de la LMT
             $SQL_LMT = Seleccionar('uvw_Sap_tbl_ArticulosLlamadas', '*', "ItemCode='" . base64_decode($_GET['ItemCode']) . "'");
             $row_LMT = sqlsrv_fetch_array($SQL_LMT);
@@ -267,6 +288,7 @@ if (isset($_GET['dt_LS']) && ($_GET['dt_LS']) == 1) { //Verificar que viene de u
     //Orden de servicio
     $SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . base64_decode($_GET['LS']) . "'");
 }
+// Fin, Verificar que viene de una LS
 
 if ($edit == 1 && $sw_error == 0) {
 
@@ -377,7 +399,12 @@ $ParamSerie = array(
 );
 $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 
+// Stiven Muñoz Murillo, 28/01/2022
+$row_encode = isset($row) ? json_encode($row) : "";
+$cadena = isset($row) ? "ajustarCadena('$row_encode')" : "'Not Found'";
+// echo "<script> console.log($cadena); </script>";
 ?>
+
 <!DOCTYPE html>
 <html><!-- InstanceBegin template="/Templates/PlantillaPrincipal.dwt.php" codeOutsideHTMLIsLocked="false" -->
 
@@ -1008,7 +1035,7 @@ if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
 					<div class="col-lg-3">
                     	<select name="Serie" class="form-control" id="Serie" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "disabled='disabled'";}?>>
                         	<!-- SMM, 04/02/2022 -->
-							<option value=''>Seleccione...</option>  
+							<option value=''>Seleccione...</option>
 							<?php while ($row_Series = sqlsrv_fetch_array($SQL_Series)) {?>
 								<option value="<?php echo $row_Series['IdSeries']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['IdSeries'])) && (strcmp($row_Series['IdSeries'], $row['IdSeries']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Series['DeSeries']; ?></option>
 							<?php }?>

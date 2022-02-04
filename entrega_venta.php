@@ -1,9 +1,9 @@
-<script>
+<!-- script>
 	// Stiven Muñoz Murillo, 28/01/2022
 	function ajustarCadena(cadena) {
 		return JSON.parse(cadena.replace(/\n|\r/g, ""));
 	}
-</script>
+</script -->
 
 <?php require_once "includes/conexion.php";
 PermitirAcceso(407);
@@ -39,7 +39,8 @@ if (isset($_REQUEST['tl']) && ($_REQUEST['tl'] != "")) { //0 Si se está creando
     $edit = 0;
 }
 
-if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Entrega de venta
+// Inicio, Grabar Entrega de Venta
+if (isset($_POST['P']) && ($_POST['P'] != "")) { 
     //*** Carpeta temporal ***
     $i = 0; //Archivos
     $RutaAttachSAP = ObtenerDirAttach();
@@ -212,44 +213,11 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Entrega de venta
     } catch (Exception $e) {
         echo 'Excepcion capturada: ', $e->getMessage(), "\n";
     }
-
 }
+// Fin, Grabar Entrega de Venta
 
-if (isset($_GET['dt_LS']) && ($_GET['dt_LS']) == 1) { //Verificar que viene de una Llamada de servicio (Datos Llamada servicio).
-    $dt_LS = 1;
-
-    if (!isset($_GET['LMT']) && $_GET['ItemCode'] != "" && isset($_GET['ItemCode'])) {
-        //Consultar datos de la LMT
-        $SQL_LMT = Seleccionar('uvw_Sap_tbl_ArticulosLlamadas', '*', "ItemCode='" . base64_decode($_GET['ItemCode']) . "'");
-        $row_LMT = sqlsrv_fetch_array($SQL_LMT);
-
-        //Cargar la LMT
-        $ParametrosAddLMT = array(
-            "'" . base64_decode($_GET['ItemCode']) . "'",
-            "'" . $row_LMT['WhsCode'] . "'",
-            "'" . base64_decode($_GET['Cardcode']) . "'",
-            "'" . $_SESSION['CodUser'] . "'",
-        );
-        $SQL_AddLMT = EjecutarSP('sp_CargarLMT_EntregaVentaDetalleCarrito', $ParametrosAddLMT);
-    } else {
-        Eliminar('tbl_EntregaVentaDetalleCarrito', "Usuario='" . $_SESSION['CodUser'] . "' AND CardCode='" . base64_decode($_GET['Cardcode']) . "'");
-    }
-
-    //Clientes
-    $SQL_Cliente = Seleccionar('uvw_Sap_tbl_Clientes', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreCliente');
-    $row_Cliente = sqlsrv_fetch_array($SQL_Cliente);
-
-    //Contacto cliente
-    $SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreContacto');
-
-    //Sucursal destino
-    $SQL_SucursalDestino = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "' AND NombreSucursal='" . base64_decode($_GET['Sucursal']) . "'");
-
-    //Orden de servicio
-    $SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . base64_decode($_GET['LS']) . "'");
-}
-
-if (isset($_GET['dt_OV']) && ($_GET['dt_OV']) == 1) { //Verificar que viene de una Orden de ventas
+// Inicio, Verificar que viene de una Orden de Ventas
+if (isset($_GET['dt_OV']) && ($_GET['dt_OV']) == 1) { 
     $dt_OV = 1;
 
     //Clientes
@@ -281,8 +249,47 @@ if (isset($_GET['dt_OV']) && ($_GET['dt_OV']) == 1) { //Verificar que viene de u
 		});
 		</script>";
     }
-
 }
+// Fin, Verificar que viene de una Orden de Ventas
+
+// Inicio, Verificar que viene de una Llamada de servicio (Datos Llamada servicio).
+if (isset($_GET['dt_LS']) && ($_GET['dt_LS']) == 1) { 
+    $dt_LS = 1;
+
+	if ($dt_OV == 0) {
+		if (!isset($_GET['LMT']) && $_GET['ItemCode'] != "" && isset($_GET['ItemCode'])) {
+			//Consultar datos de la LMT
+			$SQL_LMT = Seleccionar('uvw_Sap_tbl_ArticulosLlamadas', '*', "ItemCode='" . base64_decode($_GET['ItemCode']) . "'");
+			$row_LMT = sqlsrv_fetch_array($SQL_LMT);
+
+			//Cargar la LMT
+			$ParametrosAddLMT = array(
+				"'" . base64_decode($_GET['ItemCode']) . "'",
+				"'" . $row_LMT['WhsCode'] . "'",
+				"'" . base64_decode($_GET['Cardcode']) . "'",
+				"'" . $_SESSION['CodUser'] . "'",
+			);
+			$SQL_AddLMT = EjecutarSP('sp_CargarLMT_EntregaVentaDetalleCarrito', $ParametrosAddLMT);
+		} else {
+			// echo "Hola Mundo";
+			Eliminar('tbl_EntregaVentaDetalleCarrito', "Usuario='" . $_SESSION['CodUser'] . "' AND CardCode='" . base64_decode($_GET['Cardcode']) . "'");
+		}
+	}
+
+    //Clientes
+    $SQL_Cliente = Seleccionar('uvw_Sap_tbl_Clientes', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreCliente');
+    $row_Cliente = sqlsrv_fetch_array($SQL_Cliente);
+
+    //Contacto cliente
+    $SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreContacto');
+
+    //Sucursal destino
+    $SQL_SucursalDestino = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "' AND NombreSucursal='" . base64_decode($_GET['Sucursal']) . "'");
+
+    //Orden de servicio
+    $SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . base64_decode($_GET['LS']) . "'");
+}
+// Fin, Verificar que viene de una LS
 
 if ($edit == 1 && $sw_error == 0) {
 
@@ -396,8 +403,9 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 // Stiven Muñoz Murillo, 28/01/2022
 $row_encode = isset($row) ? json_encode($row) : "";
 $cadena = isset($row) ? "ajustarCadena('$row_encode')" : "'Not Found'";
-echo "<script> console.log($cadena); </script>";
+// echo "<script> console.log($cadena); </script>";
 ?>
+
 <!DOCTYPE html>
 <html><!-- InstanceBegin template="/Templates/PlantillaPrincipal.dwt.php" codeOutsideHTMLIsLocked="false" -->
 
