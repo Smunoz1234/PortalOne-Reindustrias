@@ -382,9 +382,16 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
                     echo "<option value=''>(Todos)</option>";
                 }
 
+                $Dim2 = $_GET['Dim2'] ?? ""; // SMM, 04/02/2022
                 echo "<option value=''>Seleccione...</option>"; // SMM, 27/01/22
+
                 while ($row = sqlsrv_fetch_array($SQL)) {
-                    echo "<option value=\"" . $row['IdSucursal'] . "\">" . $row['DeSucursal'] . "</option>";
+                    if ($Dim2 == $row['IdSucursal']) {
+                        // Stiven Muñoz Murillo, 04/02/2022
+                        echo "<option selected=\"selected\" value=\"" . $row['IdSucursal'] . "\" >" . $row['DeSucursal'] . "</option>";
+                    } else {
+                        echo "<option value=\"" . $row['IdSucursal'] . "\" >" . $row['DeSucursal'] . "</option>";
+                    }
                 }
             } else {
                 echo "<option value=''>Seleccione...</option>";
@@ -406,9 +413,16 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
                 $SQL = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'WhsCode, WhsName', "IdSeries='" . $_GET['serie'] . "' and IdSucursal='" . $_GET['id'] . "' and IdTipoDocumento='" . $_GET['tdoc'] . "'", "WhsCode, WhsName", 'WhsName');
                 $Num = sqlsrv_num_rows($SQL);
                 if ($Num) {
+                    $WhsCode = $_GET['WhsCode'] ?? ""; // SMM, 04/02/2022
                     echo "<option value=''>Seleccione...</option>"; // SMM, 27/01/22
+
                     while ($row = sqlsrv_fetch_array($SQL)) {
-                        echo "<option value=\"" . $row['WhsCode'] . "\">" . $row['WhsName'] . "</option>";
+                        if ($WhsCode == $row['WhsCode']) {
+                            // Stiven Muñoz Murillo, 04/02/2022
+                            echo "<option selected=\"selected\" value=\"" . $row['WhsCode'] . "\">" . $row['WhsName'] . "</option>";
+                        } else {
+                            echo "<option value=\"" . $row['WhsCode'] . "\">" . $row['WhsName'] . "</option>";
+                        }
                     }
                 } else {
                     echo "<option value=''>Seleccione...</option>";
@@ -876,11 +890,11 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
             $SerialInterno = "'" . $_GET['id'] . "'";
             $SQL = Seleccionar("uvw_Sap_tbl_TarjetasEquipos", "CDU_IdMarca,CDU_IdLinea", "SerialInterno=" . $SerialInterno);
             $row = sqlsrv_fetch_array($SQL);
-            
+
             $marca = $row['CDU_IdMarca'];
             $linea = $row['CDU_IdLinea'];
 
-            $SQL = Seleccionar('uvw_Sap_tbl_ListaMateriales', '*', "CDU_IdMarca=$marca AND CDU_IdLinea=$linea AND OcrCode2='".$_SESSION['CentroCosto2']."'");
+            $SQL = Seleccionar('uvw_Sap_tbl_ListaMateriales', '*', "CDU_IdMarca=$marca AND CDU_IdLinea=$linea AND OcrCode2='" . $_SESSION['CentroCosto2'] . "'");
             $Num = sqlsrv_num_rows($SQL);
             if ($Num) {
                 echo "<option value=''>Seleccione...</option>";

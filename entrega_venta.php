@@ -218,7 +218,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Entrega de venta
 if (isset($_GET['dt_LS']) && ($_GET['dt_LS']) == 1) { //Verificar que viene de una Llamada de servicio (Datos Llamada servicio).
     $dt_LS = 1;
 
-    if (!isset($_GET['LMT'])  && $_GET['ItemCode'] != "" && isset($_GET['ItemCode'])) {
+    if (!isset($_GET['LMT']) && $_GET['ItemCode'] != "" && isset($_GET['ItemCode'])) {
         //Consultar datos de la LMT
         $SQL_LMT = Seleccionar('uvw_Sap_tbl_ArticulosLlamadas', '*', "ItemCode='" . base64_decode($_GET['ItemCode']) . "'");
         $row_LMT = sqlsrv_fetch_array($SQL_LMT);
@@ -602,10 +602,13 @@ function ConsultarDatosCliente(){
 		});
 		$("#Serie").change(function(){
 			$('.ibox-content').toggleClass('sk-loading',true);
+
 			var Serie=document.getElementById('Serie').value;
+			let Dim2=document.getElementById('Dim2').value; // SMM, 04/02/2022
+
 			$.ajax({
 				type: "POST",
-				url: "ajx_cbo_select.php?type=19&id="+Serie,
+				url: `ajx_cbo_select.php?type=19&id=${Serie}&Dim2=${Dim2}`,
 				success: function(response){
 					$('#Dim2').html(response).fadeIn();
 					$('.ibox-content').toggleClass('sk-loading',false);
@@ -755,13 +758,17 @@ function ConsultarDatosCliente(){
 
 		$("#Dim2").change(function(){
 			$('.ibox-content').toggleClass('sk-loading',true);
+			var frame=document.getElementById('DataGrid');
+
 			var Dim2=document.getElementById('Dim2').value;
 			var Serie=document.getElementById('Serie').value;
-			var frame=document.getElementById('DataGrid');
+
+			// Stiven Muñoz Murillo, 04/02/2022
+			// let WhsCode = document.getElementById('Almacen').value;
 
 			$.ajax({
 				type: "POST",
-				url: "ajx_cbo_select.php?type=20&id="+Dim2+"&serie="+Serie+"&tdoc=15",
+				url: `ajx_cbo_select.php?type=20&id=${Dim2}&serie=${Serie}&tdoc=15&WhsCode=<?php echo $row['WhsCode'] ?? ""; ?>`,
 				success: function(response){
 					$('#Almacen').html(response).fadeIn();
 					$('.ibox-content').toggleClass('sk-loading',false);
@@ -1032,9 +1039,11 @@ if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
 					<label class="col-lg-1 control-label">Serie <span class="text-danger">*</span></label>
 					<div class="col-lg-3">
                     	<select name="Serie" class="form-control" id="Serie" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "disabled='disabled'";}?>>
-                          <?php while ($row_Series = sqlsrv_fetch_array($SQL_Series)) {?>
+                        	<!-- SMM, 04/02/2022 -->
+							<option value=''>Seleccione...</option>
+							<?php while ($row_Series = sqlsrv_fetch_array($SQL_Series)) {?>
 								<option value="<?php echo $row_Series['IdSeries']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['IdSeries'])) && (strcmp($row_Series['IdSeries'], $row['IdSeries']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Series['DeSeries']; ?></option>
-						  <?php }?>
+							<?php }?>
 						</select>
                	  	</div>
 					<label class="col-lg-1 control-label">Referencia</label>

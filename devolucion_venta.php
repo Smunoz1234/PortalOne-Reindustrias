@@ -1007,9 +1007,11 @@ if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
 					<label class="col-lg-1 control-label">Serie <span class="text-danger">*</span></label>
 					<div class="col-lg-3">
                     	<select name="Serie" class="form-control" id="Serie" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "disabled='disabled'";}?>>
-                          <?php while ($row_Series = sqlsrv_fetch_array($SQL_Series)) {?>
+                        	<!-- SMM, 04/02/2022 -->
+							<option value=''>Seleccione...</option>  
+							<?php while ($row_Series = sqlsrv_fetch_array($SQL_Series)) {?>
 								<option value="<?php echo $row_Series['IdSeries']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['IdSeries'])) && (strcmp($row_Series['IdSeries'], $row['IdSeries']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Series['DeSeries']; ?></option>
-						  <?php }?>
+							<?php }?>
 						</select>
                	  	</div>
 					<label class="col-lg-1 control-label">Referencia</label>
