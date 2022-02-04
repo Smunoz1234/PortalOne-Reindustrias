@@ -299,11 +299,11 @@ function SeleccionarTodos(){
 				<th>Dosificación</th>
 				<th>Stock almacén</th>
 				<?php $row_DimReparto = sqlsrv_fetch_array($SQL_DimReparto);?>
-				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 1                        ?></th>
+				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 1                          ?></th>
 				<?php $row_DimReparto = sqlsrv_fetch_array($SQL_DimReparto);?>
-				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 2                        ?></th>
+				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 2                          ?></th>
 				<?php $row_DimReparto = sqlsrv_fetch_array($SQL_DimReparto);?>
-				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 3                        ?></th>
+				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 3                          ?></th>
 				<th>Proyecto</th>
 				<th>Servicio</th>
 				<th>Método aplicación</th>
@@ -324,6 +324,7 @@ if ($sw == 1) {
 
     // Stiven Muñoz Murillo, 27/01/2022
     $flag = PermitirFuncion(416);
+    $main = false;
 
     // Inicia el ciclo
     while ($row = sqlsrv_fetch_array($SQL)) {
@@ -459,7 +460,7 @@ if ($sw == 1) {
 
 		<?php // Fin, comprobando permiso 416.
             $i++; // Totalizar
-        }?>
+        } else { $main = true;}?>
 		</tr>
 
 	<?php } // Termina el ciclo
@@ -467,7 +468,7 @@ if ($sw == 1) {
 
     // Stiven Muñoz Murillo, 27/01/2022
     // Se debe validar que venga de una lista de materiales para borrar el principal de esa lista, 04/02/2022
-    if ((isset($_GET['LMT']) && $_GET('LMT')) && !$flag) {echo "<script>BorrarLineaPrincipal(); </script>";}
+    if ($main && !$flag) {echo "<script>BorrarLineaPrincipal(); </script>";}
 
 } // Termina el "if ($sw == 1)"
 ?>
