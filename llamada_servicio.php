@@ -127,7 +127,7 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
             "'" . $_POST['CDU_Contrato'] . "'",
             "NULL",
             "'" . $_POST['CDU_ListaMateriales'] . "'",
-			isset($_POST['CDU_TiempoTarea']) ? $_POST['CDU_TiempoTarea'] : 0 // int
+            isset($_POST['CDU_TiempoTarea']) ? $_POST['CDU_TiempoTarea'] : 0, // int
         );
         $SQL_InsLlamada = EjecutarSP('sp_tbl_LlamadaServicios', $ParamInsLlamada, 32);
         if ($SQL_InsLlamada) {
@@ -306,10 +306,10 @@ if (isset($_POST['P']) && ($_POST['P'] == 33)) { //Actualizar llamada de servici
             "'" . $_POST['CDU_Contrato'] . "'",
             "NULL",
             "'" . $_POST['CDU_ListaMateriales'] . "'",
-			isset($_POST['CDU_TiempoTarea']) ? $_POST['CDU_TiempoTarea'] : 0 // int
+            isset($_POST['CDU_TiempoTarea']) ? $_POST['CDU_TiempoTarea'] : 0, // int
         );
 
-		// Actualizar la llamada de servicio.
+        // Actualizar la llamada de servicio.
         $SQL_UpdLlamada = EjecutarSP('sp_tbl_LlamadaServicios', $ParamUpdLlamada, 33);
         if ($SQL_UpdLlamada) {
             if (base64_decode($_POST['IdLlamadaPortal']) == "") {
@@ -859,25 +859,35 @@ if (isset($sw_error) && ($sw_error == 1)) {
 		});
 		$("#SucursalCliente").change(function(){
 			$('.ibox-content').toggleClass('sk-loading',true);
+			
 			var Cliente=document.getElementById('ClienteLlamada').value;
 			var Sucursal=document.getElementById('SucursalCliente').value;
-			$.ajax({
-				url:"ajx_buscar_datos_json.php",
-				data:{type:1,CardCode:Cliente,Sucursal:Sucursal},
-				dataType:'json',
-				success: function(data){
-					document.getElementById('DireccionLlamada').value=data.Direccion;
-					document.getElementById('BarrioDireccionLlamada').value=data.Barrio;
-					document.getElementById('CiudadLlamada').value=data.Ciudad;
-					document.getElementById('CDU_NombreContacto').value=data.NombreContacto;
-					document.getElementById('CDU_TelefonoContacto').value=data.TelefonoContacto;
-					document.getElementById('CDU_CargoContacto').value=data.CargoContacto;
-					document.getElementById('CDU_CorreoContacto').value=data.CorreoContacto;
 
-					// Stiven Muñoz Murillo, 22/01/2022
-					document.getElementById('TelefonoLlamada').value=data.TelefonoContacto;
-				}
-			});
+			if(Sucursal != -1 && Sucursal != '') {
+				$.ajax({
+					url:"ajx_buscar_datos_json.php",
+					data:{type:1,CardCode:Cliente,Sucursal:Sucursal},
+					dataType:'json',
+					success: function(data){
+						document.getElementById('DireccionLlamada').value=data.Direccion;
+						document.getElementById('BarrioDireccionLlamada').value=data.Barrio;
+						document.getElementById('CiudadLlamada').value=data.Ciudad;
+						document.getElementById('CDU_NombreContacto').value=data.NombreContacto;
+						document.getElementById('CDU_TelefonoContacto').value=data.TelefonoContacto;
+						document.getElementById('CDU_CargoContacto').value=data.CargoContacto;
+						document.getElementById('CDU_CorreoContacto').value=data.CorreoContacto;
+
+						// Stiven Muñoz Murillo, 22/01/2022
+						document.getElementById('TelefonoLlamada').value=data.TelefonoContacto;
+					},
+					error: function(error){
+						$('.ibox-content').toggleClass('sk-loading', false);
+						console.error("SucursalCliente", error.responseText);
+					}
+				});
+			} else {
+				$('.ibox-content').toggleClass('sk-loading', false);
+			}
 			// TODO, filtrar los resultados por cliente y sucursal
 			/*
 			$.ajax({
@@ -1360,7 +1370,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 						<div class="form-group">
 							<div class="col-lg-8">
 								<label class="control-label"><i onClick="ConsultarArticulo();" title="Consultar ID Servicio" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> ID servicio <span class="text-danger">*</span></label>
-								<input name="IdArticuloLlamada" type="hidden" id="IdArticuloLlamada" value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['IdArticuloLlamada'];} elseif ($dt_LS == 1 && isset($row_Articulo['ItemCode'])) {echo $row_Articulo['ItemCode'];} ?>">
+								<input name="IdArticuloLlamada" type="hidden" id="IdArticuloLlamada" value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['IdArticuloLlamada'];} elseif ($dt_LS == 1 && isset($row_Articulo['ItemCode'])) {echo $row_Articulo['ItemCode'];}?>">
 
 								<!-- Descripción del Item -->
 								<input name="DeArticuloLlamada" type="text" required="required" class="form-control" id="DeArticuloLlamada" placeholder="Digite para buscar..."
@@ -1661,7 +1671,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_Concesionario = sqlsrv_fetch_array($SQL_Concesionario)) {?>
-										<option value="<?php echo $row_Concesionario['NombreConcesionario']; //['CodigoConcesionario']; ?>"
+										<option value="<?php echo $row_Concesionario['NombreConcesionario']; //['CodigoConcesionario'];    ?>"
 										<?php if ((isset($row['CDU_Concesionario'])) && (strcmp($row_Concesionario['NombreConcesionario'], $row['CDU_Concesionario']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_Concesionario['NombreConcesionario']; ?>
 										</option>
@@ -1674,7 +1684,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_Aseguradora = sqlsrv_fetch_array($SQL_Aseguradora)) {?>
-										<option value="<?php echo $row_Aseguradora['NombreAseguradora']; //['CodigoAseguradora'];                                                                               ?>"
+										<option value="<?php echo $row_Aseguradora['NombreAseguradora']; //['CodigoAseguradora'];                                                                                  ?>"
 										<?php if ((isset($row['CDU_Aseguradora'])) && (strcmp($row_Aseguradora['NombreAseguradora'], $row['CDU_Aseguradora']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_Aseguradora['NombreAseguradora']; ?>
 										</option>
@@ -1689,7 +1699,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_TipoServicio = sqlsrv_fetch_array($SQL_TipoServicio)) {?>
-										<option value="<?php echo $row_TipoServicio['NombreTipoServicio']; //['CodigoTipoServicio'];?>"
+										<option value="<?php echo $row_TipoServicio['NombreTipoServicio']; //['CodigoTipoServicio'];   ?>"
 										<?php if ((isset($row['CDU_TipoServicio'])) && (strcmp($row_TipoServicio['NombreTipoServicio'], $row['CDU_TipoServicio']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_TipoServicio['NombreTipoServicio']; ?>
 										</option>
@@ -1702,7 +1712,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_Contrato = sqlsrv_fetch_array($SQL_ContratosLlamada)) {?>
-										<option value="<?php echo $row_Contrato['NombreContrato']; //['CodigoContrato']; ?>"
+										<option value="<?php echo $row_Contrato['NombreContrato']; //['CodigoContrato'];    ?>"
 										<?php if ((isset($row['CDU_Contrato'])) && (strcmp($row_Contrato['NombreContrato'], $row['CDU_Contrato']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_Contrato['NombreContrato']; ?>
 										</option>
