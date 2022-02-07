@@ -141,6 +141,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar lista de materiales
                 "hora_actualizacion" => ($row_json['FechaActualizacion']->format('Y-m-d') . "T" . $row_json['FechaActualizacion']->format('H:i:s')),
                 "seg_actualizacion" => intval($row_json['FechaActualizacion']->format('s')),
                 "metodo" => intval($row_json['Metodo']),
+                "CDU_tiempo_tarea" => intval($row_json['CDU_TiempoTarea']), // SMM 01/02/2022
                 "lista_material_lineas" => $Detalle,
             );
 
@@ -207,6 +208,14 @@ if ($edit == 1 && $sw_error == 0) {
     $codigoCliente = isset($row['CDU_CodigoCliente']) ? $row['CDU_CodigoCliente'] : "";
     $SQL_Sucursal = Seleccionar("uvw_Sap_tbl_Clientes_Sucursales", "NombreSucursal, NumeroLinea", "CodigoCliente='" . $codigoCliente . "'");
 
+	// Stiven Muñoz Murillo, 07/02/2022
+	// Lista de materiales (SAP)
+    $SQL_Sap = Seleccionar("uvw_Sap_tbl_ListaMateriales", '*', "ItemCode='$ItemCode'");
+    $row_Sap = sqlsrv_fetch_array($SQL_Sap);
+    $row_Sap_encode = isset($row_Sap) ? json_encode($row_Sap) : "";
+    $cadena_sap = isset($row_Sap) ? "JSON.parse('$row_Sap_encode'.replace(/\\n|\\r/g, ''))" : "'Not Found'";
+    // echo "<script> console.log('SAP', $cadena_sap); </script>";
+
 }
 
 if ($sw_error == 1) {
@@ -253,6 +262,10 @@ $SQL_MarcaVehiculo = Seleccionar('uvw_Sap_tbl_ListaMateriales_MarcaVehiculo', '*
 // Lineas de vehiculo en la tarjeta de equipo
 $SQL_LineaVehiculo = Seleccionar('uvw_Sap_tbl_ListaMateriales_LineaVehiculo', '*');
 
+// Stiven Muñoz Murillo, 07/02/2022
+$row_encode = isset($row) ? json_encode($row) : "";
+$cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'Not Found'";
+// echo "<script> console.log($cadena); </script>";
 ?>
 <!DOCTYPE html>
 <html><!-- InstanceBegin template="/Templates/PlantillaPrincipal.dwt.php" codeOutsideHTMLIsLocked="false" -->
@@ -540,8 +553,8 @@ while ($row_Plantilla = sqlsrv_fetch_array($SQL_Plantilla)) {?>
 						<textarea name="CDU_Areas" rows="5" class="form-control" id="CDU_Areas" type="text"><?php if (($edit == 1) || ($sw_error == 1)) {echo $row['CDU_Areas'];}?></textarea>
 					</div>
 					<div class="col-lg-4">
-						<label class="control-label">Tiempo tarea (Minutos)</label>
-						<input name="CDU_TiempoTarea" type="text" class="form-control" id="CDU_TiempoTarea" maxlength="100" value="<?php if (($edit == 1) || ($sw_error == 1)) {echo $row['CDU_TiempoTarea'];}?>">
+						<label class="control-label">Tiempo tarea (Minutos) <span class="text-danger">*</span></label>
+						<input name="CDU_TiempoTarea" type="text" class="form-control" id="CDU_TiempoTarea" required="required" value="<?php if (($edit == 1) || ($sw_error == 1)) {echo $row_Sap['CDU_TiempoTarea'] ?? '';}?>">
 					</div>
 				</div>
 
@@ -552,7 +565,7 @@ while ($row_Plantilla = sqlsrv_fetch_array($SQL_Plantilla)) {?>
 							<option value="" disabled selected disabled selected>Seleccione...</option>
 							<?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) {?>
 							<option value="<?php echo $row_MarcaVehiculo['IdMarcaVehiculo']; ?>"
-							<?php if ((isset($row['CDU_IdMarca'])) && (strcmp($row_MarcaVehiculo['IdMarcaVehiculo'], $row['CDU_IdMarca']) == 0)) {echo "selected=\"selected\"";}?>>
+							<?php if ((isset($row_Sap['CDU_IdMarca'])) && (strcmp($row_MarcaVehiculo['IdMarcaVehiculo'], $row_Sap['CDU_IdMarca']) == 0)) {echo "selected=\"selected\"";}?>>
 								<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
 							</option>
 							<?php }?>
@@ -564,7 +577,7 @@ while ($row_Plantilla = sqlsrv_fetch_array($SQL_Plantilla)) {?>
 								<option value="" disabled selected>Seleccione...</option>
 							<?php while ($row_LineaVehiculo = sqlsrv_fetch_array($SQL_LineaVehiculo)) {?>
 								<option value="<?php echo $row_LineaVehiculo['IdLineaModeloVehiculo']; ?>"
-								<?php if ((isset($row['CDU_IdLinea'])) && (strcmp($row_LineaVehiculo['IdLineaModeloVehiculo'], $row['CDU_IdLinea']) == 0)) {echo "selected=\"selected\"";}?>>
+								<?php if ((isset($row_Sap['CDU_IdLinea'])) && (strcmp($row_LineaVehiculo['IdLineaModeloVehiculo'], $row_Sap['CDU_IdLinea']) == 0)) {echo "selected=\"selected\"";}?>>
 									<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; ?>
 								</option>
 							<?php }?>
