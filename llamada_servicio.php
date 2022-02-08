@@ -538,6 +538,9 @@ if ($sw_error == 1) {
     // Stiven Muñoz Murillo, 24/01/2022
     $SQL_Articulo = Seleccionar('uvw_Sap_tbl_ArticulosLlamadas', '*', "ItemCode='" . $row['IdArticuloLlamada'] . "'");
     $row_Articulo = sqlsrv_fetch_array($SQL_Articulo);
+
+	// Lista de materiales
+    $SQL_ListaMateriales = Seleccionar('uvw_Sap_tbl_ListaMateriales', '*', "CDU_IdMarca='" . $row['CDU_IdMarca_TarjetaEquipo'] . "' AND CDU_IdLinea='" . $row['CDU_IdLinea_TarjetaEquipo'] . "' AND OcrCode2='" . $_SESSION['CentroCosto2'] . "'");
 }
 
 //Tipo de llamada
