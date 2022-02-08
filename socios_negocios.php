@@ -930,9 +930,19 @@ if ($sw_ext == 0) {?>
 									<a href="<?php echo $return; ?>" class="alkin btn btn-outline btn-default"><i class="fa fa-arrow-circle-o-left"></i> Regresar</a>
 								<?php }?>
 							</div>
-							<div class="col-lg-6">
+							<div class="col-lg-3 pull-right">
 								<?php if (($edit == 1) && (PermitirFuncion(302))) {?>
-									<a href="llamada_servicio.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['CodigoCliente']); ?>" target="_blank" class="pull-right btn btn-primary"><i class="fa fa-plus-circle"></i> Crear llamada de servicio</a>
+									<div class="btn-group">
+										<button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i class="fa fa-plus-circle"></i> Agregar documento <i class="fa fa-caret-down"></i></button>
+										<ul class="dropdown-menu">
+											<li>
+												<a class="dropdown-item" href="llamada_servicio.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['CodigoCliente']); ?>" target="_blank">Crear llamada de servicio</a>
+											</li>
+											<li>
+												<a class="dropdown-item" href="tarjeta_equipo.php?dt_TE=1&Cardcode=<?php echo base64_encode($row['CodigoCliente']); ?>" target="_blank">Crear tarjeta de equipo</a>
+											</li>
+										</ul>
+									</div>
 								<?php }?>
 							</div>
 						</div>
@@ -2471,7 +2481,7 @@ function ConsultarTab(type){
 				});
 			}
 		}
-	} 
+	}
 
 	// Stiven Muñoz Murillo, 26/01/2022
 	else if(type==7){ // Tarjetas de equipo
