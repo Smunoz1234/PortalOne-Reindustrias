@@ -859,7 +859,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 		});
 		$("#SucursalCliente").change(function(){
 			$('.ibox-content').toggleClass('sk-loading',true);
-			
+
 			var Cliente=document.getElementById('ClienteLlamada').value;
 			var Sucursal=document.getElementById('SucursalCliente').value;
 
@@ -1023,6 +1023,33 @@ if (isset($sw_error) && ($sw_error == 1)) {
 				$('.ibox-content').toggleClass('sk-loading',false);
 			}
 
+		});
+
+		// Stiven Muñoz Murillo, 07/02/2022
+		$("#CDU_ListaMateriales").change(function(){
+			$('.ibox-content').toggleClass('sk-loading',true);
+			let listaMaterial=document.getElementById('CDU_ListaMateriales').value;
+
+			if(listaMaterial != "") {
+				$.ajax({
+					url: "ajx_buscar_datos_json.php",
+					data: {
+						type: 47,
+						id: listaMaterial
+					},
+					dataType: 'json',
+					success: function(data){
+						// console.log(data);
+
+						document.getElementById('CDU_TiempoTarea').value = data.tiempoTarea;
+						$('.ibox-content').toggleClass('sk-loading',false);
+					},
+					error: function(error) {
+						console.error(error.responseText);
+						$('.ibox-content').toggleClass('sk-loading',false);
+					}
+				});
+			}
 		});
 
 		// Stiven Muñoz Murillo, 20/12/2021
@@ -1671,7 +1698,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_Concesionario = sqlsrv_fetch_array($SQL_Concesionario)) {?>
-										<option value="<?php echo $row_Concesionario['NombreConcesionario']; //['CodigoConcesionario'];    ?>"
+										<option value="<?php echo $row_Concesionario['NombreConcesionario']; //['CodigoConcesionario'];      ?>"
 										<?php if ((isset($row['CDU_Concesionario'])) && (strcmp($row_Concesionario['NombreConcesionario'], $row['CDU_Concesionario']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_Concesionario['NombreConcesionario']; ?>
 										</option>
@@ -1684,7 +1711,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_Aseguradora = sqlsrv_fetch_array($SQL_Aseguradora)) {?>
-										<option value="<?php echo $row_Aseguradora['NombreAseguradora']; //['CodigoAseguradora'];                                                                                  ?>"
+										<option value="<?php echo $row_Aseguradora['NombreAseguradora']; //['CodigoAseguradora'];                                                                                    ?>"
 										<?php if ((isset($row['CDU_Aseguradora'])) && (strcmp($row_Aseguradora['NombreAseguradora'], $row['CDU_Aseguradora']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_Aseguradora['NombreAseguradora']; ?>
 										</option>
@@ -1699,7 +1726,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_TipoServicio = sqlsrv_fetch_array($SQL_TipoServicio)) {?>
-										<option value="<?php echo $row_TipoServicio['NombreTipoServicio']; //['CodigoTipoServicio'];   ?>"
+										<option value="<?php echo $row_TipoServicio['NombreTipoServicio']; //['CodigoTipoServicio'];     ?>"
 										<?php if ((isset($row['CDU_TipoServicio'])) && (strcmp($row_TipoServicio['NombreTipoServicio'], $row['CDU_TipoServicio']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_TipoServicio['NombreTipoServicio']; ?>
 										</option>
@@ -1712,7 +1739,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_Contrato = sqlsrv_fetch_array($SQL_ContratosLlamada)) {?>
-										<option value="<?php echo $row_Contrato['NombreContrato']; //['CodigoContrato'];    ?>"
+										<option value="<?php echo $row_Contrato['NombreContrato']; //['CodigoContrato'];      ?>"
 										<?php if ((isset($row['CDU_Contrato'])) && (strcmp($row_Contrato['NombreContrato'], $row['CDU_Contrato']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_Contrato['NombreContrato']; ?>
 										</option>

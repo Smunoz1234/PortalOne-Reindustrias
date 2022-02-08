@@ -682,6 +682,17 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
         echo json_encode($records);
     }
 
+    // Stiven Muñoz Murillo, 07/02/2022
+    elseif ($_GET['type'] == 47) { // Lista de Materiales por ItemCode
+        $id = "'" . $_GET['id'] . "'";
+        $SQL = Seleccionar("uvw_Sap_tbl_ListaMateriales", "*", "ItemCode=" . $id);
+        $row = sqlsrv_fetch_array($SQL);
+        $records = array(
+            'tiempoTarea' => $row['CDU_TiempoTarea'],
+        );
+        echo json_encode($records);
+    }
+
     // Después de los condicionales
     // Se cierra la conexión a la BD
     sqlsrv_close($conexion);
