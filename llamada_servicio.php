@@ -1356,8 +1356,8 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								</select>
 							</div>
 							<div class="col-lg-4">
-								<label class="control-label">Sucursal</label>
-								<select name="SucursalCliente" class="form-control select2" id="SucursalCliente" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
+								<label class="control-label">Sucursal <span class="text-danger">*</span></label>
+								<select name="SucursalCliente" class="form-control select2" id="SucursalCliente" required="required" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 								  <?php if (($type_llmd == 0) || ($sw_error == 1)) {?><option value="">Seleccione...</option><?php }?>
 								  <?php if (($type_llmd == 1) || ($sw_error == 1)) {
     while ($row_SucursalCliente = sqlsrv_fetch_array($SQL_SucursalCliente)) {?>

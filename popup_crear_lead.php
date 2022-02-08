@@ -51,7 +51,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
                 array_push($Anexos, array(
                     "id_anexo" => $j,
                     "tipo_documento" => 2, //ObjType de Socios de negocios
-                    "id_documento" => null,
+                    "id_documento" => 0, //se necesita cero porque no tiene registro en la bd
                     "archivo" => $OnlyName,
                     "ext_archivo" => $Ext,
                     "metodo" => 1,
@@ -182,7 +182,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
                     "metodo" => 1,
                 ),
             ),
-            "documentos_Anexos" => $Anexos,
+            "anexos" => $Anexos,
             "metodo" => 1,
             "prop1" => (isset($_POST['Prop1']) && ($_POST['Prop1'] == "Y")) ? $_POST['Prop1'] : "N",
             "prop2" => (isset($_POST['Prop2']) && ($_POST['Prop2'] == "Y")) ? $_POST['Prop2'] : "N",

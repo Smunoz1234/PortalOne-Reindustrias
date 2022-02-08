@@ -554,7 +554,7 @@ while ($row_Plantilla = sqlsrv_fetch_array($SQL_Plantilla)) {?>
 					</div>
 					<div class="col-lg-4">
 						<label class="control-label">Tiempo tarea (Minutos) <span class="text-danger">*</span></label>
-						<input name="CDU_TiempoTarea" type="text" class="form-control" id="CDU_TiempoTarea" required="required" value="<?php if (($edit == 1) || ($sw_error == 1)) {echo $row_Sap['CDU_TiempoTarea'] ?? '';}?>">
+						<input name="CDU_TiempoTarea" type="number" class="form-control" id="CDU_TiempoTarea" required="required" value="<?php if (($edit == 1) || ($sw_error == 1)) {echo $row_Sap['CDU_TiempoTarea'] ?? '';}?>">
 					</div>
 				</div>
 
