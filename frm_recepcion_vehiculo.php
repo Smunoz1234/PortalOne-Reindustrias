@@ -10,6 +10,9 @@ if (isset($_REQUEST['frm']) && ($_REQUEST['frm'] != "")) {
 
     // Stiven Muñoz Murillo, 10/01/2022
     $SQL_Cat = Seleccionar("uvw_tbl_Categorias", "ID_Categoria, NombreCategoria, NombreCategoriaPadre, URL", "ID_Categoria = '" . base64_decode($frm) . "'");
+} else {
+	// Stiven Muñoz Murillo, 09/02/2022
+	$frm = "";
 }
 
 // Stiven Muñoz Murillo, 10/01/2022
@@ -564,7 +567,7 @@ $SQL_Preguntas = Seleccionar('tbl_RecepcionVehiculos_Preguntas', '*');
 $(function() {
     $("#recepcionForm").on("submit", function(e) {
         // Evitar redirección del formulario
-        console.log(e);
+        console.log("570", e);
         // e.preventDefault();
 		/*
         // Llamar la acción del formulario
@@ -619,9 +622,9 @@ if (isset($sw_error) && ($sw_error == 1)) {
 	$(document).ready(function() {//Cargar los combos dependiendo de otros
 		var borrarLineaModeloVehiculo = true;
 
-		$("#Cliente").change(function(){
+		$("#id_socio_negocio").change(function(){
 			$('.ibox-content').toggleClass('sk-loading',true);
-			var Cliente=document.getElementById('Cliente').value;
+			var Cliente=document.getElementById('id_socio_negocio').value;
 
 			$.ajax({
 				type: "POST",
@@ -648,8 +651,8 @@ if (isset($sw_error) && ($sw_error == 1)) {
 					type: "POST",
 					url: "ajx_cbo_select.php?type=6&id="+Cliente,
 					success: function(response){
-						$('#OrdenServicio').html(response).fadeIn();
-						$('#OrdenServicio').trigger('change');
+						$('#id_llamada_servicio').html(response).fadeIn();
+						$('#id_llamada_servicio').trigger('change');
 					}
 				});
 			<?php }?>
@@ -671,13 +674,13 @@ if (isset($sw_error) && ($sw_error == 1)) {
 				},
 				dataType:'json',
 				success: function(data){
-					console.log(data);
+					console.log("677", data);
 
-					document.getElementById('Direccion').value=data.Direccion;
-					document.getElementById('Celular').value=data.Celular;
+					document.getElementById('direccion_destino').value=data.Direccion;
+					document.getElementById('celular').value=data.Celular;
 					document.getElementById('Ciudad').value=data.Ciudad;
-					document.getElementById('Telefono').value=data.Telefono;
-					document.getElementById('Correo').value=data.Correo;
+					document.getElementById('telefono').value=data.Telefono;
+					document.getElementById('correo').value=data.Correo;
 				},
 				error: function(error) {
 					console.error(error.responseText);
@@ -689,7 +692,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 		$("#SucursalCliente").change(function(){
 			$('.ibox-content').toggleClass('sk-loading',true);
 
-			var Cliente=document.getElementById('Cliente').value;
+			var Cliente=document.getElementById('id_socio_negocio').value;
 			var Sucursal=document.getElementById('SucursalCliente').value;
 
 			if(Sucursal !== "" && Sucursal !== null && Sucursal*1 !== -1) {
@@ -698,11 +701,11 @@ if (isset($sw_error) && ($sw_error == 1)) {
 					data:{type:1,CardCode:Cliente,Sucursal:Sucursal},
 					dataType:'json',
 					success: function(data){
-						document.getElementById('Direccion').value=data.Direccion;
+						document.getElementById('direccion_destino').value=data.Direccion;
 						document.getElementById('Barrio').value=data.Barrio;
 						document.getElementById('Ciudad').value=data.Ciudad;
-						document.getElementById('Telefono').value=data.TelefonoContacto;
-						document.getElementById('Correo').value=data.CorreoContacto;
+						document.getElementById('telefono').value=data.TelefonoContacto;
+						document.getElementById('correo').value=data.CorreoContacto;
 					},
 					error: function(error) {
 						console.error("#SucursalCliente", error.responseText);
@@ -722,8 +725,8 @@ if (isset($sw_error) && ($sw_error == 1)) {
 					data:{type:5,Contacto:Contacto},
 					dataType:'json',
 					success: function(data){
-						document.getElementById('Telefono').value=data.Telefono;
-						document.getElementById('Correo').value=data.Correo;
+						document.getElementById('telefono').value=data.Telefono;
+						document.getElementById('correo').value=data.Correo;
 					},
 					error: function(error) {
 						console.error("#ContactoCliente", error.responseText);
@@ -762,7 +765,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 		});
 
 		// Stiven Muñoz Murillo, 19/01/2021
-		$("#OrdenServicio").change(function() {
+		$("#id_llamada_servicio").change(function() {
 			$('.ibox-content').toggleClass('sk-loading',true);
 
 			$.ajax({
@@ -770,33 +773,32 @@ if (isset($sw_error) && ($sw_error == 1)) {
 				data: {
 					type: 44,
 					id: '',
-					ot: document.getElementById('OrdenServicio').value
+					ot: document.getElementById('id_llamada_servicio').value
 				},
 				dataType: 'json',
 				success: function(data){
 					// console.log(data);
 
-					document.getElementById('SerialInterno').value = data.SerialInterno;
-					document.getElementById('SerialFabricante').value = data.SerialFabricante;
-					document.getElementById('No_Motor').value = data.No_Motor;
+					document.getElementById('placa').value = data.SerialInterno;
+					document.getElementById('VIN').value = data.SerialFabricante;
+					document.getElementById('no_motor').value = data.No_Motor;
 
 					if(data.CDU_Marca !== null) {
-						// document.getElementById('CDU_IdMarca').value = data.CDU_IdMarca;
-						document.getElementById('CDU_Marca').value = data.CDU_Marca;
-						$('#CDU_Marca').trigger('change');
+						document.getElementById('id_marca').value = data.CDU_IdMarca;
+						$('#id_marca').trigger('change');
 
 						borrarLineaModeloVehiculo = false;
-						document.getElementById('CDU_Linea').value = data.CDU_IdLinea;
-						$('#CDU_Linea').trigger('change');
+						document.getElementById('id_linea').value = data.CDU_IdLinea;
+						$('#id_linea').trigger('change');
 
-						document.getElementById('CDU_Ano').value = data.CDU_Ano;
-						$('#CDU_Ano').trigger('change');
+						document.getElementById('annio').value = data.CDU_Ano;
+						$('#annio').trigger('change');
 					}
 
 					$('.ibox-content').toggleClass('sk-loading',false);
 				},
 				error: function(error) {
-					console.error("#OrdenServicio", error.responseText);
+					console.error("#id_llamada_servicio", error.responseText);
 					$('.ibox-content').toggleClass('sk-loading',false);
 				}
 			});
@@ -804,7 +806,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 	});
 
 function ConsultarDatosCliente(){
-	var Cliente=document.getElementById('Cliente');
+	var Cliente=document.getElementById('id_socio_negocio');
 	if(Cliente.value!=""){
 		self.name='opener';
 		remote=open('socios_negocios.php?id='+Base64.encode(Cliente.value)+'&ext=1&tl=1','remote','location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
@@ -814,7 +816,7 @@ function ConsultarDatosCliente(){
 
 // Stiven Muñoz Murillo, 12/01/2022
 function ConsultarServicio(){
-	var llamada=document.getElementById('OrdenServicio');
+	var llamada=document.getElementById('id_llamada_servicio');
 	if(llamada.value!=""){
 		self.name='opener';
 		remote=open('llamada_servicio.php?id='+Base64.encode(llamada.value)+'&ext=1&tl=1','remote','location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
@@ -823,7 +825,7 @@ function ConsultarServicio(){
 }
 
 function AgregarArea(){
-	var Cliente=document.getElementById('Cliente');
+	var Cliente=document.getElementById('id_socio_negocio');
 	if(Cliente.value!=""){
 		self.name='opener';
 		var altura=370;
@@ -1034,7 +1036,7 @@ function Eliminar(){
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">Línea del vehículo <span class="text-danger">*</span></label>
-								<select name="id_linea" class="form-control select2" required="required" id="CDU_Linea"
+								<select name="id_linea" class="form-control select2" required="required" id="id_linea"
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_LineaVehiculo = sqlsrv_fetch_array($SQL_LineaVehiculo)) {?>
@@ -1047,7 +1049,7 @@ function Eliminar(){
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">Modelo del vehículo <span class="text-danger">*</span></label>
-								<select name="annio" class="form-control select2" required="required" id="CDU_Ano"
+								<select name="annio" class="form-control select2" required="required" id="annio"
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_ModeloVehiculo = sqlsrv_fetch_array($SQL_ModeloVehiculo)) {?>
@@ -1233,7 +1235,7 @@ function Eliminar(){
 					</div>
 					<div class="ibox-content">
 						<?php while ($row_Pregunta = sqlsrv_fetch_array($SQL_Preguntas)) {?>
-							<?php $id_rp = $row_Pregunta['id_recepcion_pregunta'];?>
+							<?php $id_rp = intval($row_Pregunta['id_recepcion_pregunta']) - 99;?>
 
 							<div class="form-group">
 								<div class="col-lg-4 border-bottom ">
@@ -1433,7 +1435,7 @@ function Eliminar(){
 						<div class="form-group">
 							<label class="col-lg-1 control-label">Responsable del cliente</label>
 							<div class="col-lg-4">
-								<input autocomplete="off" name="ResponsableCliente" type="text" required="required" class="form-control" id="ResponsableCliente" maxlength="150" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['ResponsableCliente'];}?>">
+								<input autocomplete="off" name="ResponsableCliente" type="text" class="form-control" id="ResponsableCliente" maxlength="150" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['ResponsableCliente'];}?>">
 							</div>
 						</div>
 						<div class="form-group">
@@ -1561,7 +1563,7 @@ if (isset($_GET['return'])) {
     $return = base64_decode($_GET['pag']) . "?" . $_GET['return'];
 } else {
     // Stiven Muñoz Murillo, 10/01/2022
-    // $return = "gestionar_hallazgos.php?id=" . $frm;
+    $return = "consultar_frm_recepcion_vehiculo.php?id=" . $frm;
 }?>
 					<div class="col-lg-9">
 						 <br><br>
@@ -1738,13 +1740,15 @@ $(document).ready(function(){
 			// Stiven Muñoz Murillo, 08/02/2022
 			// $('.ibox-content').toggleClass('sk-loading');
 			// form.submit();
+			
 			let data = new FormData(form);
-			console.log(data);
+			console.log("1745", data);
+
 			let json = Object.fromEntries(data);
-			console.log(json);
+			console.log("1748", json);
 
 			localStorage.recepcionForm = JSON.stringify(json);
-			console.log("Hola", JSON.parse(localStorage.recepcionForm));
+			console.log("1751", JSON.parse(localStorage.recepcionForm));
 		}
 	});
 		 $(".alkin").on('click', function(){
@@ -1805,8 +1809,8 @@ $(document).ready(function(){
 					enabled: true
 				},
 				onClickEvent: function() {
-					var value = $("#NombreCliente").getSelectedItemData().CodigoCliente;
-					$("#Cliente").val(value).trigger("change");
+					var value = $("#socio_negocio").getSelectedItemData().CodigoCliente;
+					$("#id_socio_negocio").val(value).trigger("change");
 				}
 			}
 		};
@@ -1830,14 +1834,14 @@ $(document).ready(function(){
 			}
 		};
 
-		$("#NombreCliente").easyAutocomplete(options);
+		$("#socio_negocio").easyAutocomplete(options);
 		$("#Ciudad").easyAutocomplete(options2);
 
 		<?php if ($dt_LS == 1) {?>
-			$('#Cliente').trigger('change');
+			$('#id_socio_negocio').trigger('change');
 
 			// Stiven Muñoz Murillo, 20/01/2022
-			$('#OrdenServicio').trigger('change');
+			$('#id_llamada_servicio').trigger('change');
 	 	<?php }?>
 
 		$(".btn_del").each(function (el){
@@ -1846,14 +1850,14 @@ $(document).ready(function(){
 
 		  <?php
 if (($type_frm == 1) && (!PermitirFuncion(213))) {?>
-				//$('#ClienteActividad option:not(:selected)').attr('disabled',true);
+				//$('#id_socio_negocioActividad option:not(:selected)').attr('disabled',true);
 		 		$('#Revision option:not(:selected)').attr('disabled',true);
 		<?php }?>
 		 <?php
 if ($dt_LS == 1) {?>
-				//$('#ClienteActividad option:not(:selected)').attr('disabled',true);
+				//$('#id_socio_negocioActividad option:not(:selected)').attr('disabled',true);
 		 		$('#SucursalCliente option:not(:selected)').attr('disabled',true);
-		 		$('#OrdenServicio option:not(:selected)').attr('disabled',true);
+		 		$('#id_llamada_servicio option:not(:selected)').attr('disabled',true);
 		<?php }?>
 	});
 </script>
