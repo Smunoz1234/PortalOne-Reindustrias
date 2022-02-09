@@ -11,8 +11,8 @@ if (isset($_REQUEST['frm']) && ($_REQUEST['frm'] != "")) {
     // Stiven Muñoz Murillo, 10/01/2022
     $SQL_Cat = Seleccionar("uvw_tbl_Categorias", "ID_Categoria, NombreCategoria, NombreCategoriaPadre, URL", "ID_Categoria = '" . base64_decode($frm) . "'");
 } else {
-	// Stiven Muñoz Murillo, 09/02/2022
-	$frm = "";
+    // Stiven Muñoz Murillo, 09/02/2022
+    $frm = "";
 }
 
 // Stiven Muñoz Murillo, 10/01/2022
@@ -65,286 +65,342 @@ $dir_new = CrearObtenerDirAnx("formularios");
 
 if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
 
-    //Insertar formulario
+    // Inicio, Enviar datos al WebService
+    $Cabecera = $_POST;
+
     try {
-        //*** Foto evidencia ***
+        $Metodo = "RecepcionVehiculos";
+        $Resultado = EnviarWebServiceSAP($Metodo, $Cabecera, true, true);
 
-        $ImgEvidencia1 = "NULL";
-        $ImgEvidencia2 = "NULL";
-        $ImgEvidencia3 = "NULL";
-        $ImgCierre = "NULL";
-        $NombreFirmaCliente = "NULL";
-        $NombreFirmaTecnico = "NULL";
-
-        if ($_FILES['ImgEvidencia1']['tmp_name'] != "") {
-            if (is_uploaded_file($_FILES['ImgEvidencia1']['tmp_name'])) {
-                $Nombre_Archivo = $_FILES['ImgEvidencia1']['name'];
-                //Sacar la extension del archivo
-                $Ext = end(explode('.', $Nombre_Archivo));
-                //Sacar el nombre sin la extension
-                $OnlyName = substr($Nombre_Archivo, 0, strlen($Nombre_Archivo) - (strlen($Ext) + 1));
-                //Reemplazar espacios
-                $OnlyName = str_replace(" ", "_", $OnlyName);
-                $Prefijo = substr(uniqid(rand()), 0, 3);
-                $ImgEvidencia1 = LSiqmlObs($OnlyName) . "_" . date('Ymd') . $Prefijo . "." . $Ext;
-                move_uploaded_file($_FILES['ImgEvidencia1']['tmp_name'], $dir_new . $ImgEvidencia1);
-                if (!RedimensionarImagen($ImgEvidencia1, $dir_new . $ImgEvidencia1, 300, 400)) {
-                    $sw_error = 1;
-                    $msg_error = "Error al redimensionar el archivo Evidencia 1";
-                }
-                $ImgEvidencia1 = "'" . $ImgEvidencia1 . "'";
-            } else {
-                throw new Exception('No se pudo cargar el archivo Evidencia 1');
-                sqlsrv_close($conexion);
-            }
-        }
-
-        if ($_FILES['ImgEvidencia2']['tmp_name'] != "") {
-            if (is_uploaded_file($_FILES['ImgEvidencia2']['tmp_name'])) {
-                $Nombre_Archivo = $_FILES['ImgEvidencia2']['name'];
-                //Sacar la extension del archivo
-                $Ext = end(explode('.', $Nombre_Archivo));
-                //Sacar el nombre sin la extension
-                $OnlyName = substr($Nombre_Archivo, 0, strlen($Nombre_Archivo) - (strlen($Ext) + 1));
-                //Reemplazar espacios
-                $OnlyName = str_replace(" ", "_", $OnlyName);
-                $Prefijo = substr(uniqid(rand()), 0, 3);
-                $ImgEvidencia2 = LSiqmlObs($OnlyName) . "_" . date('Ymd') . $Prefijo . "." . $Ext;
-                move_uploaded_file($_FILES['ImgEvidencia2']['tmp_name'], $dir_new . $ImgEvidencia2);
-                if (!RedimensionarImagen($ImgEvidencia2, $dir_new . $ImgEvidencia2, 300, 400)) {
-                    $sw_error = 1;
-                    $msg_error = "Error al redimensionar el archivo Evidencia 2";
-                }
-                $ImgEvidencia2 = "'" . $ImgEvidencia2 . "'";
-            } else {
-                throw new Exception('No se pudo cargar el archivo Evidencia 2');
-                sqlsrv_close($conexion);
-            }
-        }
-
-        if ($_FILES['ImgEvidencia3']['tmp_name'] != "") {
-            if (is_uploaded_file($_FILES['ImgEvidencia3']['tmp_name'])) {
-                $Nombre_Archivo = $_FILES['ImgEvidencia3']['name'];
-                //Sacar la extension del archivo
-                $Ext = end(explode('.', $Nombre_Archivo));
-                //Sacar el nombre sin la extension
-                $OnlyName = substr($Nombre_Archivo, 0, strlen($Nombre_Archivo) - (strlen($Ext) + 1));
-                //Reemplazar espacios
-                $OnlyName = str_replace(" ", "_", $OnlyName);
-                $Prefijo = substr(uniqid(rand()), 0, 3);
-                $ImgEvidencia3 = LSiqmlObs($OnlyName) . "_" . date('Ymd') . $Prefijo . "." . $Ext;
-                move_uploaded_file($_FILES['ImgEvidencia3']['tmp_name'], $dir_new . $ImgEvidencia3);
-                if (!RedimensionarImagen($ImgEvidencia3, $dir_new . $ImgEvidencia3, 300, 400)) {
-                    $sw_error = 1;
-                    $msg_error = "Error al redimensionar el archivo Evidencia 2";
-                }
-                $ImgEvidencia3 = "'" . $ImgEvidencia3 . "'";
-            } else {
-                throw new Exception('No se pudo cargar el archivo Evidencia 3');
-                sqlsrv_close($conexion);
-            }
-        }
-
-        if ($_FILES['ImgCierre']['tmp_name'] != "") {
-            if (is_uploaded_file($_FILES['ImgCierre']['tmp_name'])) {
-                $Nombre_Archivo = $_FILES['ImgCierre']['name'];
-                //Sacar la extension del archivo
-                $Ext = end(explode('.', $Nombre_Archivo));
-                //Sacar el nombre sin la extension
-                $OnlyName = substr($Nombre_Archivo, 0, strlen($Nombre_Archivo) - (strlen($Ext) + 1));
-                //Reemplazar espacios
-                $OnlyName = str_replace(" ", "_", $OnlyName);
-                $Prefijo = substr(uniqid(rand()), 0, 3);
-                $ImgCierre = LSiqmlObs($OnlyName) . "_" . date('Ymd') . $Prefijo . "." . $Ext;
-                move_uploaded_file($_FILES['ImgCierre']['tmp_name'], $dir_new . $ImgCierre);
-                if (!RedimensionarImagen($ImgCierre, $dir_new . $ImgCierre, 300, 400)) {
-                    $sw_error = 1;
-                    $msg_error = "Error al redimensionar el archivo Evidencia cierre";
-                }
-                $ImgCierre = "'" . $ImgCierre . "'";
-            } else {
-                throw new Exception('No se pudo cargar el archivo Evidencia cierre');
-                sqlsrv_close($conexion);
-            }
-        }
-
-        //Firmas
-        if ($_POST['SigCliente'] != "") {
-            $NombreFirmaCliente = base64_decode($_POST['SigCliente']);
-            if (copy($dir_firma . $NombreFirmaCliente, $dir_new . $NombreFirmaCliente)) {
-                RedimensionarImagen($NombreFirmaCliente, $dir_new . $NombreFirmaCliente, 300, 300);
-                $NombreFirmaCliente = "'" . $NombreFirmaCliente . "'";
-            } else {
-                $NombreFirmaCliente = "NULL";
-                $sw_error = 1;
-                $msg_error = "No se pudo mover la firma del cliente";
-            }
-        }
-
-        if ($_POST['SigTecnico'] != "") {
-            $NombreFirmaTecnico = base64_decode($_POST['SigTecnico']);
-            if (copy($dir_firma . $NombreFirmaTecnico, $dir_new . $NombreFirmaTecnico)) {
-                RedimensionarImagen($NombreFirmaTecnico, $dir_new . $NombreFirmaTecnico, 300, 300);
-                $NombreFirmaTecnico = "'" . $NombreFirmaTecnico . "'";
-            } else {
-                $NombreFirmaTecnico = "NULL";
-                $sw_error = 1;
-                $msg_error = "No se pudo mover la firma del tecnico";
-            }
-        }
-
-        //Insertar el registro en la BD
-        if ($_POST['tl'] == 0) { //Insertando
-            $Type = 1;
-            $ID = "NULL";
-        } else { //Actualizando
-            $Type = 2;
-            $ID = base64_decode($_POST['IdFrm']);
-        }
-
-        $ParamInsFrm = array(
-            $ID,
-            "'" . $_POST['Cliente'] . "'",
-            "'" . $_POST['ContactoCliente'] . "'",
-            "'" . $_POST['Telefono'] . "'",
-            "'" . $_POST['Correo'] . "'",
-            "'" . $_POST['SucursalCliente'] . "'",
-            "'" . $_POST['Direccion'] . "'",
-            "'" . $_POST['Ciudad'] . "'",
-            "'" . $_POST['Barrio'] . "'",
-            "'" . $_POST['ContactoSucursal'] . "'",
-            "'" . $_POST['OrdenServicio'] . "'",
-            "'" . $_POST['Area'] . "'",
-            "'" . $_POST['TipoVisita'] . "'",
-            "'" . $_POST['Empleado'] . "'",
-            "'" . $_POST['Estado'] . "'",
-            "'" . LSiqmlObs($_POST['Hallazgo']) . "'",
-            "'" . LSiqmlObs($_POST['Recomendaciones']) . "'",
-            "'" . $_POST['ResponsableCliente'] . "'",
-            "'" . LSiqmlObs($_POST['ComentariosCierre']) . "'",
-            "'" . FormatoFecha($_POST['FechaCreacion'], $_POST['HoraCreacion']) . "'",
-            "'" . FormatoFecha($_POST['FechaCierre'], $_POST['HoraCierre']) . "'",
-            "1",
-            $ImgEvidencia1,
-            $ImgEvidencia2,
-            $ImgEvidencia3,
-            $ImgCierre,
-            $NombreFirmaCliente,
-            $NombreFirmaTecnico,
-            "'" . $_POST['Revision'] . "'",
-            "'" . $_POST['EstadoCriticidad'] . "'",
-            "'" . $_SESSION['CodUser'] . "'",
-            "'" . $_SESSION['CodUser'] . "'",
-            "'" . $Type . "'",
-        );
-        $SQL_InsFrm = EjecutarSP('sp_tbl_FrmHallazgos', $ParamInsFrm, 101);
-        if ($SQL_InsFrm) {
-            $row_NewIdFrm = sqlsrv_fetch_array($SQL_InsFrm);
-            $IdFrm = $row_NewIdFrm[0];
-
-            //Insertar plagas
-            $Count = count($_POST['TipoPlaga']);
-            $i = 0;
-            while ($i < $Count) {
-                if ($_POST['TipoPlaga'][$i] != "") {
-                    //Cargar foto
-                    if ($_FILES['FotoPlaga']['tmp_name'][$i] != "") {
-                        if (is_uploaded_file($_FILES['FotoPlaga']['tmp_name'][$i])) {
-                            $Nombre_Archivo = $_FILES['FotoPlaga']['name'][$i];
-                            //Sacar la extension del archivo
-                            $Ext = end(explode('.', $Nombre_Archivo));
-                            //Sacar el nombre sin la extension
-                            $OnlyName = substr($Nombre_Archivo, 0, strlen($Nombre_Archivo) - (strlen($Ext) + 1));
-                            //Reemplazar espacios
-                            $OnlyName = str_replace(" ", "_", $OnlyName);
-                            $Prefijo = substr(uniqid(rand()), 0, 3);
-                            $FotoPlaga = LSiqmlObs($OnlyName) . "_" . date('Ymd') . $Prefijo . "." . $Ext;
-                            move_uploaded_file($_FILES['FotoPlaga']['tmp_name'][$i], $dir_new . $FotoPlaga);
-                            if (!RedimensionarImagen($FotoPlaga, $dir_new . $FotoPlaga, 300, 400)) {
-                                $sw_error = 1;
-                                $msg_error = "Error al redimensionar la foto de la plaga";
-                            }
-                        } else {
-                            $sw_error = 1;
-                            $msg_error = "No se pudo cargar la foto de la plaga";
-                        }
-                    }
-                    if ($_POST['tl'] == 0) { //Insertando
-                        $Type = 1;
-                        $ID = $IdFrm;
-                    } else { //Actualizando
-                        $Type = 2;
-                        $ID = base64_decode($_POST['IdFrm']);
-                    }
-                    $ParamInsPlagas = array(
-                        "'" . $ID . "'",
-                        "'" . $_POST['TipoPlaga'][$i] . "'",
-                        "'" . $_POST['Cantidad'][$i] . "'",
-                        "'" . $FotoPlaga . "'",
-                        "'" . $_SESSION['CodUser'] . "'",
-                        "1",
-                    );
-
-                    $SQL_InsPlagas = EjecutarSP('sp_tbl_FrmHallazgos_Plagas', $ParamInsPlagas, 101);
-                    if (!$SQL_InsPlagas) {
-                        $sw_error = 1;
-                        $msg_error = "Error al insertar las plagas";
-                    }
-                }
-                $i = $i + 1;
-            }
-
-            //Insertar las recurrecias
-            if ($_POST['tl'] == 1) { //Actualizando
-                $ID = base64_decode($_POST['IdFrm']);
-
-                if ($_POST['FechaRec'] != "") {
-                    $ParamInsRec = array(
-                        "'" . $ID . "'",
-                        "'" . $_POST['FechaRec'] . "'",
-                        "'" . $_POST['ComentariosRec'] . "'",
-                        "'" . $_SESSION['CodUser'] . "'",
-                        "1",
-                    );
-
-                    $SQL_InsRec = EjecutarSP('sp_tbl_FrmHallazgos_Rec', $ParamInsRec, 101);
-                    if (!$SQL_InsRec) {
-                        $sw_error = 1;
-                        $msg_error = "Error al insertar la recurrencia del hallazgo";
-                    }
-                }
-            }
-
-            if ($_POST['tl'] == 0) {
-                if (isset($_POST['chkEnvioMail']) && ($_POST['chkEnvioMail'] == 1)) {
-                    //Enviar correo
-                    $ParamEnviaMail = array(
-                        "'" . $ID . "'",
-                        "'1001'",
-                        "'4'",
-                    );
-                    $SQL_EnviaMail = EjecutarSP('usp_CorreoEnvio', $ParamEnviaMail, 101);
-                    if (!$SQL_EnviaMail) {
-                        $sw_error = 1;
-                        $msg_error = "Error al enviar el correo al usuario.";
-                    }
-                }
-            }
-
-            sqlsrv_close($conexion);
-            if ($_POST['tl'] == 1) {
-                header('Location:' . base64_decode($_POST['return']) . '&a=' . base64_encode("OK_FrmUpd"));
-            } else {
-                header('Location:' . base64_decode($_POST['return']) . '&a=' . base64_encode("OK_FrmAdd"));
-            }
-
-        } else {
-            $sw_error = 1;
-            $msg_error = "Error al crear el formulario";
+        if ($Resultado->Success == 0) {
+            // $sw_error = 1;
+            $msg_error = $Resultado->Mensaje;
+            //header("Location:tarjeta_equipo.php?id=$IdTarjetaEquipo&swError=1&a=" . base64_encode($Msg));
+            //echo "<script>alert('$msg_error'); location = 'tarjeta_equipo.php';</script>";
         }
     } catch (Exception $e) {
         echo 'Excepcion capturada: ', $e->getMessage(), "\n";
     }
+
+    /*
+    try {
+    if ($Metodo == 1) { //Creando
+    $Metodo = "TarjetaEquipos";
+    $Resultado = EnviarWebServiceSAP($Metodo, $Cabecera, true, true);
+    } else { //Editando
+    $Metodo = "TarjetaEquipos/" . base64_decode($_POST['ID_TarjetaEquipo']);
+    $Resultado = EnviarWebServiceSAP($Metodo, $Cabecera, true, true, "PUT");
+    }
+
+    if ($Resultado->Success == 0) {
+    $sw_error = 1;
+    $msg_error = $Resultado->Mensaje;
+    $Cabecera_json = json_encode($Cabecera);
+    //header("Location:tarjeta_equipo.php?id=$IdTarjetaEquipo&swError=1&a=" . base64_encode($Msg));
+    //echo "<script>alert('$msg_error'); location = 'tarjeta_equipo.php';</script>";
+    } else {
+    $Msg = ($_POST['tl'] == 1) ? "OK_TarjetaEquipoUpdate" : "OK_TarjetaEquipoAdd";
+
+    if ($_POST['tl'] == 1) {
+    header('Location:tarjeta_equipo.php?id=' . $_POST['ID_TarjetaEquipo'] . '&tl=1&a=' . base64_encode($Msg));
+    } else {
+    $SQL_ID = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', 'IdTarjetaEquipo', "SerialInterno='" . $row_json['SerialInterno'] . "'");
+    $row_ID = sqlsrv_fetch_array($SQL_ID);
+
+    header('Location:tarjeta_equipo.php?id=' . base64_encode($row_ID['IdTarjetaEquipo']) . '&tl=1&a=' . base64_encode($Msg));
+    }
+
+    $edit = 1;
+    $_GET['a'] = base64_encode($Msg);
+    }
+    } catch (Exception $e) {
+    echo 'Excepcion capturada: ', $e->getMessage(), "\n";
+    }
+     */
+    // Fin, Enviar datos al WebService
+
+    /*
+//Insertar formulario
+try {
+//*** Foto evidencia ***
+
+$ImgEvidencia1 = "NULL";
+$ImgEvidencia2 = "NULL";
+$ImgEvidencia3 = "NULL";
+$ImgCierre = "NULL";
+$NombreFirmaCliente = "NULL";
+$NombreFirmaTecnico = "NULL";
+
+if ($_FILES['ImgEvidencia1']['tmp_name'] != "") {
+if (is_uploaded_file($_FILES['ImgEvidencia1']['tmp_name'])) {
+$Nombre_Archivo = $_FILES['ImgEvidencia1']['name'];
+//Sacar la extension del archivo
+$Ext = end(explode('.', $Nombre_Archivo));
+//Sacar el nombre sin la extension
+$OnlyName = substr($Nombre_Archivo, 0, strlen($Nombre_Archivo) - (strlen($Ext) + 1));
+//Reemplazar espacios
+$OnlyName = str_replace(" ", "_", $OnlyName);
+$Prefijo = substr(uniqid(rand()), 0, 3);
+$ImgEvidencia1 = LSiqmlObs($OnlyName) . "_" . date('Ymd') . $Prefijo . "." . $Ext;
+move_uploaded_file($_FILES['ImgEvidencia1']['tmp_name'], $dir_new . $ImgEvidencia1);
+if (!RedimensionarImagen($ImgEvidencia1, $dir_new . $ImgEvidencia1, 300, 400)) {
+$sw_error = 1;
+$msg_error = "Error al redimensionar el archivo Evidencia 1";
+}
+$ImgEvidencia1 = "'" . $ImgEvidencia1 . "'";
+} else {
+throw new Exception('No se pudo cargar el archivo Evidencia 1');
+sqlsrv_close($conexion);
+}
+}
+
+if ($_FILES['ImgEvidencia2']['tmp_name'] != "") {
+if (is_uploaded_file($_FILES['ImgEvidencia2']['tmp_name'])) {
+$Nombre_Archivo = $_FILES['ImgEvidencia2']['name'];
+//Sacar la extension del archivo
+$Ext = end(explode('.', $Nombre_Archivo));
+//Sacar el nombre sin la extension
+$OnlyName = substr($Nombre_Archivo, 0, strlen($Nombre_Archivo) - (strlen($Ext) + 1));
+//Reemplazar espacios
+$OnlyName = str_replace(" ", "_", $OnlyName);
+$Prefijo = substr(uniqid(rand()), 0, 3);
+$ImgEvidencia2 = LSiqmlObs($OnlyName) . "_" . date('Ymd') . $Prefijo . "." . $Ext;
+move_uploaded_file($_FILES['ImgEvidencia2']['tmp_name'], $dir_new . $ImgEvidencia2);
+if (!RedimensionarImagen($ImgEvidencia2, $dir_new . $ImgEvidencia2, 300, 400)) {
+$sw_error = 1;
+$msg_error = "Error al redimensionar el archivo Evidencia 2";
+}
+$ImgEvidencia2 = "'" . $ImgEvidencia2 . "'";
+} else {
+throw new Exception('No se pudo cargar el archivo Evidencia 2');
+sqlsrv_close($conexion);
+}
+}
+
+if ($_FILES['ImgEvidencia3']['tmp_name'] != "") {
+if (is_uploaded_file($_FILES['ImgEvidencia3']['tmp_name'])) {
+$Nombre_Archivo = $_FILES['ImgEvidencia3']['name'];
+//Sacar la extension del archivo
+$Ext = end(explode('.', $Nombre_Archivo));
+//Sacar el nombre sin la extension
+$OnlyName = substr($Nombre_Archivo, 0, strlen($Nombre_Archivo) - (strlen($Ext) + 1));
+//Reemplazar espacios
+$OnlyName = str_replace(" ", "_", $OnlyName);
+$Prefijo = substr(uniqid(rand()), 0, 3);
+$ImgEvidencia3 = LSiqmlObs($OnlyName) . "_" . date('Ymd') . $Prefijo . "." . $Ext;
+move_uploaded_file($_FILES['ImgEvidencia3']['tmp_name'], $dir_new . $ImgEvidencia3);
+if (!RedimensionarImagen($ImgEvidencia3, $dir_new . $ImgEvidencia3, 300, 400)) {
+$sw_error = 1;
+$msg_error = "Error al redimensionar el archivo Evidencia 2";
+}
+$ImgEvidencia3 = "'" . $ImgEvidencia3 . "'";
+} else {
+throw new Exception('No se pudo cargar el archivo Evidencia 3');
+sqlsrv_close($conexion);
+}
+}
+
+if ($_FILES['ImgCierre']['tmp_name'] != "") {
+if (is_uploaded_file($_FILES['ImgCierre']['tmp_name'])) {
+$Nombre_Archivo = $_FILES['ImgCierre']['name'];
+//Sacar la extension del archivo
+$Ext = end(explode('.', $Nombre_Archivo));
+//Sacar el nombre sin la extension
+$OnlyName = substr($Nombre_Archivo, 0, strlen($Nombre_Archivo) - (strlen($Ext) + 1));
+//Reemplazar espacios
+$OnlyName = str_replace(" ", "_", $OnlyName);
+$Prefijo = substr(uniqid(rand()), 0, 3);
+$ImgCierre = LSiqmlObs($OnlyName) . "_" . date('Ymd') . $Prefijo . "." . $Ext;
+move_uploaded_file($_FILES['ImgCierre']['tmp_name'], $dir_new . $ImgCierre);
+if (!RedimensionarImagen($ImgCierre, $dir_new . $ImgCierre, 300, 400)) {
+$sw_error = 1;
+$msg_error = "Error al redimensionar el archivo Evidencia cierre";
+}
+$ImgCierre = "'" . $ImgCierre . "'";
+} else {
+throw new Exception('No se pudo cargar el archivo Evidencia cierre');
+sqlsrv_close($conexion);
+}
+}
+
+//Firmas
+if ($_POST['SigCliente'] != "") {
+$NombreFirmaCliente = base64_decode($_POST['SigCliente']);
+if (copy($dir_firma . $NombreFirmaCliente, $dir_new . $NombreFirmaCliente)) {
+RedimensionarImagen($NombreFirmaCliente, $dir_new . $NombreFirmaCliente, 300, 300);
+$NombreFirmaCliente = "'" . $NombreFirmaCliente . "'";
+} else {
+$NombreFirmaCliente = "NULL";
+$sw_error = 1;
+$msg_error = "No se pudo mover la firma del cliente";
+}
+}
+
+if ($_POST['SigTecnico'] != "") {
+$NombreFirmaTecnico = base64_decode($_POST['SigTecnico']);
+if (copy($dir_firma . $NombreFirmaTecnico, $dir_new . $NombreFirmaTecnico)) {
+RedimensionarImagen($NombreFirmaTecnico, $dir_new . $NombreFirmaTecnico, 300, 300);
+$NombreFirmaTecnico = "'" . $NombreFirmaTecnico . "'";
+} else {
+$NombreFirmaTecnico = "NULL";
+$sw_error = 1;
+$msg_error = "No se pudo mover la firma del tecnico";
+}
+}
+
+//Insertar el registro en la BD
+if ($_POST['tl'] == 0) { //Insertando
+$Type = 1;
+$ID = "NULL";
+} else { //Actualizando
+$Type = 2;
+$ID = base64_decode($_POST['IdFrm']);
+}
+
+$ParamInsFrm = array(
+$ID,
+"'" . $_POST['Cliente'] . "'",
+"'" . $_POST['ContactoCliente'] . "'",
+"'" . $_POST['Telefono'] . "'",
+"'" . $_POST['Correo'] . "'",
+"'" . $_POST['SucursalCliente'] . "'",
+"'" . $_POST['Direccion'] . "'",
+"'" . $_POST['Ciudad'] . "'",
+"'" . $_POST['Barrio'] . "'",
+"'" . $_POST['ContactoSucursal'] . "'",
+"'" . $_POST['OrdenServicio'] . "'",
+"'" . $_POST['Area'] . "'",
+"'" . $_POST['TipoVisita'] . "'",
+"'" . $_POST['Empleado'] . "'",
+"'" . $_POST['Estado'] . "'",
+"'" . LSiqmlObs($_POST['Hallazgo']) . "'",
+"'" . LSiqmlObs($_POST['Recomendaciones']) . "'",
+"'" . $_POST['ResponsableCliente'] . "'",
+"'" . LSiqmlObs($_POST['ComentariosCierre']) . "'",
+"'" . FormatoFecha($_POST['FechaCreacion'], $_POST['HoraCreacion']) . "'",
+"'" . FormatoFecha($_POST['FechaCierre'], $_POST['HoraCierre']) . "'",
+"1",
+$ImgEvidencia1,
+$ImgEvidencia2,
+$ImgEvidencia3,
+$ImgCierre,
+$NombreFirmaCliente,
+$NombreFirmaTecnico,
+"'" . $_POST['Revision'] . "'",
+"'" . $_POST['EstadoCriticidad'] . "'",
+"'" . $_SESSION['CodUser'] . "'",
+"'" . $_SESSION['CodUser'] . "'",
+"'" . $Type . "'",
+);
+$SQL_InsFrm = EjecutarSP('sp_tbl_FrmHallazgos', $ParamInsFrm, 101);
+if ($SQL_InsFrm) {
+$row_NewIdFrm = sqlsrv_fetch_array($SQL_InsFrm);
+$IdFrm = $row_NewIdFrm[0];
+
+//Insertar plagas
+$Count = count($_POST['TipoPlaga']);
+$i = 0;
+while ($i < $Count) {
+if ($_POST['TipoPlaga'][$i] != "") {
+//Cargar foto
+if ($_FILES['FotoPlaga']['tmp_name'][$i] != "") {
+if (is_uploaded_file($_FILES['FotoPlaga']['tmp_name'][$i])) {
+$Nombre_Archivo = $_FILES['FotoPlaga']['name'][$i];
+//Sacar la extension del archivo
+$Ext = end(explode('.', $Nombre_Archivo));
+//Sacar el nombre sin la extension
+$OnlyName = substr($Nombre_Archivo, 0, strlen($Nombre_Archivo) - (strlen($Ext) + 1));
+//Reemplazar espacios
+$OnlyName = str_replace(" ", "_", $OnlyName);
+$Prefijo = substr(uniqid(rand()), 0, 3);
+$FotoPlaga = LSiqmlObs($OnlyName) . "_" . date('Ymd') . $Prefijo . "." . $Ext;
+move_uploaded_file($_FILES['FotoPlaga']['tmp_name'][$i], $dir_new . $FotoPlaga);
+if (!RedimensionarImagen($FotoPlaga, $dir_new . $FotoPlaga, 300, 400)) {
+$sw_error = 1;
+$msg_error = "Error al redimensionar la foto de la plaga";
+}
+} else {
+$sw_error = 1;
+$msg_error = "No se pudo cargar la foto de la plaga";
+}
+}
+if ($_POST['tl'] == 0) { //Insertando
+$Type = 1;
+$ID = $IdFrm;
+} else { //Actualizando
+$Type = 2;
+$ID = base64_decode($_POST['IdFrm']);
+}
+$ParamInsPlagas = array(
+"'" . $ID . "'",
+"'" . $_POST['TipoPlaga'][$i] . "'",
+"'" . $_POST['Cantidad'][$i] . "'",
+"'" . $FotoPlaga . "'",
+"'" . $_SESSION['CodUser'] . "'",
+"1",
+);
+
+$SQL_InsPlagas = EjecutarSP('sp_tbl_FrmHallazgos_Plagas', $ParamInsPlagas, 101);
+if (!$SQL_InsPlagas) {
+$sw_error = 1;
+$msg_error = "Error al insertar las plagas";
+}
+}
+$i = $i + 1;
+}
+
+//Insertar las recurrecias
+if ($_POST['tl'] == 1) { //Actualizando
+$ID = base64_decode($_POST['IdFrm']);
+
+if ($_POST['FechaRec'] != "") {
+$ParamInsRec = array(
+"'" . $ID . "'",
+"'" . $_POST['FechaRec'] . "'",
+"'" . $_POST['ComentariosRec'] . "'",
+"'" . $_SESSION['CodUser'] . "'",
+"1",
+);
+
+$SQL_InsRec = EjecutarSP('sp_tbl_FrmHallazgos_Rec', $ParamInsRec, 101);
+if (!$SQL_InsRec) {
+$sw_error = 1;
+$msg_error = "Error al insertar la recurrencia del hallazgo";
+}
+}
+}
+
+if ($_POST['tl'] == 0) {
+if (isset($_POST['chkEnvioMail']) && ($_POST['chkEnvioMail'] == 1)) {
+//Enviar correo
+$ParamEnviaMail = array(
+"'" . $ID . "'",
+"'1001'",
+"'4'",
+);
+$SQL_EnviaMail = EjecutarSP('usp_CorreoEnvio', $ParamEnviaMail, 101);
+if (!$SQL_EnviaMail) {
+$sw_error = 1;
+$msg_error = "Error al enviar el correo al usuario.";
+}
+}
+}
+
+sqlsrv_close($conexion);
+if ($_POST['tl'] == 1) {
+header('Location:' . base64_decode($_POST['return']) . '&a=' . base64_encode("OK_FrmUpd"));
+} else {
+header('Location:' . base64_decode($_POST['return']) . '&a=' . base64_encode("OK_FrmAdd"));
+}
+
+} else {
+$sw_error = 1;
+$msg_error = "Error al crear el formulario";
+}
+} catch (Exception $e) {
+echo 'Excepcion capturada: ', $e->getMessage(), "\n";
+}
+ */
 }
 
 if (isset($_GET['POpen']) && ($_GET['POpen'] != "")) {
@@ -563,41 +619,11 @@ $SQL_Preguntas = Seleccionar('tbl_RecepcionVehiculos_Preguntas', '*');
 <title><?php echo $Title; ?> | <?php echo NOMBRE_PORTAL; ?></title>
 <!-- InstanceEndEditable -->
 <!-- InstanceBeginEditable name="head" -->
-<script>
-$(function() {
-    $("#recepcionForm").on("submit", function(e) {
-        // Evitar redirección del formulario
-        console.log("570", e);
-        // e.preventDefault();
-		/*
-        // Llamar la acción del formulario
-        if (typeof $("#estado").val() !== "undefined") {
-            crearCotizacion($("#estado").val());
-        } else {
-            Lobibox.confirm({
-                msg: "¿Desea confirmar la orden de trabajo?",
-                callback: function(lobibox, type) {
-                    if (type === "yes") {
-                        // Se debe mandar un correo al administrador, FALTA IMPLEMENTAR
-                        crearCotizacion("aceptada");
-                        sessionStorage.setItem("estado", "aceptada");
-                        // Llamado al objeto creado en cotizaciones.js
-                        almacenarCronogramaPagos(cronograma());
-                        cargarEstado();
-                        //ocultarPdf();
-                    }
-                }
-            });
-        }
-		*/
-    });
-});
-</script>
 <?php
 if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_OpenFrm"))) {
     echo "<script>
 		$(document).ready(function() {
-			swal({
+			Swal.fire({
                 title: '¡Listo!',
                 text: 'El formulario ha sido abierto nuevamente.',
                 type: 'success'
@@ -608,7 +634,7 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_OpenFrm"))) {
 if (isset($sw_error) && ($sw_error == 1)) {
     echo "<script>
 		$(document).ready(function() {
-			swal({
+			Swal.fire({
                 title: '¡Ha ocurrido un error!',
                 text: '" . $msg_error . "',
                 type: 'error'
@@ -849,7 +875,7 @@ function AbrirFirma(IDCampo){
 
 <?php if ($type_frm == 1) {?>
 function Eliminar(){
-	swal({
+	Swal.fire({
 		title: "Eliminar",
 		text: "¿Está seguro que desea eliminar este registro? Esta acción no tiene reversión.",
 		type: "warning",
@@ -984,7 +1010,7 @@ function Eliminar(){
 							<div class="col-lg-8">
 								<label class="control-label"><i onClick="ConsultarServicio();" title="Consultar llamada de servicio" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Orden servicio <span class="text-danger">*</span></label>
 
-								<select name="id_llamada_servicio" class="form-control select2" id="id_llamada_servicio" <?php if ($dt_LS == 1) {echo "disabled='disabled'";}?>>
+								<select name="id_llamada_servicio" class="form-control select2" required="required" id="id_llamada_servicio" <?php if ($dt_LS == 1) {echo "disabled='disabled'";}?>>
 									<?php if ($dt_LS != 1) {?><option value="">(Ninguna)</option><?php }?>
 									<?php if ($sw_error == 1 || $dt_LS == 1 || $type_llmd == 1) {while ($row_OrdenServicioCliente = sqlsrv_fetch_array($SQL_OrdenServicioCliente)) {?>
 										<option value="<?php echo $row_OrdenServicioCliente['ID_LlamadaServicio']; ?>" <?php if ((isset($row['ID_OrdenServicioActividad'])) && (strcmp($row_OrdenServicioCliente['ID_LlamadaServicio'], $row['ID_LlamadaServicio']) == 0)) {echo "selected=\"selected\"";} elseif (isset($_GET['LS']) && (strcmp($row_OrdenServicioCliente['ID_LlamadaServicio'], base64_decode($_GET['LS'])) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_OrdenServicioCliente['DocNum'] . " - " . $row_OrdenServicioCliente['AsuntoLlamada']; ?></option>
@@ -1234,8 +1260,14 @@ function Eliminar(){
 						</a>
 					</div>
 					<div class="ibox-content">
+						<?php $count_rp = 0;?>
+
 						<?php while ($row_Pregunta = sqlsrv_fetch_array($SQL_Preguntas)) {?>
-							<?php $id_rp = intval($row_Pregunta['id_recepcion_pregunta']) - 99;?>
+							<?php $count_rp++;?>
+
+							<input type="hidden" name="<?php echo "id_pregunta_$count_rp"; ?>" id="<?php echo "id_pregunta_$count_rp"; ?>" value="<?php echo $row_Pregunta['id_recepcion_pregunta']; ?>">
+							<input type="hidden" name="<?php echo "pregunta_$count_rp"; ?>" id="<?php echo "pregunta_$count_rp"; ?>" value="<?php echo $row_Pregunta['recepcion_pregunta']; ?>">
+
 
 							<div class="form-group">
 								<div class="col-lg-4 border-bottom ">
@@ -1245,22 +1277,22 @@ function Eliminar(){
 							<div class="form-group">
 								<label class="col-lg-1 control-label">Disponibilidad</label>
 								<div class="col-lg-2">
-									<select class="form-control" name="<?php echo "p_disponible_$id_rp"; ?>" id="<?php echo "p_disponible_$id_rp"; ?>" <?php if (false) {echo "disabled='disabled'";}?>>
-										<option value="SI" <?php if ((isset($row["p_disponible_$id_rp"])) && (strcmp("si", $row["p_disponible_$id_rp"]) == 0)) {echo "selected=\"selected\"";}?>>
+									<select class="form-control" name="<?php echo "p_disponible_$count_rp"; ?>" id="<?php echo "p_disponible_$count_rp"; ?>" <?php if (false) {echo "disabled='disabled'";}?>>
+										<option value="SI" <?php if ((isset($row["p_disponible_$count_rp"])) && (strcmp("si", $row["p_disponible_$count_rp"]) == 0)) {echo "selected=\"selected\"";}?>>
 											Si
 										</option>
-										<option value="NO" <?php if ((isset($row["p_disponible_$id_rp"])) && (strcmp("no", $row["p_disponible_$id_rp"]) == 0)) {echo "selected=\"selected\"";}?>>
+										<option value="NO" <?php if ((isset($row["p_disponible_$count_rp"])) && (strcmp("no", $row["p_disponible_$count_rp"]) == 0)) {echo "selected=\"selected\"";}?>>
 											No
 										</option>
 									</select>
 								</div>
 								<label class="col-lg-1 control-label">Estado</label>
 								<div class="col-lg-2">
-									<select class="form-control" name="<?php echo "p_estado_$id_rp"; ?>" id="<?php echo "p_estado_$id_rp"; ?>" <?php if (false) {echo "disabled='disabled'";}?>>
-										<option value="BUENO" <?php if ((isset($row["p_estado_$id_rp"])) && (strcmp("BUENO", $row["p_estado_$id_rp"]) == 0)) {echo "selected=\"selected\"";}?>>
+									<select class="form-control" name="<?php echo "p_estado_$count_rp"; ?>" id="<?php echo "p_estado_$count_rp"; ?>" <?php if (false) {echo "disabled='disabled'";}?>>
+										<option value="BUENO" <?php if ((isset($row["p_estado_$count_rp"])) && (strcmp("BUENO", $row["p_estado_$count_rp"]) == 0)) {echo "selected=\"selected\"";}?>>
 											Bueno
 										</option>
-										<option value="MALO" <?php if ((isset($row["p_estado_$id_rp"])) && (strcmp("MALO", $row["p_estado_$id_rp"]) == 0)) {echo "selected=\"selected\"";}?>>
+										<option value="MALO" <?php if ((isset($row["p_estado_$count_rp"])) && (strcmp("MALO", $row["p_estado_$count_rp"]) == 0)) {echo "selected=\"selected\"";}?>>
 											Malo
 										</option>
 									</select>
@@ -1494,6 +1526,18 @@ function Eliminar(){
 				</div>
 				<!-- IBOX, Fin -->
 
+				<?php
+$EliminaMsg = array("&a=" . base64_encode("OK_FrmAdd"), "&a=" . base64_encode("OK_FrmUpd"), "&a=" . base64_encode("OK_FrmDel")); //Eliminar mensajes
+
+if (isset($_GET['return'])) {
+    $_GET['return'] = str_replace($EliminaMsg, "", base64_decode($_GET['return']));
+}
+if (isset($_GET['return'])) {
+    $return = base64_decode($_GET['pag']) . "?" . $_GET['return'];
+} else {
+    // Stiven Muñoz Murillo, 10/01/2022
+    $return = "consultar_frm_recepcion_vehiculo.php?id=" . $frm;
+}?>
 
 				<!-- Esto es otra cosa -->
 				<input type="hidden" id="P" name="P" value="<?php echo base64_encode('MM_frmHallazgos') ?>" />
@@ -1553,18 +1597,6 @@ function Eliminar(){
 
 			<!-- Botones de acción al final del formulario, SMM -->
 			   <div class="form-group">
-				   <?php
-$EliminaMsg = array("&a=" . base64_encode("OK_FrmAdd"), "&a=" . base64_encode("OK_FrmUpd"), "&a=" . base64_encode("OK_FrmDel")); //Eliminar mensajes
-
-if (isset($_GET['return'])) {
-    $_GET['return'] = str_replace($EliminaMsg, "", base64_decode($_GET['return']));
-}
-if (isset($_GET['return'])) {
-    $return = base64_decode($_GET['pag']) . "?" . $_GET['return'];
-} else {
-    // Stiven Muñoz Murillo, 10/01/2022
-    $return = "consultar_frm_recepcion_vehiculo.php?id=" . $frm;
-}?>
 					<div class="col-lg-9">
 						 <br><br>
 						<?php if (($type_frm == 1) && (PermitirFuncion(107) && (($row['Cod_Estado'] == '-3') || ($row['Cod_Estado'] == '-2')))) {?>
@@ -1735,12 +1767,16 @@ function testImage(url, timeoutT) {
 
 <script>
 $(document).ready(function(){
+	$('#recepcionForm').on('submit', function (event) {
+		event.preventDefault();
+	});
+
 	$("#recepcionForm").validate({
 		submitHandler: function(form){
 			// Stiven Muñoz Murillo, 08/02/2022
 			// $('.ibox-content').toggleClass('sk-loading');
 			// form.submit();
-			
+
 			let data = new FormData(form);
 			console.log("1745", data);
 
@@ -1749,6 +1785,26 @@ $(document).ready(function(){
 
 			localStorage.recepcionForm = JSON.stringify(json);
 			console.log("1751", JSON.parse(localStorage.recepcionForm));
+
+			// Inicio, AJAX
+			let formData = data;
+			$.ajax({
+				url: 'frm_recepcion_vehiculo_ws.php',
+				type: 'post',
+				data: formData,
+				processData: false,  // tell jQuery not to process the data
+  				contentType: false,   // tell jQuery not to set contentType
+				success: function(response) {
+					console.log(response);
+					Swal.fire(JSON.parse(response));
+				},
+				error: function(response) {
+					console.error("server error")
+					console.error(response);
+					// $('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
+				}
+			});
+			// Fin, AJAX
 		}
 	});
 		 $(".alkin").on('click', function(){
@@ -1864,7 +1920,7 @@ if ($dt_LS == 1) {?>
 <?php if ($type_frm == 1) {?>
 <script>
 function Reabrir(){
-	swal({
+	Swal.fire({
 		title: "Reabrir",
 		text: "¿Está seguro que desea volver a abrir este documento?",
 		type: "warning",
