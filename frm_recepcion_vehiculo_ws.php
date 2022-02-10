@@ -68,6 +68,68 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
     // Inicio, Enviar datos al WebService
     $Cabecera = $_POST;
 
+    unset($Cabecera["fecha_autoriza_campana"]);
+    unset($Cabecera["hora_autoriza_campana"]);
+    unset($Cabecera["ContactoCliente"]);
+    unset($Cabecera["Barrio"]);
+    unset($Cabecera["Ciudad"]);
+    unset($Cabecera["FechaCreacion"]);
+    unset($Cabecera["HoraCreacion"]);
+    unset($Cabecera["ResponsableCliente"]);
+    unset($Cabecera["SigCliente"]);
+    unset($Cabecera["P"]);
+    unset($Cabecera["swTipo"]);
+    unset($Cabecera["swError"]);
+    unset($Cabecera["tl"]);
+    unset($Cabecera["d_LS"]);
+    unset($Cabecera["IdFrm"]);
+    unset($Cabecera["return"]);
+    unset($Cabecera["frm"]);
+
+    $Cabecera["id_consecutivo_direccion"] = 0; // NumeroLinea (Sap_Clientes_Sucursales)
+    $Cabecera["id_direccion_destino"] = $Cabecera["SucursalCliente"];
+    $Cabecera["annio"] = intval($Cabecera["annio"]) ?? 0;
+
+    $Cabecera["fecha_ingreso"] = "2022-02-10T14:32:44.389Z";
+    $Cabecera["hora_ingreso"] = "2022-02-10T14:32:44.389Z";
+    $Cabecera["fecha_aprox_entrega"] = "2022-02-10T14:32:44.389Z";
+    $Cabecera["hora_aprox_entrega"] = "2022-02-10T14:32:44.389Z";
+
+    $Cabecera["km_actual"] = intval($Cabecera["km_actual"] ?? 0);
+    $Cabecera["fecha_hora_autoriza_campana"] = "2022-02-10T14:32:44.389Z";
+
+    $Cabecera["fecha_cierre"] = "2022-02-10T14:32:44.389Z";
+    $Cabecera["hora_cierre"] = "2022-02-10T14:32:44.389Z";
+
+    $Cabecera["id_empleado_tecnico"] = $_SESSION['CodigoSAP'];
+    $Cabecera["empleado_tecnico"] = $_SESSION['NombreEmpleado'];
+
+    $Cabecera["observaciones"] = "string";
+    $Cabecera["id_usuario_creacion"] = $_SESSION['CodUser'];
+
+    $Cabecera["comentarios_cierre"] = "string";
+    $Cabecera["id_usuario_cierre"] = $_SESSION['CodUser'];
+
+    $Cabecera["id_llamada_servicio"] = intval($Cabecera["id_llamada_servicio"]) ?? 0;
+    $Cabecera["docentry_llamada_servicio"] = 0;
+
+    $Cabecera["fotografias"] = array(
+        "id_recepcion_vehiculo" => 0,
+        "id_recepcion_fotografia" => 0,
+        "anexo_frente" => "string",
+        "anexo_lateral_izquierdo" => "string",
+        "anexo_lateral_derecho" => "string",
+        "anexo_trasero" => "string",
+        "anexo_capot" => "string",
+    );
+
+    $Cabecera["anexos"] = array(
+        "id_anexo" => 0,
+        "id_linea" => 0,
+        "anexo" => "string",
+        "comentarios" => "string",
+    );
+
     try {
         $Metodo = "RecepcionVehiculos";
         $Resultado = EnviarWebServiceSAP($Metodo, $Cabecera, true, true);
@@ -75,25 +137,25 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
         if ($Resultado->Success == 0) {
             // $sw_error = 1;
             $msg_error = $Resultado->Mensaje;
-			$msg = array(
-				"title" => "¡Ha ocurrido un error!",
-				"text" => "$msg_error",
-				"icon" => "warning"
-			);
+            $msg = array(
+                "title" => "¡Ha ocurrido un error!",
+                "text" => "$msg_error",
+                "icon" => "warning",
+            );
 
-			echo json_encode($msg);
-			
-			/*
-			echo "<script>
-			$(document).ready(function() {
-				Swal.fire({
-					title: '¡Ha ocurrido un error!',
-					text: '" . $msg_error . "',
-					type: 'error'
-				});
-			});
-			</script>";
-			*/
+            echo json_encode($msg);
+
+            /*
+            echo "<script>
+            $(document).ready(function() {
+            Swal.fire({
+            title: '¡Ha ocurrido un error!',
+            text: '" . $msg_error . "',
+            type: 'error'
+            });
+            });
+            </script>";
+             */
             //header("Location:tarjeta_equipo.php?id=$IdTarjetaEquipo&swError=1&a=" . base64_encode($Msg));
             //echo "<script>alert('$msg_error'); location = 'tarjeta_equipo.php';</script>";
         }
@@ -629,6 +691,4 @@ $SQL_ModeloVehiculo = Seleccionar('uvw_Sap_tbl_LlamadasServicios_AñoModeloVehic
 // Preguntas en la recepción de vehículo
 $SQL_Preguntas = Seleccionar('tbl_RecepcionVehiculos_Preguntas', '*');
 
-
 sqlsrv_close($conexion);
-?>

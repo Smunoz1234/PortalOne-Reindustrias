@@ -41,6 +41,7 @@ if(isset($_POST['User'])||isset($_POST['Password'])){
 					$_SESSION['CambioClave']=$row['CambioClave'];
 					$_SESSION['TimeOut']=$row['TimeOut'];
 					$_SESSION['CodigoSAP']=$row['CodigoSAP'];
+					$_SESSION['NombreEmpleado']=$row['NombreEmpleado'];
 					$_SESSION['IdCardCode']=$row['IdCardCode'];
 					$_SESSION['CodigoEmpVentas']=$row['IdEmpVentas'];
 					$_SESSION['SetCookie']=$row['SetCookie'];
