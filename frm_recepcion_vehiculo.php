@@ -1652,6 +1652,8 @@ Dropzone.options.dropzoneForm = {
 </script>
 
 <script>
+var photos = []; // SMM, 11/02/2022
+
 // Stiven Muñoz Murillo, 11/01/2022
 function uploadImage(refImage) {
 	$('.ibox-content').toggleClass('sk-loading', true); // Carga iniciada.
@@ -1681,7 +1683,9 @@ function uploadImage(refImage) {
 				success: function(response) {
 					testImage(response).then(success => {
 						console.log(success);
-						console.log(response);
+						console.log("1684", response);
+
+						photos[refImage] = response; // SMM, 11/02/2022
 
 						$(`#view${refImage}`).attr("src", response);
 						mostrarAlerta(`msg${refImage}`, 'info', `Imagen cargada éxitosamente con un peso de ${fileSize.size}`);
@@ -1777,26 +1781,24 @@ $(document).ready(function(){
 			// $('.ibox-content').toggleClass('sk-loading');
 			// form.submit();
 
-			let data = new FormData(form);
-			console.log("1745", data);
+			let formData = new FormData(form);
+			Object.entries(photos).forEach(([key, value]) => formData.append(key, value));
 
-			let json = Object.fromEntries(data);
-			console.log("1748", json);
-
+			let json = Object.fromEntries(formData);
 			localStorage.recepcionForm = JSON.stringify(json);
-			console.log("1751", JSON.parse(localStorage.recepcionForm));
+			
+			console.log("1790", json);
 
 			// Inicio, AJAX
-			let formData = data;
 			$.ajax({
 				url: 'frm_recepcion_vehiculo_ws.php',
-				type: 'post',
+				type: 'POST',
 				data: formData,
 				processData: false,  // tell jQuery not to process the data
   				contentType: false,   // tell jQuery not to set contentType
 				success: function(response) {
 					console.log(response);
-					Swal.fire(JSON.parse(response));
+					// Swal.fire(JSON.parse(response));
 				},
 				error: function(response) {
 					console.error("server error")

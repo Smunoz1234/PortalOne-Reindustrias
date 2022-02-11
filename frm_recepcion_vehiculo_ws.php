@@ -61,20 +61,25 @@ if ($type_frm == 0) {
 
 $dir = CrearObtenerDirTemp();
 $dir_firma = CrearObtenerDirTempFirma();
-$dir_new = CrearObtenerDirAnx("formularios");
+$dir_new = CrearObtenerDirAnx("recepcion_vehiculo");
+
+echo $dir.'<br>';
+echo $dir_firma.'<br>';
+echo $dir_new.'<br>';
 
 if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
 
     // Inicio, Enviar datos al WebService
     $Cabecera = $_POST;
 
-    unset($Cabecera["fecha_autoriza_campana"]);
-    unset($Cabecera["hora_autoriza_campana"]);
+    unset($Cabecera["SucursalCliente"]);
     unset($Cabecera["ContactoCliente"]);
     unset($Cabecera["Barrio"]);
     unset($Cabecera["Ciudad"]);
     unset($Cabecera["FechaCreacion"]);
     unset($Cabecera["HoraCreacion"]);
+    unset($Cabecera["fecha_autoriza_campana"]);
+    unset($Cabecera["hora_autoriza_campana"]);
     unset($Cabecera["ResponsableCliente"]);
     unset($Cabecera["SigCliente"]);
     unset($Cabecera["P"]);
@@ -87,7 +92,8 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
     unset($Cabecera["frm"]);
 
     $Cabecera["id_consecutivo_direccion"] = 0; // NumeroLinea (Sap_Clientes_Sucursales)
-    $Cabecera["id_direccion_destino"] = $Cabecera["SucursalCliente"];
+    $Cabecera["id_direccion_destino"] = $_POST["SucursalCliente"];
+
     $Cabecera["annio"] = intval($Cabecera["annio"]) ?? 0;
 
     $Cabecera["fecha_ingreso"] = "2022-02-10T14:32:44.389Z";
@@ -98,10 +104,16 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
     $Cabecera["km_actual"] = intval($Cabecera["km_actual"] ?? 0);
     $Cabecera["fecha_hora_autoriza_campana"] = "2022-02-10T14:32:44.389Z";
 
+    for ($i = 1; $i <= 25; $i++) {
+        if (isset($Cabecera["id_pregunta_$i"])) {
+			$Cabecera["id_pregunta_$i"] = intval($Cabecera["id_pregunta_$i"]);
+        }
+    }
+
     $Cabecera["fecha_cierre"] = "2022-02-10T14:32:44.389Z";
     $Cabecera["hora_cierre"] = "2022-02-10T14:32:44.389Z";
 
-    $Cabecera["id_empleado_tecnico"] = $_SESSION['CodigoSAP'];
+    $Cabecera["id_empleado_tecnico"] = intval($_SESSION['CodigoSAP']);
     $Cabecera["empleado_tecnico"] = $_SESSION['NombreEmpleado'];
 
     $Cabecera["observaciones"] = "string";
