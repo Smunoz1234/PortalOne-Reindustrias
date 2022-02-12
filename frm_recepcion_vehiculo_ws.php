@@ -126,22 +126,26 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
     $Cabecera["id_llamada_servicio"] = intval($Cabecera["id_llamada_servicio"]) ?? 0;
     $Cabecera["docentry_llamada_servicio"] = 0;
 
-    $Cabecera["fotografias"] = array(
-        "id_recepcion_vehiculo" => 0,
-        "id_recepcion_fotografia" => 0,
-		"anexo_frente" => "string",
-        "anexo_lateral_izquierdo" => "string",
-        "anexo_lateral_derecho" => "string",
-        "anexo_trasero" => "string",
-        "anexo_capot" => "string",
-    );
-	
-    $Cabecera["anexos"] = array(
-        "id_anexo" => 0,
-        "id_linea" => 0,
-        "anexo" => "string",
-        "comentarios" => "string",
-    );
+    $Cabecera["fotografias"] = [
+        array(
+            "id_recepcion_vehiculo" => 0,
+            "id_recepcion_fotografia" => 0,
+            "anexo_frente" => "string",
+            "anexo_lateral_izquierdo" => "string",
+            "anexo_lateral_derecho" => "string",
+            "anexo_trasero" => "string",
+            "anexo_capot" => "string",
+        ),
+    ];
+
+    $Cabecera["anexos"] = [
+        array(
+            "id_anexo" => 0,
+            "id_linea" => 0,
+            "anexo" => "string",
+            "comentarios" => "string",
+        ),
+    ];
 
     // Inicio, Copiar fotografias a la ruta log y main.
     $dir_log = CrearObtenerDirRuta(ObtenerVariable("RutaAnexosPortalOne") . "/" . $_SESSION['User'] . "/" . $dir_name . "/");
@@ -159,7 +163,7 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
         $Cabecera["fotografias"]["anexo_frente"] = $Cabecera["Img1"];
     }
 
-	if (isset($Cabecera["Img2"])) {
+    if (isset($Cabecera["Img2"])) {
         $source = CrearObtenerDirTemp() . $Cabecera["Img2"];
 
         $dest = $dir_log . $Cabecera["Img2"];
@@ -171,7 +175,7 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
         $Cabecera["fotografias"]["anexo_lateral_izquierdo"] = $Cabecera["Img2"];
     }
 
-	if (isset($Cabecera["Img3"])) {
+    if (isset($Cabecera["Img3"])) {
         $source = CrearObtenerDirTemp() . $Cabecera["Img3"];
 
         $dest = $dir_log . $Cabecera["Img3"];
@@ -183,8 +187,7 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
         $Cabecera["fotografias"]["anexo_lateral_derecho"] = $Cabecera["Img3"];
     }
 
-
-	if (isset($Cabecera["Img4"])) {
+    if (isset($Cabecera["Img4"])) {
         $source = CrearObtenerDirTemp() . $Cabecera["Img4"];
 
         $dest = $dir_log . $Cabecera["Img4"];
@@ -196,7 +199,7 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
         $Cabecera["fotografias"]["anexo_trasero"] = $Cabecera["Img4"];
     }
 
-	if (isset($Cabecera["Img5"])) {
+    if (isset($Cabecera["Img5"])) {
         $source = CrearObtenerDirTemp() . $Cabecera["Img5"];
 
         $dest = $dir_log . $Cabecera["Img5"];
