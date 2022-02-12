@@ -61,11 +61,12 @@ if ($type_frm == 0) {
 
 $dir = CrearObtenerDirTemp();
 $dir_firma = CrearObtenerDirTempFirma();
-$dir_new = CrearObtenerDirAnx("recepcion_vehiculo");
+$dir_name = "recepcion_vehiculos";
+$dir_new = CrearObtenerDirAnx($dir_name);
 
-echo $dir.'<br>';
-echo $dir_firma.'<br>';
-echo $dir_new.'<br>';
+//echo $dir . '<br>';
+//echo $dir_firma . '<br>';
+//echo $dir_new . '<br>';
 
 if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
 
@@ -106,7 +107,7 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
 
     for ($i = 1; $i <= 25; $i++) {
         if (isset($Cabecera["id_pregunta_$i"])) {
-			$Cabecera["id_pregunta_$i"] = intval($Cabecera["id_pregunta_$i"]);
+            $Cabecera["id_pregunta_$i"] = intval($Cabecera["id_pregunta_$i"]);
         }
     }
 
@@ -128,19 +129,85 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
     $Cabecera["fotografias"] = array(
         "id_recepcion_vehiculo" => 0,
         "id_recepcion_fotografia" => 0,
-        "anexo_frente" => "string",
+		"anexo_frente" => "string",
         "anexo_lateral_izquierdo" => "string",
         "anexo_lateral_derecho" => "string",
         "anexo_trasero" => "string",
         "anexo_capot" => "string",
     );
-
+	
     $Cabecera["anexos"] = array(
         "id_anexo" => 0,
         "id_linea" => 0,
         "anexo" => "string",
         "comentarios" => "string",
     );
+
+    // Inicio, Copiar fotografias a la ruta log y main.
+    $dir_log = CrearObtenerDirRuta(ObtenerVariable("RutaAnexosPortalOne") . "/" . $_SESSION['User'] . "/" . $dir_name . "/");
+    $dir_main = CrearObtenerDirRuta(ObtenerVariable("RutaAnexosRecepcionVehiculo"));
+
+    if (isset($Cabecera["Img1"])) {
+        $source = CrearObtenerDirTemp() . $Cabecera["Img1"];
+
+        $dest = $dir_log . $Cabecera["Img1"];
+        copy($source, $dest);
+
+        $dest = $dir_main . $Cabecera["Img1"];
+        copy($source, $dest);
+
+        $Cabecera["fotografias"]["anexo_frente"] = $Cabecera["Img1"];
+    }
+
+	if (isset($Cabecera["Img2"])) {
+        $source = CrearObtenerDirTemp() . $Cabecera["Img2"];
+
+        $dest = $dir_log . $Cabecera["Img2"];
+        copy($source, $dest);
+
+        $dest = $dir_main . $Cabecera["Img2"];
+        copy($source, $dest);
+
+        $Cabecera["fotografias"]["anexo_lateral_izquierdo"] = $Cabecera["Img2"];
+    }
+
+	if (isset($Cabecera["Img3"])) {
+        $source = CrearObtenerDirTemp() . $Cabecera["Img3"];
+
+        $dest = $dir_log . $Cabecera["Img3"];
+        copy($source, $dest);
+
+        $dest = $dir_main . $Cabecera["Img3"];
+        copy($source, $dest);
+
+        $Cabecera["fotografias"]["anexo_lateral_derecho"] = $Cabecera["Img3"];
+    }
+
+
+	if (isset($Cabecera["Img4"])) {
+        $source = CrearObtenerDirTemp() . $Cabecera["Img4"];
+
+        $dest = $dir_log . $Cabecera["Img4"];
+        copy($source, $dest);
+
+        $dest = $dir_main . $Cabecera["Img4"];
+        copy($source, $dest);
+
+        $Cabecera["fotografias"]["anexo_trasero"] = $Cabecera["Img4"];
+    }
+
+	if (isset($Cabecera["Img5"])) {
+        $source = CrearObtenerDirTemp() . $Cabecera["Img5"];
+
+        $dest = $dir_log . $Cabecera["Img5"];
+        copy($source, $dest);
+
+        $dest = $dir_main . $Cabecera["Img5"];
+        copy($source, $dest);
+
+        $Cabecera["fotografias"]["anexo_capot"] = $Cabecera["Img5"];
+    }
+    // Fin, Copiar fotografias a la ruta log y main.
 
     try {
         $Metodo = "RecepcionVehiculos";

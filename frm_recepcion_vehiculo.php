@@ -1661,7 +1661,7 @@ function uploadImage(refImage) {
 	var formData = new FormData();
 	var file = $(`#${refImage}`)[0].files[0];
 
-	console.log(file);
+	console.log("1664", file);
 	formData.append('image', file);
 
 	if(typeof file !== 'undefined'){
@@ -1681,13 +1681,18 @@ function uploadImage(refImage) {
 				contentType: false,
 				processData: false,
 				success: function(response) {
-					testImage(response).then(success => {
+					json_response = JSON.parse(response);
+
+					photo_name = json_response.nombre;
+					photo_route = json_response.directorio + photo_name;
+					
+					testImage(photo_route).then(success => {
 						console.log(success);
-						console.log("1684", response);
+						console.log("1684", photo_route);
 
-						photos[refImage] = response; // SMM, 11/02/2022
+						photos[refImage] = photo_name; // SMM, 11/02/2022
 
-						$(`#view${refImage}`).attr("src", response);
+						$(`#view${refImage}`).attr("src", photo_route);
 						mostrarAlerta(`msg${refImage}`, 'info', `Imagen cargada éxitosamente con un peso de ${fileSize.size}`);
 					})
 					.catch(error => {
@@ -1786,7 +1791,7 @@ $(document).ready(function(){
 
 			let json = Object.fromEntries(formData);
 			localStorage.recepcionForm = JSON.stringify(json);
-			
+
 			console.log("1790", json);
 
 			// Inicio, AJAX
@@ -1797,8 +1802,8 @@ $(document).ready(function(){
 				processData: false,  // tell jQuery not to process the data
   				contentType: false,   // tell jQuery not to set contentType
 				success: function(response) {
-					console.log(response);
-					// Swal.fire(JSON.parse(response));
+					console.log("1805", response);
+					Swal.fire(JSON.parse(response));
 				},
 				error: function(response) {
 					console.error("server error")
