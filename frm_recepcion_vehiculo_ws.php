@@ -92,6 +92,9 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
     unset($Cabecera["return"]);
     unset($Cabecera["frm"]);
 
+    $Cabecera["app"] = "PortalOne";
+    $Cabecera["estado"] = "O";
+
     $Cabecera["id_consecutivo_direccion"] = 0; // NumeroLinea (Sap_Clientes_Sucursales)
     $Cabecera["id_direccion_destino"] = $_POST["SucursalCliente"];
 
@@ -126,18 +129,6 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
     $Cabecera["id_llamada_servicio"] = intval($Cabecera["id_llamada_servicio"]) ?? 0;
     $Cabecera["docentry_llamada_servicio"] = 0;
 
-    $Cabecera["fotografias"] = [
-        array(
-            "id_recepcion_vehiculo" => 0,
-            "id_recepcion_fotografia" => 0,
-            "anexo_frente" => "string",
-            "anexo_lateral_izquierdo" => "string",
-            "anexo_lateral_derecho" => "string",
-            "anexo_trasero" => "string",
-            "anexo_capot" => "string",
-        ),
-    ];
-
     $Cabecera["anexos"] = [
         array(
             "id_anexo" => 0,
@@ -147,7 +138,19 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
         ),
     ];
 
-    // Inicio, Copiar fotografias a la ruta log y main.
+    // Inicio, copiar fotografias a la ruta log y main, y agregarlas al JSON.
+    $Cabecera["fotografias"] = [
+        array(
+            "id_recepcion_vehiculo" => 0,
+            "id_recepcion_fotografia" => 0,
+            "anexo_frente" => $Cabecera["Img1"] ?? "",
+            "anexo_lateral_izquierdo" => $Cabecera["Img2"] ?? "",
+            "anexo_lateral_derecho" => $Cabecera["Img3"] ?? "",
+            "anexo_trasero" => $Cabecera["Img4"] ?? "",
+            "anexo_capot" => $Cabecera["Img5"] ?? "",
+        ),
+    ];
+
     $dir_log = CrearObtenerDirRuta(ObtenerVariable("RutaAnexosPortalOne") . "/" . $_SESSION['User'] . "/" . $dir_name . "/");
     $dir_main = CrearObtenerDirRuta(ObtenerVariable("RutaAnexosRecepcionVehiculo"));
 
@@ -159,8 +162,6 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
 
         $dest = $dir_main . $Cabecera["Img1"];
         copy($source, $dest);
-
-        $Cabecera["fotografias"]["anexo_frente"] = $Cabecera["Img1"];
     }
 
     if (isset($Cabecera["Img2"])) {
@@ -171,8 +172,6 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
 
         $dest = $dir_main . $Cabecera["Img2"];
         copy($source, $dest);
-
-        $Cabecera["fotografias"]["anexo_lateral_izquierdo"] = $Cabecera["Img2"];
     }
 
     if (isset($Cabecera["Img3"])) {
@@ -183,8 +182,6 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
 
         $dest = $dir_main . $Cabecera["Img3"];
         copy($source, $dest);
-
-        $Cabecera["fotografias"]["anexo_lateral_derecho"] = $Cabecera["Img3"];
     }
 
     if (isset($Cabecera["Img4"])) {
@@ -195,8 +192,6 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
 
         $dest = $dir_main . $Cabecera["Img4"];
         copy($source, $dest);
-
-        $Cabecera["fotografias"]["anexo_trasero"] = $Cabecera["Img4"];
     }
 
     if (isset($Cabecera["Img5"])) {
@@ -207,8 +202,6 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
 
         $dest = $dir_main . $Cabecera["Img5"];
         copy($source, $dest);
-
-        $Cabecera["fotografias"]["anexo_capot"] = $Cabecera["Img5"];
     }
     // Fin, Copiar fotografias a la ruta log y main.
 
@@ -226,20 +219,14 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
             );
 
             echo json_encode($msg);
+        } else {
+            $msg = array(
+                "title" => "¡Listo!",
+                "text" => "La recepción de vehículo ha sido creada exitosamente.",
+                "icon" => "success",
+            );
 
-            /*
-            echo "<script>
-            $(document).ready(function() {
-            Swal.fire({
-            title: '¡Ha ocurrido un error!',
-            text: '" . $msg_error . "',
-            type: 'error'
-            });
-            });
-            </script>";
-             */
-            //header("Location:tarjeta_equipo.php?id=$IdTarjetaEquipo&swError=1&a=" . base64_encode($Msg));
-            //echo "<script>alert('$msg_error'); location = 'tarjeta_equipo.php';</script>";
+            echo json_encode($msg);
         }
     } catch (Exception $e) {
         echo 'Excepcion capturada: ', $e->getMessage(), "\n";

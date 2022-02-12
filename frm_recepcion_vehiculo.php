@@ -968,9 +968,9 @@ function Eliminar(){
 						</div>
 						<div class="form-group">
 							<div class="col-lg-4">
-								<label class="control-label">Teléfono</label>
+								<label class="control-label">Teléfono <span class="text-danger">*</span></label>
 
-								<input name="telefono" type="text" class="form-control" id="telefono" maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['TelefonoContacto'];} elseif ($dt_LS == 1) {echo isset($_GET['Telefono']) ? base64_decode($_GET['Telefono']) : "";}?>">
+								<input name="telefono" type="text" class="form-control" id="telefono" required="required" maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['TelefonoContacto'];} elseif ($dt_LS == 1) {echo isset($_GET['Telefono']) ? base64_decode($_GET['Telefono']) : "";}?>">
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">Celular</label>
@@ -1103,8 +1103,8 @@ function Eliminar(){
 							<div class="col-lg-4">
 								<label class="control-label">Servicio de movilidad ofrecido</label>
 								<select name="servicio_movil_ofrecido" class="form-control" id="servicio_movil_ofrecido" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
-										<option value="si">SI</option>
-										<option value="no">NO</option>
+										<option value="SI">SI</option>
+										<option value="NO">NO</option>
 								<?php //while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) {?>
 										<!--option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['Cod_Estado'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['Cod_Estado']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option -->
 								<?php //}?>
@@ -1113,8 +1113,8 @@ function Eliminar(){
 							<div class="col-lg-4">
 								<label class="control-label">Se hizo prueba de ruta</label>
 								<select name="hizo_prueba_ruta" class="form-control" id="hizo_prueba_ruta" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
-										<option value="si">SI</option>
-										<option value="no">NO</option>
+										<option value="SI">SI</option>
+										<option value="NO">NO</option>
 								<?php //while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) {?>
 										<!--option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['Cod_Estado'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['Cod_Estado']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option -->
 								<?php //}?>
@@ -1123,8 +1123,8 @@ function Eliminar(){
 							<div class="col-lg-4">
 								<label class="control-label">Campaña autorizada por cliente</label>
 								<select name="campana_autorizada_cliente" class="form-control" id="campana_autorizada_cliente" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
-										<option value="si">SI</option>
-										<option value="no">NO</option>
+										<option value="SI">SI</option>
+										<option value="NO">NO</option>
 								<?php //while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) {?>
 										<!--option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['Cod_Estado'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['Cod_Estado']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option -->
 								<?php //}?>
@@ -1135,8 +1135,8 @@ function Eliminar(){
 							<div class="col-lg-4">
 								<label class="control-label">Nivel de combustible</label>
 								<select name="nivel_combustible" class="form-control" id="nivel_combustible" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
-										<option value="si">SI</option>
-										<option value="no">NO</option>
+										<option value="SI">SI</option>
+										<option value="NO">NO</option>
 								<?php //while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) {?>
 										<!--option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['Cod_Estado'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['Cod_Estado']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option -->
 								<?php //}?>
@@ -1145,8 +1145,8 @@ function Eliminar(){
 							<div class="col-lg-4">
 								<label class="control-label">Medio por el cual se informo campaña</label>
 								<select name="medio_informa_campana" class="form-control" id="medio_informa_campana" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
-										<option value="si">SI</option>
-										<option value="no">NO</option>
+										<option value="SI">SI</option>
+										<option value="NO">NO</option>
 								<?php //while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) {?>
 										<!--option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['Cod_Estado'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['Cod_Estado']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option -->
 								<?php //}?>
@@ -1155,13 +1155,13 @@ function Eliminar(){
 						</div>
 						<div class="form-group">
 							<div class="col-lg-4">
-								<label class="control-label">KM actual</label>
-								<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="km_actual" type="text" class="form-control" id="km_actual" maxlength="100"
+								<label class="control-label">KM actual <span class="text-danger">*</span></label>
+								<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="km_actual" required="required" type="text" class="form-control" id="km_actual" maxlength="100"
 								value="<?php if (isset($row['CDU_No_Motor'])) {echo $row['CDU_No_Motor'];}?>">
 							</div>
 							<div class="col-lg-4">
-								<label class="control-label">No. Campaña</label>
-								<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="no_campana" type="text" class="form-control" id="no_campana" maxlength="100"
+								<label class="control-label">No. Campaña <span class="text-danger">*</span></label>
+								<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="no_campana" required="required" type="text" class="form-control" id="no_campana" maxlength="100"
 								value="<?php if (isset($row['CDU_No_Motor'])) {echo $row['CDU_No_Motor'];}?>">
 							</div>
 						</div>
@@ -1313,7 +1313,7 @@ function Eliminar(){
 					<div class="ibox-content">
 						<!-- Inicio, Foto 1 -->
 						<div class="form-group">
-							<label class="col-lg-1 control-label">Frente</label>
+							<label class="col-lg-1 control-label">Frente <span class="text-danger">*</span></label>
 							<div class="col-lg-5">
 								<div class="fileinput fileinput-new input-group" data-provides="fileinput">
 									<div class="form-control" data-trigger="fileinput">
@@ -1323,7 +1323,7 @@ function Eliminar(){
 									<span class="input-group-addon btn btn-default btn-file">
 										<span class="fileinput-new">Seleccionar</span>
 										<span class="fileinput-exists">Cambiar</span>
-										<input name="Img1" type="file" id="Img1" onchange="uploadImage('Img1')"/>
+										<input name="Img1" type="file" id="Img1" onchange="uploadImage('Img1')" required="required"/>
 									</span>
 									<a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Quitar</a>
 								</div>
@@ -1340,7 +1340,7 @@ function Eliminar(){
 						<!-- Inicio, Foto 1 -->
 						<!-- Inicio, Foto 2 -->
 						<div class="form-group">
-							<label class="col-lg-1 control-label">Lateral Izquierdo</label>
+							<label class="col-lg-1 control-label">Lateral Izquierdo <span class="text-danger">*</span></label>
 							<div class="col-lg-5">
 								<div class="fileinput fileinput-new input-group" data-provides="fileinput">
 									<div class="form-control" data-trigger="fileinput">
@@ -1350,7 +1350,7 @@ function Eliminar(){
 									<span class="input-group-addon btn btn-default btn-file">
 										<span class="fileinput-new">Seleccionar</span>
 										<span class="fileinput-exists">Cambiar</span>
-										<input name="Img2" type="file" id="Img2" onchange="uploadImage('Img2')"/>
+										<input name="Img2" type="file" id="Img2" onchange="uploadImage('Img2')" required="required"/>
 									</span>
 									<a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Quitar</a>
 								</div>
@@ -1367,7 +1367,7 @@ function Eliminar(){
 						<!-- Fin, Foto 2 -->
 						<!-- Inicio, Foto 3 -->
 						<div class="form-group">
-							<label class="col-lg-1 control-label">Lateral Derecho</label>
+							<label class="col-lg-1 control-label">Lateral Derecho <span class="text-danger">*</span></label>
 							<div class="col-lg-5">
 								<div class="fileinput fileinput-new input-group" data-provides="fileinput">
 									<div class="form-control" data-trigger="fileinput">
@@ -1377,7 +1377,7 @@ function Eliminar(){
 									<span class="input-group-addon btn btn-default btn-file">
 										<span class="fileinput-new">Seleccionar</span>
 										<span class="fileinput-exists">Cambiar</span>
-										<input name="Img3" type="file" id="Img3" onchange="uploadImage('Img3')"/>
+										<input name="Img3" type="file" id="Img3" onchange="uploadImage('Img3')" required="required"/>
 									</span>
 									<a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Quitar</a>
 								</div>
@@ -1394,7 +1394,7 @@ function Eliminar(){
 						<!-- Fin, Foto 3 -->
 						<!-- Inicio, Foto 4 -->
 						<div class="form-group">
-							<label class="col-lg-1 control-label">Trasero</label>
+							<label class="col-lg-1 control-label">Trasero <span class="text-danger">*</span></label>
 							<div class="col-lg-5">
 								<div class="fileinput fileinput-new input-group" data-provides="fileinput">
 									<div class="form-control" data-trigger="fileinput">
@@ -1404,7 +1404,7 @@ function Eliminar(){
 									<span class="input-group-addon btn btn-default btn-file">
 										<span class="fileinput-new">Seleccionar</span>
 										<span class="fileinput-exists">Cambiar</span>
-										<input name="Img4" type="file" id="Img4" onchange="uploadImage('Img4')"/>
+										<input name="Img4" type="file" id="Img4" onchange="uploadImage('Img4')" required="required"/>
 									</span>
 									<a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Quitar</a>
 								</div>
@@ -1421,7 +1421,7 @@ function Eliminar(){
 						<!-- Fin, Foto 4 -->
 						<!-- Inicio, Foto 5 -->
 						<div class="form-group">
-							<label class="col-lg-1 control-label">Capot</label>
+							<label class="col-lg-1 control-label">Capot <span class="text-danger">*</span></label>
 							<div class="col-lg-5">
 								<div class="fileinput fileinput-new input-group" data-provides="fileinput">
 									<div class="form-control" data-trigger="fileinput">
@@ -1431,7 +1431,7 @@ function Eliminar(){
 									<span class="input-group-addon btn btn-default btn-file">
 										<span class="fileinput-new">Seleccionar</span>
 										<span class="fileinput-exists">Cambiar</span>
-										<input name="Img5" type="file" id="Img5" onchange="uploadImage('Img5')"/>
+										<input name="Img5" type="file" id="Img5" onchange="uploadImage('Img5')" required="required"/>
 									</span>
 									<a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Quitar</a>
 								</div>
