@@ -412,7 +412,8 @@ function ObtenerValorDefecto($TipoObjeto, $NombreCampo)
     $SQL = Seleccionar('uvw_tbl_CamposValoresDefecto_Detalle', 'ValorCampo', "TipoObjeto='" . $TipoObjeto . "' AND NombreCampo='" . $NombreCampo . "' AND ID_Usuario='" . $_SESSION['CodUser'] . "'");
     $row = sqlsrv_fetch_array($SQL);
     //$Num=sqlsrv_num_rows($SQL);
-    return $row['ValorCampo'];
+    if (!isset($row['ValorCampo'])) {echo "La variable $NombreCampo no tiene un valor por defecto.";}
+    return $row['ValorCampo'] ?? "";
 }
 
 function EliminarArchivo($pRuta)

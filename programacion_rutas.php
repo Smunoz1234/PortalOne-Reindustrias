@@ -38,9 +38,8 @@ if (isset($_GET['FechaFinal']) && $_GET['FechaFinal'] != "") {
 
 $Sede = isset($_GET['Sede']) ? $_GET['Sede'] : "";
 $Grupo = isset($_GET['Grupo']) ? $_GET['Grupo'] : "";
-$Recurso = isset($_GET['Recursos']) ? implode(',', $_GET['Recursos']) : "";
-// SMM
-// print_r($Recurso);
+$Recurso = isset($_GET['Recursos']) ? implode(',', $_GET['Recursos']) : ""; // SMM
+
 $Cliente = isset($_GET['Cliente']) ? $_GET['Cliente'] : "";
 $NomSucursal = isset($_GET['Sucursal']) ? $_GET['Sucursal'] : "";
 
@@ -69,12 +68,13 @@ if ($sw == 1) {
     while ($row_resources = sqlsrv_fetch_array($sql_resources)) {
         array_push($all_resources, $row_resources['ID_Empleado']);
     }
-    $Recurso = implode(',', $all_resources);
+    $resource = implode(',', $all_resources);
+	// Sin uso actualmente, contiene todos los técnicos.
     // Stiven Muñoz Murillo
 
     $ParamEvento = array(
         "'" . $Sede . "'",
-        //"'".$Recurso."'",
+        // "'".$Recurso."'",
         "'" . $Cliente . "'",
         "'" . $NomSucursal . "'",
         "'" . FormatoFecha($FechaInicial) . "'",
@@ -88,7 +88,7 @@ if ($sw == 1) {
     $row_Evento = sqlsrv_fetch_array($SQL_Evento);
 
     $ParamCons = array(
-        "'" . $Recurso . "'",
+        "'" . $Recurso . "'", // SMM, 14/02/2022
         "'" . $Grupo . "'",
         "'" . $row_Evento['IdEvento'] . "'",
         "'" . $_SESSION['CodUser'] . "'",
@@ -108,7 +108,7 @@ if ($sw == 1) {
         "'" . FormatoFecha($FechaFinal) . "'",
     );
 
-	// Procedimiento modificado, SMM 07/02/2022
+    // Procedimiento modificado, SMM 07/02/2022
     $SQL_OT = EjecutarSP("sp_ConsultarDatosCalendarioRutasOT", $ParamOT);
     $Num_OT = sqlsrv_num_rows($SQL_OT);
 
@@ -140,7 +140,6 @@ if ($sw == 1) {
 
     //Ciudad
     $SQL_Ciudad = Seleccionar("tbl_LlamadasServicios_Rutas", "DISTINCT CiudadLlamada", "Usuario='" . $_SESSION['CodUser'] . "' and IdEvento='" . $row_Evento['IdEvento'] . "'", "CiudadLlamada");
-
 }
 
 ?>
@@ -559,7 +558,7 @@ $j = 0;
 				<?php if ($sw == 1) {
     while ($row_OT = sqlsrv_fetch_array($SQL_OT)) {?>
 					<div class="card card-body mt-lg-3 bg-light border-primary <?php if ($row_OT['Validacion'] == "OK") {echo "item-drag";}?>" style="min-height: 14rem;" data-title="<?php echo $row_OT['Etiqueta']; ?>" data-docnum="<?php echo $row_OT['DocNum']; ?>" data-estado="<?php echo $row_OT['IdEstadoLlamada']; ?>" data-info="<?php echo $row_OT['DeTipoLlamada']; ?>" data-validacion="<?php echo $row_OT['Validacion']; ?>"
-					data-tiempo="<?php echo $row_OT['CDU_TiempoTarea']; // Stiven Muñoz Murillo, 07/02/2022  ?>">
+					data-tiempo="<?php echo $row_OT['CDU_TiempoTarea']; // Stiven Muñoz Murillo, 07/02/2022   ?>">
 
 						<h5 class="card-title"><a href="llamada_servicio.php?id=<?php echo base64_encode($row_OT['ID_LlamadaServicio']); ?>&tl=1" target="_blank" title="Consultar Llamada de servicio" class="btn-xs btn-success fas fa-search"></a> <?php echo $row_OT['DocNum']; ?></h5>
 						<h6 class="card-subtitle mb-2 text-muted"><?php echo $row_OT['DeTipoLlamada']; ?></h6>
@@ -583,7 +582,7 @@ $j = 0;
                       	</button>
 					</div>
 				</div>
-				<div id="dv_calendar"><?php require_once 'programacion_rutas_calendario.php';?></div>
+				<div id="dv_calendar"><?php require_once "programacion_rutas_calendario.php";?></div>
 			</div>
 		</div>
     </div>

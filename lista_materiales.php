@@ -472,9 +472,9 @@ function ConsultarPlantilla(){
 						  <?php }?>
 						</select>
                	  	</div>
-					<label class="col-lg-1 control-label">Proyecto <span class="text-danger">*</span></label>
+					<label class="col-lg-1 control-label">Proyecto</label>
 					<div class="col-lg-3">
-						<select name="Proyecto" class="form-control select2" id="Proyecto" required>
+						<select name="Proyecto" class="form-control select2" id="Proyecto">
 								<option value="">Seleccione...</option>
 						  <?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) {?>
 								<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['IdProyecto'])) && (strcmp($row_Proyecto['IdProyecto'], $row['IdProyecto']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Proyecto['DeProyecto']; ?></option>
@@ -492,18 +492,18 @@ function ConsultarPlantilla(){
 							<?php }?>
 						</select>
                	  	</div>
-					<label class="col-lg-1 control-label">Área <span class="text-danger">*</span></label>
+					<label class="col-lg-1 control-label">Área</label>
 					<div class="col-lg-3">
-						<select name="OcrCode" class="form-control" id="OcrCode" required="required">
+						<select name="OcrCode" class="form-control" id="OcrCode">
 							<option value="">Seleccione...</option>
 						  <?php while ($row_CentroCosto = sqlsrv_fetch_array($SQL_CentroCosto)) {?>
 								<option value="<?php echo $row_CentroCosto['OcrCode']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['OcrCode'])) && (strcmp($row_CentroCosto['OcrCode'], $row['OcrCode']) == 0)) {echo "selected=\"selected\"";} elseif (($edit == 0) && ($row_DatosEmpleados['CentroCosto1'] != "") && (strcmp($row_DatosEmpleados['CentroCosto1'], $row_CentroCosto['OcrCode']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_CentroCosto['OcrName']; ?></option>
 						  <?php }?>
 						</select>
 					</div>
-					<label class="col-lg-1 control-label">Sede <span class="text-danger">*</span></label>
+					<label class="col-lg-1 control-label">Sede</label>
 					<div class="col-lg-3">
-                    	<select name="OcrCode3" class="form-control" id="OcrCode3" required="required">
+                    	<select name="OcrCode3" class="form-control" id="OcrCode3">
 							<option value="">Seleccione...</option>
 						  <?php while ($row_Sede = sqlsrv_fetch_array($SQL_Sede)) {?>
 								<option value="<?php echo $row_Sede['OcrCode']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['OcrCode3'])) && (strcmp($row_Sede['OcrCode'], $row['OcrCode3']) == 0)) {echo "selected=\"selected\"";} elseif (($edit == 0) && ($row_DatosEmpleados['CentroCosto3'] != "") && (strcmp($row_DatosEmpleados['CentroCosto3'], $row_Sede['OcrCode']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Sede['OcrName']; ?></option>

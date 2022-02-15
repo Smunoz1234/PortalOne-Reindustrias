@@ -32,6 +32,10 @@ if (isset($_GET['pGrupo'])) {
     $Grupo = $_GET['pGrupo'];
 }
 
+// Stiven Muñoz Murillo, 14/02/2022
+$cadena = $Recurso ?? "";
+// echo "<script> console.log('Line 37', '$cadena'); </script>";
+
 if ($type == 1) { //Si estoy refrescando datos ya cargados
 
     //Tecnicos para seleccionar
