@@ -1196,7 +1196,7 @@ function Eliminar(){
 									<div class="col-lg-6 input-group date">
 										<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaCreacion" type="text" class="form-control" id="FechaCreacion" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('Y-m-d');} else {echo date('Y-m-d');}?>" readonly='readonly' placeholder="YYYY-MM-DD" required>
 									</div>
-									<div class="col-lg-6 input-group clockpicker2" data-autoclose="true">
+									<div class="col-lg-6 input-group clockpicker" data-autoclose="true">
 										<input name="HoraCreacion" id="HoraCreacion" type="text" class="form-control" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('H:i');} else {echo date('H:i');}?>" readonly='readonly' placeholder="hh:mm" required>
 										<span class="input-group-addon">
 											<span class="fa fa-clock-o"></span>
@@ -1208,14 +1208,14 @@ function Eliminar(){
 							<!-- Inicio, Componente Fecha y Hora -->
 							<div class="col-lg-6">
 								<div class="row">
-									<label class="col-lg-6 control-label" style="text-align: left !important;">Fecha hora propietario autoriza campaña <span class="text-danger">*</span></label>
+									<label class="col-lg-6 control-label" style="text-align: left !important;">Fecha y hora de ingreso <span class="text-danger">*</span></label>
 								</div>
 								<div class="row">
 									<div class="col-lg-6 input-group date">
-										<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="fecha_autoriza_campana" type="text" class="form-control" id="fecha_hora_autoriza_campana" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('Y-m-d');} else {echo date('Y-m-d');}?>" placeholder="YYYY-MM-DD" required>
+										<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="fecha_ingreso" type="text" class="form-control" id="fecha_ingreso" value="<?php if (($type_frm == 1) && ($row['fecha_ingreso']->format('Y-m-d')) != "1900-01-01") {echo $row['fecha_ingreso']->format('Y-m-d');} //else {echo date('Y-m-d');}?>" placeholder="YYYY-MM-DD" required>
 									</div>
-									<div class="col-lg-6 input-group clockpicker2" data-autoclose="true">
-										<input name="hora_autoriza_campana" id="fecha_hora_autoriza_campana" type="text" class="form-control" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('H:i');} else {echo date('H:i');}?>" placeholder="hh:mm" required>
+									<div class="col-lg-6 input-group clockpicker" data-autoclose="true">
+										<input name="hora_ingreso" id="hora_ingreso" type="text" class="form-control" value="<?php if (($type_frm == 1) && ($row['fecha_ingreso']->format('Y-m-d')) != "1900-01-01") {echo $row['fecha_ingreso']->format('H:i');} //else {echo date('H:i');}?>" placeholder="hh:mm" required>
 										<span class="input-group-addon">
 											<span class="fa fa-clock-o"></span>
 										</span>
@@ -1232,10 +1232,10 @@ function Eliminar(){
 								</div>
 								<div class="row">
 									<div class="col-lg-6 input-group date">
-										<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="fecha_aprox_entrega" type="text" class="form-control" id="fecha_aprox_entrega" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('Y-m-d');} else {echo date('Y-m-d');}?>" readonly='readonly' placeholder="YYYY-MM-DD" required>
+										<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="fecha_aprox_entrega" type="text" class="form-control" id="fecha_aprox_entrega" value="<?php if (($type_frm == 1) && ($row['fecha_aprox_entrega']->format('Y-m-d')) != "1900-01-01") {echo $row['fecha_aprox_entrega']->format('Y-m-d');} else {echo date('Y-m-d');}?>" readonly='readonly' placeholder="YYYY-MM-DD" required>
 									</div>
-									<div class="col-lg-6 input-group clockpicker2" data-autoclose="true">
-										<input name="hora_aprox_entrega" id="hora_aprox_entrega" type="text" class="form-control" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('H:i');} else {echo date('H:i');}?>" readonly='readonly' placeholder="hh:mm" required>
+									<div class="col-lg-6 input-group clockpicker" data-autoclose="true">
+										<input name="hora_aprox_entrega" id="hora_aprox_entrega" type="text" class="form-control" value="<?php if (($type_frm == 1) && ($row['fecha_aprox_entrega']->format('Y-m-d')) != "1900-01-01") {echo $row['fecha_aprox_entrega']->format('H:i');} else {echo date('H:i');}?>" readonly='readonly' placeholder="hh:mm" required>
 										<span class="input-group-addon">
 											<span class="fa fa-clock-o"></span>
 										</span>
@@ -1246,14 +1246,14 @@ function Eliminar(){
 							<!-- Inicio, Componente Fecha y Hora -->
 							<div class="col-lg-6">
 								<div class="row">
-									<label class="col-lg-6 control-label" style="text-align: left !important;">Fecha y hora de ingreso <span class="text-danger">*</span></label>
+									<label class="col-lg-6 control-label" style="text-align: left !important;">Fecha hora propietario autoriza campaña <span class="text-danger">*</span></label>
 								</div>
 								<div class="row">
 									<div class="col-lg-6 input-group date">
-										<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="fecha_ingreso" type="text" class="form-control" id="fecha_ingreso" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('Y-m-d');} else {echo date('Y-m-d');}?>" placeholder="YYYY-MM-DD" required>
+										<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="fecha_autoriza_campana" type="text" class="form-control" id="fecha_autoriza_campana" value="<?php if (($type_frm == 1) && ($row['fecha_autoriza_campana']->format('Y-m-d')) != "1900-01-01") {echo $row['fecha_autoriza_campana']->format('Y-m-d');} //else {echo date('Y-m-d');}?>" placeholder="YYYY-MM-DD" required>
 									</div>
-									<div class="col-lg-6 input-group clockpicker2" data-autoclose="true">
-										<input name="hora_ingreso" id="hora_ingreso" type="text" class="form-control" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('H:i');} else {echo date('H:i');}?>" placeholder="hh:mm" required>
+									<div class="col-lg-6 input-group clockpicker" data-autoclose="true">
+										<input name="hora_autoriza_campana" id="hora_autoriza_campana" type="text" class="form-control" value="<?php if (($type_frm == 1) && ($row['fecha_autoriza_campana']->format('Y-m-d')) != "1900-01-01") {echo $row['fecha_autoriza_campana']->format('H:i');} //else {echo date('H:i');}?>" placeholder="hh:mm" required>
 										<span class="input-group-addon">
 											<span class="fa fa-clock-o"></span>
 										</span>
@@ -1832,44 +1832,51 @@ $(document).ready(function(){
 		 $(".alkin").on('click', function(){
 				 $('.ibox-content').toggleClass('sk-loading');
 			});
-		 <?php if (PermitirFuncion(213)) {?>
-		  $('#FechaCreacion').datepicker({
-                todayBtn: "linked",
-                keyboardNavigation: false,
-                forceParse: false,
-                calendarWeeks: true,
-                autoclose: true,
-				format: 'yyyy-mm-dd',
-			 	todayHighlight: true,
-			 	endDate: '<?php echo date('Y-m-d'); ?>'
-            });
-		 $('.clockpicker2').clockpicker();
-	 	 <?php }?>
-		 <?php if (!isset($row['Cod_Estado']) || ($row['Cod_Estado'] != '-1')) {?>
-		 $('#FechaCierre').datepicker({
-                todayBtn: "linked",
-                keyboardNavigation: false,
-                forceParse: false,
-                calendarWeeks: true,
-                autoclose: true,
-				format: 'yyyy-mm-dd',
-			 	todayHighlight: true,
-			 	endDate: '<?php echo date('Y-m-d'); ?>'
-            });
-		 $('.clockpicker').clockpicker();
-		<?php }?>
-		<?php if ((!isset($row['Cod_Estado']) || ($row['Cod_Estado'] != '-1')) && ($type_frm == 1)) {?>
-		 $('#FechaRec').datepicker({
-                todayBtn: "linked",
-                keyboardNavigation: false,
-                forceParse: false,
-                calendarWeeks: true,
-                autoclose: true,
-				format: 'yyyy-mm-dd',
-			 	todayHighlight: true,
-			 	endDate: '<?php echo date('Y-m-d'); ?>'
-            });
-	 	<?php }?>
+
+			// @autor SMM
+			// @version 15/02/2022
+
+			// Inicio, Sección de fechas y horas.
+			if(!$('#fecha_ingreso').prop('readonly')){
+				$('#fecha_ingreso').datepicker({
+					placement: 'top',
+					todayBtn: "linked",
+					keyboardNavigation: false,
+					forceParse: false,
+					calendarWeeks: true,
+					autoclose: true,
+					format: 'yyyy-mm-dd',
+					todayHighlight: true,
+					endDate: '<?php echo date('Y-m-d'); ?>'
+				});
+
+				$('#hora_ingreso').clockpicker({
+					placement: 'top',
+					align: 'left',
+					donetext: 'Done'
+				});
+			}
+			if(!$('#fecha_autoriza_campana').prop('readonly')){
+				$('#fecha_autoriza_campana').datepicker({
+					placement: 'top',
+					todayBtn: "linked",
+					keyboardNavigation: false,
+					forceParse: false,
+					calendarWeeks: true,
+					autoclose: true,
+					format: 'yyyy-mm-dd',
+					todayHighlight: true
+				});
+
+				$('#hora_autoriza_campana').clockpicker({
+					placement: 'top',
+					align: 'left',
+					donetext: 'Done'
+				});
+			}
+			// Fin, Sección de fechas y horas.
+
+
 		 $(".select2").select2();
 		 $('.i-checks').iCheck({
 			 checkboxClass: 'icheckbox_square-green',

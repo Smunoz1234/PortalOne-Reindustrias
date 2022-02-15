@@ -448,8 +448,8 @@ function CambiarEstado(id,lote=false){
 		url: "md_frm_cambiar_estados.php",
 		data:{
 			id:id,
-			frm: 'EvaluacionTecnicos',
-			nomID: 'id_evaluacion_tecnico'
+			frm: 'RecepcionVehiculos',
+			nomID: 'id_recepcion_vehiculo'
 		},
 		success: function(response){
 			$('.ibox-content').toggleClass('sk-loading',false);

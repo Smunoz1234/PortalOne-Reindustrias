@@ -79,8 +79,6 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
     unset($Cabecera["Ciudad"]);
     unset($Cabecera["FechaCreacion"]);
     unset($Cabecera["HoraCreacion"]);
-    unset($Cabecera["fecha_autoriza_campana"]);
-    unset($Cabecera["hora_autoriza_campana"]);
     unset($Cabecera["ResponsableCliente"]);
     unset($Cabecera["SigCliente"]);
     unset($Cabecera["P"]);
@@ -92,19 +90,20 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
     unset($Cabecera["return"]);
     unset($Cabecera["frm"]);
 
-    $Cabecera["app"] = "PortalOne";
-    $Cabecera["estado"] = "O";
+    $Cabecera["app"] = "PortalOne"; // Por defecto
+    $Cabecera["estado"] = "O"; // Por defecto
 
     $Cabecera["id_consecutivo_direccion"] = 0; // NumeroLinea (Sap_Clientes_Sucursales)
     $Cabecera["id_direccion_destino"] = $_POST["SucursalCliente"];
 
-    $Cabecera["fecha_ingreso"] = "2022-02-10T14:32:44.389Z";
-    $Cabecera["hora_ingreso"] = "2022-02-10T14:32:44.389Z";
-    $Cabecera["fecha_aprox_entrega"] = "2022-02-10T14:32:44.389Z";
-    $Cabecera["hora_aprox_entrega"] = "2022-02-10T14:32:44.389Z";
+    $Cabecera["hora_ingreso"] = FormatoFechaToSAP($Cabecera['fecha_ingreso'], $Cabecera['hora_ingreso']);
+    $Cabecera["fecha_ingreso"] = FormatoFechaToSAP($Cabecera['fecha_ingreso']);
+
+    $Cabecera["hora_aprox_entrega"] = FormatoFechaToSAP($Cabecera['fecha_aprox_entrega'], $Cabecera['hora_aprox_entrega']);
+    $Cabecera["fecha_aprox_entrega"] = FormatoFechaToSAP($Cabecera['fecha_aprox_entrega']);
 
     $Cabecera["km_actual"] = intval($Cabecera["km_actual"] ?? 0);
-    $Cabecera["fecha_hora_autoriza_campana"] = "2022-02-10T14:32:44.389Z";
+    $Cabecera["fecha_hora_autoriza_campana"] = FormatoFechaToSAP($Cabecera['fecha_autoriza_campana'], $Cabecera['hora_autoriza_campana']);
 
     for ($i = 1; $i <= 25; $i++) {
         if (isset($Cabecera["id_pregunta_$i"])) {
@@ -112,27 +111,21 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
         }
     }
 
-    $Cabecera["fecha_cierre"] = "2022-02-10T14:32:44.389Z";
-    $Cabecera["hora_cierre"] = "2022-02-10T14:32:44.389Z";
-
     $Cabecera["id_empleado_tecnico"] = intval($_SESSION['CodigoSAP']);
     $Cabecera["empleado_tecnico"] = $_SESSION['NombreEmpleado'];
 
-    $Cabecera["observaciones"] = "string";
-    $Cabecera["firma_responsable_cliente"] = "string";
+    $Cabecera["observaciones"] = ""; // Falta asignarle un valor
+    $Cabecera["firma_responsable_cliente"] = "string"; // Ruta de la imagen
     $Cabecera["id_usuario_creacion"] = $_SESSION['CodUser'];
-
-    $Cabecera["comentarios_cierre"] = "string";
-    $Cabecera["id_usuario_cierre"] = $_SESSION['CodUser'];
 
     $Cabecera["id_llamada_servicio"] = intval($Cabecera["id_llamada_servicio"]) ?? 0;
     $Cabecera["docentry_llamada_servicio"] = 0;
 
     $Cabecera["anexos"] = [
         array(
-            "id_anexo" => 0,
-            "id_linea" => 0,
-            "anexo" => "string",
+            "id_anexo" => 0, // Por defecto
+            "id_linea" => 0, // Por defecto
+            "anexo" => "string", // Ruta del anexo
             "comentarios" => "string",
         ),
     ];
@@ -140,8 +133,8 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
     // Inicio, copiar fotografias a la ruta log y main, y agregarlas al JSON.
     $Cabecera["fotografias"] = [
         array(
-            "id_recepcion_vehiculo" => 0,
-            "id_recepcion_fotografia" => 0,
+            "id_recepcion_vehiculo" => 0, // Por defecto
+            "id_recepcion_fotografia" => 0, // Por defecto
             "anexo_frente" => $Cabecera["Img1"] ?? "",
             "anexo_lateral_izquierdo" => $Cabecera["Img2"] ?? "",
             "anexo_lateral_derecho" => $Cabecera["Img3"] ?? "",

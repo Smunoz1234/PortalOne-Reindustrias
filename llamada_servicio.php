@@ -1130,7 +1130,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 						$('.ibox-content').toggleClass('sk-loading',false);
 					},
 					error: function(data) {
-						console.error(data);
+						console.error("Line 1133", data.responseText);
 					}
 				});
 				$.ajax({
