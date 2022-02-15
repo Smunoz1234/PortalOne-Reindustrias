@@ -291,6 +291,7 @@ while ($row_Empleados = sqlsrv_fetch_array($SQL_Empleados)) {?>
 								<th>Empleado</th>
 								<th>Cliente</th>
 								<th>Sucursal</th>
+								<th>Placa</th>
 								<th>Comentarios cierre</th>
 								<th>Fecha creación</th>
 								<th>Usuario creación</th>
@@ -308,6 +309,7 @@ while ($row_Empleados = sqlsrv_fetch_array($SQL_Empleados)) {?>
 									<td><?php echo $row['empleado_tecnico']; ?></td>
 									<td><?php echo $row['socio_negocio']; ?></td>
 									<td><?php echo $row['id_direccion_destino']; ?></td>
+									<td><?php echo $row['placa']; ?></td>
 									<td><?php echo $row['comentarios_cierre']; ?></td>
 									<td><?php echo $row['fecha_creacion']->format('Y-m-d H:i'); ?></td>
 									<td><?php echo $row['nombre_usuario_creacion']; ?></td>
@@ -319,7 +321,7 @@ while ($row_Empleados = sqlsrv_fetch_array($SQL_Empleados)) {?>
 											<button id="btnEstado<?php echo $row['id_recepcion_vehiculo']; ?>" class="btn btn-success btn-xs" onClick="CambiarEstado('<?php echo $row['id_recepcion_vehiculo']; ?>');" title="Cambiar estado"><i class="fa fa-pencil"></i></button>
 										<?php }?>
 
-										<a href="filedownload.php?file=<?php echo base64_encode("EvaluacionTecnicos/DescargarFormatos/" . $row['id_recepcion_vehiculo'] . "/" . $_SESSION['User']); ?>&api=1" target="_blank" class="btn btn-warning btn-xs" title="Descargar"><i class="fa fa-download"></i></a>
+										<a href="filedownload.php?file=<?php echo base64_encode("RecepcionVehiculos/DescargarFormatos/" . $row['id_recepcion_vehiculo'] . "/" . $_SESSION['User']); ?>&api=1" target="_blank" class="btn btn-warning btn-xs" title="Descargar"><i class="fa fa-download"></i></a>
 									</td>
 									<td class="text-center">
 										<?php if ($row['estado'] == 'O') {?>

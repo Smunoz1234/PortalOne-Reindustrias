@@ -814,6 +814,8 @@ if (isset($sw_error) && ($sw_error == 1)) {
 					document.getElementById('VIN').value = data.SerialFabricante;
 					document.getElementById('no_motor').value = data.No_Motor;
 
+					document.getElementById('responsable_cliente').value = data.CDU_NombreContacto; // SMM, 15/02/2022
+
 					if(data.CDU_IdMarca !== null) {
 						document.getElementById('id_marca').value = data.CDU_IdMarca;
 						$('#id_marca').trigger('change');
@@ -822,8 +824,8 @@ if (isset($sw_error) && ($sw_error == 1)) {
 						document.getElementById('id_linea').value = data.CDU_IdLinea;
 						$('#id_linea').trigger('change');
 
-						document.getElementById('annio').value = data.CDU_Ano;
-						$('#annio').trigger('change');
+						document.getElementById('id_annio').value = data.CDU_Ano;
+						$('#id_annio').trigger('change');
 
 						document.getElementById('id_color').value = data.CDU_Color;
 						$('#id_color').trigger('change');
@@ -1083,7 +1085,7 @@ function Eliminar(){
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">Modelo del vehículo <span class="text-danger">*</span></label>
-								<select name="annio" class="form-control select2" required="required" id="annio"
+								<select name="id_annio" class="form-control select2" required="required" id="id_annio"
 								<?php if ($dt_LS == 1) {echo "disabled='disabled'";}?>>
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_ModeloVehiculo = sqlsrv_fetch_array($SQL_ModeloVehiculo)) {?>
@@ -1144,11 +1146,8 @@ function Eliminar(){
 							<div class="col-lg-4">
 								<label class="control-label">Campaña autorizada por cliente</label>
 								<select name="campana_autorizada_cliente" class="form-control" id="campana_autorizada_cliente" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
-										<option value="SI">SI</option>
-										<option value="NO">NO</option>
-								<?php //while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) {?>
-										<!--option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['Cod_Estado'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['Cod_Estado']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option -->
-								<?php //}?>
+									<option value="SI">SI</option>
+									<option value="NO">NO</option>
 								</select>
 							</div>
 						</div>
@@ -1156,21 +1155,16 @@ function Eliminar(){
 							<div class="col-lg-4">
 								<label class="control-label">Nivel de combustible</label>
 								<select name="nivel_combustible" class="form-control" id="nivel_combustible" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
-										<option value="SI">SI</option>
-										<option value="NO">NO</option>
-								<?php //while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) {?>
-										<!--option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['Cod_Estado'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['Cod_Estado']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option -->
-								<?php //}?>
+									<option value="1/4">1/4</option>
+									<option value="1/2">1/2</option>
+									<option value="3/4">3/4</option>
+									<option value="Full">Full</option>
 								</select>
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">Medio por el cual se informo campaña</label>
 								<select name="medio_informa_campana" class="form-control" id="medio_informa_campana" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
-										<option value="SI">SI</option>
-										<option value="NO">NO</option>
-								<?php //while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) {?>
-										<!--option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['Cod_Estado'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['Cod_Estado']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option -->
-								<?php //}?>
+										<option value="N/A">N/A</option>
 								</select>
 							</div>
 						</div>
@@ -1488,7 +1482,7 @@ function Eliminar(){
 						<div class="form-group">
 							<label class="col-lg-1 control-label">Responsable del cliente</label>
 							<div class="col-lg-4">
-								<input autocomplete="off" name="ResponsableCliente" type="text" class="form-control" id="ResponsableCliente" maxlength="150" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['ResponsableCliente'];}?>">
+								<input autocomplete="off" name="responsable_cliente" type="text" class="form-control" id="responsable_cliente" maxlength="150" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['ResponsableCliente'];}?>">
 							</div>
 						</div>
 						<div class="form-group">
@@ -1706,7 +1700,7 @@ function uploadImage(refImage) {
 
 					photo_name = json_response.nombre;
 					photo_route = json_response.directorio + photo_name;
-					
+
 					testImage(photo_route).then(success => {
 						console.log(success);
 						console.log("1684", photo_route);

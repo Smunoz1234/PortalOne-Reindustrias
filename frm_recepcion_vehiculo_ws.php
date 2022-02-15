@@ -98,8 +98,6 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
     $Cabecera["id_consecutivo_direccion"] = 0; // NumeroLinea (Sap_Clientes_Sucursales)
     $Cabecera["id_direccion_destino"] = $_POST["SucursalCliente"];
 
-    $Cabecera["annio"] = intval($Cabecera["annio"]) ?? 0;
-
     $Cabecera["fecha_ingreso"] = "2022-02-10T14:32:44.389Z";
     $Cabecera["hora_ingreso"] = "2022-02-10T14:32:44.389Z";
     $Cabecera["fecha_aprox_entrega"] = "2022-02-10T14:32:44.389Z";
@@ -121,6 +119,7 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
     $Cabecera["empleado_tecnico"] = $_SESSION['NombreEmpleado'];
 
     $Cabecera["observaciones"] = "string";
+    $Cabecera["firma_responsable_cliente"] = "string";
     $Cabecera["id_usuario_creacion"] = $_SESSION['CodUser'];
 
     $Cabecera["comentarios_cierre"] = "string";

@@ -608,7 +608,18 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
                 $SerialInterno = $row['IdNumeroSerie'];
                 $SerialInterno = "'" . $SerialInterno . "'";
             }
+
+            $NombreContacto = "";
+            if (isset($row['CDU_NombreContacto'])) {
+                $NombreContacto = $row['CDU_NombreContacto'];
+                $NombreContacto = "'" . $NombreContacto . "'";
+            }
         }
+
+        $SQL = Seleccionar("uvw_Sap_tbl_LlamadasServicios", "CDU_NombreContacto", "ID_LlamadaServicio=" . $ID_LlamadaServicio);
+        $row = sqlsrv_fetch_array($SQL);
+
+        $NombreContacto = $row['CDU_NombreContacto'] ?? "";
 
         if ($SerialInterno != "''") {
             $SQL = Seleccionar("uvw_Sap_tbl_TarjetasEquipos", "*", "SerialInterno=" . $SerialInterno);
@@ -627,6 +638,7 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
                 'CDU_Color' => $row['CDU_Color'], // SMM, 24/01/2022
                 'CDU_Concesionario' => $row['CDU_Concesionario'],
                 'CDU_TipoServicio' => $row['CDU_TipoServicio'],
+                'CDU_NombreContacto' => $NombreContacto, // SMM, 15/02/2022
             );
             echo json_encode($records);
         } else {
@@ -643,7 +655,9 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
                 'CDU_Ano' => null,
                 'CDU_Color' => null,
                 'CDU_Concesionario' => null,
-                'CDU_TipoServicio' => null);
+                'CDU_TipoServicio' => null,
+                'CDU_NombreContacto' => null,
+            );
             echo json_encode($records);
         }
     }
