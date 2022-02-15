@@ -894,7 +894,8 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
             $marca = $row['CDU_IdMarca'];
             $linea = $row['CDU_IdLinea'];
 
-            $SQL = Seleccionar('uvw_Sap_tbl_ListaMateriales', '*', "CDU_IdMarca=$marca AND CDU_IdLinea=$linea AND OcrCode2='" . $_SESSION['CentroCosto2'] . "'");
+            $SQL = Seleccionar('uvw_Sap_tbl_ListaMateriales', '*', "CDU_IdMarca=$marca AND CDU_IdLinea=$linea"); // SMM, 14/02/2022
+            // $SQL = Seleccionar('uvw_Sap_tbl_ListaMateriales', '*', "CDU_IdMarca=$marca AND CDU_IdLinea=$linea AND OcrCode2='" . $_SESSION['CentroCosto2'] . "'");
             $Num = sqlsrv_num_rows($SQL);
             if ($Num) {
                 echo "<option value=''>Seleccione...</option>";

@@ -38,7 +38,7 @@ if ($sw == 1) {
         "'" . $Empleado . "'",
         "'" . $Supervidor . "'",
     );
-    $SQL = EjecutarSP('sp_ConsultarEvalTecnicos', $Param);
+    $SQL = EjecutarSP('sp_ConsultarFormRecepcionVehiculos', $Param);
 }
 
 //Estado
@@ -48,7 +48,7 @@ $SQL_EstadoFrm = Seleccionar('tbl_EstadoFormulario', '*');
 $SQL_Empleados = Seleccionar('uvw_Sap_tbl_Empleados', 'ID_Empleado, NombreEmpleado', '', 'NombreEmpleado');
 
 //Supervisor
-$SQL_Supervisor = Seleccionar('uvw_tbl_EvaluacionTecnicos', 'DISTINCT id_empleado_supervisor, empleado_supervisor', '', 'empleado_supervisor');
+$SQL_Supervisor = Seleccionar('uvw_tbl_RecepcionVehiculos', 'DISTINCT id_empleado_supervisor, empleado_supervisor', '', 'empleado_supervisor');
 
 ?>
 <!DOCTYPE html>
@@ -195,7 +195,7 @@ function SeleccionarTodos(){
 				<div class="col-lg-12">
 			    <div class="ibox-content">
 					 <?php include "includes/spinner.php";?>
-				  <form action="consultar_frm_eval_tecnico.php" method="get" id="formBuscar" class="form-horizontal">
+				  <form action="consultar_frm_recepcion_vehiculo.php" method="get" id="formBuscar" class="form-horizontal">
 					  	<div class="form-group">
 							<label class="col-xs-12"><h3 class="bg-success p-xs b-r-sm"><i class="fa fa-filter"></i> Datos para filtrar</h3></label>
 						</div>
@@ -288,11 +288,9 @@ while ($row_Empleados = sqlsrv_fetch_array($SQL_Empleados)) {?>
 							<thead>
 							<tr>
 								<th>ID</th>
-								<th>Supervisor</th>
-								<th>Técnico</th>
+								<th>Empleado</th>
 								<th>Cliente</th>
 								<th>Sucursal</th>
-								<th>Observaciones</th>
 								<th>Comentarios cierre</th>
 								<th>Fecha creación</th>
 								<th>Usuario creación</th>
@@ -305,30 +303,28 @@ while ($row_Empleados = sqlsrv_fetch_array($SQL_Empleados)) {?>
 							</thead>
 							<tbody>
 							<?php while ($row = sqlsrv_fetch_array($SQL)) {?>
-								<tr id="tr_Resum<?php echo $row['id_evaluacion_tecnico']; ?>" class="trResum">
-									<td><?php echo $row['id_evaluacion_tecnico']; ?></td>
-									<td><?php echo $row['empleado_supervisor']; ?></td>
+								<tr id="tr_Resum<?php echo $row['id_recepcion_vehiculo']; ?>" class="trResum">
+									<td><?php echo $row['id_recepcion_vehiculo']; ?></td>
 									<td><?php echo $row['empleado_tecnico']; ?></td>
 									<td><?php echo $row['socio_negocio']; ?></td>
 									<td><?php echo $row['id_direccion_destino']; ?></td>
-									<td><?php echo SubComent($row['observaciones'], 140); ?></td>
-									<td id="comentCierre<?php echo $row['id_evaluacion_tecnico']; ?>"><?php echo SubComent($row['comentarios_cierre'], 140); ?></td>
-									<td><?php echo $row['fecha_hora']->format('Y-m-d H:i'); ?></td>
+									<td><?php echo $row['comentarios_cierre']; ?></td>
+									<td><?php echo $row['fecha_creacion']->format('Y-m-d H:i'); ?></td>
 									<td><?php echo $row['nombre_usuario_creacion']; ?></td>
 									<td><?php echo ($row['fecha_cierre'] != "") ? $row['fecha_cierre']->format('Y-m-d H:i') : ""; ?></td>
 									<td><?php echo $row['nombre_usuario_cierre']; ?></td>
-									<td><span id="lblEstado<?php echo $row['id_evaluacion_tecnico']; ?>" <?php if ($row['estado'] == 'O') {echo "class='label label-info'";} elseif ($row['estado'] == 'A') {echo "class='label label-danger'";} else {echo "class='label label-primary'";}?>><?php echo $row['nombre_estado']; ?></span></td>
+									<td><span id="lblEstado<?php echo $row['id_recepcion_vehiculo']; ?>" <?php if ($row['estado'] == 'O') {echo "class='label label-info'";} elseif ($row['estado'] == 'A') {echo "class='label label-danger'";} else {echo "class='label label-primary'";}?>><?php echo $row['nombre_estado']; ?></span></td>
 									<td class="text-center form-inline w-80">
 										<?php if ($row['estado'] == 'O') {?>
-											<button id="btnEstado<?php echo $row['id_evaluacion_tecnico']; ?>" class="btn btn-success btn-xs" onClick="CambiarEstado('<?php echo $row['id_evaluacion_tecnico']; ?>');" title="Cambiar estado"><i class="fa fa-pencil"></i></button>
+											<button id="btnEstado<?php echo $row['id_recepcion_vehiculo']; ?>" class="btn btn-success btn-xs" onClick="CambiarEstado('<?php echo $row['id_recepcion_vehiculo']; ?>');" title="Cambiar estado"><i class="fa fa-pencil"></i></button>
 										<?php }?>
 
-										<a href="filedownload.php?file=<?php echo base64_encode("EvaluacionTecnicos/DescargarFormatos/" . $row['id_evaluacion_tecnico'] . "/" . $_SESSION['User']); ?>&api=1" target="_blank" class="btn btn-warning btn-xs" title="Descargar"><i class="fa fa-download"></i></a>
+										<a href="filedownload.php?file=<?php echo base64_encode("EvaluacionTecnicos/DescargarFormatos/" . $row['id_recepcion_vehiculo'] . "/" . $_SESSION['User']); ?>&api=1" target="_blank" class="btn btn-warning btn-xs" title="Descargar"><i class="fa fa-download"></i></a>
 									</td>
 									<td class="text-center">
 										<?php if ($row['estado'] == 'O') {?>
-										<div class="checkbox checkbox-success" id="dvChkSel<?php echo $row['id_evaluacion_tecnico']; ?>">
-											<input type="checkbox" class="chkSelOT" id="chkSelOT<?php echo $row['id_evaluacion_tecnico']; ?>" value="" onChange="SeleccionarOT('<?php echo $row['id_evaluacion_tecnico']; ?>');" aria-label="Single checkbox One"><label></label>
+										<div class="checkbox checkbox-success" id="dvChkSel<?php echo $row['id_recepcion_vehiculo']; ?>">
+											<input type="checkbox" class="chkSelOT" id="chkSelOT<?php echo $row['id_recepcion_vehiculo']; ?>" value="" onChange="SeleccionarOT('<?php echo $row['id_recepcion_vehiculo']; ?>');" aria-label="Single checkbox One"><label></label>
 										</div>
 										<?php }?>
 									</td>

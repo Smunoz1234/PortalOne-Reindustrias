@@ -1532,7 +1532,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								</select>
 							</div>
 							<div class="col-lg-4">
-								<label class="control-label">Tipo llamada (Subtipo Servicio) <span class="text-danger">*</span></label>
+								<label class="control-label">Tipo llamada (Tipo Cliente) <span class="text-danger">*</span></label>
 								<select name="TipoLlamada" class="form-control" required="required" id="TipoLlamada" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 										<option value="">Seleccione...</option>
 								  <?php while ($row_TipoLlamadas = sqlsrv_fetch_array($SQL_TipoLlamadas)) {?>
@@ -1552,7 +1552,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 						</div>
 						<div class="form-group">
 							<div class="col-lg-4">
-								<label class="control-label">Tipo problema (Tipo Cliente) <span class="text-danger">*</span></label>
+								<label class="control-label">Tipo problema (Tipo Servicio) <span class="text-danger">*</span></label>
 								<select name="TipoProblema" class="form-control" id="TipoProblema" required <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 										<option value="">Seleccione...</option>
 								  <?php while ($row_TipoProblema = sqlsrv_fetch_array($SQL_TipoProblema)) {?>
@@ -1561,7 +1561,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								</select>
 							</div>
 							<div class="col-lg-4">
-								<label class="control-label">SubTipo problema (Tipo Servicio) <span class="text-danger">*</span></label>
+								<label class="control-label">SubTipo problema (Subtipo Servicio) <span class="text-danger">*</span></label>
 								<select name="SubTipoProblema" class="form-control" required id="SubTipoProblema" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 										<option value="">Seleccione...</option>
 								  <?php while ($row_SubTipoProblema = sqlsrv_fetch_array($SQL_SubTipoProblema)) {?>
@@ -1622,7 +1622,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								</select>
 							</div>
 							<div class="col-lg-4">
-								<label class="control-label">Técnico</label>
+								<label class="control-label">Técnico/Asesor</label>
 								<select name="Tecnico" class="form-control select2" id="Tecnico" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 										<option value="">Seleccione...</option>
 								  <?php while ($row_Tecnicos = sqlsrv_fetch_array($SQL_Tecnicos)) {?>
