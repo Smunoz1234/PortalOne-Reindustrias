@@ -624,6 +624,7 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
                 'CDU_IdLinea' => $row['CDU_IdLinea'],
                 'CDU_Linea' => $row['CDU_Linea'],
                 'CDU_Ano' => $row['CDU_Ano'],
+                'CDU_Color' => $row['CDU_Color'], // SMM, 24/01/2022
                 'CDU_Concesionario' => $row['CDU_Concesionario'],
                 'CDU_TipoServicio' => $row['CDU_TipoServicio'],
             );
@@ -640,6 +641,7 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
                 'CDU_IdLinea' => null,
                 'CDU_Linea' => null,
                 'CDU_Ano' => null,
+                'CDU_Color' => null,
                 'CDU_Concesionario' => null,
                 'CDU_TipoServicio' => null);
             echo json_encode($records);

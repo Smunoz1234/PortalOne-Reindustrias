@@ -771,7 +771,7 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Ano" class="form-control select2" required="required" id="CDU_Ano">
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_ModeloVehiculo = sqlsrv_fetch_array($SQL_ModeloVehiculo)) {?>
-										<option value="<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; //['CodigoModeloVehiculo'];                                                                                                                                ?>"
+										<option value="<?php echo $row_ModeloVehiculo['CodigoModeloVehiculo'];?>"
 										<?php if (isset($row['CDU_Ano']) && ((strcmp($row_ModeloVehiculo['CodigoModeloVehiculo'], $row['CDU_Ano']) == 0) || (strcmp($row_ModeloVehiculo['AñoModeloVehiculo'], $row['CDU_Ano']) == 0))) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; ?>
 										</option>

@@ -4,7 +4,7 @@ $IdLlamada = "";
 $msg_error = ""; //Mensaje del error
 $dt_LS = 0; //sw para saber si vienen datos del SN. 0 no vienen. 1 si vienen.
 $sw_valDir = 0; //Validar si el nombre de la direccion cambio
-$TituloLlamada = "PLAN DE CONTROL DE PLAGAS"; //Titulo por defecto cuando se está creando la llamada de servicio
+$TituloLlamada = ""; //Titulo por defecto cuando se está creando la llamada de servicio
 
 if (isset($_GET['id']) && ($_GET['id'] != "")) {
     $IdLlamada = base64_decode($_GET['id']);

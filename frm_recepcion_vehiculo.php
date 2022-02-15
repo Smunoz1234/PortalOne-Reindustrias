@@ -598,14 +598,19 @@ $SQL_Condicion = Seleccionar('uvw_tbl_Areas_Condicion', '*');
 // @author Stiven Muñoz Murillo
 // @version 10/01/2022
 
-// Marcas de vehiculo en la llamada de servicio
-$SQL_MarcaVehiculo = Seleccionar('uvw_Sap_tbl_LlamadasServicios_MarcaVehiculo', '*');
+// Marcas de vehiculo en la tarjeta de equipo
+$SQL_MarcaVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_MarcaVehiculo', '*');
 
-// Lineas de vehiculo en la llamada de servicio
-$SQL_LineaVehiculo = Seleccionar('uvw_Sap_tbl_LlamadasServicios_LineaVehiculo', '*');
+// Lineas de vehiculo en la tarjeta de equipo
+$SQL_LineaVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_LineaVehiculo', '*');
 
-// Modelo o año de fabricación de vehiculo en la llamada de servicio
-$SQL_ModeloVehiculo = Seleccionar('uvw_Sap_tbl_LlamadasServicios_AñoModeloVehiculo', '*');
+// Modelo o año de fabricación de vehiculo en la tarjeta de equipo
+$SQL_ModeloVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_AñoModeloVehiculo', '*');
+
+// SMM, 15/02/2022
+
+// Colores de vehiculo en la tarjeta de equipo
+$SQL_ColorVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_ColorVehiculo', '*');
 
 // Preguntas en la recepción de vehículo
 $SQL_Preguntas = Seleccionar('tbl_RecepcionVehiculos_Preguntas', '*');
@@ -803,13 +808,13 @@ if (isset($sw_error) && ($sw_error == 1)) {
 				},
 				dataType: 'json',
 				success: function(data){
-					// console.log(data);
+					console.log("Line 806", data);
 
 					document.getElementById('placa').value = data.SerialInterno;
 					document.getElementById('VIN').value = data.SerialFabricante;
 					document.getElementById('no_motor').value = data.No_Motor;
 
-					if(data.CDU_Marca !== null) {
+					if(data.CDU_IdMarca !== null) {
 						document.getElementById('id_marca').value = data.CDU_IdMarca;
 						$('#id_marca').trigger('change');
 
@@ -819,6 +824,9 @@ if (isset($sw_error) && ($sw_error == 1)) {
 
 						document.getElementById('annio').value = data.CDU_Ano;
 						$('#annio').trigger('change');
+
+						document.getElementById('id_color').value = data.CDU_Color;
+						$('#id_color').trigger('change');
 					}
 
 					$('.ibox-content').toggleClass('sk-loading',false);
@@ -1050,11 +1058,11 @@ function Eliminar(){
 							<div class="col-lg-4">
 								<label class="control-label">Marca del vehículo <span class="text-danger">*</span></label>
 								<select name="id_marca" class="form-control select2" required="required" id="id_marca"
-								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
+								<?php if ($dt_LS == 1) {echo "disabled='disabled'";}?>>
 									<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) {?>
 									<option value="<?php echo $row_MarcaVehiculo['IdMarcaVehiculo']; ?>"
-									<?php if ((isset($row['CDU_Marca'])) && (strcmp($row_MarcaVehiculo['DeMarcaVehiculo'], $row['CDU_Marca']) == 0)) {echo "selected=\"selected\"";}?>>
+									<?php if ((isset($row['CDU_IdMarca'])) && (strcmp($row_MarcaVehiculo['IdMarcaVehiculo'], $row['CDU_IdMarca']) == 0)) {echo "selected=\"selected\"";}?>>
 										<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
 									</option>
 								  <?php }?>
@@ -1063,11 +1071,11 @@ function Eliminar(){
 							<div class="col-lg-4">
 								<label class="control-label">Línea del vehículo <span class="text-danger">*</span></label>
 								<select name="id_linea" class="form-control select2" required="required" id="id_linea"
-								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
+								<?php if ($dt_LS == 1) {echo "disabled='disabled'";}?>>
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_LineaVehiculo = sqlsrv_fetch_array($SQL_LineaVehiculo)) {?>
 										<option value="<?php echo $row_LineaVehiculo['IdLineaModeloVehiculo']; ?>"
-										<?php if ((isset($row['CDU_Linea'])) && (strcmp($row_LineaVehiculo['IdLineaModeloVehiculo'], $row['CDU_Linea']) == 0)) {echo "selected=\"selected\"";}?>>
+										<?php if ((isset($row['CDU_IdLinea'])) && (strcmp($row_LineaVehiculo['IdLineaModeloVehiculo'], $row['CDU_IdLinea']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; ?>
 										</option>
 								  <?php }?>
@@ -1076,12 +1084,25 @@ function Eliminar(){
 							<div class="col-lg-4">
 								<label class="control-label">Modelo del vehículo <span class="text-danger">*</span></label>
 								<select name="annio" class="form-control select2" required="required" id="annio"
-								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
+								<?php if ($dt_LS == 1) {echo "disabled='disabled'";}?>>
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_ModeloVehiculo = sqlsrv_fetch_array($SQL_ModeloVehiculo)) {?>
 										<option value="<?php echo $row_ModeloVehiculo['CodigoModeloVehiculo']; ?>"
 										<?php if ((isset($row['CDU_Ano'])) && ((strcmp($row_ModeloVehiculo['CodigoModeloVehiculo'], $row['CDU_Ano']) == 0) || (strcmp($row_ModeloVehiculo['AñoModeloVehiculo'], $row['CDU_Ano']) == 0))) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; ?>
+										</option>
+								  <?php }?>
+								</select>
+							</div>
+							<div class="col-lg-4">
+								<label class="control-label">Color <span class="text-danger">*</span></label>
+								<select name="id_color" class="form-control select2" required="required" id="id_color"
+								<?php if ($dt_LS == 1) {echo "disabled='disabled'";}?>>
+										<option value="" disabled selected>Seleccione...</option>
+								  <?php while ($row_ColorVehiculo = sqlsrv_fetch_array($SQL_ColorVehiculo)) {?>
+										<option value="<?php echo $row_ColorVehiculo['CodigoColorVehiculo']; ?>"
+										<?php if ((isset($row['CDU_Color'])) && ((strcmp($row_ColorVehiculo['CodigoColorVehiculo'], $row['CDU_Color']) == 0) || (strcmp($row_ColorVehiculo['NombreColorVehiculo'], $row['CDU_Color']) == 0))) {echo "selected=\"selected\"";}?>>
+											<?php echo $row_ColorVehiculo['NombreColorVehiculo']; ?>
 										</option>
 								  <?php }?>
 								</select>
