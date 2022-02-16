@@ -1808,9 +1808,9 @@ $(document).ready(function(){
 			// Agregar valores de las listas
 			formData.append("id_llamada_servicio", $("#id_llamada_servicio").val());
 			formData.append("id_marca", $("#id_marca").val());
-			formData.append("id_linea", $("#id_marca").val());
-			formData.append("id_annio", $("#id_marca").val());
-			formData.append("id_color", $("#id_marca").val());
+			formData.append("id_linea", $("#id_linea").val());
+			formData.append("id_annio", $("#id_annio").val());
+			formData.append("id_color", $("#id_color").val());
 			
 
 			let json = Object.fromEntries(formData);

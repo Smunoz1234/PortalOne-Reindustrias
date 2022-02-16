@@ -103,7 +103,7 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
 
     $Cabecera["km_actual"] = intval($Cabecera["km_actual"] ?? 0);
 
-    if(isset($Cabecera['fecha_autoriza_campana']) && $Cabecera['fecha_autoriza_campana'] != "") {
+    if (isset($Cabecera['fecha_autoriza_campana']) && $Cabecera['fecha_autoriza_campana'] != "") {
         $Cabecera["fecha_hora_autoriza_campana"] = FormatoFechaToSAP($Cabecera['fecha_autoriza_campana'], $Cabecera['hora_autoriza_campana']);
     } else {
         unset($Cabecera["fecha_autoriza_campana"]);
@@ -121,15 +121,23 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
 
     $Cabecera["id_usuario_creacion"] = $_SESSION['CodUser'];
 
-    $Cabecera["id_llamada_servicio"] = intval($Cabecera["id_llamada_servicio"] ?? 0);
-    $Cabecera["docentry_llamada_servicio"] = 0;
+    if (isset($Cabecera["id_llamada_servicio"])) {
+        $Cabecera["docentry_llamada_servicio"] = intval($Cabecera["id_llamada_servicio"]);
+
+        $SQL_OT = Seleccionar("uvw_Sap_tbl_LlamadasServicios", "DocNum", "ID_LlamadaServicio=" . $Cabecera["docentry_llamada_servicio"]);
+        $row_OT = sqlsrv_fetch_array($SQL_OT);
+        $Cabecera["id_llamada_servicio"] = intval($row_OT['DocNum'] ?? 0);
+    } else {
+        $Cabecera["id_llamada_servicio"] = 0;
+        $Cabecera["docentry_llamada_servicio"] = 0;
+    }
 
     $Cabecera["anexos"] = [
         array(
             "id_anexo" => 0, // Por defecto
             "id_linea" => 0, // Por defecto
             "anexo" => "string", // Ruta del anexo
-            "comentarios" => "Comentario", // Por defecto 
+            "comentarios" => "Comentario", // Por defecto
         ),
     ];
 
