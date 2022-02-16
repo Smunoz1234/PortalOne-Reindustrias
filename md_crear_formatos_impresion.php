@@ -90,8 +90,8 @@ if($edit==1){
 				</div>
 				<div class="form-group">
 					<label class="control-label">Nombre del archivo <span class="text-danger">*</span></label>
-					<?php if($edit==1){?><input type="text" class="form-control" name="NombreArchivo" id="NombreArchivo" required autocomplete="off" value="<?php if($edit==1){echo $row_Data['DeFormato'];}?>"><?php }?>
-					<input name="FileNombreArchivo" type="file" id="FileNombreArchivo" class="m-t-md" <?php if($edit==0){echo "required";}?> />
+					<?php {?><input type="text" class="form-control" name="NombreArchivo" id="NombreArchivo" required autocomplete="off" value="<?php if($edit==1){echo $row_Data['DeFormato'];}?>"><?php }?>
+					<input name="FileNombreArchivo" type="file" id="FileNombreArchivo" class="m-t-md" />
 				</div>
 			</div>
 		</div>

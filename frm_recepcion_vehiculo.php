@@ -705,7 +705,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 				},
 				dataType:'json',
 				success: function(data){
-					console.log("677", data);
+					console.log("Line 677", data);
 
 					document.getElementById('direccion_destino').value=data.Direccion;
 					document.getElementById('celular').value=data.Celular;
@@ -1500,7 +1500,7 @@ function Eliminar(){
 									<ol class="indicator"></ol>
 								</div>
 							</div>
-							<?php } else {//LimpiarDirTempFirma();?>
+							<?php } else { //LimpiarDirTempFirma();?>
 							<div class="col-lg-5">
 								<button class="btn btn-primary" type="button" id="FirmaCliente" onClick="AbrirFirma('SigCliente');"><i class="fa fa-pencil-square-o"></i> Realizar firma</button>
 								<br><br>
@@ -1600,12 +1600,12 @@ if (isset($_GET['return'])) {
 						</div>
 					<?php } else {echo "<!--p>Sin anexos.</p-->";}?>
 					<div class="row">
-						<!-- form action="upload.php" class="dropzone" id="dropzoneForm" name="dropzoneForm">
+						<form action="upload.php" class="dropzone" id="dropzoneForm" name="dropzoneForm">
 							<?php //if ($sw_error == 0) {LimpiarDirTemp();}?>
 							<div class="fallback">
 								<input name="File" id="File" type="file" form="dropzoneForm" />
 							</div>
-						</form -->
+						</form>
 					</div>
 				</div>
 			</div>
@@ -1644,6 +1644,8 @@ if (isset($_GET['return'])) {
 <!-- InstanceBeginEditable name="EditRegion4" -->
 
 <script>
+var anexos = []; // SMM, 16/02/2022
+
 // Stiven Muñoz Murillo, 11/01/2022
 Dropzone.options.dropzoneForm = {
 	paramName: "File", // The name that will be used to transfer the file
@@ -1656,6 +1658,11 @@ Dropzone.options.dropzoneForm = {
 	dictDefaultMessage: "<strong>Haga clic aqui para cargar anexos</strong><br>Tambien puede arrastrarlos hasta aqui<br><h4><small>(máximo <?php echo ObtenerVariable("CantidadArchivos"); ?> archivos a la vez)<small></h4>",
 	dictFallbackMessage: "Tu navegador no soporta cargue de archivos mediante arrastrar y soltar",
 	removedfile: function(file) {
+		var indice = anexos.indexOf(file.name);
+		if (indice !== -1) {
+			anexos.splice(indice, 1);
+		}
+
 		$.get( "includes/procedimientos.php", {
 		type: "3",
 		nombre: file.name
@@ -1663,7 +1670,13 @@ Dropzone.options.dropzoneForm = {
 		var _ref;
 		return (_ref = file.previewElement) !== null ? _ref.parentNode.removeChild(file.previewElement) : void 0;
 		});
-		}
+		},
+	init: function(file) {
+		this.on("addedfile", file => {
+			anexos.push(file.name); // SMM, 16/02/2022
+			console.log("Line 1677", file.name);
+    });
+  }
 };
 </script>
 
@@ -1677,7 +1690,7 @@ function uploadImage(refImage) {
 	var formData = new FormData();
 	var file = $(`#${refImage}`)[0].files[0];
 
-	console.log("1664", file);
+	console.log("Line 1664", file);
 	formData.append('image', file);
 
 	if(typeof file !== 'undefined'){
@@ -1704,7 +1717,7 @@ function uploadImage(refImage) {
 
 					testImage(photo_route).then(success => {
 						console.log(success);
-						console.log("1684", photo_route);
+						console.log("Line 1684", photo_route);
 
 						photos[refImage] = photo_name; // SMM, 11/02/2022
 
@@ -1802,8 +1815,11 @@ $(document).ready(function(){
 			// $('.ibox-content').toggleClass('sk-loading');
 			// form.submit();
 
+			console.log(anexos);
+
 			let formData = new FormData(form);
 			Object.entries(photos).forEach(([key, value]) => formData.append(key, value));
+			Object.entries(anexos).forEach(([key, value]) => formData.append(`Anexo${key}`, value));
 
 			// Agregar valores de las listas
 			formData.append("id_llamada_servicio", $("#id_llamada_servicio").val());
@@ -1811,12 +1827,12 @@ $(document).ready(function(){
 			formData.append("id_linea", $("#id_linea").val());
 			formData.append("id_annio", $("#id_annio").val());
 			formData.append("id_color", $("#id_color").val());
-			
+
 
 			let json = Object.fromEntries(formData);
 			localStorage.recepcionForm = JSON.stringify(json);
 
-			console.log("1790", json);
+			console.log("Line 1790", json);
 
 			// Inicio, AJAX
 			$.ajax({
@@ -1826,7 +1842,7 @@ $(document).ready(function(){
 				processData: false,  // tell jQuery not to process the data
   				contentType: false,   // tell jQuery not to set contentType
 				success: function(response) {
-					console.log("1805", response);
+					console.log("Line 1805", response);
 					Swal.fire(JSON.parse(response));
 				},
 				error: function(response) {

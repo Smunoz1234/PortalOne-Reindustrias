@@ -462,7 +462,6 @@ while ($row_TipoLlamadas = sqlsrv_fetch_array($SQL_TipoLlamadas)) {?>
 						<div class="ibox-content">
 							<div class="row m-b-md">
 								<div class="col-lg-12">
-									<a href="sapdownload.php?id=<?php echo base64_encode('18'); ?>&type=<?php echo base64_encode('2'); ?>&FechaInicial=<?php echo base64_encode(FormatoFecha($FechaInicial)); ?>&FechaFinal=<?php echo base64_encode(FormatoFecha($FechaFinal)); ?>&Sede=<?php echo base64_encode($Sede); ?>&Almacen=<?php echo base64_encode($Almacen); ?>&TipoLlamada=<?php echo base64_encode($TipoLlamada); ?>&Tecnicos=<?php echo base64_encode($NombreEmpleado); ?>" target="_blank" class="btn btn-warning"><i class="fa fa-download"></i> Descargar rutas</a>
 									<button class="pull-right btn btn-danger disabled" id="btnImprimir" name="btnImprimir" onClick="EnviarDatos();"><i class="fa fa-file-pdf-o"></i> Exportar lista de ordenes</button>
 									<button class="pull-right btn btn-success m-r-xs disabled" id="btnEntregas" name="btnEntregas" onClick="ExportarEntregas();"><i class="fa fa-file-pdf-o"></i> Exportar lista de articulos</button>
 								</div>

@@ -132,17 +132,34 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
         $Cabecera["docentry_llamada_servicio"] = 0;
     }
 
-    $Cabecera["anexos"] = [
-        array(
-            "id_anexo" => 0, // Por defecto
-            "id_linea" => 0, // Por defecto
-            "anexo" => "string", // Ruta del anexo
-            "comentarios" => "Comentario", // Por defecto
-        ),
-    ];
-
     $dir_log = CrearObtenerDirRuta(ObtenerVariable("RutaAnexosPortalOne") . "/" . $_SESSION['User'] . "/" . $dir_name . "/");
     $dir_main = CrearObtenerDirRuta(ObtenerVariable("RutaAnexosRecepcionVehiculo"));
+
+    // Inicio, agregar anexos al JSON.
+    if (isset($Cabecera["Anexo0"])) {
+        $a = 0;
+        $Cabecera["anexos"] = array();
+        while (isset($Cabecera["Anexo$a"])) {
+            $ext = substr($Cabecera["Anexo$a"], -3);
+            $hash = substr(uniqid(rand()), 0, 8);
+            $nombre_anexo = "Anexo_$hash.$ext";
+
+            array_push($Cabecera["anexos"], [
+                "anexo" => $nombre_anexo,
+            ]);
+
+            // Inicio, copiar anexos a la ruta log y main.
+            $source = CrearObtenerDirTemp() . $Cabecera["Anexo$a"];
+            $dest = $dir_log . $nombre_anexo;
+            copy($source, $dest);
+            $dest = $dir_main . $nombre_anexo;
+            copy($source, $dest);
+            // Fin, copiar anexos a la ruta log y main.
+
+            $a++;
+        }
+    }
+    // Fin, agregar anexos al JSON.
 
     // Inicio, copiar firma a la ruta log y main, y agregarlas al JSON.
     $Cabecera["firma_responsable_cliente"] = base64_decode($Cabecera["SigCliente"]) ?? "";
@@ -180,6 +197,8 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
 
         $dest = $dir_main . $Cabecera["Img1"];
         copy($source, $dest);
+
+        unset($Cabecera["Img1"]);
     }
 
     if (isset($Cabecera["Img2"])) {
@@ -190,6 +209,8 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
 
         $dest = $dir_main . $Cabecera["Img2"];
         copy($source, $dest);
+
+        unset($Cabecera["Img2"]);
     }
 
     if (isset($Cabecera["Img3"])) {
@@ -200,6 +221,8 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
 
         $dest = $dir_main . $Cabecera["Img3"];
         copy($source, $dest);
+
+        unset($Cabecera["Img3"]);
     }
 
     if (isset($Cabecera["Img4"])) {
@@ -210,6 +233,8 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
 
         $dest = $dir_main . $Cabecera["Img4"];
         copy($source, $dest);
+
+        unset($Cabecera["Img4"]);
     }
 
     if (isset($Cabecera["Img5"])) {
@@ -220,6 +245,8 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
 
         $dest = $dir_main . $Cabecera["Img5"];
         copy($source, $dest);
+
+        unset($Cabecera["Img5"]);
     }
     // Fin, Copiar fotografias a la ruta log y main.
 
