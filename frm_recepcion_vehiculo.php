@@ -1051,8 +1051,8 @@ function Eliminar(){
 								<input <?php if ($dt_LS == 1) {echo "readonly='readonly'";}?> autocomplete="off" name="VIN" type="text" required="required" class="form-control" id="VIN" maxlength="150" value="<?php if (isset($row['SerialFabricante'])) {echo $row['SerialFabricante'];}?>">
 							</div>
 							<div class="col-lg-4">
-								<label class="control-label">No_Motor</label>
-								<input <?php if ($dt_LS == 1) {echo "readonly='readonly'";}?> autocomplete="off" name="no_motor" type="text" class="form-control" id="no_motor" maxlength="100"
+								<label class="control-label">No_Motor <span class="text-danger">*</span></label>
+								<input <?php if ($dt_LS == 1) {echo "readonly='readonly'";}?> autocomplete="off" name="no_motor" type="text" required="required" class="form-control" id="no_motor" maxlength="100"
 								value="<?php if (isset($row['No_Motor'])) {echo $row['No_Motor'];}?>">
 							</div>
 						</div>
@@ -1338,7 +1338,7 @@ function Eliminar(){
 									<span class="input-group-addon btn btn-default btn-file">
 										<span class="fileinput-new">Seleccionar</span>
 										<span class="fileinput-exists">Cambiar</span>
-										<input name="Img1" type="file" id="Img1" onchange="uploadImage('Img1')" required="required"/>
+										<input name="Img1" type="file" id="Img1" onchange="uploadImage('Img1')"/>
 									</span>
 									<a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Quitar</a>
 								</div>
@@ -1365,7 +1365,7 @@ function Eliminar(){
 									<span class="input-group-addon btn btn-default btn-file">
 										<span class="fileinput-new">Seleccionar</span>
 										<span class="fileinput-exists">Cambiar</span>
-										<input name="Img2" type="file" id="Img2" onchange="uploadImage('Img2')" required="required"/>
+										<input name="Img2" type="file" id="Img2" onchange="uploadImage('Img2')"/>
 									</span>
 									<a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Quitar</a>
 								</div>
@@ -1392,7 +1392,7 @@ function Eliminar(){
 									<span class="input-group-addon btn btn-default btn-file">
 										<span class="fileinput-new">Seleccionar</span>
 										<span class="fileinput-exists">Cambiar</span>
-										<input name="Img3" type="file" id="Img3" onchange="uploadImage('Img3')" required="required"/>
+										<input name="Img3" type="file" id="Img3" onchange="uploadImage('Img3')"/>
 									</span>
 									<a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Quitar</a>
 								</div>
@@ -1419,7 +1419,7 @@ function Eliminar(){
 									<span class="input-group-addon btn btn-default btn-file">
 										<span class="fileinput-new">Seleccionar</span>
 										<span class="fileinput-exists">Cambiar</span>
-										<input name="Img4" type="file" id="Img4" onchange="uploadImage('Img4')" required="required"/>
+										<input name="Img4" type="file" id="Img4" onchange="uploadImage('Img4')"/>
 									</span>
 									<a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Quitar</a>
 								</div>
@@ -1446,7 +1446,7 @@ function Eliminar(){
 									<span class="input-group-addon btn btn-default btn-file">
 										<span class="fileinput-new">Seleccionar</span>
 										<span class="fileinput-exists">Cambiar</span>
-										<input name="Img5" type="file" id="Img5" onchange="uploadImage('Img5')" required="required"/>
+										<input name="Img5" type="file" id="Img5" onchange="uploadImage('Img5')"/>
 									</span>
 									<a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Quitar</a>
 								</div>
@@ -1480,13 +1480,13 @@ function Eliminar(){
 					</div>
 					<div class="ibox-content">
 						<div class="form-group">
-							<label class="col-lg-1 control-label">Responsable del cliente</label>
+							<label class="col-lg-1 control-label">Responsable del cliente <span class="text-danger">*</span></label>
 							<div class="col-lg-4">
-								<input autocomplete="off" name="responsable_cliente" type="text" class="form-control" id="responsable_cliente" maxlength="150" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['ResponsableCliente'];}?>">
+								<input autocomplete="off" name="responsable_cliente" type="text" class="form-control" required="required" id="responsable_cliente"  <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['ResponsableCliente'];}?>">
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-lg-1 control-label">Firma del cliente</label>
+							<label class="col-lg-1 control-label">Firma del cliente <span class="text-danger">*</span></label>
 							<?php if ($type_frm == 1 && $row['FirmaCliente'] != "") {?>
 							<div class="col-lg-4 lightBoxGallery">
 								<a href="<?php echo $dir_new . $row['FirmaCliente']; ?>" title="Firma cliente" data-gallery=""><img src="<?php echo $dir_new . $row['FirmaCliente']; ?>" width="500" height="150"></a>

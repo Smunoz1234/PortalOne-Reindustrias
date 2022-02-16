@@ -80,7 +80,6 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
     unset($Cabecera["FechaCreacion"]);
     unset($Cabecera["HoraCreacion"]);
     unset($Cabecera["ResponsableCliente"]);
-    unset($Cabecera["SigCliente"]);
     unset($Cabecera["P"]);
     unset($Cabecera["swTipo"]);
     unset($Cabecera["swError"]);
@@ -102,7 +101,7 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
     $Cabecera["hora_aprox_entrega"] = FormatoFechaToSAP($Cabecera['fecha_aprox_entrega'], $Cabecera['hora_aprox_entrega']);
     $Cabecera["fecha_aprox_entrega"] = FormatoFechaToSAP($Cabecera['fecha_aprox_entrega']);
 
-    $Cabecera["km_actual"] = intval($Cabecera["km_actual"] ?? 0);
+    $Cabecera["km_actual"] = intval($Cabecera["km_actual"]) ?? 0;
     $Cabecera["fecha_hora_autoriza_campana"] = FormatoFechaToSAP($Cabecera['fecha_autoriza_campana'], $Cabecera['hora_autoriza_campana']);
 
     for ($i = 1; $i <= 25; $i++) {
@@ -114,8 +113,7 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
     $Cabecera["id_empleado_tecnico"] = intval($_SESSION['CodigoSAP']);
     $Cabecera["empleado_tecnico"] = $_SESSION['NombreEmpleado'];
 
-    $Cabecera["observaciones"] = ""; // Falta asignarle un valor
-    $Cabecera["firma_responsable_cliente"] = "string"; // Ruta de la imagen
+    $Cabecera["observaciones"] = "Observaciones"; // Por defecto
     $Cabecera["id_usuario_creacion"] = $_SESSION['CodUser'];
 
     $Cabecera["id_llamada_servicio"] = intval($Cabecera["id_llamada_servicio"]) ?? 0;
@@ -130,6 +128,23 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
         ),
     ];
 
+    $dir_log = CrearObtenerDirRuta(ObtenerVariable("RutaAnexosPortalOne") . "/" . $_SESSION['User'] . "/" . $dir_name . "/");
+    $dir_main = CrearObtenerDirRuta(ObtenerVariable("RutaAnexosRecepcionVehiculo"));
+
+    // Inicio, copiar firma a la ruta log y main, y agregarlas al JSON.
+    $Cabecera["firma_responsable_cliente"] = base64_decode($Cabecera["SigCliente"]) ?? "";
+
+    if ($Cabecera["firma_responsable_cliente"] != "") {
+        $source = CrearObtenerDirTempFirma() . $Cabecera["firma_responsable_cliente"];
+
+        $dest = $dir_log . $Cabecera["firma_responsable_cliente"];
+        copy($source, $dest);
+
+        $dest = $dir_main . $Cabecera["firma_responsable_cliente"];
+        copy($source, $dest);
+    }
+    // Fin, copiar firma a la ruta log y main, y agregarlas al JSON.
+
     // Inicio, copiar fotografias a la ruta log y main, y agregarlas al JSON.
     $Cabecera["fotografias"] = [
         array(
@@ -142,9 +157,6 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
             "anexo_capot" => $Cabecera["Img5"] ?? "",
         ),
     ];
-
-    $dir_log = CrearObtenerDirRuta(ObtenerVariable("RutaAnexosPortalOne") . "/" . $_SESSION['User'] . "/" . $dir_name . "/");
-    $dir_main = CrearObtenerDirRuta(ObtenerVariable("RutaAnexosRecepcionVehiculo"));
 
     if (isset($Cabecera["Img1"])) {
         $source = CrearObtenerDirTemp() . $Cabecera["Img1"];
