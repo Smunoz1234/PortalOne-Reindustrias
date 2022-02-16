@@ -1,6 +1,6 @@
 <?php
 require_once "includes/conexion.php";
-// PermitirAcceso(1704);
+PermitirAcceso(1707);
 
 $sw = 0;
 //Fechas
@@ -175,13 +175,13 @@ function SeleccionarTodos(){
                         </li>
                     </ol>
 				</div>
-				<?php //if(PermitirFuncion(304)) { ?>
+				<?php if(PermitirFuncion(1706)) { ?>
                 <div class="col-sm-4">
 					<div class="title-action">
 						<a href="frm_recepcion_vehiculo.php" class="alkin btn btn-primary"><i class="fa fa-plus-circle"></i> Crear nueva recepción de vehículo</a>
 					</div>
 				</div>
-				<?php //} ?>
+				<?php } ?>
             </div>
          <div class="wrapper wrapper-content">
 			 <div class="modal inmodal fade" id="myModal" tabindex="1" role="dialog" aria-hidden="true">

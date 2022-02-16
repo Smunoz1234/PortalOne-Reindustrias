@@ -1,5 +1,5 @@
 <?php require_once "includes/conexion.php";
-PermitirAcceso(106);
+PermitirAcceso(1706);
 $IdFrm = "";
 $msg_error = ""; //Mensaje del error
 $dt_LS = 0; //sw para saber si vienen datos del SN. 0 no vienen. 1 si vienen.
@@ -1052,7 +1052,7 @@ function Eliminar(){
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">No_Motor <span class="text-danger">*</span></label>
-								<input <?php if ($dt_LS == 1) {echo "readonly='readonly'";}?> autocomplete="off" name="no_motor" type="text" required="required" class="form-control" id="no_motor" maxlength="100"
+								<input autocomplete="off" name="no_motor" type="text" required="required" class="form-control" id="no_motor" maxlength="100"
 								value="<?php if (isset($row['No_Motor'])) {echo $row['No_Motor'];}?>">
 							</div>
 						</div>
@@ -1171,12 +1171,12 @@ function Eliminar(){
 						<div class="form-group">
 							<div class="col-lg-4">
 								<label class="control-label">KM actual <span class="text-danger">*</span></label>
-								<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="km_actual" required="required" type="text" class="form-control" id="km_actual" maxlength="100"
+								<input autocomplete="off" name="km_actual" required="required" type="text" class="form-control" id="km_actual" maxlength="100"
 								value="<?php if (isset($row['CDU_No_Motor'])) {echo $row['CDU_No_Motor'];}?>">
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">No. Campaña <span class="text-danger">*</span></label>
-								<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="no_campana" required="required" type="text" class="form-control" id="no_campana" maxlength="100"
+								<input autocomplete="off" name="no_campana" required="required" type="text" class="form-control" id="no_campana" maxlength="100"
 								value="<?php if (isset($row['CDU_No_Motor'])) {echo $row['CDU_No_Motor'];}?>">
 							</div>
 						</div>
@@ -1194,10 +1194,10 @@ function Eliminar(){
 								</div>
 								<div class="row">
 									<div class="col-lg-6 input-group date">
-										<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaCreacion" type="text" class="form-control" id="FechaCreacion" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('Y-m-d');} else {echo date('Y-m-d');}?>" readonly='readonly' placeholder="YYYY-MM-DD" required>
+										<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaCreacion" type="text" autocomplete="off" class="form-control" id="FechaCreacion" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('Y-m-d');} else {echo date('Y-m-d');}?>" readonly='readonly' placeholder="YYYY-MM-DD" required>
 									</div>
 									<div class="col-lg-6 input-group clockpicker" data-autoclose="true">
-										<input name="HoraCreacion" id="HoraCreacion" type="text" class="form-control" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('H:i');} else {echo date('H:i');}?>" readonly='readonly' placeholder="hh:mm" required>
+										<input name="HoraCreacion" id="HoraCreacion" type="text" autocomplete="off" class="form-control" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {echo $row['FechaCreacion']->format('H:i');} else {echo date('H:i');}?>" readonly='readonly' placeholder="hh:mm" required>
 										<span class="input-group-addon">
 											<span class="fa fa-clock-o"></span>
 										</span>
@@ -1212,10 +1212,10 @@ function Eliminar(){
 								</div>
 								<div class="row">
 									<div class="col-lg-6 input-group date">
-										<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="fecha_ingreso" type="text" class="form-control" id="fecha_ingreso" value="<?php if (($type_frm == 1) && ($row['fecha_ingreso']->format('Y-m-d')) != "1900-01-01") {echo $row['fecha_ingreso']->format('Y-m-d');} //else {echo date('Y-m-d');}?>" placeholder="YYYY-MM-DD" required>
+										<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="fecha_ingreso" type="text" autocomplete="off" class="form-control" id="fecha_ingreso" value="<?php if (($type_frm == 1) && ($row['fecha_ingreso']->format('Y-m-d')) != "1900-01-01") {echo $row['fecha_ingreso']->format('Y-m-d');} //else {echo date('Y-m-d');}?>" placeholder="YYYY-MM-DD" required>
 									</div>
 									<div class="col-lg-6 input-group clockpicker" data-autoclose="true">
-										<input name="hora_ingreso" id="hora_ingreso" type="text" class="form-control" value="<?php if (($type_frm == 1) && ($row['fecha_ingreso']->format('Y-m-d')) != "1900-01-01") {echo $row['fecha_ingreso']->format('H:i');} //else {echo date('H:i');}?>" placeholder="hh:mm" required>
+										<input name="hora_ingreso" id="hora_ingreso" type="text" autocomplete="off" class="form-control" value="<?php if (($type_frm == 1) && ($row['fecha_ingreso']->format('Y-m-d')) != "1900-01-01") {echo $row['fecha_ingreso']->format('H:i');} //else {echo date('H:i');}?>" placeholder="hh:mm" required>
 										<span class="input-group-addon">
 											<span class="fa fa-clock-o"></span>
 										</span>
@@ -1232,10 +1232,10 @@ function Eliminar(){
 								</div>
 								<div class="row">
 									<div class="col-lg-6 input-group date">
-										<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="fecha_aprox_entrega" type="text" class="form-control" id="fecha_aprox_entrega" value="<?php if (($type_frm == 1) && ($row['fecha_aprox_entrega']->format('Y-m-d')) != "1900-01-01") {echo $row['fecha_aprox_entrega']->format('Y-m-d');} else {echo date('Y-m-d');}?>" readonly='readonly' placeholder="YYYY-MM-DD" required>
+										<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="fecha_aprox_entrega" type="text" autocomplete="off" class="form-control" id="fecha_aprox_entrega" value="<?php if (($type_frm == 1) && ($row['fecha_aprox_entrega']->format('Y-m-d')) != "1900-01-01") {echo $row['fecha_aprox_entrega']->format('Y-m-d');} else {echo date('Y-m-d');}?>" placeholder="YYYY-MM-DD" required>
 									</div>
 									<div class="col-lg-6 input-group clockpicker" data-autoclose="true">
-										<input name="hora_aprox_entrega" id="hora_aprox_entrega" type="text" class="form-control" value="<?php if (($type_frm == 1) && ($row['fecha_aprox_entrega']->format('Y-m-d')) != "1900-01-01") {echo $row['fecha_aprox_entrega']->format('H:i');} else {echo date('H:i');}?>" readonly='readonly' placeholder="hh:mm" required>
+										<input name="hora_aprox_entrega" id="hora_aprox_entrega" type="text" autocomplete="off" class="form-control" value="<?php if (($type_frm == 1) && ($row['fecha_aprox_entrega']->format('Y-m-d')) != "1900-01-01") {echo $row['fecha_aprox_entrega']->format('H:i');} else {echo date('H:i');}?>" placeholder="hh:mm" required>
 										<span class="input-group-addon">
 											<span class="fa fa-clock-o"></span>
 										</span>
@@ -1246,14 +1246,14 @@ function Eliminar(){
 							<!-- Inicio, Componente Fecha y Hora -->
 							<div class="col-lg-6">
 								<div class="row">
-									<label class="col-lg-6 control-label" style="text-align: left !important;">Fecha hora propietario autoriza campaña <span class="text-danger">*</span></label>
+									<label class="col-lg-6 control-label" style="text-align: left !important;">Fecha hora propietario autoriza campaña</label>
 								</div>
 								<div class="row">
 									<div class="col-lg-6 input-group date">
-										<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="fecha_autoriza_campana" type="text" class="form-control" id="fecha_autoriza_campana" value="<?php if (($type_frm == 1) && ($row['fecha_autoriza_campana']->format('Y-m-d')) != "1900-01-01") {echo $row['fecha_autoriza_campana']->format('Y-m-d');} //else {echo date('Y-m-d');}?>" placeholder="YYYY-MM-DD" required>
+										<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="fecha_autoriza_campana" type="text" autocomplete="off" class="form-control" id="fecha_autoriza_campana" value="<?php if (($type_frm == 1) && ($row['fecha_autoriza_campana']->format('Y-m-d')) != "1900-01-01") {echo $row['fecha_autoriza_campana']->format('Y-m-d');} //else {echo date('Y-m-d');}?>" placeholder="YYYY-MM-DD">
 									</div>
 									<div class="col-lg-6 input-group clockpicker" data-autoclose="true">
-										<input name="hora_autoriza_campana" id="hora_autoriza_campana" type="text" class="form-control" value="<?php if (($type_frm == 1) && ($row['fecha_autoriza_campana']->format('Y-m-d')) != "1900-01-01") {echo $row['fecha_autoriza_campana']->format('H:i');} //else {echo date('H:i');}?>" placeholder="hh:mm" required>
+										<input name="hora_autoriza_campana" id="hora_autoriza_campana" type="text" autocomplete="off" class="form-control" value="<?php if (($type_frm == 1) && ($row['fecha_autoriza_campana']->format('Y-m-d')) != "1900-01-01") {echo $row['fecha_autoriza_campana']->format('H:i');} //else {echo date('H:i');}?>" placeholder="hh:mm">
 										<span class="input-group-addon">
 											<span class="fa fa-clock-o"></span>
 										</span>
@@ -1338,7 +1338,7 @@ function Eliminar(){
 									<span class="input-group-addon btn btn-default btn-file">
 										<span class="fileinput-new">Seleccionar</span>
 										<span class="fileinput-exists">Cambiar</span>
-										<input name="Img1" type="file" id="Img1" onchange="uploadImage('Img1')"/>
+										<input name="Img1" type="file" id="Img1" onchange="uploadImage('Img1')" required="required"/>
 									</span>
 									<a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Quitar</a>
 								</div>
@@ -1365,7 +1365,7 @@ function Eliminar(){
 									<span class="input-group-addon btn btn-default btn-file">
 										<span class="fileinput-new">Seleccionar</span>
 										<span class="fileinput-exists">Cambiar</span>
-										<input name="Img2" type="file" id="Img2" onchange="uploadImage('Img2')"/>
+										<input name="Img2" type="file" id="Img2" onchange="uploadImage('Img2')" required="required"/>
 									</span>
 									<a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Quitar</a>
 								</div>
@@ -1392,7 +1392,7 @@ function Eliminar(){
 									<span class="input-group-addon btn btn-default btn-file">
 										<span class="fileinput-new">Seleccionar</span>
 										<span class="fileinput-exists">Cambiar</span>
-										<input name="Img3" type="file" id="Img3" onchange="uploadImage('Img3')"/>
+										<input name="Img3" type="file" id="Img3" onchange="uploadImage('Img3')" required="required"/>
 									</span>
 									<a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Quitar</a>
 								</div>
@@ -1419,7 +1419,7 @@ function Eliminar(){
 									<span class="input-group-addon btn btn-default btn-file">
 										<span class="fileinput-new">Seleccionar</span>
 										<span class="fileinput-exists">Cambiar</span>
-										<input name="Img4" type="file" id="Img4" onchange="uploadImage('Img4')"/>
+										<input name="Img4" type="file" id="Img4" onchange="uploadImage('Img4')" required="required"/>
 									</span>
 									<a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Quitar</a>
 								</div>
@@ -1446,7 +1446,7 @@ function Eliminar(){
 									<span class="input-group-addon btn btn-default btn-file">
 										<span class="fileinput-new">Seleccionar</span>
 										<span class="fileinput-exists">Cambiar</span>
-										<input name="Img5" type="file" id="Img5" onchange="uploadImage('Img5')"/>
+										<input name="Img5" type="file" id="Img5" onchange="uploadImage('Img5')" required="required"/>
 									</span>
 									<a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Quitar</a>
 								</div>
@@ -1462,9 +1462,9 @@ function Eliminar(){
 						</div>
 						<!-- Fin, Foto 5 -->
 						<div class="form-group">
-							<label class="col-lg-1 control-label">Texto de condiciones</label>
+							<label class="col-lg-1 control-label">Observaciones <span class="text-danger">*</span></label>
 							<div class="col-lg-8">
-								<textarea name="texto_condiciones" rows="5" type="text" class="form-control" id="texto_condiciones" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?>><?php if (($type_frm == 1) || ($sw_error == 1)) {echo utf8_decode($row['ComentariosCierre']);}?></textarea>
+								<textarea name="observaciones" rows="5" type="text" class="form-control" required="required" id="texto_condiciones" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?>><?php if (($type_frm == 1) || ($sw_error == 1)) {echo utf8_decode($row['ComentariosCierre']);}?></textarea>
 							</div>
 						</div>
 					</div>
@@ -1500,10 +1500,11 @@ function Eliminar(){
 									<ol class="indicator"></ol>
 								</div>
 							</div>
-							<?php } else {LimpiarDirTempFirma();?>
+							<?php } else {//LimpiarDirTempFirma();?>
 							<div class="col-lg-5">
 								<button class="btn btn-primary" type="button" id="FirmaCliente" onClick="AbrirFirma('SigCliente');"><i class="fa fa-pencil-square-o"></i> Realizar firma</button>
-								<input type="hidden" id="SigCliente" name="SigCliente" value="" />
+								<br><br>
+								<input type="text" id="SigCliente" name="SigCliente" value="" required="required" readonly="readonly"/>
 								<div id="msgInfoSigCliente" style="display: none;" class="alert alert-info"><i class="fa fa-info-circle"></i> El documento ya ha sido firmado.</div>
 							</div>
 							<div class="col-lg-5">
@@ -1600,7 +1601,7 @@ if (isset($_GET['return'])) {
 					<?php } else {echo "<!--p>Sin anexos.</p-->";}?>
 					<div class="row">
 						<!-- form action="upload.php" class="dropzone" id="dropzoneForm" name="dropzoneForm">
-							<?php if ($sw_error == 0) {LimpiarDirTemp();}?>
+							<?php //if ($sw_error == 0) {LimpiarDirTemp();}?>
 							<div class="fallback">
 								<input name="File" id="File" type="file" form="dropzoneForm" />
 							</div>
@@ -1804,6 +1805,14 @@ $(document).ready(function(){
 			let formData = new FormData(form);
 			Object.entries(photos).forEach(([key, value]) => formData.append(key, value));
 
+			// Agregar valores de las listas
+			formData.append("id_llamada_servicio", $("#id_llamada_servicio").val());
+			formData.append("id_marca", $("#id_marca").val());
+			formData.append("id_linea", $("#id_marca").val());
+			formData.append("id_annio", $("#id_marca").val());
+			formData.append("id_color", $("#id_marca").val());
+			
+
 			let json = Object.fromEntries(formData);
 			localStorage.recepcionForm = JSON.stringify(json);
 
@@ -1839,7 +1848,6 @@ $(document).ready(function(){
 			// Inicio, Sección de fechas y horas.
 			if(!$('#fecha_ingreso').prop('readonly')){
 				$('#fecha_ingreso').datepicker({
-					placement: 'top',
 					todayBtn: "linked",
 					keyboardNavigation: false,
 					forceParse: false,
@@ -1851,14 +1859,11 @@ $(document).ready(function(){
 				});
 
 				$('#hora_ingreso').clockpicker({
-					placement: 'top',
-					align: 'left',
 					donetext: 'Done'
 				});
 			}
 			if(!$('#fecha_autoriza_campana').prop('readonly')){
 				$('#fecha_autoriza_campana').datepicker({
-					placement: 'top',
 					todayBtn: "linked",
 					keyboardNavigation: false,
 					forceParse: false,
@@ -1869,8 +1874,21 @@ $(document).ready(function(){
 				});
 
 				$('#hora_autoriza_campana').clockpicker({
-					placement: 'top',
-					align: 'left',
+					donetext: 'Done'
+				});
+			}
+			if(!$('#fecha_aprox_entrega').prop('readonly')){
+				$('#fecha_aprox_entrega').datepicker({
+					todayBtn: "linked",
+					keyboardNavigation: false,
+					forceParse: false,
+					calendarWeeks: true,
+					autoclose: true,
+					format: 'yyyy-mm-dd',
+					todayHighlight: true
+				});
+
+				$('#hora_aprox_entrega').clockpicker({
 					donetext: 'Done'
 				});
 			}

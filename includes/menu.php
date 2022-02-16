@@ -107,7 +107,7 @@ $Num_Menu = sqlsrv_num_rows($SQL_Menu);
 					</li>
 					"; //li2
 }?>
-				<?php if (PermitirFuncion([1701, 1702, 1703, 1704])) {?>
+				<?php if (PermitirFuncion([1701, 1702, 1703, 1704, 1706, 1707])) {?>
             	<li>
                     <a href="#"><i class="fa fa-file-text"></i> <span class="nav-label">Formularios</span><span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level">
@@ -115,7 +115,7 @@ $Num_Menu = sqlsrv_num_rows($SQL_Menu);
                   		<?php if (PermitirFuncion(1703)) {?><li><a class="alnk" href="consultar_frm_fitosanitario.php">Monitoreo estado fitosanitario</a></li><?php }?>
                    		<?php if (PermitirFuncion(1701)) {?><li><a class="alnk" href="consultar_frm_analisis_lab.php">Monitoreo análisis de laboratorio</a></li><?php }?>
 						<?php if (PermitirFuncion(1704)) {?><li><a class="alnk" href="consultar_frm_eval_tecnico.php">Evaluación de técnicos</a></li><?php }?>
-						<?php // if(PermitirFuncion(1704)){ ?> <li><a class="alnk" href="consultar_frm_recepcion_vehiculo.php">Recepción de vehículos</a></li> <?php //} ?>
+						<?php if (PermitirFuncion(1706) || PermitirFuncion(1707)) {?><li><a class="alnk" href="consultar_frm_recepcion_vehiculo.php">Recepción de vehículos</a></li> <?php }?>
 						<?php if (PermitirFuncion(1702)) {?>
 						<li>
                    			<a href="#">Informes <span class="fa arrow"></span></a>

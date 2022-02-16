@@ -101,8 +101,14 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
     $Cabecera["hora_aprox_entrega"] = FormatoFechaToSAP($Cabecera['fecha_aprox_entrega'], $Cabecera['hora_aprox_entrega']);
     $Cabecera["fecha_aprox_entrega"] = FormatoFechaToSAP($Cabecera['fecha_aprox_entrega']);
 
-    $Cabecera["km_actual"] = intval($Cabecera["km_actual"]) ?? 0;
-    $Cabecera["fecha_hora_autoriza_campana"] = FormatoFechaToSAP($Cabecera['fecha_autoriza_campana'], $Cabecera['hora_autoriza_campana']);
+    $Cabecera["km_actual"] = intval($Cabecera["km_actual"] ?? 0);
+
+    if(isset($Cabecera['fecha_autoriza_campana']) && $Cabecera['fecha_autoriza_campana'] != "") {
+        $Cabecera["fecha_hora_autoriza_campana"] = FormatoFechaToSAP($Cabecera['fecha_autoriza_campana'], $Cabecera['hora_autoriza_campana']);
+    } else {
+        unset($Cabecera["fecha_autoriza_campana"]);
+        unset($Cabecera["hora_autoriza_campana"]);
+    }
 
     for ($i = 1; $i <= 25; $i++) {
         if (isset($Cabecera["id_pregunta_$i"])) {
@@ -113,10 +119,9 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
     $Cabecera["id_empleado_tecnico"] = intval($_SESSION['CodigoSAP']);
     $Cabecera["empleado_tecnico"] = $_SESSION['NombreEmpleado'];
 
-    $Cabecera["observaciones"] = "Observaciones"; // Por defecto
     $Cabecera["id_usuario_creacion"] = $_SESSION['CodUser'];
 
-    $Cabecera["id_llamada_servicio"] = intval($Cabecera["id_llamada_servicio"]) ?? 0;
+    $Cabecera["id_llamada_servicio"] = intval($Cabecera["id_llamada_servicio"] ?? 0);
     $Cabecera["docentry_llamada_servicio"] = 0;
 
     $Cabecera["anexos"] = [
@@ -124,7 +129,7 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
             "id_anexo" => 0, // Por defecto
             "id_linea" => 0, // Por defecto
             "anexo" => "string", // Ruta del anexo
-            "comentarios" => "string",
+            "comentarios" => "Comentario", // Por defecto 
         ),
     ];
 
@@ -133,6 +138,7 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
 
     // Inicio, copiar firma a la ruta log y main, y agregarlas al JSON.
     $Cabecera["firma_responsable_cliente"] = base64_decode($Cabecera["SigCliente"]) ?? "";
+    unset($Cabecera["SigCliente"]);
 
     if ($Cabecera["firma_responsable_cliente"] != "") {
         $source = CrearObtenerDirTempFirma() . $Cabecera["firma_responsable_cliente"];
