@@ -45,9 +45,20 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
     $i = 0; //Archivos
     $RutaAttachSAP = ObtenerDirAttach();
     $dir = CrearObtenerDirTemp();
+	$dir_firma = CrearObtenerDirTempFirma();
     $dir_new = CrearObtenerDirAnx("devolucionventa");
-    $route = opendir($dir);
-    //$directorio = opendir("."); //ruta actual
+    
+	// SMM, 17/02/2022
+	if ((isset($_POST['SigRecibe'])) && ($_POST['SigRecibe'] != "")) {
+        $NombreFileFirma = base64_decode($_POST['SigRecibe']);
+        $Nombre_Archivo = "Sig_" . $NombreFileFirma;
+        if (!copy($dir_firma . $NombreFileFirma, $dir . $Nombre_Archivo)) {
+            $sw_error = 1;
+            $msg_error = "No se pudo mover la firma";
+        }
+    }
+	
+	$route = opendir($dir);
     $DocFiles = array();
     while ($archivo = readdir($route)) { //obtenemos un archivo y luego otro sucesivamente
         if (($archivo == ".") || ($archivo == "..")) {
