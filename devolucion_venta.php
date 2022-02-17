@@ -1189,6 +1189,25 @@ if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
 							<textarea name="Comentarios" form="CrearDevolucionVenta" rows="4" class="form-control" id="Comentarios" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "readonly";}?>><?php if ($edit == 1 || $sw_error == 1) {echo $row['Comentarios'];}?></textarea>
 						</div>
 					</div>
+					<?php if (PermitirFuncion(417)) {?>
+						<div class="form-group">
+							<label class="col-lg-2">Firma quien recibe</label>
+							<?php if ($edit == 1 && $NameFirma != "") {?>
+							<div class="col-lg-10">
+								<span class="badge badge-primary">Firmado</span>
+							</div>
+							<?php } else {LimpiarDirTempFirma();?>
+							<div class="col-lg-5">
+								<button class="btn btn-primary" type="button" id="FirmaCliente" onClick="AbrirFirma('SigRecibe');"><i class="fa fa-pencil-square-o"></i> Realizar firma</button>
+								<input type="hidden" id="SigRecibe" name="SigRecibe" value="" form="CrearDevolucionVenta" />
+								<div id="msgInfoSigRecibe" style="display: none;" class="alert alert-info"><i class="fa fa-info-circle"></i> El documento ya ha sido firmado.</div>
+							</div>
+							<div class="col-lg-5">
+								<img id="ImgSigRecibe" style="display: none; max-width: 100%; height: auto;" src="" alt="" />
+							</div>
+							<?php }?>
+						</div>
+					<?php }?>
 					<div class="form-group">
 						<label class="col-lg-2">Información adicional</label>
 						<div class="col-lg-10">

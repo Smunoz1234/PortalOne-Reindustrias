@@ -40,7 +40,7 @@ if (isset($_REQUEST['tl']) && ($_REQUEST['tl'] != "")) { //0 Si se está creando
 }
 
 // Inicio, Grabar Entrega de Venta
-if (isset($_POST['P']) && ($_POST['P'] != "")) { 
+if (isset($_POST['P']) && ($_POST['P'] != "")) {
     //*** Carpeta temporal ***
     $i = 0; //Archivos
     $RutaAttachSAP = ObtenerDirAttach();
@@ -217,7 +217,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
 // Fin, Grabar Entrega de Venta
 
 // Inicio, Verificar que viene de una Orden de Ventas
-if (isset($_GET['dt_OV']) && ($_GET['dt_OV']) == 1) { 
+if (isset($_GET['dt_OV']) && ($_GET['dt_OV']) == 1) {
     $dt_OV = 1;
 
     //Clientes
@@ -253,28 +253,28 @@ if (isset($_GET['dt_OV']) && ($_GET['dt_OV']) == 1) {
 // Fin, Verificar que viene de una Orden de Ventas
 
 // Inicio, Verificar que viene de una Llamada de servicio (Datos Llamada servicio).
-if (isset($_GET['dt_LS']) && ($_GET['dt_LS']) == 1) { 
+if (isset($_GET['dt_LS']) && ($_GET['dt_LS']) == 1) {
     $dt_LS = 1;
 
-	if ($dt_OV == 0) {
-		if (!isset($_GET['LMT']) && $_GET['ItemCode'] != "" && isset($_GET['ItemCode'])) {
-			//Consultar datos de la LMT
-			$SQL_LMT = Seleccionar('uvw_Sap_tbl_ArticulosLlamadas', '*', "ItemCode='" . base64_decode($_GET['ItemCode']) . "'");
-			$row_LMT = sqlsrv_fetch_array($SQL_LMT);
+    if ($dt_OV == 0) {
+        if (!isset($_GET['LMT']) && $_GET['ItemCode'] != "" && isset($_GET['ItemCode'])) {
+            //Consultar datos de la LMT
+            $SQL_LMT = Seleccionar('uvw_Sap_tbl_ArticulosLlamadas', '*', "ItemCode='" . base64_decode($_GET['ItemCode']) . "'");
+            $row_LMT = sqlsrv_fetch_array($SQL_LMT);
 
-			//Cargar la LMT
-			$ParametrosAddLMT = array(
-				"'" . base64_decode($_GET['ItemCode']) . "'",
-				"'" . $row_LMT['WhsCode'] . "'",
-				"'" . base64_decode($_GET['Cardcode']) . "'",
-				"'" . $_SESSION['CodUser'] . "'",
-			);
-			$SQL_AddLMT = EjecutarSP('sp_CargarLMT_EntregaVentaDetalleCarrito', $ParametrosAddLMT);
-		} else {
-			// echo "Hola Mundo";
-			Eliminar('tbl_EntregaVentaDetalleCarrito', "Usuario='" . $_SESSION['CodUser'] . "' AND CardCode='" . base64_decode($_GET['Cardcode']) . "'");
-		}
-	}
+            //Cargar la LMT
+            $ParametrosAddLMT = array(
+                "'" . base64_decode($_GET['ItemCode']) . "'",
+                "'" . $row_LMT['WhsCode'] . "'",
+                "'" . base64_decode($_GET['Cardcode']) . "'",
+                "'" . $_SESSION['CodUser'] . "'",
+            );
+            $SQL_AddLMT = EjecutarSP('sp_CargarLMT_EntregaVentaDetalleCarrito', $ParametrosAddLMT);
+        } else {
+            // echo "Hola Mundo";
+            Eliminar('tbl_EntregaVentaDetalleCarrito', "Usuario='" . $_SESSION['CodUser'] . "' AND CardCode='" . base64_decode($_GET['Cardcode']) . "'");
+        }
+    }
 
     //Clientes
     $SQL_Cliente = Seleccionar('uvw_Sap_tbl_Clientes', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreCliente');
@@ -1205,23 +1205,25 @@ if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
 							<textarea name="Comentarios" form="CrearEntregaVenta" rows="4" class="form-control" id="Comentarios" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "readonly";}?>><?php if ($edit == 1 || $sw_error == 1) {echo $row['Comentarios'];}?></textarea>
 						</div>
 					</div>
-					<div class="form-group">
-						<label class="col-lg-2">Firma quien recibe</label>
-						<?php if ($edit == 1 && $NameFirma != "") {?>
-						<div class="col-lg-10">
-							<span class="badge badge-primary">Firmado</span>
+					<?php if (PermitirFuncion(417)) {?>
+						<div class="form-group">
+							<label class="col-lg-2">Firma quien recibe</label>
+							<?php if ($edit == 1 && $NameFirma != "") {?>
+							<div class="col-lg-10">
+								<span class="badge badge-primary">Firmado</span>
+							</div>
+							<?php } else {LimpiarDirTempFirma();?>
+							<div class="col-lg-5">
+								<button class="btn btn-primary" type="button" id="FirmaCliente" onClick="AbrirFirma('SigRecibe');"><i class="fa fa-pencil-square-o"></i> Realizar firma</button>
+								<input type="hidden" id="SigRecibe" name="SigRecibe" value="" form="CrearEntregaVenta" />
+								<div id="msgInfoSigRecibe" style="display: none;" class="alert alert-info"><i class="fa fa-info-circle"></i> El documento ya ha sido firmado.</div>
+							</div>
+							<div class="col-lg-5">
+								<img id="ImgSigRecibe" style="display: none; max-width: 100%; height: auto;" src="" alt="" />
+							</div>
+							<?php }?>
 						</div>
-						<?php } else {LimpiarDirTempFirma();?>
-						<div class="col-lg-5">
-							<button class="btn btn-primary" type="button" id="FirmaCliente" onClick="AbrirFirma('SigRecibe');"><i class="fa fa-pencil-square-o"></i> Realizar firma</button>
-							<input type="hidden" id="SigRecibe" name="SigRecibe" value="" form="CrearEntregaVenta" />
-							<div id="msgInfoSigRecibe" style="display: none;" class="alert alert-info"><i class="fa fa-info-circle"></i> El documento ya ha sido firmado.</div>
-						</div>
-						<div class="col-lg-5">
-							<img id="ImgSigRecibe" style="display: none; max-width: 100%; height: auto;" src="" alt="" />
-						</div>
-						<?php }?>
-					</div>
+					<?php }?>
 					<div class="form-group">
 						<label class="col-lg-2">Información adicional</label>
 						<div class="col-lg-10">
