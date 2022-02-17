@@ -1843,7 +1843,13 @@ $(document).ready(function(){
   				contentType: false,   // tell jQuery not to set contentType
 				success: function(response) {
 					console.log("Line 1805", response);
-					Swal.fire(JSON.parse(response));
+
+					let json_response = JSON.parse(response);
+					Swal.fire(json_response).then(() => {
+						if (json_response.hasOwnProperty('return')) {
+							window.location = json_response.return;
+						}
+					});
 				},
 				error: function(response) {
 					console.error("server error")

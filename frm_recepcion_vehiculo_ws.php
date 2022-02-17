@@ -72,7 +72,9 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
 
     // Inicio, Enviar datos al WebService
     $Cabecera = $_POST;
+    $return = base64_decode($Cabecera["return"]);
 
+    unset($Cabecera["return"]);
     unset($Cabecera["SucursalCliente"]);
     unset($Cabecera["ContactoCliente"]);
     unset($Cabecera["Barrio"]);
@@ -86,7 +88,6 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
     unset($Cabecera["tl"]);
     unset($Cabecera["d_LS"]);
     unset($Cabecera["IdFrm"]);
-    unset($Cabecera["return"]);
     unset($Cabecera["frm"]);
 
     $Cabecera["app"] = "PortalOne"; // Por defecto
@@ -269,6 +270,7 @@ if (isset($_POST['P']) && ($_POST['P'] == base64_encode('MM_frmHallazgos'))) {
                 "title" => "¡Listo!",
                 "text" => "La recepción de vehículo ha sido creada exitosamente.",
                 "icon" => "success",
+                "return" => $return,
             );
 
             echo json_encode($msg);
