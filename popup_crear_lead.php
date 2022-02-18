@@ -251,6 +251,9 @@ $SQL_Dptos = Seleccionar('uvw_Sap_tbl_SN_Municipio', 'Distinct DeDepartamento', 
 
 //Propiedades
 $SQL_Prop = Seleccionar('uvw_Sap_tbl_SN_ListaPropiedades', '*');
+
+// Lista de precios, 17/02/2022
+$SQL_ListaPrecios = Seleccionar('uvw_Sap_tbl_ListaPrecios', '*');
 ?>
 <!doctype html>
 <html>
@@ -505,6 +508,19 @@ while ($row_MedioPago = sqlsrv_fetch_array($SQL_MedioPago)) {?>
 										</select>
 									</div>
 								</div>
+								<div class="form-group">
+										<label class="col-lg-1 control-label">Lista de precios <!--span class="text-danger">*</span--></label>
+										<div class="col-lg-3">
+											<select name="IdListaPrecio" class="form-control" id="IdListaPrecio" <?php //required="required" ?>>
+											  <?php while ($row_ListaPrecio = sqlsrv_fetch_array($SQL_ListaPrecios)) {?>
+												<option value="<?php echo $row_ListaPrecio['IdListaPrecio']; ?>"
+												<?php if (isset($row['IdListaPrecio']) && (strcmp($row_ListaPrecio['IdListaPrecio'], $row['IdListaPrecio']) == 0)) {echo "selected=\"selected\"";}?>>
+													<?php echo $row_ListaPrecio['DeListaPrecio']; ?>
+												</option>
+											  <?php }?>
+											</select>
+										</div>
+									</div>
 								<div class="form-group">
 									<div class="col-lg-9">
 										<button class="btn btn-primary" type="submit" id="Crear"><i class="fa fa-check"></i> Crear Prospecto</button>
