@@ -352,7 +352,14 @@ if($sw==1){
 							<th>Serie</th>
 							<th>Tipo llamada</th>
 							<th>Cliente</th>
-							<th>Sucursal</th> 
+							<th>Sucursal</th>
+							
+							<th>Articulo</th>
+							<th>Serial Interno</th>
+							<th>Nombre Contacto</th>
+							<th>Telefono Contacto</th>
+							<th>Correo Contacto</th>
+							
 							<th>Facturado</th>
 							<th>Servicio</th>  
 							<th>Metodo aplicación</th>
@@ -383,6 +390,13 @@ if($sw==1){
 								<td><?php echo $row['DeTipoLlamada'];?></td>
 								<td><?php echo $row['NombreCliente'];?></td>
 								<td><?php echo $row['NombreSucursalCliente'];?></td>
+								
+								<td><?php echo $row['DeArticuloLlamada'];?></td>
+								<td><?php echo $row['SerialArticuloLlamada'];?></td>
+								<td><?php echo $row['NombreContactoLlamada'];?></td>
+								<td><?php echo $row['TelefonoContactoLlamada'];?></td>
+								<td><?php echo $row['CorreoContactoLlamada'];?></td>
+								
 								<td><?php echo $row['Facturado'];?></td>
 								<td><?php echo $row['ServiciosLlamadas'];?></td>
 								<td><?php echo $row['MetodoAplicaLlamadas'];?></td>
