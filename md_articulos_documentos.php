@@ -28,6 +28,12 @@ if($preCostos==0){//para informe de analisis de ventas
 		"'".$_POST['DocEntry']."'"
 	);
 	$SQL=EjecutarSP('sp_ConsultarCostosOT',$ParamCons);
+}elseif($preCostos==3){//Previsualizar los precios de ventas de una llamada de servicio
+	
+	$ParamCons=array(
+		"'".$_POST['DocEntry']."'"
+	);
+	$SQL=EjecutarSP('sp_ConsultarEntregasVentasOT',$ParamCons);
 }
 
 ?>

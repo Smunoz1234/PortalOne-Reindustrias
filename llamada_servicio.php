@@ -1726,7 +1726,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_Concesionario = sqlsrv_fetch_array($SQL_Concesionario)) {?>
-										<option value="<?php echo $row_Concesionario['NombreConcesionario']; //['CodigoConcesionario'];              ?>"
+										<option value="<?php echo $row_Concesionario['NombreConcesionario']; //['CodigoConcesionario'];                    ?>"
 										<?php if ((isset($row['CDU_Concesionario'])) && (strcmp($row_Concesionario['NombreConcesionario'], $row['CDU_Concesionario']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_Concesionario['NombreConcesionario']; ?>
 										</option>
@@ -1739,7 +1739,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_Aseguradora = sqlsrv_fetch_array($SQL_Aseguradora)) {?>
-										<option value="<?php echo $row_Aseguradora['NombreAseguradora']; //['CodigoAseguradora'];                                                                                            ?>"
+										<option value="<?php echo $row_Aseguradora['NombreAseguradora']; //['CodigoAseguradora'];                                                                                                  ?>"
 										<?php if ((isset($row['CDU_Aseguradora'])) && (strcmp($row_Aseguradora['NombreAseguradora'], $row['CDU_Aseguradora']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_Aseguradora['NombreAseguradora']; ?>
 										</option>
@@ -1754,7 +1754,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_TipoServicio = sqlsrv_fetch_array($SQL_TipoServicio)) {?>
-										<option value="<?php echo $row_TipoServicio['NombreTipoServicio']; //['CodigoTipoServicio'];             ?>"
+										<option value="<?php echo $row_TipoServicio['NombreTipoServicio']; //['CodigoTipoServicio'];                   ?>"
 										<?php if ((isset($row['CDU_TipoServicio'])) && (strcmp($row_TipoServicio['NombreTipoServicio'], $row['CDU_TipoServicio']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_TipoServicio['NombreTipoServicio']; ?>
 										</option>
@@ -1767,7 +1767,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_Contrato = sqlsrv_fetch_array($SQL_ContratosLlamada)) {?>
-										<option value="<?php echo $row_Contrato['NombreContrato']; //['CodigoContrato'];              ?>"
+										<option value="<?php echo $row_Contrato['NombreContrato']; //['CodigoContrato'];                    ?>"
 										<?php if ((isset($row['CDU_Contrato'])) && (strcmp($row_Contrato['NombreContrato'], $row['CDU_Contrato']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_Contrato['NombreContrato']; ?>
 										</option>
@@ -2011,7 +2011,7 @@ $return = QuitarParametrosURL($return, array("a"));?>
 								<div class="panel-body">
 									<!-- Agregar documento, Inicio -->
 									<div class="row">
-										<div class="col-lg-6">
+										<div class="col-lg-9">
 											<?php if (PermitirFuncion(302) && ($row['IdEstadoLlamada'] != '-1')) {?>
 												<?php if (PermitirFuncion(402)) {?>
 													<div class="btn-group">
@@ -2039,8 +2039,24 @@ $return = QuitarParametrosURL($return, array("a"));?>
 													</div>
 											<?php }}?>
 										</div>
-										<div class="col-lg-6">
-											<button class="pull-right btn btn-primary" id="btnPreCostos" name="btnPreCostos" onClick="MostrarCostos('<?php echo $IdLlamada; ?>');"><i class="fa fa-money"></i> Previsualizar costos</button>
+										<div class="col-lg-3">
+											<div class="row">
+												<div class="col-lg-6">
+													<button class="pull-right btn btn-primary" id="btnPreCostos" name="btnPreCostos" onClick="MostrarCostos('<?php echo $IdLlamada; ?>');"><i class="fa fa-money"></i> Previsualizar Precios</button>
+												</div>
+												<div class="col-lg-6">
+													<div class="btn-group pull-right">
+														<button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i class="fa fa-mail-forward"></i> Copiar a <i class="fa fa-caret-down"></i></button>
+														<ul class="dropdown-menu">
+															<li><a class="alkin dropdown-item" href="#" onClick="CopiarToFactura(1);">Factura de venta (copiar adjuntos)</a></li>
+															<li><a class="alkin dropdown-item" href="#" onClick="CopiarToFactura(0);">Factura de venta (<strong>NO</strong> copiar adjuntos)</a></li>
+															<!--li class="dropdown-divider"></li>
+															<li><a class="alkin dropdown-item" href="#" onClick="CopiarToFactura(1,2);">Orden de venta (copiar adjuntos)</a></li>
+															<li><a class="alkin dropdown-item" href="#" onClick="CopiarToFactura(0,2);">Orden de venta (<strong>NO</strong> copiar adjuntos)</a></li-->
+														</ul>
+													</div>
+												</div>
+											</div>
 										</div>
 									</div>
 									<br>
@@ -2433,25 +2449,45 @@ function CambiarEstado(id,form,columID){
 	});
 }
 
-// SMM, 18/02/2022 
-function MostrarCostos(cardcode){
+// SMM, 18/02/2022
+function MostrarCostos(id_llamada){
 	$('.ibox-content').toggleClass('sk-loading',true);
 	$.ajax({
 		type: "POST",
 		async: false,
 		url: "md_articulos_documentos.php",
 		data:{
-			pre:2,
-			DocEntry:cardcode
+			pre:3,
+			DocEntry:id_llamada
 		},
 		success: function(response){
 			$('.ibox-content').toggleClass('sk-loading',false);
 			$('#ContenidoModal').html(response);
-			$('#TituloModal').html('Costos asociados');
+			$('#TituloModal').html('Precios asociados (Entregas (+) / Devoluciones (-))');
 			$('#myModal').modal("show");
 		}
 	});
 }
+
+// neduga, 18/02/2022
+function CopiarToFactura(adj=1,dest=1){
+	let CodClienteFactura = document.getElementById('ClienteLlamada');
+	let callID = document.getElementById('CallID');
+	let ticket = document.getElementById('Ticket');
+
+	let docDest="factura_venta.php";
+
+	if(dest==2){
+		docDest="orden_venta.php";
+	}
+
+	if(CodClienteFactura.value!=""){
+		window.location = docDest+`?dt_FC=2&Cardcode=${btoa(CodClienteFactura.value)}&adt=${btoa(adj)}&CodFactura=${btoa(CodClienteFactura.value)}&IdLlamada=${btoa(callID.value)}&DocNum=${btoa(ticket.value)}`;
+	}else{
+		window.location = docDest+`?dt_FC=2&Cardcode=${btoa(CodClienteFactura.value)}&adt=${btoa(adj)}&CodFactura=&IdLlamada=&DocNum=`;
+	}
+}
+
 </script>
 <script>
  Dropzone.options.dropzoneForm = {

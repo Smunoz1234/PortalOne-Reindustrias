@@ -249,6 +249,43 @@ if(isset($_GET['dt_FC'])&&($_GET['dt_FC'])==1){//Verificar que viene de una Fact
 		
 }
 
+if(isset($_GET['dt_FC'])&&($_GET['dt_FC'])==2){//Verificar que viene de una llamada de servicio
+	$dt_OV=1;
+		
+	$ParametrosCopiarFactOTToFactura=array(
+		"'".base64_decode($_GET['Cardcode'])."'",
+		"'".base64_decode($_GET['IdLlamada'])."'",
+		"'".base64_decode($_GET['DocNum'])."'",
+		"'".$_SESSION['CodUser']."'",
+		"'".base64_decode($_GET['adt'])."'",
+		"'".base64_decode($_GET['CodFactura'])."'"
+		//"'".base64_decode($_GET['add30'])."'"
+	);
+	$SQL_CopiarFactOTToFactura=EjecutarSP('sp_tbl_LlamadaServicio_To_FacturaVentaDet',$ParametrosCopiarFactOTToFactura);
+	
+	//Verificar si se va a facturar a nombre de otro cliente
+	if($_GET['CodFactura']!=""){
+		$_GET['Cardcode']=$_GET['CodFactura'];
+	}
+	
+	//Clientes
+	$SQL_Cliente=Seleccionar('uvw_Sap_tbl_Clientes','*',"CodigoCliente='".base64_decode($_GET['Cardcode'])."'",'NombreCliente');
+	$row_Cliente=sqlsrv_fetch_array($SQL_Cliente);
+	
+	if(!$SQL_CopiarFactOTToFactura){
+		echo "<script>
+		$(document).ready(function() {
+			Swal.fire({
+				title: '¡Ha ocurrido un error!',
+				text: 'No se pudo copiar el detale de las ordenes de servicio en Factura de venta.',
+				icon: 'error'
+			});
+		});		
+		</script>";
+	}
+		
+}
+
 if($edit==1&&$sw_error==0){
 	
 	$ParametrosLimpiar=array(
@@ -894,7 +931,9 @@ function MostrarRet(){
 							<?php
 								if($edit==1||$dt_LS==1||$sw_error==1){
 									while($row_OrdenServicioCliente=sqlsrv_fetch_array($SQL_OrdenServicioCliente)){?>
-										<option value="<?php echo $row_OrdenServicioCliente['ID_LlamadaServicio'];?>" <?php if((isset($row['ID_LlamadaServicio']))&&(strcmp($row_OrdenServicioCliente['ID_LlamadaServicio'],$row['ID_LlamadaServicio'])==0)){ echo "selected=\"selected\"";}elseif((isset($_GET['LS']))&&(strcmp($row_OrdenServicioCliente['ID_LlamadaServicio'],base64_decode($_GET['LS']))==0)){ echo "selected=\"selected\"";}?>><?php echo $row_OrdenServicioCliente['DocNum']." - ".$row_OrdenServicioCliente['AsuntoLlamada']." (".$row_OrdenServicioCliente['DeTipoLlamada'].")";?></option>
+										<option value="<?php echo $row_OrdenServicioCliente['ID_LlamadaServicio'];?>" <?php if((isset($row['ID_LlamadaServicio']))&&(strcmp($row_OrdenServicioCliente['ID_LlamadaServicio'],$row['ID_LlamadaServicio'])==0)){ echo "selected=\"selected\"";}elseif((isset($_GET['LS']))&&(strcmp($row_OrdenServicioCliente['ID_LlamadaServicio'],base64_decode($_GET['LS']))==0)){ echo "selected=\"selected\"";}?>>
+											<?php echo $row_OrdenServicioCliente['DocNum']." - ".$row_OrdenServicioCliente['AsuntoLlamada']." (".$row_OrdenServicioCliente['DeTipoLlamada'].")";?>
+										</option>
 							  <?php }
 								}?>
 						</select>
