@@ -129,7 +129,11 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
             if ($Num) {
                 echo "<option value=''>(Ninguna)</option>";
                 while ($row = sqlsrv_fetch_array($SQL)) {
-                    echo "<option value=\"" . $row['ID_LlamadaServicio'] . "\">" . $row['DocNum'] . " - " . $row['AsuntoLlamada'] . " (" . $row['DeTipoLlamada'] . ")</option>";
+                    if ((isset($_GET['ls'])) && (strcmp($row['ID_LlamadaServicio'], $_GET['ls']) == 0)) {
+                        echo "<option selected=\"selected\" value=\"" . $row['ID_LlamadaServicio'] . "\">" . $row['DocNum'] . " - " . $row['AsuntoLlamada'] . " (" . $row['DeTipoLlamada'] . ")</option>";
+                    } else {
+                        echo "<option value=\"" . $row['ID_LlamadaServicio'] . "\">" . $row['DocNum'] . " - " . $row['AsuntoLlamada'] . " (" . $row['DeTipoLlamada'] . ")</option>";
+                    }
                 }
             } else {
                 echo "<option value='-1'>(Ninguna)</option>";
