@@ -519,7 +519,7 @@ function ConsultarDatosCliente(){
 <script type="text/javascript">
 	$(document).ready(function() {//Cargar los combos dependiendo de otros
 		$("#CardCode").change(function(){
-			$('.ibox-content').toggleClass('sk-loading',true);
+			// $('.ibox-content').toggleClass('sk-loading',true);
 			var frame=document.getElementById('DataGrid');
 			var carcode=document.getElementById('CardCode').value;
 			var almacen=document.getElementById('Almacen').value;
@@ -528,6 +528,9 @@ function ConsultarDatosCliente(){
 				url: "ajx_cbo_select.php?type=2&id="+carcode,
 				success: function(response){
 					$('#ContactoCliente').html(response).fadeIn();
+				},
+				error: function(error) {
+					console.error(error.responseText);
 				}
 			});
 			<?php if ($dt_LS == 0) { //Para que no recargue las listas cuando vienen de una llamada de servicio.?>
@@ -537,6 +540,9 @@ function ConsultarDatosCliente(){
 				success: function(response){
 					$('#SucursalDestino').html(response).fadeIn();
 					$('#SucursalDestino').trigger('change');
+				},
+				error: function(error) {
+					console.error(error.responseText);
 				}
 			});
 			$.ajax({
@@ -545,6 +551,9 @@ function ConsultarDatosCliente(){
 				success: function(response){
 					$('#OrdenServicioCliente').html(response).fadeIn();
 					$('#OrdenServicioCliente').val(null).trigger('change');
+				},
+				error: function(error) {
+					console.error(error.responseText);
 				}
 			});
 			<?php }?>
@@ -554,6 +563,9 @@ function ConsultarDatosCliente(){
 				success: function(response){
 					$('#SucursalFacturacion').html(response).fadeIn();
 					$('#SucursalFacturacion').trigger('change');
+				},
+				error: function(error) {
+					console.error(error.responseText);
 				}
 			});
 			$.ajax({
@@ -561,6 +573,9 @@ function ConsultarDatosCliente(){
 				url: "ajx_cbo_select.php?type=7&id="+carcode,
 				success: function(response){
 					$('#CondicionPago').html(response).fadeIn();
+				},
+				error: function(error) {
+					console.error(error.responseText);
 				}
 			});
 			<?php if ($edit == 0 && $dt_LS == 0 && $dt_OF == 0 && $sw_error == 0) {?>
@@ -603,6 +618,9 @@ function ConsultarDatosCliente(){
 				success: function(data){
 					document.getElementById('DireccionDestino').value=data.Direccion;
 					$('.ibox-content').toggleClass('sk-loading',false);
+				},
+				error: function(error) {
+					console.error("Line 623", error.responseText);
 				}
 			});
 		});
@@ -616,6 +634,10 @@ function ConsultarDatosCliente(){
 				dataType:'json',
 				success: function(data){
 					document.getElementById('DireccionFacturacion').value=data.Direccion;
+					$('.ibox-content').toggleClass('sk-loading',false);
+				},
+				error: function(error) {
+					console.error("Line 640", error.responseText);
 					$('.ibox-content').toggleClass('sk-loading',false);
 				}
 			});

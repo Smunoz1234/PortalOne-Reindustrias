@@ -591,6 +591,10 @@ function ConsultarDatosCliente(){
 				success: function(data){
 					document.getElementById('DireccionDestino').value=data.Direccion;
 					$('.ibox-content').toggleClass('sk-loading',false);
+				},
+				error: function(error) {
+					console.error("Line 596", error.responseText);
+					$('.ibox-content').toggleClass('sk-loading',false);
 				}
 			});
 		});
@@ -604,6 +608,10 @@ function ConsultarDatosCliente(){
 				dataType:'json',
 				success: function(data){
 					document.getElementById('DireccionFacturacion').value=data.Direccion;
+					$('.ibox-content').toggleClass('sk-loading',false);
+				},
+				error: function(error) {
+					console.error("Line 614", error.responseText);
 					$('.ibox-content').toggleClass('sk-loading',false);
 				}
 			});

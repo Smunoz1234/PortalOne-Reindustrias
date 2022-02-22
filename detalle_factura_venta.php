@@ -262,7 +262,7 @@ function SeleccionarTodos(){
 		<tr>
 			<td class="text-center">
 				<div class="checkbox checkbox-success no-margins">
-					<input type="checkbox" class="chkSel" id="chkSel<?php echo $row['LineNum']; ?>" value="" onChange="Seleccionar('<?php echo $row['LineNum']; ?>');" aria-label="Single checkbox One" <?php if (($row['LineStatus'] == "C") && ($type == 1)) {echo "disabled='disabled'";}?>><label></label>
+					<input type="checkbox" class="chkSel" id="chkSel<?php echo $row['LineNum']; ?>" value="" onChange="Seleccionar('<?php echo $row['LineNum']; ?>');" aria-label="Single checkbox One" <?php if (($row['LineStatus'] == "C") && ($type == 2)) {echo "disabled='disabled'";}?>><label></label>
 				</div>
 			</td>
 
