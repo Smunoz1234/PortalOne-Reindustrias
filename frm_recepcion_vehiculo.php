@@ -1037,15 +1037,15 @@ function Eliminar(){
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-lg-1 control-label">Teléfono de contacto <!--span class="text-danger">*</span--></label>
+							<label class="col-lg-1 control-label">Teléfono de contacto <span class="text-danger">*</span></label>
 							<div class="col-lg-4">
-								<input autocomplete="off" name="telefono_responsable_cliente" type="text" class="form-control" id="telefono_responsable_cliente"  <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?>>
+								<input autocomplete="off" name="telefono_responsable_cliente" type="text" class="form-control" required="required" id="telefono_responsable_cliente"  <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?>>
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-lg-1 control-label">Correo de contacto <!--span class="text-danger">*</span--></label>
+							<label class="col-lg-1 control-label">Correo de contacto <span class="text-danger">*</span></label>
 							<div class="col-lg-4">
-								<input autocomplete="off" name="correo_responsable_cliente" type="text" class="form-control" id="correo_responsable_cliente"  <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?>>
+								<input autocomplete="off" name="correo_responsable_cliente" type="text" class="form-control" required="required" id="correo_responsable_cliente"  <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?>>
 							</div>
 						</div>
 						<br><br>
