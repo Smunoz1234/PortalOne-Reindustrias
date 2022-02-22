@@ -6,7 +6,6 @@ unset($Cabecera["return"]);
 
 unset($Cabecera["SucursalCliente"]);
 unset($Cabecera["ContactoCliente"]);
-unset($Cabecera["Barrio"]);
 unset($Cabecera["FechaCreacion"]);
 unset($Cabecera["HoraCreacion"]);
 unset($Cabecera["ResponsableCliente"]);

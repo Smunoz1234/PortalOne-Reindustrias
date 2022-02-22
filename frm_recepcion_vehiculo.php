@@ -282,7 +282,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 					dataType:'json',
 					success: function(data){
 						document.getElementById('direccion_destino').value=data.Direccion;
-						document.getElementById('Barrio').value=data.Barrio;
+						document.getElementById('barrio').value=data.Barrio;
 						document.getElementById('ciudad').value=data.Ciudad;
 						document.getElementById('telefono').value=data.TelefonoContacto;
 						document.getElementById('correo').value=data.CorreoContacto;
@@ -553,7 +553,7 @@ function Eliminar(){
 							<div class="col-lg-4">
 								<label class="control-label">Barrio</label>
 
-								<input name="Barrio" type="text" class="form-control" id="Barrio" maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['Barrio'];} elseif ($dt_LS == 1) {echo isset($_GET['Barrio']) ? base64_decode($_GET['Barrio']) : "";}?>">
+								<input name="barrio" type="text" class="form-control" id="barrio" maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['barrio'];} elseif ($dt_LS == 1) {echo isset($_GET['Barrio']) ? base64_decode($_GET['Barrio']) : "";}?>">
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">Ciudad</label>
