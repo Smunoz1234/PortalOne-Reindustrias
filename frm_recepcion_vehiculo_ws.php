@@ -1,12 +1,12 @@
 <?php require_once "includes/conexion.php";
 $Cabecera = $_POST;
-$return = base64_decode($Cabecera["return"]);
 
+$return = base64_decode($Cabecera["return"]);
 unset($Cabecera["return"]);
+
 unset($Cabecera["SucursalCliente"]);
 unset($Cabecera["ContactoCliente"]);
 unset($Cabecera["Barrio"]);
-unset($Cabecera["Ciudad"]);
 unset($Cabecera["FechaCreacion"]);
 unset($Cabecera["HoraCreacion"]);
 unset($Cabecera["ResponsableCliente"]);
@@ -49,6 +49,7 @@ $Cabecera["id_empleado_tecnico"] = intval($_SESSION['CodigoSAP']);
 $Cabecera["empleado_tecnico"] = $_SESSION['NombreEmpleado'];
 
 $Cabecera["id_usuario_creacion"] = $_SESSION['CodUser'];
+$Cabecera["usuario_creacion"] = strtolower($_SESSION['User']); // 22/02/2022
 
 if (isset($Cabecera["id_llamada_servicio"])) {
     $Cabecera["docentry_llamada_servicio"] = intval($Cabecera["id_llamada_servicio"]);

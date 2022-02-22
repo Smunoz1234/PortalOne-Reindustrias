@@ -255,7 +255,7 @@ if (isset($_GET['dt_FC']) && ($_GET['dt_FC']) == 2) { //Verificar que viene de u
 
     $ParametrosCopiarFactOTToFactura = array(
         "'" . base64_decode($_GET['Cardcode']) . "'",
-        "'" . base64_decode($_GET['IdLlamada']) . "'",
+        "'" . base64_decode($_GET['IdLlamada'] ?? "") . "'",
         "'" . base64_decode($_GET['DocNum']) . "'",
         "'" . $_SESSION['CodUser'] . "'",
         "'" . base64_decode($_GET['adt']) . "'",
@@ -510,7 +510,7 @@ function MostrarRet(){
 			});
 			$.ajax({
 				type: "POST",
-				url: `ajx_cbo_select.php?type=6&id=${carcode}&ls=<?php echo base64_decode($_GET['IdLlamada']) ?? ""; ?>`,
+				url: `ajx_cbo_select.php?type=6&id=${carcode}&ls=<?php echo base64_decode($_GET['IdLlamada'] ?? ""); ?>`,
 				success: function(response){
 					$('#OrdenServicioCliente').html(response).fadeIn();
 					$('#OrdenServicioCliente').trigger('change');

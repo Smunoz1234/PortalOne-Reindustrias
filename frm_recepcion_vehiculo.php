@@ -258,7 +258,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 
 					document.getElementById('direccion_destino').value=data.Direccion;
 					document.getElementById('celular').value=data.Celular;
-					document.getElementById('Ciudad').value=data.Ciudad;
+					document.getElementById('ciudad').value=data.Ciudad;
 					document.getElementById('telefono').value=data.Telefono;
 					document.getElementById('correo').value=data.Correo;
 				},
@@ -283,7 +283,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 					success: function(data){
 						document.getElementById('direccion_destino').value=data.Direccion;
 						document.getElementById('Barrio').value=data.Barrio;
-						document.getElementById('Ciudad').value=data.Ciudad;
+						document.getElementById('ciudad').value=data.Ciudad;
 						document.getElementById('telefono').value=data.TelefonoContacto;
 						document.getElementById('correo').value=data.CorreoContacto;
 					},
@@ -364,6 +364,8 @@ if (isset($sw_error) && ($sw_error == 1)) {
 					document.getElementById('no_motor').value = data.No_Motor;
 
 					document.getElementById('responsable_cliente').value = data.CDU_NombreContacto; // SMM, 15/02/2022
+					document.getElementById('telefono_responsable_cliente').value = data.CDU_TelefonoContacto; // SMM, 22/02/2022
+					document.getElementById('correo_responsable_cliente').value = data.CDU_CorreoContacto; // SMM, 22/02/2022
 
 					if(data.CDU_IdMarca !== null) {
 						document.getElementById('id_marca').value = data.CDU_IdMarca;
@@ -556,7 +558,7 @@ function Eliminar(){
 							<div class="col-lg-4">
 								<label class="control-label">Ciudad</label>
 
-								<input name="Ciudad" type="text" class="form-control" id="Ciudad" maxlength="100" value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['Ciudad'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Ciudad']);}?>" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?>>
+								<input name="ciudad" type="text" class="form-control" id="ciudad" maxlength="100" value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['ciudad'];} elseif ($dt_LS == 1) {echo base64_decode($_GET['Ciudad']);}?>" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?>>
 							</div>
 						</div>
 						<div class="form-group">
@@ -1035,6 +1037,19 @@ function Eliminar(){
 							</div>
 						</div>
 						<div class="form-group">
+							<label class="col-lg-1 control-label">Teléfono de contacto <!--span class="text-danger">*</span--></label>
+							<div class="col-lg-4">
+								<input autocomplete="off" name="telefono_responsable_cliente" type="text" class="form-control" id="telefono_responsable_cliente"  <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?>>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-lg-1 control-label">Correo de contacto <!--span class="text-danger">*</span--></label>
+							<div class="col-lg-4">
+								<input autocomplete="off" name="correo_responsable_cliente" type="text" class="form-control" id="correo_responsable_cliente"  <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?>>
+							</div>
+						</div>
+						<br><br>
+						<div class="form-group">
 							<label class="col-lg-1">Firma del cliente <span class="text-danger">*</span></label>
 							<?php if ($type_frm == 1 && $row['FirmaCliente'] != "") {?>
 							<div class="col-lg-10">
@@ -1043,8 +1058,8 @@ function Eliminar(){
 							<?php } else { //LimpiarDirTempFirma();?>
 							<div class="col-lg-5">
 								<button class="btn btn-primary" type="button" id="FirmaCliente" onClick="AbrirFirma('SigCliente');"><i class="fa fa-pencil-square-o"></i> Realizar firma</button>
-								<br><br>
-								<input type="text" id="SigCliente" name="SigCliente" value="" form="recepcionForm" required="required" readonly="readonly"/>
+								<br>
+								<input type="text" id="SigCliente" name="SigCliente" value="" form="recepcionForm" required="required" readonly="readonly" style="width: 0; margin-left: -7px; visibility: hidden;"/>
 								<div id="msgInfoSigCliente" style="display: none;" class="alert alert-info"><i class="fa fa-info-circle"></i> El documento ya ha sido firmado.</div>
 							</div>
 							<div class="col-lg-5">
@@ -1474,7 +1489,7 @@ $(document).ready(function(){
 		};
 
 		$("#socio_negocio").easyAutocomplete(options);
-		$("#Ciudad").easyAutocomplete(options2);
+		$("#ciudad").easyAutocomplete(options2);
 
 		<?php if ($dt_LS == 1) {?>
 			$('#id_socio_negocio').trigger('change');

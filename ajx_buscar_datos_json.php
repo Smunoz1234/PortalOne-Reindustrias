@@ -608,19 +608,15 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
                 $SerialInterno = $row['IdNumeroSerie'];
                 $SerialInterno = "'" . $SerialInterno . "'";
             }
-
-            $NombreContacto = "";
-            if (isset($row['CDU_NombreContacto'])) {
-                $NombreContacto = $row['CDU_NombreContacto'];
-                $NombreContacto = "'" . $NombreContacto . "'";
-            }
         }
 
         if (isset($ID_LlamadaServicio)) {
-            $SQL = Seleccionar("uvw_Sap_tbl_LlamadasServicios", "CDU_NombreContacto", "ID_LlamadaServicio=" . $ID_LlamadaServicio);
+            $SQL = Seleccionar("uvw_Sap_tbl_LlamadasServicios", "*", "ID_LlamadaServicio=" . $ID_LlamadaServicio);
             $row = sqlsrv_fetch_array($SQL);
 
             $NombreContacto = $row['CDU_NombreContacto'] ?? "";
+            $TelefonoContacto = $row['CDU_TelefonoContacto'] ?? "";
+            $CorreoContacto = $row['CDU_CorreoContacto'] ?? "";
         }
 
         if ($SerialInterno != "''") {
@@ -641,6 +637,8 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
                 'CDU_Concesionario' => $row['CDU_Concesionario'],
                 'CDU_TipoServicio' => $row['CDU_TipoServicio'],
                 'CDU_NombreContacto' => $NombreContacto ?? "", // SMM, 15/02/2022
+                'CDU_TelefonoContacto' => $TelefonoContacto ?? "", // SMM, 22/02/2022
+                'CDU_CorreoContacto' => $CorreoContacto ?? "", // SMM, 22/02/2022
             );
             echo json_encode($records);
         } else {
@@ -659,6 +657,8 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
                 'CDU_Concesionario' => null,
                 'CDU_TipoServicio' => null,
                 'CDU_NombreContacto' => null,
+                'CDU_TelefonoContacto' => null,
+                'CDU_CorreoContacto' => null,
             );
             echo json_encode($records);
         }
