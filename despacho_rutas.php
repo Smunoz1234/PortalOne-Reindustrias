@@ -116,7 +116,7 @@ if ($sw == 1) {
     //    print_r($row);
 
     $SQL_Almacen = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'WhsCode, WhsName', "IdSucursal='" . $Sede . "' and IdTipoDocumento='17'", "WhsCode, WhsName", 'WhsName');
-    $SQL_AlmacenDestino = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'ToWhsCode, ToWhsName', "IdSucursal='" . $Sede . "'", "ToWhsCode, ToWhsName", 'ToWhsName');
+    $SQL_AlmacenDestino = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'ToWhsCode, ToWhsName', "IdSucursal='" . $Sede . "' and IdTipoDocumento='67'", "ToWhsCode, ToWhsName", 'ToWhsName');
 
     $ParamRes = array(
         "'" . FormatoFecha($FechaInicial) . "'",
