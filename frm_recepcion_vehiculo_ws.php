@@ -32,11 +32,10 @@ $Cabecera["fecha_aprox_entrega"] = FormatoFechaToSAP($Cabecera['fecha_aprox_entr
 
 $Cabecera["km_actual"] = intval($Cabecera["km_actual"] ?? 0);
 
-if (isset($Cabecera['fecha_autoriza_campana']) && $Cabecera['fecha_autoriza_campana'] != "") {
-    $Cabecera["fecha_hora_autoriza_campana"] = FormatoFechaToSAP($Cabecera['fecha_autoriza_campana'], $Cabecera['hora_autoriza_campana']);
-} else {
-    unset($Cabecera["fecha_autoriza_campana"]);
-    unset($Cabecera["hora_autoriza_campana"]);
+unset($Cabecera["hora_autoriza_campana"]); // SMM, 22/02/2022
+unset($Cabecera["fecha_autoriza_campana"]); // SMM, 22/02/2022
+if (isset($_POST['fecha_autoriza_campana']) && $_POST['fecha_autoriza_campana'] != "") {
+    $Cabecera["fecha_hora_autoriza_campana"] = FormatoFechaToSAP($_POST['fecha_autoriza_campana'], $_POST['hora_autoriza_campana']);
 }
 
 for ($i = 1; $i <= 25; $i++) {
