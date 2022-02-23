@@ -53,6 +53,9 @@ if (isset($_GET['id']) && ($_GET['id'] != "")) {
     }
 }
 
+//Empleado de ventas, SMM 22/02/2022
+$SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', '', 'DE_EmpVentas');
+
 //Servicios
 $SQL_Servicios = Seleccionar("uvw_Sap_tbl_OrdenesVentasDetalleServicios", "*", "", "DeServicio");
 
@@ -146,6 +149,9 @@ function Totalizar(num){
 	window.parent.document.getElementById('TotalItems').value=num;
 }
 
+/**
+ * Ejemplo: ActualizarDatos('EmpVentas',$i,$row['LineNum'];
+ */
 function ActualizarDatos(name,id,line){//Actualizar datos asincronicamente
 	$.ajax({
 		type: "GET",
@@ -299,12 +305,13 @@ function SeleccionarTodos(){
 				<th>Dosificación</th>
 				<th>Stock almacén</th>
 				<?php $row_DimReparto = sqlsrv_fetch_array($SQL_DimReparto);?>
-				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 1                          ?></th>
+				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 1                           ?></th>
 				<?php $row_DimReparto = sqlsrv_fetch_array($SQL_DimReparto);?>
-				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 2                          ?></th>
+				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 2                           ?></th>
 				<?php $row_DimReparto = sqlsrv_fetch_array($SQL_DimReparto);?>
-				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 3                          ?></th>
+				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 3                           ?></th>
 				<th>Proyecto</th>
+				<th>Empleado de ventas</th>
 				<th>Servicio</th>
 				<th>Método aplicación</th>
 				<th>Tipo plaga</th>
@@ -337,6 +344,7 @@ if ($sw == 1) {
         sqlsrv_fetch($SQL_Dim2, SQLSRV_SCROLL_ABSOLUTE, -1);
         sqlsrv_fetch($SQL_Dim3, SQLSRV_SCROLL_ABSOLUTE, -1);
         sqlsrv_fetch($SQL_Proyecto, SQLSRV_SCROLL_ABSOLUTE, -1);
+		sqlsrv_fetch($SQL_EmpleadosVentas, SQLSRV_SCROLL_ABSOLUTE, -1); // SMM, 22/02/2022
 
         // Stiven Muñoz Murillo, 31/01/2022
         $row_encode = isset($row) ? json_encode($row) : "";
@@ -408,8 +416,21 @@ if ($sw == 1) {
 				<select id="PrjCode<?php echo $i; ?>" name="PrjCode[]" class="form-control select2" onChange="ActualizarDatos('PrjCode',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402))) {echo "disabled='disabled'";}?>>
 					<option value="">(NINGUNO)</option>
 				  <?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) {?>
-						<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if ((isset($row['PrjCode'])) && (strcmp($row_Proyecto['IdProyecto'], $row['PrjCode']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Proyecto['DeProyecto']; ?></option>
+						<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if ((isset($row['PrjCode'])) && (strcmp($row_Proyecto['IdProyecto'], $row['PrjCode']) == 0)) {echo "selected=\"selected\"";}?>>
+							<?php echo $row_Proyecto['DeProyecto']; ?>
+						</option>
 				  <?php }?>
+				</select>
+			</td>
+
+			<td> <!-- SMM, 22/02/2022 -->
+				<select id="EmpVentas<?php echo $i; ?>" name="EmpVentas[]" class="form-control select2" onChange="ActualizarDatos('EmpVentas',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402))) {echo "disabled='disabled'";}?>>
+						<option value="">(NINGUNO)</option>
+					<?php while ($row_EmpleadosVentas = sqlsrv_fetch_array($SQL_EmpleadosVentas)) {?>
+						<option value="<?php echo $row_EmpleadosVentas['ID_EmpVentas']; ?>" <?php if ((isset($row['EmpVentas'])) && (strcmp($row_EmpleadosVentas['ID_EmpVentas'], $row['EmpVentas']) == 0)) {echo "selected=\"selected\"";}?>>
+							<?php echo $row_EmpleadosVentas['DE_EmpVentas']; ?>
+						</option>
+					<?php }?>
 				</select>
 			</td>
 

@@ -60,6 +60,9 @@ $SQL_Dim3=Seleccionar('uvw_Sap_tbl_DimensionesReparto','*','DimCode=3');
 
 //Proyectos
 $SQL_Proyecto=Seleccionar('uvw_Sap_tbl_Proyectos','*','','DeProyecto');
+
+//Empleado de ventas, SMM 22/02/2022
+$SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', '', 'DE_EmpVentas');
 ?>
 <!doctype html>
 <html>
@@ -240,6 +243,7 @@ function SeleccionarTodos(){
 				<?php $row_DimReparto=sqlsrv_fetch_array($SQL_DimReparto);?>
 				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 3 ?></th>
 				<th>Proyecto</th>
+				<th>Empleado de ventas</th>
 				<th>Texto libre</th>
 				<th>Precio</th>
 				<th>Precio con IVA</th>
@@ -258,6 +262,7 @@ function SeleccionarTodos(){
 				sqlsrv_fetch($SQL_Dim2, SQLSRV_SCROLL_ABSOLUTE, -1);
 				sqlsrv_fetch($SQL_Dim3, SQLSRV_SCROLL_ABSOLUTE, -1);
 				sqlsrv_fetch($SQL_Proyecto, SQLSRV_SCROLL_ABSOLUTE, -1);
+				sqlsrv_fetch($SQL_EmpleadosVentas, SQLSRV_SCROLL_ABSOLUTE, -1); // SMM, 22/02/2022
 		?>
 		<tr>
 			<td class="text-center">
@@ -326,6 +331,17 @@ function SeleccionarTodos(){
 				  <?php while($row_Proyecto=sqlsrv_fetch_array($SQL_Proyecto)){?>
 						<option value="<?php echo $row_Proyecto['IdProyecto'];?>" <?php if((isset($row['PrjCode']))&&(strcmp($row_Proyecto['IdProyecto'],$row['PrjCode'])==0)){ echo "selected=\"selected\"";}?>><?php echo $row_Proyecto['DeProyecto'];?></option>
 				  <?php }?>
+				</select>
+			</td>
+
+			<td> <!-- SMM, 22/02/2022 -->
+				<select id="EmpVentas<?php echo $i; ?>" name="EmpVentas[]" class="form-control select2" onChange="ActualizarDatos('EmpVentas',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402))) {echo "disabled='disabled'";}?>>
+						<option value="">(NINGUNO)</option>
+					<?php while ($row_EmpleadosVentas = sqlsrv_fetch_array($SQL_EmpleadosVentas)) {?>
+						<option value="<?php echo $row_EmpleadosVentas['ID_EmpVentas']; ?>" <?php if ((isset($row['EmpVentas'])) && (strcmp($row_EmpleadosVentas['ID_EmpVentas'], $row['EmpVentas']) == 0)) {echo "selected=\"selected\"";}?>>
+							<?php echo $row_EmpleadosVentas['DE_EmpVentas']; ?>
+						</option>
+					<?php }?>
 				</select>
 			</td>
 			

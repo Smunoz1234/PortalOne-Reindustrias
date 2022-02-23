@@ -78,10 +78,13 @@ if (isset($_GET['id']) && ($_GET['id'] != "")) {
     }
 }
 
+//Empleado de ventas, SMM 22/02/2022
+$SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', '', 'DE_EmpVentas');
+
 //Servicios
 $SQL_Servicios = Seleccionar("uvw_Sap_tbl_OrdenesVentasDetalleServicios", "*", "", "DeServicio");
 
-//Metodo de apliacion
+//Metodo de aplicacion
 $SQL_MetodoAplicacion = Seleccionar("uvw_Sap_tbl_OrdenesVentasDetalleMetodoAplicacion", "*", "", "DeMetodoAplicacion");
 
 //Tipo de plagas
@@ -331,6 +334,7 @@ function SeleccionarTodos(){
 				<?php $row_DimReparto = sqlsrv_fetch_array($SQL_DimReparto);?>
 				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 3  ?></th>
 				<th>Proyecto</th>
+				<th>Empleado de ventas</th>
 				<th>Servicio</th>
 				<th>Método aplicación</th>
 				<th>Tipo plaga</th>
@@ -357,6 +361,7 @@ if ($sw == 1) {
         sqlsrv_fetch($SQL_Dim2, SQLSRV_SCROLL_ABSOLUTE, -1);
         sqlsrv_fetch($SQL_Dim3, SQLSRV_SCROLL_ABSOLUTE, -1);
         sqlsrv_fetch($SQL_Proyecto, SQLSRV_SCROLL_ABSOLUTE, -1);
+		sqlsrv_fetch($SQL_EmpleadosVentas, SQLSRV_SCROLL_ABSOLUTE, -1); // SMM, 22/02/2022
         ?>
 		<tr>
 			<td class="text-center">
@@ -425,6 +430,16 @@ if ($sw == 1) {
 				</select>
 			</td>
 
+			<td> <!-- SMM, 22/02/2022 -->
+				<select id="EmpVentas<?php echo $i; ?>" name="EmpVentas[]" class="form-control select2" onChange="ActualizarDatos('EmpVentas',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402))) {echo "disabled='disabled'";}?>>
+						<option value="">(NINGUNO)</option>
+					<?php while ($row_EmpleadosVentas = sqlsrv_fetch_array($SQL_EmpleadosVentas)) {?>
+						<option value="<?php echo $row_EmpleadosVentas['ID_EmpVentas']; ?>" <?php if ((isset($row['EmpVentas'])) && (strcmp($row_EmpleadosVentas['ID_EmpVentas'], $row['EmpVentas']) == 0)) {echo "selected=\"selected\"";}?>>
+							<?php echo $row_EmpleadosVentas['DE_EmpVentas']; ?>
+						</option>
+					<?php }?>
+				</select>
+			</td>
 
 			<td><?php if (($row['TreeType'] != "T") || (($row['TreeType'] == "T") && ($row['LineNum'] != 0))) {?>
 				<select id="CDU_IdServicio<?php echo $i; ?>" name="CDU_IdServicio[]" class="form-control select2" onChange="ActualizarDatos('CDU_IdServicio',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402))) {echo "disabled='disabled'";}?>>
