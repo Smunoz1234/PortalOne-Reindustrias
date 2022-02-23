@@ -1726,7 +1726,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_Concesionario = sqlsrv_fetch_array($SQL_Concesionario)) {?>
-										<option value="<?php echo $row_Concesionario['NombreConcesionario']; //['CodigoConcesionario'];                    ?>"
+										<option value="<?php echo $row_Concesionario['NombreConcesionario']; //['CodigoConcesionario'];                     ?>"
 										<?php if ((isset($row['CDU_Concesionario'])) && (strcmp($row_Concesionario['NombreConcesionario'], $row['CDU_Concesionario']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_Concesionario['NombreConcesionario']; ?>
 										</option>
@@ -1739,7 +1739,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_Aseguradora = sqlsrv_fetch_array($SQL_Aseguradora)) {?>
-										<option value="<?php echo $row_Aseguradora['NombreAseguradora']; //['CodigoAseguradora'];                                                                                                  ?>"
+										<option value="<?php echo $row_Aseguradora['NombreAseguradora']; //['CodigoAseguradora'];                                                                                                   ?>"
 										<?php if ((isset($row['CDU_Aseguradora'])) && (strcmp($row_Aseguradora['NombreAseguradora'], $row['CDU_Aseguradora']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_Aseguradora['NombreAseguradora']; ?>
 										</option>
@@ -1754,7 +1754,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_TipoServicio = sqlsrv_fetch_array($SQL_TipoServicio)) {?>
-										<option value="<?php echo $row_TipoServicio['NombreTipoServicio']; //['CodigoTipoServicio'];                   ?>"
+										<option value="<?php echo $row_TipoServicio['NombreTipoServicio']; //['CodigoTipoServicio'];                    ?>"
 										<?php if ((isset($row['CDU_TipoServicio'])) && (strcmp($row_TipoServicio['NombreTipoServicio'], $row['CDU_TipoServicio']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_TipoServicio['NombreTipoServicio']; ?>
 										</option>
@@ -1767,7 +1767,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_Contrato = sqlsrv_fetch_array($SQL_ContratosLlamada)) {?>
-										<option value="<?php echo $row_Contrato['NombreContrato']; //['CodigoContrato'];                    ?>"
+										<option value="<?php echo $row_Contrato['NombreContrato']; //['CodigoContrato'];                     ?>"
 										<?php if ((isset($row['CDU_Contrato'])) && (strcmp($row_Contrato['NombreContrato'], $row['CDU_Contrato']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_Contrato['NombreContrato']; ?>
 										</option>
@@ -2137,7 +2137,7 @@ $return = QuitarParametrosURL($return, array("a"));?>
 													<tr class="gradeX">
 														<td><?php echo $row_Formularios['tipo_objeto']; ?></td>
 														<td><?php echo $row_Formularios['id_formulario']; ?></td>
-														<td><?php echo $row_Formularios['fecha_hora']->format('Y-m-d H:i'); ?></td>
+														<td><?php echo isset($row_Formularios['fecha_hora']) ? $row_Formularios['fecha_hora']->format('Y-m-d H:i') : ""; ?></td>
 														<td><?php echo SubComent($row_Formularios['observaciones'], 140); ?></td>
 														<td id="comentCierre<?php echo $row_Formularios['id_formulario']; ?>"><?php echo SubComent($row_Formularios['comentarios_cierre'], 140); ?></td>
 														<td><?php echo ($row_Formularios['fecha_cierre'] != "") ? $row_Formularios['fecha_cierre']->format('Y-m-d H:i') : ""; ?></td>
