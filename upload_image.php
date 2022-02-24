@@ -13,10 +13,10 @@ $nombreArchivo = NormalizarNombreImagen($imgID, $imgFN, $imgEXT);
 sqlsrv_close($conexion);
 
 // Los archivos se borran cuando se ejecuta "LimpiarDirTemp()"
-$route = $temp . "/" . $_SESSION['CodUser'] . "/";
+// $route = $temp . "/" . $_SESSION['CodUser'] . "/";
 
 // Usar cuando se quiera que los archivos sean persistentes.
-//$route = $temp . "/images/" . $_SESSION['CodUser'] . "/";
+$route = CrearObtenerDirRuta($temp . "/recepcion_vehiculos/" . $_SESSION['CodUser'] . "/");
 
 if (!file_exists($route)) {
     mkdir($route, 0777);

@@ -1344,7 +1344,8 @@ $(document).ready(function(){
 			// $('.ibox-content').toggleClass('sk-loading');
 			// form.submit();
 
-			console.log(anexos);
+			console.log("Line 1347", anexos);
+			$('.ibox-content').toggleClass('sk-loading', true); // Carga iniciada.
 
 			let formData = new FormData(form);
 			Object.entries(photos).forEach(([key, value]) => formData.append(key, value));
@@ -1379,11 +1380,14 @@ $(document).ready(function(){
 							window.location = json_response.return;
 						}
 					});
+
+					$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
 				},
 				error: function(response) {
 					console.error("server error")
 					console.error(response);
-					// $('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
+					
+					$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
 				}
 			});
 			// Fin, AJAX

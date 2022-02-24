@@ -118,8 +118,9 @@ $Cabecera["fotografias"] = [
     ),
 ];
 
+$route = CrearObtenerDirRuta(ObtenerVariable("CarpetaTmp") . "/recepcion_vehiculos/" . $_SESSION['CodUser'] . "/");
 if (isset($Cabecera["Img1"])) {
-    $source = CrearObtenerDirTemp() . $Cabecera["Img1"];
+    $source = $route . $Cabecera["Img1"];
 
     $dest = $dir_log . $Cabecera["Img1"];
     copy($source, $dest);
@@ -131,7 +132,7 @@ if (isset($Cabecera["Img1"])) {
 }
 
 if (isset($Cabecera["Img2"])) {
-    $source = CrearObtenerDirTemp() . $Cabecera["Img2"];
+    $source = $route . $Cabecera["Img2"];
 
     $dest = $dir_log . $Cabecera["Img2"];
     copy($source, $dest);
@@ -143,7 +144,7 @@ if (isset($Cabecera["Img2"])) {
 }
 
 if (isset($Cabecera["Img3"])) {
-    $source = CrearObtenerDirTemp() . $Cabecera["Img3"];
+    $source = $route . $Cabecera["Img3"];
 
     $dest = $dir_log . $Cabecera["Img3"];
     copy($source, $dest);
@@ -155,7 +156,7 @@ if (isset($Cabecera["Img3"])) {
 }
 
 if (isset($Cabecera["Img4"])) {
-    $source = CrearObtenerDirTemp() . $Cabecera["Img4"];
+    $source = $route . $Cabecera["Img4"];
 
     $dest = $dir_log . $Cabecera["Img4"];
     copy($source, $dest);
@@ -167,7 +168,7 @@ if (isset($Cabecera["Img4"])) {
 }
 
 if (isset($Cabecera["Img5"])) {
-    $source = CrearObtenerDirTemp() . $Cabecera["Img5"];
+    $source = $route . $Cabecera["Img5"];
 
     $dest = $dir_log . $Cabecera["Img5"];
     copy($source, $dest);
