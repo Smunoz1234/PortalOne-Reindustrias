@@ -43,7 +43,9 @@ if (isset($_GET['id']) && ($_GET['id'] != "")) {
 
         $where = base64_decode($_GET['id']) . "' and IdEvento='" . base64_decode($_GET['evento']) . "' and Metodo <> 3";
         $SQL = Seleccionar("uvw_tbl_OrdenVentaDetalle", "*", "ID_OrdenVenta='" . $where);
-        // echo $where;
+        
+		// Editando Orden de venta
+		// echo $where;
 
         if ($SQL) {
             $sw = 1;

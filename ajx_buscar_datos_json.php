@@ -186,21 +186,28 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
         $TipoDoc = isset($_GET['tipodoc']) ? $_GET['tipodoc'] : 1;
         $SoloStock = isset($_GET['solostock']) ? $_GET['solostock'] : 1;
         $TodosArticulos = isset($_GET['todosart']) ? $_GET['todosart'] : 0;
+        $IdListaPrecio = isset($_GET['idlistaprecio']) ? $_GET['idlistaprecio'] : ""; // NEDUGA, 24/02/2022
 
         $Param = array(
-            "'" . $Dato . "'",
-            "'" . $Almacen . "'",
-            "'" . $TipoDoc . "'",
-            "'" . $SoloStock . "'",
-            "'" . $TodosArticulos . "'",
+            "'".$Dato."'", // @DatoBuscar
+            "'".$Almacen."'", // @WhsCode
+            "'".$TipoDoc."'",
+            "'".$SoloStock."'",
+            "'".$TodosArticulos."'",
+            "'".$IdListaPrecio."'", // @PriceList. NEDUGA, 24/02/2022
         );
         //$Param=array("'".$_GET['data']."'","'".$_GET['whscode']."'","'".$_GET['tipodoc']."'");
-        $SQL = EjecutarSP('sp_ConsultarArticulos', $Param);
+        
+        // $SQL=EjecutarSP('sp_ConsultarArticulos',$Param); // Anterior
+	    $SQL=EjecutarSP('sp_ConsultarArticulos_ListaPrecios',$Param); // Nuevo
+        
         $records = array();
         $j = 0;
         while ($row = sqlsrv_fetch_array($SQL)) {
             $records[$j] = array(
                 'IdArticulo' => $row['IdArticulo'],
+				'CodArticuloProveedor' => $row['CodArticuloProveedor'], // NEDUGA, 24/02/2022
+                'IdListaPrecio' => $row['IdListaPrecio'], // SMM, 24/02/2022
                 'DescripcionArticulo' => $row['DescripcionArticulo'],
                 'NombreBuscarArticulo' => $row['NombreBuscarArticulo'],
                 'UndMedida' => $row['UndMedida'],
@@ -675,6 +682,7 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
             'Celular' => $row['Celular'],
             'Telefono' => $row['Telefono'],
             'Correo' => $row['Email'],
+            'IdListaPrecio' => $row['IdListaPrecio'], // SMM, 24/02/2022
         );
         echo json_encode($records);
     }

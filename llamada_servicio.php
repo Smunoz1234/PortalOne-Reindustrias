@@ -1335,7 +1335,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 													<?php }?>
 												</ul>
 											</div>
-											<a href="#" class="btn btn-outline btn-primary"><i class="fa fa-envelope"></i> Enviar correo</a>
+											<!-- a href="#" class="btn btn-outline btn-primary"><i class="fa fa-envelope"></i> Enviar correo</a -->
 											<a href="#" class="btn btn-outline btn-info" onClick="VerMapaRel('<?php echo base64_encode($row['ID_LlamadaServicio']); ?>','<?php echo base64_encode('191'); ?>');"><i class="fa fa-sitemap"></i> Mapa de relaciones</a>
 										</div>
 										<?php } else if (PermitirFuncion(508)) {?>
@@ -2048,7 +2048,7 @@ $return = QuitarParametrosURL($return, array("a"));?>
 													<div class="btn-group pull-right">
 														<button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i class="fa fa-mail-forward"></i> Copiar a <i class="fa fa-caret-down"></i></button>
 														<ul class="dropdown-menu">
-															<li><a class="alkin dropdown-item" href="#" onClick="CopiarToFactura(1);">Factura de venta (copiar adjuntos)</a></li>
+															<!-- li><a class="alkin dropdown-item" href="#" onClick="CopiarToFactura(1);">Factura de venta (copiar adjuntos)</a></li -->
 															<li><a class="alkin dropdown-item" href="#" onClick="CopiarToFactura(0);">Factura de venta (<strong>NO</strong> copiar adjuntos)</a></li>
 															<!--li class="dropdown-divider"></li>
 															<li><a class="alkin dropdown-item" href="#" onClick="CopiarToFactura(1,2);">Orden de venta (copiar adjuntos)</a></li>
