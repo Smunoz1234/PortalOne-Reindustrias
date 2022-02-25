@@ -413,9 +413,18 @@ else if(doctype==13){//Devolucion de venta crear
 			  window.close();
 		}
   	};
-	  xhttp.open("POST", "registro.php", true);
-	  xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	  xhttp.send("P=35&doctype=13&item="+str+"&whscode="+whscode+"&cardcode=<?php echo $CardCode; ?>&dim1=<?php echo $dim1; ?>&dim2=<?php echo $dim2; ?>&dim3=<?php echo $dim3; ?>");
+
+	if (pricelist != "") {
+		xhttp.open("POST", "registro.php", true);
+		xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+		// "&pricelist="+pricelist+ - SMM, 25/02/2022
+		xhttp.send("P=35&doctype=13&item="+str+"&whscode="+whscode+"&pricelist="+pricelist+"&cardcode=<?php echo $CardCode; ?>&dim1=<?php echo $dim1; ?>&dim2=<?php echo $dim2; ?>&dim3=<?php echo $dim3; ?>");
+	} else {
+		xhttp.open("POST", "registro.php", true);
+		xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		xhttp.send("P=35&doctype=13&item="+str+"&whscode="+whscode+"&cardcode=<?php echo $CardCode; ?>&dim1=<?php echo $dim1; ?>&dim2=<?php echo $dim2; ?>&dim3=<?php echo $dim3; ?>");
+	}
   }
 else if(doctype==14){//Devolucion de venta editar
 	  var xhttp;
@@ -433,9 +442,18 @@ else if(doctype==14){//Devolucion de venta editar
 			  window.close();
 		}
   	};
-	  xhttp.open("POST", "registro.php", true);
-	  xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	  xhttp.send("P=35&doctype=14&item="+str+"&whscode="+whscode+"&cardcode=<?php echo $CardCode; ?>&id=<?php echo $ID_DevolucionVenta; ?>&evento=<?php echo $ID_Evento; ?>&dim1=<?php echo $dim1; ?>&dim2=<?php echo $dim2; ?>&dim3=<?php echo $dim3; ?>");
+
+	if (pricelist != "") {
+		xhttp.open("POST", "registro.php", true);
+		xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+		// "&pricelist="+pricelist+ - SMM, 25/02/2022
+		xhttp.send("P=35&doctype=14&item="+str+"&whscode="+whscode+"&pricelist="+pricelist+"&cardcode=<?php echo $CardCode; ?>&id=<?php echo $ID_DevolucionVenta; ?>&evento=<?php echo $ID_Evento; ?>&dim1=<?php echo $dim1; ?>&dim2=<?php echo $dim2; ?>&dim3=<?php echo $dim3; ?>");
+	} else {
+		xhttp.open("POST", "registro.php", true);
+		xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		xhttp.send("P=35&doctype=14&item="+str+"&whscode="+whscode+"&cardcode=<?php echo $CardCode; ?>&id=<?php echo $ID_DevolucionVenta; ?>&evento=<?php echo $ID_Evento; ?>&dim1=<?php echo $dim1; ?>&dim2=<?php echo $dim2; ?>&dim3=<?php echo $dim3; ?>");
+	}
   }
 else if(doctype==15){//Factura de venta crear
 	  var xhttp;
@@ -453,9 +471,19 @@ else if(doctype==15){//Factura de venta crear
 			  window.close();
 		}
   	};
-	  xhttp.open("POST", "registro.php", true);
-	  xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	  xhttp.send("P=35&doctype=15&item="+str+"&whscode="+whscode+"&cardcode=<?php echo $CardCode; ?>&dim1=<?php echo $dim1; ?>&dim2=<?php echo $dim2; ?>&dim3=<?php echo $dim3; ?>");
+
+	if (pricelist != "") {
+		xhttp.open("POST", "registro.php", true);
+		xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+		// "&pricelist="+pricelist+ - SMM, 25/02/2022
+		xhttp.send("P=35&doctype=15&item="+str+"&whscode="+whscode+"&pricelist="+pricelist+"&cardcode=<?php echo $CardCode; ?>&dim1=<?php echo $dim1; ?>&dim2=<?php echo $dim2; ?>&dim3=<?php echo $dim3; ?>");
+	} else {
+		xhttp.open("POST", "registro.php", true);
+		xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		xhttp.send("P=35&doctype=15&item="+str+"&whscode="+whscode+"&cardcode=<?php echo $CardCode; ?>&dim1=<?php echo $dim1; ?>&dim2=<?php echo $dim2; ?>&dim3=<?php echo $dim3; ?>");
+	}
+
   }
 else if(doctype==16){//Factura de venta editar
 	  var xhttp;
@@ -473,9 +501,18 @@ else if(doctype==16){//Factura de venta editar
 			  window.close();
 		}
   	};
-	  xhttp.open("POST", "registro.php", true);
-	  xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	  xhttp.send("P=35&doctype=16&item="+str+"&whscode="+whscode+"&cardcode=<?php echo $CardCode; ?>&id=<?php echo $ID_FacturaVenta; ?>&evento=<?php echo $ID_Evento; ?>&dim1=<?php echo $dim1; ?>&dim2=<?php echo $dim2; ?>&dim3=<?php echo $dim3; ?>");
+
+	if (pricelist != "") {
+		xhttp.open("POST", "registro.php", true);
+		xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+		// "&pricelist="+pricelist+ - SMM, 25/02/2022
+		xhttp.send("P=35&doctype=16&item="+str+"&whscode="+whscode+"&pricelist="+pricelist+"&cardcode=<?php echo $CardCode; ?>&id=<?php echo $ID_FacturaVenta; ?>&evento=<?php echo $ID_Evento; ?>&dim1=<?php echo $dim1; ?>&dim2=<?php echo $dim2; ?>&dim3=<?php echo $dim3; ?>");
+	} else {
+		xhttp.open("POST", "registro.php", true);
+		xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		xhttp.send("P=35&doctype=16&item="+str+"&whscode="+whscode+"&cardcode=<?php echo $CardCode; ?>&id=<?php echo $ID_FacturaVenta; ?>&evento=<?php echo $ID_Evento; ?>&dim1=<?php echo $dim1; ?>&dim2=<?php echo $dim2; ?>&dim3=<?php echo $dim3; ?>");
+	}
   }
 else if(doctype==17){//Lista de materiales
 	  var xhttp;

@@ -396,6 +396,13 @@ $ParamSerie = array(
 );
 $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 
+// Lista de precios, 25/02/2022
+$SQL_ListaPrecios = Seleccionar('uvw_Sap_tbl_ListaPrecios', '*');
+
+// Stiven Muñoz Murillo, 25/02/2022
+$row_encode = isset($row) ? json_encode($row) : "";
+$cadena = isset($row) ? "ajustarCadena('$row_encode')" : "'Not Found'";
+// echo "<script> console.log($cadena); </script>";
 ?>
 <!DOCTYPE html>
 <html><!-- InstanceBegin template="/Templates/PlantillaPrincipal.dwt.php" codeOutsideHTMLIsLocked="false" -->
@@ -452,14 +459,16 @@ function BuscarArticulo(dato){
 	var posicion_y;
 	posicion_x=(screen.width/2)-(1200/2);
 	posicion_y=(screen.height/2)-(500/2);
+
+	let idlistaprecio = document.getElementById("IdListaPrecio").value; // SMM, 25/02/2022
 	if(dato!=""){
-		if((cardcode!="")&&(almacen!="")){
-			remote=open('buscar_articulo.php?dato='+dato+'&cardcode='+cardcode+'&whscode='+almacen+'&doctype=<?php if ($edit == 0) {echo "15";} else {echo "16";}?>&idfacturaventa=<?php if ($edit == 1) {echo base64_encode($row['ID_FacturaVenta']);} else {echo "0";}?>&evento=<?php if ($edit == 1) {echo base64_encode($row['IdEvento']);} else {echo "0";}?>&tipodoc=2&dim1='+dim1+'&dim2='+dim2+'&dim3='+dim3,'remote',"width=1200,height=500,location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=no,fullscreen=no,directories=no,status=yes,left="+posicion_x+",top="+posicion_y+"");
+		if((cardcode!="")&&(almacen!="")&&(idlistaprecio!="")){
+			remote=open('buscar_articulo.php?dato='+dato+'&cardcode='+cardcode+'&whscode='+almacen+'&idlistaprecio='+idlistaprecio+'&doctype=<?php if ($edit == 0) {echo "15";} else {echo "16";}?>&idfacturaventa=<?php if ($edit == 1) {echo base64_encode($row['ID_FacturaVenta']);} else {echo "0";}?>&evento=<?php if ($edit == 1) {echo base64_encode($row['IdEvento']);} else {echo "0";}?>&tipodoc=2&dim1='+dim1+'&dim2='+dim2+'&dim3='+dim3,'remote',"width=1200,height=500,location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=no,fullscreen=no,directories=no,status=yes,left="+posicion_x+",top="+posicion_y+"");
 			remote.focus();
 		}else{
 			Swal.fire({
 				title: "¡Advertencia!",
-				text: "Debe seleccionar un cliente y un almacén",
+				text: "Debe seleccionar un cliente, un almacén y una lista de precios",
 				type: "warning",
 				confirmButtonText: "OK"
 			});
@@ -499,6 +508,35 @@ function MostrarRet(){
 					$('#ContactoCliente').html(response).fadeIn();
 				}
 			});
+
+			// Stiven Muñoz Murillo, 20/01/2022
+			let cardcode = carcode;
+			$.ajax({
+				url:"ajx_buscar_datos_json.php",
+				data: {
+					type: 45,
+					id: cardcode
+				},
+				dataType:'json',
+				success: function(data){
+					console.log("Line 550", data);
+
+					document.getElementById('IdListaPrecio').value=data.IdListaPrecio;
+					$('#IdListaPrecio').trigger('change');
+
+					/*
+					document.getElementById('direccion_destino').value=data.Direccion;
+					document.getElementById('celular').value=data.Celular;
+					document.getElementById('ciudad').value=data.Ciudad;
+					document.getElementById('telefono').value=data.Telefono;
+					document.getElementById('correo').value=data.Correo;
+					*/
+				},
+				error: function(error) {
+					console.error(error.responseText);
+				}
+			});
+
 			<?php if ($dt_LS == 0) { //Para que no recargue las listas cuando vienen de una llamada de servicio.?>
 			$.ajax({
 				type: "POST",
@@ -1097,6 +1135,20 @@ if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
 						  <?php }?>
 						</select>
                	  	</div>
+
+					<!-- Inicio, Lista Precios SN -->
+					<label class="col-lg-1 control-label">Lista de precios <!--span class="text-danger">*</span--></label>
+					<div class="col-lg-3">
+						<select name="IdListaPrecio" class="form-control" id="IdListaPrecio" <?php if(!PermitirFuncion(418)) { echo "readonly='readonly'";} ?>>
+							<?php while ($row_ListaPrecio = sqlsrv_fetch_array($SQL_ListaPrecios)) {?>
+							<option value="<?php echo $row_ListaPrecio['IdListaPrecio']; ?>"
+							<?php if (isset($row['IdListaPrecio']) && (strcmp($row_ListaPrecio['IdListaPrecio'], $row['IdListaPrecio']) == 0)) {echo "selected=\"selected\"";}?>>
+								<?php echo $row_ListaPrecio['DeListaPrecio']; ?>
+							</option>
+							<?php }?>
+						</select>
+					</div>
+					<!-- Fin, Lista Precios SN -->
 				</div>
 				<div class="form-group">
 					<label class="col-xs-12"><h3 class="bg-success p-xs b-r-sm"><i class="fa fa-list"></i> Contenido de la factura</h3></label>
@@ -1357,6 +1409,8 @@ if (!PermitirFuncion(403)) {?>
 		<?php if ($edit == 0) {?>
 		 $('#Serie').trigger('change');
 	 	<?php }?>
+
+		$('#CardCode').trigger('change'); // SMM, 24/02/2022
 	});
 </script>
 <script>
