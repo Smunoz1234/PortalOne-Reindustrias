@@ -78,6 +78,7 @@ if (!isset($_GET['dato']) || ($_GET['dato'] == "")) {
         $ID_Evento = base64_decode($_GET['evento']);
     }
 
+    // SMM, 25/02/2022
     if ($IdListaPrecio != "") {
         $Param = array(
             "'" . $Dato . "'", // @DatoBuscar
@@ -112,6 +113,12 @@ if (!isset($_GET['dato']) || ($_GET['dato'] == "")) {
 	}
 </style>
 <script type="text/javascript">
+
+/**
+ * Esta función crea la URL para agregar el artículo al detalle.
+ *
+ * @author Ameth
+ */
 function showHint(str, whscode, pricelist="", doctype=<?php echo $_GET['doctype']; ?>)
 	{
 if(doctype==1){//Orden de venta crear
@@ -134,6 +141,8 @@ if(doctype==1){//Orden de venta crear
 	if (pricelist != "") {
 		xhttp.open("POST", "registro.php", true);
 		xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+		// "&pricelist="+pricelist+ - SMM, 25/02/2022
 		xhttp.send("P=35&doctype=1&item="+str+"&whscode="+whscode+"&pricelist="+pricelist+"&cardcode=<?php echo $CardCode; ?>&dim1=<?php echo $dim1; ?>&dim2=<?php echo $dim2; ?>&dim3=<?php echo $dim3; ?>");
 	} else {
 		xhttp.open("POST", "registro.php", true);
@@ -161,6 +170,8 @@ else if(doctype==2){//Orden de venta editar
 	if (pricelist != "") {
 		xhttp.open("POST", "registro.php", true);
 	  	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+		// "&pricelist="+pricelist+ - SMM, 25/02/2022
 	  	xhttp.send("P=35&doctype=2&item="+str+"&whscode="+whscode+"&pricelist="+pricelist+"&cardcode=<?php echo $CardCode; ?>&id=<?php echo $ID_OrdenVenta; ?>&evento=<?php echo $ID_Evento; ?>&dim1=<?php echo $dim1; ?>&dim2=<?php echo $dim2; ?>&dim3=<?php echo $dim3; ?>");
 	} else {
 		xhttp.open("POST", "registro.php", true);
@@ -224,9 +235,18 @@ else if(doctype==5){//Entrega de venta crear
 			  window.close();
 		}
   	};
-	  xhttp.open("POST", "registro.php", true);
-	  xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	  xhttp.send("P=35&doctype=5&item="+str+"&whscode="+whscode+"&cardcode=<?php echo $CardCode; ?>&dim1=<?php echo $dim1; ?>&dim2=<?php echo $dim2; ?>&dim3=<?php echo $dim3; ?>");
+
+	  if (pricelist != "") {
+		xhttp.open("POST", "registro.php", true);
+	  	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+		// "&pricelist="+pricelist+ - SMM, 25/02/2022
+	  	xhttp.send("P=35&doctype=5&item="+str+"&whscode="+whscode+"&pricelist="+pricelist+"&cardcode=<?php echo $CardCode; ?>&dim1=<?php echo $dim1; ?>&dim2=<?php echo $dim2; ?>&dim3=<?php echo $dim3; ?>");
+	  } else {
+		xhttp.open("POST", "registro.php", true);
+	  	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	  	xhttp.send("P=35&doctype=5&item="+str+"&whscode="+whscode+"&cardcode=<?php echo $CardCode; ?>&dim1=<?php echo $dim1; ?>&dim2=<?php echo $dim2; ?>&dim3=<?php echo $dim3; ?>");
+	  }
   }
 else if(doctype==6){//Entrega de venta editar
 	  var xhttp;
@@ -244,9 +264,18 @@ else if(doctype==6){//Entrega de venta editar
 			  window.close();
 		}
   	};
-	  xhttp.open("POST", "registro.php", true);
-	  xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	  xhttp.send("P=35&doctype=6&item="+str+"&whscode="+whscode+"&cardcode=<?php echo $CardCode; ?>&id=<?php echo $ID_EntregaVenta; ?>&evento=<?php echo $ID_Evento; ?>&dim1=<?php echo $dim1; ?>&dim2=<?php echo $dim2; ?>&dim3=<?php echo $dim3; ?>");
+
+	if (pricelist != "") {
+		xhttp.open("POST", "registro.php", true);
+		xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+		// "&pricelist="+pricelist+ - SMM, 25/02/2022
+		xhttp.send("P=35&doctype=6&item="+str+"&whscode="+whscode+"&pricelist="+pricelist+"&cardcode=<?php echo $CardCode; ?>&id=<?php echo $ID_EntregaVenta; ?>&evento=<?php echo $ID_Evento; ?>&dim1=<?php echo $dim1; ?>&dim2=<?php echo $dim2; ?>&dim3=<?php echo $dim3; ?>");
+	} else {
+		xhttp.open("POST", "registro.php", true);
+		xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		xhttp.send("P=35&doctype=6&item="+str+"&whscode="+whscode+"&cardcode=<?php echo $CardCode; ?>&id=<?php echo $ID_EntregaVenta; ?>&evento=<?php echo $ID_Evento; ?>&dim1=<?php echo $dim1; ?>&dim2=<?php echo $dim2; ?>&dim3=<?php echo $dim3; ?>");
+	}
   }
 else if(doctype==7){//Solicitud de traslado crear
 	  var xhttp;

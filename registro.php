@@ -2113,7 +2113,7 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     "''", //dim4
                     "''", //dim5
                     "''", //prjcode
-                    "'" . $_REQUEST['EmpVentas'] . "'",
+                    "'" . $_REQUEST['pricelist'] . "'", // SMM, 25/02/2022
                 );
                 $SQL_Insert = EjecutarSP('sp_tbl_OrdenVentaDetalleCarritoInsert', $ParametrosInsert, 35);
                 if ($SQL_Insert) {
@@ -2152,7 +2152,7 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     "''", //dim4
                     "''", //dim5
                     "''", //prjcode
-                    "'" . $_REQUEST['EmpVentas'] . "'",
+                    "'" . $_REQUEST['pricelist'] . "'", // SMM, 25/02/2022
                 );
                 $SQL_Insert = EjecutarSP('sp_tbl_OrdenVentaDetalleInsert', $ParametrosInsert, 35);
                 if ($SQL_Insert) {
@@ -2249,6 +2249,7 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     "''", //dim4
                     "''", //dim5
                     "''", //prjcode
+                    "'" . $_REQUEST['pricelist'] . "'", // SMM, 25/02/2022
                 );
                 $SQL_Insert = EjecutarSP('sp_tbl_EntregaVentaDetalleCarritoInsert', $ParametrosInsert, 35);
                 if ($SQL_Insert) {
@@ -2287,6 +2288,7 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     "''", //dim4
                     "''", //dim5
                     "''", //prjcode
+                    "'" . $_REQUEST['pricelist'] . "'", // SMM, 25/02/2022
                 );
                 $SQL_Insert = EjecutarSP('sp_tbl_EntregaVentaDetalleInsert', $ParametrosInsert, 35);
                 if ($SQL_Insert) {
