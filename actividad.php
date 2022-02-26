@@ -4,7 +4,7 @@ $IdActividad="";
 $msg_error="";//Mensaje del error
 $dt_LS=0;//sw para saber si vienen datos de la llamada de servicio. 0 no vienen. 1 si vienen.
 $dt_DM=0;//sw para saber si vienen datos de un Documento de Marketing. 0 no vienen. 1 si vienen.
-$TituloAct="INSPECCION DE CONDICIONES SANITARIAS";//Titulo por defecto cuando se está creando la actividad
+$TituloAct="";//Titulo por defecto cuando se está creando la actividad
 $BloqEdit=0;//Saber si solo el usuario creador puede editar la actividad. 1 Bloqueado porque no es el creador. 0 Se puede editar por todos.
 
 if(isset($_GET['id'])&&($_GET['id']!="")){

@@ -92,7 +92,7 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
         if (!isset($_GET['id']) || ($_GET['id'] == "")) {
             echo "<option value=''>(Ninguna)</option>";
         } else {
-            $SQL = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_CodigoCliente='" . $_GET['id'] . "' And NombreSucursal='" . base64_decode($_GET['suc']) . "' And IdEstadoLlamada='-3'", 'AsuntoLlamada');
+            $SQL = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_CodigoCliente='" . $_GET['id'] . "' And NombreSucursal='" . base64_decode($_GET['suc']) . "' And IdEstadoLlamada<>'-1'", 'AsuntoLlamada');
             $Num = sqlsrv_num_rows($SQL);
             if ($Num) {
                 echo "<option value=''>(Ninguna)</option>";

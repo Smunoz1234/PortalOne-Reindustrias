@@ -783,10 +783,10 @@ function Eliminar(){
 								</div>
 								<div class="row">
 									<div class="col-lg-6 input-group date">
-										<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="fecha_aprox_entrega" type="text" autocomplete="off" class="form-control" id="fecha_aprox_entrega" value="<?php if (($type_frm == 1) && ($row['fecha_aprox_entrega']->format('Y-m-d')) != "1900-01-01") {echo $row['fecha_aprox_entrega']->format('Y-m-d');} else {echo date('Y-m-d');}?>" placeholder="YYYY-MM-DD" required>
+										<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="fecha_aprox_entrega" type="text" autocomplete="off" class="form-control" id="fecha_aprox_entrega" value="<?php if (($type_frm == 1) && ($row['fecha_aprox_entrega']->format('Y-m-d')) != "1900-01-01") {echo $row['fecha_aprox_entrega']->format('Y-m-d');} //else {echo date('Y-m-d');}?>" placeholder="YYYY-MM-DD" required>
 									</div>
 									<div class="col-lg-6 input-group clockpicker" data-autoclose="true">
-										<input name="hora_aprox_entrega" id="hora_aprox_entrega" type="text" autocomplete="off" class="form-control" value="<?php if (($type_frm == 1) && ($row['fecha_aprox_entrega']->format('Y-m-d')) != "1900-01-01") {echo $row['fecha_aprox_entrega']->format('H:i');} else {echo date('H:i');}?>" placeholder="hh:mm" required>
+										<input name="hora_aprox_entrega" id="hora_aprox_entrega" type="text" autocomplete="off" class="form-control" value="<?php if (($type_frm == 1) && ($row['fecha_aprox_entrega']->format('Y-m-d')) != "1900-01-01") {echo $row['fecha_aprox_entrega']->format('H:i');} //else {echo date('H:i');}?>" placeholder="hh:mm" required>
 										<span class="input-group-addon">
 											<span class="fa fa-clock-o"></span>
 										</span>
@@ -1334,63 +1334,78 @@ function testImage(url, timeoutT) {
 
 <script>
 $(document).ready(function(){
+	var bandera_fechas = false; // SMM, 25/02/2022
 	$('#recepcionForm').on('submit', function (event) {
+		// Stiven Muñoz Murillo, 08/02/2022
 		event.preventDefault();
+
+		// Stiven Muñoz Murillo, 25/02/2022
+		let d1 = new Date(`${$('#fecha_ingreso').val()} ${$('#hora_ingreso').val()}`);
+		let d2 = new Date(`${$('#fecha_aprox_entrega').val()} ${$('#hora_aprox_entrega').val()}`);
+
+		console.log(d1);
+		console.log(d2);
+
+		// Stiven Muñoz Murillo, 25/02/2022
+		bandera_fechas = (d1 > d2) ? true:false;
 	});
 
 	$("#recepcionForm").validate({
 		submitHandler: function(form){
-			// Stiven Muñoz Murillo, 08/02/2022
-			// $('.ibox-content').toggleClass('sk-loading');
-			// form.submit();
+			if(bandera_fechas) {
+				Swal.fire({
+					"title": "¡Ha ocurrido un error!",
+					"text": "La fecha de ingreso no puede superar a la fecha de entrega.",
+					"icon": "warning"
+				});
+			} else {
+				$('.ibox-content').toggleClass('sk-loading', true); // Carga iniciada.
 
-			console.log("Line 1347", anexos);
-			$('.ibox-content').toggleClass('sk-loading', true); // Carga iniciada.
+				let formData = new FormData(form);
+				Object.entries(photos).forEach(([key, value]) => formData.append(key, value));
+				Object.entries(anexos).forEach(([key, value]) => formData.append(`Anexo${key}`, value));
 
-			let formData = new FormData(form);
-			Object.entries(photos).forEach(([key, value]) => formData.append(key, value));
-			Object.entries(anexos).forEach(([key, value]) => formData.append(`Anexo${key}`, value));
-
-			// Agregar valores de las listas
-			formData.append("id_llamada_servicio", $("#id_llamada_servicio").val());
-			formData.append("id_marca", $("#id_marca").val());
-			formData.append("id_linea", $("#id_linea").val());
-			formData.append("id_annio", $("#id_annio").val());
-			formData.append("id_color", $("#id_color").val());
+				// Agregar valores de las listas
+				formData.append("id_llamada_servicio", $("#id_llamada_servicio").val());
+				formData.append("id_marca", $("#id_marca").val());
+				formData.append("id_linea", $("#id_linea").val());
+				formData.append("id_annio", $("#id_annio").val());
+				formData.append("id_color", $("#id_color").val());
 
 
-			let json = Object.fromEntries(formData);
-			localStorage.recepcionForm = JSON.stringify(json);
+				let json = Object.fromEntries(formData);
+				localStorage.recepcionForm = JSON.stringify(json);
 
-			console.log("Line 1790", json);
+				console.log("Line 1790", json);
 
-			// Inicio, AJAX
-			$.ajax({
-				url: 'frm_recepcion_vehiculo_ws.php',
-				type: 'POST',
-				data: formData,
-				processData: false,  // tell jQuery not to process the data
-  				contentType: false,   // tell jQuery not to set contentType
-				success: function(response) {
-					console.log("Line 1805", response);
+				// Inicio, AJAX
+				$.ajax({
+					url: 'frm_recepcion_vehiculo_ws.php',
+					type: 'POST',
+					data: formData,
+					processData: false,  // tell jQuery not to process the data
+					contentType: false,   // tell jQuery not to set contentType
+					success: function(response) {
+						console.log("Line 1805", response);
 
-					let json_response = JSON.parse(response);
-					Swal.fire(json_response).then(() => {
-						if (json_response.hasOwnProperty('return')) {
-							window.location = json_response.return;
-						}
-					});
+						let json_response = JSON.parse(response);
+						Swal.fire(json_response).then(() => {
+							if (json_response.hasOwnProperty('return')) {
+								window.location = json_response.return;
+							}
+						});
 
-					$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
-				},
-				error: function(response) {
-					console.error("server error")
-					console.error(response);
-					
-					$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
-				}
-			});
-			// Fin, AJAX
+						$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
+					},
+					error: function(response) {
+						console.error("server error")
+						console.error(response);
+
+						$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
+					}
+				});
+				// Fin, AJAX
+			}
 		}
 	});
 		 $(".alkin").on('click', function(){

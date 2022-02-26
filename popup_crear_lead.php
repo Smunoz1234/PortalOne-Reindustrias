@@ -378,21 +378,21 @@ while ($row_TipoDoc = sqlsrv_fetch_array($SQL_TipoDoc)) {?>
 								<div class="form-group">
 									<label class="col-lg-1 control-label">Nombres</label>
 									<div class="col-lg-3">
-										<input name="PNNombres" type="text" class="form-control" id="PNNombres" <?php if (($sw_error == 0) || ($sw_error == 1 && $_POST['TipoEntidad'] == 2)) {echo "readonly='readonly'";}?> value="<?php if ($sw_error == 1) {echo $_POST['PNNombres'];}?>" onChange="CrearNombre();" autocomplete="off">
+										<input name="PNNombres" type="text" class="form-control" id="PNNombres" onkeyup="mayus(this);" <?php if (($sw_error == 0) || ($sw_error == 1 && $_POST['TipoEntidad'] == 2)) {echo "readonly='readonly'";}?> value="<?php if ($sw_error == 1) {echo $_POST['PNNombres'];}?>" onChange="CrearNombre();" autocomplete="off">
 									</div>
 									<label class="col-lg-1 control-label">Primer apellido</label>
 									<div class="col-lg-3">
-										<input name="PNApellido1" type="text" class="form-control" id="PNApellido1" <?php if (($sw_error == 0) || ($sw_error == 1 && $_POST['TipoEntidad'] == 2)) {echo "readonly='readonly'";}?> value="<?php if ($sw_error == 1) {echo $_POST['PNApellido1'];}?>" onChange="CrearNombre();" autocomplete="off">
+										<input name="PNApellido1" type="text" class="form-control" id="PNApellido1" onkeyup="mayus(this);" <?php if (($sw_error == 0) || ($sw_error == 1 && $_POST['TipoEntidad'] == 2)) {echo "readonly='readonly'";}?> value="<?php if ($sw_error == 1) {echo $_POST['PNApellido1'];}?>" onChange="CrearNombre();" autocomplete="off">
 									</div>
 									<label class="col-lg-1 control-label">Segundo apellido</label>
 									<div class="col-lg-3">
-										<input name="PNApellido2" type="text" class="form-control" id="PNApellido2" <?php if (($sw_error == 0) || ($sw_error == 1 && $_POST['TipoEntidad'] == 2)) {echo "readonly='readonly'";}?> value="<?php if ($sw_error == 1) {echo $_POST['PNApellido2'];}?>" onChange="CrearNombre();" autocomplete="off">
+										<input name="PNApellido2" type="text" class="form-control" id="PNApellido2" onkeyup="mayus(this);" <?php if (($sw_error == 0) || ($sw_error == 1 && $_POST['TipoEntidad'] == 2)) {echo "readonly='readonly'";}?> value="<?php if ($sw_error == 1) {echo $_POST['PNApellido2'];}?>" onChange="CrearNombre();" autocomplete="off">
 									</div>
 								</div>
 								<div class="form-group">
 									<label class="col-lg-1 control-label">Nombre cliente/Razón social <span class="text-danger">*</span></label>
 									<div class="col-lg-3">
-										<input type="text" class="form-control" name="CardName" id="CardName" required value="<?php if ($sw_error == 1) {echo $_POST['CardName'];}?>" autocomplete="off" <?php if ($sw_error == 1 && $_POST['TipoEntidad'] == 1) {echo "readonly='readonly'";}?>>
+										<input type="text" class="form-control" name="CardName" id="CardName" onkeyup="mayus(this);" required value="<?php if ($sw_error == 1) {echo $_POST['CardName'];}?>" autocomplete="off" <?php if ($sw_error == 1 && $_POST['TipoEntidad'] == 1) {echo "readonly='readonly'";}?>>
 									</div>
 									<label class="col-lg-1 control-label">Correo eléctronico <span class="text-danger">*</span></label>
 									<div class="col-lg-3">
@@ -412,15 +412,15 @@ while ($row_GruposClientes = sqlsrv_fetch_array($SQL_GruposClientes)) {?>
 								<div class="form-group">
 									<label class="col-lg-1 control-label">Teléfono <span class="text-danger">*</span></label>
 									<div class="col-lg-3">
-										<input type="text" class="form-control" name="TelefonoCliente" id="TelefonoCliente" required value="<?php if ($sw_error == 1) {echo $_POST['TelefonoCliente'];}?>" autocomplete="off">
+										<input type="text" class="form-control" name="TelefonoCliente" id="TelefonoCliente" onkeyup="mayus(this);" required value="<?php if ($sw_error == 1) {echo $_POST['TelefonoCliente'];}?>" autocomplete="off">
 									</div>
 									<label class="col-lg-1 control-label">Celular <span class="text-danger">*</span></label>
 									<div class="col-lg-3">
-										<input type="text" class="form-control" name="CelularCliente" id="CelularCliente" required value="<?php if ($sw_error == 1) {echo $_POST['CelularCliente'];}?>" autocomplete="off">
+										<input type="text" class="form-control" name="CelularCliente" id="CelularCliente" onkeyup="mayus(this);" required value="<?php if ($sw_error == 1) {echo $_POST['CelularCliente'];}?>" autocomplete="off">
 									</div>
 									<label class="col-lg-1 control-label">Dirección <span class="text-danger">*</span></label>
 									<div class="col-lg-3">
-										<input name="Street" type="text" required class="form-control" id="Street" maxlength="100" autocomplete="off" value="<?php if ($sw_error == 1) {echo $_POST['Street'];}?>">
+										<input name="Street" type="text" required class="form-control" id="Street" maxlength="100" onkeyup="mayus(this);" autocomplete="off" value="<?php if ($sw_error == 1) {echo $_POST['Street'];}?>">
 									</div>
 								</div>
 								<div class="form-group">
@@ -777,6 +777,11 @@ function CrearProyecto(){
 	ValidarPrj()
 
 	document.getElementById("NomProyecto").value=document.getElementById("CardName").value
+}
+
+// Stiven Muñoz Murillo, 26/02/2022
+function mayus(e) {
+	e.value = e.value.toUpperCase();
 }
 </script>
 <script>

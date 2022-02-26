@@ -860,6 +860,11 @@ function CopiarNombreCont(){
 
 }
 <?php }?>
+
+// Stiven Muñoz Murillo, 26/02/2022
+function mayus(e) {
+	e.value = e.value.toUpperCase();
+}
 </script>
 <?php /*?><script>
 function NomDir(id){
@@ -1048,21 +1053,21 @@ if ($sw_ext == 0) {?>
 								    <div class="form-group">
 										<label class="col-lg-1 control-label">Nombres</label>
 										<div class="col-lg-3">
-											<input name="PNNombres" type="text" class="form-control" id="PNNombres" readonly="readonly" value="<?php if ($edit == 1 || $sw_error == 1) {echo ($row['U_HBT_Nombres']);}?>" onChange="CrearNombre();">
+											<input name="PNNombres" type="text" class="form-control" id="PNNombres" onkeyup="mayus(this);" readonly="readonly" value="<?php if ($edit == 1 || $sw_error == 1) {echo ($row['U_HBT_Nombres']);}?>" onChange="CrearNombre();">
 										</div>
 										<label class="col-lg-1 control-label">Primer apellido</label>
 										<div class="col-lg-3">
-											<input name="PNApellido1" type="text" class="form-control" id="PNApellido1" readonly="readonly" value="<?php if ($edit == 1 || $sw_error == 1) {echo ($row['U_HBT_Apellido1']);}?>" onChange="CrearNombre();">
+											<input name="PNApellido1" type="text" class="form-control" id="PNApellido1" onkeyup="mayus(this);" readonly="readonly" value="<?php if ($edit == 1 || $sw_error == 1) {echo ($row['U_HBT_Apellido1']);}?>" onChange="CrearNombre();">
 										</div>
 										<label class="col-lg-1 control-label">Segundo apellido</label>
 										<div class="col-lg-3">
-											<input name="PNApellido2" type="text" class="form-control" id="PNApellido2" readonly="readonly" value="<?php if ($edit == 1 || $sw_error == 1) {echo ($row['U_HBT_Apellido2']);}?>" onChange="CrearNombre();">
+											<input name="PNApellido2" type="text" class="form-control" id="PNApellido2" onkeyup="mayus(this);" readonly="readonly" value="<?php if ($edit == 1 || $sw_error == 1) {echo ($row['U_HBT_Apellido2']);}?>" onChange="CrearNombre();">
 										</div>
 									</div>
 									<div class="form-group">
 										<label class="col-lg-1 control-label">Nombre cliente/Razón social <span class="text-danger">*</span></label>
 										<div class="col-lg-3">
-											<input type="text" class="form-control" name="CardName" id="CardName" required value="<?php if ($edit == 1 || $sw_error == 1) {echo ($row['NombreCliente']);}?>" onChange="CrearNombre();">
+											<input type="text" class="form-control" name="CardName" id="CardName" onkeyup="mayus(this);" required value="<?php if ($edit == 1 || $sw_error == 1) {echo ($row['NombreCliente']);}?>" onChange="CrearNombre();">
 										</div>
 										<label class="col-lg-1 control-label">Estado servicio</label>
 										<div class="col-lg-3">
@@ -1076,11 +1081,11 @@ if ($sw_ext == 0) {?>
 								    <div class="form-group">
 										<label class="col-lg-1 control-label">Teléfono <span class="text-danger">*</span></label>
 										<div class="col-lg-3">
-											<input type="text" class="form-control" name="TelefonoCliente" id="TelefonoCliente" required value="<?php if ($edit == 1 || $sw_error == 1) {echo ($row['Telefono']);}?>" <?php if ($edit == 0) {?>onChange="CopiarNombreCont();"<?php }?>>
+											<input type="text" class="form-control" name="TelefonoCliente" id="TelefonoCliente" onkeyup="mayus(this);" required value="<?php if ($edit == 1 || $sw_error == 1) {echo ($row['Telefono']);}?>" <?php if ($edit == 0) {?>onChange="CopiarNombreCont();"<?php }?>>
 										</div>
 										<label class="col-lg-1 control-label">Celular <span class="text-danger">*</span></label>
 										<div class="col-lg-3">
-											<input type="text" class="form-control" name="CelularCliente" id="CelularCliente" required value="<?php if ($edit == 1 || $sw_error == 1) {echo ($row['Celular']);}?>" <?php if ($edit == 0) {?>onChange="CopiarNombreCont();"<?php }?>>
+											<input type="text" class="form-control" name="CelularCliente" id="CelularCliente" onkeyup="mayus(this);" required value="<?php if ($edit == 1 || $sw_error == 1) {echo ($row['Celular']);}?>" <?php if ($edit == 0) {?>onChange="CopiarNombreCont();"<?php }?>>
 										</div>
 										<label class="col-lg-1 control-label">Vendedor <span class="text-danger">*</span></label>
 										<div class="col-lg-3">
