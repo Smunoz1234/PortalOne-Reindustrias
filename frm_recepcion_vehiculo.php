@@ -541,7 +541,7 @@ function Eliminar(){
 							<div class="col-lg-4">
 								<label class="control-label">Correo</label>
 
-								<input name="correo" type="text" class="form-control" id="correo" maxlength="100" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['CorreoContacto'];} elseif ($dt_LS == 1) {echo isset($_GET['Correo']) ? base64_decode($_GET['Correo']) : "";}?>">
+								<input name="correo" type="email" class="form-control" id="correo" maxlength="100" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['CorreoContacto'];} elseif ($dt_LS == 1) {echo isset($_GET['Correo']) ? base64_decode($_GET['Correo']) : "";}?>">
 							</div>
 						</div>
 						<div class="form-group">
@@ -1045,7 +1045,7 @@ function Eliminar(){
 						<div class="form-group">
 							<label class="col-lg-1 control-label">Correo de contacto <span class="text-danger">*</span></label>
 							<div class="col-lg-4">
-								<input autocomplete="off" name="correo_responsable_cliente" type="text" class="form-control" required="required" id="correo_responsable_cliente"  <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?>>
+								<input autocomplete="off" name="correo_responsable_cliente" type="email" class="form-control" required="required" id="correo_responsable_cliente"  <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?>>
 							</div>
 						</div>
 						<br><br>

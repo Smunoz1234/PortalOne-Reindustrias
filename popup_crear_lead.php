@@ -396,7 +396,7 @@ while ($row_TipoDoc = sqlsrv_fetch_array($SQL_TipoDoc)) {?>
 									</div>
 									<label class="col-lg-1 control-label">Correo eléctronico <span class="text-danger">*</span></label>
 									<div class="col-lg-3">
-										<input type="text" class="form-control" name="CorreoCliente" id="CorreoCliente" required value="<?php if ($sw_error == 1) {echo $_POST['CorreoCliente'];}?>" autocomplete="off">
+										<input type="email" class="form-control" name="CorreoCliente" id="CorreoCliente" required value="<?php if ($sw_error == 1) {echo $_POST['CorreoCliente'];}?>" autocomplete="off">
 									</div>
 									<label class="col-lg-1 control-label">Grupo <span class="text-danger">*</span></label>
 									<div class="col-lg-3">
@@ -511,10 +511,10 @@ while ($row_MedioPago = sqlsrv_fetch_array($SQL_MedioPago)) {?>
 								<div class="form-group">
 										<label class="col-lg-1 control-label">Lista de precios <!--span class="text-danger">*</span--></label>
 										<div class="col-lg-3">
-											<select name="IdListaPrecio" class="form-control" id="IdListaPrecio" <?php //required="required" ?>>
+											<select name="IdListaPrecio" class="form-control" id="IdListaPrecio" <?php if(!PermitirFuncion(511)) { echo "disabled='disabled'";} ?>>
 											  <?php while ($row_ListaPrecio = sqlsrv_fetch_array($SQL_ListaPrecios)) {?>
 												<option value="<?php echo $row_ListaPrecio['IdListaPrecio']; ?>"
-												<?php if (isset($row['IdListaPrecio']) && (strcmp($row_ListaPrecio['IdListaPrecio'], $row['IdListaPrecio']) == 0)) {echo "selected=\"selected\"";}?>>
+												<?php if ((ObtenerValorDefecto(2,'IdListaPrecio') !== null) && (strcmp($row_ListaPrecio['IdListaPrecio'], ObtenerValorDefecto(2,'IdListaPrecio')) == 0)) {echo "selected=\"selected\"";}?>>
 													<?php echo $row_ListaPrecio['DeListaPrecio']; ?>
 												</option>
 											  <?php }?>

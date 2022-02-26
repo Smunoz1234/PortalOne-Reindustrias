@@ -1226,7 +1226,7 @@ if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
 					<!-- Inicio, Lista Precios SN -->
 					<label class="col-lg-1 control-label">Lista de precios <!--span class="text-danger">*</span--></label>
 					<div class="col-lg-3">
-						<select name="IdListaPrecio" class="form-control" id="IdListaPrecio" <?php if(!PermitirFuncion(418)) { echo "readonly='readonly'";} ?>>
+						<select name="IdListaPrecio" class="form-control" id="IdListaPrecio" <?php if(!PermitirFuncion(418)) { echo "disabled='disabled'";} ?>>
 							<?php while ($row_ListaPrecio = sqlsrv_fetch_array($SQL_ListaPrecios)) {?>
 							<option value="<?php echo $row_ListaPrecio['IdListaPrecio']; ?>"
 							<?php if (isset($row['IdListaPrecio']) && (strcmp($row_ListaPrecio['IdListaPrecio'], $row['IdListaPrecio']) == 0)) {echo "selected=\"selected\"";}?>>
