@@ -34,7 +34,7 @@ if (isset($_GET['pGrupo'])) {
 
 // Stiven Muñoz Murillo, 14/02/2022
 $cadena = $Recurso ?? "";
-// echo "<script> console.log('Line 37', '$cadena'); </script>";
+// echo "<script> console.log('programacion_rutas_calendario.php 37', '$cadena'); </script>";
 
 if ($type == 1) { //Si estoy refrescando datos ya cargados
 
@@ -60,6 +60,9 @@ if ($type == 1) { //Si estoy refrescando datos ya cargados
 } elseif ($type == 0 && $sw == 1) {
     array_push($ParamRec, "'" . $FilRec . "'");
     $SQL_Recursos = EjecutarSP("sp_ConsultarTecnicos", $ParamRec);
+
+	// Descomentar, para válidar los parámetros del SP.
+	// var_dump($ParamRec);
 }
 
 ?>

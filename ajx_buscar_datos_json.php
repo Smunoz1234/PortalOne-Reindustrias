@@ -189,24 +189,24 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
         $IdListaPrecio = isset($_GET['idlistaprecio']) ? $_GET['idlistaprecio'] : ""; // NEDUGA, 24/02/2022
 
         $Param = array(
-            "'".$Dato."'", // @DatoBuscar
-            "'".$Almacen."'", // @WhsCode
-            "'".$TipoDoc."'",
-            "'".$SoloStock."'",
-            "'".$TodosArticulos."'",
-            "'".$IdListaPrecio."'", // @PriceList. NEDUGA, 24/02/2022
+            "'" . $Dato . "'", // @DatoBuscar
+            "'" . $Almacen . "'", // @WhsCode
+            "'" . $TipoDoc . "'",
+            "'" . $SoloStock . "'",
+            "'" . $TodosArticulos . "'",
+            "'" . $IdListaPrecio . "'", // @PriceList. NEDUGA, 24/02/2022
         );
         //$Param=array("'".$_GET['data']."'","'".$_GET['whscode']."'","'".$_GET['tipodoc']."'");
-        
+
         // $SQL=EjecutarSP('sp_ConsultarArticulos',$Param); // Anterior
-	    $SQL=EjecutarSP('sp_ConsultarArticulos_ListaPrecios',$Param); // Nuevo
-        
+        $SQL = EjecutarSP('sp_ConsultarArticulos_ListaPrecios', $Param); // Nuevo
+
         $records = array();
         $j = 0;
         while ($row = sqlsrv_fetch_array($SQL)) {
             $records[$j] = array(
                 'IdArticulo' => $row['IdArticulo'],
-				'CodArticuloProveedor' => $row['CodArticuloProveedor'], // NEDUGA, 24/02/2022
+                'CodArticuloProveedor' => $row['CodArticuloProveedor'], // NEDUGA, 24/02/2022
                 'IdListaPrecio' => $row['IdListaPrecio'], // SMM, 24/02/2022
                 'DescripcionArticulo' => $row['DescripcionArticulo'],
                 'NombreBuscarArticulo' => $row['NombreBuscarArticulo'],
@@ -624,6 +624,9 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
             $NombreContacto = $row['CDU_NombreContacto'] ?? "";
             $TelefonoContacto = $row['CDU_TelefonoContacto'] ?? "";
             $CorreoContacto = $row['CDU_CorreoContacto'] ?? "";
+
+            // SMM, 02/03/2022
+            $Kilometros = $row['CDU_Kilometros'] ?? "";
         }
 
         if ($SerialInterno != "''") {
@@ -646,6 +649,7 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
                 'CDU_NombreContacto' => $NombreContacto ?? "", // SMM, 15/02/2022
                 'CDU_TelefonoContacto' => $TelefonoContacto ?? "", // SMM, 22/02/2022
                 'CDU_CorreoContacto' => $CorreoContacto ?? "", // SMM, 22/02/2022
+                'CDU_Kilometros' => $Kilometros ?? "", // SMM, 02/03/2022
             );
             echo json_encode($records);
         } else {
@@ -666,6 +670,7 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
                 'CDU_NombreContacto' => null,
                 'CDU_TelefonoContacto' => null,
                 'CDU_CorreoContacto' => null,
+                'CDU_Kilometros' => null,
             );
             echo json_encode($records);
         }

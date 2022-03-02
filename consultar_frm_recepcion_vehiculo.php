@@ -311,7 +311,7 @@ while ($row_Empleados = sqlsrv_fetch_array($SQL_Empleados)) {?>
 									<td><?php echo $row['id_direccion_destino']; ?></td>
 									<td><?php echo $row['placa']; ?></td>
 									<td><?php echo $row['comentarios_cierre']; ?></td>
-									<td><?php echo $row['fecha_creacion']->format('Y-m-d H:i'); ?></td>
+									<td><?php echo $row['hora_creacion']->format('Y-m-d H:i'); ?></td>
 									<td><?php echo $row['nombre_usuario_creacion']; ?></td>
 									<td><?php echo ($row['fecha_cierre'] != "") ? $row['fecha_cierre']->format('Y-m-d H:i') : ""; ?></td>
 									<td><?php echo $row['nombre_usuario_cierre']; ?></td>

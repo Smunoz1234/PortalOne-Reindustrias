@@ -363,6 +363,8 @@ if (isset($sw_error) && ($sw_error == 1)) {
 					document.getElementById('VIN').value = data.SerialFabricante;
 					document.getElementById('no_motor').value = data.No_Motor;
 
+					document.getElementById('km_actual').value = data.CDU_Kilometros; // SMM, 02/03/2022
+
 					document.getElementById('responsable_cliente').value = data.CDU_NombreContacto; // SMM, 15/02/2022
 					document.getElementById('telefono_responsable_cliente').value = data.CDU_TelefonoContacto; // SMM, 22/02/2022
 					document.getElementById('correo_responsable_cliente').value = data.CDU_CorreoContacto; // SMM, 22/02/2022
@@ -763,10 +765,10 @@ function Eliminar(){
 								</div>
 								<div class="row">
 									<div class="col-lg-6 input-group date">
-										<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="fecha_ingreso" type="text" autocomplete="off" class="form-control" id="fecha_ingreso" value="<?php if (($type_frm == 1) && ($row['fecha_ingreso']->format('Y-m-d')) != "1900-01-01") {echo $row['fecha_ingreso']->format('Y-m-d');} //else {echo date('Y-m-d');}?>" placeholder="YYYY-MM-DD" required>
+										<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="fecha_ingreso" type="text" autocomplete="off" class="form-control" id="fecha_ingreso" value="<?php if (($type_frm == 1) && ($row['fecha_ingreso']->format('Y-m-d')) != "1900-01-01") {echo $row['fecha_ingreso']->format('Y-m-d');} else {echo date('Y-m-d');}?>" placeholder="YYYY-MM-DD" required>
 									</div>
 									<div class="col-lg-6 input-group clockpicker" data-autoclose="true">
-										<input name="hora_ingreso" id="hora_ingreso" type="text" autocomplete="off" class="form-control" value="<?php if (($type_frm == 1) && ($row['fecha_ingreso']->format('Y-m-d')) != "1900-01-01") {echo $row['fecha_ingreso']->format('H:i');} //else {echo date('H:i');}?>" placeholder="hh:mm" required>
+										<input name="hora_ingreso" id="hora_ingreso" type="text" autocomplete="off" class="form-control" value="<?php if (($type_frm == 1) && ($row['fecha_ingreso']->format('Y-m-d')) != "1900-01-01") {echo $row['fecha_ingreso']->format('H:i');} else {echo date('H:i');}?>" placeholder="hh:mm" required>
 										<span class="input-group-addon">
 											<span class="fa fa-clock-o"></span>
 										</span>
@@ -1015,7 +1017,7 @@ function Eliminar(){
 						<div class="form-group">
 							<label class="col-lg-1 control-label">Observaciones <span class="text-danger">*</span></label>
 							<div class="col-lg-8">
-								<textarea name="observaciones" rows="5" type="text" class="form-control" required="required" id="texto_condiciones" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?>><?php if (($type_frm == 1) || ($sw_error == 1)) {echo utf8_decode($row['ComentariosCierre']);}?></textarea>
+								<textarea name="observaciones" id="observaciones" rows="5" type="text" maxlength="250" class="form-control" required="required" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?>><?php if (($type_frm == 1) || ($sw_error == 1)) {echo utf8_decode($row['ComentariosCierre']);}?></textarea>
 							</div>
 						</div>
 					</div>
@@ -1334,6 +1336,8 @@ function testImage(url, timeoutT) {
 
 <script>
 $(document).ready(function(){
+	maxLength('observaciones'); // SMM, 02/03/2022
+
 	var bandera_fechas = false; // SMM, 25/02/2022
 	$('#recepcionForm').on('submit', function (event) {
 		// Stiven Muñoz Murillo, 08/02/2022

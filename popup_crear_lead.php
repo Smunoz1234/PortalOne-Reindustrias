@@ -84,6 +84,21 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
             $IdSN = "CL-" . $IdNum;
         }
 
+        // Inicio, tabla de retenciones.
+        $id_municipio = "'" . $_POST['City'] . "'";
+        $id_tipo_entidad = "'" . $_POST['TipoEntidad'] . "'";
+        $SQL_Retenciones = Seleccionar('tbl_MunicipiosRetenciones', 'id_retencion', "estado='Y' AND id_municipio=$id_municipio AND id_tipo_entidad=$id_tipo_entidad");
+
+        $Retenciones = array();
+        while ($row_Retenciones = sqlsrv_fetch_array($SQL_Retenciones)) {
+            array_push($Retenciones, array(
+                "metodo" => 1,
+                "id_retencion" => $row_Retenciones["id_retencion"],
+                "id_socio_negocio" => $IdSN,
+            ));
+        }
+        // Fin, tabla de retenciones.
+
         $Cabecera = array(
             "id_series" => null,
             "id_socio_negocio" => $IdSN,
@@ -173,7 +188,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
                     "id_barrio" => $_POST['Block'],
                     "barrio" => $row_Barrio['DeBarrio'],
                     "id_estrato" => "",
-                    "id_codigo_postal" => ObtenerValorDefecto(2, "CodigoPostal"),
+                    "id_codigo_postal" => isset($row_Ciudad['CodigoPostal']) && ($row_Ciudad['CodigoPostal'] != "") ? $row_Ciudad['CodigoPostal'] : ObtenerValorDefecto(2, "CodigoPostal"),
                     "CDU_nombre_contacto" => isset($Nombres[0]) && ($Nombres[0] != "") ? $Nombres[0] : $_POST['CardName'],
                     "CDU_cargo_contacto" => "NO APLICA",
                     "CDU_telefono_contacto" => $_POST['TelefonoCliente'],
@@ -182,6 +197,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
                     "metodo" => 1,
                 ),
             ),
+            "retenciones" => $Retenciones, // SMM 01/03/2022
             "anexos" => $Anexos,
             "metodo" => 1,
             "prop1" => (isset($_POST['Prop1']) && ($_POST['Prop1'] == "Y")) ? $_POST['Prop1'] : "N",
@@ -197,8 +213,8 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
         );
 
         // Para probar, en caso contrario comentar
-        //$Cabecera_json = json_encode($Cabecera);
-        //echo $Cabecera_json;
+        /*$Cabecera_json = json_encode($Cabecera);
+        echo $Cabecera_json;*/
         // Comentar esto
         $Metodo = "SociosNegocios/Asistente";
         $Resultado = EnviarWebServiceSAP($Metodo, $Cabecera, true, true);
@@ -511,10 +527,10 @@ while ($row_MedioPago = sqlsrv_fetch_array($SQL_MedioPago)) {?>
 								<div class="form-group">
 										<label class="col-lg-1 control-label">Lista de precios <!--span class="text-danger">*</span--></label>
 										<div class="col-lg-3">
-											<select name="IdListaPrecio" class="form-control" id="IdListaPrecio" <?php if(!PermitirFuncion(511)) { echo "disabled='disabled'";} ?>>
+											<select name="IdListaPrecio" class="form-control" id="IdListaPrecio" <?php if (!PermitirFuncion(511)) {echo "disabled='disabled'";}?>>
 											  <?php while ($row_ListaPrecio = sqlsrv_fetch_array($SQL_ListaPrecios)) {?>
 												<option value="<?php echo $row_ListaPrecio['IdListaPrecio']; ?>"
-												<?php if ((ObtenerValorDefecto(2,'IdListaPrecio') !== null) && (strcmp($row_ListaPrecio['IdListaPrecio'], ObtenerValorDefecto(2,'IdListaPrecio')) == 0)) {echo "selected=\"selected\"";}?>>
+												<?php if ((ObtenerValorDefecto(2, 'IdListaPrecio') !== null) && (strcmp($row_ListaPrecio['IdListaPrecio'], ObtenerValorDefecto(2, 'IdListaPrecio')) == 0)) {echo "selected=\"selected\"";}?>>
 													<?php echo $row_ListaPrecio['DeListaPrecio']; ?>
 												</option>
 											  <?php }?>
