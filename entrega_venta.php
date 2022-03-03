@@ -1,10 +1,3 @@
-<!-- script>
-	// Stiven Muñoz Murillo, 28/01/2022
-	function ajustarCadena(cadena) {
-		return JSON.parse(cadena.replace(/\n|\r/g, ""));
-	}
-</script -->
-
 <?php require_once "includes/conexion.php";
 PermitirAcceso(407);
 $dt_LS = 0; //sw para saber si vienen datos de la llamada de servicio. 0 no vienen. 1 si vienen.
@@ -403,10 +396,10 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 // Lista de precios, 24/02/2022
 $SQL_ListaPrecios = Seleccionar('uvw_Sap_tbl_ListaPrecios', '*');
 
-// Stiven Muñoz Murillo, 28/01/2022
+// Stiven Muñoz Murillo, 02/03/2022
 $row_encode = isset($row) ? json_encode($row) : "";
-$cadena = isset($row) ? "ajustarCadena('$row_encode')" : "'Not Found'";
-// echo "<script> console.log($cadena); </script>";
+$cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'Not Found'";
+echo "<script> console.log($cadena); </script>";
 ?>
 
 <!DOCTYPE html>

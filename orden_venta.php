@@ -1,10 +1,3 @@
-<!-- script>
-	// Stiven Muñoz Murillo, 28/01/2022
-	function ajustarCadena(cadena) {
-		return JSON.parse(cadena.replace(/\n|\r/g, ""));
-	}
-</script -->
-
 <?php require_once "includes/conexion.php";
 PermitirAcceso(406);
 $dt_LS = 0; //sw para saber si vienen datos de la llamada de servicio. 0 no vienen. 1 si vienen.
@@ -411,14 +404,13 @@ $ParamSerie = array(
 );
 $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 
-
 // Lista de precios, 24/02/2022
 $SQL_ListaPrecios = Seleccionar('uvw_Sap_tbl_ListaPrecios', '*');
 
-// Stiven Muñoz Murillo, 28/01/2022
+// Stiven Muñoz Murillo, 02/03/2022
 $row_encode = isset($row) ? json_encode($row) : "";
-$cadena = isset($row) ? "ajustarCadena('$row_encode')" : "'Not Found'";
-// echo "<script> console.log($cadena); </script>";
+$cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'Not Found'";
+echo "<script> console.log($cadena); </script>";
 ?>
 <!DOCTYPE html>
 <html><!-- InstanceBegin template="/Templates/PlantillaPrincipal.dwt.php" codeOutsideHTMLIsLocked="false" -->
@@ -1226,7 +1218,7 @@ if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
 					<!-- Inicio, Lista Precios SN -->
 					<label class="col-lg-1 control-label">Lista de precios <!--span class="text-danger">*</span--></label>
 					<div class="col-lg-3">
-						<select name="IdListaPrecio" class="form-control" id="IdListaPrecio" <?php if(!PermitirFuncion(418)) { echo "disabled='disabled'";} ?>>
+						<select name="IdListaPrecio" class="form-control" id="IdListaPrecio" <?php if (!PermitirFuncion(418)) {echo "disabled='disabled'";}?>>
 							<?php while ($row_ListaPrecio = sqlsrv_fetch_array($SQL_ListaPrecios)) {?>
 							<option value="<?php echo $row_ListaPrecio['IdListaPrecio']; ?>"
 							<?php if (isset($row['IdListaPrecio']) && (strcmp($row_ListaPrecio['IdListaPrecio'], $row['IdListaPrecio']) == 0)) {echo "selected=\"selected\"";}?>>
@@ -1534,7 +1526,7 @@ function Validar(){
 	$.ajax({
 		url:"ajx_buscar_datos_json.php",
 		data:{
-			type:15,  
+			type:15,
 			docentry:'<?php if ($edit == 1) {echo base64_encode($row['DocEntry']);}?>',
 			objtype:17,
 			date:'<?php echo FormatoFecha(date('Y-m-d'), date('H:i:s')); ?>'

@@ -172,7 +172,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
             //      "'".$_POST['Etnia']."'",
             //      "'".$_POST['Discapacidad']."'",
             //      "'".$_POST['NivelEduca']."'",
-            $_POST['IdListaPrecio'] ?? 0, // SMM, 17/02/2022
+            $_POST['IdListaPrecio'] ?? -1, // SMM, 17/02/2022
             $CapacidadServ,
             $VigenciaCont,
             $Metodo,
@@ -1188,10 +1188,10 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorio)) {?>
 									<div class="form-group">
 										<label class="col-lg-1 control-label">Lista de precios <!--span class="text-danger">*</span--></label>
 										<div class="col-lg-3">
-											<select name="IdListaPrecio" class="form-control" id="IdListaPrecio" <?php if(!PermitirFuncion(511)) { echo "disabled='disabled'";} ?>>
+											<select name="IdListaPrecio" class="form-control" id="IdListaPrecio">
 											  <?php while ($row_ListaPrecio = sqlsrv_fetch_array($SQL_ListaPrecios)) {?>
 												<option value="<?php echo $row_ListaPrecio['IdListaPrecio']; ?>"
-												<?php if (isset($row['IdListaPrecio']) && (strcmp($row_ListaPrecio['IdListaPrecio'], $row['IdListaPrecio']) == 0)) {echo "selected=\"selected\"";} elseif ($edit == 0 && (ObtenerValorDefecto(2, 'IdListaPrecio') !== null) && (strcmp($row_ListaPrecio['IdListaPrecio'], ObtenerValorDefecto(2, 'IdListaPrecio')) == 0)) {echo "selected=\"selected\"";}?>>
+												<?php if (isset($row['IdListaPrecio']) && (strcmp($row_ListaPrecio['IdListaPrecio'], $row['IdListaPrecio']) == 0)) {echo "selected=\"selected\"";} elseif ($edit == 0 && (ObtenerValorDefecto(2, 'IdListaPrecio') !== null) && (strcmp($row_ListaPrecio['IdListaPrecio'], ObtenerValorDefecto(2, 'IdListaPrecio')) == 0)) {echo "selected=\"selected\"";} elseif (!PermitirFuncion(511)) {echo "disabled='disabled'";}?>>
 													<?php echo $row_ListaPrecio['DeListaPrecio']; ?>
 												</option>
 											  <?php }?>

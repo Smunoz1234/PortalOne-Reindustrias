@@ -128,7 +128,7 @@ if ($type == 1) { //Si estoy refrescando datos ya cargados
 					return {
 						id: new_id,
 						title: eventEl.dataset.title,
-						duration: (minutos=="")?'02:00':tiempo // SMM, 07/02/2022
+						duration: (minutos=="") ?'02:00':tiempo // SMM, 07/02/2022
 					};
 				}
 			});
@@ -200,7 +200,8 @@ if ($sw == 1) {
 			    ],
 				resourceOrder: 'title',
 				eventDidMount: function(info){
-//					console.log('Se ejecuto eventDidMount')
+					console.log('Se ejecuto eventDidMount en el calendario');
+
 //					$(info.el).tooltip({ title: info.event.extendedProps.informacionAdicional })
 //					console.log(info.event)
 					if(info.view.type!='dayGridMonth' && info.view.type!='listWeek'){
@@ -258,6 +259,7 @@ if ($sw == 1) {
 }?>
 				],
 				eventDrop:function(info){
+					console.log('Se ejecuto eventDrop en el calendario');
 					// console.log("eventDrop [CTRL]", info);
 
 					//Cuando se va a duplicar con la tecla CTRL
@@ -377,6 +379,8 @@ if ($sw == 1) {
 					}
 				},
 				eventResize:function(info){
+					console.log('Se ejecuto eventResize en el calendario');
+
 					var ID;
 					var docentry;
 					var metodo;
@@ -487,6 +491,7 @@ if ($sw == 1) {
 					}
 				},
 				eventClick: function(info){
+					console.log('Se ejecuto eventClick en el calendario');
 //					console.log(info.event.title)
 //					var ID;
 					var tl;
