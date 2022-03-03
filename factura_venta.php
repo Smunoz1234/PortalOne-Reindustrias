@@ -399,9 +399,9 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 // Lista de precios, 25/02/2022
 $SQL_ListaPrecios = Seleccionar('uvw_Sap_tbl_ListaPrecios', '*');
 
-// Stiven Muñoz Murillo, 25/02/2022
+// Stiven Muñoz Murillo, 02/03/2022
 $row_encode = isset($row) ? json_encode($row) : "";
-$cadena = isset($row) ? "ajustarCadena('$row_encode')" : "'Not Found'";
+$cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'Not Found'";
 // echo "<script> console.log($cadena); </script>";
 ?>
 <!DOCTYPE html>
@@ -537,13 +537,21 @@ function MostrarRet(){
 				}
 			});
 
-			<?php if ($dt_LS == 0) { //Para que no recargue las listas cuando vienen de una llamada de servicio.?>
+			<?php if ($dt_LS == 0 && $edit == 0) { //Para que no recargue las listas cuando vienen de una llamada de servicio.?>
 			$.ajax({
 				type: "POST",
 				url: "ajx_cbo_select.php?type=3&tdir=S&id="+carcode,
 				success: function(response){
 					$('#SucursalDestino').html(response).fadeIn();
 					$('#SucursalDestino').trigger('change');
+				}
+			});
+			$.ajax({
+				type: "POST",
+				url: "ajx_cbo_select.php?type=3&tdir=B&id="+carcode,
+				success: function(response){
+					$('#SucursalFacturacion').html(response).fadeIn();
+					$('#SucursalFacturacion').trigger('change');
 				}
 			});
 			$.ajax({
@@ -559,14 +567,7 @@ function MostrarRet(){
 				}
 			});
 			<?php }?>
-			$.ajax({
-				type: "POST",
-				url: "ajx_cbo_select.php?type=3&tdir=B&id="+carcode,
-				success: function(response){
-					$('#SucursalFacturacion').html(response).fadeIn();
-					$('#SucursalFacturacion').trigger('change');
-				}
-			});
+
 			$.ajax({
 				type: "POST",
 				url: "ajx_cbo_select.php?type=7&id="+carcode,

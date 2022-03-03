@@ -399,7 +399,7 @@ $SQL_ListaPrecios = Seleccionar('uvw_Sap_tbl_ListaPrecios', '*');
 // Stiven Muñoz Murillo, 02/03/2022
 $row_encode = isset($row) ? json_encode($row) : "";
 $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'Not Found'";
-echo "<script> console.log($cadena); </script>";
+// echo "<script> console.log($cadena); </script>";
 ?>
 
 <!DOCTYPE html>
@@ -543,7 +543,7 @@ function ConsultarDatosCliente(){
 				}
 			});
 
-			<?php if ($dt_LS == 0 && $dt_OV == 0) { //Para que no recargue las listas cuando vienen de una llamada de servicio u Orden venta.?>
+			<?php if ($dt_LS == 0 && $dt_OV == 0 && $edit == 0) { //Para que no recargue las listas cuando vienen de una llamada de servicio u Orden venta.?>
 			$.ajax({
 				type: "POST",
 				url: "ajx_cbo_select.php?type=3&tdir=S&id="+carcode,
@@ -552,8 +552,14 @@ function ConsultarDatosCliente(){
 					$('#SucursalDestino').trigger('change');
 				}
 			});
-			<?php }?>
-			<?php if ($dt_LS == 0) { //Para que no recargue las listas cuando vienen de una llamada de servicio?>
+			$.ajax({
+				type: "POST",
+				url: "ajx_cbo_select.php?type=3&tdir=B&id="+carcode,
+				success: function(response){
+					$('#SucursalFacturacion').html(response).fadeIn();
+					$('#SucursalFacturacion').trigger('change');
+				}
+			});
 			$.ajax({
 				type: "POST",
 				url: "ajx_cbo_select.php?type=6&id="+carcode,
@@ -563,14 +569,7 @@ function ConsultarDatosCliente(){
 				}
 			});
 			<?php }?>
-			$.ajax({
-				type: "POST",
-				url: "ajx_cbo_select.php?type=3&tdir=B&id="+carcode,
-				success: function(response){
-					$('#SucursalFacturacion').html(response).fadeIn();
-					$('#SucursalFacturacion').trigger('change');
-				}
-			});
+
 			$.ajax({
 				type: "POST",
 				url: "ajx_cbo_select.php?type=7&id="+carcode,
@@ -1198,7 +1197,7 @@ if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
 					<!-- Inicio, Lista Precios SN -->
 					<label class="col-lg-1 control-label">Lista de precios <!--span class="text-danger">*</span--></label>
 					<div class="col-lg-3">
-						<select name="IdListaPrecio" class="form-control" id="IdListaPrecio" <?php if(!PermitirFuncion(418)) { echo "disabled='disabled'";} ?>>
+						<select name="IdListaPrecio" class="form-control" id="IdListaPrecio" <?php if (!PermitirFuncion(418)) {echo "disabled='disabled'";}?>>
 							<?php while ($row_ListaPrecio = sqlsrv_fetch_array($SQL_ListaPrecios)) {?>
 							<option value="<?php echo $row_ListaPrecio['IdListaPrecio']; ?>"
 							<?php if (isset($row['IdListaPrecio']) && (strcmp($row_ListaPrecio['IdListaPrecio'], $row['IdListaPrecio']) == 0)) {echo "selected=\"selected\"";}?>>
