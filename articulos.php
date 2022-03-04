@@ -380,6 +380,14 @@ while ($row_GruposArticulos = sqlsrv_fetch_array($SQL_GruposArticulos)) {?>
 														</select>
 													</div>
 												</div>
+												<!-- SMM -->
+												<div class="form-group">
+													<label class="col-lg-1 control-label">Ubicación Física</label>
+													<div class="col-lg-3">
+														<input type="text" class="form-control" name="CDU_UbicacionFisica" id="CDU_UbicacionFisica" value="<?php if ($edit == 1) {echo $row['CDU_UbicacionFisica'];}?>">
+													</div>
+												</div>
+												<!-- 03/03/2022 -->
 											</div>
 									   </div>
 									   <div class="ibox">

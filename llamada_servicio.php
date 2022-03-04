@@ -1656,6 +1656,12 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								  <?php }?>
 								</select>
 							</div>
+							<div class="col-lg-4">
+								<label class="control-label">Fecha recepción <span class="text-danger">*</span></label>
+								<div class="input-group date">
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaRecepcion" type="text" required="required" class="form-control" id="FechaRecepcion" value="<?php if (($type_llmd == 1) && ($row['FechaCreacionLLamada']) != "") {echo $row['FechaCreacionLLamada'];} else {echo date('Y-m-d');}?>" readonly='readonly'>
+								</div>
+							</div>
 						</div>
 						<div class="form-group">
 							<div class="col-lg-4">
@@ -1666,6 +1672,16 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 										<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if ((isset($row['IdProyecto'])) && (strcmp($row_Proyecto['IdProyecto'], $row['IdProyecto']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Proyecto['DeProyecto']; ?></option>
 								  <?php }?>
 								</select>
+							</div>
+							<div class="col-lg-4"></div>
+							<div class="col-lg-4">
+								<label class="control-label">Hora recepción <span class="text-danger">*</span></label>
+								<div class="input-group clockpicker" data-autoclose="true">
+									<span class="input-group-addon">
+										<span class="fa fa-clock-o"></span>
+									</span>
+									<input name="HoraRecepcion" id="HoraRecepcion" type="text" class="form-control" value="<?php if ($type_llmd == 1) {echo $row['FechaHoraCreacionLLamada']->format('H:i');} else {echo date('H:i');}?>" required="required" readonly='readonly'>
+								</div>
 							</div>
 						</div>
 						<div class="form-group">

@@ -26,7 +26,7 @@ $Cliente = isset($_GET['Cliente']) ? $_GET['Cliente'] : "";
 $Sucursal = isset($_GET['Sucursal']) ? $_GET['Sucursal'] : "";
 $Estado = isset($_GET['Estado']) ? $_GET['Estado'] : "";
 $Empleado = isset($_GET['Empleado']) ? implode(",", $_GET['Empleado']) : "";
-$Supervidor = isset($_GET['Supervidor']) ? $_GET['Supervidor'] : "";
+$Supervisor = "";
 
 if ($sw == 1) {
     $Param = array(
@@ -36,7 +36,7 @@ if ($sw == 1) {
         "'" . $Sucursal . "'",
         "'" . $Estado . "'",
         "'" . $Empleado . "'",
-        "'" . $Supervidor . "'",
+        "'" . $Supervisor . "'",
     );
     $SQL = EjecutarSP('sp_ConsultarFormRecepcionVehiculos', $Param);
 }
@@ -49,8 +49,8 @@ $SQL_Empleados = Seleccionar('uvw_Sap_tbl_Empleados', 'ID_Empleado, NombreEmplea
 
 //Supervisor
 $SQL_Supervisor = Seleccionar('uvw_tbl_RecepcionVehiculos', 'DISTINCT id_empleado_supervisor, empleado_supervisor', '', 'empleado_supervisor');
-
 ?>
+
 <!DOCTYPE html>
 <html><!-- InstanceBegin template="/Templates/PlantillaPrincipal.dwt.php" codeOutsideHTMLIsLocked="false" -->
 
@@ -262,7 +262,7 @@ while ($row_Empleados = sqlsrv_fetch_array($SQL_Empleados)) {?>
 					  	<?php if ($sw == 1) {?>
 					  	<div class="form-group">
 							<div class="col-lg-10">
-								<a href="exportar_excel.php?exp=10&Cons=<?php echo base64_encode(implode(",", $Param)); ?>&sp=<?php echo base64_encode("sp_ConsultarEvalTecnicos"); ?>">
+								<a href="exportar_excel.php?exp=10&Cons=<?php echo base64_encode(implode(",", $Param)); ?>&sp=<?php echo base64_encode("sp_ConsultarFormRecepcionVehiculos"); ?>">
 									<img src="css/exp_excel.png" width="50" height="30" alt="Exportar a Excel" title="Exportar a Excel"/>
 								</a>
 							</div>
