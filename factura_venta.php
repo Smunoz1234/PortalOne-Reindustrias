@@ -547,11 +547,12 @@ function MostrarRet(){
 				type: "POST",
 				url: "includes/procedimientos.php?type=7&objtype=13&cardcode="+carcode
 			});
+			<?php }?>
 
 			// Recargar lista de llamadas de servicio.
 			$.ajax({
 				type: "POST",
-				url: "ajx_cbo_select.php?type=6&id="+carcode,
+				url: `ajx_cbo_select.php?type=6&id=${carcode}&ls=<?php echo base64_decode($_GET['IdLlamada'] ?? ""); ?>`,
 				success: function(response){
 					$('#OrdenServicioCliente').html(response).fadeIn();
 					$('#OrdenServicioCliente').trigger('change');
@@ -561,7 +562,6 @@ function MostrarRet(){
 					$('.ibox-content').toggleClass('sk-loading', false);
 				}
 			});
-			<?php }?>
 
 			<?php if ($edit == 0 && $sw_error == 0) { // Para que no recargue las sucursales en la edición. ?>
 				$.ajax({
@@ -634,7 +634,7 @@ function MostrarRet(){
 					$('.ibox-content').toggleClass('sk-loading',false);
 				},
 				error: function(error) {
-					console.error("Line 677", error.responseText);
+					console.error("Line 637", error.responseText);
 					$('.ibox-content').toggleClass('sk-loading', false);
 				}
 			});
@@ -654,7 +654,7 @@ function MostrarRet(){
 					$('.ibox-content').toggleClass('sk-loading',false);
 				},
 				error: function(error) {
-					console.error("Line 677", error.responseText);
+					console.error("Line 657", error.responseText);
 					$('.ibox-content').toggleClass('sk-loading', false);
 				}
 			});
@@ -673,7 +673,7 @@ function MostrarRet(){
 					$('#Dim2').trigger('change');
 				},
 				error: function(error) {
-					console.error("Line 677", error.responseText);
+					console.error("Line 676", error.responseText);
 					$('.ibox-content').toggleClass('sk-loading', false);
 				}
 			});
