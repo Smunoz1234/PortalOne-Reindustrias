@@ -9,7 +9,7 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
     }
 
     if ($type == 1) { //Buscar direccion y barrio dependiendo de la sucursal
-        $Consulta = "Select * From uvw_Sap_tbl_Clientes_Sucursales Where CodigoCliente='" . $_GET['CardCode'] . "' and NombreSucursal='" . $_GET['Sucursal'] . "'";
+        $Consulta = "Select * From uvw_Sap_tbl_Clientes_Sucursales Where TipoDireccion='S' And CodigoCliente='" . $_GET['CardCode'] . "' and NombreSucursal='" . $_GET['Sucursal'] . "'";
         //echo $Consulta;
         $SQL = sqlsrv_query($conexion, $Consulta);
         $records = array();

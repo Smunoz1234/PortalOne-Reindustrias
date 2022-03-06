@@ -261,6 +261,7 @@ if(isset($_GET['a'])&&($_GET['a']==base64_encode("OK_FactVentUpd"))){
 						<th>Serie</th>
 						<th>Fecha factura</th>
 						<th>Socio de negocio</th>
+						<th>Comentarios</th>
 						<th>Empleado de venta</th>
 						<th>Autorización</th>
 						<th>Usuario Autoriza</th>
@@ -280,6 +281,7 @@ if(isset($_GET['a'])&&($_GET['a']==base64_encode("OK_FactVentUpd"))){
 							<td><?php echo $row['DeSeries'];?></td>
 							<td><?php echo $row['DocDate'];?></td>
 							<td><?php echo $row['NombreCliente'];?></td>
+							<td><?php echo $row['Comentarios'];?></td>
 							<td><?php echo $row['NombreEmpleadoVentas'];?></td>
 							<td><?php echo $row['DeAuthPortal'];?></td>
 							<td><?php echo $row['UsuarioAutoriza'];?></td>

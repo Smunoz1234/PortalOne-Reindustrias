@@ -261,6 +261,7 @@ if(isset($_GET['a'])&&($_GET['a']==base64_encode("OK_EVenUpd"))){
 						<th>Serie</th>
 						<th>Fecha orden</th>
 						<th>Socio de negocio</th>
+						<th>Comentarios</th>
 						<th>Empleado de venta</th>
 						<th>Tipo venta</th>
 						<th>Usuario Autoriza</th>
@@ -280,6 +281,7 @@ if(isset($_GET['a'])&&($_GET['a']==base64_encode("OK_EVenUpd"))){
 							<td><?php echo $row['DeSeries'];?></td>
 							<td><?php echo $row['DocDate'];?></td>
 							<td><?php echo $row['NombreCliente'];?></td>
+							<td><?php echo $row['Comentarios'];?></td>
 							<td><?php echo $row['NombreEmpleadoVentas'];?></td>
 							<td><?php echo $row['TipoVenta'];?></td>
 							<td><?php echo $row['UsuarioAutoriza'];?></td>
