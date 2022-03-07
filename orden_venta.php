@@ -231,6 +231,36 @@ if (isset($_GET['dt_LS']) && ($_GET['dt_LS']) == 1) { //Verificar que viene de u
     $SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . base64_decode($_GET['LS']) . "'");
 }
 
+// SMM, 07/03/2022
+if (isset($_GET['dt_OV']) && ($_GET['dt_OV']) == 1) { // Verificar que viene de una Orden de ventas (Duplicar)
+    $dt_OF = 1;
+
+    //Clientes
+    $SQL_Cliente = Seleccionar('uvw_Sap_tbl_Clientes', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreCliente');
+    $row_Cliente = sqlsrv_fetch_array($SQL_Cliente);
+
+    $ParametrosCopiarOrdenToOrden = array(
+        "'" . base64_decode($_GET['OV']) . "'",
+        "'" . base64_decode($_GET['Evento']) . "'",
+        "'" . base64_decode($_GET['Almacen']) . "'",
+        "'" . base64_decode($_GET['Cardcode']) . "'",
+        "'" . $_SESSION['CodUser'] . "'",
+    );
+
+    $SQL_CopiarOrdenToOrden = EjecutarSP('sp_tbl_OrdenVentaDet_To_OrdenVentaDet', $ParametrosCopiarOrdenToOrden);
+    if (!$SQL_CopiarOrdenToOrden) {
+        echo "<script>
+		$(document).ready(function() {
+			Swal.fire({
+				title: '¡Ha ocurrido un error!',
+				text: 'No se pudo duplicar la Orden de venta.',
+				icon: 'error'
+			});
+		});
+		</script>";
+    }
+}
+
 if (isset($_GET['dt_OF']) && ($_GET['dt_OF']) == 1) { //Verificar que viene de una Oferta de ventas
     $dt_OF = 1;
 
@@ -260,7 +290,6 @@ if (isset($_GET['dt_OF']) && ($_GET['dt_OF']) == 1) { //Verificar que viene de u
 		});
 		</script>";
     }
-
 }
 
 if (isset($_GET['dt_FC']) && ($_GET['dt_FC']) == 1) { //Verificar que viene de una Facturacion de OTs
@@ -1430,9 +1459,9 @@ $return = QuitarParametrosURL($return, array("a"));
                             <button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i class="fa fa-mail-forward"></i> Copiar a <i class="fa fa-caret-down"></i></button>
                             <ul class="dropdown-menu">
                                 <li><a class="alkin dropdown-item" href="entrega_venta.php?dt_OV=1&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Dim1=<?php echo base64_encode($row['OcrCode']); ?>&Dim2=<?php echo base64_encode($row['OcrCode2']); ?>&Dim3=<?php echo base64_encode($row['OcrCode3']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Referencia=<?php echo base64_encode($row['NumAtCard']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&OV=<?php echo base64_encode($row['ID_OrdenVenta']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&LS=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>">Entrega de venta</a></li>
+								<li><a class="alkin dropdown-item" href="orden_venta.php?dt_OV=1&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Dim1=<?php echo base64_encode($row['OcrCode']); ?>&Dim2=<?php echo base64_encode($row['OcrCode2']); ?>&Dim3=<?php echo base64_encode($row['OcrCode3']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&OV=<?php echo base64_encode($row['ID_OrdenVenta']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&">Orden de venta (Duplicar)</a></li>
 								<li class="dropdown-divider"></li>
 								<li><a class="alkin dropdown-item" href="factura_venta.php?dt_OV=1&adt=1&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Dim1=<?php echo base64_encode($row['OcrCode']); ?>&Dim2=<?php echo base64_encode($row['OcrCode2']); ?>&Dim3=<?php echo base64_encode($row['OcrCode3']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&OV=<?php echo base64_encode($row['ID_OrdenVenta']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&LS=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>">Factura de venta (copiar adjuntos)</a></li>
-
 								<li><a class="alkin dropdown-item" href="factura_venta.php?dt_OV=1&adt=0&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Dim1=<?php echo base64_encode($row['OcrCode']); ?>&Dim2=<?php echo base64_encode($row['OcrCode2']); ?>&Dim3=<?php echo base64_encode($row['OcrCode3']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&OV=<?php echo base64_encode($row['ID_OrdenVenta']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&LS=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>">Factura de venta (<strong>NO</strong> copiar adjuntos)</a></li>
                             </ul>
                         </div>

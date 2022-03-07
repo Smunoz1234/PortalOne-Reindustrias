@@ -286,7 +286,6 @@ if (isset($_GET['dt_FC']) && ($_GET['dt_FC']) == 2) { //Verificar que viene de u
 		});
 		</script>";
     }
-
 }
 
 if ($edit == 1 && $sw_error == 0) {
