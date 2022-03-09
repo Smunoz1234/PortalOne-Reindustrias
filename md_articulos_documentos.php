@@ -44,6 +44,10 @@ if($preCostos==0){//para informe de analisis de ventas
 			<thead>
 			<tr>
 				<th>#</th>
+				<?php if($preCostos==3) {?>
+					<th>Código cliente</th>
+					<th>Nombre de cliente</th>
+				<?php }?>
 				<th>Código artículo</th>
 				<th>Nombre de artículo</th>
 				<th>Unidad de medida</th>
@@ -61,20 +65,24 @@ if($preCostos==0){//para informe de analisis de ventas
 				$SubTotal=0;
 				$Total=0;
 				$sw_Cambio=0;
+				
 				while($row=sqlsrv_fetch_array($SQL)){ 
 				if($i==1){
 					$SubGrupo=$row['DE_ItemType'];
 				}
 				?>
+
 				<?php 
 					if((($SubGrupo!=$row['DE_ItemType'])&&$i>1)||($i==1)){
 						if($i>1){
 				?>
+				
 				<tr>
-					<td colspan="6" class="text-success font-bold"><span class="pull-right">SubTotal <?php echo $SubGrupo;?></span></td>
+					<td colspan="<?php echo ($preCostos==3)?'8':'6'; ?>" class="text-success font-bold"><span class="pull-right">SubTotal <?php echo $SubGrupo;?></span></td>
 					<td class="text-success font-bold"><?php echo "$".number_format($SubTotal,2);?></td>
 					<td colspan="2" class="text-success font-bold">&nbsp;</td>
 				</tr>
+
 				<?php 
 						}
 						$SubGrupo=$row['DE_ItemType'];
@@ -82,12 +90,16 @@ if($preCostos==0){//para informe de analisis de ventas
 						
 				?>
 				<tr>
-					<td colspan="9" class="bg-muted text-success font-bold"><?php echo $row['DE_ItemType'];?></td>
+					<td colspan="<?php echo ($preCostos==3)?'11':'9'; ?>" class="bg-muted text-success font-bold"><?php echo $row['DE_ItemType'];?></td>
 				</tr>
-				<?php }
-				?>
+				<?php }?>
+
 				 <tr>
 					<td><?php echo $i;?></td>
+					<?php if($preCostos==3) {?>
+						<td><a href="socios_negocios.php?id=<?php echo base64_encode($row['IdCliente']);?>&tl=1" target="_blank"><?php echo $row['IdCliente'];?></a></td>
+						<td><?php echo $row['NombreCliente'];?></td>
+					<?php }?>
 					<td><a href="articulos.php?id=<?php echo base64_encode($row['ItemCode']);?>&tl=1" target="_blank"><?php echo $row['ItemCode'];?></a></td>
 					<td><?php echo $row['ItemName'];?></td>
 					<td><?php echo $row['Unidad'];?></td>
@@ -103,12 +115,12 @@ if($preCostos==0){//para informe de analisis de ventas
 				}
 			?>
 				<tr>
-					<td colspan="6" class="text-success font-bold"><span class="pull-right">SubTotal <?php echo $SubGrupo;?></span></td>
+					<td colspan="<?php echo ($preCostos==3)?'8':'6'; ?>" class="text-success font-bold"><span class="pull-right">SubTotal <?php echo $SubGrupo;?></span></td>
 					<td class="text-success font-bold"><?php echo "$".number_format($SubTotal,2);?></td>
 					<td colspan="2" class="text-success font-bold">&nbsp;</td>
 				</tr>
 				<tr>
-					<td colspan="6" class="text-danger font-bold"><span class="pull-right">TOTAL</span></td>
+					<td colspan="<?php echo ($preCostos==3)?'8':'6'; ?>" class="text-danger font-bold"><span class="pull-right">TOTAL</span></td>
 					<td class="text-danger font-bold"><?php echo "$".number_format($Total,2);?></td>
 					<td colspan="2" class="text-danger font-bold">&nbsp;</td>
 				</tr>

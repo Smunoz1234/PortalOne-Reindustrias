@@ -45,20 +45,24 @@ if (isset($_GET['type']) && $_GET['type'] != "") {
 
             // Stiven Muñoz Murillo, 27/01/2022
             $Cons = "DELETE FROM tbl_OrdenVentaDetalleCarrito WHERE LineNum IN (SELECT VALUE FROM STRING_SPLIT('$linenum', ',')) AND CardCode='$cardcode' AND Usuario='$coduser'";
-            
+
             $SQL_Cons = sqlsrv_query($conexion, $Cons);
             if ($SQL_Cons) {
                 echo "*Ok*";
             }
         } else {
-            $Parametros = array(
-                "'" . $_GET['linenum'] . "'",
-                "'" . $_GET['id'] . "'",
-                "'" . $_GET['evento'] . "'",
-            );
-            $LimpiarOrden = EjecutarSP('sp_tbl_OrdenVentaDetalle_DelLine', $Parametros);
-            if ($LimpiarOrden) {
-                echo "*Ok*";
+            $linenum = explode(',', $_GET['linenum']); // SMM, 08/03/2022
+
+            foreach ($linenum as $l) {
+                $Parametros = array(
+                    "'" . $l . "'",
+                    "'" . $_GET['id'] . "'",
+                    "'" . $_GET['evento'] . "'",
+                );
+                $LimpiarOrden = EjecutarSP('sp_tbl_OrdenVentaDetalle_DelLine', $Parametros);
+                if ($LimpiarOrden) {
+                    echo "*Ok*";
+                }
             }
         }
     } elseif ($_GET['type'] == 5) { //Consultar si ya existe el archivo de productos cargado en esa categoria
@@ -72,20 +76,30 @@ if (isset($_GET['type']) && $_GET['type'] != "") {
         }
     } elseif ($_GET['type'] == 6) { //Eliminar una linea del carrito en la Oferta de venta
         if ($_GET['edit'] == 1) {
-            $Cons = "Delete From tbl_OfertaVentaDetalleCarrito Where LineNum='" . $_GET['linenum'] . "' And CardCode='" . $_GET['cardcode'] . "' And Usuario='" . $_SESSION['CodUser'] . "'";
+            $linenum = $_GET['linenum'];
+            $cardcode = $_GET['cardcode'];
+            $coduser = $_SESSION['CodUser'];
+
+            // Stiven Muñoz Murillo, 08/03/2022
+            $Cons = "DELETE FROM tbl_OfertaVentaDetalleCarrito WHERE LineNum IN (SELECT VALUE FROM STRING_SPLIT('$linenum', ',')) AND CardCode='$cardcode' AND Usuario='$coduser'";
+
             $SQL_Cons = sqlsrv_query($conexion, $Cons);
             if ($SQL_Cons) {
                 echo "*Ok*";
             }
         } else {
-            $Parametros = array(
-                "'" . $_GET['linenum'] . "'",
-                "'" . $_GET['id'] . "'",
-                "'" . $_GET['evento'] . "'",
-            );
-            $LimpiarOrden = EjecutarSP('sp_tbl_OfertaVentaDetalle_DelLine', $Parametros);
-            if ($LimpiarOrden) {
-                echo "*Ok*";
+            $linenum = explode(',', $_GET['linenum']); // SMM, 08/03/2022
+
+            foreach ($linenum as $l) {
+                $Parametros = array(
+                    "'" . $l . "'",
+                    "'" . $_GET['id'] . "'",
+                    "'" . $_GET['evento'] . "'",
+                );
+                $LimpiarOrden = EjecutarSP('sp_tbl_OfertaVentaDetalle_DelLine', $Parametros);
+                if ($LimpiarOrden) {
+                    echo "*Ok*";
+                }
             }
         }
     } elseif ($_GET['type'] == 7) { //Limpiar carrito cuando estan creando un documento y selecciona el cliente
@@ -197,14 +211,18 @@ if (isset($_GET['type']) && $_GET['type'] != "") {
                 echo "*Ok*";
             }
         } else {
-            $Parametros = array(
-                "'" . $_GET['linenum'] . "'",
-                "'" . $_GET['id'] . "'",
-                "'" . $_GET['evento'] . "'",
-            );
-            $LimpiarOrden = EjecutarSP('sp_tbl_EntregaVentaDetalle_DelLine', $Parametros);
-            if ($LimpiarOrden) {
-                echo "*Ok*";
+            $linenum = explode(',', $_GET['linenum']); // SMM, 08/03/2022
+
+            foreach ($linenum as $l) {
+                $Parametros = array(
+                    "'" . $l . "'",
+                    "'" . $_GET['id'] . "'",
+                    "'" . $_GET['evento'] . "'",
+                );
+                $LimpiarOrden = EjecutarSP('sp_tbl_EntregaVentaDetalle_DelLine', $Parametros);
+                if ($LimpiarOrden) {
+                    echo "*Ok*";
+                }
             }
         }
     } elseif ($_GET['type'] == 9) { //Eliminar una linea del carrito en la Solicitud de salida
@@ -343,14 +361,18 @@ if (isset($_GET['type']) && $_GET['type'] != "") {
                 echo "*Ok*";
             }
         } else {
-            $Parametros = array(
-                "'" . $_GET['linenum'] . "'",
-                "'" . $_GET['id'] . "'",
-                "'" . $_GET['evento'] . "'",
-            );
-            $LimpiarOrden = EjecutarSP('sp_tbl_DevolucionVentaDetalle_DelLine', $Parametros);
-            if ($LimpiarOrden) {
-                echo "*Ok*";
+            $linenum = explode(',', $_GET['linenum']); // SMM, 08/03/2022
+
+            foreach ($linenum as $l) {
+                $Parametros = array(
+                    "'" . $l . "'",
+                    "'" . $_GET['id'] . "'",
+                    "'" . $_GET['evento'] . "'",
+                );
+                $LimpiarOrden = EjecutarSP('sp_tbl_DevolucionVentaDetalle_DelLine', $Parametros);
+                if ($LimpiarOrden) {
+                    echo "*Ok*";
+                }
             }
         }
     } elseif ($_GET['type'] == 18) { //Agregar cantidades de seriales en los items
@@ -398,14 +420,18 @@ if (isset($_GET['type']) && $_GET['type'] != "") {
                 echo "*Ok*";
             }
         } else {
-            $Parametros = array(
-                "'" . $_GET['linenum'] . "'",
-                "'" . $_GET['id'] . "'",
-                "'" . $_GET['evento'] . "'",
-            );
-            $LimpiarOrden = EjecutarSP('sp_tbl_FacturaVentaDetalle_DelLine', $Parametros);
-            if ($LimpiarOrden) {
-                echo "*Ok*";
+            $linenum = explode(',', $_GET['linenum']); // SMM, 08/03/2022
+
+            foreach ($linenum as $l) {
+                $Parametros = array(
+                    "'" . $l . "'",
+                    "'" . $_GET['id'] . "'",
+                    "'" . $_GET['evento'] . "'",
+                );
+                $LimpiarOrden = EjecutarSP('sp_tbl_FacturaVentaDetalle_DelLine', $Parametros);
+                if ($LimpiarOrden) {
+                    echo "*Ok*";
+                }
             }
         }
     } elseif ($_GET['type'] == 21) { //Eliminar una linea en el cronograma de servicios

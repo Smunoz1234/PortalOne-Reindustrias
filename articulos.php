@@ -380,14 +380,21 @@ while ($row_GruposArticulos = sqlsrv_fetch_array($SQL_GruposArticulos)) {?>
 														</select>
 													</div>
 												</div>
-												<!-- SMM -->
+												
 												<div class="form-group">
+													<!-- SMM -->
 													<label class="col-lg-1 control-label">Ubicación Física</label>
 													<div class="col-lg-3">
 														<input type="text" class="form-control" name="CDU_UbicacionFisica" id="CDU_UbicacionFisica" value="<?php if ($edit == 1) {echo $row['CDU_UbicacionFisica'];}?>" readonly>
 													</div>
+													<!-- 03/03/2022 -->
+													<!-- SMM -->
+													<label class="col-lg-1 control-label">Código de proveedor</label>
+													<div class="col-lg-3">
+														<input type="text" class="form-control" name="SuppCatNum" id="SuppCatNum" value="<?php if ($edit == 1) {echo $row['SuppCatNum'];}?>" readonly>
+													</div>
+													<!-- 08/03/2022 -->
 												</div>
-												<!-- 03/03/2022 -->
 											</div>
 									   </div>
 									   <div class="ibox">

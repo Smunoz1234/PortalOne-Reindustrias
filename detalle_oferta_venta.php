@@ -45,6 +45,9 @@ if(isset($_GET['id'])&&($_GET['id']!="")){
 	}
 }
 
+//Empleado de ventas, SMM 08/03/2022
+$SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', '', 'DE_EmpVentas');
+
 //Servicios
 $SQL_Servicios=Seleccionar("uvw_Sap_tbl_OrdenesVentasDetalleServicios","*","","DeServicio");
 
@@ -92,23 +95,7 @@ $SQL_Proyecto=Seleccionar('uvw_Sap_tbl_Proyectos','*','','DeProyecto');
 		vertical-align: middle;
 	}
 </style>
-<script>
-function BorrarLinea(LineNum){
-	if(confirm(String.fromCharCode(191)+'Est'+String.fromCharCode(225)+' seguro que desea eliminar este item? Este proceso no se puede revertir.')){
-		$.ajax({
-			type: "GET",
-			<?php if($type==1){?>
-			url: "includes/procedimientos.php?type=6&edit=<?php echo $type;?>&linenum="+LineNum+"&cardcode=<?php echo $CardCode;?>",
-			<?php }else{?>
-			url: "includes/procedimientos.php?type=6&edit=<?php echo $type;?>&linenum="+LineNum+"&id=<?php echo base64_decode($_GET['id']);?>&evento=<?php echo base64_decode($_GET['evento']);?>",
-			<?php }?>		
-			success: function(response){
-				window.location.href="detalle_oferta_venta.php?<?php echo $_SERVER['QUERY_STRING'];?>";
-			}
-		});
-	}	
-}
-</script>
+
 <script>
 function Totalizar(num){
 	//alert(num);
@@ -182,6 +169,76 @@ function ActStockAlmacen(name,id,line){//Actualizar el stock al cambiar el almac
 		}
 	});
 }
+
+// Stiven Muñoz Murillo, 08/03/2022
+var json=[];
+var cant=0;
+
+function BorrarLinea(){
+	if(confirm(String.fromCharCode(191)+'Est'+String.fromCharCode(225)+' seguro que desea eliminar este item? Este proceso no se puede revertir.')){
+		$.ajax({
+			type: "GET",
+			<?php if ($type == 1) {?>
+			url: "includes/procedimientos.php?type=6&edit=<?php echo $type; ?>&linenum="+json+"&cardcode=<?php echo $CardCode; ?>",
+			<?php } else {?>
+			url: "includes/procedimientos.php?type=6&edit=<?php echo $type; ?>&linenum="+json+"&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
+			<?php }?>
+			success: function(response){
+				window.location.href="detalle_oferta_venta.php?<?php echo $_SERVER['QUERY_STRING']; ?>";
+				console.log(response);
+			},
+			error: function(error){
+				console.error(error);
+			}
+		});
+	}
+}
+
+// Stiven Muñoz Murillo, 08/03/2022
+function Seleccionar(ID){
+	var btnBorrarLineas=document.getElementById('btnBorrarLineas');
+	var btnDuplicarLineas=document.getElementById('btnDuplicarLineas');
+	var Check = document.getElementById('chkSel'+ID).checked;
+	var sw=-1;
+	json.forEach(function(element,index){
+//		console.log(element,index);
+//		console.log(json[index])deta
+		if(json[index]==ID){
+			sw=index;
+		}
+
+	});
+
+	if(sw>=0){
+		json.splice(sw, 1);
+		cant--;
+	}else if(Check){
+		json.push(ID);
+		cant++;
+	}
+	if(cant>0){
+		$("#btnBorrarLineas").prop('disabled', false);
+	}else{
+		$("#btnBorrarLineas").prop('disabled', true);
+	}
+
+	//console.log(json);
+}
+
+// Stiven Muñoz Murillo, 08/03/2022
+function SeleccionarTodos(){
+	var Check = document.getElementById('chkAll').checked;
+	if(Check==false){
+		json=[];
+		cant=0;
+		$("#btnBorrarLineas").prop('disabled', true);
+	}
+	$(".chkSel:not(:disabled)").prop("checked", Check);
+
+	if(Check){
+		$(".chkSel:not(:disabled)").trigger('change');
+	}
+}
 </script>
 </head>
 
@@ -191,7 +248,10 @@ function ActStockAlmacen(name,id,line){//Actualizar el stock al cambiar el almac
 	<table width="100%" class="table table-bordered">
 		<thead>
 			<tr>
-				<th>&nbsp;</th>
+				<th class="text-center form-inline w-150">
+					<div class="checkbox checkbox-success"><input type="checkbox" id="chkAll" value="" onChange="SeleccionarTodos();" title="Seleccionar todos"><label></label></div>
+					<button type="button" id="btnBorrarLineas" title="Borrar lineas" class="btn btn-danger btn-xs" disabled onClick="BorrarLinea();"><i class="fa fa-trash"></i></button>
+				</th> <!-- SMM, 08/03/2022 -->
 				<th>Código artículo</th>
 				<th>Nombre artículo</th>
 				<th>Unidad</th>
@@ -208,6 +268,7 @@ function ActStockAlmacen(name,id,line){//Actualizar el stock al cambiar el almac
 				<?php $row_DimReparto=sqlsrv_fetch_array($SQL_DimReparto);?>
 				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 3 ?></th>
 				<th>Proyecto</th>
+				<th>Empleado de ventas</th> <!-- SMM, 08/03/2022 -->
 				<th>Servicio</th>
 				<th>Método aplicación</th>
 				<th>Tipo plaga</th>
@@ -234,9 +295,18 @@ function ActStockAlmacen(name,id,line){//Actualizar el stock al cambiar el almac
 				sqlsrv_fetch($SQL_Dim2, SQLSRV_SCROLL_ABSOLUTE, -1);
 				sqlsrv_fetch($SQL_Dim3, SQLSRV_SCROLL_ABSOLUTE, -1);
 				sqlsrv_fetch($SQL_Proyecto, SQLSRV_SCROLL_ABSOLUTE, -1);
+				sqlsrv_fetch($SQL_EmpleadosVentas, SQLSRV_SCROLL_ABSOLUTE, -1); // SMM, 08/03/2022
 		?>
 		<tr>
-			<td><?php if(($row['TreeType']!="T")&&($row['LineStatus']=="O")){?><button type="button" title="Borrar linea" class="btn btn-danger btn-xs" onClick="BorrarLinea(<?php echo $row['LineNum'];?>);"><i class="fa fa-trash"></i></button><?php }?></td>
+			<td class="text-center">
+				<div class="checkbox checkbox-success no-margins">
+					<input type="checkbox" class="chkSel" id="chkSel<?php echo $row['LineNum']; ?>" value="" onChange="Seleccionar('<?php echo $row['LineNum']; ?>');" aria-label="Single checkbox One" <?php if (($row['LineStatus'] == "C") && ($type == 1)) {echo "disabled='disabled'";}?>><label></label>
+				</div>
+
+				<!-- SMM, 08/03/2022 -->
+				<a target="_blank" href="articulos.php?id=<?php echo base64_encode($row['ItemCode']);?>&tl=1&return=<?php echo base64_encode($_SERVER['QUERY_STRING']);?>&pag=<?php echo base64_encode('consultar_articulos.php');?>" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i> Abrir</a>
+			</td>
+			
 			<td><input size="20" type="text" id="ItemCode<?php echo $i;?>" name="ItemCode[]" class="form-control" readonly value="<?php echo $row['ItemCode'];?>"><input type="hidden" name="LineNum[]" id="LineNum<?php echo $i;?>" value="<?php echo $row['LineNum'];?>"></td>
 			<td><input size="50" type="text" autocomplete="off" id="ItemName<?php echo $i;?>" name="ItemName[]" class="form-control" value="<?php echo $row['ItemName'];?>" maxlength="100" onChange="ActualizarDatos('ItemName',<?php echo $i;?>,<?php echo $row['LineNum'];?>);" <?php if($row['LineStatus']=='C'||(!PermitirFuncion(401))){echo "readonly";}?>></td>
 			<td><input size="15" type="text" autocomplete="off" id="UnitMsr<?php echo $i;?>" name="UnitMsr[]" class="form-control" readonly value="<?php echo $row['UnitMsr'];?>"></td>
@@ -291,6 +361,17 @@ function ActStockAlmacen(name,id,line){//Actualizar el stock al cambiar el almac
 				  <?php while($row_Proyecto=sqlsrv_fetch_array($SQL_Proyecto)){?>
 						<option value="<?php echo $row_Proyecto['IdProyecto'];?>" <?php if((isset($row['PrjCode']))&&(strcmp($row_Proyecto['IdProyecto'],$row['PrjCode'])==0)){ echo "selected=\"selected\"";}?>><?php echo $row_Proyecto['DeProyecto'];?></option>
 				  <?php }?>
+				</select>
+			</td>
+
+			<td> <!-- SMM, 08/03/2022 -->
+				<select id="EmpVentas<?php echo $i; ?>" name="EmpVentas[]" class="form-control select2" onChange="ActualizarDatos('EmpVentas',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402))) {echo "disabled='disabled'";}?>>
+						<option value="">(NINGUNO)</option>
+					<?php while ($row_EmpleadosVentas = sqlsrv_fetch_array($SQL_EmpleadosVentas)) {?>
+						<option value="<?php echo $row_EmpleadosVentas['ID_EmpVentas']; ?>" <?php if ((isset($row['EmpVentas'])) && (strcmp($row_EmpleadosVentas['ID_EmpVentas'], $row['EmpVentas']) == 0)) {echo "selected=\"selected\"";}?>>
+							<?php echo $row_EmpleadosVentas['DE_EmpVentas']; ?>
+						</option>
+					<?php }?>
 				</select>
 			</td>
 			

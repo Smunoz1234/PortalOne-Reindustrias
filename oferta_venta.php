@@ -1,7 +1,9 @@
 <?php require_once("includes/conexion.php");
 PermitirAcceso(405);
+
 $dt_LS=0;//sw para saber si vienen datos de la llamada de servicio. 0 no vienen. 1 si vienen.
 $dt_OF=0;//sw para saber si vienen datos de una Oferta de venta.
+
 $msg_error="";//Mensaje del error
 $IdOferta=0;
 $IdPortal=0;//Id del portal para las ordenes que fueron creadas en el portal, para eliminar el registro antes de cargar al editar
@@ -312,7 +314,18 @@ $ParamSerie=array(
 );
 $SQL_Series=EjecutarSP('sp_ConsultarSeriesDocumentos',$ParamSerie);
 
+// Lista de precios, 07/03/2022
+$SQL_ListaPrecios = Seleccionar('uvw_Sap_tbl_ListaPrecios', '*');
+
+// Proyectos, SMM 07/03/2022
+$SQL_Proyecto = Seleccionar('uvw_Sap_tbl_Proyectos', '*', '', 'DeProyecto');
+
+// Stiven Muñoz Murillo, 07/03/2022
+$row_encode = isset($row) ? json_encode($row) : "";
+$cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'Not Found'";
+// echo "<script> console.log($cadena); </script>";
 ?>
+
 <!DOCTYPE html>
 <html><!-- InstanceBegin template="/Templates/PlantillaPrincipal.dwt.php" codeOutsideHTMLIsLocked="false" -->
 
@@ -445,58 +458,109 @@ function CrearLead(){
 }
 </script>
 <script type="text/javascript">
-	$(document).ready(function() {//Cargar los combos dependiendo de otros
-		$("#CardCode").change(function(){
-			$('.ibox-content').toggleClass('sk-loading',true);
+	$(document).ready(function() { // Cargar los combos dependiendo de otros
+		$("#CardCode").change(function() {
+			$('.ibox-content').toggleClass('sk-loading', true);
+
 			var frame=document.getElementById('DataGrid');
 			var carcode=document.getElementById('CardCode').value;
 			var almacen=document.getElementById('Almacen').value;
+
+			// Cargar contactos del cliente.
 			$.ajax({
 				type: "POST",
 				url: "ajx_cbo_select.php?type=2&id="+carcode,
 				success: function(response){
 					$('#ContactoCliente').html(response).fadeIn();
+				},
+				error: function(error) {
+					console.error(error.responseText);
+					$('.ibox-content').toggleClass('sk-loading', false);
 				}
 			});
-			<?php if($dt_LS==0){//Para que no recargue la lista de ordenes cuando ya viene.?>
+
+			// Lista de precio en el SN, SMM 20/01/2022
+			/*let cardcode = carcode;
+			$.ajax({
+				url:"ajx_buscar_datos_json.php",
+				data: {
+					type: 45,
+					id: cardcode
+				},
+				dataType:'json',
+				success: function(data){
+					console.log("Line 554", data);
+
+					document.getElementById('IdListaPrecio').value=data.IdListaPrecio;
+					$('#IdListaPrecio').trigger('change');
+				},
+				error: function(error) {
+					console.error(error.responseText);
+					$('.ibox-content').toggleClass('sk-loading', false);
+				}
+			});*/
+
+			<?php if ($edit == 0 && $sw_error == 0 && $dt_LS == 0 && $dt_OF == 0) { // Limpiar carrito detalle. ?>
 			$.ajax({
 				type: "POST",
-				url: "ajx_cbo_select.php?type=3&tdir=S&id="+carcode,
-				success: function(response){
-					$('#SucursalDestino').html(response).fadeIn();
-					$('#SucursalDestino').trigger('change');
-				}
+				url: "includes/procedimientos.php?type=7&objtype=23&cardcode="+carcode
 			});
+
+			// Recargar lista de llamadas de servicio.
 			$.ajax({
 				type: "POST",
 				url: "ajx_cbo_select.php?type=6&id="+carcode,
 				success: function(response){
 					$('#OrdenServicioCliente').html(response).fadeIn();
-					$('#OrdenServicioCliente').val(null).trigger('change');
+					$('#OrdenServicioCliente').trigger('change');
+				},
+				error: function(error) {
+					console.error(error.responseText);
+					$('.ibox-content').toggleClass('sk-loading', false);
 				}
 			});
 			<?php }?>
-			$.ajax({
-				type: "POST",
-				url: "ajx_cbo_select.php?type=3&tdir=B&id="+carcode,
-				success: function(response){
-					$('#SucursalFacturacion').html(response).fadeIn();
-					$('#SucursalFacturacion').trigger('change');
-				}
-			});
+
+			<?php if ($edit == 0 && $sw_error == 0) { // Para que no recargue las sucursales en la edición. ?>
+				$.ajax({
+					type: "POST",
+					url: "ajx_cbo_select.php?type=3&tdir=S&id="+carcode,
+					success: function(response){
+						$('#SucursalDestino').html(response).fadeIn();
+						$('#SucursalDestino').trigger('change');
+					},
+					error: function(error) {
+						console.error(error.responseText);
+						$('.ibox-content').toggleClass('sk-loading', false);
+					}
+				});
+				$.ajax({
+					type: "POST",
+					url: "ajx_cbo_select.php?type=3&tdir=B&id="+carcode,
+					success: function(response){
+						$('#SucursalFacturacion').html(response).fadeIn();
+						$('#SucursalFacturacion').trigger('change');
+					},
+					error: function(error) {
+						console.error(error.responseText);
+						$('.ibox-content').toggleClass('sk-loading', false);
+					}
+				});
+			<?php }?>
+
+			// Recargar condición de pago.
 			$.ajax({
 				type: "POST",
 				url: "ajx_cbo_select.php?type=7&id="+carcode,
 				success: function(response){
 					$('#CondicionPago').html(response).fadeIn();
+				},
+				error: function(error) {
+					console.error(error.responseText);
+					$('.ibox-content').toggleClass('sk-loading', false);
 				}
 			});
-			<?php if($edit==0&&$dt_LS==0&&$dt_OF==0&&$sw_error==0){?>
-			$.ajax({
-				type: "POST",
-				url: "includes/procedimientos.php?type=7&objtype=23&cardcode="+carcode
-			});
-			<?php }?>
+
 			<?php if($edit==0){?>
 				if(carcode!="" && almacen!=""){
 					frame.src="detalle_oferta_venta.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser'];?>&cardcode="+carcode;
@@ -510,18 +574,13 @@ function CrearLead(){
 					frame.src="detalle_oferta_venta.php";
 				}
 			<?php }?>
-			$.ajax({
-				url:"ajx_buscar_datos_json.php",
-				data:{type:31,CardCode:carcode},
-				dataType:'json',
-				success: function(data){
-					document.getElementById('PrjCode').value=data.IdProyecto;
-				}
-			});
+			
 			$('.ibox-content').toggleClass('sk-loading',false);
 		});	
-		$("#SucursalDestino").change(function(){
+
+		$("#SucursalDestino").change(function() {
 			$('.ibox-content').toggleClass('sk-loading',true);
+
 			var Cliente=document.getElementById('CardCode').value;
 			var Sucursal=document.getElementById('SucursalDestino').value;
 			$.ajax({
@@ -531,11 +590,17 @@ function CrearLead(){
 				success: function(data){
 					document.getElementById('DireccionDestino').value=data.Direccion;
 					$('.ibox-content').toggleClass('sk-loading',false);
+				},
+				error: function(error) {
+					console.error("Line 657", error.responseText);
+					$('.ibox-content').toggleClass('sk-loading', false);
 				}
 			});
 		});
-		$("#SucursalFacturacion").change(function(){
+
+		$("#SucursalFacturacion").change(function() {
 			$('.ibox-content').toggleClass('sk-loading',true);
+
 			var Cliente=document.getElementById('CardCode').value;
 			var Sucursal=document.getElementById('SucursalFacturacion').value;
 			$.ajax({
@@ -545,11 +610,17 @@ function CrearLead(){
 				success: function(data){
 					document.getElementById('DireccionFacturacion').value=data.Direccion;
 					$('.ibox-content').toggleClass('sk-loading',false);
+				},
+				error: function(error) {
+					console.error("Line 657", error.responseText);
+					$('.ibox-content').toggleClass('sk-loading', false);
 				}
 			});
 		});
-		$("#Serie").change(function(){
+
+		$("#Serie").change(function() {
 			$('.ibox-content').toggleClass('sk-loading',true);
+
 			var Serie=document.getElementById('Serie').value;
 			$.ajax({
 				type: "POST",
@@ -558,56 +629,15 @@ function CrearLead(){
 					$('#Dim2').html(response).fadeIn();
 					$('.ibox-content').toggleClass('sk-loading',false);
 					$('#Dim2').trigger('change');
+				},
+				error: function(error) {
+					console.error("Line 657", error.responseText);
+					$('.ibox-content').toggleClass('sk-loading', false);
 				}
 			});		
 		});
-		$("#Dim3").change(function(){
-			var Dim3=document.getElementById('Dim3').value;
-			var Serie=document.getElementById('Serie').value;
-			var frame=document.getElementById('DataGrid'); 
-			// $.ajax({
-			// 	type: "POST",
-			// 	url: "ajx_cbo_select.php?type=20&id="+Dim3+"&serie="+Serie+"&tdoc=23",
-			// 	success: function(response){
-			// 		$('#Almacen').html(response).fadeIn();
-			// 		$('.ibox-content').toggleClass('sk-loading',false);
-			// 		// $('#Almacen').trigger('change');
-			// 	}
-			// });
-			
-			if(Dim3!=""&&document.getElementById('CardCode').value!=""&&document.getElementById('TotalItems').value!="0"){
-				Swal.fire({
-					title: "¿Desea actualizar las lineas?",
-					icon: "question",
-					showCancelButton: true,
-					confirmButtonText: "Si, confirmo",
-					cancelButtonText: "No"
-				}).then((result) => {
-					if (result.isConfirmed) {
-						$('.ibox-content').toggleClass('sk-loading',true);
-							<?php if($edit==0){?>
-						$.ajax({
-							type: "GET",					
-							url: "registro.php?P=36&doctype=2&type=1&name=OcrCode3&value="+Base64.encode(Dim3)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
-							success: function(response){
-								frame.src="detalle_oferta_venta.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser'];?>&cardcode="+document.getElementById('CardCode').value;
-								$('.ibox-content').toggleClass('sk-loading',false);
-							}
-						});
-						<?php }else{?>
-						$.ajax({
-							type: "GET",
-							url: "registro.php?P=36&doctype=2&type=2&name=OcrCode3&value="+Base64.encode(Dim3)+"&line=0&id=<?php echo $row['ID_OfertaVenta'];?>&evento=<?php echo $IdEvento;?>&actodos=1",
-							success: function(response){
-								frame.src="detalle_oferta_venta.php?id=<?php echo base64_encode($row['ID_OfertaVenta']);?>&evento=<?php echo base64_encode($IdEvento);?>&type=2";
-								$('.ibox-content').toggleClass('sk-loading',false);
-							}
-						});
-						<?php }?>
-					}
-				});
-			}
-		});
+
+		// Actualización del almacen en las líneas.
 		$("#Almacen").change(function(){
 			var frame=document.getElementById('DataGrid');
 			if(document.getElementById('Almacen').value!=""&&document.getElementById('CardCode').value!=""&&document.getElementById('TotalItems').value!="0"){
@@ -643,26 +673,11 @@ function CrearLead(){
 				});
 			}
 			
-//			$('.ibox-content').toggleClass('sk-loading',true);
-//			var carcode=document.getElementById('CardCode').value;
-//			var almacen=document.getElementById('Almacen').value;
-//			var frame=document.getElementById('DataGrid');
-//			<?php //if($edit==0){?>
-//				if(carcode!="" && almacen!=""){
-//					frame.src="detalle_oferta_venta.php?id=0&type=1&usr=<?php //echo $_SESSION['CodUser'];?>&cardcode="+carcode+"&whscode="+almacen;
-//				}else{
-//					frame.src="detalle_oferta_venta.php";
-//				}
-//			<?php //}else{?>
-//				if(carcode!="" && almacen!=""){
-//					frame.src="detalle_oferta_venta.php?id=<?php //echo base64_encode($row['ID_OfertaVenta']);?>&evento=<?php //echo base64_encode($row['IdEvento']);?>&type=2";
-//				}else{
-//					frame.src="detalle_oferta_venta.php";
-//				}
-//			<?php //}?>	
-//			$('.ibox-content').toggleClass('sk-loading',false);
+
 		});
-		
+		// Actualizar almacen, llega hasta aquí.
+
+		// Actualización de la dimensión 1 (Marca) en las líneas.		
 		$("#Dim1").change(function(){
 			var frame=document.getElementById('DataGrid');
 			if(document.getElementById('Dim1').value!=""&&document.getElementById('CardCode').value!=""&&document.getElementById('TotalItems').value!="0"){
@@ -698,7 +713,9 @@ function CrearLead(){
 				});
 			}
 		});
-		
+		// Actualizar dimensión 1, llega hasta aquí.
+
+		// Actualización de la dimensión 2 (Ciudad) en las líneas.
 		$("#Dim2").change(function(){
 			var Dim2=document.getElementById('Dim2').value;
 			var Serie=document.getElementById('Serie').value;
@@ -746,7 +763,126 @@ function CrearLead(){
 				});
 			}
 		});
-		
+		// Actualizar dimensión 2, llega hasta aquí.
+
+		// Actualización de la dimensión 3 (Placa) en las líneas.
+		$("#Dim3").change(function(){
+			var Dim3=document.getElementById('Dim3').value;
+			var Serie=document.getElementById('Serie').value;
+			var frame=document.getElementById('DataGrid'); 
+			
+			if(Dim3!=""&&document.getElementById('CardCode').value!=""&&document.getElementById('TotalItems').value!="0"){
+				Swal.fire({
+					title: "¿Desea actualizar las lineas?",
+					icon: "question",
+					showCancelButton: true,
+					confirmButtonText: "Si, confirmo",
+					cancelButtonText: "No"
+				}).then((result) => {
+					if (result.isConfirmed) {
+						$('.ibox-content').toggleClass('sk-loading',true);
+							<?php if($edit==0){?>
+						$.ajax({
+							type: "GET",					
+							url: "registro.php?P=36&doctype=2&type=1&name=OcrCode3&value="+Base64.encode(Dim3)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
+							success: function(response){
+								frame.src="detalle_oferta_venta.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser'];?>&cardcode="+document.getElementById('CardCode').value;
+								$('.ibox-content').toggleClass('sk-loading',false);
+							}
+						});
+						<?php }else{?>
+						$.ajax({
+							type: "GET",
+							url: "registro.php?P=36&doctype=2&type=2&name=OcrCode3&value="+Base64.encode(Dim3)+"&line=0&id=<?php echo $row['ID_OfertaVenta'];?>&evento=<?php echo $IdEvento;?>&actodos=1",
+							success: function(response){
+								frame.src="detalle_oferta_venta.php?id=<?php echo base64_encode($row['ID_OfertaVenta']);?>&evento=<?php echo base64_encode($IdEvento);?>&type=2";
+								$('.ibox-content').toggleClass('sk-loading',false);
+							}
+						});
+						<?php }?>
+					}
+				});
+			}
+		});
+		// Actualizar dimensión 3, llega hasta aquí.
+
+		// Actualización del vendedor en las líneas, SMM 07/03/2022
+		$("#EmpleadoVentas").change(function() {
+			var frame=document.getElementById('DataGrid');
+
+			if(document.getElementById('EmpleadoVentas').value!=""&&document.getElementById('CardCode').value!=""&&document.getElementById('TotalItems').value!="0"){
+				Swal.fire({
+					title: "¿Desea actualizar las lineas?",
+					icon: "question",
+					showCancelButton: true,
+					confirmButtonText: "Si, confirmo",
+					cancelButtonText: "No"
+				}).then((result) => {
+					if (result.isConfirmed) {
+						$('.ibox-content').toggleClass('sk-loading',true);
+							<?php if ($edit == 0) {?>
+						$.ajax({
+							type: "GET", // "EmpVentas" es el nombre que tiene el registro en el detalle.
+							url: "registro.php?P=36&doctype=2&type=1&name=EmpVentas&value="+Base64.encode(document.getElementById('EmpleadoVentas').value)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
+							success: function(response){
+								frame.src="detalle_oferta_venta.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
+								$('.ibox-content').toggleClass('sk-loading',false);
+							}
+						});
+						<?php } else {?>
+						$.ajax({
+							type: "GET", // "EmpVentas" es el nombre que tiene el registro en el detalle.
+							url: "registro.php?P=36&doctype=2&type=2&name=EmpVentas&value="+Base64.encode(document.getElementById('EmpleadoVentas').value)+"&line=0&id=<?php echo $row['ID_OfertaVenta']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
+							success: function(response){
+								frame.src="detalle_oferta_venta.php?id=<?php echo base64_encode($row['ID_OfertaVenta']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
+								$('.ibox-content').toggleClass('sk-loading',false);
+							}
+						});
+						<?php }?>
+					}
+				});
+			}
+		});
+		// Actualizar vendedor, llega hasta aquí.
+
+		// Actualización del proyecto en las líneas, SMM 07/03/2022
+		$("#PrjCode").change(function() {
+			var frame=document.getElementById('DataGrid');
+
+			if(document.getElementById('PrjCode').value!=""&&document.getElementById('CardCode').value!=""&&document.getElementById('TotalItems').value!="0"){
+				Swal.fire({
+					title: "¿Desea actualizar las lineas?",
+					icon: "question",
+					showCancelButton: true,
+					confirmButtonText: "Si, confirmo",
+					cancelButtonText: "No"
+				}).then((result) => {
+					if (result.isConfirmed) {
+						$('.ibox-content').toggleClass('sk-loading',true);
+							<?php if ($edit == 0) {?>
+						$.ajax({
+							type: "GET",
+							url: "registro.php?P=36&doctype=2&type=1&name=PrjCode&value="+Base64.encode(document.getElementById('PrjCode').value)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
+							success: function(response){
+								frame.src="detalle_oferta_venta.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
+								$('.ibox-content').toggleClass('sk-loading',false);
+							}
+						});
+						<?php } else {?>
+						$.ajax({
+							type: "GET",
+							url: "registro.php?P=36&doctype=2&type=2&name=PrjCode&value="+Base64.encode(document.getElementById('PrjCode').value)+"&line=0&id=<?php echo $row['ID_OfertaVenta']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
+							success: function(response){
+								frame.src="detalle_oferta_venta.php?id=<?php echo base64_encode($row['ID_OfertaVenta']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
+								$('.ibox-content').toggleClass('sk-loading',false);
+							}
+						});
+						<?php }?>
+					}
+				});
+			}
+		});
+		// Actualizar proyecto, llega hasta aquí.
 	});
 </script>
 <!-- InstanceEndEditable -->
@@ -870,7 +1006,8 @@ function CrearLead(){
 						<div class="col-lg-9">
 							<input name="CardCode" type="hidden" id="CardCode" value="<?php if(($edit==1)||($sw_error==1)){echo $row['CardCode'];}elseif($dt_LS==1||$dt_OF==1){echo $row_Cliente['CodigoCliente'];}?>">
 							
-							<input name="CardName" type="text" required="required" class="form-control" id="CardName" placeholder="Digite para buscar..." value="<?php if(($edit==1)||($sw_error==1)){echo $row['NombreCliente'];}elseif($dt_LS==1||$dt_OF==1){echo $row_Cliente['NombreCliente'];}?>" <?php if((($edit==1)&&($row['Cod_Estado']=='C'))||($dt_LS==1||$dt_OF==1)||($edit==1)){echo "readonly";}?>>
+							<input name="CardName" type="text" required="required" class="form-control" id="CardName" placeholder="Digite para buscar..." value="<?php if(($edit==1)||($sw_error==1)){echo $row['NombreCliente'];}elseif($dt_LS==1||$dt_OF==1){echo $row_Cliente['NombreCliente'];}?>" 
+							<?php if(!PermitirFuncion(419) && ((($edit==1)&&($row['Cod_Estado']=='C'))||($dt_LS==1||$dt_OF==1)||($edit==1))){echo "readonly";}?>>
 						</div>
 					</div>
 					<div class="form-group">
@@ -1039,13 +1176,27 @@ function CrearLead(){
 						</select>
 					</div>					
 					<label class="col-lg-1 control-label">Autorización</label>
-					<div class="col-lg-2">
+					<div class="col-lg-3">
                     	<select name="Autorizacion" class="form-control" id="Autorizacion" <?php if(($edit==1)&&($row['Cod_Estado']=='C')){echo "disabled='disabled'";}?>>
                           <?php while($row_EstadoAuth=sqlsrv_fetch_array($SQL_EstadoAuth)){?>
 								<option value="<?php echo $row_EstadoAuth['IdAuth'];?>" <?php if(($edit==1||$sw_error==1)&&(isset($row['AuthPortal']))&&(strcmp($row_EstadoAuth['IdAuth'],$row['AuthPortal'])==0)){ echo "selected=\"selected\"";}elseif(($edit==0&&$sw_error==0)&&($row_EstadoAuth['IdAuth']=='N')){echo "selected=\"selected\"";}?>><?php echo $row_EstadoAuth['DeAuth'];?></option>
 						  <?php }?>
 						</select>
                	  	</div>
+
+					<!-- Inicio, Lista Precios SN -->
+					<label class="col-lg-1 control-label">Lista de precios <!--span class="text-danger">*</span--></label>
+					<div class="col-lg-3">
+						<select name="IdListaPrecio" class="form-control" id="IdListaPrecio" <?php if (!PermitirFuncion(418)) {echo "disabled='disabled'";}?>>
+							<?php while ($row_ListaPrecio = sqlsrv_fetch_array($SQL_ListaPrecios)) {?>
+							<option value="<?php echo $row_ListaPrecio['IdListaPrecio']; ?>"
+							<?php if (isset($row['IdListaPrecio']) && (strcmp($row_ListaPrecio['IdListaPrecio'], $row['IdListaPrecio']) == 0)) {echo "selected=\"selected\"";}?>>
+								<?php echo $row_ListaPrecio['DeListaPrecio']; ?>
+							</option>
+							<?php }?>
+						</select>
+					</div>
+					<!-- Fin, Lista Precios SN -->
 				</div>
 				<div class="form-group">
 					<label class="col-xs-12"><h3 class="bg-success p-xs b-r-sm"><i class="fa fa-list"></i> Contenido de la oferta</h3></label>
@@ -1111,13 +1262,26 @@ function CrearLead(){
 					<div class="form-group">
 						<label class="col-lg-2">Empleado de ventas <span class="text-danger">*</span></label>
 						<div class="col-lg-5">
-							<select name="EmpleadoVentas" class="form-control" id="EmpleadoVentas" form="CrearOfertaVenta" required="required" <?php if(($edit==1)&&($row['Cod_Estado']=='C')){echo "disabled='disabled'";}?>>
-							  <?php while($row_EmpleadosVentas=sqlsrv_fetch_array($SQL_EmpleadosVentas)){?>
-									<option value="<?php echo $row_EmpleadosVentas['ID_EmpVentas'];?>" <?php if($edit==0&&$sw_error==0){if(($_SESSION['CodigoEmpVentas']!="")&&(strcmp($row_EmpleadosVentas['ID_EmpVentas'],$_SESSION['CodigoEmpVentas'])==0)){ echo "selected=\"selected\"";}}elseif($edit==1||$sw_error==1){if(($row['SlpCode']!="")&&(strcmp($row_EmpleadosVentas['ID_EmpVentas'],$row['SlpCode'])==0)){ echo "selected=\"selected\"";}}?>><?php echo $row_EmpleadosVentas['DE_EmpVentas'];?></option>
+							<select name="EmpleadoVentas" class="form-control" id="EmpleadoVentas" form="CrearOrdenVenta" required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "disabled='disabled'";}?>>
+							  <?php while ($row_EmpleadosVentas = sqlsrv_fetch_array($SQL_EmpleadosVentas)) {?>
+									<option value="<?php echo $row_EmpleadosVentas['ID_EmpVentas']; ?>" <?php if ($edit == 0 && $sw_error == 0) {if (isset($_GET['Empleado']) && (strcmp($row_EmpleadosVentas['ID_EmpVentas'], base64_decode($_GET['Empleado'])) == 0)) {echo "selected=\"selected\"";} elseif (($_SESSION['CodigoEmpVentas'] != "") && (!isset($_GET['Empleado'])) && (strcmp($row_EmpleadosVentas['ID_EmpVentas'], $_SESSION['CodigoEmpVentas']) == 0)) {echo "selected=\"selected\"";}} elseif ($edit == 1 || $sw_error == 1) {if (($row['SlpCode'] != "") && (strcmp($row_EmpleadosVentas['ID_EmpVentas'], $row['SlpCode']) == 0)) {echo "selected=\"selected\"";}}?>><?php echo $row_EmpleadosVentas['DE_EmpVentas']; ?></option>
 							  <?php }?>
 							</select>
 						</div>
+
+						<label class="col-lg-1">Proyecto <span class="text-danger">*</span></label>
+						<div class="col-lg-4">
+							<select id="PrjCode" name="PrjCode" class="form-control select2" form="CrearOrdenVenta" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "disabled='disabled'";}?>>
+									<option value="">(NINGUNO)</option>
+								<?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) {?>
+									<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if ((isset($row['PrjCode'])) && (strcmp($row_Proyecto['IdProyecto'], $row['PrjCode']) == 0)) {echo "selected=\"selected\"";}?>>
+										<?php echo $row_Proyecto['DeProyecto']; ?>
+									</option>
+								<?php }?>
+							</select>
+						</div>
 					</div>
+
 					<div class="form-group">
 						<label class="col-lg-2">Comentarios</label>
 						<div class="col-lg-10">
@@ -1298,7 +1462,7 @@ function CrearLead(){
 				  }
 			  }
 		 };
-		  <?php if($edit==0){?>
+		  <?php if (PermitirFuncion(419) || ($edit == 0)) {?>
 		 $("#CardName").easyAutocomplete(options);
 	 	 <?php }?>
 		<?php if($dt_LS==1||$dt_OF==1){?>
