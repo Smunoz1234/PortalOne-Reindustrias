@@ -25,7 +25,7 @@ if (isset($_GET['id']) && ($_GET['id'] != "")) {
     if ($type == 1) { //Creando Entrega de Venta
         $where = "Usuario='" . $_GET['usr'] . "' and CardCode='" . $_GET['cardcode'] . "'";
         $SQL = Seleccionar("uvw_tbl_EntregaVentaDetalleCarrito", "*", $where);
-		// echo $where;
+        // echo $where;
 
         //Contar si hay articulos con lote
         $SQL_Lotes = Seleccionar("uvw_tbl_EntregaVentaDetalleCarrito", "Count(ID_EntregaVentaDetalleCarrito) AS Cant", "Usuario='" . $_GET['usr'] . "' and CardCode='" . $_GET['cardcode'] . "' and ManBtchNum='Y'");
@@ -307,6 +307,15 @@ function SeleccionarTodos(){
 		$(".chkSel:not(:disabled)").trigger('change');
 	}
 }
+
+// SMM, 10/03/2022
+function ConsultarArticulo(articulo){
+	if(articulo!=""){
+		self.name='opener';
+		remote=open('articulos.php?id='+articulo+'&ext=1&tl=1','remote','location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
+		remote.focus();
+	}
+}
 </script>
 </head>
 
@@ -330,11 +339,11 @@ function SeleccionarTodos(){
 				<th>Dosificación</th>
 				<th>Stock almacén</th>
 				<?php $row_DimReparto = sqlsrv_fetch_array($SQL_DimReparto);?>
-				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 1  ?></th>
+				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 1    ?></th>
 				<?php $row_DimReparto = sqlsrv_fetch_array($SQL_DimReparto);?>
-				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 2  ?></th>
+				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 2    ?></th>
 				<?php $row_DimReparto = sqlsrv_fetch_array($SQL_DimReparto);?>
-				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 3  ?></th>
+				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 3    ?></th>
 				<th>Proyecto</th>
 				<th>Empleado de ventas</th>
 				<th>Servicio</th>
@@ -363,16 +372,12 @@ if ($sw == 1) {
         sqlsrv_fetch($SQL_Dim2, SQLSRV_SCROLL_ABSOLUTE, -1);
         sqlsrv_fetch($SQL_Dim3, SQLSRV_SCROLL_ABSOLUTE, -1);
         sqlsrv_fetch($SQL_Proyecto, SQLSRV_SCROLL_ABSOLUTE, -1);
-		sqlsrv_fetch($SQL_EmpleadosVentas, SQLSRV_SCROLL_ABSOLUTE, -1); // SMM, 22/02/2022
+        sqlsrv_fetch($SQL_EmpleadosVentas, SQLSRV_SCROLL_ABSOLUTE, -1); // SMM, 22/02/2022
         ?>
 		<tr>
-			<td class="text-center">
-				<div class="checkbox checkbox-success no-margins">
-					<input type="checkbox" class="chkSel" id="chkSel<?php echo $row['LineNum']; ?>" value="" onChange="Seleccionar('<?php echo $row['LineNum']; ?>');" aria-label="Single checkbox One" <?php if (($row['LineStatus'] == "C") && ($type == 1)) {echo "disabled='disabled'";}?>><label></label>
-				</div>
-
-				<!-- SMM, 08/03/2022 -->
-				<a target="_blank" href="articulos.php?id=<?php echo base64_encode($row['ItemCode']);?>&tl=1&return=<?php echo base64_encode($_SERVER['QUERY_STRING']);?>&pag=<?php echo base64_encode('consultar_articulos.php');?>" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i> Abrir</a>
+			<td class="text-center form-inline w-150">
+				<div class="checkbox checkbox-success"><input type="checkbox" class="chkSel" id="chkSel<?php echo $row['LineNum']; ?>" value="" onChange="Seleccionar('<?php echo $row['LineNum']; ?>');" aria-label="Single checkbox One" <?php if (($row['LineStatus'] == "C") && ($type == 1)) {echo "disabled='disabled'";}?>><label></label></div>
+				<button type="button" class="btn btn-success btn-xs" onClick="ConsultarArticulo('<?php echo base64_encode($row['ItemCode']); ?>');" title="Consultar Articulo"><i class="fa fa-search"></i></button> <!-- SMM, 10/03/2022 -->
 			</td>
 
 			<td>
