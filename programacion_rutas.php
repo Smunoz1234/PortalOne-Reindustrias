@@ -117,6 +117,9 @@ if ($sw == 1) {
     //Llamada de servicio
     $SQL_LlamadaServicio = Seleccionar("tbl_LlamadasServicios_Rutas", "DISTINCT DocNum", "Usuario='" . $_SESSION['CodUser'] . "' and IdEvento='" . $row_Evento['IdEvento'] . "'", "DocNum");
 
+	//Placas
+	$SQL_Placas = Seleccionar("tbl_LlamadasServicios_Rutas", "DISTINCT SerialArticuloLlamada", "Usuario='" . $_SESSION['CodUser'] . "' and IdEvento='" . $row_Evento['IdEvento'] . "'", "SerialArticuloLlamada");
+
     //Series
     $SQL_Series = Seleccionar("tbl_LlamadasServicios_Rutas", "DISTINCT IdSeries, DeSeries", "Usuario='" . $_SESSION['CodUser'] . "' and IdEvento='" . $row_Evento['IdEvento'] . "'", "DeSeries");
 
@@ -422,6 +425,21 @@ $j = 0;
 									</div>
 									<div class="form-row">
 										<div class="form-group col-12">
+											<label class="form-label">Serial Interno</label>
+											 <div class="select2-success">
+											  <select name="Placa[]" id="Placa" class="select2OT form-control" multiple style="width: 100%" data-placeholder="(TODOS)">
+												   <?php
+$j = 0;
+    while ($row_Placa = sqlsrv_fetch_array($SQL_Placas)) {?>
+														<option value="<?php echo $row_Placa['SerialArticuloLlamada']; ?>" <?php if ((isset($_GET['Placa'][$j]) && ($_GET['Placa'][$j] != "")) && (strcmp($row_Placa['SerialArticuloLlamada'], $_GET['Placa'][$j]) == 0)) {echo "selected=\"selected\"";
+        $j++;}?>><?php echo $row_Placa['SerialArticuloLlamada']; ?></option>
+												  <?php }?>
+											  </select>
+											</div>
+										</div>
+									</div>
+									<div class="form-row">
+										<div class="form-group col-12">
 											<label class="form-label">Serie llamada</label>
 											 <div class="select2-success">
 											  <select name="Series[]" id="Series" class="select2OT form-control" multiple style="width: 100%" data-placeholder="(TODOS)">
@@ -564,6 +582,7 @@ $j = 0;
 						<h6 class="card-subtitle mb-2 text-muted"><?php echo $row_OT['DeTipoLlamada']; ?></h6>
 						<p class="card-text mb-0 small text-primary"><?php echo $row_OT['DeArticuloLlamada']; ?></p>
 						<p class="card-text mb-0 small"><strong><?php echo $row_OT['NombreClienteLlamada']; ?></strong></p>
+						<p class="card-text mb-0 small"><span class="font-weight-bold">Serial Interno:</span> <?php echo $row_OT['SerialArticuloLlamada'];?></p>
 						<p class="card-text mb-0 small"><span class="font-weight-bold">Sucursal:</span> <?php echo $row_OT['NombreSucursal']; ?></p>
 						<p class="card-text mb-0 small"><span class="font-weight-bold">Ciudad:</span> <?php echo $row_OT['CiudadLlamada']; ?></p>
 						<p class="card-text mb-0 small"><span class="font-weight-bold">Fecha:</span> <?php echo $row_OT['FechaLlamada']->format('Y-m-d'); ?></p>
@@ -809,6 +828,7 @@ function FiltrarOT(){
 	$("#accordion1-1").collapse('hide');
 	var Evento=document.getElementById("IdEvento").value;
 	var LlamadaServicio=$("#LlamadaServicio").val();
+	var Placa=$("#Placa").val();
 	var Series=$("#Series").val();
 	var Cliente=$("#ClienteLlamada").val();
 	var SucursalCliente=$("#SucursalCliente").val();
@@ -819,11 +839,10 @@ function FiltrarOT(){
 	var Ciudad=$("#Ciudad").val();
 	var FechaInicioOT=$("#FechaInicioOT").val();
 	var FechaFinalOT=$("#FechaFinalOT").val();
-//	var Cliente=document.getElementById("Cliente").value;
 
 	$.ajax({
 		type: "POST",
-		url: "programacion_rutas_OT.php?idEvento="+Evento+"&DocNum="+LlamadaServicio+"&Series="+Series+"&SucursalCliente="+btoa(SucursalCliente)+"&Servicios="+Servicios+"&Areas="+Areas+"&Articulo="+ArticuloLlamada+"&TipoLlamada="+TipoLlamada+"&Ciudad="+Ciudad+"&FechaInicio="+FechaInicioOT+"&FechaFinal="+FechaFinalOT+"&Cliente="+Cliente,
+		url: "programacion_rutas_OT.php?idEvento="+Evento+"&DocNum="+LlamadaServicio+"&Placa="+Placa+"&Series="+Series+"&SucursalCliente="+btoa(SucursalCliente)+"&Servicios="+Servicios+"&Areas="+Areas+"&Articulo="+ArticuloLlamada+"&TipoLlamada="+TipoLlamada+"&Ciudad="+Ciudad+"&FechaInicio="+FechaInicioOT+"&FechaFinal="+FechaFinalOT+"&Cliente="+Cliente,
 		success: function(response){
 			$('#dvResult').html(response);
 			$("#dvOT").scrollTop(0);

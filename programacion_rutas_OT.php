@@ -4,6 +4,7 @@ PermitirAcceso(312);
 //require_once("includes/conexion_hn.php");
 
 $DocNum = (isset($_GET['DocNum']) && $_GET['DocNum']!="") ? $_GET['DocNum'] : "";
+$Placa = (isset($_GET['Placa']) && $_GET['Placa']!="") ? $_GET['Placa'] : ""; // SMM, 09/03/2022
 $Series = (isset($_GET['Series']) && $_GET['Series']!="") ? $_GET['Series'] : "";
 $SucursalCliente = (isset($_GET['SucursalCliente']) && $_GET['SucursalCliente']!="") ? $_GET['SucursalCliente'] : "";
 $Servicios = (isset($_GET['Servicios']) && $_GET['Servicios']!="") ? $_GET['Servicios'] : "";
@@ -31,7 +32,10 @@ $ParamOT=array(
 	"'".$Areas."'",
 	"'".$Articulo."'",
 	"'".$TipoLlamada."'",
-	"'".$Ciudad."'"	
+	"'".$Ciudad."'",
+	"''",
+	"''",
+	"'".$Placa."'", // SMM, 09/03/2022
 );
 
 $SQL_OT=EjecutarSP("sp_ConsultarDatosCalendarioRutasOT",$ParamOT);
@@ -46,6 +50,7 @@ while($row_OT=sqlsrv_fetch_array($SQL_OT)){?>
 		<h6 class="card-subtitle mb-2 text-muted"><?php echo $row_OT['DeTipoLlamada'];?></h6>
 		<p class="card-text mb-0 small text-primary"><?php echo $row_OT['DeArticuloLlamada'];?></p>
 		<p class="card-text mb-0 small"><strong><?php echo $row_OT['NombreClienteLlamada'];?></strong></p>
+		<p class="card-text mb-0 small"><span class="font-weight-bold">Serial Interno:</span> <?php echo $row_OT['SerialArticuloLlamada'];?></p>
 		<p class="card-text mb-0 small"><span class="font-weight-bold">Sucursal:</span> <?php echo $row_OT['NombreSucursal'];?></p>
 		<p class="card-text mb-0 small"><span class="font-weight-bold">Ciudad:</span> <?php echo $row_OT['CiudadLlamada'];?></p>
 		<p class="card-text mb-0 small"><span class="font-weight-bold">Fecha:</span> <?php echo $row_OT['FechaLlamada']->format('Y-m-d');?></p>

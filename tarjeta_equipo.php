@@ -215,6 +215,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
                 "CDU_id_color" => $_POST['CDU_Color'],
                 "CDU_id_cilindraje" => $_POST['CDU_Cilindraje'],
                 "CDU_id_tipo_servicio" => $_POST['CDU_TipoServicio'],
+				"CDU_no_motor" => $_POST['CDU_No_Motor'],
                 "anexos" => (count($Anexos) > 0) ? $Anexos : null,
             );
 
