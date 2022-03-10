@@ -12,11 +12,14 @@ $imgEXT = pathinfo($path, PATHINFO_EXTENSION);
 $nombreArchivo = NormalizarNombreImagen($imgID, $imgFN, $imgEXT);
 sqlsrv_close($conexion);
 
-// Los archivos se borran cuando se ejecuta "LimpiarDirTemp()"
-// $route = $temp . "/" . $_SESSION['CodUser'] . "/";
-
-// Usar cuando se quiera que los archivos sean persistentes.
-$route = CrearObtenerDirRuta($temp . "/recepcion_vehiculos/" . $_SESSION['CodUser'] . "/");
+$persistent = $_REQUEST['persistent'] ?? ""; // SMM, 10/03/2022
+if($persistent == "") {
+    // Los archivos se borran cuando se ejecuta "LimpiarDirTemp()"
+	$route= $temp."/".$_SESSION['CodUser']."/";
+} else {
+    // Usar cuando se quiera que los archivos sean persistentes.
+	$route = CrearObtenerDirRuta($temp . "/$persistent/" . $_SESSION['CodUser'] . "/");
+}
 
 if (!file_exists($route)) {
     mkdir($route, 0777);

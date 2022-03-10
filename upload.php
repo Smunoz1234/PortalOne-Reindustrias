@@ -2,7 +2,13 @@
 require("includes/conexion.php"); 
 
 $temp=ObtenerVariable("CarpetaTmp");
-$route= $temp."/".$_SESSION['CodUser']."/";
+$persistent = $_REQUEST['persistent'] ?? ""; // SMM, 10/03/2022
+
+if($persistent == "") {
+	$route= $temp."/".$_SESSION['CodUser']."/";
+} else {
+	$route = CrearObtenerDirRuta($temp . "/$persistent/" . $_SESSION['CodUser'] . "/");
+}
 
 $cant=count($_FILES['File']['name']);
 

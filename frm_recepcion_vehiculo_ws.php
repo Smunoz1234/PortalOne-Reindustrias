@@ -1,21 +1,13 @@
 <?php require_once "includes/conexion.php";
 $Cabecera = $_POST;
-
 $return = base64_decode($Cabecera["return"]);
-unset($Cabecera["return"]);
 
+unset($Cabecera["return"]);
 unset($Cabecera["SucursalCliente"]);
 unset($Cabecera["ContactoCliente"]);
 unset($Cabecera["FechaCreacion"]);
 unset($Cabecera["HoraCreacion"]);
 unset($Cabecera["ResponsableCliente"]);
-unset($Cabecera["P"]);
-unset($Cabecera["swTipo"]);
-unset($Cabecera["swError"]);
-unset($Cabecera["tl"]);
-unset($Cabecera["d_LS"]);
-unset($Cabecera["IdFrm"]);
-unset($Cabecera["frm"]);
 
 $Cabecera["app"] = "PortalOne"; // Por defecto
 $Cabecera["estado"] = "O"; // Por defecto
@@ -78,7 +70,9 @@ if (isset($Cabecera["Anexo0"])) {
         ]);
 
         // Inicio, copiar anexos a la ruta log y main.
-        $source = CrearObtenerDirTemp() . $Cabecera["Anexo$a"];
+        $source = CrearObtenerDirRuta(ObtenerVariable("CarpetaTmp") . "/recepcion_vehiculos/" . $_SESSION['CodUser'] . "/");
+        $source .= $Cabecera["Anexo$a"];
+        
         $dest = $dir_log . $nombre_anexo;
         copy($source, $dest);
         $dest = $dir_main . $nombre_anexo;

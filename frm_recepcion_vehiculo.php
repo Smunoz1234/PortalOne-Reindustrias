@@ -1,5 +1,6 @@
 <?php require_once "includes/conexion.php";
 PermitirAcceso(1706);
+
 $IdFrm = "";
 $msg_error = ""; //Mensaje del error
 $dt_LS = 0; //sw para saber si vienen datos del SN. 0 no vienen. 1 si vienen.
@@ -62,88 +63,6 @@ if ($type_frm == 0) {
 $dir = CrearObtenerDirTemp();
 $dir_firma = CrearObtenerDirTempFirma();
 
-if ($type_frm == 1) { //Editando el formulario
-    //Llamada
-    $SQL = Seleccionar('uvw_tbl_FrmHallazgos', '*', "ID_Frm='" . $IdFrm . "'");
-    $row = sqlsrv_fetch_array($SQL);
-
-    //Clientes
-    $SQL_Cliente = Seleccionar("uvw_Sap_tbl_Clientes", "CodigoCliente, NombreCliente", "CodigoCliente='" . $row['ID_CodigoCliente'] . "'", 'NombreCliente');
-
-    //Contactos clientes
-    $SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', '*', "CodigoCliente='" . $row['ID_CodigoCliente'] . "'", 'NombreContacto');
-
-    //Sucursales
-    $SQL_SucursalCliente = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', '*', "CodigoCliente='" . $row['ID_CodigoCliente'] . "'", 'NombreSucursal');
-
-    //Orden de servicio
-    $SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_CodigoCliente='" . $row['ID_CodigoCliente'] . "' and NombreSucursal='" . $row['NombreSucursal'] . "'", 'AsuntoLlamada');
-
-    //Anexos
-    $SQL_AnexoLlamada = Seleccionar('uvw_tbl_DocumentosSAP_Anexos', '*', "ID_Documento='" . $row['ID_Frm'] . "'");
-
-    //Areas del cliente
-    $SQL_Areas = Seleccionar('uvw_tbl_Areas_Clientes', '*', "IdCodigoCliente='" . $row['ID_CodigoCliente'] . "'", 'DeArea');
-
-    //Plagas
-    $SQL_Plagas = Seleccionar('uvw_tbl_FrmHallazgos_Plagas', '*', "ID_Frm='" . $row['ID_Frm'] . "'");
-    $Num_Plagas = sqlsrv_num_rows($SQL_Plagas);
-
-    //Recurrencias
-    $SQL_Recurrencias = Seleccionar('uvw_tbl_FrmHallazgos_Rec', '*', "ID_Frm='" . $row['ID_Frm'] . "'", 'FechaRegistro', 'DESC');
-
-}
-
-if ($sw_error == 1) {
-    //Si ocurre un error, vuelvo a consultar los datos insertados desde la base de datos.
-    $SQL = Seleccionar('uvw_tbl_FrmHallazgos', '*', "ID_Frm='" . $IdFrm . "'");
-    $row = sqlsrv_fetch_array($SQL);
-
-    //Clientes
-    $SQL_Cliente = Seleccionar("uvw_Sap_tbl_Clientes", "CodigoCliente, NombreCliente", "CodigoCliente='" . $row['ID_CodigoCliente'] . "'", 'NombreCliente');
-
-    //Contactos clientes
-    $SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', '*', "CodigoCliente='" . $row['ID_CodigoCliente'] . "'", 'NombreContacto');
-
-    //Sucursales
-    $SQL_SucursalCliente = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', '*', "CodigoCliente='" . $row['ID_CodigoCliente'] . "'", 'NombreSucursal');
-
-    //Anexos
-    $SQL_AnexoLlamada = Seleccionar('uvw_tbl_DocumentosSAP_Anexos', '*', "ID_Documento='" . $IdFrm . "'");
-
-    //Areas del cliente
-    $SQL_Areas = Seleccionar('uvw_tbl_Areas_Clientes', '*', "IdCodigoCliente='" . $row['ID_CodigoCliente'] . "'", 'DeArea');
-
-    //Plagas
-    $SQL_Plagas = Seleccionar('uvw_tbl_FrmHallazgos_Plagas', '*', "ID_Frm='" . $IdFrm . "'");
-    $Num_Plagas = sqlsrv_num_rows($SQL_Plagas);
-
-    //Recurrencias
-    $SQL_Recurrencias = Seleccionar('uvw_tbl_FrmHallazgos_Rec', '*', "ID_Frm='" . $IdFrm . "'", 'FechaRegistro', 'DESC');
-}
-
-//Tipo de visita
-$SQL_TipoVisita = Seleccionar('uvw_Sap_tbl_TipoLlamadas', '*', '', 'DeTipoLlamada');
-
-//Tipo de plaga
-$SQL_TipoPlaga = Seleccionar('uvw_tbl_Plagas', '*', '', 'NombrePlaga');
-
-//Empleados
-if ($type_frm == 0) {
-    $SQL_EmpleadoLlamada = Seleccionar('uvw_Sap_tbl_Empleados', '*', "ID_Empleado='" . $_SESSION['CodigoSAP'] . "'", 'NombreEmpleado');
-} else {
-    $SQL_EmpleadoLlamada = Seleccionar('uvw_Sap_tbl_Empleados', '*', '', 'NombreEmpleado');
-}
-
-//Estado formulario
-$SQL_EstadoLlamada = Seleccionar('uvw_tbl_EstadoLlamada', '*');
-
-//Estado criticidad
-$SQL_EstadoCriticidad = Seleccionar('uvw_tbl_EstadoCriticidad', '*');
-
-//Condiciones
-$SQL_Condicion = Seleccionar('uvw_tbl_Areas_Condicion', '*');
-
 // @author Stiven Muñoz Murillo
 // @version 10/01/2022
 
@@ -156,14 +75,13 @@ $SQL_LineaVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_LineaVehiculo', '*
 // Modelo o año de fabricación de vehiculo en la tarjeta de equipo
 $SQL_ModeloVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_AñoModeloVehiculo', '*');
 
-// SMM, 15/02/2022
-
 // Colores de vehiculo en la tarjeta de equipo
 $SQL_ColorVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_ColorVehiculo', '*');
 
 // Preguntas en la recepción de vehículo
 $SQL_Preguntas = Seleccionar('tbl_RecepcionVehiculos_Preguntas', '*');
 ?>
+
 <!DOCTYPE html>
 <html><!-- InstanceBegin template="/Templates/PlantillaPrincipal.dwt.php" codeOutsideHTMLIsLocked="false" -->
 
@@ -173,30 +91,6 @@ $SQL_Preguntas = Seleccionar('tbl_RecepcionVehiculos_Preguntas', '*');
 <title><?php echo $Title; ?> | <?php echo NOMBRE_PORTAL; ?></title>
 <!-- InstanceEndEditable -->
 <!-- InstanceBeginEditable name="head" -->
-<?php
-if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_OpenFrm"))) {
-    echo "<script>
-		$(document).ready(function() {
-			Swal.fire({
-                title: '¡Listo!',
-                text: 'El formulario ha sido abierto nuevamente.',
-                type: 'success'
-            });
-		});
-		</script>";
-}
-if (isset($sw_error) && ($sw_error == 1)) {
-    echo "<script>
-		$(document).ready(function() {
-			Swal.fire({
-                title: '¡Ha ocurrido un error!',
-                text: '" . $msg_error . "',
-                type: 'error'
-            });
-		});
-		</script>";
-}
-?>
 
 <script type="text/javascript">
 	$(document).ready(function() {//Cargar los combos dependiendo de otros
@@ -254,7 +148,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 				},
 				dataType:'json',
 				success: function(data){
-					console.log("Line 677", data);
+					console.log("Line 151, ajx_buscar_datos_json.php 45", data);
 
 					document.getElementById('direccion_destino').value=data.Direccion;
 					document.getElementById('celular').value=data.Celular;
@@ -357,7 +251,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 				},
 				dataType: 'json',
 				success: function(data){
-					console.log("Line 806", data);
+					console.log("Line 254, ajx_buscar_datos_json.php 44", data);
 
 					document.getElementById('placa').value = data.SerialInterno;
 					document.getElementById('VIN').value = data.SerialFabricante;
@@ -394,15 +288,6 @@ if (isset($sw_error) && ($sw_error == 1)) {
 		});
 	});
 
-function ConsultarDatosCliente(){
-	var Cliente=document.getElementById('id_socio_negocio');
-	if(Cliente.value!=""){
-		self.name='opener';
-		remote=open('socios_negocios.php?id='+Base64.encode(Cliente.value)+'&ext=1&tl=1','remote','location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
-		remote.focus();
-	}
-}
-
 // Stiven Muñoz Murillo, 12/01/2022
 function ConsultarServicio(){
 	var llamada=document.getElementById('id_llamada_servicio');
@@ -413,15 +298,11 @@ function ConsultarServicio(){
 	}
 }
 
-function AgregarArea(){
+function ConsultarDatosCliente(){
 	var Cliente=document.getElementById('id_socio_negocio');
 	if(Cliente.value!=""){
 		self.name='opener';
-		var altura=370;
-		var anchura=500;
-		var posicion_y=parseInt((window.screen.height/2)-(altura/2));
-		var posicion_x=parseInt((window.screen.width/2)-(anchura/2));
-		remote=open('popup_agregar_area.php?cardcode='+Base64.encode(Cliente.value)+'&tl=1','remote','width='+anchura+',height='+altura+',location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=no,status=yes,left='+posicion_x+',top='+posicion_y);
+		remote=open('socios_negocios.php?id='+Base64.encode(Cliente.value)+'&ext=1&tl=1','remote','location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
 		remote.focus();
 	}
 }
@@ -435,24 +316,6 @@ function AbrirFirma(IDCampo){
 	remote=open('popup_firma.php?id='+Base64.encode(IDCampo),'remote',"width=1200,height=500,location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=no,fullscreen=no,directories=no,status=yes,left="+posicion_x+",top="+posicion_y+"");
 	remote.focus();
 }
-
-<?php if ($type_frm == 1) {?>
-function Eliminar(){
-	Swal.fire({
-		title: "Eliminar",
-		text: "¿Está seguro que desea eliminar este registro? Esta acción no tiene reversión.",
-		type: "warning",
-		showCancelButton: true,
-		confirmButtonText: "Si, estoy seguro",
-		cancelButtonText: "Cancelar",
-		closeOnConfirm: false
-	},
-	function(){
-		$('.ibox-content').toggleClass('sk-loading');
-		location.href='frm_hallazgos.php?PDel=1&id_frm=<?php echo $IdFrm; ?>&frm=<?php echo $frm; ?>';
-	});
-}
-<?php }?>
 </script>
 <!-- InstanceEndEditable -->
 </head>
@@ -1073,7 +936,8 @@ function Eliminar(){
 				</div>
 				<!-- IBOX, Fin -->
 
-				<?php
+<!-- Inicio, relacionado al $return -->
+<?php
 $EliminaMsg = array("&a=" . base64_encode("OK_FrmAdd"), "&a=" . base64_encode("OK_FrmUpd"), "&a=" . base64_encode("OK_FrmDel")); //Eliminar mensajes
 
 if (isset($_GET['return'])) {
@@ -1084,17 +948,12 @@ if (isset($_GET['return'])) {
 } else {
     // Stiven Muñoz Murillo, 10/01/2022
     $return = "consultar_frm_recepcion_vehiculo.php?id=" . $frm;
-}?>
+}
+?>
+<!-- Fin, relacionado al $return -->
 
-				<!-- Esto es otra cosa -->
-				<input type="hidden" id="P" name="P" value="<?php echo base64_encode('MM_frmHallazgos') ?>" />
-				<input type="hidden" id="swTipo" name="swTipo" value="0" />
-				<input type="hidden" id="swError" name="swError" value="<?php echo $sw_error; ?>" />
-				<input type="hidden" id="tl" name="tl" value="<?php echo $type_frm; ?>" />
-				<input type="hidden" id="d_LS" name="d_LS" value="<?php echo $dt_LS; ?>" />
-				<input type="hidden" id="IdFrm" name="IdFrm" value="<?php echo base64_encode($IdFrm); ?>" />
+				<!-- Campos ocultos -->
 				<input type="hidden" id="return" name="return" value="<?php echo base64_encode($return); ?>" />
-				<input type="hidden" id="frm" name="frm" value="<?php echo $frm; ?>" />
 			</form>
 
 
@@ -1131,7 +990,7 @@ if (isset($_GET['return'])) {
 						</div>
 					<?php } else {echo "<!--p>Sin anexos.</p-->";}?>
 					<div class="row">
-						<form action="upload.php" class="dropzone" id="dropzoneForm" name="dropzoneForm">
+						<form action="upload.php?persistent=recepcion_vehiculos" class="dropzone" id="dropzoneForm" name="dropzoneForm">
 							<?php //if ($sw_error == 0) {LimpiarDirTemp();}?>
 							<div class="fallback">
 								<input name="File" id="File" type="file" form="dropzoneForm" />
@@ -1145,18 +1004,8 @@ if (isset($_GET['return'])) {
 			<!-- Botones de acción al final del formulario, SMM -->
 			   <div class="form-group">
 					<div class="col-lg-9">
-						 <br><br>
-						<?php if (($type_frm == 1) && (PermitirFuncion(107) && (($row['Cod_Estado'] == '-3') || ($row['Cod_Estado'] == '-2')))) {?>
-							<button class="btn btn-warning" type="submit" form="recepcionForm" id="Actualizar"><i class="fa fa-refresh"></i> Actualizar formulario</button>
-						<?php }?>
 						<?php if ($type_frm == 0) {?>
 							<button class="btn btn-primary" form="recepcionForm" type="submit" id="Crear"><i class="fa fa-check"></i> Registrar formulario</button>
-						<?php }?>
-						<?php if (($type_frm == 1) && (PermitirFuncion(213) && ($row['Cod_Estado'] == '-1'))) {?>
-							<button class="btn btn-success" type="button" onClick="Reabrir();"><i class="fa fa-reply"></i> Reabrir</button>
-						<?php }?>
-						<?php if ($type_frm == 1 && PermitirFuncion(213)) {?>
-							<button class="btn btn-danger" type="button" onClick="Eliminar();"><i class="fa fa-times-circle"></i>&nbsp;Eliminar</button>
 						<?php }?>
 						<a href="<?php echo $return; ?>" class="alkin btn btn-outline btn-default"><i class="fa fa-arrow-circle-o-left"></i> Regresar</a>
 					</div>
@@ -1205,7 +1054,7 @@ Dropzone.options.dropzoneForm = {
 	init: function(file) {
 		this.on("addedfile", file => {
 			anexos.push(file.name); // SMM, 16/02/2022
-			console.log("Line 1677", file.name);
+			console.log("Line 1057, Dropzone(addedfile)", file.name);
     });
   }
 };
@@ -1221,7 +1070,7 @@ function uploadImage(refImage) {
 	var formData = new FormData();
 	var file = $(`#${refImage}`)[0].files[0];
 
-	console.log("Line 1664", file);
+	console.log("Line 1073, uploadImage", file);
 	formData.append('image', file);
 
 	if(typeof file !== 'undefined'){
@@ -1235,7 +1084,7 @@ function uploadImage(refImage) {
 		} else {
 			// Inicio, AJAX
 			$.ajax({
-				url: 'upload_image.php',
+				url: 'upload_image.php?persistent=recepcion_vehiculos',
 				type: 'post',
 				data: formData,
 				contentType: false,
@@ -1248,7 +1097,7 @@ function uploadImage(refImage) {
 
 					testImage(photo_route).then(success => {
 						console.log(success);
-						console.log("Line 1684", photo_route);
+						console.log("Line 1100, testImage", photo_route);
 
 						photos[refImage] = photo_name; // SMM, 11/02/2022
 
@@ -1412,217 +1261,118 @@ $(document).ready(function(){
 			}
 		}
 	});
-		 $(".alkin").on('click', function(){
-				 $('.ibox-content').toggleClass('sk-loading');
-			});
 
-			// @autor SMM
-			// @version 15/02/2022
-
-			// Inicio, Sección de fechas y horas.
-			if(!$('#fecha_ingreso').prop('readonly')){
-				$('#fecha_ingreso').datepicker({
-					todayBtn: "linked",
-					keyboardNavigation: false,
-					forceParse: false,
-					calendarWeeks: true,
-					autoclose: true,
-					format: 'yyyy-mm-dd',
-					todayHighlight: true,
-					endDate: '<?php echo date('Y-m-d'); ?>'
-				});
-
-				$('#hora_ingreso').clockpicker({
-					donetext: 'Done'
-				});
-			}
-			if(!$('#fecha_autoriza_campana').prop('readonly')){
-				$('#fecha_autoriza_campana').datepicker({
-					todayBtn: "linked",
-					keyboardNavigation: false,
-					forceParse: false,
-					calendarWeeks: true,
-					autoclose: true,
-					format: 'yyyy-mm-dd',
-					todayHighlight: true
-				});
-
-				$('#hora_autoriza_campana').clockpicker({
-					donetext: 'Done'
-				});
-			}
-			if(!$('#fecha_aprox_entrega').prop('readonly')){
-				$('#fecha_aprox_entrega').datepicker({
-					todayBtn: "linked",
-					keyboardNavigation: false,
-					forceParse: false,
-					calendarWeeks: true,
-					autoclose: true,
-					format: 'yyyy-mm-dd',
-					todayHighlight: true
-				});
-
-				$('#hora_aprox_entrega').clockpicker({
-					donetext: 'Done'
-				});
-			}
-			// Fin, Sección de fechas y horas.
-
-
-		 $(".select2").select2();
-		 $('.i-checks').iCheck({
-			 checkboxClass: 'icheckbox_square-green',
-             radioClass: 'iradio_square-green',
-          });
-		 var options = {
-			url: function(phrase) {
-				return "ajx_buscar_datos_json.php?type=7&id="+phrase;
-			},
-
-			getValue: "NombreBuscarCliente",
-			requestDelay: 400,
-			list: {
-				match: {
-					enabled: true
-				},
-				onClickEvent: function() {
-					var value = $("#socio_negocio").getSelectedItemData().CodigoCliente;
-					$("#id_socio_negocio").val(value).trigger("change");
-				}
-			}
-		};
-		 var options2 = {
-			url: function(phrase) {
-				return "ajx_buscar_datos_json.php?type=8&id="+phrase;
-			},
-
-			getValue: "Ciudad",
-			requestDelay: 400,
-			template: {
-				type: "description",
-				fields: {
-					description: "Codigo"
-				}
-			},
-			list: {
-				match: {
-					enabled: true
-				}
-			}
-		};
-
-		$("#socio_negocio").easyAutocomplete(options);
-		$("#ciudad").easyAutocomplete(options2);
-
-		<?php if ($dt_LS == 1) {?>
-			$('#id_socio_negocio').trigger('change');
-
-			// Stiven Muñoz Murillo, 20/01/2022
-			$('#id_llamada_servicio').trigger('change');
-	 	<?php }?>
-
-		$(".btn_del").each(function (el){
-			 $(this).bind("click",delRow);
-		 });
-
-		  <?php
-if (($type_frm == 1) && (!PermitirFuncion(213))) {?>
-				//$('#id_socio_negocioActividad option:not(:selected)').attr('disabled',true);
-		 		$('#Revision option:not(:selected)').attr('disabled',true);
-		<?php }?>
-		 <?php
-if ($dt_LS == 1) {?>
-				//$('#id_socio_negocioActividad option:not(:selected)').attr('disabled',true);
-		 		$('#SucursalCliente option:not(:selected)').attr('disabled',true);
-		 		$('#id_llamada_servicio option:not(:selected)').attr('disabled',true);
-		<?php }?>
+	$(".alkin").on('click', function(){
+			$('.ibox-content').toggleClass('sk-loading');
 	});
-</script>
-<?php if ($type_frm == 1) {?>
-<script>
-function Reabrir(){
-	Swal.fire({
-		title: "Reabrir",
-		text: "¿Está seguro que desea volver a abrir este documento?",
-		type: "warning",
-		showCancelButton: true,
-		confirmButtonText: "Si, estoy seguro",
-		cancelButtonText: "Cancelar",
-		closeOnConfirm: false
-	},
-	function(){
-		$('.ibox-content').toggleClass('sk-loading');
-		location.href='frm_hallazgos.php?POpen=1&id_frm=<?php echo base64_encode($IdFrm); ?>&return=<?php echo base64_encode($_GET['return']); ?>&pag=<?php echo $_GET['pag']; ?>&frm=<?php echo $frm; ?>';
+
+	// Inicio, sección de fechas y horas.
+	if(!$('#fecha_ingreso').prop('readonly')){
+		$('#fecha_ingreso').datepicker({
+			todayBtn: "linked",
+			keyboardNavigation: false,
+			forceParse: false,
+			calendarWeeks: true,
+			autoclose: true,
+			format: 'yyyy-mm-dd',
+			todayHighlight: true,
+			endDate: '<?php echo date('Y-m-d'); ?>'
+		});
+
+		$('#hora_ingreso').clockpicker({
+			donetext: 'Done'
+		});
+	}
+	if(!$('#fecha_autoriza_campana').prop('readonly')){
+		$('#fecha_autoriza_campana').datepicker({
+			todayBtn: "linked",
+			keyboardNavigation: false,
+			forceParse: false,
+			calendarWeeks: true,
+			autoclose: true,
+			format: 'yyyy-mm-dd',
+			todayHighlight: true
+		});
+
+		$('#hora_autoriza_campana').clockpicker({
+			donetext: 'Done'
+		});
+	}
+	if(!$('#fecha_aprox_entrega').prop('readonly')){
+		$('#fecha_aprox_entrega').datepicker({
+			todayBtn: "linked",
+			keyboardNavigation: false,
+			forceParse: false,
+			calendarWeeks: true,
+			autoclose: true,
+			format: 'yyyy-mm-dd',
+			todayHighlight: true
+		});
+
+		$('#hora_aprox_entrega').clockpicker({
+			donetext: 'Done'
+		});
+	}
+	// Fin, sección de fechas y horas.
+
+
+	$(".select2").select2();
+	$('.i-checks').iCheck({
+		checkboxClass: 'icheckbox_square-green',
+		radioClass: 'iradio_square-green',
 	});
-}
+
+	var options = {
+		url: function(phrase) {
+			return "ajx_buscar_datos_json.php?type=7&id="+phrase;
+		},
+
+		getValue: "NombreBuscarCliente",
+		requestDelay: 400,
+		list: {
+			match: {
+				enabled: true
+			},
+			onClickEvent: function() {
+				var value = $("#socio_negocio").getSelectedItemData().CodigoCliente;
+				$("#id_socio_negocio").val(value).trigger("change");
+			}
+		}
+	};
+	var options2 = {
+		url: function(phrase) {
+			return "ajx_buscar_datos_json.php?type=8&id="+phrase;
+		},
+
+		getValue: "Ciudad",
+		requestDelay: 400,
+		template: {
+			type: "description",
+			fields: {
+				description: "Codigo"
+			}
+		},
+		list: {
+			match: {
+				enabled: true
+			}
+		}
+	};
+
+	$("#socio_negocio").easyAutocomplete(options);
+	$("#ciudad").easyAutocomplete(options2);
+
+	<?php if ($dt_LS == 1) {?>
+		$('#SucursalCliente option:not(:selected)').attr('disabled',true);
+		$('#id_llamada_servicio option:not(:selected)').attr('disabled',true);
+
+		// Stiven Muñoz Murillo, 20/01/2022
+		$('#id_llamada_servicio').trigger('change');
+		$('#id_socio_negocio').trigger('change');
+	<?php }?>
+});
 </script>
-<?php }?>
-<script>
-function addField(btn){//Clonar div
-	var clickID = parseInt($(btn).parent('div').parent('div').attr('id').replace('div_',''));
-	//alert($(btn).parent('div').attr('id'));
-	//alert(clickID);
-	var newID = (clickID+1);
 
-	$newClone = $('#div_'+clickID).clone(true);
-
-	//div
-	$newClone.attr("id",'div_'+newID);
-
-	//select
-	$newClone.children("div").eq(0).children("select").eq(0).attr('id','TipoPlaga_'+newID);
-
-	//inputs
-	$newClone.children("div").eq(1).children("input").eq(0).attr('id','Cantidad_'+newID);
-	$newClone.children("div").eq(2).children("div").eq(0).children("span").eq(0).children("input").eq(0).attr('id','FotoPlaga_'+newID);
-
-	//button
-	$newClone.children("div").eq(3).children("button").eq(0).attr('id',''+newID);
-
-	$newClone.insertAfter($('#div_'+clickID));
-
-	//$("#"+clickID).val('Remover');
-	document.getElementById(''+clickID).innerHTML="<i class='fa fa-minus'></i> Remover";
-	document.getElementById(''+clickID).setAttribute('class','btn btn-warning btn-xs btn_del');
-	document.getElementById(''+clickID).setAttribute('onClick','delRow2(this);');
-
-	document.getElementById('FotoPlaga_'+newID).value='';
-
-	//$("#"+clickID).addEventListener("click",delRow);
-
-	//$("#"+clickID).bind("click",delRow);
-}
-
-function addHallazgo(btn){//Clonar div
-	var clickID = parseInt($(btn).parent('div').parent('div').parent('div').attr('id').replace('divHallazgo',''));
-	//alert($(btn).parent('div').attr('id'));
-	//alert(clickID);
-	var newID = (clickID+1);
-
-	$('#Area'+clickID).select2("destroy");
-
-	$newClone = $('#divHallazgo'+clickID).clone(true);
-
-	//div
-	$newClone.attr("id",'divHallazgo'+newID);
-
-	//select
-	$newClone.children("div").eq(0).children("div").eq(0).children("select").eq(0).attr('id','Area'+newID);
-
-
-	$newClone.insertAfter($('#divHallazgo'+clickID));
-	$('#Area'+clickID).select2();
-	$('#Area'+newID).select2();
-}
-</script>
-<script>
-function delRow(){//Eliminar div
-	$(this).parent('div').parent('div').remove();
-}
-function delRow2(btn){//Eliminar div
-	$(btn).parent('div').parent('div').remove();
-}
-</script>
 <!-- InstanceEndEditable -->
 </body>
 
