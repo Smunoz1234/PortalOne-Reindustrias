@@ -61,8 +61,8 @@ if ($type == 1) { //Si estoy refrescando datos ya cargados
     array_push($ParamRec, "'" . $FilRec . "'");
     $SQL_Recursos = EjecutarSP("sp_ConsultarTecnicos", $ParamRec);
 
-	// Descomentar, para válidar los parámetros del SP.
-	// var_dump($ParamRec);
+    // Descomentar, para válidar los parámetros del SP.
+    // var_dump($ParamRec);
 }
 
 ?>
@@ -200,10 +200,14 @@ if ($sw == 1) {
 			    ],
 				resourceOrder: 'title',
 				eventDidMount: function(info){
+					// console.log(info.event)
 					console.log('Se ejecuto eventDidMount en el calendario');
 
-//					$(info.el).tooltip({ title: info.event.extendedProps.informacionAdicional })
-//					console.log(info.event)
+					// SMM, 10/03/2022
+					$(info.el).tooltip({
+						title: info.event.title
+					});
+
 					if(info.view.type!='dayGridMonth' && info.view.type!='listWeek'){
 						let cont = info.el.getElementsByClassName('fc-event-time')//fc-event-title-container
 
