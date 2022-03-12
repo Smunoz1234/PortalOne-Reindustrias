@@ -136,7 +136,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
                 array(
                     "id_consecutivo" => null,
                     "id_contacto" => null,
-                    "contacto" => $_POST['CardName'],
+                    "contacto" => substr($_POST['CardName'], 0, 50), // Reducir a 50 carácteres
                     "id_socio_negocio" => $IdSN,
                     "primer_nombre" => isset($Nombres[0]) && ($Nombres[0] != "") ? $Nombres[0] : $_POST['CardName'],
                     "segundo_nombre" => isset($Nombres[1]) && ($Nombres[1] != "") ? $Nombres[1] : "",

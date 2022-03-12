@@ -865,6 +865,25 @@ function CopiarNombreCont(){
 function mayus(e) {
 	e.value = e.value.toUpperCase();
 }
+
+// SMM, 18/02/2022
+function MostrarPlazos(no_documento){
+	$('.ibox-content').toggleClass('sk-loading',true);
+	$.ajax({
+		type: "POST",
+		async: false,
+		url: "md_facturas_pendientes_plazos.php",
+		data:{
+			NoDocumento: no_documento
+		},
+		success: function(response){
+			$('.ibox-content').toggleClass('sk-loading',false);
+			$('#ContenidoModal').html(response);
+			$('#TituloModal').html(`PLAZOS FACTURA NO. ${no_documento}`);
+			$('#myModal').modal("show");
+		}
+	});
+}
 </script>
 <?php /*?><script>
 function NomDir(id){
@@ -908,6 +927,21 @@ nombredir.value="<?php echo ObtenerVariable("DirDestino");?>";
             </div>
 
          <div class="wrapper wrapper-content">
+			<!-- Inicio, myModal -->
+			<div class="modal inmodal fade" id="myModal" tabindex="-1" role="dialog" aria-hidden="true">
+				<div class="modal-dialog modal-lg" style="width: 70% !important;">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h4 class="modal-title" id="TituloModal"></h4>
+						</div>
+						<div class="modal-body" id="ContenidoModal"></div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-success m-t-md" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- Fin, myModal -->
 			 <form action="socios_negocios.php" method="post" class="form-horizontal" enctype="multipart/form-data" id="EditarSN" name="EditarSN">
 			 <div class="row">
 				<div class="col-lg-12">
@@ -1377,6 +1411,7 @@ while ($row_ResponsabilidadFiscal = sqlsrv_fetch_array($SQL_ResponsabilidadFisca
 								<th>Abono</th>
 								<th>Dias vencidos</th>
 								<th>Saldo total</th>
+								<th>Plazos</th>
 								<th>Acciones</th>
 								<th>Seleccionar</th>
 							</tr>
@@ -1391,6 +1426,11 @@ while ($row_ResponsabilidadFiscal = sqlsrv_fetch_array($SQL_ResponsabilidadFisca
 									<td><?php echo "$" . number_format($row_FactPend['ValorPagoDocumento'], 2); ?></td>
 									<td><?php echo number_format($row_FactPend['DiasVencidos'], 0); ?></td>
 									<td><?php echo "$" . number_format($row_FactPend['SaldoDocumento'], 2); ?></td>
+									
+									<td> <!-- SMM, 11/03/2022 -->
+										<a onClick="MostrarPlazos('<?php echo $row_FactPend['NoDocumento']; ?>');"><?php echo $row_FactPend['CantidadPlazo']; ?></a>
+									</td>
+									
 									<td>
 										<a href="factura_venta.php?id=<?php echo base64_encode($row_FactPend['NoInterno']); ?>&id_portal=<?php echo base64_encode($row_FactPend['IdDocPortal']); ?>&tl=1" class="btn btn-success btn-xs" target="_blank"><i class="fa fa-folder-open-o"></i> Abrir</a>
 										<a href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row_FactPend['NoInterno']); ?>&ObType=<?php echo base64_encode('13'); ?>&IdFrm=<?php echo base64_encode($row_FactPend['IdSeries']); ?>" target="_blank" class="btn btn-warning btn-xs"><i class="fa fa-download"></i> Descargar</a>

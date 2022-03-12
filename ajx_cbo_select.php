@@ -591,7 +591,7 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
         if (!isset($_GET['id']) || ($_GET['id'] == "")) {
             echo "<option value=''>(Todos)</option>";
         } else {
-            $SQL = Seleccionar('uvw_Sap_tbl_Recursos', 'DISTINCT IdCargo, DeCargo', "CentroCosto3='" . $_GET['id'] . "'");
+            $SQL = Seleccionar('uvw_Sap_tbl_Recursos', 'DISTINCT IdCargo, DeCargo', "CentroCosto2='" . $_GET['id'] . "'");
             $Num = sqlsrv_num_rows($SQL);
             if (isset($_GET['todos']) && ($_GET['todos'] == 1)) {
                 $Todos = 1;
@@ -604,7 +604,7 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
                 }
                 while ($row = sqlsrv_fetch_array($SQL)) {
                     echo "<optgroup label='" . $row['DeCargo'] . "'></optgroup>";
-                    $SQL_Rec = Seleccionar('uvw_Sap_tbl_Recursos', 'ID_Empleado, NombreEmpleado', "CentroCosto3='" . $_GET['id'] . "' and IdCargo='" . $row['IdCargo'] . "'", 'NombreEmpleado');
+                    $SQL_Rec = Seleccionar('uvw_Sap_tbl_Recursos', 'ID_Empleado, NombreEmpleado', "CentroCosto2='" . $_GET['id'] . "' and IdCargo='" . $row['IdCargo'] . "'", 'NombreEmpleado');
                     while ($row_Rec = sqlsrv_fetch_array($SQL_Rec)) {
                         echo "<option value=\"" . $row_Rec['ID_Empleado'] . "\">" . $row_Rec['NombreEmpleado'] . "</option>";
                     }
