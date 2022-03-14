@@ -211,22 +211,29 @@ if ($sw == 1) {
 					if(info.view.type!='dayGridMonth' && info.view.type!='listWeek'){
 						let cont = info.el.getElementsByClassName('fc-event-time')//fc-event-title-container
 
-						//-3 Abierto, -2 Pendiente, -1 Cerrado
-						if(info.event.extendedProps.estadoLlamadaServ=='-3'){
-							cont[0].insertAdjacentHTML('beforeend','<i class="fas fa-door-open pull-right" title="Llamada de servicio abierta"></i>')
-						}else if(info.event.extendedProps.estadoLlamadaServ=='-2'){
-							cont[0].insertAdjacentHTML('beforeend','<i class="fas fa-clock pull-right" title="Llamada de servicio pendiente"></i>')
-						}else if(info.event.extendedProps.estadoLlamadaServ=='-1'){
-							cont[0].insertAdjacentHTML('beforeend','<i class="fas fa-door-closed pull-right" title="Llamada de servicio cerrada"></i>')
-						}else if(info.event.extendedProps.estadoLlamadaServ==''){//No tiene llamada de servicio
-							cont[0].insertAdjacentHTML('beforeend','<i class="fas fa-unlink pull-right" title="Actividad sin llamada de servicio asociada"></i>')
-						}else if(info.event.extendedProps.estadoLlamadaServ===undefined){//Cuando se agrega por primera vez haciendo drop
-							cont[0].insertAdjacentHTML('beforeend','<i class="fas fa-door-open pull-right" title="Llamada de servicio abierta"></i>')
-						}
+						// console.log(info.event.extendedProps.estadoLlamadaServ);
+						// console.log(cont[0]);
 
-						//Si tiene llamada de servicio
-						if(info.event.extendedProps.llamadaServicio===undefined || info.event.extendedProps.llamadaServicio!=='0'){//Cuando se agrega por primera vez haciendo drop
-							cont[0].insertAdjacentHTML('beforeend','<i class="fas fa-phone-square-alt mr-1 pull-right" title="Tiene asociada una llamada de servicio"></i>')
+						if(cont[0]!==undefined) {
+
+							//-3 Abierto, -2 Pendiente, -1 Cerrado
+							if(info.event.extendedProps.estadoLlamadaServ===undefined){//Cuando se agrega por primera vez haciendo drop
+								cont[0].insertAdjacentHTML('beforeend','<i class="fas fa-door-open pull-right" title="Llamada de servicio abierta"></i>')
+							}else if(info.event.extendedProps.estadoLlamadaServ=='-3'){
+								cont[0].insertAdjacentHTML('beforeend','<i class="fas fa-door-open pull-right" title="Llamada de servicio abierta"></i>')
+							}else if(info.event.extendedProps.estadoLlamadaServ=='-2'){
+								cont[0].insertAdjacentHTML('beforeend','<i class="fas fa-clock pull-right" title="Llamada de servicio pendiente"></i>')
+							}else if(info.event.extendedProps.estadoLlamadaServ=='-1'){
+								cont[0].insertAdjacentHTML('beforeend','<i class="fas fa-door-closed pull-right" title="Llamada de servicio cerrada"></i>')
+							}else if(info.event.extendedProps.estadoLlamadaServ==''){//No tiene llamada de servicio
+								cont[0].insertAdjacentHTML('beforeend','<i class="fas fa-unlink pull-right" title="Actividad sin llamada de servicio asociada"></i>')
+							}
+
+							//Si tiene llamada de servicio
+							if(info.event.extendedProps.llamadaServicio===undefined || info.event.extendedProps.llamadaServicio!=='0'){//Cuando se agrega por primera vez haciendo drop
+								cont[0].insertAdjacentHTML('beforeend','<i class="fas fa-phone-square-alt mr-1 pull-right" title="Tiene asociada una llamada de servicio"></i>')
+							}
+							
 						}
 					}
 				},
