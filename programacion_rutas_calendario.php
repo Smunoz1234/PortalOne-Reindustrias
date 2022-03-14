@@ -234,6 +234,8 @@ if ($sw == 1) {
 								cont[0].insertAdjacentHTML('beforeend','<i class="fas fa-phone-square-alt mr-1 pull-right" title="Tiene asociada una llamada de servicio"></i>')
 							}
 							
+						} else {
+							console.error("info.el.getElementsByClassName('fc-event-time') === undefined");
 						}
 					}
 				},
