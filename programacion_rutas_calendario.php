@@ -199,6 +199,10 @@ if ($sw == 1) {
 }?>
 			    ],
 				resourceOrder: 'title',
+				eventWillUnmount: function(info) {
+					console.log('Se ejecuto eventWillUnmount en el calendario');
+					$('.tooltip').remove();
+				},
 				eventDidMount: function(info){
 					// console.log(info.event)
 					console.log('Se ejecuto eventDidMount en el calendario');
@@ -233,7 +237,7 @@ if ($sw == 1) {
 							if(info.event.extendedProps.llamadaServicio===undefined || info.event.extendedProps.llamadaServicio!=='0'){//Cuando se agrega por primera vez haciendo drop
 								cont[0].insertAdjacentHTML('beforeend','<i class="fas fa-phone-square-alt mr-1 pull-right" title="Tiene asociada una llamada de servicio"></i>')
 							}
-							
+
 						} else {
 							console.error("info.el.getElementsByClassName('fc-event-time') === undefined");
 						}
