@@ -1,10 +1,10 @@
 <?php
-require_once( "includes/conexion.php" );
+require_once "includes/conexion.php";
 PermitirAcceso(312);
 
-$Cant=0;
+$Cant = 0;
 
-$IdEvento= isset($_POST['idEvento']) ? base64_decode($_POST['idEvento']) : 0;
+$IdEvento = isset($_POST['idEvento']) ? base64_decode($_POST['idEvento']) : 0;
 
 $Sede = isset($_POST['Sede']) ? $_POST['Sede'] : "";
 $LlamadaServicio = isset($_POST['LlamadaServicio']) ? $_POST['LlamadaServicio'] : "";
@@ -16,29 +16,29 @@ $FechaFinal = isset($_POST['FechaFinal']) ? $_POST['FechaFinal'] : "";
 $Type = isset($_POST['type']) ? $_POST['type'] : "";
 
 //Consultamos la lista de OT pendientes
-$Param=array(
-	$Type,
-	"'".$_SESSION['CodUser']."'",
-	"'".$IdEvento."'",
-	"'".$Sede."'",
-	"'".$Cliente."'",
-	"'".$NomSucursal."'",
-	"'".FormatoFecha($FechaInicial)."'",
-	"'".FormatoFecha($FechaFinal)."'",
-	"'".$Recurso."'",
-	"'".$LlamadaServicio."'",
+$Param = array(
+    $Type,
+    "'" . $_SESSION['CodUser'] . "'",
+    "'" . $IdEvento . "'",
+    "'" . $Sede . "'",
+    "'" . $Cliente . "'",
+    "'" . $NomSucursal . "'",
+    "'" . FormatoFecha($FechaInicial) . "'",
+    "'" . FormatoFecha($FechaFinal) . "'",
+    "'" . $Recurso . "'",
+    "'" . $LlamadaServicio . "'",
 );
 
-$SQL=EjecutarSP("sp_ConsultarDatosCalendarioMoverActLote",$Param);
-$Cant=sqlsrv_num_rows($SQL);
+$SQL = EjecutarSP("sp_ConsultarDatosCalendarioMoverActLote", $Param);
+$Cant = sqlsrv_num_rows($SQL);
 
 //Lista de recursos (Tecnicos)
-$ParamRec=array(
-	"'".$_SESSION['CodUser']."'",
-	"'".$Sede."'"	
+$ParamRec = array(
+    "'" . $_SESSION['CodUser'] . "'",
+    "'" . $Sede . "'",
 );
 
-$SQL_Recursos=EjecutarSP("sp_ConsultarTecnicos",$ParamRec);
+$SQL_Recursos = EjecutarSP("sp_ConsultarTecnicos", $ParamRec);
 
 ?>
 <script>
@@ -49,12 +49,12 @@ function BorrarLinea(){
 	if(confirm(String.fromCharCode(191)+'Est'+String.fromCharCode(225)+' seguro que desea eliminar este item? Este proceso no se puede revertir.')){
 		$.ajax({
 			type: "GET",
-			url: "includes/procedimientos.php?type=50&linenum="+json,		
+			url: "includes/procedimientos.php?type=50&linenum="+json,
 			success: function(response){
 				FiltrarDatos(3)
 			}
 		});
-	}	
+	}
 }
 
 function DuplicarLinea(){
@@ -63,10 +63,10 @@ function DuplicarLinea(){
 			type: "GET",
 			url: "includes/procedimientos.php?type=42&linenum="+json,
 			success: function(response){
-				FiltrarDatos(5)
+				FiltrarDatos(3);
 			}
 		});
-	}	
+	}
 }
 
 function ValidarDatosDetalle(name,id,line){//Actualizar datos asincronicamente
@@ -78,9 +78,9 @@ function ValidarDatosDetalle(name,id,line){//Actualizar datos asincronicamente
 				text: 'Fecha invalida. Por favor verifique.',
 				icon: 'warning',
 			});
-			campo.value='<?php echo date('Y-m-d');?>';
+			campo.value='<?php echo date('Y-m-d'); ?>';
 		}
-		ActualizarDatos(name,id,line)	
+		ActualizarDatos(name,id,line)
 	}else{//HoraActividad
 		if((campo.value=="")||(campo.value.length<5)||(!esHora(campo.value))){
 			 Swal.fire({
@@ -92,7 +92,7 @@ function ValidarDatosDetalle(name,id,line){//Actualizar datos asincronicamente
 		}
 		ActualizarDatos(name,id,line)
 	}
-	
+
 }
 
 function ActualizarDatos(name,id,line){//Actualizar datos asincronicamente
@@ -120,7 +120,7 @@ function ActualizarDatos(name,id,line){//Actualizar datos asincronicamente
 		}
 	});
 }
-	
+
 function ActualizarDatosLote(name){//Actualizar datos asincronicamente
 	Swal.fire({
 		title: "¿Está seguro que desea actualizar todos los registros?",
@@ -170,9 +170,9 @@ function Seleccionar(ID){
 		if(json[index]==ID){
 			sw=index;
 		}
-		
+
 	});
-	
+
 	if(sw>=0){
 		json.splice(sw, 1);
 		cant--;
@@ -187,7 +187,7 @@ function Seleccionar(ID){
 		$("#btnBorrarLineas").prop('disabled', true);
 		$("#btnDuplicarLineas").prop('disabled', true);
 	}
-	
+
 	//console.log(json);
 }
 
@@ -202,12 +202,12 @@ function SeleccionarTodos(){
 	$(".chkSel").prop("checked", Check);
 	if(Check){
 		$(".chkSel").trigger('change');
-	}		
+	}
 }
 </script>
 <div class="card">
   <h6 class="card-header bg-primary text-white">
-	Resultados: <?php echo $Cant;?>
+	Resultados: <?php echo $Cant; ?>
   </h6>
 	<div id="accordionActLote" class="card col-lg-12 p-md-4">
 		<div class="pt-2 pr-2 pl-2 pb-0 mb-2 bg-success text-white">
@@ -225,17 +225,17 @@ function SeleccionarTodos(){
 			<div class="form-row mb-2">
 				<label class="col-lg-1 col-form-label">Fecha inicio</label>
 				<div class="col-lg-2 input-group">
-					<input name="FechaInicialAsig" type="text" class="form-control" id="FechaInicialAsig" value="<?php echo date('Y-m-d');?>" placeholder="YYYY-MM-DD">
+					<input name="FechaInicialAsig" type="text" class="form-control" id="FechaInicialAsig" value="<?php echo date('Y-m-d'); ?>" placeholder="YYYY-MM-DD">
 				</div>
 				<div class="col-lg-2 input-group">
-					<input name="HoraInicioAsig" id="HoraInicioAsig" type="text" class="form-control" value="<?php echo date('H').":00";?>" onChange="ValidarHoras();">
+					<input name="HoraInicioAsig" id="HoraInicioAsig" type="text" class="form-control" value="<?php echo date('H') . ":00"; ?>" onChange="ValidarHoras();">
 				</div>
 				<label class="col-lg-1 col-form-label">Fecha fin</label>
 				<div class="col-lg-2 input-group">
-					<input name="FechaFinAsig" type="text" class="form-control" id="FechaFinAsig" value="<?php echo date('Y-m-d');?>" placeholder="YYYY-MM-DD">
+					<input name="FechaFinAsig" type="text" class="form-control" id="FechaFinAsig" value="<?php echo date('Y-m-d'); ?>" placeholder="YYYY-MM-DD">
 				</div>
 				<div class="col-lg-2 input-group">
-					<input name="HoraFinAsig" id="HoraFinAsig" type="text" class="form-control" value="<?php echo (date('H')+2).":00";?>" onChange="ValidarHoras();">
+					<input name="HoraFinAsig" id="HoraFinAsig" type="text" class="form-control" value="<?php echo (date('H') + 2) . ":00"; ?>" onChange="ValidarHoras();">
 				</div>
 				<div class="col-lg-2">
 					<button id="btnActFechaLote" type="button" class="btn btn-primary btn-sm" onClick="ActualizarDatosLote('Fechas');"><i class="fas fa-list"></i> Actualizar fechas</button>
@@ -253,8 +253,8 @@ function SeleccionarTodos(){
 					  <select name="TecnicoAsig" id="TecnicoAsig" class="select2OTLote form-control" style="width: 100%">
 						   <option value="">Seleccione...</option>
 						   <?php
-						   while($row_Recursos=sqlsrv_fetch_array($SQL_Recursos)){?>
-								<option value="<?php echo $row_Recursos['ID_Empleado'];?>"><?php echo $row_Recursos['NombreEmpleado'];?></option>
+while ($row_Recursos = sqlsrv_fetch_array($SQL_Recursos)) {?>
+								<option value="<?php echo $row_Recursos['ID_Empleado']; ?>"><?php echo $row_Recursos['NombreEmpleado']; ?></option>
 						  <?php }?>
 					  </select>
 					</div>
@@ -264,7 +264,7 @@ function SeleccionarTodos(){
 				</div>
 			</div>
 		</div>
-	</div>  
+	</div>
   <div class="card-datatable table-responsive">
 	<table class="datatables-demo table table-striped table-bordered small">
 	  <thead>
@@ -276,8 +276,8 @@ function SeleccionarTodos(){
 					  <span class="custom-control-label"></span>
 					</label>
 					<button type="button" id="btnBorrarLineas" title="Borrar lineas" class="btn btn-danger btn-xs" disabled onClick="BorrarLinea();"><i class="fas fa-trash"></i></button>
-					<button type="button" id="btnDuplicarLineas" title="Duplicar lineas" class="btn btn-primary btn-xs ml-1" disabled onClick="DuplicarLinea();" style="display: none;"><i class="far fa-clone"></i></button>
-				</div>				
+					<button type="button" id="btnDuplicarLineas" title="Duplicar lineas" class="btn btn-primary btn-xs ml-1" disabled onClick="DuplicarLinea();"><i class="far fa-clone"></i></button>
+				</div>
 			</th>
 			<th>#</th>
 			<th>Llamada de servicio</th>
@@ -293,43 +293,43 @@ function SeleccionarTodos(){
 	  </thead>
 	  <tbody>
 	   <?php
-		  $i=1;
-		  while($row=sqlsrv_fetch_array($SQL)){
-			  
-			$ParamRec=array(
-				"'".$_SESSION['CodUser']."'",
-				"'".$Sede."'"	
-			);
+$i = 1;
+while ($row = sqlsrv_fetch_array($SQL)) {
 
-			$SQL_Recursos=EjecutarSP("sp_ConsultarTecnicos",$ParamRec,-1);
-				
-			?>
-			 <tr class="gradeX odd" id="tr_<?php echo $row['ID'];?>">
+    $ParamRec = array(
+        "'" . $_SESSION['CodUser'] . "'",
+        "'" . $Sede . "'",
+    );
+
+    $SQL_Recursos = EjecutarSP("sp_ConsultarTecnicos", $ParamRec, -1);
+
+    ?>
+			 <tr class="gradeX odd" id="tr_<?php echo $row['ID']; ?>">
 				<td class="text-center">
 					<label class="custom-control custom-checkbox checkbox-lg">
-					  <input type="checkbox" class="custom-control-input chkSel" id="chkSel<?php echo $row['ID'];?>" value="" onChange="Seleccionar('<?php echo $row['ID'];?>');">
+					  <input type="checkbox" class="custom-control-input chkSel" id="chkSel<?php echo $row['ID']; ?>" value="" onChange="Seleccionar('<?php echo $row['ID']; ?>');">
 					  <span class="custom-control-label"></span>
 					</label>
 				</td>
-				<td><?php echo $i;?></td>
-				<td><?php echo $row['ID_LlamadaServicio'];?></td>
-				<td><?php echo $row['ID_Actividad'];?></td>
-				<td><?php echo $row['NombreClienteLlamada'];?></td>						
-				<td><?php echo $row['NombreSucursal'];?></td>
-				 
-				<td><input type="text" id="FechaInicioActividad<?php echo $i;?>" name="FechaInicioActividad" class="form-control" value="<?php if($row['FechaInicioActividad']!=""){echo $row['FechaInicioActividad']->format('Y-m-d');}?>" placeholder="YYYY-MM-DD" onChange="ValidarDatosDetalle('FechaInicioActividad',<?php echo $i;?>,<?php echo $row['ID'];?>);" autocomplete="off"></td>
-				
-				<td><input name="HoraInicioActividad" type="text" class="form-control" id="HoraInicioActividad<?php echo $i;?>" placeholder="HH:MM" onChange="ValidarDatosDetalle('HoraInicioActividad',<?php echo $i;?>,<?php echo $row['ID'];?>);" value="<?php if($row['HoraInicioActividad']!=""){echo $row['HoraInicioActividad']->format('H:i');}?>" autocomplete="off"></td>
-				 
-				<td><input type="text" id="FechaFinActividad<?php echo $i;?>" name="FechaFinActividad" class="form-control" value="<?php if($row['FechaFinActividad']!=""){echo $row['FechaFinActividad']->format('Y-m-d');}?>" placeholder="YYYY-MM-DD" onChange="ValidarDatosDetalle('FechaFinActividad',<?php echo $i;?>,<?php echo $row['ID'];?>);" autocomplete="off"></td>
-				
-				<td><input name="HoraFinActividad" type="text" class="form-control" id="HoraFinActividad<?php echo $i;?>" placeholder="HH:MM" onChange="ValidarDatosDetalle('HoraFinActividad',<?php echo $i;?>,<?php echo $row['ID'];?>);" value="<?php if($row['HoraFinActividad']!=""){echo $row['HoraFinActividad']->format('H:i');}?>" autocomplete="off"></td>
-				 
+				<td><?php echo $i; ?></td>
+				<td><?php echo $row['ID_LlamadaServicio']; ?></td>
+				<td><?php echo $row['ID_Actividad']; ?></td>
+				<td><?php echo $row['NombreClienteLlamada']; ?></td>
+				<td><?php echo $row['NombreSucursal']; ?></td>
+
+				<td><input type="text" id="FechaInicioActividad<?php echo $i; ?>" name="FechaInicioActividad" class="form-control" value="<?php if ($row['FechaInicioActividad'] != "") {echo $row['FechaInicioActividad']->format('Y-m-d');}?>" placeholder="YYYY-MM-DD" onChange="ValidarDatosDetalle('FechaInicioActividad',<?php echo $i; ?>,<?php echo $row['ID']; ?>);" autocomplete="off"></td>
+
+				<td><input name="HoraInicioActividad" type="text" class="form-control" id="HoraInicioActividad<?php echo $i; ?>" placeholder="HH:MM" onChange="ValidarDatosDetalle('HoraInicioActividad',<?php echo $i; ?>,<?php echo $row['ID']; ?>);" value="<?php if ($row['HoraInicioActividad'] != "") {echo $row['HoraInicioActividad']->format('H:i');}?>" autocomplete="off"></td>
+
+				<td><input type="text" id="FechaFinActividad<?php echo $i; ?>" name="FechaFinActividad" class="form-control" value="<?php if ($row['FechaFinActividad'] != "") {echo $row['FechaFinActividad']->format('Y-m-d');}?>" placeholder="YYYY-MM-DD" onChange="ValidarDatosDetalle('FechaFinActividad',<?php echo $i; ?>,<?php echo $row['ID']; ?>);" autocomplete="off"></td>
+
+				<td><input name="HoraFinActividad" type="text" class="form-control" id="HoraFinActividad<?php echo $i; ?>" placeholder="HH:MM" onChange="ValidarDatosDetalle('HoraFinActividad',<?php echo $i; ?>,<?php echo $row['ID']; ?>);" value="<?php if ($row['HoraFinActividad'] != "") {echo $row['HoraFinActividad']->format('H:i');}?>" autocomplete="off"></td>
+
 			   	<td>
-				 <select name="ID_EmpleadoActividad" id="ID_EmpleadoActividad<?php echo $i;?>" class="select2 form-control" style="width: 100%" onChange="ActualizarDatos('ID_EmpleadoActividad',<?php echo $i;?>,<?php echo $row['ID'];?>);">
+				 <select name="ID_EmpleadoActividad" id="ID_EmpleadoActividad<?php echo $i; ?>" class="select2 form-control" style="width: 100%" onChange="ActualizarDatos('ID_EmpleadoActividad',<?php echo $i; ?>,<?php echo $row['ID']; ?>);">
 				   <?php
-					   while($row_Recursos=sqlsrv_fetch_array($SQL_Recursos)){?>
-							<option value="<?php echo $row_Recursos['ID_Empleado'];?>" <?php if((isset($row['ID_EmpleadoActividad'])&&($row['ID_EmpleadoActividad']!=""))&&(strcmp($row_Recursos['ID_Empleado'],$row['ID_EmpleadoActividad'])==0)){ echo "selected=\"selected\"";}?>><?php echo $row_Recursos['NombreEmpleado'];?></option>
+while ($row_Recursos = sqlsrv_fetch_array($SQL_Recursos)) {?>
+							<option value="<?php echo $row_Recursos['ID_Empleado']; ?>" <?php if ((isset($row['ID_EmpleadoActividad']) && ($row['ID_EmpleadoActividad'] != "")) && (strcmp($row_Recursos['ID_Empleado'], $row['ID_EmpleadoActividad']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Recursos['NombreEmpleado']; ?></option>
 					  <?php }?>
 				    </select>
 			   </td>
@@ -342,12 +342,12 @@ function SeleccionarTodos(){
 
 <script>
 $(document).ready(function() {
-	
+
 	var horaInicioActividad = document.getElementsByName("HoraInicioActividad");
 	var horaFinActividad = document.getElementsByName("HoraFinActividad");
 	var fechaInicioActividad = document.getElementsByName("FechaInicioActividad");
 	var fechaFinActividad = document.getElementsByName("FechaFinActividad");
-	
+
 	fechaInicioActividad.forEach(function(currentValue){
 		vanillaTextMask.maskInput({
 			inputElement: currentValue,
@@ -355,7 +355,7 @@ $(document).ready(function() {
 			guide: false
 		})
 	})
-	
+
 	fechaFinActividad.forEach(function(currentValue){
 		vanillaTextMask.maskInput({
 			inputElement: currentValue,
@@ -363,7 +363,7 @@ $(document).ready(function() {
 			guide: false
 		})
 	})
-	
+
 	horaInicioActividad.forEach(function(currentValue){
 		vanillaTextMask.maskInput({
 			inputElement: currentValue,
@@ -371,7 +371,7 @@ $(document).ready(function() {
 			guide: false
 		})
 	})
-	
+
 	horaFinActividad.forEach(function(currentValue){
 		vanillaTextMask.maskInput({
 			inputElement: currentValue,
@@ -379,19 +379,19 @@ $(document).ready(function() {
 			guide: false
 		})
 	})
-	
+
 	$('#FechaInicialAsig').flatpickr({
 		 dateFormat: "Y-m-d",
 		 static : true,
 		 allowInput: true
 	 });
-	
+
 	$('#FechaFinAsig').flatpickr({
 		 dateFormat: "Y-m-d",
 		 static : true,
 		 allowInput: true
 	 });
-	
+
 	$('#HoraInicioAsig').flatpickr({
 		 enableTime: true,
 		 noCalendar: true,
@@ -400,7 +400,7 @@ $(document).ready(function() {
 		 static : true,
 		 allowInput: true
 	 });
-	
+
 	$('#HoraFinAsig').flatpickr({
 		 enableTime: true,
 		 noCalendar: true,
@@ -409,11 +409,11 @@ $(document).ready(function() {
 		 static : true,
 		 allowInput: true
 	 });
-	
+
 	$(".select2OTLote").select2({
         dropdownParent: $('#ModalAct')
     });
-	
+
 	$('.datatables-demo').DataTable({
 		pageLength: 10,
 		info: false,
@@ -443,11 +443,11 @@ $(document).ready(function() {
 	});
 
 });
-	
+
 function ValidarHoras(){
 	var HInicio = document.getElementById("HoraInicioAsig").value;
 	var HFin = document.getElementById("HoraFinAsig").value;
-	
+
 	if(!validarRangoHoras(HInicio,HFin)){
 		 Swal.fire({
 			title: '¡Advertencia!',

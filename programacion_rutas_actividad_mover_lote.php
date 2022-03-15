@@ -20,9 +20,18 @@ $ParamRec=array(
 
 $SQL_Recursos=EjecutarSP("sp_ConsultarTecnicos",$ParamRec);
 
-$FechaInicial= date('Y-m-d');
-$FechaFinal= date('Y-m-d');
+// $FechaInicial= date('Y-m-d');
+// $FechaFinal= date('Y-m-d');
 
+$fecha = date('Y-m-d');
+$nuevafecha = strtotime ('-'.ObtenerVariable("DiasRangoFechasDocSAP").' day');
+$nuevafecha = date ( 'Y-m-d' , $nuevafecha);
+$FechaInicial=$nuevafecha;
+
+$fecha = date('Y-m-d');
+$nuevafecha = strtotime ('+'.ObtenerVariable("DiasRangoFechasDocSAP").' day');
+$nuevafecha = date ( 'Y-m-d' , $nuevafecha);
+$FechaFinal=$nuevafecha;
 ?>
 <script type="text/javascript">
 	$(document).ready(function() {//Cargar los almacenes dependiendo del proyecto
