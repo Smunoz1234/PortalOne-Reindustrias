@@ -630,7 +630,14 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
         }
 
         if ($SerialInterno != "''") {
-            $SQL = Seleccionar("uvw_Sap_tbl_TarjetasEquipos", "*", "SerialInterno=" . $SerialInterno);
+            $cliente = "'" . $_GET['clt'] . "'" ?? "";
+            
+            if ($cliente == "") {
+                $SQL = Seleccionar("uvw_Sap_tbl_TarjetasEquipos", "*", "SerialInterno=$SerialInterno");
+            } else {
+                $SQL = Seleccionar("uvw_Sap_tbl_TarjetasEquipos", "*", "SerialInterno=$SerialInterno AND CardCode=$cliente");
+            }
+
             $row = sqlsrv_fetch_array($SQL);
             $records = array(
                 'SerialInterno' => $row['SerialInterno'],
