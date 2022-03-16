@@ -630,8 +630,8 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
         }
 
         if ($SerialInterno != "''") {
-            $cliente = "'" . $_GET['clt'] . "'" ?? "";
-            
+            $cliente = isset($_GET['clt']) ? "'" . $_GET['clt'] . "'" : "";
+
             if ($cliente == "") {
                 $SQL = Seleccionar("uvw_Sap_tbl_TarjetasEquipos", "*", "SerialInterno=$SerialInterno");
             } else {
