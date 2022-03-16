@@ -167,9 +167,8 @@ function BuscarSerial(){
 }
 
 function Totalizar(num){
-	console.log("Totalizar, Line 170");
+	console.log(`Totalizar(${num})`);
 
-	//alert(num);
 	var SubTotal=0;
 	var Descuentos=0;
 	var Iva=0;
@@ -197,9 +196,13 @@ function Totalizar(num){
 		var TotalDesc=(PrcDesc*SubTotalLinea)/100;
 		//TotalLinea.value=number_format(SubTotalLinea-TotalDesc,2);
 
+		let TotIVA=((parseFloat(Precio)*parseFloat(TarifaIVA)/100)+parseFloat(Precio)); // SMM, 16/03/2022
+		let SubTotalIVA = TotIVA * Cant; // SMM, 16/03/2022
+		TotalLinea.value=number_format(SubTotalIVA-TotalDesc, 2); // SMM, 16/03/2022
+
 		SubTotal=parseFloat(SubTotal)+parseFloat(SubTotalLinea);
 		Descuentos=parseFloat(Descuentos)+parseFloat(TotalDesc);
-		Iva=parseFloat(Iva)+parseFloat(ValorIVA);
+		Iva=parseFloat(Iva)+parseFloat(ValorIVA * Cant);
 		//var Linea=document.getElementById('LineTotal'+i).value.replace(/,/g, '');
 	}
 	Total=parseFloat(Total)+parseFloat((SubTotal-Descuentos)+Iva);
@@ -538,7 +541,7 @@ $i++;}
 </form>
 <script>
 function CalcularTotal(line){
-	console.log("CalcularTotal, Line 527");
+	console.log(`CalcularTotal(${line})`);
 
 	var TotalLinea=document.getElementById('LineTotal'+line);
 	var PrecioLinea=document.getElementById('Price'+line);
@@ -564,7 +567,7 @@ function CalcularTotal(line){
 			var PrcDesc=parseFloat(PrcDescuentoLinea.value.replace(/,/g, ''));
 			var TotalDesc=(PrcDesc*SubTotalLinea)/100;
 
-			TotalLinea.value=number_format(SubTotalLinea-TotalDesc,2);
+			TotalLinea.value=number_format(SubTotalLinea-TotalDesc, 2);
 		//}else{
 			//alert('Ult');
 			//var Ult=UltPrecioLinea.value.replace(/,/g, '');

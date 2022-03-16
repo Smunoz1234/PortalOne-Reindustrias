@@ -87,7 +87,8 @@ $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', '', 'DE_E
 </style>
 <script>
 function Totalizar(num){
-	//alert(num);
+	console.log(`Totalizar(${num})`);
+
 	var SubTotal=0;
 	var Descuentos=0;
 	var Iva=0;
@@ -115,9 +116,13 @@ function Totalizar(num){
 		var TotalDesc=(PrcDesc*SubTotalLinea)/100;
 		//TotalLinea.value=number_format(SubTotalLinea-TotalDesc,2);
 
+		let TotIVA=((parseFloat(Precio)*parseFloat(TarifaIVA)/100)+parseFloat(Precio)); // SMM, 16/03/2022
+		let SubTotalIVA = TotIVA * Cant; // SMM, 16/03/2022
+		TotalLinea.value=number_format(SubTotalIVA-TotalDesc, 2); // SMM, 16/03/2022
+
 		SubTotal=parseFloat(SubTotal)+parseFloat(SubTotalLinea);
 		Descuentos=parseFloat(Descuentos)+parseFloat(TotalDesc);
-		Iva=parseFloat(Iva)+parseFloat(ValorIVA);
+		Iva=parseFloat(Iva)+parseFloat(ValorIVA * Cant);
 		//var Linea=document.getElementById('LineTotal'+i).value.replace(/,/g, '');
 	}
 	Total=parseFloat(Total)+parseFloat((SubTotal-Descuentos)+Iva);
@@ -134,9 +139,9 @@ function ActualizarDatos(name,id,line){//Actualizar datos asincronicamente
 	$.ajax({
 		type: "GET",
 		<?php if($type==1){?>
-		url: "registro.php?P=36&doctype=9&type=1&name="+name+"&value="+Base64.encode(document.getElementById(name+id).value)+"&line="+line+"&cardcode=<?php echo $CardCode;?>&whscode=<?php echo $Almacen;?>",
+		url: "registro.php?P=36&doctype=9&type=1&name="+name+"&value="+Base64.encode(document.getElementById(name+id).value)+"&line="+line+"&cardcode=<?php echo $CardCode;?>&whscode=<?php echo $Almacen;?>&actodos=0",
 		<?php }else{?>
-		url: "registro.php?P=36&doctype=9&type=2&name="+name+"&value="+Base64.encode(document.getElementById(name+id).value)+"&line="+line+"&id=<?php echo base64_decode($_GET['id']);?>&evento=<?php echo base64_decode($_GET['evento']);?>",
+		url: "registro.php?P=36&doctype=9&type=2&name="+name+"&value="+Base64.encode(document.getElementById(name+id).value)+"&line="+line+"&id=<?php echo base64_decode($_GET['id']);?>&evento=<?php echo base64_decode($_GET['evento']);?>&actodos=0",
 		<?php }?>
 		success: function(response){
 			if(response!="Error"){
@@ -398,6 +403,8 @@ function ConsultarArticulo(articulo){
 </form>
 <script>
 function CalcularTotal(line){
+	console.log(`CalcularTotal(${line})`);
+
 	var TotalLinea=document.getElementById('LineTotal'+line);
 	var PrecioLinea=document.getElementById('Price'+line);
 	var PrecioIVALinea=document.getElementById('PriceTax'+line);
@@ -422,7 +429,7 @@ function CalcularTotal(line){
 			var PrcDesc=parseFloat(PrcDescuentoLinea.value.replace(/,/g, ''));
 			var TotalDesc=(PrcDesc*SubTotalLinea)/100;
 			
-			TotalLinea.value=number_format(SubTotalLinea-TotalDesc,2);
+			TotalLinea.value=number_format(SubTotalLinea-TotalDesc, 2);
 		//}else{
 			//alert('Ult');
 			//var Ult=UltPrecioLinea.value.replace(/,/g, '');

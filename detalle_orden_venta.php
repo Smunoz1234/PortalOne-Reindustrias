@@ -107,7 +107,7 @@ $SQL_Proyecto = Seleccionar('uvw_Sap_tbl_Proyectos', '*', '', 'DeProyecto');
 </style>
 <script>
 function Totalizar(num){
-	//alert(num);
+	console.log(`Totalizar(${num})`);
 
 	var SubTotal=0;
 	var Descuentos=0;
@@ -116,29 +116,33 @@ function Totalizar(num){
 
 	for(i=1;i<=num;i++){
 		var TotalLinea=document.getElementById('LineTotal'+i);
+		var CantLinea=document.getElementById('Quantity'+i);
+
+		
+
 		var PrecioLinea=document.getElementById('Price'+i);
 		var PrecioIVALinea=document.getElementById('PriceTax'+i);
 		var TarifaIVALinea=document.getElementById('TarifaIVA'+i);
 		var ValorIVALinea=document.getElementById('VatSum'+i);
 		var PrcDescuentoLinea=document.getElementById('DiscPrcnt'+i);
-		var CantLinea=document.getElementById('Quantity'+i);
 
 		var Precio=parseFloat(PrecioLinea.value.replace(/,/g, ''));
 		var PrecioIVA=parseFloat(PrecioIVALinea.value.replace(/,/g, ''));
 		var TarifaIVA=TarifaIVALinea.value.replace(/,/g, '');
 		var ValorIVA=ValorIVALinea.value.replace(/,/g, '');
 		var Cant=parseFloat(CantLinea.value.replace(/,/g, ''));
-		//var TotIVA=((parseFloat(Precio)*parseFloat(TarifaIVA)/100)+parseFloat(Precio));
-		//ValorIVALinea.value=number_format((parseFloat(Precio)*parseFloat(TarifaIVA)/100),2);
-		//PrecioIVALinea.value=number_format(parseFloat(TotIVA),2);
+		
 		var SubTotalLinea=Precio*Cant;
 		var PrcDesc=parseFloat(PrcDescuentoLinea.value.replace(/,/g, ''));
 		var TotalDesc=(PrcDesc*SubTotalLinea)/100;
-		//TotalLinea.value=number_format(SubTotalLinea-TotalDesc,2);
+
+		let TotIVA=((parseFloat(Precio)*parseFloat(TarifaIVA)/100)+parseFloat(Precio)); // SMM, 16/03/2022
+		let SubTotalIVA = TotIVA * Cant; // SMM, 16/03/2022
+		TotalLinea.value=number_format(SubTotalIVA-TotalDesc, 2); // SMM, 16/03/2022
 
 		SubTotal=parseFloat(SubTotal)+parseFloat(SubTotalLinea);
 		Descuentos=parseFloat(Descuentos)+parseFloat(TotalDesc);
-		Iva=parseFloat(Iva)+parseFloat(ValorIVA);
+		Iva=parseFloat(Iva)+parseFloat(ValorIVA*Cant);
 		//var Linea=document.getElementById('LineTotal'+i).value.replace(/,/g, '');
 	}
 	Total=parseFloat(Total)+parseFloat((SubTotal-Descuentos)+Iva);
@@ -152,7 +156,7 @@ function Totalizar(num){
 }
 
 /**
- * Ejemplo: ActualizarDatos('EmpVentas',$i,$row['LineNum'];
+ * Ejemplo: ActualizarDatos('EmpVentas',$i,$row['LineNum']);
  */
 function ActualizarDatos(name,id,line){//Actualizar datos asincronicamente
 	$.ajax({
@@ -360,7 +364,7 @@ if ($sw == 1) {
         // Stiven Muñoz Murillo, 31/01/2022
         $row_encode = isset($row) ? json_encode($row) : "";
         $cadena = isset($row) ? "JSON.parse(JSON.stringify($row_encode))" : "'Not Found'";
-        echo "<script> console.log($cadena); </script>";
+        // echo "<script> console.log($cadena); </script>";
         ?>
 		<tr>
 		<?php // Inicio, comprobando permiso 416.
@@ -377,7 +381,10 @@ if ($sw == 1) {
 
 			<td><input size="50" type="text" autocomplete="off" id="ItemName<?php echo $i; ?>" name="ItemName[]" class="form-control" value="<?php echo $row['ItemName']; ?>" maxlength="100" onChange="ActualizarDatos('ItemName',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402))) {echo "readonly";}?>></td>
 			<td><input size="15" type="text" id="UnitMsr<?php echo $i; ?>" name="UnitMsr[]" class="form-control" readonly value="<?php echo $row['UnitMsr']; ?>"></td>
-			<td><input size="15" type="text" autocomplete="off" id="Quantity<?php echo $i; ?>" name="Quantity[]" class="form-control" value="<?php echo number_format($row['Quantity'], 2); ?>" onChange="ActualizarDatos('Quantity',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402))) {echo "readonly";}?>></td>
+
+			<td>
+				<input size="15" type="text" autocomplete="off" id="Quantity<?php echo $i; ?>" name="Quantity[]" class="form-control" value="<?php echo number_format($row['Quantity'], 2); ?>" onChange="ActualizarDatos('Quantity',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402))) {echo "readonly";}?>>
+			</td>
 
 			<td><input size="15" type="text" id="CantInicial<?php echo $i; ?>" name="CantInicial[]" class="form-control" value="<?php echo number_format($row['CantInicial'], 2); ?>" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" readonly></td>
 
@@ -485,7 +492,10 @@ if ($sw == 1) {
 			</td>
 
 			<td><input size="15" type="text" id="DiscPrcnt<?php echo $i; ?>" name="DiscPrcnt[]" class="form-control" value="<?php echo number_format($row['DiscPrcnt'], 2); ?>" onChange="ActualizarDatos('DiscPrcnt',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402))) {echo "readonly";}?>></td>
-			<td><input size="15" type="text" id="LineTotal<?php echo $i; ?>" name="LineTotal[]" class="form-control" readonly value="<?php echo number_format($row['LineTotal'], 2); ?>"></td>
+			
+			<td>
+				<input size="15" type="text" id="LineTotal<?php echo $i; ?>" name="LineTotal[]" class="form-control" value="<?php echo number_format($row['LineTotal'], 2); ?>" readonly>
+			</td>
 
 			<td><?php if ($row['Metodo'] == 0) {?><i class="fa fa-check-circle text-info" title="Sincronizado con SAP"></i><?php } else {?><i class="fa fa-times-circle text-danger" title="Aún no enviado a SAP"></i><?php }?></td>
 
@@ -539,6 +549,8 @@ if ($sw == 1) {
 </form>
 <script>
 function CalcularTotal(line){
+	console.log(`CalcularTotal(${line})`);
+
 	var TotalLinea=document.getElementById('LineTotal'+line);
 	var PrecioLinea=document.getElementById('Price'+line);
 	var PrecioIVALinea=document.getElementById('PriceTax'+line);
@@ -563,7 +575,7 @@ function CalcularTotal(line){
 			var PrcDesc=parseFloat(PrcDescuentoLinea.value.replace(/,/g, ''));
 			var TotalDesc=(PrcDesc*SubTotalLinea)/100;
 
-			TotalLinea.value=number_format(SubTotalLinea-TotalDesc,2);
+			TotalLinea.value=number_format(SubTotalLinea-TotalDesc, 2);
 		//}else{
 			//alert('Ult');
 			//var Ult=UltPrecioLinea.value.replace(/,/g, '');
