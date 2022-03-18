@@ -172,7 +172,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Oferta de venta
                         $row_ConsID = sqlsrv_fetch_array($SQL_ConsID);
                         sqlsrv_close($conexion);
                         header('Location:oferta_venta.php?id=' . base64_encode($row_ConsID['ID_OfertaVenta']) . '&id_portal=' . base64_encode($IdOfertaVenta) . '&tl=1&a=' . base64_encode("OK_OFertAdd"));
-                    } else { //Actualizando orden
+                    } else { //Actualizando oferta
                         sqlsrv_close($conexion);
                         header('Location:' . base64_decode($_POST['return']) . '&a=' . base64_encode("OK_OFertUpd"));
                     }

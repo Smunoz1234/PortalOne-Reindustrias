@@ -25,7 +25,7 @@ if (isset($_GET['id']) && ($_GET['id'] != "")) {
     if ($type == 1) { //Creando Devolucion de Venta
         $where = "Usuario='" . $_GET['usr'] . "' and CardCode='" . $_GET['cardcode'] . "'";
         $SQL = Seleccionar("uvw_tbl_DevolucionVentaDetalleCarrito", "*", $where);
-		// echo $where;
+        // echo $where;
 
         //Contar si hay articulos con lote
         $SQL_Lotes = Seleccionar("uvw_tbl_DevolucionVentaDetalleCarrito", "Count(ID_DevolucionVentaDetalleCarrito) AS Cant", "Usuario='" . $_GET['usr'] . "' and CardCode='" . $_GET['cardcode'] . "' and ManBtchNum='Y'");
@@ -244,31 +244,32 @@ function Totalizar(num){
 	for(i=1;i<=num;i++){
 		var TotalLinea=document.getElementById('LineTotal'+i);
 		var PrecioLinea=document.getElementById('Price'+i);
+
 		var PrecioIVALinea=document.getElementById('PriceTax'+i);
 		var TarifaIVALinea=document.getElementById('TarifaIVA'+i);
-		var ValorIVALinea=document.getElementById('VatSum'+i);
+		// var ValorIVALinea=document.getElementById('VatSum'+i);
 		var PrcDescuentoLinea=document.getElementById('DiscPrcnt'+i);
 		var CantLinea=document.getElementById('Quantity'+i);
 
 		var Precio=parseFloat(PrecioLinea.value.replace(/,/g, ''));
 		var PrecioIVA=parseFloat(PrecioIVALinea.value.replace(/,/g, ''));
 		var TarifaIVA=TarifaIVALinea.value.replace(/,/g, '');
-		var ValorIVA=ValorIVALinea.value.replace(/,/g, '');
+		// var ValorIVA=ValorIVALinea.value.replace(/,/g, '');
 		var Cant=parseFloat(CantLinea.value.replace(/,/g, ''));
-		//var TotIVA=((parseFloat(Precio)*parseFloat(TarifaIVA)/100)+parseFloat(Precio));
-		//ValorIVALinea.value=number_format((parseFloat(Precio)*parseFloat(TarifaIVA)/100),2);
-		//PrecioIVALinea.value=number_format(parseFloat(TotIVA),2);
+
 		var SubTotalLinea=Precio*Cant;
 		var PrcDesc=parseFloat(PrcDescuentoLinea.value.replace(/,/g, ''));
 		var TotalDesc=(PrcDesc*SubTotalLinea)/100;
-		//TotalLinea.value=number_format(SubTotalLinea-TotalDesc,2);
 
-		let TotIVA=((parseFloat(Precio)*parseFloat(TarifaIVA)/100)+parseFloat(Precio)); // SMM, 16/03/2022
+		let ValorIVA = parseFloat(Precio) * (parseFloat(TarifaIVA) / 100); // SMM, 18/03/2022
+		let TotIVA = ValorIVA + parseFloat(Precio); // SMM, 16/03/2022
 		let SubTotalIVA = TotIVA * Cant; // SMM, 16/03/2022
-		TotalLinea.value=number_format(SubTotalIVA-TotalDesc, 2); // SMM, 16/03/2022
+
+		TotalLinea.value = number_format(SubTotalIVA-TotalDesc, 2); // SMM, 16/03/2022
 
 		SubTotal=parseFloat(SubTotal)+parseFloat(SubTotalLinea);
 		Descuentos=parseFloat(Descuentos)+parseFloat(TotalDesc);
+
 		Iva=parseFloat(Iva)+parseFloat(ValorIVA * Cant);
 		//var Linea=document.getElementById('LineTotal'+i).value.replace(/,/g, '');
 	}
@@ -340,11 +341,11 @@ function ConsultarArticulo(articulo){
 				<th>Almacén</th>
 				<th>Stock almacén</th>
 				<?php $row_DimReparto = sqlsrv_fetch_array($SQL_DimReparto);?>
-				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 1  ?></th>
+				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 1   ?></th>
 				<?php $row_DimReparto = sqlsrv_fetch_array($SQL_DimReparto);?>
-				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 2  ?></th>
+				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 2   ?></th>
 				<?php $row_DimReparto = sqlsrv_fetch_array($SQL_DimReparto);?>
-				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 3  ?></th>
+				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 3   ?></th>
 				<th>Proyecto</th>
 				<th>Empleado de ventas</th>
 				<th>Servicio</th>
@@ -373,14 +374,14 @@ if ($sw == 1) {
         sqlsrv_fetch($SQL_Dim2, SQLSRV_SCROLL_ABSOLUTE, -1);
         sqlsrv_fetch($SQL_Dim3, SQLSRV_SCROLL_ABSOLUTE, -1);
         sqlsrv_fetch($SQL_Proyecto, SQLSRV_SCROLL_ABSOLUTE, -1);
-		sqlsrv_fetch($SQL_EmpleadosVentas, SQLSRV_SCROLL_ABSOLUTE, -1); // SMM, 22/02/2022
+        sqlsrv_fetch($SQL_EmpleadosVentas, SQLSRV_SCROLL_ABSOLUTE, -1); // SMM, 22/02/2022
         ?>
 		<tr>
 			<td class="text-center form-inline w-150">
 				<div class="checkbox checkbox-success"><input type="checkbox" class="chkSel" id="chkSel<?php echo $row['LineNum']; ?>" value="" onChange="Seleccionar('<?php echo $row['LineNum']; ?>');" aria-label="Single checkbox One" <?php if (($row['LineStatus'] == "C") && ($type == 1)) {echo "disabled='disabled'";}?>><label></label></div>
 				<button type="button" class="btn btn-success btn-xs" onClick="ConsultarArticulo('<?php echo base64_encode($row['ItemCode']); ?>');" title="Consultar Articulo"><i class="fa fa-search"></i></button> <!-- SMM, 10/03/2022 -->
 			</td>
-			
+
 			<td>
 				<input size="20" type="text" id="ItemCode<?php echo $i; ?>" name="ItemCode[]" class="form-control" readonly value="<?php echo $row['ItemCode']; ?>">
 				<input type="hidden" name="LineNum[]" id="LineNum<?php echo $i; ?>" value="<?php echo $row['LineNum']; ?>">

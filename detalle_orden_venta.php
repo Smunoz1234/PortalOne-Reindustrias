@@ -118,31 +118,32 @@ function Totalizar(num){
 		var TotalLinea=document.getElementById('LineTotal'+i);
 		var CantLinea=document.getElementById('Quantity'+i);
 
-		
-
 		var PrecioLinea=document.getElementById('Price'+i);
 		var PrecioIVALinea=document.getElementById('PriceTax'+i);
 		var TarifaIVALinea=document.getElementById('TarifaIVA'+i);
-		var ValorIVALinea=document.getElementById('VatSum'+i);
+		// var ValorIVALinea=document.getElementById('VatSum'+i);
 		var PrcDescuentoLinea=document.getElementById('DiscPrcnt'+i);
 
 		var Precio=parseFloat(PrecioLinea.value.replace(/,/g, ''));
 		var PrecioIVA=parseFloat(PrecioIVALinea.value.replace(/,/g, ''));
 		var TarifaIVA=TarifaIVALinea.value.replace(/,/g, '');
-		var ValorIVA=ValorIVALinea.value.replace(/,/g, '');
+		// var ValorIVA=ValorIVALinea.value.replace(/,/g, '');
 		var Cant=parseFloat(CantLinea.value.replace(/,/g, ''));
-		
+
 		var SubTotalLinea=Precio*Cant;
 		var PrcDesc=parseFloat(PrcDescuentoLinea.value.replace(/,/g, ''));
 		var TotalDesc=(PrcDesc*SubTotalLinea)/100;
 
-		let TotIVA=((parseFloat(Precio)*parseFloat(TarifaIVA)/100)+parseFloat(Precio)); // SMM, 16/03/2022
+		let ValorIVA = parseFloat(Precio) * (parseFloat(TarifaIVA) / 100); // SMM, 18/03/2022
+		let TotIVA = ValorIVA + parseFloat(Precio); // SMM, 16/03/2022
 		let SubTotalIVA = TotIVA * Cant; // SMM, 16/03/2022
-		TotalLinea.value=number_format(SubTotalIVA-TotalDesc, 2); // SMM, 16/03/2022
+
+		TotalLinea.value = number_format(SubTotalIVA-TotalDesc, 2); // SMM, 16/03/2022
 
 		SubTotal=parseFloat(SubTotal)+parseFloat(SubTotalLinea);
 		Descuentos=parseFloat(Descuentos)+parseFloat(TotalDesc);
-		Iva=parseFloat(Iva)+parseFloat(ValorIVA*Cant);
+
+		Iva = parseFloat(Iva) + parseFloat(ValorIVA * Cant);
 		//var Linea=document.getElementById('LineTotal'+i).value.replace(/,/g, '');
 	}
 	Total=parseFloat(Total)+parseFloat((SubTotal-Descuentos)+Iva);
@@ -320,11 +321,11 @@ function ConsultarArticulo(articulo){
 				<th>Dosificación</th>
 				<th>Stock almacén</th>
 				<?php $row_DimReparto = sqlsrv_fetch_array($SQL_DimReparto);?>
-				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 1                               ?></th>
+				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 1                                 ?></th>
 				<?php $row_DimReparto = sqlsrv_fetch_array($SQL_DimReparto);?>
-				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 2                               ?></th>
+				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 2                                 ?></th>
 				<?php $row_DimReparto = sqlsrv_fetch_array($SQL_DimReparto);?>
-				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 3                               ?></th>
+				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 3                                 ?></th>
 				<th>Proyecto</th>
 				<th>Empleado de ventas</th>
 				<th>Servicio</th>
@@ -492,7 +493,7 @@ if ($sw == 1) {
 			</td>
 
 			<td><input size="15" type="text" id="DiscPrcnt<?php echo $i; ?>" name="DiscPrcnt[]" class="form-control" value="<?php echo number_format($row['DiscPrcnt'], 2); ?>" onChange="ActualizarDatos('DiscPrcnt',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402))) {echo "readonly";}?>></td>
-			
+
 			<td>
 				<input size="15" type="text" id="LineTotal<?php echo $i; ?>" name="LineTotal[]" class="form-control" value="<?php echo number_format($row['LineTotal'], 2); ?>" readonly>
 			</td>
