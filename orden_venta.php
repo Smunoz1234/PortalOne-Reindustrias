@@ -1467,6 +1467,15 @@ $return = QuitarParametrosURL($return, array("a"));
                             </ul>
                         </div>
 					</div>
+					<?php } else if (($edit == 1) && $row['Cod_Estado'] == 'C') {?>
+					<div class="col-lg-3">
+						<div class="btn-group pull-right">
+                            <button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i class="fa fa-mail-forward"></i> Copiar a <i class="fa fa-caret-down"></i></button>
+                            <ul class="dropdown-menu">
+								<li><a class="alkin dropdown-item" href="orden_venta.php?dt_OV=1&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Dim1=<?php echo base64_encode($row['OcrCode']); ?>&Dim2=<?php echo base64_encode($row['OcrCode2']); ?>&Dim3=<?php echo base64_encode($row['OcrCode3']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&OV=<?php echo base64_encode($row['ID_OrdenVenta']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&LS=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&pag=<?php echo $_GET['pag']; ?>&return=<?php echo $_GET['return']; ?>">Orden de venta (Duplicar)</a></li>
+                            </ul>
+                        </div>
+					</div>
 					<?php }?>
 				</div>
 				<input type="hidden" form="CrearOrdenVenta" id="P" name="P" value="<?php if ($edit == 0) {echo "37";} else {echo "39";}?>" />

@@ -61,7 +61,7 @@ function DuplicarLinea(){
 	if(confirm(String.fromCharCode(191)+'Est'+String.fromCharCode(225)+' seguro que desea duplicar estos registros?')){
 		$.ajax({
 			type: "GET",
-			url: "includes/procedimientos.php?type=42&linenum="+json,
+			url: "includes/procedimientos.php?type=52&linenum="+json,
 			success: function(response){
 				FiltrarDatos(3);
 			}
