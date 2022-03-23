@@ -146,11 +146,13 @@ function Totalizar(num){
 		Iva = parseFloat(Iva) + parseFloat(ValorIVA * Cant);
 		//var Linea=document.getElementById('LineTotal'+i).value.replace(/,/g, '');
 	}
-	Total=parseFloat(Total)+parseFloat((SubTotal-Descuentos)+Iva);
+
+	// Total=parseFloat(Total)+parseFloat((SubTotal-Descuentos)+Iva);
+	Total=parseFloat(Total)+parseFloat(SubTotal + Iva); // SMM 23/03/2022
 	//return Total;
 	//alert(Total);
 	window.parent.document.getElementById('SubTotal').value=number_format(parseFloat(SubTotal),2);
-	window.parent.document.getElementById('Descuentos').value=number_format(parseFloat(Descuentos),2);
+	// window.parent.document.getElementById('Descuentos').value=number_format(parseFloat(Descuentos),2);
 	window.parent.document.getElementById('Impuestos').value=number_format(parseFloat(Iva),2);
 	window.parent.document.getElementById('TotalOrden').value=number_format(parseFloat(Total),2);
 	window.parent.document.getElementById('TotalItems').value=num;
@@ -321,11 +323,11 @@ function ConsultarArticulo(articulo){
 				<th>Dosificación</th>
 				<th>Stock almacén</th>
 				<?php $row_DimReparto = sqlsrv_fetch_array($SQL_DimReparto);?>
-				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 1                                 ?></th>
+				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 1                                  ?></th>
 				<?php $row_DimReparto = sqlsrv_fetch_array($SQL_DimReparto);?>
-				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 2                                 ?></th>
+				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 2                                  ?></th>
 				<?php $row_DimReparto = sqlsrv_fetch_array($SQL_DimReparto);?>
-				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 3                                 ?></th>
+				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 3                                  ?></th>
 				<th>Proyecto</th>
 				<th>Empleado de ventas</th>
 				<th>Servicio</th>
