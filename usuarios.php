@@ -263,10 +263,10 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
             }
 
             //Valores por defecto
-            if (isset($_POST['TipoDocumento']) && ($_POST['TipoDocumento'] != "")) {
-                $SQL = Seleccionar("uvw_tbl_CamposValoresDefecto", "*", "TipoObjeto='" . $_POST['TipoDocumento'] . "'");
+            if (isset($_POST['TipoDocumentoVD']) && ($_POST['TipoDocumentoVD'] != "")) {
+                $SQL = Seleccionar("uvw_tbl_CamposValoresDefecto", "*", "TipoObjeto='" . $_POST['TipoDocumentoVD'] . "'");
 
-                $SQL_Delete = Eliminar("tbl_CamposValoresDefecto_Detalle", "ID_Usuario='" . $ID . "' and TipoObjeto='" . $_POST['TipoDocumento'] . "'");
+                $SQL_Delete = Eliminar("tbl_CamposValoresDefecto_Detalle", "ID_Usuario='" . $ID . "' and TipoObjeto='" . $_POST['TipoDocumentoVD'] . "'");
 
                 while ($row = sqlsrv_fetch_array($SQL)) {
                     if ($_POST['ValorCampo' . $row['ID_Campo']] != "") {
@@ -303,7 +303,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
 //Crear nuevo valor por defecto
 if (isset($_POST['MM_Insert']) && ($_POST['MM_Insert'] != "")) {
     $Param = array(
-        "'" . $_POST['TipoDocumento'] . "'",
+        "'" . $_POST['TipoDocumentoVD'] . "'",
         "'" . $_POST['NombreVariable'] . "'",
         "'" . $_POST['NombreMostrar'] . "'",
     );
@@ -990,23 +990,27 @@ while ($row_TiposDocumentos = sqlsrv_fetch_array($SQL_TiposDocumentos)) {
 <?php include_once "includes/pie.php";?>
 <!-- InstanceBeginEditable name="EditRegion4" -->
 <script>
-	 $(document).ready(function(){
-		 $("#AgregarUsuario").validate({
-			 submitHandler: function(form){
-				 Swal.fire({
-						title: "¿Está seguro que desea guardar los datos?",
-						icon: "question",
-						showCancelButton: true,
-						confirmButtonText: "Si, confirmo",
-						cancelButtonText: "No"
-					}).then((result) => {
-						if (result.isConfirmed) {
-							$('.ibox-content').toggleClass('sk-loading',true);
-							form.submit();
-						}
-					});
-				}
-			});
+	$(document).ready(function(){
+		$("#AgregarUsuario").validate({
+			submitHandler: function(form){
+				// let formData = new FormData(form);
+				// let json = Object.fromEntries(formData);
+				// localStorage.usuariosForm = JSON.stringify(json);
+
+				Swal.fire({
+					title: "¿Está seguro que desea guardar los datos?",
+					icon: "question",
+					showCancelButton: true,
+					confirmButtonText: "Si, confirmo",
+					cancelButtonText: "No"
+				}).then((result) => {
+					if (result.isConfirmed) {
+						$('.ibox-content').toggleClass('sk-loading',true);
+						form.submit();
+					}
+				});
+			}
+		});
 
 		 $('.chosen-select').chosen({width: "100%"});
 		 $(".select2").select2();
