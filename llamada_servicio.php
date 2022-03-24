@@ -1315,13 +1315,68 @@ function CrearLead(){
 
 							<div class="modal-footer">
 								<button type="submit" class="btn btn-success m-t-md"><i class="fa fa-check"></i> Aceptar</button>
-								<button type="button" class="btn btn-secondary m-t-md" data-dismiss="modal" id="CancelarSN"><i class="fa fa-times"></i> Cancelar</button>
+								<button type="button" class="btn btn-secondary m-t-md CancelarSN" data-dismiss="modal"><i class="fa fa-times"></i> Cancelar</button>
 							</div>
 						</form>
 					</div>
 				</div>
 			</div>
 			<!-- Fin, modalSN -->
+			<!-- Inicio, modalFactSN -->
+			<div class="modal inmodal fade" id="modalFactSN" tabindex="-1" role="dialog" aria-hidden="true">
+				<div class="modal-dialog modal-lg" style="width: 70% !important;">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h4 class="modal-title">Cambiar Socio de Negocio en el Nuevo Documento</h4>
+						</div>
+
+						<form id="formCambiarFactSN">
+							<div class="modal-body">
+								<div class="row">
+									<div class="col-lg-1"></div>
+									<div class="col-lg-5">
+										<label class="control-label">
+											<i onClick="ConsultarDatosFactSN();" title="Consultar cliente" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Cliente <span class="text-danger">*</span>
+										</label>
+										<select class="form-control" id="ClienteFactSN" name="ClienteFactSN" required>
+											<option value="">Seleccione...</option>
+										</select>
+									</div>
+									<div class="col-lg-5">
+										<label class="control-label">Contacto</label>
+										<select class="form-control" id="ContactoFactSN" name="ContactoFactSN">
+											<option value="">Seleccione...</option>
+										</select>
+									</div>
+									<div class="col-lg-1"></div>
+								</div>
+								<br><br>
+								<div class="row">
+									<div class="col-lg-1"></div>
+									<div class="col-lg-5">
+										<label class="control-label">Sucursal</label>
+										<select class="form-control" id="SucursalFactSN" name="SucursalFactSN">
+											<option value="">Seleccione...</option>
+										</select>
+									</div>
+									<div class="col-lg-5">
+										<label class="control-label">Dirección</label>
+										<input type="text" class="form-control" id="DireccionFactSN" name="DireccionFactSN" maxlength="100">
+									</div>
+									<div class="col-lg-1"></div>
+								</div>
+							</div>
+
+							<div class="modal-footer">
+								<button type="submit" class="btn btn-success m-t-md"><i class="fa fa-check"></i> Aceptar</button>
+								<button type="button" class="btn btn-secondary m-t-md CancelarSN" data-dismiss="modal"><i class="fa fa-times"></i> Cancelar</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+			<!-- Fin, modalFactSN -->
+
 			<?php if ($type_llmd == 1) {?>
 			<div class="row">
 				<div class="col-lg-3">
@@ -1787,7 +1842,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_Concesionario = sqlsrv_fetch_array($SQL_Concesionario)) {?>
-										<option value="<?php echo $row_Concesionario['NombreConcesionario']; //['CodigoConcesionario'];                                                                                           ?>"
+										<option value="<?php echo $row_Concesionario['NombreConcesionario']; //['CodigoConcesionario'];                                                                                                                                               ?>"
 										<?php if ((isset($row['CDU_Concesionario'])) && (strcmp($row_Concesionario['NombreConcesionario'], $row['CDU_Concesionario']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_Concesionario['NombreConcesionario']; ?>
 										</option>
@@ -1800,7 +1855,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_Aseguradora = sqlsrv_fetch_array($SQL_Aseguradora)) {?>
-										<option value="<?php echo $row_Aseguradora['NombreAseguradora']; //['CodigoAseguradora'];                                                                                                                                                                         ?>"
+										<option value="<?php echo $row_Aseguradora['NombreAseguradora']; //['CodigoAseguradora'];                                                                                                                                                                                                                             ?>"
 										<?php if ((isset($row['CDU_Aseguradora'])) && (strcmp($row_Aseguradora['NombreAseguradora'], $row['CDU_Aseguradora']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_Aseguradora['NombreAseguradora']; ?>
 										</option>
@@ -1815,7 +1870,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_TipoServicio = sqlsrv_fetch_array($SQL_TipoServicio)) {?>
-										<option value="<?php echo $row_TipoServicio['NombreTipoServicio']; //['CodigoTipoServicio'];                                                                                          ?>"
+										<option value="<?php echo $row_TipoServicio['NombreTipoServicio']; //['CodigoTipoServicio'];                                                                                                                                              ?>"
 										<?php if ((isset($row['CDU_TipoServicio'])) && (strcmp($row_TipoServicio['NombreTipoServicio'], $row['CDU_TipoServicio']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_TipoServicio['NombreTipoServicio']; ?>
 										</option>
@@ -1828,7 +1883,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_Contrato = sqlsrv_fetch_array($SQL_ContratosLlamada)) {?>
-										<option value="<?php echo $row_Contrato['NombreContrato']; //['CodigoContrato'];                                                                                           ?>"
+										<option value="<?php echo $row_Contrato['NombreContrato']; //['CodigoContrato'];                                                                                                                                               ?>"
 										<?php if ((isset($row['CDU_Contrato'])) && (strcmp($row_Contrato['NombreContrato'], $row['CDU_Contrato']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_Contrato['NombreContrato']; ?>
 										</option>
@@ -2530,22 +2585,60 @@ function MostrarCostos(id_llamada){
 	});
 }
 
-// neduga, 18/02/2022
+// SMM 22/03/2022
 function CopiarToFactura(adj=1,dest=1){
+	var docDest="factura_venta.php";
+	if(dest==2)	docDest="orden_venta.php";
+
+	<?php if (PermitirFuncion(419)) {?>
+		Swal.fire({
+			title: "¿Desea cambiar de socio de negocio?",
+			icon: "question",
+			showCancelButton: true,
+			confirmButtonText: "Si, confirmo",
+			cancelButtonText: "No"
+		}).then((result) => {
+			if (result.isConfirmed) {
+				$.ajax({
+					type: "POST",
+					url: "ajx_cbo_select.php?type=42&id=" + $('#CallID').val(),
+					success: function(response){
+						$('#ClienteFactSN').html(response).fadeIn();
+						$('#ClienteFactSN').trigger('change');
+					}
+				});
+				$('#modalFactSN').modal("show");
+			} else {
+				CopiarFactura(adj, docDest);
+			}
+		});
+	<?php } else {?>
+		CopiarFactura(adj, docDest);
+	<?php }?>
+}
+
+// neduga, 18/02/2022
+function CopiarFactura(adj, docDest) {
 	let CodClienteFactura = document.getElementById('ClienteLlamada');
-	let callID = document.getElementById('CallID');
-	let ticket = document.getElementById('Ticket');
 
-	let docDest="factura_venta.php";
-
-	if(dest==2){
-		docDest="orden_venta.php";
+	if(CodClienteFactura.value!="") {
+		window.location = docDest+`?dt_FC=2&Cardcode=${btoa(CodClienteFactura.value)}&adt=${btoa(adj)}&CodFactura=${btoa(CodClienteFactura.value)}&IdLlamada=${btoa($('#CallID').val())}&DocNum=${btoa($('#Ticket').val())}`;
+	} else {
+		Swal.fire({
+			title: '¡Advertencia!',
+			text: 'Debe seleccionar un valor en el campo Cliente.',
+			icon: 'warning'
+		});
 	}
+}
 
-	if(CodClienteFactura.value!=""){
-		window.location = docDest+`?dt_FC=2&Cardcode=${btoa(CodClienteFactura.value)}&adt=${btoa(adj)}&CodFactura=${btoa(CodClienteFactura.value)}&IdLlamada=${btoa(callID.value)}&DocNum=${btoa(ticket.value)}`;
-	}else{
-		window.location = docDest+`?dt_FC=2&Cardcode=${btoa(CodClienteFactura.value)}&adt=${btoa(adj)}&CodFactura=&IdLlamada=&DocNum=`;
+// SMM, 22/06/2022
+function CopiarFacturaSN(Cliente, Contacto, Sucursal, Direccion) {
+	if(Cliente != "") {
+		adicionales = `Cardcode=${btoa(Cliente)}&CodFactura=${btoa(Cliente)}&Contacto=${btoa(Contacto)}&Sucursal=${btoa(Sucursal)}&Direccion=${btoa(Direccion)}`;
+		window.location = `factura_venta.php?dt_FC=2&${adicionales}&adt=${btoa(1)}&IdLlamada=${btoa($('#CallID').val())}&DocNum=${btoa($('#Ticket').val())}`;
+	} else {
+		console.log('Debe seleccionar un valor en el campo Cliente.');
 	}
 }
 
@@ -2630,7 +2723,7 @@ function CopiarToFactura(adj=1,dest=1){
 
 		$("#NombreClienteSN").easyAutocomplete(options);
 
-		$("#CancelarSN").on("click", function() {
+		$(".CancelarSN").on("click", function() {
 			$('.ibox-content').toggleClass('sk-loading', false);
 		});
 
@@ -2702,6 +2795,69 @@ function CopiarToFactura(adj=1,dest=1){
 				});
 			}
 		});
+
+		$("#formCambiarFactSN").on("submit", function(event) {
+			event.preventDefault(); // Evitar redirección del formulario
+
+			let Cliente = document.getElementById('ClienteFactSN').value;
+			let Contacto = document.getElementById('ContactoFactSN').value;
+			let Sucursal = document.getElementById('SucursalFactSN').value;
+			let Direccion = document.getElementById('DireccionFactSN').value;
+
+			CopiarFacturaSN(Cliente, Contacto, Sucursal, Direccion);
+		});
+
+		$("#ClienteFactSN").change(function() {
+			let ClienteFactSN = document.getElementById('ClienteFactSN').value;
+
+			$.ajax({
+				type: "POST",
+				url: "ajx_cbo_select.php?type=2&id="+ClienteFactSN,
+				success: function(response) {
+					$('#ContactoFactSN').html(response).fadeIn();
+					$('#ContactoFactSN').trigger('change');
+				},
+				error: function(error) {
+					console.error("ContactoFactSN", error.responseText);
+				}
+			});
+			$.ajax({
+				type: "POST",
+				url: "ajx_cbo_select.php?type=3&id="+ClienteFactSN,
+				success: function(response) {
+					console.log(response);
+
+					$('#SucursalFactSN').html(response).fadeIn();
+					$('#SucursalFactSN').trigger('change');
+				},
+				error: function(error) {
+					console.error("SucursalFactSN", error.responseText);
+				}
+			});
+		});
+
+		$("#SucursalFactSN").change(function() {
+			let ClienteFactSN = document.getElementById('ClienteFactSN').value;
+			let SucursalFactSN = document.getElementById('SucursalFactSN').value;
+
+			if (SucursalFactSN != -1 && SucursalFactSN != '') {
+				$.ajax({
+					url:"ajx_buscar_datos_json.php",
+					data: {
+						type: 1,
+						CardCode: ClienteFactSN,
+						Sucursal: SucursalFactSN
+					},
+					dataType:'json',
+					success: function(data) {
+						document.getElementById('DireccionFactSN').value=data.Direccion;
+					},
+					error: function(error) {
+						console.error("SucursalFactSN", error.responseText);
+					}
+				});
+			}
+		});
 	});
 
 	function ConsultarDatosClienteSN(){
@@ -2710,6 +2866,16 @@ function CopiarToFactura(adj=1,dest=1){
 		if(ClienteSN.value!=""){
 			self.name='opener';
 			remote=open('socios_negocios.php?id='+Base64.encode(ClienteSN.value)+'&ext=1&tl=1','remote','location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
+			remote.focus();
+		}
+	}
+
+	function ConsultarDatosFactSN(){
+		let ClienteFactSN=document.getElementById('ClienteFactSN');
+
+		if(ClienteFactSN.value!=""){
+			self.name='opener';
+			remote=open('socios_negocios.php?id='+Base64.encode(ClienteFactSN.value)+'&ext=1&tl=1','remote','location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
 			remote.focus();
 		}
 	}

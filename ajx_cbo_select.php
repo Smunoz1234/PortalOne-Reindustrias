@@ -124,7 +124,7 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
         if (!isset($_GET['id']) || ($_GET['id'] == "")) {
             echo "<option value='-1'>(Ninguna)</option>";
         } else {
-            $SQL = Seleccionar('uvw_Sap_tbl_LlamadasServicios', 'ID_LlamadaServicio, DocNum, AsuntoLlamada, DeTipoLlamada', "IdEstadoLlamada <> -1 AND ID_CodigoCliente='" . $_GET['id'] . "'", 'AsuntoLlamada'); //Colocar estado Abierto
+            $SQL = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_CodigoCliente='" . $_GET['id'] . "' OR ID_LlamadaServicio='" . $_GET['ls'] . "' AND IdEstadoLlamada='-3'");
             $Num = sqlsrv_num_rows($SQL);
             if ($Num) {
                 echo "<option value=''>(Ninguna)</option>";
@@ -921,6 +921,26 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
                 echo "<option value=''>Seleccione...</option>";
                 while ($row = sqlsrv_fetch_array($SQL)) {
                     echo "<option value=\"" . $row['IdLineaModeloVehiculo'] . "\">" . $row['DeLineaModeloVehiculo'] . "</option>";
+                }
+            } else {
+                echo "<option value=''>Seleccione...</option>";
+            }
+        }
+    } elseif ($_GET['type'] == 42) { // Lista de clientes en las entregas de venta de una llamada de servicio.
+        if (!isset($_GET['id']) || ($_GET['id'] == "")) {
+            echo "<option value=''>Seleccione...</option>";
+        } else {
+            $Parametros = array(
+                "'" . $_GET['id'] . "'",
+            );
+
+            $SQL = EjecutarSP('sp_tbl_LlamadaServicio_Clientes_To_FacturaVentaDet', $Parametros);
+            $Num = sqlsrv_num_rows($SQL);
+
+            if ($Num) {
+                echo "<option value=''>Seleccione...</option>";
+                while ($row = sqlsrv_fetch_array($SQL)) {
+                    echo "<option value='" . $row['IdCliente'] . "'>" . $row['DeCliente'] . "</option>";
                 }
             } else {
                 echo "<option value=''>Seleccione...</option>";
