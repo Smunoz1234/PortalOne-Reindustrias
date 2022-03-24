@@ -19,7 +19,7 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
             'Ciudad' => $row['Ciudad'],
             'Barrio' => $row['Barrio'],
             'NombreContacto' => $row['NombreContacto'],
-            'TelefonoContacto' => $row['TelefonoContacto'],
+            'TelefonoContacto' => PermitirFuncion(512) ? $row['CelularCliente'] : $row['TelefonoContacto'], // SMM, 23/03/2022
             'CargoContacto' => $row['CargoContacto'],
             'CorreoContacto' => $row['CorreoContacto'],
         );
@@ -75,7 +75,7 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
         $records = array();
         $row = sqlsrv_fetch_array($SQL);
         $records = array(
-            'Telefono' => $row['Telefono1'],
+            'Telefono' => PermitirFuncion(512) ? $row['TelefonoCelular'] : $row['Telefono1'], // SMM, 23/03/2022
             'Correo' => $row['CorreoElectronico'],
         );
         echo json_encode($records);
