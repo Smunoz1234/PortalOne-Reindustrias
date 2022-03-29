@@ -225,6 +225,7 @@ $Num_Menu = sqlsrv_num_rows($SQL_Menu);
 									<?php if (PermitirFuncion(314)) {?><li><a class="alnk" href="consultar_operaciones.php">Gestión de operaciones</a></li><?php }?>
 									<?php if (PermitirFuncion(315)) {?><li><a class="alnk" href="programacion_clientes.php">Programación de clientes</a></li><?php }?>
 									<?php if (PermitirFuncion(414)) {?><li><a class="alnk" href="impresion_orden_servicio.php">Impresión de OT</a></li><?php }?>
+									<?php if (PermitirFuncion(320)) {?><li><a class="alnk" href="consultar_operaciones_personalizado.php">Gestión de Operaciones Personalizado</a></li><?php }?>
 								</ul>
 							</li>
 						<?php }?>
