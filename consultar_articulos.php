@@ -5,7 +5,8 @@ $sw=0;//Para saber si ya se selecciono un cliente y mostrar la información
 //Filtros
 $Filtro="";//Filtro
 if(isset($_GET['BuscarDatoArt'])&&$_GET['BuscarDatoArt']!=""){
-	$Filtro="Where (ItemCode LIKE '%".$_GET['BuscarDatoArt']."%' OR ItemName LIKE '%".$_GET['BuscarDatoArt']."%' OR FrgnName LIKE '%".$_GET['BuscarDatoArt']."%' OR SuppCatNum LIKE '%".$_GET['BuscarDatoArt']."%')";
+	$BuscarDatosArt = trim($_GET['BuscarDatoArt']);
+	$Filtro="Where (ItemCode LIKE '%".$BuscarDatosArt."%' OR ItemName LIKE '%".$BuscarDatosArt."%' OR FrgnName LIKE '%".$BuscarDatosArt."%' OR SuppCatNum LIKE '%".$BuscarDatosArt."%')";
 	
 	$Cons="Select * From uvw_Sap_tbl_ArticulosTodos $Filtro";
 	//echo $Cons;

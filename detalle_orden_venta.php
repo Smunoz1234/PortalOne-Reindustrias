@@ -106,62 +106,76 @@ $SQL_Proyecto = Seleccionar('uvw_Sap_tbl_Proyectos', '*', '', 'DeProyecto');
 	}
 </style>
 <script>
-function Totalizar(num){
-	console.log(`Totalizar(${num})`);
+function CalcularLinea(line, totalizar=true, incIVA=false) {
+	let CantLinea = document.getElementById(`Quantity${line}`);
+	let PrecioLinea = document.getElementById(`Price${line}`);
+	let PrecioIVALinea = document.getElementById(`PriceTax${line}`);
+	let TarifaIVALinea = document.getElementById(`TarifaIVA${line}`);
+	let ValorIVALinea = document.getElementById(`VatSum${line}`);
+	let PrcDescLinea = document.getElementById(`DiscPrcnt${line}`);
+	let TotalLinea = document.getElementById(`LineTotal${line}`);
 
-	var SubTotal=0;
-	var Descuentos=0;
-	var Iva=0;
-	var Total=0;
+	let CantDecimal = parseFloat(CantLinea.value.replace(/,/g, ''));
+	let PrecioDecimal = parseFloat(PrecioLinea.value.replace(/,/g, ''));
+	let PrecioIVADecimal = parseFloat(PrecioIVALinea.value.replace(/,/g, '')); // Useless
+	let TarifaIVADecimal = parseFloat(TarifaIVALinea.value.replace(/,/g, ''));
+	let ValorIVADecimal = parseFloat(ValorIVALinea.value.replace(/,/g, '')); // Useless
+	let PrcDescDecimal = parseFloat(PrcDescLinea.value.replace(/,/g, ''));
+	let TotalDecimal = parseFloat(TotalLinea.value.replace(/,/g, ''));
 
-	for(i=1;i<=num;i++){
-		var TotalLinea=document.getElementById('LineTotal'+i);
-		var CantLinea=document.getElementById('Quantity'+i);
+	let NuevoValorIVA = PrecioDecimal * (TarifaIVADecimal / 100);
+	ValorIVALinea.value = number_format(NuevoValorIVA, 2);
 
-		var PrecioLinea=document.getElementById('Price'+i);
-		var PrecioIVALinea=document.getElementById('PriceTax'+i);
-		var TarifaIVALinea=document.getElementById('TarifaIVA'+i);
-		// var ValorIVALinea=document.getElementById('VatSum'+i);
-		var PrcDescuentoLinea=document.getElementById('DiscPrcnt'+i);
+	let NuevoPrecioIVA = PrecioDecimal + NuevoValorIVA;
+	PrecioIVALinea.value = number_format(NuevoPrecioIVA, 2);
 
-		var Precio=parseFloat(PrecioLinea.value.replace(/,/g, ''));
-		var PrecioIVA=parseFloat(PrecioIVALinea.value.replace(/,/g, ''));
-		var TarifaIVA=TarifaIVALinea.value.replace(/,/g, '');
-		// var ValorIVA=ValorIVALinea.value.replace(/,/g, '');
-		var Cant=parseFloat(CantLinea.value.replace(/,/g, ''));
-
-		var SubTotalLinea=Precio*Cant;
-		var PrcDesc=parseFloat(PrcDescuentoLinea.value.replace(/,/g, ''));
-		var TotalDesc=(PrcDesc*SubTotalLinea)/100;
-
-		let ValorIVA = parseFloat(Precio) * (parseFloat(TarifaIVA) / 100); // SMM, 18/03/2022
-		let TotIVA = ValorIVA + parseFloat(Precio); // SMM, 16/03/2022
-		let SubTotalIVA = TotIVA * Cant; // SMM, 16/03/2022
-
-		TotalLinea.value = number_format(SubTotalIVA-TotalDesc, 2); // SMM, 16/03/2022
-
-		SubTotal=parseFloat(SubTotal)+parseFloat(SubTotalLinea);
-		Descuentos=parseFloat(Descuentos)+parseFloat(TotalDesc);
-
-		Iva = parseFloat(Iva) + parseFloat(ValorIVA * Cant);
-		//var Linea=document.getElementById('LineTotal'+i).value.replace(/,/g, '');
+	let SubTotalLinea = 0;
+	if(incIVA) {
+		SubTotalLinea = NuevoPrecioIVA * CantDecimal;
+	} else {
+		SubTotalLinea = PrecioDecimal * CantDecimal;
 	}
 
-	// Total=parseFloat(Total)+parseFloat((SubTotal-Descuentos)+Iva);
-	Total=parseFloat(Total)+parseFloat(SubTotal + Iva); // SMM 23/03/2022
-	//return Total;
-	//alert(Total);
-	window.parent.document.getElementById('SubTotal').value=number_format(parseFloat(SubTotal),2);
-	// window.parent.document.getElementById('Descuentos').value=number_format(parseFloat(Descuentos),2);
-	window.parent.document.getElementById('Impuestos').value=number_format(parseFloat(Iva),2);
-	window.parent.document.getElementById('TotalOrden').value=number_format(parseFloat(Total),2);
-	window.parent.document.getElementById('TotalItems').value=num;
+	let TotalDescLinea = (PrcDescDecimal * SubTotalLinea) / 100;
+	if(totalizar) {
+		TotalLinea.value = number_format(SubTotalLinea - TotalDescLinea, 2);
+	}
+
+	let IvaLinea = NuevoValorIVA * CantDecimal;
+	return [SubTotalLinea - TotalDescLinea, IvaLinea, CantLinea, PrcDescLinea, TotalLinea, TotalDecimal];
+}
+
+function Totalizar(num) {
+	var SubTotal = 0;
+	var Descuentos = 0;
+	var Iva = 0;
+	var Total = 0;
+
+	console.log(`Totalizar(${num})`);
+	for(let i=1; i <= num; i++) {
+		let ValoresLinea = CalcularLinea(i);
+
+		let SubTotalLinea = ValoresLinea[0];
+		let IvaLinea = ValoresLinea[1];
+
+		SubTotal = parseFloat(SubTotal) + parseFloat(SubTotalLinea);
+		Iva = parseFloat(Iva) + parseFloat(IvaLinea);
+	}
+
+	// Total = parseFloat(Total) + parseFloat((SubTotal - Descuentos) + Iva);
+	Total = parseFloat(Total) + parseFloat(SubTotal + Iva); // SMM 23/03/2022
+
+	window.parent.document.getElementById('SubTotal').value = number_format(parseFloat(SubTotal), 2);
+	window.parent.document.getElementById('Impuestos').value = number_format(parseFloat(Iva), 2);
+	window.parent.document.getElementById('TotalOrden').value = number_format(parseFloat(Total), 2);
+	window.parent.document.getElementById('TotalItems').value = num;
 }
 
 /**
  * Ejemplo: ActualizarDatos('EmpVentas',$i,$row['LineNum']);
  */
-function ActualizarDatos(name,id,line){//Actualizar datos asincronicamente
+function ActualizarDatos(name, id, line) { // Actualizar datos asincronicamente
+	console.log(`ActualizarDatos(${name}, ${id}, ${line})`);
 	$.ajax({
 		type: "GET",
 		<?php if ($type == 1) {?>
@@ -323,11 +337,11 @@ function ConsultarArticulo(articulo){
 				<th>Dosificación</th>
 				<th>Stock almacén</th>
 				<?php $row_DimReparto = sqlsrv_fetch_array($SQL_DimReparto);?>
-				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 1                                  ?></th>
+				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 1                                                                                                                                                      ?></th>
 				<?php $row_DimReparto = sqlsrv_fetch_array($SQL_DimReparto);?>
-				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 2                                  ?></th>
+				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 2                                                                                                                                                      ?></th>
 				<?php $row_DimReparto = sqlsrv_fetch_array($SQL_DimReparto);?>
-				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 3                                  ?></th>
+				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 3                                                                                                                                                      ?></th>
 				<th>Proyecto</th>
 				<th>Empleado de ventas</th>
 				<th>Servicio</th>
@@ -497,12 +511,18 @@ if ($sw == 1) {
 			<td><input size="15" type="text" id="DiscPrcnt<?php echo $i; ?>" name="DiscPrcnt[]" class="form-control" value="<?php echo number_format($row['DiscPrcnt'], 2); ?>" onChange="ActualizarDatos('DiscPrcnt',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402))) {echo "readonly";}?>></td>
 
 			<td>
-				<input size="15" type="text" id="LineTotal<?php echo $i; ?>" name="LineTotal[]" class="form-control" value="<?php echo number_format($row['LineTotal'], 2); ?>" readonly>
+				<input size="15" type="text" id="LineTotal<?php echo $i; ?>" name="LineTotal[]" class="form-control" value="<?php echo number_format($row['LineTotal'], 2); ?>" onChange="ActualizarDatos('LineTotal',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" onBlur="CalcularTotal(<?php echo $i; ?>, false);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402))) {echo "readonly";}?> autocomplete="off">
 			</td>
 
 			<td><?php if ($row['Metodo'] == 0) {?><i class="fa fa-check-circle text-info" title="Sincronizado con SAP"></i><?php } else {?><i class="fa fa-times-circle text-danger" title="Aún no enviado a SAP"></i><?php }?></td>
 
 		<?php // Fin, comprobando permiso 416.
+			
+			// Cambio de Stock en Lote
+			$LineNum = $row['LineNum'];
+			echo "<script> ActStockAlmacen('WhsCode', $i, $LineNum); </script>";
+			// SMM, 30/03/2022
+
             $i++; // Totalizar
         } else { $main = true;}?>
 		</tr>
@@ -551,115 +571,108 @@ if ($sw == 1) {
 	</div>
 </form>
 <script>
-function CalcularTotal(line){
-	console.log(`CalcularTotal(${line})`);
+function CalcularTotal(line, totalizar=true){
+	let Linea = document.getElementById(`LineNum${line}`);
 
-	var TotalLinea=document.getElementById('LineTotal'+line);
-	var PrecioLinea=document.getElementById('Price'+line);
-	var PrecioIVALinea=document.getElementById('PriceTax'+line);
-	var TarifaIVALinea=document.getElementById('TarifaIVA'+line);
-	var ValorIVALinea=document.getElementById('VatSum'+line);
-	var PrcDescuentoLinea=document.getElementById('DiscPrcnt'+line);
-	var CantLinea=document.getElementById('Quantity'+line);
-	var Linea=document.getElementById('LineNum'+line);
+	let ValoresLinea = CalcularLinea(line);
+	let SubTotalLinea = ValoresLinea[0];
 
-	if(CantLinea.value>0){
-		//if(parseFloat(PrecioLinea.value)>0){
-			//alert('Info');
-			var Precio=PrecioLinea.value.replace(/,/g, '');
-			var TarifaIVA=TarifaIVALinea.value.replace(/,/g, '');
-			var ValorIVA=ValorIVALinea.value.replace(/,/g, '');
-			var Cant=CantLinea.value.replace(/,/g, '');
-			var TotIVA=((parseFloat(Precio)*parseFloat(TarifaIVA)/100)+parseFloat(Precio));
-			ValorIVALinea.value=number_format((parseFloat(Precio)*parseFloat(TarifaIVA)/100),2);
-			PrecioIVALinea.value=number_format(parseFloat(TotIVA),2);
-			var PrecioIVA=PrecioIVALinea.value.replace(/,/g, '');
-			var SubTotalLinea=PrecioIVA*Cant;
-			var PrcDesc=parseFloat(PrcDescuentoLinea.value.replace(/,/g, ''));
-			var TotalDesc=(PrcDesc*SubTotalLinea)/100;
+	let CantLinea = ValoresLinea[2];
+	let PrcDescLinea = ValoresLinea[3];
+	let TotalLinea = ValoresLinea[4];
+	let TotalDecimal = ValoresLinea[5];
 
-			TotalLinea.value=number_format(SubTotalLinea-TotalDesc, 2);
-		//}else{
-			//alert('Ult');
-			//var Ult=UltPrecioLinea.value.replace(/,/g, '');
-			//var Cant=CantLinea.value.replace(/,/g, '');
-			//TotalLinea.value=parseFloat(number_format(Ult*Cant,2));
-		//}
-		Totalizar(<?php if (isset($i)) {echo $i - 1;} else {echo 0;}?>);
-		//window.parent.document.getElementById('TotalSolicitud').value='500';
-	}else{
-		alert("No puede solicitar cantidad en 0. Si ya no va a solicitar este articulo, borre la linea.");
-		CantLinea.value="1.00";
-		//ActualizarDatos(1,line,Linea.value);
-	}
+	console.log(`CalcularTotal(${line}, ${totalizar})`);
+	if(CantLinea.value > 0) {
+		if(totalizar) {
+			// alert("Totalizar");
+			Totalizar(<?php if (isset($i)) {echo $i - 1;} else {echo 0;}?>);
+		} else { // SMM 28/03/2022
+			if(TotalDecimal < SubTotalLinea) {
+				TotalDescLinea = SubTotalLinea - TotalDecimal;
+				PrcDesc = 100 / (SubTotalLinea / TotalDescLinea);
 
-}
-</script>
-<script>
-	 $(document).ready(function(){
-		 $(".alkin").on('click', function(){
-				 $('.ibox-content').toggleClass('sk-loading');
-			});
-		  $(".select2").select2();
-		 var options = {
-			url: function(phrase) {
-				return "ajx_buscar_datos_json.php?type=12&data="+phrase+"&whscode=<?php echo $Almacen; ?>&tipodoc=2";
-			},
-			getValue: "IdArticulo",
-			requestDelay: 400,
-			template: {
-				type: "description",
-				fields: {
-					description: "DescripcionArticulo"
-				}
-			},
-			list: {
-				maxNumberOfElements: 8,
-				match: {
-					enabled: true
-				},
-				onClickEvent: function() {
-					var IdArticulo = $("#ItemCodeNew").getSelectedItemData().IdArticulo;
-					var DescripcionArticulo = $("#ItemCodeNew").getSelectedItemData().DescripcionArticulo;
-					var UndMedida = $("#ItemCodeNew").getSelectedItemData().UndMedida;
-					var PrecioSinIVA = $("#ItemCodeNew").getSelectedItemData().PrecioSinIVA;
-					var PrecioConIVA = $("#ItemCodeNew").getSelectedItemData().PrecioConIVA;
-					var CodAlmacen = $("#ItemCodeNew").getSelectedItemData().CodAlmacen;
-					var Almacen = $("#ItemCodeNew").getSelectedItemData().Almacen;
-					var StockAlmacen = $("#ItemCodeNew").getSelectedItemData().StockAlmacen;
-					var StockGeneral = $("#ItemCodeNew").getSelectedItemData().StockGeneral;
-					$("#ItemNameNew").val(DescripcionArticulo);
-					$("#UnitMsrNew").val(UndMedida);
-					$("#QuantityNew").val('1.00');
-					$("#CantInicialNew").val('1.00');
-					$("#CDU_CantLitrosNew").val('1.00');
-					$("#PriceNew").val(PrecioSinIVA);
-					$("#PriceTaxNew").val(PrecioConIVA);
-					$("#DiscPrcntNew").val('0.00');
-					$("#LineTotalNew").val('0.00');
-					$("#OnHandNew").val(StockAlmacen);
-					$("#WhsCodeNew").val(Almacen);
-					$.ajax({
-						type: "GET",
-						<?php if ($type == 1) {?>
-						url: "registro.php?P=35&doctype=1&item="+IdArticulo+"&whscode="+CodAlmacen+"&cardcode=<?php echo $CardCode; ?>",
-						<?php } else {?>
-						url: "registro.php?P=35&doctype=2&item="+IdArticulo+"&whscode="+CodAlmacen+"&cardcode=0&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
-						<?php }?>
-						success: function(response){
-							window.location.href="detalle_orden_venta.php?<?php echo $_SERVER['QUERY_STRING']; ?>";
-						}
-					});
-				}
+				PrcDescLinea.value = number_format(PrcDesc, 2);
+				TotalLinea.value = number_format(TotalDecimal, 2);
+
+				Totalizar(<?php if (isset($i)) {echo $i - 1;} else {echo 0;}?>);
+				ActualizarDatos('DiscPrcnt', line, Linea.value);
+			} else {
+				// console.log(`${TotalDecimal} < ${SubTotalLinea}`);
+				alert("El nuevo total de línea debe ser menor al total de línea sin descuento (SubTotalLinea).");
 			}
-		};
-		<?php if ($sw == 1 && $Estado == 1 && PermitirFuncion(402)) {?>
-		$("#ItemCodeNew").easyAutocomplete(options);
+		}
+	} else {
+		alert("No puede solicitar cantidad en 0. Si ya no va a solicitar este articulo, borre la linea.");
+		CantLinea.value = "1.00";
+		// ActualizarDatos('Quantity', line, Linea.value);
+	}
+}
 
-		// Stiven Muñoz Murillo, 31/01/2022
-		// $(".iva").blur();
-	 	<?php }?>
+$(document).ready(function(){
+	$(".alkin").on('click', function(){
+			$('.ibox-content').toggleClass('sk-loading');
 	});
+	$(".select2").select2();
+	var options = {
+	url: function(phrase) {
+		return "ajx_buscar_datos_json.php?type=12&data="+phrase+"&whscode=<?php echo $Almacen; ?>&tipodoc=2";
+	},
+	getValue: "IdArticulo",
+	requestDelay: 400,
+	template: {
+		type: "description",
+		fields: {
+			description: "DescripcionArticulo"
+		}
+	},
+	list: {
+		maxNumberOfElements: 8,
+		match: {
+			enabled: true
+		},
+		onClickEvent: function() {
+			var IdArticulo = $("#ItemCodeNew").getSelectedItemData().IdArticulo;
+			var DescripcionArticulo = $("#ItemCodeNew").getSelectedItemData().DescripcionArticulo;
+			var UndMedida = $("#ItemCodeNew").getSelectedItemData().UndMedida;
+			var PrecioSinIVA = $("#ItemCodeNew").getSelectedItemData().PrecioSinIVA;
+			var PrecioConIVA = $("#ItemCodeNew").getSelectedItemData().PrecioConIVA;
+			var CodAlmacen = $("#ItemCodeNew").getSelectedItemData().CodAlmacen;
+			var Almacen = $("#ItemCodeNew").getSelectedItemData().Almacen;
+			var StockAlmacen = $("#ItemCodeNew").getSelectedItemData().StockAlmacen;
+			var StockGeneral = $("#ItemCodeNew").getSelectedItemData().StockGeneral;
+			$("#ItemNameNew").val(DescripcionArticulo);
+			$("#UnitMsrNew").val(UndMedida);
+			$("#QuantityNew").val('1.00');
+			$("#CantInicialNew").val('1.00');
+			$("#CDU_CantLitrosNew").val('1.00');
+			$("#PriceNew").val(PrecioSinIVA);
+			$("#PriceTaxNew").val(PrecioConIVA);
+			$("#DiscPrcntNew").val('0.00');
+			$("#LineTotalNew").val('0.00');
+			$("#OnHandNew").val(StockAlmacen);
+			$("#WhsCodeNew").val(Almacen);
+			$.ajax({
+				type: "GET",
+				<?php if ($type == 1) {?>
+				url: "registro.php?P=35&doctype=1&item="+IdArticulo+"&whscode="+CodAlmacen+"&cardcode=<?php echo $CardCode; ?>",
+				<?php } else {?>
+				url: "registro.php?P=35&doctype=2&item="+IdArticulo+"&whscode="+CodAlmacen+"&cardcode=0&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
+				<?php }?>
+				success: function(response){
+					window.location.href="detalle_orden_venta.php?<?php echo $_SERVER['QUERY_STRING']; ?>";
+				}
+			});
+		}
+	}
+};
+<?php if ($sw == 1 && $Estado == 1 && PermitirFuncion(402)) {?>
+$("#ItemCodeNew").easyAutocomplete(options);
+
+// Stiven Muñoz Murillo, 31/01/2022
+// $(".iva").blur();
+<?php }?>
+});
 </script>
 </body>
 </html>
