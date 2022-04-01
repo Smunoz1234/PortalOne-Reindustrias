@@ -303,7 +303,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
 //Crear nuevo valor por defecto
 if (isset($_POST['MM_Insert']) && ($_POST['MM_Insert'] != "")) {
     $Param = array(
-        "'" . $_POST['TipoDocumentoVD'] . "'",
+        "'" . $_POST['TipoDocumento'] . "'",
         "'" . $_POST['NombreVariable'] . "'",
         "'" . $_POST['NombreMostrar'] . "'",
     );
