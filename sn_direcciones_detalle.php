@@ -165,7 +165,13 @@ function CargarDatos(){
 	
 	if(sw>=0){
 		document.getElementById('AdresType').value = json[0].direcciones[sw].tipo_direccion;
+		
 		document.getElementById('Address').value = json[0].direcciones[sw].nombre_direccion;
+		
+		if($("#Address").val() != "") {
+			$('#Address').prop('readonly', true); // SMM, 04/04/2022
+		}
+
 		document.getElementById('Street').value = json[0].direcciones[sw].direccion;
 		document.getElementById('County').value = json[0].direcciones[sw].departamento;
 		BuscarCiudad(false);
