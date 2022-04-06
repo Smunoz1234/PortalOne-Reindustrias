@@ -1189,6 +1189,20 @@ if ($edit == 1 || $sw_error == 1) {
 }?>
 							</select>
 						</div>
+
+						<!-- Inicio, Lista Precios SN -->
+						<label class="col-lg-1 control-label">Lista Precios <!--span class="text-danger">*</span--></label>
+						<div class="col-lg-5">
+							<select name="IdListaPrecio" class="form-control" id="IdListaPrecio" <?php if (!PermitirFuncion(418)) {echo "disabled='disabled'";}?>>
+								<?php while ($row_ListaPrecio = sqlsrv_fetch_array($SQL_ListaPrecios)) {?>
+								<option value="<?php echo $row_ListaPrecio['IdListaPrecio']; ?>"
+								<?php if (isset($row['IdListaPrecio']) && (strcmp($row_ListaPrecio['IdListaPrecio'], $row['IdListaPrecio']) == 0)) {echo "selected=\"selected\"";}?>>
+									<?php echo $row_ListaPrecio['DeListaPrecio']; ?>
+								</option>
+								<?php }?>
+							</select>
+						</div>
+						<!-- Fin, Lista Precios SN -->
 					</div>
 					<div class="form-group">
 						<label class="col-lg-1 control-label">Sucursal destino <span class="text-danger">*</span></label>
@@ -1352,19 +1366,19 @@ if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
 						</select>
                	  	</div>
 
-					<!-- Inicio, Lista Precios SN -->
-					<label class="col-lg-1 control-label">Lista de precios <!--span class="text-danger">*</span--></label>
+					<!-- Inicio, Proyecto -->
+					<label class="col-lg-1 control-label">Proyecto <span class="text-danger">*</span></label>
 					<div class="col-lg-3">
-						<select name="IdListaPrecio" class="form-control" id="IdListaPrecio" <?php if (!PermitirFuncion(418)) {echo "disabled='disabled'";}?>>
-							<?php while ($row_ListaPrecio = sqlsrv_fetch_array($SQL_ListaPrecios)) {?>
-							<option value="<?php echo $row_ListaPrecio['IdListaPrecio']; ?>"
-							<?php if (isset($row['IdListaPrecio']) && (strcmp($row_ListaPrecio['IdListaPrecio'], $row['IdListaPrecio']) == 0)) {echo "selected=\"selected\"";}?>>
-								<?php echo $row_ListaPrecio['DeListaPrecio']; ?>
-							</option>
+						<select id="PrjCode" name="PrjCode" class="form-control select2" form="CrearOrdenVenta" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "disabled='disabled'";}?>>
+								<option value="">(NINGUNO)</option>
+							<?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) {?>
+								<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if ((isset($row['PrjCode'])) && (strcmp($row_Proyecto['IdProyecto'], $row['PrjCode']) == 0)) {echo "selected=\"selected\"";}?>>
+									<?php echo $row_Proyecto['DeProyecto']; ?>
+								</option>
 							<?php }?>
 						</select>
 					</div>
-					<!-- Fin, Lista Precios SN -->
+					<!-- Fin, Proyecto -->
 				</div>
 				<div class="form-group">
 					<label class="col-xs-12"><h3 class="bg-success p-xs b-r-sm"><i class="fa fa-list"></i> Contenido de la orden</h3></label>
@@ -1437,17 +1451,7 @@ if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
 							</select>
 						</div>
 
-						<label class="col-lg-1">Proyecto <span class="text-danger">*</span></label>
-						<div class="col-lg-4">
-							<select id="PrjCode" name="PrjCode" class="form-control select2" form="CrearOrdenVenta" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "disabled='disabled'";}?>>
-									<option value="">(NINGUNO)</option>
-								<?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) {?>
-									<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if ((isset($row['PrjCode'])) && (strcmp($row_Proyecto['IdProyecto'], $row['PrjCode']) == 0)) {echo "selected=\"selected\"";}?>>
-										<?php echo $row_Proyecto['DeProyecto']; ?>
-									</option>
-								<?php }?>
-							</select>
-						</div>
+
 					</div>
 					<div class="form-group">
 						<label class="col-lg-2">Comentarios</label>
