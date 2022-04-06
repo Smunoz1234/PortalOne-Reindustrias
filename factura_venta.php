@@ -1206,7 +1206,7 @@ if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
 					<!-- Inicio, Proyecto -->
 					<label class="col-lg-1 control-label">Proyecto <span class="text-danger">*</span></label>
 					<div class="col-lg-3">
-						<select id="PrjCode" name="PrjCode" class="form-control select2" form="CrearOrdenVenta" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "disabled='disabled'";}?>>
+						<select id="PrjCode" name="PrjCode" class="form-control select2" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "disabled='disabled'";}?>>
 								<option value="">(NINGUNO)</option>
 							<?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) {?>
 								<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if ((isset($row['PrjCode'])) && (strcmp($row_Proyecto['IdProyecto'], $row['PrjCode']) == 0)) {echo "selected=\"selected\"";}?>>
