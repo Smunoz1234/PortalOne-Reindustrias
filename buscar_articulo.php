@@ -738,7 +738,7 @@ else if(doctype==27){//Devolucion de compra editar
 </script>
 </head>
 
-<body>
+<body style="overflow-x: auto;">
 <div class="p-sm col-lg-4">
 	<label class="checkbox-inline i-checks"><input name="chkStock" type="checkbox" id="chkStock" value="1" <?php if ($SoloStock == 1) {?>checked="checked"<?php }?>> Mostrar solo los art&iacute;culos con stock</label>
 </div>
@@ -793,7 +793,7 @@ $rawdata = array();
                 } else {
                     if (is_object($rawdata[$i][$j])) {
                         echo "<td>" . $rawdata[$i][$j]->format('Y-m-d') . "</td>";
-                    } elseif (is_numeric($rawdata[$i][$j])) {
+                    } elseif (strpos(strtolower($rawdata[$i][$j]), 'e') === false && is_numeric($rawdata[$i][$j])) {
                         echo "<td>" . number_format($rawdata[$i][$j], 2) . "</td>";
                     } else {
                         echo "<td>" . utf8_encode($rawdata[$i][$j]) . "</td>";
