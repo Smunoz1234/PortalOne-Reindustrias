@@ -234,11 +234,13 @@ function SeleccionarTodos(){
 </script>
 <script>
 function CalcularLinea(line, totalizar=true, incIVA=false) {
+	let Linea = document.getElementById(`LineNum${line}`); // SMM, 04/04/2022
 	let CantLinea = document.getElementById(`Quantity${line}`);
 	let PrecioLinea = document.getElementById(`Price${line}`);
 	let PrecioIVALinea = document.getElementById(`PriceTax${line}`);
 	let TarifaIVALinea = document.getElementById(`TarifaIVA${line}`);
 	let ValorIVALinea = document.getElementById(`VatSum${line}`);
+	let PrecioDescLinea = document.getElementById(`PriceDisc${line}`); // SMM, 04/04/2022
 	let PrcDescLinea = document.getElementById(`DiscPrcnt${line}`);
 	let TotalLinea = document.getElementById(`LineTotal${line}`);
 
@@ -247,6 +249,7 @@ function CalcularLinea(line, totalizar=true, incIVA=false) {
 	let PrecioIVADecimal = parseFloat(PrecioIVALinea.value.replace(/,/g, '')); // Useless
 	let TarifaIVADecimal = parseFloat(TarifaIVALinea.value.replace(/,/g, ''));
 	let ValorIVADecimal = parseFloat(ValorIVALinea.value.replace(/,/g, '')); // Useless
+	let PrecioDescDecimal = parseFloat(PrecioDescLinea.value.replace(/,/g, '')); // Useless
 	let PrcDescDecimal = parseFloat(PrcDescLinea.value.replace(/,/g, ''));
 	let TotalDecimal = parseFloat(TotalLinea.value.replace(/,/g, ''));
 
@@ -266,26 +269,34 @@ function CalcularLinea(line, totalizar=true, incIVA=false) {
 	let TotalDescLinea = (PrcDescDecimal * SubTotalLinea) / 100;
 	if(totalizar) {
 		TotalLinea.value = number_format(SubTotalLinea - TotalDescLinea, 2);
+		// ActualizarDatos('LineTotal', line, Linea.value, 2);
 	}
 
-	let IvaLinea = NuevoValorIVA * CantDecimal;
-	return [SubTotalLinea - TotalDescLinea, IvaLinea, CantLinea, PrcDescLinea, TotalLinea, TotalDecimal];
+	// SMM, 04/04/2022
+	let SubTotalDescLinea = (PrcDescDecimal * PrecioDecimal) / 100;
+	let NuevoPrecioDesc = PrecioDecimal - SubTotalDescLinea;
+	PrecioDescLinea.value = number_format(NuevoPrecioDesc, 2);
+
+	let SubTotalDesc = SubTotalLinea - TotalDescLinea; // Para, Totalizar()
+	let IvaLinea = NuevoValorIVA * CantDecimal; // Para, Totalizar()
+
+	return [SubTotalDesc, IvaLinea, Linea, SubTotalLinea, CantLinea, PrcDescLinea, TotalLinea, TotalDecimal];
 }
 
-function Totalizar(num) {
+function Totalizar(num, totalizar=true) {
 	var SubTotal = 0;
 	var Descuentos = 0;
 	var Iva = 0;
 	var Total = 0;
 
-	console.log(`Totalizar(${num})`);
+	console.log(`Totalizar(${num}, ${totalizar})`);
 	for(let i=1; i <= num; i++) {
-		let ValoresLinea = CalcularLinea(i);
+		let ValoresLinea = CalcularLinea(i, totalizar);
 
-		let SubTotalLinea = ValoresLinea[0];
+		let SubTotalDesc = ValoresLinea[0];
 		let IvaLinea = ValoresLinea[1];
 
-		SubTotal = parseFloat(SubTotal) + parseFloat(SubTotalLinea);
+		SubTotal = parseFloat(SubTotal) + parseFloat(SubTotalDesc);
 		Iva = parseFloat(Iva) + parseFloat(IvaLinea);
 	}
 
@@ -294,12 +305,20 @@ function Totalizar(num) {
 
 	window.parent.document.getElementById('SubTotal').value = number_format(parseFloat(SubTotal), 2);
 	window.parent.document.getElementById('Impuestos').value = number_format(parseFloat(Iva), 2);
-	window.parent.document.getElementById('TotalDevolucion').value = number_format(parseFloat(Total), 2);
+	window.parent.document.getElementById('TotalDevolucion').value = number_format(parseFloat(Total), 0);
 	window.parent.document.getElementById('TotalItems').value = num;
 }
-</script>
-<script>
-function ActualizarDatos(name,id,line){//Actualizar datos asincronicamente
+
+function ActualizarDatos(name, id, line, round=0) { // Actualizar datos asincronicamente
+	console.log(`ActualizarDatos(${name}, ${id}, ${line}, ${round})`);
+
+	let elemento = document.getElementById(name+id);
+	let valor = elemento.value;
+
+	if(round != 0) {
+		elemento.value = number_format(valor, round);
+	}
+
 	$.ajax({
 		type: "GET",
 		<?php if ($type == 1) {?>
@@ -356,11 +375,11 @@ function ConsultarArticulo(articulo){
 				<th>Almacén</th>
 				<th>Stock almacén</th>
 				<?php $row_DimReparto = sqlsrv_fetch_array($SQL_DimReparto);?>
-				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 1     ?></th>
+				<th><?php echo $row_DimReparto['NombreDim']; ?><!-- Dimension 1 --></th>
 				<?php $row_DimReparto = sqlsrv_fetch_array($SQL_DimReparto);?>
-				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 2     ?></th>
+				<th><?php echo $row_DimReparto['NombreDim']; ?><!-- Dimension 2 --></th>
 				<?php $row_DimReparto = sqlsrv_fetch_array($SQL_DimReparto);?>
-				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 3     ?></th>
+				<th><?php echo $row_DimReparto['NombreDim']; ?><!-- Dimension 3 --></th>
 				<th>Proyecto</th>
 				<th>Empleado de ventas</th>
 				<th>Servicio</th>
@@ -370,6 +389,7 @@ function ConsultarArticulo(articulo){
 				<th>Texto libre</th>
 				<th>Precio</th>
 				<th>Precio con IVA</th>
+				<th>Precio con Desc.</th><!-- SMM, 05/04/2022 -->
 				<th>% Desc.</th>
 				<th>Total</th>
 				<th><i class="fa fa-refresh"></i></th>
@@ -404,7 +424,11 @@ if ($sw == 1) {
 
 			<td><input size="50" type="text" id="ItemName<?php echo $i; ?>" name="ItemName[]" class="form-control" value="<?php echo $row['ItemName']; ?>" maxlength="100" onChange="ActualizarDatos('ItemName',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if (($row['LineStatus'] == 'C') || ($type == 2)) {echo "readonly";}?>></td>
 			<td><input size="15" type="text" id="UnitMsr<?php echo $i; ?>" name="UnitMsr[]" class="form-control" readonly value="<?php echo $row['UnitMsr']; ?>"></td>
-			<td><input size="15" type="text" id="Quantity<?php echo $i; ?>" name="Quantity[]" class="form-control" value="<?php echo number_format($row['Quantity'], 2); ?>" onChange="ActualizarDatos('Quantity',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if (($row['LineStatus'] == 'C') || ($type == 2)) {echo "readonly";}?>></td>
+
+			<td>
+				<input size="15" type="text" id="Quantity<?php echo $i; ?>" name="Quantity[]" class="form-control" value="<?php echo number_format($row['Quantity'], 2); ?>" onChange="ActualizarDatos('Quantity',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>, 2);" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if (($row['LineStatus'] == 'C') || ($type == 2)) {echo "readonly";}?> onFocus="focalizarValores(this)">
+			</td>
+
 			<td><input size="15" type="text" id="CantInicial<?php echo $i; ?>" name="CantInicial[]" class="form-control" value="<?php echo number_format($row['CantInicial'], 2); ?>" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" readonly></td>
 
 			<td>
@@ -496,12 +520,27 @@ if ($sw == 1) {
 				<?php }?>
 			</td>
 			<td><input size="50" type="text" id="FreeTxt<?php echo $i; ?>" name="FreeTxt[]" class="form-control" value="<?php echo $row['FreeTxt']; ?>" onChange="ActualizarDatos('FreeTxt',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" maxlength="100" <?php if (($row['LineStatus'] == 'C') || ($type == 2)) {echo "readonly";}?>></td>
-			<td><input size="15" type="text" id="Price<?php echo $i; ?>" name="Price[]" class="form-control" value="<?php echo number_format($row['Price'], 2); ?>" onChange="ActualizarDatos('Price',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if (($row['LineStatus'] == 'C') || ($type == 2)) {echo "readonly";}?>></td>
-			<td><input size="15" type="text" id="PriceTax<?php echo $i; ?>" name="PriceTax[]" class="form-control" value="<?php echo number_format($row['PriceTax'], 2); ?>" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" readonly><input type="hidden" id="TarifaIVA<?php echo $i; ?>" name="TarifaIVA[]" value="<?php echo number_format($row['TarifaIVA'], 0); ?>"><input type="hidden" id="VatSum<?php echo $i; ?>" name="VatSum[]" value="<?php echo number_format($row['VatSum'], 2); ?>"></td>
-			<td><input size="15" type="text" id="DiscPrcnt<?php echo $i; ?>" name="DiscPrcnt[]" class="form-control" value="<?php echo number_format($row['DiscPrcnt'], 2); ?>" onChange="ActualizarDatos('DiscPrcnt',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if (($row['LineStatus'] == 'C') || ($type == 2)) {echo "readonly";}?>></td>
+			
+			<td>
+				<input size="15" type="text" id="Price<?php echo $i; ?>" name="Price[]" class="form-control" value="<?php echo number_format($row['Price'], 2); ?>" onChange="ActualizarDatos('Price',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>, 2);" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if (($row['LineStatus'] == 'C') || ($type == 2)) {echo "readonly";}?> onFocus="focalizarValores(this)">
+			</td>
+			
+			<td>
+				<input size="15" type="text" id="PriceTax<?php echo $i; ?>" name="PriceTax[]" class="form-control" value="<?php echo number_format($row['PriceTax'], 2); ?>" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" readonly onFocus="focalizarValores(this)">
+				<input type="hidden" id="TarifaIVA<?php echo $i; ?>" name="TarifaIVA[]" value="<?php echo number_format($row['TarifaIVA'], 0); ?>">
+				<input type="hidden" id="VatSum<?php echo $i; ?>" name="VatSum[]" value="<?php echo number_format($row['VatSum'], 2); ?>">
+			</td>
 
 			<td>
-				<input size="15" type="text" id="LineTotal<?php echo $i; ?>" name="LineTotal[]" class="form-control" value="<?php echo number_format($row['LineTotal'], 2); ?>" onChange="ActualizarDatos('LineTotal',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" onBlur="CalcularTotal(<?php echo $i; ?>, false);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if ($row['LineStatus'] == 'C' || ($type == 2)) {echo "readonly";}?> autocomplete="off">
+				<input size="15" type="text" id="PriceDisc<?php echo $i; ?>" name="PriceDisc[]" class="form-control" value="0" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" readonly onFocus="focalizarValores(this)">
+			</td>
+
+			<td>
+				<input size="15" type="text" id="DiscPrcnt<?php echo $i; ?>" name="DiscPrcnt[]" class="form-control" value="<?php echo number_format($row['DiscPrcnt'], 4); ?>" onChange="ActualizarDatos('DiscPrcnt',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>, 4);" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if (($row['LineStatus'] == 'C') || ($type == 2)) {echo "readonly";}?> onFocus="focalizarValores(this)">
+			</td>
+
+			<td>
+				<input size="15" type="text" id="LineTotal<?php echo $i; ?>" name="LineTotal[]" class="form-control" value="<?php echo number_format($row['LineTotal'], 2); ?>" onChange="ActualizarDatos('LineTotal',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>, 2);" onBlur="CalcularTotal(<?php echo $i; ?>, false);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if ($row['LineStatus'] == 'C' || ($type == 2)) {echo "readonly";}?> autocomplete="off" onFocus="focalizarValores(this)">
 			</td>
 
 			<td><?php if ($row['Metodo'] == 0) {?><i class="fa fa-check-circle text-info" title="Sincronizado con SAP"></i><?php } else {?><i class="fa fa-times-circle text-danger" title="Aún no enviado a SAP"></i><?php }?></td>
@@ -553,32 +592,42 @@ if ($sw == 1) {
 	</div>
 </form>
 <script>
+function focalizarValores(elemento) {
+	elemento.value = parseFloat(elemento.value.replace(/,/g, ''));
+}
+
 function CalcularTotal(line, totalizar=true){
-	let Linea = document.getElementById(`LineNum${line}`);
-
 	let ValoresLinea = CalcularLinea(line);
-	let SubTotalLinea = ValoresLinea[0];
 
-	let CantLinea = ValoresLinea[2];
-	let PrcDescLinea = ValoresLinea[3];
-	let TotalLinea = ValoresLinea[4];
-	let TotalDecimal = ValoresLinea[5];
+	let Linea = ValoresLinea[2];
+	let SubTotalLinea = ValoresLinea[3];
+	let CantLinea = ValoresLinea[4];
+	let PrcDescLinea = ValoresLinea[5];
+	let TotalLinea = ValoresLinea[6];
+	let TotalDecimal = ValoresLinea[7];
 
+	console.log("TotalDecimal", TotalDecimal);
 	console.log(`CalcularTotal(${line}, ${totalizar})`);
+
 	if(CantLinea.value > 0) {
 		if(totalizar) {
 			// alert("Totalizar");
 			Totalizar(<?php if (isset($i)) {echo $i - 1;} else {echo 0;}?>);
 		} else { // SMM 28/03/2022
+			console.log("SubTotalLinea", SubTotalLinea);
+
 			if(TotalDecimal < SubTotalLinea) {
 				TotalDescLinea = SubTotalLinea - TotalDecimal;
+				console.log("TotalDescLinea", TotalDescLinea);
+
 				PrcDesc = 100 / (SubTotalLinea / TotalDescLinea);
+				console.log("PrcDesc", PrcDesc);
 
 				PrcDescLinea.value = number_format(PrcDesc, 2);
 				TotalLinea.value = number_format(TotalDecimal, 2);
 
-				Totalizar(<?php if (isset($i)) {echo $i - 1;} else {echo 0;}?>);
-				ActualizarDatos('DiscPrcnt', line, Linea.value);
+				Totalizar(<?php if (isset($i)) {echo $i - 1;} else {echo 0;}?>, false);
+				ActualizarDatos('DiscPrcnt', line, Linea.value, 4);
 			} else {
 				// console.log(`${TotalDecimal} < ${SubTotalLinea}`);
 				alert("El nuevo total de línea debe ser menor al total de línea sin descuento (SubTotalLinea).");
@@ -587,7 +636,7 @@ function CalcularTotal(line, totalizar=true){
 	} else {
 		alert("No puede solicitar cantidad en 0. Si ya no va a solicitar este articulo, borre la linea.");
 		CantLinea.value = "1.00";
-		// ActualizarDatos('Quantity', line, Linea.value);
+		// ActualizarDatos('Quantity', line, Linea.value, 2);
 	}
 }
 </script>
