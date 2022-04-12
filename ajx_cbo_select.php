@@ -421,12 +421,12 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
                     echo "<option value=''>Seleccione...</option>"; // SMM, 27/01/22
 
                     while ($row = sqlsrv_fetch_array($SQL)) {
-                        /*if ($WhsCode == $row['WhsCode']) {
+                        if ($WhsCode == $row['WhsCode']) {
                             // Stiven Muñoz Murillo, 04/02/2022
                             echo "<option selected=\"selected\" value=\"" . $row['WhsCode'] . "\">" . $row['WhsName'] . "</option>";
-                        } else {*/
+                        } else {
                             echo "<option value=\"" . $row['WhsCode'] . "\">" . $row['WhsName'] . "</option>";
-                        //}
+                        }
                     }
                 } else {
                     echo "<option value=''>Seleccione...</option>";
