@@ -1321,6 +1321,12 @@ if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
 						</div>
 					</div>
 					<div class="form-group">
+						<label class="col-lg-7"><strong class="pull-right">Redondeo</strong></label>
+						<div class="col-lg-5">
+							<input type="text" name="Redondeo" form="CrearOrdenVenta" id="Redondeo" class="form-control" style="text-align: right; font-weight: bold;" value="0.00" readonly>
+						</div>
+					</div>
+					<div class="form-group">
 						<label class="col-lg-7"><strong class="pull-right">Total</strong></label>
 						<div class="col-lg-5">
 							<input type="text" name="TotalOferta" form="CrearOfertaVenta" id="TotalOferta" class="form-control" style="text-align: right; font-weight: bold;" value="<?php if ($edit == 1) {echo number_format($row['DocTotal'], 0);} else {echo "0.00";}?>" readonly>
