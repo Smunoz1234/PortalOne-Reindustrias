@@ -82,6 +82,19 @@ $SQL_Dim3 = Seleccionar('uvw_Sap_tbl_DimensionesReparto', '*', 'DimCode=3');
 
 //Proyectos
 $SQL_Proyecto = Seleccionar('uvw_Sap_tbl_Proyectos', '*', '', 'DeProyecto');
+
+// Base del Redondeo
+$SQL_DatosBase = Seleccionar('uvw_Sap_ConfiguracionSAPB1_DatosBase', '*');
+$row_DatosBase = sqlsrv_fetch_array($SQL_DatosBase);
+
+$row_encode = isset($row_DatosBase) ? json_encode($row_DatosBase) : "";
+$cadena = isset($row_DatosBase) ? "JSON.parse(JSON.stringify($row_encode))" : "'Not Found'";
+// echo "<script> console.log('DatosBase', $cadena); </script>";
+
+$dImportes = $row_DatosBase["DecimalImportes"]; // 0
+$dPrecios = $row_DatosBase["DecimalPrecios"]; // 2
+$dCantidades = $row_DatosBase["DecimalCantidades"]; // 2
+$dPorcentajes = $row_DatosBase["DecimalPorcentajes"]; // 4
 ?>
 
 <!doctype html>
@@ -106,7 +119,7 @@ $SQL_Proyecto = Seleccionar('uvw_Sap_tbl_Proyectos', '*', '', 'DeProyecto');
 	}
 </style>
 <script>
-function CalcularLinea(line, totalizar=true, incIVA=false) {
+function CalcularLinea(line, totalizar=true) {
 	let Linea = document.getElementById(`LineNum${line}`); // SMM, 04/04/2022
 	let CantLinea = document.getElementById(`Quantity${line}`);
 	let PrecioLinea = document.getElementById(`Price${line}`);
@@ -126,21 +139,12 @@ function CalcularLinea(line, totalizar=true, incIVA=false) {
 	let PrcDescDecimal = parseFloat(PrcDescLinea.value.replace(/,/g, ''));
 	let TotalDecimal = parseFloat(TotalLinea.value.replace(/,/g, ''));
 
-	let NuevoValorIVA = PrecioDecimal * (TarifaIVADecimal / 100);
-	ValorIVALinea.value = number_format(NuevoValorIVA, 2);
 
-	let NuevoPrecioIVA = PrecioDecimal + NuevoValorIVA;
-	PrecioIVALinea.value = number_format(NuevoPrecioIVA, 2);
-
-	let SubTotalLinea = 0;
-	if(incIVA) {
-		SubTotalLinea = NuevoPrecioIVA * CantDecimal;
-	} else {
-		SubTotalLinea = PrecioDecimal * CantDecimal;
-	}
-
+	let SubTotalLinea = PrecioDecimal * CantDecimal; // SMM, 12/04/2022
 	let TotalDescLinea = (PrcDescDecimal * SubTotalLinea) / 100;
-	if(totalizar) {
+
+	let ControlDesc = document.getElementById(`ControlDesc${line}`).checked;
+	if(totalizar && ControlDesc == false) {
 		TotalLinea.value = number_format(SubTotalLinea - TotalDescLinea, 2);
 		// ActualizarDatos('LineTotal', line, Linea.value, 2);
 	}
@@ -148,12 +152,21 @@ function CalcularLinea(line, totalizar=true, incIVA=false) {
 	// SMM, 04/04/2022
 	let SubTotalDescLinea = (PrcDescDecimal * PrecioDecimal) / 100;
 	let NuevoPrecioDesc = PrecioDecimal - SubTotalDescLinea;
+
 	PrecioDescLinea.value = number_format(NuevoPrecioDesc, 2);
+
+	// SMM, 12/04/2022
+	let NuevoValorIVA = NuevoPrecioDesc * (TarifaIVADecimal / 100);
+	ValorIVALinea.value = number_format(NuevoValorIVA, 2);
+	let NuevoPrecioIVA = NuevoPrecioDesc + NuevoValorIVA;
+	PrecioIVALinea.value = number_format(NuevoPrecioIVA, 2);
 
 	let SubTotalDesc = SubTotalLinea - TotalDescLinea; // Para, Totalizar()
 	let IvaLinea = NuevoValorIVA * CantDecimal; // Para, Totalizar()
 
-	return [SubTotalDesc, IvaLinea, Linea, SubTotalLinea, CantLinea, PrcDescLinea, TotalLinea, TotalDecimal];
+	let NuevoSubTotal = (ControlDesc == false) ? SubTotalDesc:TotalDecimal; // SMM, 11/04/2022
+
+	return [NuevoSubTotal, IvaLinea, Linea, SubTotalLinea, CantLinea, PrcDescLinea, TotalLinea, TotalDecimal];
 }
 
 function Totalizar(num, totalizar=true) {
@@ -166,10 +179,10 @@ function Totalizar(num, totalizar=true) {
 	for(let i=1; i <= num; i++) {
 		let ValoresLinea = CalcularLinea(i, totalizar);
 
-		let SubTotalDesc = ValoresLinea[0];
+		let NuevoSubTotal = ValoresLinea[0];
 		let IvaLinea = ValoresLinea[1];
 
-		SubTotal = parseFloat(SubTotal) + parseFloat(SubTotalDesc);
+		SubTotal = parseFloat(SubTotal) + parseFloat(NuevoSubTotal);
 		Iva = parseFloat(Iva) + parseFloat(IvaLinea);
 	}
 
@@ -177,8 +190,10 @@ function Totalizar(num, totalizar=true) {
 	Total = parseFloat(Total) + parseFloat(SubTotal + Iva); // SMM 23/03/2022
 
 	window.parent.document.getElementById('SubTotal').value = number_format(parseFloat(SubTotal), 2);
+
 	window.parent.document.getElementById('Impuestos').value = number_format(parseFloat(Iva), 2);
-	window.parent.document.getElementById('TotalOrden').value = number_format(parseFloat(Total), 0);
+	window.parent.document.getElementById('Redondeo').value = number_format(Total - Math.floor(Total), 2);
+	window.parent.document.getElementById('TotalOrden').value = number_format(Math.floor(Total), 2);
 	window.parent.document.getElementById('TotalItems').value = num;
 }
 
@@ -188,8 +203,16 @@ function ActualizarDatos(name, id, line, round=0) { // Actualizar datos asincron
 	let elemento = document.getElementById(name+id);
 	let valor = elemento.value;
 
-	if(round != 0) {
+	if(round > 0) {
 		elemento.value = number_format(valor, round);
+	} 
+	
+	if(name == "ControlDesc"){ // SMM, 11/04/2022
+		if(elemento.checked) {
+			valor = 'T';
+		} else {
+			valor = 'X';
+		}
 	}
 
 	$.ajax({
@@ -466,11 +489,11 @@ if ($sw == 1) {
 			<td>
 				<select id="PrjCode<?php echo $i; ?>" name="PrjCode[]" class="form-control select2" onChange="ActualizarDatos('PrjCode',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402))) {echo "disabled='disabled'";}?>>
 					<option value="">(NINGUNO)</option>
-				  <?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) {?>
+				  	<?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) {?>
 						<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if ((isset($row['PrjCode'])) && (strcmp($row_Proyecto['IdProyecto'], $row['PrjCode']) == 0)) {echo "selected=\"selected\"";}?>>
 							<?php echo $row_Proyecto['DeProyecto']; ?>
 						</option>
-				  <?php }?>
+				  	<?php }?>
 				</select>
 			</td>
 
@@ -520,7 +543,7 @@ if ($sw == 1) {
 			<td><input size="50" type="text" id="FreeTxt<?php echo $i; ?>" name="FreeTxt[]" class="form-control" value="<?php echo $row['FreeTxt']; ?>" onChange="ActualizarDatos('FreeTxt',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" maxlength="100" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402))) {echo "readonly";}?>></td>
 
 			<td>
-				<input size="15" type="text" id="Price<?php echo $i; ?>" name="Price[]" class="form-control" value="<?php echo number_format($row['Price'], 2); ?>" onChange="ActualizarDatos('Price',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>, 2);" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402))) {echo "readonly";}?> onFocus="focalizarValores(this)">
+				<input size="15" type="text" id="Price<?php echo $i; ?>" name="Price[]" class="form-control" value="<?php echo number_format($row['Price'], 2); ?>" onChange="ActualizarDatos('Price',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>, 2);" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402)) || !PermitirFuncion(420)) {echo "readonly";}?> onFocus="focalizarValores(this)">
 			</td>
 
 			<td>
@@ -539,6 +562,7 @@ if ($sw == 1) {
 
 			<td>
 				<input size="15" type="text" id="LineTotal<?php echo $i; ?>" name="LineTotal[]" class="form-control" value="<?php echo number_format($row['LineTotal'], 2); ?>" onChange="ActualizarDatos('LineTotal',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>, 2);" onBlur="CalcularTotal(<?php echo $i; ?>, false);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402))) {echo "readonly";}?> autocomplete="off" onFocus="focalizarValores(this)">
+				<input type="checkbox" id="ControlDesc<?php echo $i; ?>" name="ControlDesc[]" class="form-control" onChange="ActualizarDatos('ControlDesc',<?php echo $i; ?>, <?php echo $row['LineNum']; ?>);" <?php if(isset($row['ControlDesc']) && ($row['ControlDesc'] == "T")) { echo "checked"; }?>>
 			</td>
 
 			<td><?php if ($row['Metodo'] == 0) {?><i class="fa fa-check-circle text-info" title="Sincronizado con SAP"></i><?php } else {?><i class="fa fa-times-circle text-danger" title="Aún no enviado a SAP"></i><?php }?></td>
@@ -555,7 +579,7 @@ if ($sw == 1) {
 		</tr>
 
 	<?php } // Termina el ciclo
-    echo "<script>Totalizar(" . ($i - 1) . "); </script>";
+    echo "<script>Totalizar(" . ($i - 1) . ", false); </script>";
 
     // Stiven Muñoz Murillo, 27/01/2022
     // Se debe validar que venga de una lista de materiales para borrar el principal de esa lista, 04/02/2022
@@ -617,8 +641,12 @@ function CalcularTotal(line, totalizar=true){
 
 	if(CantLinea.value > 0) {
 		if(totalizar) {
+			// SMM, 11/04/2022
+			$(`#ControlDesc${line}`).prop("checked", false);
+			ActualizarDatos('ControlDesc', line, Linea.value);
+
 			// alert("Totalizar");
-			Totalizar(<?php if (isset($i)) {echo $i - 1;} else {echo 0;}?>);
+			Totalizar(<?php if (isset($i)) {echo $i - 1;} else {echo 0;}?>);			
 		} else { // SMM 28/03/2022
 			console.log("SubTotalLinea", SubTotalLinea);
 
@@ -632,8 +660,12 @@ function CalcularTotal(line, totalizar=true){
 				PrcDescLinea.value = number_format(PrcDesc, 4);
 				TotalLinea.value = number_format(TotalDecimal, 2);
 
-				Totalizar(<?php if (isset($i)) {echo $i - 1;} else {echo 0;}?>, false);
+				// SMM, 11/04/2022
+				$(`#ControlDesc${line}`).prop("checked", true);
+				ActualizarDatos('ControlDesc', line, Linea.value);
+
 				ActualizarDatos('DiscPrcnt', line, Linea.value, 4);
+				Totalizar(<?php if (isset($i)) {echo $i - 1;} else {echo 0;}?>, false);
 			} else {
 				// console.log(`${TotalDecimal} < ${SubTotalLinea}`);
 				alert("El nuevo total de línea debe ser menor al total de línea sin descuento (SubTotalLinea).");
