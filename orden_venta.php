@@ -612,7 +612,7 @@ function ConsultarDatosCliente(){
 			});
 			<?php }?>
 
-			<?php if ($edit == 0 && $sw_error == 0) { // Para que no recargue las sucursales en la edición. ?>
+			<?php if ($edit == 0 && $sw_error == 0 && $dt_OF == 0) { // Para que no recargue las sucursales en la edición. ?>
 				$.ajax({
 					type: "POST",
 					url: "ajx_cbo_select.php?type=3&tdir=S&id="+carcode,

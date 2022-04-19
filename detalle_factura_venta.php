@@ -99,6 +99,7 @@ $dPorcentajes = $row_DatosBase["DecimalPorcentajes"]; // 4
 		vertical-align: middle;
 	}
 </style>
+
 <script>
 function CalcularLinea(line, totalizar=true) {
 	let Linea = document.getElementById(`LineNum${line}`); // SMM, 04/04/2022
@@ -123,11 +124,12 @@ function CalcularLinea(line, totalizar=true) {
 
 	let SubTotalLinea = PrecioDecimal * CantDecimal; // SMM, 12/04/2022
 	let TotalDescLinea = (PrcDescDecimal * SubTotalLinea) / 100;
+	let SubTotalDesc = SubTotalLinea - TotalDescLinea; // Para, Totalizar()
 
 	let ControlDesc = document.getElementById(`ControlDesc${line}`).checked;
 	if(totalizar && ControlDesc == false) {
-		TotalLinea.value = number_format(SubTotalLinea - TotalDescLinea, 2);
-		// ActualizarDatos('LineTotal', line, Linea.value, 2);
+		TotalLinea.value = number_format(SubTotalDesc, 2);
+		ActualizarDatos('LineTotal', line, Linea.value, 2);
 	}
 
 	// SMM, 04/04/2022
@@ -142,12 +144,30 @@ function CalcularLinea(line, totalizar=true) {
 	let NuevoPrecioIVA = NuevoPrecioDesc + NuevoValorIVA;
 	PrecioIVALinea.value = number_format(NuevoPrecioIVA, 2);
 
-	let SubTotalDesc = SubTotalLinea - TotalDescLinea; // Para, Totalizar()
 	let IvaLinea = NuevoValorIVA * CantDecimal; // Para, Totalizar()
 
-	let NuevoSubTotal = (ControlDesc == false) ? SubTotalDesc:TotalDecimal; // SMM, 11/04/2022
+	if(!totalizar) {
+		if(number_format(SubTotalDesc, 2) != number_format(TotalDecimal, 2)) {
+			console.log(`${number_format(SubTotalDesc, 2)} != ${number_format(TotalDecimal, 2)}`);
+			$(`#ControlDesc${line}`).prop("checked", true);
 
-	return [NuevoSubTotal, IvaLinea, Linea, SubTotalLinea, CantLinea, PrcDescLinea, TotalLinea, TotalDecimal];
+		} else { // SMM, 15/04/2022
+			console.log(`${number_format(SubTotalDesc, 2)} == ${number_format(TotalDecimal, 2)}`);
+			$(`#ControlDesc${line}`).prop("checked", false);
+		}
+	}
+	ActualizarDatos('ControlDesc', line, Linea.value);
+
+	let NuevoSubTotal = SubTotalDesc;
+	let NuevoIVA = IvaLinea;
+
+	ControlDesc = document.getElementById(`ControlDesc${line}`).checked;
+	if(ControlDesc == true) { // 14/04/2022
+		NuevoSubTotal = TotalDecimal;
+		NuevoIVA = TotalDecimal * (TarifaIVADecimal / 100);
+	}
+
+	return [NuevoSubTotal, NuevoIVA, Linea, SubTotalLinea, CantLinea, PrcDescLinea, TotalLinea, TotalDecimal];
 }
 
 function Totalizar(num, totalizar=true) {
@@ -194,6 +214,8 @@ function ActualizarDatos(name, id, line, round=0) { // Actualizar datos asincron
 		} else {
 			valor = 'X';
 		}
+	} else if(name == "LineTotal") { // SMM, 18/04/2022
+		valor = valor.replace(/,/g, '');
 	}
 
 	$.ajax({
@@ -495,6 +517,7 @@ if ($sw == 1) {
 	</table>
 	</div>
 </form>
+
 <script>
 function focalizarValores(elemento) {
 	elemento.value = parseFloat(elemento.value.replace(/,/g, ''));
@@ -510,19 +533,17 @@ function CalcularTotal(line, totalizar=true){
 	let TotalLinea = ValoresLinea[6];
 	let TotalDecimal = ValoresLinea[7];
 
-	console.log("TotalDecimal", TotalDecimal);
+	// console.log("TotalDecimal", TotalDecimal);
 	console.log(`CalcularTotal(${line}, ${totalizar})`);
 
 	if(CantLinea.value > 0) {
 		if(totalizar) {
-			// SMM, 11/04/2022
 			$(`#ControlDesc${line}`).prop("checked", false);
-			ActualizarDatos('ControlDesc', line, Linea.value);
-
+			
 			// alert("Totalizar");
 			Totalizar(<?php if (isset($i)) {echo $i - 1;} else {echo 0;}?>);
 		} else { // SMM 28/03/2022
-			console.log("SubTotalLinea", SubTotalLinea);
+			// console.log("SubTotalLinea", SubTotalLinea);
 
 			if(TotalDecimal < SubTotalLinea) {
 				TotalDescLinea = SubTotalLinea - TotalDecimal;
@@ -535,23 +556,22 @@ function CalcularTotal(line, totalizar=true){
 				TotalLinea.value = number_format(TotalDecimal, 2);
 
 				// SMM, 11/04/2022
-				$(`#ControlDesc${line}`).prop("checked", true);
-				ActualizarDatos('ControlDesc', line, Linea.value);
-
 				ActualizarDatos('DiscPrcnt', line, Linea.value, 4);
 				Totalizar(<?php if (isset($i)) {echo $i - 1;} else {echo 0;}?>, false);
 			} else {
-				// console.log(`${TotalDecimal} < ${SubTotalLinea}`);
+				console.log(`${TotalDecimal} >= ${SubTotalLinea}`);
 				alert("El nuevo total de línea debe ser menor al total de línea sin descuento (SubTotalLinea).");
 			}
 		}
 	} else {
 		alert("No puede solicitar cantidad en 0. Si ya no va a solicitar este articulo, borre la linea.");
+
 		CantLinea.value = "1.00";
-		// ActualizarDatos('Quantity', line, Linea.value, 2);
+		ActualizarDatos('Quantity', line, Linea.value, 2);
 	}
 }
 </script>
+
 <script>
 	 $(document).ready(function(){
 		 $(".alkin").on('click', function(){
