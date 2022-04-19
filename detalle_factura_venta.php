@@ -188,13 +188,14 @@ function Totalizar(num, totalizar=true) {
 	}
 
 	// Total = parseFloat(Total) + parseFloat((SubTotal - Descuentos) + Iva);
-	Total = parseFloat(Total) + parseFloat(SubTotal + Iva); // SMM 23/03/2022
+	Total = parseFloat(parseFloat(SubTotal).toFixed(2)) + parseFloat(parseFloat(Iva).toFixed(2)); // SMM 18/04/2022
 
 	window.parent.document.getElementById('SubTotal').value = number_format(parseFloat(SubTotal), 2);
-
 	window.parent.document.getElementById('Impuestos').value = number_format(parseFloat(Iva), 2);
-	window.parent.document.getElementById('Redondeo').value = number_format(Total - Math.floor(Total), 2);
-	window.parent.document.getElementById('TotalFactura').value = number_format(Math.floor(Total), 2);
+
+	window.parent.document.getElementById('Redondeo').value = number_format(Math.floor(Math.round(Total)) - parseFloat(parseFloat(Total).toFixed(2)), 2);
+	window.parent.document.getElementById('TotalFactura').value = number_format(Math.floor(Math.round(Total)), 2);
+
 	window.parent.document.getElementById('TotalItems').value = num;
 }
 
@@ -470,7 +471,7 @@ if ($sw == 1) {
 
 			<td>
 				<input size="15" type="text" id="LineTotal<?php echo $i; ?>" name="LineTotal[]" class="form-control" value="<?php echo number_format($row['LineTotal'], 2); ?>" onChange="ActualizarDatos('LineTotal',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>, 2);" onBlur="CalcularTotal(<?php echo $i; ?>, false);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if ($row['LineStatus'] == 'C' || ($type == 2)) {echo "readonly";}?> autocomplete="off" onFocus="focalizarValores(this)">
-				<input type="checkbox" id="ControlDesc<?php echo $i; ?>" name="ControlDesc[]" class="form-control" onChange="ActualizarDatos('ControlDesc',<?php echo $i; ?>, <?php echo $row['LineNum']; ?>);" <?php if(isset($row['ControlDesc']) && ($row['ControlDesc'] == "T")) { echo "checked"; }?>>
+				<input style="display: none;" type="checkbox" id="ControlDesc<?php echo $i; ?>" name="ControlDesc[]" class="form-control" onChange="ActualizarDatos('ControlDesc',<?php echo $i; ?>, <?php echo $row['LineNum']; ?>);" <?php if(isset($row['ControlDesc']) && ($row['ControlDesc'] == "T")) { echo "checked"; }?>>
 			</td>
 
 			<td><?php if ($row['Metodo'] == 0) {?><i class="fa fa-check-circle text-info" title="Sincronizado con SAP"></i><?php } else {?><i class="fa fa-times-circle text-danger" title="Aún no enviado a SAP"></i><?php }?></td>

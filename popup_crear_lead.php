@@ -128,6 +128,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
             "id_responsabilidad_fiscal" => ObtenerValorDefecto(2, "IdResponsabilidadFiscal"),
 			"id_residente" => ObtenerValorDefecto(2, "IdResidente"), // SMM, 12/04/2022
 			"id_info_tributaria" => ObtenerValorDefecto(2, "IdInfoTributaria"), // SMM, 12/04/2022
+			"id_actividad_economica_localizacion" => ObtenerValorDefecto(2, "IdActividadEconomicaLocalizacion"), // SMM, 19/04/2022
             "id_medio_pago" => $_POST['MedioPago'],
             "id_municipio" => ObtenerValorDefecto(2, "IdMunicipio"),
             "id_empleado_ventas" => intval($_SESSION['CodigoEmpVentas']),
