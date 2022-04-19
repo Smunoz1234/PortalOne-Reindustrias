@@ -316,6 +316,16 @@ function AbrirFirma(IDCampo){
 	remote=open('popup_firma.php?id='+Base64.encode(IDCampo),'remote',"width=1200,height=500,location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=no,fullscreen=no,directories=no,status=yes,left="+posicion_x+",top="+posicion_y+"");
 	remote.focus();
 }
+
+// SMM, 19/04/2022
+function ConsultarEquipo(){
+	var numSerie=document.getElementById('placa');
+	if(numSerie.value!=""){
+		self.name='opener';
+		remote=open('tarjeta_equipo.php?id='+Base64.encode(numSerie.value)+'&ext=1&tl=1','remote','location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
+		remote.focus();
+	}
+}
 </script>
 <!-- InstanceEndEditable -->
 </head>
@@ -459,7 +469,7 @@ function AbrirFirma(IDCampo){
 					<div class="ibox-content">
 						<div class="form-group">
 							<div class="col-lg-4">
-								<label class="control-label">Serial Interno (Placa) <span class="text-danger">*</span></label>
+								<label class="control-label"><i onClick="ConsultarEquipo();" title="Consultar Placa" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Serial Interno (Placa) <span class="text-danger">*</span></label>
 								<input <?php if ($dt_LS == 1) {echo "readonly='readonly'";}?> autocomplete="off" name="placa" type="text" required="required" class="form-control" id="placa" maxlength="150" value="<?php if (isset($row['SerialInterno'])) {echo $row['SerialInterno'];}?>">
 							</div>
 							<div class="col-lg-4">

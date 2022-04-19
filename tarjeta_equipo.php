@@ -1,7 +1,8 @@
 <?php require_once "includes/conexion.php";
 PermitirAcceso(1601);
 $IdTarjetaEquipo = "";
-$msg_error = ""; #Mensaje del error.
+$IdTE = true; // SMM, 19/04/2022
+$msg_error = ""; // Mensaje del error.
 $dt_TE = 0; //sw para saber si vienen datos de la llamada de servicio. 0 no vienen. 1 si vienen.
 $sw_dirS = 0; //Direcciones de destino
 $sw_dirB = 0; //Direcciones de factura
@@ -215,7 +216,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
                 "CDU_id_color" => $_POST['CDU_Color'],
                 "CDU_id_cilindraje" => $_POST['CDU_Cilindraje'],
                 "CDU_id_tipo_servicio" => $_POST['CDU_TipoServicio'],
-				"CDU_no_motor" => $_POST['CDU_No_Motor'],
+                "CDU_no_motor" => $_POST['CDU_No_Motor'],
                 "anexos" => (count($Anexos) > 0) ? $Anexos : null,
             );
 
@@ -316,20 +317,29 @@ if ($edit == 1 && $sw_error == 0) { //Editando la tarjeta de equipo
     // var_dump($IdTarjetaEquipo);
     $row = sqlsrv_fetch_array($SQL);
 
+    $CardCode = $row['CardCode'] ?? "";
+    $IdAnexo = $row['IdAnexo'] ?? "";
+    $IdTarjetaEquipo = $row['IdTarjetaEquipo'] ?? "";
+
+    if ($IdTarjetaEquipo == "") {
+        $IdTE = false;
+        echo "Tarjeta de equipo NO encontrada.";
+    }
+
     //Clientes
-    $SQL_Cliente = Seleccionar("uvw_Sap_tbl_Clientes", "CodigoCliente, NombreCliente", "CodigoCliente='" . $row['CardCode'] . "'", 'NombreCliente');
+    $SQL_Cliente = Seleccionar("uvw_Sap_tbl_Clientes", "CodigoCliente, NombreCliente", "CodigoCliente='" . $CardCode . "'", 'NombreCliente');
 
     //Contactos clientes
-    $SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', '*', "CodigoCliente='" . $row['CardCode'] . "'", 'NombreContacto');
+    $SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', '*', "CodigoCliente='" . $CardCode . "'", 'NombreContacto');
 
     //Anexos
-    $SQL_Anexos = Seleccionar('uvw_Sap_tbl_DocumentosSAP_Anexos', '*', "AbsEntry='" . $row['IdAnexo'] . "'");
+    $SQL_Anexos = Seleccionar('uvw_Sap_tbl_DocumentosSAP_Anexos', '*', "AbsEntry='" . $IdAnexo . "'");
 
     //Llamadas de servicio
-    $SQL_LlamadasServicio = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_LlamadasServicios', '*', "IdTarjetaEquipo='" . $row['IdTarjetaEquipo'] . "'", 'FechaHoraCreacionLlamada', 'DESC');
+    $SQL_LlamadasServicio = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_LlamadasServicios', '*', "IdTarjetaEquipo='" . $IdTarjetaEquipo . "'", 'FechaHoraCreacionLlamada', 'DESC');
 
     //Contratos de servicio
-    $SQL_ContratosServicio = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_Contratos', '*', "IdTarjetaEquipo='" . $row['IdTarjetaEquipo'] . "'", 'ID_Contrato');
+    $SQL_ContratosServicio = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_Contratos', '*', "IdTarjetaEquipo='" . $IdTarjetaEquipo . "'", 'ID_Contrato');
 
     //Operaciones
     //$SQL_Operaciones=Seleccionar('','*',"='".$row['CardCode']."'",'');
@@ -447,6 +457,19 @@ if (isset($sw_error) && ($sw_error == 1)) {
 			Swal.fire({
                 title: '¡Ha ocurrido un error!',
                 text: `" . LSiqmlObs($msg_error) . "`,
+                icon: 'warning'
+            });
+		});
+		</script>";
+}
+
+// SMM, 19/04/2022
+if (!$IdTE) {
+    echo "<script>
+		$(document).ready(function() {
+			Swal.fire({
+                title: '¡Ha ocurrido un error!',
+                text: 'Tarjeta de equipo NO encontrada.',
                 icon: 'warning'
             });
 		});
@@ -679,7 +702,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=176 and VerEnD
 							<div class="col-lg-3">
 								<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> name="ClienteEquipo" type="hidden" id="ClienteEquipo" value="<?php if (($edit == 1) || ($sw_error == 1)) {echo $row['CardCode'];} elseif ($dt_TE == 1) {echo $row_Cliente['CodigoCliente'];}?>">
 
-								<input <?php if (!PermitirFuncion(1602) || ($dt_TE == 1)) {echo "readonly='readonly'";}?> name="NombreClienteEquipo" type="text" required="required" class="form-control" id="NombreClienteEquipo" placeholder="Digite para buscar..." value="<?php if (($edit == 1) || ($sw_error == 1)) {echo $row['CardName'];} elseif ($dt_TE == 1) {echo $row_Cliente['NombreCliente'];}?>">
+								<input <?php if (!PermitirFuncion(1602) || ($dt_TE == 1)) {echo "readonly='readonly'";}?> name="NombreClienteEquipo" type="text" required="required" class="form-control" id="NombreClienteEquipo" placeholder="Digite para buscar..." value="<?php if (($edit == 1) || ($sw_error == 1)) {echo $row['CardName'] ?? "";} elseif ($dt_TE == 1) {echo $row_Cliente['NombreCliente'] ?? "";}?>">
 							</div>
 							<label class="col-lg-1 control-label">Persona de contacto</label>
 							<div class="col-lg-3">
@@ -786,7 +809,7 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Concesionario" class="form-control select2" required="required" id="CDU_Concesionario">
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_Concesionario = sqlsrv_fetch_array($SQL_Concesionario)) {?>
-										<option value="<?php echo $row_Concesionario['NombreConcesionario']; //['CodigoConcesionario'];                                                                                                                                        ?>"
+										<option value="<?php echo $row_Concesionario['NombreConcesionario']; //['CodigoConcesionario'];                                                                                                                                                  ?>"
 										<?php if (isset($row['CDU_Concesionario']) && (strcmp($row_Concesionario['NombreConcesionario'], $row['CDU_Concesionario']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_Concesionario['NombreConcesionario']; ?>
 										</option>
@@ -812,7 +835,7 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Cilindraje" class="form-control select2" required="required" id="CDU_Cilindraje">
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_Cilindraje = sqlsrv_fetch_array($SQL_CilindrajeVehiculo)) {?>
-										<option value="<?php echo $row_Cilindraje['DescripcionCilindraje']; //['CodigoCilindraje'];                                                                                                                           ?>"
+										<option value="<?php echo $row_Cilindraje['DescripcionCilindraje']; //['CodigoCilindraje'];                                                                                                                                     ?>"
 										<?php if (isset($row['CDU_Cilindraje']) && (strcmp($row_Cilindraje['DescripcionCilindraje'], $row['CDU_Cilindraje']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_Cilindraje['DescripcionCilindraje']; ?>
 										</option>
@@ -824,7 +847,7 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_TipoServicio" class="form-control select2" required="required" id="CDU_TipoServicio">
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_TipoServicio = sqlsrv_fetch_array($SQL_TipoServicio)) {?>
-										<option value="<?php echo $row_TipoServicio['NombreTipoServicio']; //['CodigoTipoServicio'];                                                                                                                                       ?>"
+										<option value="<?php echo $row_TipoServicio['NombreTipoServicio']; //['CodigoTipoServicio'];                                                                                                                                                 ?>"
 										<?php if (isset($row['CDU_TipoServicio']) && (strcmp($row_TipoServicio['NombreTipoServicio'], $row['CDU_TipoServicio']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_TipoServicio['NombreTipoServicio']; ?>
 										</option>
