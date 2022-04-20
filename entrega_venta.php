@@ -563,7 +563,7 @@ function ConsultarDatosCliente(){
 			});
 			<?php }?>
 
-			<?php if ($edit == 0 && $sw_error == 0) { // Para que no recargue las sucursales en la edición. ?>
+			<?php if ($edit == 0 && $sw_error == 0 && $dt_OV == 0) { // Para que no recargue las sucursales en la edición. ?>
 				$.ajax({
 					type: "POST",
 					url: "ajx_cbo_select.php?type=3&tdir=S&id="+carcode,
@@ -1273,7 +1273,7 @@ if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
 						<select id="PrjCode" name="PrjCode" class="form-control select2" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "disabled='disabled'";}?>>
 								<option value="">(NINGUNO)</option>
 							<?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) {?>
-								<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if ((isset($row['PrjCode'])) && (strcmp($row_Proyecto['IdProyecto'], $row['PrjCode']) == 0)) {echo "selected=\"selected\"";}?>>
+								<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if ((isset($row['PrjCode'])) && (strcmp($row_Proyecto['IdProyecto'], $row['PrjCode']) == 0)) {echo "selected=\"selected\"";} elseif ((isset($_GET['Proyecto'])) && (strcmp($row_Proyecto['IdProyecto'], base64_decode($_GET['Proyecto'])) == 0)) {echo "selected=\"selected\"";}?>>
 									<?php echo $row_Proyecto['DeProyecto']; ?>
 								</option>
 							<?php }?>
@@ -1363,7 +1363,7 @@ if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
 					<div class="form-group">
 						<label class="col-lg-2">Comentarios</label>
 						<div class="col-lg-10">
-							<textarea name="Comentarios" form="CrearEntregaVenta" rows="4" class="form-control" id="Comentarios" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "readonly";}?>><?php if ($edit == 1 || $sw_error == 1) {echo $row['Comentarios'];}?></textarea>
+							<textarea name="Comentarios" form="CrearEntregaVenta" rows="4" class="form-control" id="Comentarios" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "readonly";}?>><?php if ($edit == 1 || $sw_error == 1) {echo $row['Comentarios'];} elseif (isset($_GET['Comentarios'])) {echo base64_decode($_GET['Comentarios']);}?></textarea>
 						</div>
 					</div>
 					<?php if (PermitirFuncion(417)) {?>
