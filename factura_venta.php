@@ -808,7 +808,7 @@ function MostrarRet(){
 
 		// Actualización de la dimensión 3 (Placa) en las líneas.
 		$("#Dim3").change(function() {
-			$('.ibox-content').toggleClass('sk-loading',true);
+			// $('.ibox-content').toggleClass('sk-loading',true);
 
 			var Dim3=document.getElementById('Dim3').value;
 			var Serie=document.getElementById('Serie').value;
@@ -816,6 +816,7 @@ function MostrarRet(){
 
 
 			if(Dim3!=""&&document.getElementById('CardCode').value!=""&&document.getElementById('TotalItems').value!="0"){
+				console.log("Line 819");
 				Swal.fire({
 					title: "¿Desea actualizar las lineas?",
 					icon: "question",
@@ -832,16 +833,25 @@ function MostrarRet(){
 							success: function(response){
 								frame.src="detalle_factura_venta.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
 								$('.ibox-content').toggleClass('sk-loading',false);
-							}
+							},
+							error: function(error) {
+								console.error("Line 838", error.responseText);
+								$('.ibox-content').toggleClass('sk-loading',false);
+							} 
 						});
 						<?php } else {?>
+							console.log("Line 838");
 						$.ajax({
 							type: "GET",
 							url: "registro.php?P=36&doctype=9&type=2&name=OcrCode3&value="+Base64.encode(Dim3)+"&line=0&id=<?php echo $row['ID_FacturaVenta']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
 							success: function(response){
 								frame.src="detalle_factura_venta.php?id=<?php echo base64_encode($row['ID_FacturaVenta']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
 								$('.ibox-content').toggleClass('sk-loading',false);
-							}
+							}, 
+							error: function(error) {
+								console.error("Line 846", error.responseText);
+								$('.ibox-content').toggleClass('sk-loading',false);
+							} 
 						});
 						<?php }?>
 					}

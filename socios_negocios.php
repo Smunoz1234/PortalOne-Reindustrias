@@ -1302,11 +1302,11 @@ while ($row_ResponsabilidadFiscal = sqlsrv_fetch_array($SQL_ResponsabilidadFisca
 										</div>
 										<label class="col-lg-1 control-label">Limite de crédito</label>
 										<div class="col-lg-3">
-											<input name="LimiteCredito" type="text" class="form-control" id="LimiteCredito" value="<?php echo number_format($row['Balance'], 2); ?>" readonly="readonly">
+											<input name="LimiteCredito" type="text" class="form-control" id="LimiteCredito" value="<?php echo number_format($row['CreditLine'], 2); ?>" readonly="readonly">
 										</div>
 										<label class="col-lg-1 control-label">Crédito consumido</label>
 										<div class="col-lg-3">
-											<input name="CreditoConsumido" type="text" class="form-control" id="CreditoConsumido" value="<?php echo number_format($row['Balance'], 2); ?>" readonly="readonly">
+											<input name="CreditoConsumido" type="text" class="form-control" id="CreditoConsumido" value="<?php echo number_format($row['CreditoConsumido'], 2); ?>" readonly="readonly">
 										</div>
 									</div>
 								   <?php }?>
