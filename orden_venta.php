@@ -816,7 +816,7 @@ function ConsultarDatosCliente(){
 
 			$.ajax({
 				type: "POST",
-				url: `ajx_cbo_select.php?type=20&id=${Dim2}&serie=${Serie}&tdoc=17&WhsCode=<?php echo $row['WhsCode'] ?? ""; ?>`,
+				url: `ajx_cbo_select.php?type=20&id=${Dim2}&serie=${Serie}&tdoc=17&WhsCode=<?php echo isset($_GET['Almacen']) ? base64_decode($_GET['Almacen']) : ($row['WhsCode'] ?? ""); ?>`,
 				success: function(response){
 					$('#Almacen').html(response).fadeIn();
 					$('.ibox-content').toggleClass('sk-loading',false);
