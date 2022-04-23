@@ -1344,6 +1344,7 @@ while ($row_ResponsabilidadFiscal = sqlsrv_fetch_array($SQL_ResponsabilidadFisca
 		<li><a data-toggle="tab" href="#tab-3" onClick="ConsultarTab('3');"><i class="fa fa-calendar"></i> Actividades</a></li>
 		<li><a data-toggle="tab" href="#tab-4"><i class="fa fa-file-text"></i> Facturas pendientes</a></li>
 		<li><a data-toggle="tab" href="#tab-5" onClick="ConsultarTab('5');"><i class="fa fa-money"></i> Pagos realizados</a></li>
+		<li><a data-toggle="tab" href="#tab-8" onClick="ConsultarTab('8');"><i class="fa fa-money"></i> Anticipos realizados</a></li>
 		<li><a data-toggle="tab" href="#tab-6"><i class="fa fa-suitcase"></i> Historico de cartera</a></li>
 	</ul>
 	<div class="tab-content">
@@ -1379,6 +1380,11 @@ while ($row_ResponsabilidadFiscal = sqlsrv_fetch_array($SQL_ResponsabilidadFisca
 					</tbody>
 				</table>
 				</div>
+			</div>
+		</div>
+		<div id="tab-8" class="tab-pane">
+			<div id="dv_anticipos" class="panel-body">
+				<!-- neduga, 22/04/2022 -->
 			</div>
 		</div>
 		<div id="tab-7" class="tab-pane">
@@ -2401,6 +2407,7 @@ function delRow2(btn){//Eliminar div
  var tab_5=0;
  var tab_6=0;
  var tab_7=0;
+ var tab_8=0;//neduga 22/04/2022
  var tab_501=0;
  var tab_601=0;
 
@@ -2552,6 +2559,21 @@ function ConsultarTab(type){
 					$('#dv_tarjetas').html(response).fadeIn();
 					$('.ibox-content').toggleClass('sk-loading',false);
 					tab_7=1;
+				}
+			});
+		}
+	}
+		// neduga, 22/04/2022
+	else if(type==8){ // Anticipos realizados
+		if(tab_8==0){
+			$('.ibox-content').toggleClass('sk-loading',true);
+			$.ajax({
+				type: "POST",
+				url: "sn_anticipos_realizados.php?id=<?php if ($edit == 1) {echo base64_encode($row['CodigoCliente']);}?>",
+				success: function(response){
+					$('#dv_anticipos').html(response).fadeIn();
+					$('.ibox-content').toggleClass('sk-loading',false);
+					tab_8=1;
 				}
 			});
 		}

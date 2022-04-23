@@ -15,11 +15,12 @@ $SQL_PagosRealizados=Seleccionar('uvw_Sap_tbl_Pagos_Recibidos','*',"[CardCode]='
 			<table width="100%" class="table table-striped table-bordered table-hover dataTables5" >
 			<thead>
 			<tr>
-				<th>Factura</th>
-				<th>Fecha factura</th>
-				<th>Fecha vencimiento</th>
+				<th>No Pago</th>
 				<th>Fecha pago</th>
 				<th>Valor pagado</th>
+				<th>No Factura</th>
+				<th>Fecha factura</th>
+				<th>Fecha vencimiento</th>
 				<th>Comentarios</th>
 				<th>Dias transcurridos</th>
 				<th>Saldo pendiente</th>
@@ -31,11 +32,12 @@ $SQL_PagosRealizados=Seleccionar('uvw_Sap_tbl_Pagos_Recibidos','*',"[CardCode]='
 				$DVenc=DiasTranscurridos($row_PagosRealizados['DocDate']->format('Y-m-d'),$row_PagosRealizados['DocDueDateFactura']->format('Y-m-d'));
 				?>
 				 <tr>
+					<td><?php echo $row_PagosRealizados['DocNum'];?></td>
+					<td><?php echo $row_PagosRealizados['DocDate']->format('Y-m-d');?></td>
+					<td><?php echo "$".number_format($row_PagosRealizados['TotalFactura'],2);?></td>
 					<td><?php echo $row_PagosRealizados['DocNumFactura'];?></td>
 					<td><?php echo $row_PagosRealizados['DocDateFactura']->format('Y-m-d');?></td>
 					<td><?php echo $row_PagosRealizados['DocDueDateFactura']->format('Y-m-d');?></td>
-					<td><?php echo $row_PagosRealizados['DocDate']->format('Y-m-d');?></td>
-					<td><?php echo "$".number_format($row_PagosRealizados['TotalFactura'],2);?></td>
 					<td><?php echo utf8_encode($row_PagosRealizados['Notas']);?></td>
 					<td><?php echo $DVenc[1];?></td>
 					<td><?php echo "$".number_format($row_PagosRealizados['Pendiente'],2);?></td>
