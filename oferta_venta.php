@@ -495,6 +495,8 @@ function CrearLead(){
 
 					document.getElementById('IdListaPrecio').value=data.IdListaPrecio;
 					$('#IdListaPrecio').trigger('change');
+
+					document.getElementById('Exento').value=data.SujetoImpuesto; // SMM, 23/04/2022
 				},
 				error: function(error) {
 					console.error(error.responseText);
@@ -1010,6 +1012,10 @@ include_once 'md_frm_campos_adicionales.php';
 
 							<input name="CardName" type="text" required="required" class="form-control" id="CardName" placeholder="Digite para buscar..." value="<?php if (($edit == 1) || ($sw_error == 1)) {echo $row['NombreCliente'];} elseif ($dt_LS == 1 || $dt_OF == 1) {echo $row_Cliente['NombreCliente'];}?>"
 							<?php if ($dt_LS == 1 || $dt_OF == 1 || $edit == 1) {echo "readonly";}?>>
+						</div>
+
+						<div class="col-lg-2">
+							<input type="hidden" id="Exento" name="Exento" class="form-control" readonly>
 						</div>
 					</div>
 					<div class="form-group">

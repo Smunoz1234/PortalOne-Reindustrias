@@ -535,6 +535,8 @@ function ConsultarDatosCliente(){
 
 					document.getElementById('IdListaPrecio').value=data.IdListaPrecio;
 					$('#IdListaPrecio').trigger('change');
+
+					document.getElementById('Exento').value=data.SujetoImpuesto; // SMM, 23/04/2022
 				},
 				error: function(error) {
 					console.error(error.responseText);
@@ -814,7 +816,7 @@ function ConsultarDatosCliente(){
 
 		// Actualización de la dimensión 3 (Placa) en las líneas.
 		$("#Dim3").change(function() {
-			$('.ibox-content').toggleClass('sk-loading',true);
+			// $('.ibox-content').toggleClass('sk-loading',true);
 			var frame=document.getElementById('DataGrid');
 
 			var Dim3=document.getElementById('Dim3').value;
@@ -1074,6 +1076,10 @@ include_once 'md_frm_campos_adicionales.php';
 
 							<input name="CardName" type="text" required="required" class="form-control" id="CardName" placeholder="Digite para buscar..." value="<?php if (($edit == 1) || ($sw_error == 1)) {echo $row['NombreCliente'];} elseif ($dt_LS == 1 || $dt_OV == 1) {echo $row_Cliente['NombreCliente'];}?>" 
 							<?php if ($dt_LS == 1 || $dt_OV == 1 || $edit == 1) {echo "readonly";}?>>
+						</div>
+
+						<div class="col-lg-2">
+							<input type="hidden" id="Exento" name="Exento" class="form-control" readonly>
 						</div>
 					</div>
 					<div class="form-group">

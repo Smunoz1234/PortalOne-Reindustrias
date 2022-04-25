@@ -193,7 +193,11 @@ function Totalizar(num, totalizar=true) {
 		let IvaLinea = ValoresLinea[1];
 
 		SubTotal = parseFloat(SubTotal) + parseFloat(NuevoSubTotal);
-		Iva = parseFloat(Iva) + parseFloat(IvaLinea);
+
+		let Exento = document.getElementById(`SujetoImpuesto${i}`);
+		if(!Exento.checked) {
+			Iva = parseFloat(Iva) + parseFloat(IvaLinea);
+		}
 	}
 
 	// Total = parseFloat(Total) + parseFloat((SubTotal - Descuentos) + Iva);
@@ -216,8 +220,8 @@ function ActualizarDatos(name, id, line, round=0) { // Actualizar datos asincron
 
 	if(round > 0) {
 		elemento.value = number_format(valor, round);
-	} 
-	
+	}
+
 	if(name == "ControlDesc"){ // SMM, 11/04/2022
 		if(elemento.checked) {
 			valor = 'T';
@@ -226,6 +230,12 @@ function ActualizarDatos(name, id, line, round=0) { // Actualizar datos asincron
 		}
 	} else if(name == "LineTotal") { // SMM, 18/04/2022
 		valor = valor.replace(/,/g, '');
+	} else if(name == "SujetoImpuesto"){ // SMM, 23/04/2022
+		if(elemento.checked) {
+			valor = 'N';
+		} else {
+			valor = 'Y';
+		}
 	}
 
 	$.ajax({
@@ -245,6 +255,21 @@ function ActualizarDatos(name, id, line, round=0) { // Actualizar datos asincron
 		}
 	});
 }
+
+// ¿ SujetoImpuesto, Exento de IVA ?
+function SujetoImpuesto() {
+		let exento = window.parent.document.getElementById('Exento').value;
+
+		if(exento == 'N') {
+			console.log("Cliente extranjero, exento de IVA");
+
+			<?php if ($type == 1) {?>
+				$(".chkExento").prop("checked", true);
+				$(".chkExento").trigger('change');
+			<?php }?>
+		}
+}
+// SMM, 23/04/2022
 
 function ActStockAlmacen(name,id,line){//Actualizar el stock al cambiar el almacen
 	$.ajax({
@@ -376,6 +401,7 @@ function ConsultarArticulo(articulo){
 				<th>Precio con Desc.</th><!-- SMM, 05/04/2022 -->
 				<th>% Desc.</th>
 				<th>Total</th>
+				<th>Exento</th><!-- SMM, 23/04/2022 -->
 				<th><i class="fa fa-refresh"></i></th>
 			</tr>
 		</thead>
@@ -404,7 +430,7 @@ if ($sw == 1) {
 			<td><input size="20" type="text" id="ItemCode<?php echo $i; ?>" name="ItemCode[]" class="form-control" readonly value="<?php echo $row['ItemCode']; ?>"><input type="hidden" name="LineNum[]" id="LineNum<?php echo $i; ?>" value="<?php echo $row['LineNum']; ?>"></td>
 			<td><input size="50" type="text" autocomplete="off" id="ItemName<?php echo $i; ?>" name="ItemName[]" class="form-control" value="<?php echo $row['ItemName']; ?>" maxlength="100" onChange="ActualizarDatos('ItemName',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(401))) {echo "readonly";}?>></td>
 			<td><input size="15" type="text" autocomplete="off" id="UnitMsr<?php echo $i; ?>" name="UnitMsr[]" class="form-control" readonly value="<?php echo $row['UnitMsr']; ?>"></td>
-			
+
 			<td>
 				<input size="15" type="text" autocomplete="off" id="Quantity<?php echo $i; ?>" name="Quantity[]" class="form-control" value="<?php echo number_format($row['Quantity'], 2); ?>" onChange="ActualizarDatos('Quantity',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>, 2);" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(401))) {echo "readonly";}?>  onFocus="focalizarValores(this)">
 			</td>
@@ -504,17 +530,17 @@ if ($sw == 1) {
 				<?php }?>
 			</td>
 			<td><input size="50" type="text" autocomplete="off" id="FreeTxt<?php echo $i; ?>" name="FreeTxt[]" class="form-control" value="<?php echo $row['FreeTxt']; ?>" onChange="ActualizarDatos('FreeTxt',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" maxlength="100" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(401))) {echo "readonly";}?>></td>
-			
+
 			<td>
 				<input size="15" type="text" id="Price<?php echo $i; ?>" name="Price[]" class="form-control" value="<?php echo number_format($row['Price'], 2); ?>" onChange="ActualizarDatos('Price',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>, 2);" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(401)) || !PermitirFuncion(420)) {echo "readonly";}?>  onFocus="focalizarValores(this)">
 			</td>
-			
+
 			<td>
 				<input size="15" type="text" id="PriceTax<?php echo $i; ?>" name="PriceTax[]" class="form-control" value="<?php echo number_format($row['PriceTax'], 2); ?>" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" readonly  onFocus="focalizarValores(this)">
 				<input type="hidden" id="TarifaIVA<?php echo $i; ?>" name="TarifaIVA[]" value="<?php echo number_format($row['TarifaIVA'], 0); ?>">
 				<input type="hidden" id="VatSum<?php echo $i; ?>" name="VatSum[]" value="<?php echo number_format($row['VatSum'], 2); ?>">
 			</td>
-			
+
 			<td>
 				<input size="15" type="text" id="PriceDisc<?php echo $i; ?>" name="PriceDisc[]" class="form-control" value="0" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" readonly  onFocus="focalizarValores(this)">
 			</td>
@@ -525,7 +551,11 @@ if ($sw == 1) {
 
 			<td>
 				<input size="15" type="text" id="LineTotal<?php echo $i; ?>" name="LineTotal[]" class="form-control" value="<?php echo number_format($row['LineTotal'], 2); ?>" onChange="ActualizarDatos('LineTotal',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>, 2);" onBlur="CalcularTotal(<?php echo $i; ?>, false);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(401))) {echo "readonly";}?> autocomplete="off">
-				<input style="display: none;" type="checkbox" id="ControlDesc<?php echo $i; ?>" name="ControlDesc[]" class="form-control" onChange="ActualizarDatos('ControlDesc',<?php echo $i; ?>, <?php echo $row['LineNum']; ?>);" <?php if(isset($row['ControlDesc']) && ($row['ControlDesc'] == "T")) { echo "checked"; }?>>
+				<input style="display: none;" type="checkbox" id="ControlDesc<?php echo $i; ?>" name="ControlDesc[]" class="form-control" onChange="ActualizarDatos('ControlDesc',<?php echo $i; ?>, <?php echo $row['LineNum']; ?>);" <?php if (isset($row['ControlDesc']) && ($row['ControlDesc'] == "T")) {echo "checked";}?>>
+			</td>
+
+			<td>
+				<input type="checkbox" id="SujetoImpuesto<?php echo $i; ?>" name="SujetoImpuesto[]" class="form-control chkExento" onChange="ActualizarDatos('SujetoImpuesto',<?php echo $i; ?>, <?php echo $row['LineNum']; ?>);" <?php if (isset($row['SujetoImpuesto']) && ($row['SujetoImpuesto'] == "N")) {echo "checked";}?> disabled>
 			</td>
 
 			<td><?php if ($row['Metodo'] == 0) {?><i class="fa fa-check-circle text-info" title="Sincronizado con SAP"></i><?php } else {?><i class="fa fa-times-circle text-danger" title="Aún no enviado a SAP"></i><?php }?></td>
@@ -538,9 +568,9 @@ if ($sw == 1) {
         // SMM, 30/03/2022
 
         $i++;}
-    echo "<script>
-			Totalizar(" . ($i - 1) . ", false);
-			</script>";
+
+    echo "<script>SujetoImpuesto();</script>";
+    echo "<script> Totalizar(" . ($i - 1) . ", false); </script>";
 }
 ?>
 		<?php if ($Estado == 1) {?>

@@ -695,6 +695,7 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
             'Telefono' => $row['Telefono'],
             'Correo' => $row['Email'],
             'IdListaPrecio' => $row['IdListaPrecio'], // SMM, 24/02/2022
+            'SujetoImpuesto' => $row['SujetoImpuesto'], // SMM, 23/04/2022
         );
         echo json_encode($records);
     }

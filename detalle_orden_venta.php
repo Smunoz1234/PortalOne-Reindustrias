@@ -205,7 +205,11 @@ function Totalizar(num, totalizar=true) {
 		// console.log("IvaLinea", IvaLinea);
 
 		SubTotal = parseFloat(SubTotal) + parseFloat(NuevoSubTotal);
-		Iva = parseFloat(Iva) + parseFloat(IvaLinea);
+
+		let Exento = document.getElementById(`SujetoImpuesto${i}`);
+		if(!Exento.checked) {
+			Iva = parseFloat(Iva) + parseFloat(IvaLinea);
+		}
 	}
 
 	// Total = parseFloat(Total) + parseFloat((SubTotal - Descuentos) + Iva);
@@ -238,6 +242,12 @@ function ActualizarDatos(name, id, line, round=0) { // Actualizar datos asincron
 		}
 	} else if(name == "LineTotal") { // SMM, 18/04/2022
 		valor = valor.replace(/,/g, '');
+	} else if(name == "SujetoImpuesto"){ // SMM, 23/04/2022
+		if(elemento.checked) {
+			valor = 'N';
+		} else {
+			valor = 'Y';
+		}
 	}
 
 	$.ajax({
@@ -257,6 +267,21 @@ function ActualizarDatos(name, id, line, round=0) { // Actualizar datos asincron
 		}
 	});
 }
+
+// ¿ SujetoImpuesto, Exento de IVA ?
+function SujetoImpuesto() {
+		let exento = window.parent.document.getElementById('Exento').value;
+
+		if(exento == 'N') {
+			console.log("Cliente extranjero, exento de IVA");
+
+			<?php if ($type == 1) {?>
+				$(".chkExento").prop("checked", true);
+				$(".chkExento").trigger('change');
+			<?php }?>
+		}
+}
+// SMM, 23/04/2022
 
 function ActDosificacion(id){//Actualizar dosificacion
 	var MetApli=document.getElementById('CDU_IdMetodoAplicacion'+id);
@@ -418,6 +443,7 @@ function ConsultarArticulo(articulo){
 				<th>Precio con Desc.</th><!-- SMM, 05/04/2022 -->
 				<th>% Desc.</th>
 				<th>Total</th>
+				<th>Exento</th><!-- SMM, 23/04/2022 -->
 				<th><i class="fa fa-refresh"></i></th>
 			</tr>
 		</thead>
@@ -590,6 +616,10 @@ if ($sw == 1) {
 				<input style="display: none;" type="checkbox" id="ControlDesc<?php echo $i; ?>" name="ControlDesc[]" class="form-control" onChange="ActualizarDatos('ControlDesc',<?php echo $i; ?>, <?php echo $row['LineNum']; ?>);" <?php if (isset($row['ControlDesc']) && ($row['ControlDesc'] == "T")) {echo "checked";}?>>
 			</td>
 
+			<td>
+				<input type="checkbox" id="SujetoImpuesto<?php echo $i; ?>" name="SujetoImpuesto[]" class="form-control chkExento" onChange="ActualizarDatos('SujetoImpuesto',<?php echo $i; ?>, <?php echo $row['LineNum']; ?>);" <?php if (isset($row['SujetoImpuesto']) && ($row['SujetoImpuesto'] == "N")) {echo "checked";}?> disabled>
+			</td>
+
 			<td><?php if ($row['Metodo'] == 0) {?><i class="fa fa-check-circle text-info" title="Sincronizado con SAP"></i><?php } else {?><i class="fa fa-times-circle text-danger" title="Aún no enviado a SAP"></i><?php }?></td>
 
 		<?php // Fin, comprobando permiso 416.
@@ -604,6 +634,8 @@ if ($sw == 1) {
 		</tr>
 
 	<?php } // Termina el ciclo
+
+    echo "<script>SujetoImpuesto();</script>";
     echo "<script>Totalizar(" . ($i - 1) . ", false); </script>";
 
     // Stiven Muñoz Murillo, 27/01/2022

@@ -87,6 +87,7 @@ if(isset($_GET['NombreEmpleado'])&&$_GET['NombreEmpleado']!=""){
 $Facturado= isset($_GET['Facturado']) ? $_GET['Facturado'] : "";
 $TipoLlamada= isset($_GET['TipoLlamada']) ? implode(",",$_GET['TipoLlamada']) : "";
 $EstadoServicioLlamada= isset($_GET['EstadoServicio']) ? implode(",",$_GET['EstadoServicio']) : "";
+$FiltroOperacion= isset($_GET['FiltroOperacion']) ? $_GET['FiltroOperacion'] : "1";
 
 if($sw==1){
 	$Param=array(
@@ -101,7 +102,8 @@ if($sw==1){
 		"'".$EstadoServicioLlamada."'",
 		"'".$NombreEmpleado."'",
 		"'".$Facturado."'",
-		"'".strtolower($_SESSION['User'])."'"
+		"'".$FiltroOperacion."'",
+		"'".strtolower($_SESSION['User'])."'"	
 	);
 	$SQL=EjecutarSP('usp_rep_OperacionesReindustrias',$Param);
 //	sqlsrv_next_result($SQL);
@@ -219,6 +221,14 @@ if($sw==1){
 						<label class="col-xs-12"><h3 class="bg-success p-xs b-r-sm"><i class="fa fa-filter"></i> Datos para filtrar</h3></label>
 					  </div>
 						<div class="form-group">
+							<label class="col-lg-1 control-label">Filtro operacion</label>
+							<div class="col-lg-3">
+								<select name="FiltroOperacion" class="form-control" id="FiltroOperacion">
+									<option value="1" <?php if(isset($_GET['FiltroOperacion'])&&($_GET['FiltroOperacion']=="1")){ echo "selected=\"selected\"";}?>>Actividades</option>
+									<option value="2" <?php if(isset($_GET['FiltroOperacion'])&&($_GET['FiltroOperacion']=="2")){ echo "selected=\"selected\"";}?>>Llamadas Servicios</option>
+									<option value="3" <?php if(isset($_GET['FiltroOperacion'])&&($_GET['FiltroOperacion']=="3")){ echo "selected=\"selected\"";}?>>Recepcion Vehiculo</option>
+								</select>
+							</div>	
 							<label class="col-lg-1 control-label">Fechas</label>
 							<div class="col-lg-3">
 								<div class="input-daterange input-group" id="datepicker">
@@ -232,6 +242,8 @@ if($sw==1){
 								<input name="Cliente" type="hidden" id="Cliente" value="<?php if(isset($_GET['Cliente'])&&($_GET['Cliente']!="")){ echo $_GET['Cliente'];}?>">
 								<input name="NombreCliente" type="text" class="form-control" id="NombreCliente" placeholder="Ingrese para buscar..." value="<?php if(isset($_GET['NombreCliente'])&&($_GET['NombreCliente']!="")){ echo $_GET['NombreCliente'];}?>">
 							</div>
+						</div>
+					  	<div class="form-group">
 							<label class="col-lg-1 control-label">Sucursal cliente</label>
 							<div class="col-lg-3">
 							 <select id="Sucursal" name="Sucursal" class="form-control select2">
@@ -251,8 +263,6 @@ if($sw==1){
 								 }?>
 							</select>
 							</div>
-						</div>
-					  	<div class="form-group">
 							<label class="col-lg-1 control-label">Serie</label>
 							<div class="col-lg-3">
 								<select name="Series" class="form-control" id="Series">
@@ -271,6 +281,8 @@ if($sw==1){
 								  <?php }?>
 								</select>
 							</div>
+						</div>
+					  	<div class="form-group">
 							<label class="col-lg-1 control-label">Estado llamada</label>
 							<div class="col-lg-3">
 								<select name="EstadoLlamada" class="form-control" id="EstadoLlamada">
@@ -280,8 +292,6 @@ if($sw==1){
 								  <?php }?>
 								</select>
 							</div>
-						</div>
-					  	<div class="form-group">
 							<label class="col-lg-1 control-label">Estado actividad</label>
 							<div class="col-lg-3">
 								<select name="EstadoActividad" class="form-control" id="EstadoActividad">
@@ -300,6 +310,8 @@ if($sw==1){
 								  <?php }?>
 								</select>
 							</div>
+						</div>
+					    <div class="form-group">
 							<label class="col-lg-1 control-label">Técnico</label>
 							<div class="col-lg-3">
 								<select name="NombreEmpleado" class="form-control select2" id="NombreEmpleado">
@@ -309,8 +321,6 @@ if($sw==1){
 								  <?php }?>
 								</select>
 							</div>
-						</div>
-					    <div class="form-group">
 							<label class="col-lg-1 control-label">Facturado</label>
 							<div class="col-lg-3">
 								<select name="Facturado" class="form-control" id="Facturado">
