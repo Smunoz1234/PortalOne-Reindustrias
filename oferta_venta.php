@@ -194,17 +194,35 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Oferta de venta
 if (isset($_GET['dt_LS']) && ($_GET['dt_LS']) == 1) { //Verificar que viene de una Llamada de servicio (Datos Llamada servicio)
     $dt_LS = 1;
 
+    if (!isset($_GET['LMT']) && isset($_GET['ItemCode']) && $_GET['ItemCode'] != "") {
+        //Consultar datos de la LMT
+        $SQL_LMT = Seleccionar('uvw_Sap_tbl_ArticulosLlamadas', '*', "ItemCode='" . base64_decode($_GET['ItemCode']) . "'");
+        $row_LMT = sqlsrv_fetch_array($SQL_LMT);
+
+        //Cargar la LMT
+        $ParametrosAddLMT = array(
+            "'" . base64_decode($_GET['ItemCode']) . "'",
+            "'" . $row_LMT['WhsCode'] . "'",
+            "'" . base64_decode($_GET['Cardcode']) . "'",
+            "'" . $_SESSION['CodUser'] . "'",
+        );
+        $SQL_AddLMT = EjecutarSP('sp_CargarLMT_OfertaVentaDetalleCarrito', $ParametrosAddLMT);
+    } else {
+        Eliminar('tbl_OfertaVentaDetalleCarrito', "Usuario='" . $_SESSION['CodUser'] . "' AND CardCode='" . base64_decode($_GET['Cardcode']) . "'");
+    }
+
     //Clientes
     $SQL_Cliente = Seleccionar('uvw_Sap_tbl_Clientes', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreCliente');
+    $row_Cliente = sqlsrv_fetch_array($SQL_Cliente);
 
     //Contacto cliente
     $SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreContacto');
 
     //Sucursal cliente
-    //$SQL_SucursalCliente=Seleccionar('uvw_Sap_tbl_Clientes_Sucursales','*',"CodigoCliente=''".base64_decode($_GET['Cardcode'])."''",'NombreSucursal');
+    $SQL_SucursalDestino = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', '*', "CodigoCliente=''" . base64_decode($_GET['Cardcode']) . "''", 'NombreSucursal');
 
     //Orden de servicio
-    $SQL_OrdenServicioCliente = Seleccionar('uvw_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . base64_decode($_GET['LS']) . "'");
+    $SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . base64_decode($_GET['LS']) . "'");
 }
 
 if ($edit == 1 && $sw_error == 0) {
@@ -380,17 +398,6 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_UpdActAdd"))) {
 		});
 		</script>";
 }
-if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_UpdActAdd"))) {
-    echo "<script>
-		$(document).ready(function() {
-			Swal.fire({
-                title: '¡Listo!',
-                text: 'La actividad ha sido actualizada exitosamente.',
-                icon: 'success'
-            });
-		});
-		</script>";
-}
 if (isset($sw_error) && ($sw_error == 1)) {
     echo "<script>
 		$(document).ready(function() {
@@ -427,14 +434,16 @@ function BuscarArticulo(dato){
 	var posicion_y;
 	posicion_x=(screen.width/2)-(1200/2);
 	posicion_y=(screen.height/2)-(500/2);
+
+	let idlistaprecio = document.getElementById("IdListaPrecio").value; // SMM, 25/02/2022
 	if(dato!=""){
-		if((cardcode!="")&&(almacen!="")){
-			remote=open('buscar_articulo.php?dato='+dato+'&cardcode='+cardcode+'&whscode='+almacen+'&doctype=<?php if ($edit == 0) {echo "3";} else {echo "4";}?>&idofertaventa=<?php if ($edit == 1) {echo base64_encode($row['ID_OfertaVenta']);} else {echo "0";}?>&evento=<?php if ($edit == 1) {echo base64_encode($row['IdEvento']);} else {echo "0";}?>&tipodoc=2&dim1='+dim1+'&dim2='+dim2+'&dim3='+dim3,'remote',"width=1200,height=500,location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=no,fullscreen=no,directories=no,status=yes,left="+posicion_x+",top="+posicion_y+"");
+		if((cardcode!="")&&(almacen!="")&&(idlistaprecio!="")){
+			remote=open('buscar_articulo.php?dato='+dato+'&cardcode='+cardcode+'&whscode='+almacen+'&idlistaprecio='+idlistaprecio+'&doctype=<?php if ($edit == 0) {echo "3";} else {echo "4";}?>&idofertaventa=<?php if ($edit == 1) {echo base64_encode($row['ID_OfertaVenta']);} else {echo "0";}?>&evento=<?php if ($edit == 1) {echo base64_encode($row['IdEvento']);} else {echo "0";}?>&tipodoc=2&dim1='+dim1+'&dim2='+dim2+'&dim3='+dim3,'remote',"width=1200,height=500,location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=no,fullscreen=no,directories=no,status=yes,left="+posicion_x+",top="+posicion_y+"");
 			remote.focus();
 		}else{
 			Swal.fire({
 				title: "¡Advertencia!",
-				text: "Debe seleccionar un cliente y un almacén",
+				text: "Debe seleccionar un cliente, almacén y una lista de precios",
 				icon: "warning",
 				confirmButtonText: "OK"
 			});
@@ -482,7 +491,7 @@ function CrearLead(){
 			});
 
 			// Lista de precio en el SN, SMM 20/01/2022
-			/*let cardcode = carcode;
+			let cardcode = carcode;
 			$.ajax({
 				url:"ajx_buscar_datos_json.php",
 				data: {
@@ -491,7 +500,7 @@ function CrearLead(){
 				},
 				dataType:'json',
 				success: function(data){
-					console.log("Line 554", data);
+					console.log("Line 503", data);
 
 					document.getElementById('IdListaPrecio').value=data.IdListaPrecio;
 					$('#IdListaPrecio').trigger('change');
@@ -502,7 +511,7 @@ function CrearLead(){
 					console.error(error.responseText);
 					$('.ibox-content').toggleClass('sk-loading', false);
 				}
-			});*/
+			});
 
 			<?php if ($edit == 0 && $sw_error == 0 && $dt_LS == 0 && $dt_OF == 0) { // Limpiar carrito detalle. ?>
 			$.ajax({
@@ -566,13 +575,13 @@ function CrearLead(){
 			});
 
 			<?php if ($edit == 0) {?>
-				if(carcode!="" && almacen!=""){
+				if(carcode!=""){
 					frame.src="detalle_oferta_venta.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+carcode;
 				}else{
 					frame.src="detalle_oferta_venta.php";
 				}
 			<?php } else {?>
-				if(carcode!="" && almacen!=""){
+				if(carcode!=""){
 					frame.src="detalle_oferta_venta.php?id=<?php echo base64_encode($row['ID_OfertaVenta']); ?>&evento=<?php echo base64_encode($row['IdEvento']); ?>&type=2";
 				}else{
 					frame.src="detalle_oferta_venta.php";
@@ -626,9 +635,10 @@ function CrearLead(){
 			$('.ibox-content').toggleClass('sk-loading',true);
 
 			var Serie=document.getElementById('Serie').value;
+			let Dim2=document.getElementById('Dim2').value; // SMM, 25/04/2022
 			$.ajax({
 				type: "POST",
-				url: "ajx_cbo_select.php?type=19&id="+Serie,
+				url: `ajx_cbo_select.php?type=19&id=${Serie}&Dim2=${Dim2}`,
 				success: function(response){
 					$('#Dim2').html(response).fadeIn();
 					$('.ibox-content').toggleClass('sk-loading',false);
@@ -644,6 +654,7 @@ function CrearLead(){
 		// Actualización del almacen en las líneas.
 		$("#Almacen").change(function(){
 			var frame=document.getElementById('DataGrid');
+
 			if(document.getElementById('Almacen').value!=""&&document.getElementById('CardCode').value!=""&&document.getElementById('TotalItems').value!="0"){
 				Swal.fire({
 					title: "¿Desea actualizar las lineas?",
@@ -684,6 +695,7 @@ function CrearLead(){
 		// Actualización de la dimensión 1 (Marca) en las líneas.
 		$("#Dim1").change(function(){
 			var frame=document.getElementById('DataGrid');
+
 			if(document.getElementById('Dim1').value!=""&&document.getElementById('CardCode').value!=""&&document.getElementById('TotalItems').value!="0"){
 				Swal.fire({
 					title: "¿Desea actualizar las lineas?",
@@ -721,9 +733,11 @@ function CrearLead(){
 
 		// Actualización de la dimensión 2 (Ciudad) en las líneas.
 		$("#Dim2").change(function(){
+			var frame=document.getElementById('DataGrid');
+
 			var Dim2=document.getElementById('Dim2').value;
 			var Serie=document.getElementById('Serie').value;
-			var frame=document.getElementById('DataGrid');
+
 			$.ajax({
 				type: "POST",
 				url: "ajx_cbo_select.php?type=20&id="+Dim2+"&serie="+Serie+"&tdoc=23",
@@ -771,9 +785,12 @@ function CrearLead(){
 
 		// Actualización de la dimensión 3 (Placa) en las líneas.
 		$("#Dim3").change(function(){
+			// $('.ibox-content').toggleClass('sk-loading',true);
+
+			var frame=document.getElementById('DataGrid');
+
 			var Dim3=document.getElementById('Dim3').value;
 			var Serie=document.getElementById('Serie').value;
-			var frame=document.getElementById('DataGrid');
 
 			if(Dim3!=""&&document.getElementById('CardCode').value!=""&&document.getElementById('TotalItems').value!="0"){
 				Swal.fire({
@@ -1076,19 +1093,23 @@ if ($edit == 1 || $sw_error == 1) {
 							<input type="text" class="form-control" name="DireccionFacturacion" id="DireccionFacturacion" value="<?php if ($edit == 1 || $sw_error == 1) {echo $row['DireccionFacturacion'];}?>" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "readonly";}?>>
 						</div>
 					</div>
+
 					<div class="form-group">
-					<label class="col-lg-1 control-label"><?php if (($edit == 1) && ($row['ID_LlamadaServicio'] != 0)) {?><a href="llamada_servicio.php?id=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&tl=1" target="_blank" title="Consultar Llamada de servicio" class="btn-xs btn-success fa fa-search"></a> <?php }?>Orden servicio</label>
-				  	<div class="col-lg-11">
-                    	<select name="OrdenServicioCliente" class="form-control select2" id="OrdenServicioCliente" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "disabled='disabled'";}?>>
-                         	<?php if ($dt_LS == 0) {?><option value="">(Ninguna)</option><?php }?>
-							<?php
-if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
-    while ($row_OrdenServicioCliente = sqlsrv_fetch_array($SQL_OrdenServicioCliente)) {?>
-										<option value="<?php echo $row_OrdenServicioCliente['ID_LlamadaServicio']; ?>" <?php if ((isset($row['ID_LlamadaServicio'])) && (strcmp($row_OrdenServicioCliente['ID_LlamadaServicio'], $row['ID_LlamadaServicio']) == 0)) {echo "selected=\"selected\"";} elseif ((isset($_GET['LS'])) && (strcmp($row_OrdenServicioCliente['ID_LlamadaServicio'], base64_decode($_GET['LS'])) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_OrdenServicioCliente['DocNum'] . " - " . $row_OrdenServicioCliente['AsuntoLlamada'] . " (" . $row_OrdenServicioCliente['DeTipoLlamada'] . ")"; ?></option>
-							  <?php }
-}?>
-						</select>
-               	  	</div>
+						<label class="col-lg-1 control-label"><?php if (($edit == 1) && ($row['ID_LlamadaServicio'] != 0)) {?><a href="llamada_servicio.php?id=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&tl=1" target="_blank" title="Consultar Llamada de servicio" class="btn-xs btn-success fa fa-search"></a> <?php }?>Orden servicio</label>
+						<div class="col-lg-11">
+							<select name="OrdenServicioCliente" class="form-control select2" id="OrdenServicioCliente" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "disabled='disabled'";}?>>
+								<?php if ($dt_LS == 0) {?>
+									<option value="">(Ninguna)</option>
+								<?php }?>
+								<?php if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {?>
+									<?php while ($row_OrdenServicioCliente = sqlsrv_fetch_array($SQL_OrdenServicioCliente)) {?>
+										<option value="<?php echo $row_OrdenServicioCliente['ID_LlamadaServicio']; ?>" <?php if ((isset($row['ID_LlamadaServicio'])) && (strcmp($row_OrdenServicioCliente['ID_LlamadaServicio'], $row['ID_LlamadaServicio']) == 0)) {echo "selected=\"selected\"";} elseif ((isset($_GET['LS'])) && (strcmp($row_OrdenServicioCliente['ID_LlamadaServicio'], base64_decode($_GET['LS'])) == 0)) {echo "selected=\"selected\"";}?>>
+											<?php echo $row_OrdenServicioCliente['DocNum'] . " - " . $row_OrdenServicioCliente['AsuntoLlamada'] . " (" . $row_OrdenServicioCliente['DeTipoLlamada'] . ")"; ?>
+										</option>
+									<?php }?>
+								<?php }?>
+							</select>
+						</div>
 				</div>
 				</div>
 				<div class="col-lg-4">
@@ -1284,7 +1305,7 @@ if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
 					<div class="form-group">
 						<label class="col-lg-2">Empleado de ventas <span class="text-danger">*</span></label>
 						<div class="col-lg-5">
-							<select name="EmpleadoVentas" class="form-control" id="EmpleadoVentas" form="CrearOrdenVenta" required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "disabled='disabled'";}?>>
+							<select name="EmpleadoVentas" class="form-control" id="EmpleadoVentas" form="CrearOfertaVenta" required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "disabled='disabled'";}?>>
 							  <?php while ($row_EmpleadosVentas = sqlsrv_fetch_array($SQL_EmpleadosVentas)) {?>
 									<option value="<?php echo $row_EmpleadosVentas['ID_EmpVentas']; ?>" <?php if ($edit == 0 && $sw_error == 0) {if (isset($_GET['Empleado']) && (strcmp($row_EmpleadosVentas['ID_EmpVentas'], base64_decode($_GET['Empleado'])) == 0)) {echo "selected=\"selected\"";} elseif (($_SESSION['CodigoEmpVentas'] != "") && (!isset($_GET['Empleado'])) && (strcmp($row_EmpleadosVentas['ID_EmpVentas'], $_SESSION['CodigoEmpVentas']) == 0)) {echo "selected=\"selected\"";}} elseif ($edit == 1 || $sw_error == 1) {if (($row['SlpCode'] != "") && (strcmp($row_EmpleadosVentas['ID_EmpVentas'], $row['SlpCode']) == 0)) {echo "selected=\"selected\"";}}?>><?php echo $row_EmpleadosVentas['DE_EmpVentas']; ?></option>
 							  <?php }?>
@@ -1329,7 +1350,7 @@ if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
 					<div class="form-group">
 						<label class="col-lg-7"><strong class="pull-right">Redondeo</strong></label>
 						<div class="col-lg-5">
-							<input type="text" name="Redondeo" form="CrearOrdenVenta" id="Redondeo" class="form-control" style="text-align: right; font-weight: bold;" value="0.00" readonly>
+							<input type="text" name="Redondeo" form="CrearOfertaVenta" id="Redondeo" class="form-control" style="text-align: right; font-weight: bold;" value="0.00" readonly>
 						</div>
 					</div>
 					<div class="form-group">

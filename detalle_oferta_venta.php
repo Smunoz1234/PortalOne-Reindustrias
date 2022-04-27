@@ -1,6 +1,7 @@
 <?php
 require_once "includes/conexion.php";
 PermitirAcceso(405);
+
 $sw = 0;
 //$Proyecto="";
 $Almacen = "";
@@ -14,11 +15,13 @@ $Estado = 1; //Abierto
 $SQL_DimReparto = Seleccionar('uvw_Sap_tbl_NombresDimensionesReparto', '*', '', "CodDim");
 
 if (isset($_GET['id']) && ($_GET['id'] != "")) {
-    if ($_GET['type'] == 1) {
+    
+	if ($_GET['type'] == 1) {
         $type = 1;
     } else {
         $type = $_GET['type'];
     }
+
     if ($type == 1) { //Creando Oferta de Venta
         $SQL = Seleccionar("uvw_tbl_OfertaVentaDetalleCarrito", "*", "Usuario='" . $_GET['usr'] . "' and CardCode='" . $_GET['cardcode'] . "'");
         if ($SQL) {
@@ -31,16 +34,23 @@ if (isset($_GET['id']) && ($_GET['id'] != "")) {
             //$Proyecto="";
             $Almacen = "";
         }
-
+		
     } else { //Editando Oferta de venta
-        if (isset($_GET['status']) && (base64_decode($_GET['status']) == "C")) {
+        
+		if (isset($_GET['status']) && (base64_decode($_GET['status']) == "C")) {
             $Estado = 2;
         } else {
             $Estado = 1;
         }
+
         $SQL = Seleccionar("uvw_tbl_OfertaVentaDetalle", "*", "ID_OfertaVenta='" . base64_decode($_GET['id']) . "' and IdEvento='" . base64_decode($_GET['evento']) . "' and Metodo <> 3");
-        if ($SQL) {
+        
+		if ($SQL) {
             $sw = 1;
+
+			// Para actualizar el Stock del Almacen.
+			$Id = base64_decode($_GET['id']);
+            $Evento = base64_decode($_GET['evento']);
         }
     }
 }
@@ -130,7 +140,6 @@ function CalcularLinea(line, totalizar=true) {
 	let PrcDescDecimal = parseFloat(PrcDescLinea.value.replace(/,/g, ''));
 	let TotalDecimal = parseFloat(TotalLinea.value.replace(/,/g, ''));
 
-
 	let SubTotalLinea = PrecioDecimal * CantDecimal; // SMM, 12/04/2022
 	let TotalDescLinea = (PrcDescDecimal * SubTotalLinea) / 100;
 	let SubTotalDesc = SubTotalLinea - TotalDescLinea; // Para, Totalizar()
@@ -191,6 +200,9 @@ function Totalizar(num, totalizar=true) {
 
 		let NuevoSubTotal = ValoresLinea[0];
 		let IvaLinea = ValoresLinea[1];
+
+		// console.log("NuevoSubTotal", NuevoSubTotal);
+		// console.log("IvaLinea", IvaLinea);
 
 		SubTotal = parseFloat(SubTotal) + parseFloat(NuevoSubTotal);
 
@@ -550,7 +562,7 @@ if ($sw == 1) {
 			</td>
 
 			<td>
-				<input size="15" type="text" id="LineTotal<?php echo $i; ?>" name="LineTotal[]" class="form-control" value="<?php echo number_format($row['LineTotal'], 2); ?>" onChange="ActualizarDatos('LineTotal',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>, 2);" onBlur="CalcularTotal(<?php echo $i; ?>, false);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(401))) {echo "readonly";}?> autocomplete="off">
+				<input size="15" type="text" id="LineTotal<?php echo $i; ?>" name="LineTotal[]" class="form-control" value="<?php echo number_format($row['LineTotal'], 2); ?>" onChange="ActualizarDatos('LineTotal',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>, 2);" onBlur="CalcularTotal(<?php echo $i; ?>, false);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(401))) {echo "readonly";}?> autocomplete="off" onFocus="focalizarValores(this)">
 				<input style="display: none;" type="checkbox" id="ControlDesc<?php echo $i; ?>" name="ControlDesc[]" class="form-control" onChange="ActualizarDatos('ControlDesc',<?php echo $i; ?>, <?php echo $row['LineNum']; ?>);" <?php if (isset($row['ControlDesc']) && ($row['ControlDesc'] == "T")) {echo "checked";}?>>
 			</td>
 
