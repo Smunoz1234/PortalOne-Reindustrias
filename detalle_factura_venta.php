@@ -254,10 +254,14 @@ function SujetoImpuesto() {
 		if(exento == 'N') {
 			console.log("Cliente extranjero, exento de IVA");
 
-			<?php if ($type == 1) {?>
-				$(".chkExento").prop("checked", true);
-				$(".chkExento").trigger('change');
-			<?php }?>
+			$(".chkExento").each(function() {
+				// console.log($(this).data("exento"));
+
+				if($(this).data("exento") != 'Y') {
+					$(this).prop("checked", true);
+					$(this).trigger('change');
+				}
+			});
 		}
 }
 // SMM, 23/04/2022
@@ -501,7 +505,7 @@ if ($sw == 1) {
 			</td>
 
 			<td>
-				<input type="checkbox" id="SujetoImpuesto<?php echo $i; ?>" name="SujetoImpuesto[]" class="form-control chkExento" onChange="ActualizarDatos('SujetoImpuesto',<?php echo $i; ?>, <?php echo $row['LineNum']; ?>);" <?php if (isset($row['SujetoImpuesto']) && ($row['SujetoImpuesto'] == "N")) {echo "checked";}?> disabled>
+				<input type="checkbox" id="SujetoImpuesto<?php echo $i; ?>" name="SujetoImpuesto[]" class="form-control chkExento" onChange="ActualizarDatos('SujetoImpuesto',<?php echo $i; ?>, <?php echo $row['LineNum']; ?>);" <?php if (isset($row['SujetoImpuesto']) && ($row['SujetoImpuesto'] == "N")) {echo "checked";}?> data-exento="<?php echo $row['SujetoImpuesto']; ?>" disabled>
 			</td>
 
 			<td><?php if ($row['Metodo'] == 0) {?><i class="fa fa-check-circle text-info" title="Sincronizado con SAP"></i><?php } else {?><i class="fa fa-times-circle text-danger" title="Aún no enviado a SAP"></i><?php }?></td>
