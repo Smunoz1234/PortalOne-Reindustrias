@@ -590,20 +590,20 @@ function ConsultarDatosCliente(){
 						$('.ibox-content').toggleClass('sk-loading', false);
 					}
 				});
+				
+				// Recargar condición de pago. Dependiendo del cliente en la creación, 28/04/2022
+				$.ajax({
+					type: "POST",
+					url: "ajx_cbo_select.php?type=7&id="+carcode,
+					success: function(response){
+						$('#CondicionPago').html(response).fadeIn();
+					},
+					error: function(error) {
+						console.error(error.responseText);
+						$('.ibox-content').toggleClass('sk-loading', false);
+					}
+				});
 			<?php }?>
-
-			// Recargar condición de pago.
-			$.ajax({
-				type: "POST",
-				url: "ajx_cbo_select.php?type=7&id="+carcode,
-				success: function(response){
-					$('#CondicionPago').html(response).fadeIn();
-				},
-				error: function(error) {
-					console.error(error.responseText);
-					$('.ibox-content').toggleClass('sk-loading', false);
-				}
-			});
 
 			<?php if ($edit == 0) {?>
 				if(carcode!=""){

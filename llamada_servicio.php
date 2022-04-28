@@ -1745,7 +1745,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								</select>
 							</div>
 							<div class="col-lg-4">
-								<label class="control-label">Contrato <span class="text-danger">*</span></label>
+								<label class="control-label">Contrato/Campaña <span class="text-danger">*</span></label>
 								<select name="CDU_Contrato" class="form-control select2" required="required" id="CDU_Contrato"
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 										<option value="" disabled selected>Seleccione...</option>
