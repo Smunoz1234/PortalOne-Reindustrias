@@ -791,5 +791,130 @@ if (isset($_GET['type']) && $_GET['type'] != "") {
         }
     }
 
+    // SMM, 29/04/2022
+    elseif ($_GET['type'] == 53) { // Duplicar una linea del detalle de la Factura de Venta
+        if ($_GET['edit'] == 1) {
+            $Parametros = array(
+                "'" . $_GET['linenum'] . "'",
+                "'" . $_GET['cardcode'] . "'",
+                "'" . $_SESSION['CodUser'] . "'",
+            );
+            $SQL = EjecutarSP('sp_tbl_FacturaVentaDetalleCarrito_DuplicarLine', $Parametros);
+            if ($SQL) {
+                echo "*Ok*";
+            }
+        } else {
+            $Parametros = array(
+                "'" . $_GET['linenum'] . "'",
+                "'" . $_GET['id'] . "'",
+                "'" . $_GET['evento'] . "'",
+            );
+            $SQL = EjecutarSP('sp_tbl_FacturaVentaDetalle_DuplicarLine', $Parametros);
+            if ($SQL) {
+                echo "*Ok*";
+            }
+        }
+    }
+
+    // SMM, 29/04/2022
+    elseif ($_GET['type'] == 54) { // Duplicar una linea del detalle de la Orden de Venta
+        if ($_GET['edit'] == 1) {
+            $Parametros = array(
+                "'" . $_GET['linenum'] . "'",
+                "'" . $_GET['cardcode'] . "'",
+                "'" . $_SESSION['CodUser'] . "'",
+            );
+            $SQL = EjecutarSP('sp_tbl_OrdenVentaDetalleCarrito_DuplicarLine', $Parametros);
+            if ($SQL) {
+                echo "*Ok*";
+            }
+        } else {
+            $Parametros = array(
+                "'" . $_GET['linenum'] . "'",
+                "'" . $_GET['id'] . "'",
+                "'" . $_GET['evento'] . "'",
+            );
+            $SQL = EjecutarSP('sp_tbl_OrdenVentaDetalle_DuplicarLine', $Parametros);
+            if ($SQL) {
+                echo "*Ok*";
+            }
+        }
+    }
+
+    // SMM, 29/04/2022
+    elseif ($_GET['type'] == 55) { // Duplicar una linea del detalle de la Entrega de Venta
+        if ($_GET['edit'] == 1) {
+            $Parametros = array(
+                "'" . $_GET['linenum'] . "'",
+                "'" . $_GET['cardcode'] . "'",
+                "'" . $_SESSION['CodUser'] . "'",
+            );
+            $SQL = EjecutarSP('sp_tbl_EntregaVentaDetalleCarrito_DuplicarLine', $Parametros);
+            if ($SQL) {
+                echo "*Ok*";
+            }
+        } else {
+            $Parametros = array(
+                "'" . $_GET['linenum'] . "'",
+                "'" . $_GET['id'] . "'",
+                "'" . $_GET['evento'] . "'",
+            );
+            $SQL = EjecutarSP('sp_tbl_EntregaVentaDetalle_DuplicarLine', $Parametros);
+            if ($SQL) {
+                echo "*Ok*";
+            }
+        }
+    }
+
+    // SMM, 29/04/2022
+    elseif ($_GET['type'] == 56) { // Duplicar una linea del detalle de la Oferta de Venta
+        if ($_GET['edit'] == 1) {
+            $Parametros = array(
+                "'" . $_GET['linenum'] . "'",
+                "'" . $_GET['cardcode'] . "'",
+                "'" . $_SESSION['CodUser'] . "'",
+            );
+            $SQL = EjecutarSP('sp_tbl_OfertaVentaDetalleCarrito_DuplicarLine', $Parametros);
+            if ($SQL) {
+                echo "*Ok*";
+            }
+        } else {
+            $Parametros = array(
+                "'" . $_GET['linenum'] . "'",
+                "'" . $_GET['id'] . "'",
+                "'" . $_GET['evento'] . "'",
+            );
+            $SQL = EjecutarSP('sp_tbl_OfertaVentaDetalle_DuplicarLine', $Parametros);
+            if ($SQL) {
+                echo "*Ok*";
+            }
+        }
+    }
+
+    // SMM, 29/04/2022
+    elseif ($_GET['type'] == 57) { // Duplicar una linea del detalle de la Devolucion de Venta
+        if ($_GET['edit'] == 1) {
+            $Parametros = array(
+                "'" . $_GET['linenum'] . "'",
+                "'" . $_GET['cardcode'] . "'",
+                "'" . $_SESSION['CodUser'] . "'",
+            );
+            $SQL = EjecutarSP('sp_tbl_DevolucionVentaDetalleCarrito_DuplicarLine', $Parametros);
+            if ($SQL) {
+                echo "*Ok*";
+            }
+        } else {
+            $Parametros = array(
+                "'" . $_GET['linenum'] . "'",
+                "'" . $_GET['id'] . "'",
+                "'" . $_GET['evento'] . "'",
+            );
+            $SQL = EjecutarSP('sp_tbl_DevolucionVentaDetalle_DuplicarLine', $Parametros);
+            if ($SQL) {
+                echo "*Ok*";
+            }
+        }
+    }
+
     sqlsrv_close($conexion);
 }

@@ -331,7 +331,27 @@ function BorrarLinea(){
 				console.log(response);
 			},
 			error: function(error){
-				console.error(error);
+				console.error(error.responseText);
+			}
+		});
+	}
+}
+
+// SMM, 27/04/2022
+function DuplicarLinea(){
+	if(confirm(String.fromCharCode(191)+'Est'+String.fromCharCode(225)+' seguro que desea duplicar estos registros?')){
+		$.ajax({
+			type: "GET",
+			<?php if ($type == 1) {?>
+			url: "includes/procedimientos.php?type=54&edit=<?php echo $type; ?>&linenum="+json+"&cardcode=<?php echo $CardCode; ?>",
+			<?php } else {?>
+			url: "includes/procedimientos.php?type=54&edit=<?php echo $type; ?>&linenum="+json+"&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
+			<?php }?>
+			success: function(response){
+				window.location.href="detalle_orden_venta.php?<?php echo $_SERVER['QUERY_STRING']; ?>";
+			},
+			error: function(error) {
+				console.log(error.responseText);
 			}
 		});
 	}
@@ -378,8 +398,10 @@ function Seleccionar(ID){
 	}
 	if(cant>0){
 		$("#btnBorrarLineas").prop('disabled', false);
+		$("#btnDuplicarLineas").prop('disabled', false);
 	}else{
 		$("#btnBorrarLineas").prop('disabled', true);
+		$("#btnDuplicarLineas").prop('disabled', true);
 	}
 
 	//console.log(json);
@@ -391,6 +413,7 @@ function SeleccionarTodos(){
 		json=[];
 		cant=0;
 		$("#btnBorrarLineas").prop('disabled', true);
+		$("#btnDuplicarLineas").prop('disabled', true);
 	}
 	$(".chkSel:not(:disabled)").prop("checked", Check);
 
@@ -419,6 +442,7 @@ function ConsultarArticulo(articulo){
 				<th class="text-center form-inline w-150">
 					<div class="checkbox checkbox-success"><input type="checkbox" id="chkAll" value="" onChange="SeleccionarTodos();" title="Seleccionar todos"><label></label></div>
 					<button type="button" id="btnBorrarLineas" title="Borrar lineas" class="btn btn-danger btn-xs" disabled onClick="BorrarLinea();"><i class="fa fa-trash"></i></button>
+					<button type="button" id="btnDuplicarLineas" title="Duplicar lineas" class="btn btn-success btn-xs" disabled onClick="DuplicarLinea();"><i class="fa fa-copy"></i></button>
 				</th>
 				<th>Código artículo</th>
 				<th>Nombre artículo</th>
