@@ -2461,22 +2461,29 @@ if (isset($_GET['exp']) && $_GET['exp'] != "" && $_GET['Cons'] != "") {
             $columnas = count($rawdata[0]) / 2;
             $filas = count($rawdata);
 
+            // Inicio - Modificado, SMM 29/04/2022
             $j = 0;
-            $letra = 65; //A
-            $segLetra = 65; //A
+            $letra = 65; // A
 
             //Llenar array de las letras del abecedario
             for ($j = 0; $j < $columnas; $j++) {
-                if ($j <= 25) {
-                    $Titulo = chr($letra);
-                    $letra++;
-                } else {
-                    $letra = 65;
-                    $Titulo = chr($letra) . chr($segLetra);
-                    $segLetra++;
+                if ($j % 26 == 0) {
+                    $restador = $j;
+                    $sumador = ($restador / 26) - 1;
                 }
+
+                if ($restador == 0) {
+                    $Titulo = chr($letra + $j);
+                } else {
+                    $Titulo = chr(65 + $sumador) . chr($letra + ($j - $restador));
+                }
+
                 $abc[$j] = $Titulo;
             }
+
+            // print("<pre>" . print_r($rawdata, true) . "</pre>");
+            // exit();
+            // Fin - Modificado, SMM 29/04/2022
 
             for ($j = 0; $j < $columnas; $j++) {
 
@@ -2538,22 +2545,29 @@ if (isset($_GET['exp']) && $_GET['exp'] != "" && $_GET['Cons'] != "") {
             $columnas = count($rawdata[0]) / 2;
             $filas = count($rawdata);
 
+            // Inicio - Modificado, SMM 29/04/2022
             $j = 0;
-            $letra = 65; //A
-            $segLetra = 65; //A
+            $letra = 65; // A
 
             //Llenar array de las letras del abecedario
             for ($j = 0; $j < $columnas; $j++) {
-                if ($j <= 25) {
-                    $Titulo = chr($letra);
-                    $letra++;
-                } else {
-                    $letra = 65;
-                    $Titulo = chr($letra) . chr($segLetra);
-                    $segLetra++;
+                if ($j % 26 == 0) {
+                    $restador = $j;
+                    $sumador = ($restador / 26) - 1;
                 }
+
+                if ($restador == 0) {
+                    $Titulo = chr($letra + $j);
+                } else {
+                    $Titulo = chr(65 + $sumador) . chr($letra + ($j - $restador));
+                }
+
                 $abc[$j] = $Titulo;
             }
+
+            // print("<pre>" . print_r($rawdata, true) . "</pre>");
+            // exit();
+            // Fin - Modificado, SMM 29/04/2022
 
             for ($j = 0; $j < $columnas; $j++) {
 
@@ -2615,22 +2629,29 @@ if (isset($_GET['exp']) && $_GET['exp'] != "" && $_GET['Cons'] != "") {
             $columnas = count($rawdata[0]) / 2;
             $filas = count($rawdata);
 
+            // Inicio - Modificado, SMM 29/04/2022
             $j = 0;
-            $letra = 65; //A
-            $segLetra = 65; //A
+            $letra = 65; // A
 
             //Llenar array de las letras del abecedario
             for ($j = 0; $j < $columnas; $j++) {
-                if ($j <= 25) {
-                    $Titulo = chr($letra);
-                    $letra++;
-                } else {
-                    $letra = 65;
-                    $Titulo = chr($letra) . chr($segLetra);
-                    $segLetra++;
+                if ($j % 26 == 0) {
+                    $restador = $j;
+                    $sumador = ($restador / 26) - 1;
                 }
+
+                if ($restador == 0) {
+                    $Titulo = chr($letra + $j);
+                } else {
+                    $Titulo = chr(65 + $sumador) . chr($letra + ($j - $restador));
+                }
+
                 $abc[$j] = $Titulo;
             }
+
+            // print("<pre>" . print_r($rawdata, true) . "</pre>");
+            // exit();
+            // Fin - Modificado, SMM 29/04/2022
 
             for ($j = 0; $j < $columnas; $j++) {
 
@@ -2692,22 +2713,29 @@ if (isset($_GET['exp']) && $_GET['exp'] != "" && $_GET['Cons'] != "") {
             $columnas = count($rawdata[0]) / 2;
             $filas = count($rawdata);
 
+            // Inicio - Modificado, SMM 29/04/2022
             $j = 0;
-            $letra = 65; //A
-            $segLetra = 65; //A
+            $letra = 65; // A
 
             //Llenar array de las letras del abecedario
             for ($j = 0; $j < $columnas; $j++) {
-                if ($j <= 25) {
-                    $Titulo = chr($letra);
-                    $letra++;
-                } else {
-                    $letra = 65;
-                    $Titulo = chr($letra) . chr($segLetra);
-                    $segLetra++;
+                if ($j % 26 == 0) {
+                    $restador = $j;
+                    $sumador = ($restador / 26) - 1;
                 }
+
+                if ($restador == 0) {
+                    $Titulo = chr($letra + $j);
+                } else {
+                    $Titulo = chr(65 + $sumador) . chr($letra + ($j - $restador));
+                }
+
                 $abc[$j] = $Titulo;
             }
+
+            // print("<pre>" . print_r($rawdata, true) . "</pre>");
+            // exit();
+            // Fin - Modificado, SMM 29/04/2022
 
             for ($j = 0; $j < $columnas; $j++) {
 

@@ -400,9 +400,9 @@ if($sw==1){
 								
 								<td><?php echo $row['DeArticuloLlamada'];?></td>
 								<td><?php echo $row['SerialArticuloLlamada'];?></td>
-								<td><?php echo $row['NombreContactoLlamada'];?></td>
-								<td><?php echo $row['TelefonoContactoLlamada'];?></td>
-								<td><?php echo $row['CorreoContactoLlamada'];?></td>
+								<td><?php echo $row['NombreContactoCliente'];?></td>
+								<td><?php echo $row['TelefonoContactoCliente'];?></td>
+								<td><?php echo $row['CorreoContactoCliente'];?></td>
 								
 								<td><?php echo $row['Facturado'];?></td>
 								<td><?php echo $row['ServiciosLlamadas'];?></td>
