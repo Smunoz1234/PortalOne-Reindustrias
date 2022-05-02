@@ -590,7 +590,7 @@ function ConsultarDatosCliente(){
 						$('.ibox-content').toggleClass('sk-loading', false);
 					}
 				});
-				
+
 				// Recargar condición de pago. Dependiendo del cliente en la creación, 28/04/2022
 				$.ajax({
 					type: "POST",
@@ -771,7 +771,7 @@ function ConsultarDatosCliente(){
 
 			$.ajax({
 				type: "POST",
-				url: `ajx_cbo_select.php?type=20&id=${Dim2}&serie=${Serie}&tdoc=15&WhsCode=<?php echo $row['WhsCode'] ?? ""; ?>`,
+				url: `ajx_cbo_select.php?type=20&id=${Dim2}&serie=${Serie}&tdoc=15&WhsCode=<?php echo isset($_GET['Almacen']) ? base64_decode($_GET['Almacen']) : ($row['WhsCode'] ?? ""); ?>`, // Modificación almacen, SMM/01/05/2022
 				success: function(response){
 					$('#Almacen').html(response).fadeIn();
 					$('.ibox-content').toggleClass('sk-loading',false);
@@ -1074,7 +1074,7 @@ include_once 'md_frm_campos_adicionales.php';
 						<div class="col-lg-9">
 							<input name="CardCode" type="hidden" id="CardCode" value="<?php if (($edit == 1) || ($sw_error == 1)) {echo $row['CardCode'];} elseif ($dt_LS == 1 || $dt_OV == 1) {echo $row_Cliente['CodigoCliente'];}?>">
 
-							<input name="CardName" type="text" required="required" class="form-control" id="CardName" placeholder="Digite para buscar..." value="<?php if (($edit == 1) || ($sw_error == 1)) {echo $row['NombreCliente'];} elseif ($dt_LS == 1 || $dt_OV == 1) {echo $row_Cliente['NombreCliente'];}?>" 
+							<input name="CardName" type="text" required="required" class="form-control" id="CardName" placeholder="Digite para buscar..." value="<?php if (($edit == 1) || ($sw_error == 1)) {echo $row['NombreCliente'];} elseif ($dt_LS == 1 || $dt_OV == 1) {echo $row_Cliente['NombreCliente'];}?>"
 							<?php if ($dt_LS == 1 || $dt_OV == 1 || $edit == 1) {echo "readonly";}?>>
 						</div>
 
@@ -1198,8 +1198,11 @@ if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
 					<label class="col-lg-1 control-label">Serie <span class="text-danger">*</span></label>
 					<div class="col-lg-3">
                     	<select name="Serie" class="form-control" required="required" id="Serie" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "disabled='disabled'";}?>>
-                        	<!-- SMM, 04/02/2022 -->
-							<option value=''>Seleccione...</option>
+                        	<!-- SMM, 01/05/2022 -->
+							<?php if (sqlsrv_num_rows($SQL_Series) > 1) {?>
+								<option value=''>Seleccione...</option>
+							<?php }?>
+							
 							<?php while ($row_Series = sqlsrv_fetch_array($SQL_Series)) {?>
 								<option value="<?php echo $row_Series['IdSeries']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['IdSeries'])) && (strcmp($row_Series['IdSeries'], $row['IdSeries']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Series['DeSeries']; ?></option>
 							<?php }?>
@@ -1214,7 +1217,7 @@ if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
 						<select name="CondicionPago" class="form-control" id="CondicionPago" required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "disabled='disabled'";}?>>
 							<option value="">Seleccione...</option>
 						  <?php while ($row_CondicionPago = sqlsrv_fetch_array($SQL_CondicionPago)) {?>
-								<option value="<?php echo $row_CondicionPago['IdCondicionPago']; ?>" <?php if ($edit == 1 || $sw_error == 1) {if (($row['IdCondicionPago'] != "") && (strcmp($row_CondicionPago['IdCondicionPago'], $row['IdCondicionPago']) == 0)) {echo "selected=\"selected\"";}}?>><?php echo $row_CondicionPago['NombreCondicion']; ?></option>
+								<option value="<?php echo $row_CondicionPago['IdCondicionPago']; ?>" <?php if ($edit == 1 || $sw_error == 1) {if (($row['IdCondicionPago'] != "") && (strcmp($row_CondicionPago['IdCondicionPago'], $row['IdCondicionPago']) == 0)) {echo "selected=\"selected\"";}} elseif ((isset($_GET['CondicionPago'])) && (strcmp($row_CondicionPago['IdCondicionPago'], base64_decode($_GET['CondicionPago'])) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_CondicionPago['NombreCondicion']; ?></option>
 						  <?php }?>
 						</select>
 				  	</div>
@@ -1454,7 +1457,8 @@ $return = QuitarParametrosURL($return, array("a"));
 						<div class="btn-group pull-right">
                             <button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i class="fa fa-mail-forward"></i> Copiar a <i class="fa fa-caret-down"></i></button>
                             <ul class="dropdown-menu">
-                                <li><a class="alkin dropdown-item" href="devolucion_venta.php?dt_ET=1&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Dim1=<?php echo base64_encode($row['OcrCode']); ?>&Dim2=<?php echo base64_encode($row['OcrCode2']); ?>&Dim3=<?php echo base64_encode($row['OcrCode3']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Referencia=<?php echo base64_encode($row['NumAtCard']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&ET=<?php echo base64_encode($row['ID_EntregaVenta']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&LS=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>">Devolución de venta</a></li>
+                                <li><a class="alkin dropdown-item" href="devolucion_venta.php?dt_ET=1&ET=<?php echo base64_encode($row['ID_EntregaVenta']); ?>&Referencia=<?php echo base64_encode($row['NumAtCard']); ?>&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Dim1=<?php echo base64_encode($row['OcrCode']); ?>&Dim2=<?php echo base64_encode($row['OcrCode2']); ?>&Dim3=<?php echo base64_encode($row['OcrCode3']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&LS=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>&CondicionPago=<?php echo base64_encode($row['IdCondicionPago']); ?>">Devolución de venta</a></li>
+								<!-- &Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>&CondicionPago=<?php echo base64_encode($row['IdCondicionPago']); ?>-->
                             </ul>
                         </div>
 					</div>
@@ -1577,6 +1581,7 @@ if (!PermitirFuncion(403)) {?>
 		 $('#Serie').trigger('change');
 	 	<?php }?>
 
+		 $('#Serie').trigger('change'); // SMM, 01/05/2022
 		 $('#CardCode').trigger('change'); // SMM, 24/02/2022
 	});
 </script>
