@@ -107,6 +107,7 @@ if ($type == 1) { //Si estoy refrescando datos ya cargados
 				itemSelector: '.item-drag',
 				eventData: function(eventEl) {
 					// console.log("eventData.dataset", eventEl.dataset);
+					// console.log("eventData.dataset.comentario", eventEl.dataset.comentario);
 
 					// Stiven Muñoz Murillo, 07/02/2022
 					let minutos = eventEl.dataset.tiempo;
@@ -128,6 +129,7 @@ if ($type == 1) { //Si estoy refrescando datos ya cargados
 					return {
 						id: new_id,
 						title: eventEl.dataset.title,
+						comentario: eventEl.dataset.comentario, // SMM, 03/05/2022
 						duration: (minutos=="") ?'02:00':tiempo // SMM, 07/02/2022
 					};
 				}
@@ -204,12 +206,12 @@ if ($sw == 1) {
 					$('.tooltip').remove();
 				},
 				eventDidMount: function(info){
-					// console.log(info.event)
+					// console.log("info.event", info.event)
 					console.log('Se ejecuto eventDidMount en el calendario');
 
 					// SMM, 10/03/2022
 					$(info.el).tooltip({
-						title: info.event.title
+						title: `${info.event.title} "${info.event.extendedProps.comentario}"` // SMM, 03/05/2022
 					});
 
 					if(info.view.type!='dayGridMonth' && info.view.type!='listWeek'){
@@ -269,6 +271,7 @@ if ($sw == 1) {
 						estado:'<?php echo $row_Actividad['IdEstadoActividad']; ?>',
 						llamadaServicio: '<?php echo $row_Actividad['ID_LlamadaServicio']; ?>',
 						estadoLlamadaServ: '<?php echo $row_Actividad['IdEstadoLlamada']; ?>',
+						comentario: '<?php echo preg_replace('([^A-Za-z0-9 ])', '', $row_Actividad['ComentarioLlamada']); ?>', // SMM, 03/05/2022
 						informacionAdicional: '<?php echo $row_Actividad['InformacionAdicional']; ?>',
 						manualChange:'0'
 					},
@@ -491,12 +494,14 @@ if ($sw == 1) {
 								}else{
 									$("#btnGuardar").prop('disabled', false);
 									$("#btnPendientes").prop('disabled', false);
+
 	//								info.event.setExtendedProp('id',response)
 									info.event.setExtendedProp('estado','N')
 									info.event.setExtendedProp('llamadaServicio',info.draggedEl.dataset.docnum)
 									info.event.setExtendedProp('estadoLlamadaServ',info.draggedEl.dataset.estado)
 									info.event.setExtendedProp('informacionAdicional',info.draggedEl.dataset.info)
 									info.event.setExtendedProp('manualChange','0')
+
 									mostrarNotify('Se ha agregado una nueva actividad')
 								}
 	//							console.log(response)

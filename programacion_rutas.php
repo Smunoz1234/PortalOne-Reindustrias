@@ -69,7 +69,7 @@ if ($sw == 1) {
         array_push($all_resources, $row_resources['ID_Empleado']);
     }
     $resource = implode(',', $all_resources);
-	// Sin uso actualmente, contiene todos los técnicos.
+    // Sin uso actualmente, contiene todos los técnicos.
     // Stiven Muñoz Murillo
 
     $ParamEvento = array(
@@ -117,8 +117,8 @@ if ($sw == 1) {
     //Llamada de servicio
     $SQL_LlamadaServicio = Seleccionar("tbl_LlamadasServicios_Rutas", "DISTINCT DocNum", "Usuario='" . $_SESSION['CodUser'] . "' and IdEvento='" . $row_Evento['IdEvento'] . "'", "DocNum");
 
-	//Placas
-	$SQL_Placas = Seleccionar("tbl_LlamadasServicios_Rutas", "DISTINCT SerialArticuloLlamada", "Usuario='" . $_SESSION['CodUser'] . "' and IdEvento='" . $row_Evento['IdEvento'] . "'", "SerialArticuloLlamada");
+    //Placas
+    $SQL_Placas = Seleccionar("tbl_LlamadasServicios_Rutas", "DISTINCT SerialArticuloLlamada", "Usuario='" . $_SESSION['CodUser'] . "' and IdEvento='" . $row_Evento['IdEvento'] . "'", "SerialArticuloLlamada");
 
     //Series
     $SQL_Series = Seleccionar("tbl_LlamadasServicios_Rutas", "DISTINCT IdSeries, DeSeries", "Usuario='" . $_SESSION['CodUser'] . "' and IdEvento='" . $row_Evento['IdEvento'] . "'", "DeSeries");
@@ -576,15 +576,15 @@ $j = 0;
 				<?php if ($sw == 1) {
     while ($row_OT = sqlsrv_fetch_array($SQL_OT)) {?>
 					<div class="card card-body mt-lg-3 bg-light border-primary <?php if ($row_OT['Validacion'] == "OK") {echo "item-drag";}?>" style="min-height: 14rem;" data-title="<?php echo $row_OT['Etiqueta']; ?>" data-docnum="<?php echo $row_OT['DocNum']; ?>" data-estado="<?php echo $row_OT['IdEstadoLlamada']; ?>" data-info="<?php echo $row_OT['DeTipoLlamada']; ?>" data-validacion="<?php echo $row_OT['Validacion']; ?>"
-					data-tiempo="<?php echo $row_OT['CDU_TiempoTarea']; // Stiven Muñoz Murillo, 07/02/2022 ?>">
+					data-tiempo="<?php echo $row_OT['CDU_TiempoTarea']; ?>" data-comentario="<?php echo $row_OT['ComentarioLlamada']; ?>"> <!-- SMM, 03/05/2022 -->
 
 						<h5 class="card-title"><a href="llamada_servicio.php?id=<?php echo base64_encode($row_OT['ID_LlamadaServicio']); ?>&tl=1" target="_blank" title="Consultar Llamada de servicio" class="btn-xs btn-success fas fa-search"></a> <?php echo $row_OT['DocNum']; ?></h5>
 						<h6 class="card-subtitle mb-2 text-muted"><?php echo $row_OT['DeTipoLlamada']; ?></h6>
 						<p class="card-text mb-0 small text-primary"><?php echo $row_OT['DeArticuloLlamada']; ?></p>
 						<p class="card-text mb-0 small"><strong><?php echo $row_OT['NombreClienteLlamada']; ?></strong></p>
-						<p class="card-text mb-0 small"><span class="font-weight-bold">Serial Interno:</span> <?php echo $row_OT['SerialArticuloLlamada'];?></p>
-						<p class="card-text mb-0 small"><span class="font-weight-bold">Marca:</span> <?php echo $row_OT['CDU_Marca'];?></p>
-						<p class="card-text mb-0 small"><span class="font-weight-bold">Linea:</span> <?php echo $row_OT['CDU_Linea'];?></p>
+						<p class="card-text mb-0 small"><span class="font-weight-bold">Serial Interno:</span> <?php echo $row_OT['SerialArticuloLlamada']; ?></p>
+						<p class="card-text mb-0 small"><span class="font-weight-bold">Marca:</span> <?php echo $row_OT['CDU_Marca']; ?></p>
+						<p class="card-text mb-0 small"><span class="font-weight-bold">Linea:</span> <?php echo $row_OT['CDU_Linea']; ?></p>
 						<p class="card-text mb-0 small"><span class="font-weight-bold">Sucursal:</span> <?php echo $row_OT['NombreSucursal']; ?></p>
 						<p class="card-text mb-0 small"><span class="font-weight-bold">Ciudad:</span> <?php echo $row_OT['CiudadLlamada']; ?></p>
 						<p class="card-text mb-0 small"><span class="font-weight-bold">Fecha:</span> <?php echo $row_OT['FechaLlamada']->format('Y-m-d'); ?></p>
