@@ -966,7 +966,7 @@ function CrearLead(){
                 </div>
             </div>
          <div class="wrapper wrapper-content">
-			 
+
 			 <!-- Inicio, modalSN -->
 			<div class="modal inmodal fade" id="modalSN" tabindex="-1" role="dialog" aria-hidden="true">
 				<div class="modal-dialog modal-lg" style="width: 70% !important;">
@@ -1335,6 +1335,28 @@ if ($edit == 1 || $sw_error == 1) {
 					<div class="col-lg-4">
                     	<input name="BuscarItem" id="BuscarItem" type="text" class="form-control" placeholder="Escriba para buscar..." onBlur="javascript:BuscarArticulo(this.value);" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "readonly";}?>>
                	  	</div>
+
+					<!-- SMM, 04/05/2022 -->
+					<?php $filtro_consulta = "LineNum NoLinea, ItemCode IdArticulo, ItemName DeArticulo, Quantity Cantidad,
+					UnitMsr UnidadMedida, WhsCode IdAlmacen, WhsName DeAlmacen, OnHand Stock, Price Precio, PriceTax PrecioConIva,
+					TarifaIVA, VatSum IVATotalLinea, DiscPrcnt PorcenDescuento, LineTotal TotalLinea, CDU_AreasControladas AreasControladas,
+					OcrCode IdDimension1, OcrCode2 IdDimension2, OcrCode3 IdDimension3, OcrCode4 IdDimension4, OcrCode5 IdDimension5, PrjCode IdProyecto";?>
+
+					<?php if ($edit == 1) {?>
+						<?php $ID_OfertaVenta = $row['ID_OfertaVenta'];?>
+						<?php $Evento = $row['IdEvento'];?>
+						<?php $consulta_detalle = "SELECT $filtro_consulta FROM uvw_tbl_OfertaVentaDetalle WHERE ID_OfertaVenta='$ID_OfertaVenta' AND IdEvento='$Evento' AND Metodo <> 3";?>
+					<?php } else {?>
+						<?php $Usuario = $_SESSION['CodUser'];?>
+						<?php $CardCode = $row['CardCode'] ?? ($row_Cliente['CodigoCliente'] ?? '');?>
+						<?php $consulta_detalle = "SELECT $filtro_consulta FROM uvw_tbl_OfertaVentaDetalleCarrito WHERE Usuario='$Usuario' AND CardCode='$CardCode'";?>
+					<?php }?>
+
+					<div class="col-lg-1 pull-right">
+						<a href="exportar_excel.php?exp=20&Cons=<?php echo base64_encode($consulta_detalle); ?>">
+							<img src="css/exp_excel.png" width="50" height="30" alt="Exportar a Excel" title="Exportar a Excel"/>
+						</a>
+					</div>
 				</div>
 				<div class="tabs-container">
 					<ul class="nav nav-tabs">
@@ -1724,12 +1746,12 @@ if (!PermitirFuncion(403)) {?>
 		<?php if (PermitirFuncion(419) || ($edit == 0)) {?>
 			$("#CardName").easyAutocomplete(options);
 		<?php }?>
-		
+
 		<?php if ($dt_LS == 1 || $dt_OF == 1) {?>
 			$('#CardCode').trigger('change');
 			// $('#Almacen').trigger('change');
 		<?php }?>
-		
+
 		<?php if ($edit == 0) {?>
 			$('#Serie').trigger('change');
 	 	<?php }?>

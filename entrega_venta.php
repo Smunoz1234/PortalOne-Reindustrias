@@ -1298,6 +1298,28 @@ if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
 					<div class="col-lg-4">
                     	<input name="BuscarItem" id="BuscarItem" type="text" class="form-control" placeholder="Escriba para buscar..." <?php if ($edit == 0) {?>onBlur="javascript:BuscarArticulo(this.value);"<?php }?> <?php if ($edit == 1) {echo "readonly";}?>>
                	  	</div>
+
+					<!-- SMM, 04/05/2022 -->
+					<?php $filtro_consulta = "LineNum NoLinea, ItemCode IdArticulo, ItemName DeArticulo, Quantity Cantidad,
+					UnitMsr UnidadMedida, WhsCode IdAlmacen, WhsName DeAlmacen, OnHand Stock, Price Precio, PriceTax PrecioConIva,
+					TarifaIVA, VatSum IVATotalLinea, DiscPrcnt PorcenDescuento, LineTotal TotalLinea, CDU_AreasControladas AreasControladas,
+					OcrCode IdDimension1, OcrCode2 IdDimension2, OcrCode3 IdDimension3, OcrCode4 IdDimension4, OcrCode5 IdDimension5, PrjCode IdProyecto";?>
+
+					<?php if ($edit == 1) {?>
+						<?php $ID_EntregaVenta = $row['ID_EntregaVenta'];?>
+						<?php $Evento = $row['IdEvento'];?>
+						<?php $consulta_detalle = "SELECT $filtro_consulta FROM uvw_tbl_EntregaVentaDetalle WHERE ID_EntregaVenta='$ID_EntregaVenta' AND IdEvento='$Evento' AND Metodo <> 3";?>
+					<?php } else {?>
+						<?php $Usuario = $_SESSION['CodUser'];?>
+						<?php $CardCode = $row['CardCode'] ?? ($row_Cliente['CodigoCliente'] ?? '');?>
+						<?php $consulta_detalle = "SELECT $filtro_consulta FROM uvw_tbl_EntregaVentaDetalleCarrito WHERE Usuario='$Usuario' AND CardCode='$CardCode'";?>
+					<?php }?>
+
+					<div class="col-lg-1 pull-right">
+						<a href="exportar_excel.php?exp=20&Cons=<?php echo base64_encode($consulta_detalle); ?>">
+							<img src="css/exp_excel.png" width="50" height="30" alt="Exportar a Excel" title="Exportar a Excel"/>
+						</a>
+					</div>
 				</div>
 				<div class="tabs-container">
 					<ul class="nav nav-tabs">

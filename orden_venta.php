@@ -526,9 +526,11 @@ function BuscarArticulo(dato){
 	posicion_y=(screen.height/2)-(500/2);
 
 	let idlistaprecio = document.getElementById("IdListaPrecio").value; // SMM, 25/02/2022
+	let proyecto = document.getElementById("PrjCode").value; // SMM, 04/05/2022
+
 	if(dato!=""){
 		if((cardcode!="")&&(almacen!="")&&(idlistaprecio!="")){
-			remote=open('buscar_articulo.php?dato='+dato+'&cardcode='+cardcode+'&whscode='+almacen+'&idlistaprecio='+idlistaprecio+'&doctype=<?php if ($edit == 0) {echo "1";} else {echo "2";}?>&idordenventa=<?php if ($edit == 1) {echo base64_encode($row['ID_OrdenVenta']);} else {echo "0";}?>&evento=<?php if ($edit == 1) {echo base64_encode($row['IdEvento']);} else {echo "0";}?>&tipodoc=2&dim1='+dim1+'&dim2='+dim2+'&dim3='+dim3,'remote',"width=1200,height=500,location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=no,fullscreen=no,directories=no,status=yes,left="+posicion_x+",top="+posicion_y+"");
+			remote=open('buscar_articulo.php?dato='+dato+'&prjcode='+proyecto+'&cardcode='+cardcode+'&whscode='+almacen+'&idlistaprecio='+idlistaprecio+'&doctype=<?php if ($edit == 0) {echo "1";} else {echo "2";}?>&idordenventa=<?php if ($edit == 1) {echo base64_encode($row['ID_OrdenVenta']);} else {echo "0";}?>&evento=<?php if ($edit == 1) {echo base64_encode($row['IdEvento']);} else {echo "0";}?>&tipodoc=2&dim1='+dim1+'&dim2='+dim2+'&dim3='+dim3,'remote',"width=1200,height=500,location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=no,fullscreen=no,directories=no,status=yes,left="+posicion_x+",top="+posicion_y+"");
 			remote.focus();
 		}else{
 			Swal.fire({
@@ -1302,7 +1304,7 @@ if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
 							<?php if (sqlsrv_num_rows($SQL_Series) > 1) {?>
 								<option value=''>Seleccione...</option>
 							<?php }?>
-							
+
 							<?php while ($row_Series = sqlsrv_fetch_array($SQL_Series)) {?>
 								<option value="<?php echo $row_Series['IdSeries']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['IdSeries'])) && (strcmp($row_Series['IdSeries'], $row['IdSeries']) == 0)) {echo "selected=\"selected\"";} elseif (isset($_GET['Serie']) && (strcmp($row_Series['IdSeries'], base64_decode($_GET['Serie'])) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Series['DeSeries']; ?></option>
 						  	<?php }?>
@@ -1397,6 +1399,28 @@ if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
 					<div class="col-lg-4">
                     	<input name="BuscarItem" id="BuscarItem" type="text" class="form-control" placeholder="Escriba para buscar..." onBlur="javascript:BuscarArticulo(this.value);" <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || (!PermitirFuncion(402))) {echo "readonly";}?>>
                	  	</div>
+
+					<!-- SMM, 04/05/2022 -->
+					<?php $filtro_consulta = "LineNum NoLinea, ItemCode IdArticulo, ItemName DeArticulo, Quantity Cantidad,
+					UnitMsr UnidadMedida, WhsCode IdAlmacen, WhsName DeAlmacen, OnHand Stock, Price Precio, PriceTax PrecioConIva,
+					TarifaIVA, VatSum IVATotalLinea, DiscPrcnt PorcenDescuento, LineTotal TotalLinea, CDU_AreasControladas AreasControladas,
+					OcrCode IdDimension1, OcrCode2 IdDimension2, OcrCode3 IdDimension3, OcrCode4 IdDimension4, OcrCode5 IdDimension5, PrjCode IdProyecto";?>
+
+					<?php if ($edit == 1) {?>
+						<?php $ID_OrdenVenta = $row['ID_OrdenVenta'];?>
+                        <?php $Evento = $row['IdEvento'];?>
+						<?php $consulta_detalle = "SELECT $filtro_consulta FROM uvw_tbl_OrdenVentaDetalle WHERE ID_OrdenVenta='$ID_OrdenVenta' AND IdEvento='$Evento' AND Metodo <> 3";?>
+					<?php } else {?>
+						<?php $Usuario = $_SESSION['CodUser'];?>
+                        <?php $CardCode = $row['CardCode'] ?? ($row_Cliente['CodigoCliente'] ?? '');?>
+						<?php $consulta_detalle = "SELECT $filtro_consulta FROM uvw_tbl_OrdenVentaDetalleCarrito WHERE Usuario='$Usuario' AND CardCode='$CardCode'";?>
+					<?php }?>
+
+					<div class="col-lg-1 pull-right">
+						<a href="exportar_excel.php?exp=20&Cons=<?php echo base64_encode($consulta_detalle); ?>">
+							<img src="css/exp_excel.png" width="50" height="30" alt="Exportar a Excel" title="Exportar a Excel"/>
+						</a>
+					</div>
 				</div>
 				<div class="tabs-container">
 					<ul class="nav nav-tabs">
@@ -1529,8 +1553,8 @@ $return = QuitarParametrosURL($return, array("a"));
 					</div>
 					<?php if (($edit == 1) && ($row['Cod_Estado'] != 'C')) {?>
 					<div class="col-lg-3">
-						<div class="btn-group pull-right">
-                            <button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i class="fa fa-mail-forward"></i> Copiar a <i class="fa fa-caret-down"></i></button>
+						<div class="btn-group dropup pull-right">
+                            <button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i class="fa fa-mail-forward"></i> Copiar a <i class="fa fa-caret-up"></i></button>
                             <ul class="dropdown-menu">
                                 		<li><a class="alkin dropdown-item" href="entrega_venta.php?dt_OV=1&OV=<?php echo base64_encode($row['ID_OrdenVenta']); ?>&Referencia=<?php echo base64_encode($row['NumAtCard']); ?>&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Dim1=<?php echo base64_encode($row['OcrCode']); ?>&Dim2=<?php echo base64_encode($row['OcrCode2']); ?>&Dim3=<?php echo base64_encode($row['OcrCode3']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&LS=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>&CondicionPago=<?php echo base64_encode($row['IdCondicionPago']); ?>">Entrega de venta</a></li>
 								<li><a class="alkin dropdown-item d-venta" href="orden_venta.php?dt_OV=1&OV=<?php echo base64_encode($row['ID_OrdenVenta']); ?>&pag=<?php echo $_GET['pag']; ?>&return=<?php echo $_GET['return']; ?>&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Dim1=<?php echo base64_encode($row['OcrCode']); ?>&Dim2=<?php echo base64_encode($row['OcrCode2']); ?>&Dim3=<?php echo base64_encode($row['OcrCode3']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&LS=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>&CondicionPago=<?php echo base64_encode($row['IdCondicionPago']); ?>&Serie=<?php echo base64_encode($row['IdSeries']); ?>">Orden de venta (Duplicar)</a></li>
@@ -1542,8 +1566,8 @@ $return = QuitarParametrosURL($return, array("a"));
 					</div>
 					<?php } elseif (($edit == 1) && $row['Cod_Estado'] == 'C') {?>
 					<div class="col-lg-3">
-						<div class="btn-group pull-right">
-                            <button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i class="fa fa-mail-forward"></i> Copiar a <i class="fa fa-caret-down"></i></button>
+						<div class="btn-group dropup pull-right">
+                            <button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i class="fa fa-mail-forward"></i> Copiar a <i class="fa fa-caret-up"></i></button>
                             <ul class="dropdown-menu">
 								<li><a class="alkin dropdown-item d-venta" href="orden_venta.php?dt_OV=1&OV=<?php echo base64_encode($row['ID_OrdenVenta']); ?>&pag=<?php echo $_GET['pag']; ?>&return=<?php echo $_GET['return']; ?>&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Dim1=<?php echo base64_encode($row['OcrCode']); ?>&Dim2=<?php echo base64_encode($row['OcrCode2']); ?>&Dim3=<?php echo base64_encode($row['OcrCode3']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&LS=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>&CondicionPago=<?php echo base64_encode($row['IdCondicionPago']); ?>&Serie=<?php echo base64_encode($row['IdSeries']); ?>">Orden de venta (Duplicar)</a></li>
                             </ul>
