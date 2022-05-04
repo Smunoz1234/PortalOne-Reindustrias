@@ -126,9 +126,9 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
             "id_tipo_extranjero" => ObtenerValorDefecto(2, "IdTipoExtranjero"),
             "id_regimen_fiscal" => ObtenerValorDefecto(2, "IdRegimenFiscal"),
             "id_responsabilidad_fiscal" => ObtenerValorDefecto(2, "IdResponsabilidadFiscal"),
-			"id_residente" => ObtenerValorDefecto(2, "IdResidente"), // SMM, 12/04/2022
-			"id_info_tributaria" => ObtenerValorDefecto(2, "IdInfoTributaria"), // SMM, 12/04/2022
-			"id_actividad_economica_localizacion" => ObtenerValorDefecto(2, "IdActividadEconomicaLocalizacion"), // SMM, 19/04/2022
+            "id_residente" => ObtenerValorDefecto(2, "IdResidente"), // SMM, 12/04/2022
+            "id_info_tributaria" => ObtenerValorDefecto(2, "IdInfoTributaria"), // SMM, 12/04/2022
+            "id_actividad_economica_localizacion" => ObtenerValorDefecto(2, "IdActividadEconomicaLocalizacion"), // SMM, 19/04/2022
             "id_medio_pago" => $_POST['MedioPago'],
             "id_municipio" => ObtenerValorDefecto(2, "IdMunicipio"),
             "id_empleado_ventas" => intval($_SESSION['CodigoEmpVentas']),
@@ -375,7 +375,7 @@ while ($row_TipoSN = sqlsrv_fetch_array($SQL_TipoSN)) {?>
 											<option value="">Seleccione...</option>
 										<?php
 while ($row_TipoEntidad = sqlsrv_fetch_array($SQL_TipoEntidad)) {?>
-												<option value="<?php echo $row_TipoEntidad['ID_TipoEntidad']; ?>" <?php if (($sw_error == 1) && (strcmp($row_TipoEntidad['ID_TipoEntidad'], $_POST['TipoEntidad']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_TipoEntidad['NombreEntidad']; ?></option>
+												<option value="<?php echo $row_TipoEntidad['ID_TipoEntidad']; ?>" <?php if (($sw_error == 1) && (strcmp($row_TipoEntidad['ID_TipoEntidad'], $_POST['TipoEntidad']) == 0)) {echo "selected=\"selected\"";} elseif (strcmp($row_TipoEntidad['ID_TipoEntidad'], ObtenerValorDefecto(2, "IdTipoEntidad")) == 0) {echo "selected=\"selected\"";}?>><?php echo $row_TipoEntidad['NombreEntidad']; ?></option>
 										<?php }?>
 										</select>
 									</div>
@@ -385,7 +385,7 @@ while ($row_TipoEntidad = sqlsrv_fetch_array($SQL_TipoEntidad)) {?>
 											<option value="">Seleccione...</option>
 										<?php
 while ($row_TipoDoc = sqlsrv_fetch_array($SQL_TipoDoc)) {?>
-												<option value="<?php echo $row_TipoDoc['ID_TipoDocumento']; ?>" <?php if (($sw_error == 1) && (strcmp($row_TipoDoc['ID_TipoDocumento'], $_POST['TipoDocumento']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_TipoDoc['TipoDocumento']; ?></option>
+												<option value="<?php echo $row_TipoDoc['ID_TipoDocumento']; ?>" <?php if (($sw_error == 1) && (strcmp($row_TipoDoc['ID_TipoDocumento'], $_POST['TipoDocumento']) == 0)) {echo "selected=\"selected\"";} elseif (strcmp($row_TipoDoc['ID_TipoDocumento'], ObtenerValorDefecto(2, "IdTipoDocumento")) == 0) {echo "selected=\"selected\"";}?>><?php echo $row_TipoDoc['TipoDocumento']; ?></option>
 										<?php }?>
 										</select>
 									</div>
@@ -423,7 +423,7 @@ while ($row_TipoDoc = sqlsrv_fetch_array($SQL_TipoDoc)) {?>
 											<option value="">Seleccione...</option>
 										<?php
 while ($row_GruposClientes = sqlsrv_fetch_array($SQL_GruposClientes)) {?>
-												<option value="<?php echo $row_GruposClientes['GroupCode']; ?>" <?php if (($sw_error == 1) && (strcmp($row_GruposClientes['GroupCode'], $_POST['GroupCode']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_GruposClientes['GroupName']; ?></option>
+												<option value="<?php echo $row_GruposClientes['GroupCode']; ?>" <?php if (($sw_error == 1) && (strcmp($row_GruposClientes['GroupCode'], $_POST['GroupCode']) == 0)) {echo "selected=\"selected\"";} elseif (strcmp($row_GruposClientes['GroupCode'], ObtenerValorDefecto(2, "IdGrupoCliente")) == 0) {echo "selected=\"selected\"";}?>><?php echo $row_GruposClientes['GroupName']; ?></option>
 										<?php }?>
 										</select>
 									</div>
@@ -503,7 +503,7 @@ if ($sw_error == 1) {
 										<select name="Industria" class="form-control" id="Industria" required>
 										<?php
 while ($row_Industria = sqlsrv_fetch_array($SQL_Industria)) {?>
-												<option value="<?php echo $row_Industria['IdIndustria']; ?>" <?php if (($sw_error == 1) && (strcmp($row_Industria['IdIndustria'], $_POST['Industria']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Industria['DeIndustria']; ?></option>
+												<option value="<?php echo $row_Industria['IdIndustria']; ?>" <?php if (($sw_error == 1) && (strcmp($row_Industria['IdIndustria'], $_POST['Industria']) == 0)) {echo "selected=\"selected\"";} elseif (strcmp($row_Industria['IdIndustria'], ObtenerValorDefecto(2, "IdIndustria")) == 0) {echo "selected=\"selected\"";}?>><?php echo $row_Industria['DeIndustria']; ?></option>
 										<?php }?>
 										</select>
 									</div>
@@ -513,7 +513,7 @@ while ($row_Industria = sqlsrv_fetch_array($SQL_Industria)) {?>
 											<option value="">Seleccione...</option>
 										<?php
 while ($row_CondicionPago = sqlsrv_fetch_array($SQL_CondicionPago)) {?>
-												<option value="<?php echo $row_CondicionPago['IdCondicionPago']; ?>" <?php if (($sw_error == 1) && (strcmp($row_CondicionPago['IdCondicionPago'], $_POST['GroupNum']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_CondicionPago['NombreCondicion']; ?></option>
+												<option value="<?php echo $row_CondicionPago['IdCondicionPago']; ?>" <?php if (($sw_error == 1) && (strcmp($row_CondicionPago['IdCondicionPago'], $_POST['GroupNum']) == 0)) {echo "selected=\"selected\"";} elseif (strcmp($row_CondicionPago['IdCondicionPago'], ObtenerValorDefecto(2, "IdCondicionPago")) == 0) {echo "selected=\"selected\"";}?>><?php echo $row_CondicionPago['NombreCondicion']; ?></option>
 										<?php }?>
 										</select>
 									</div>
@@ -522,7 +522,7 @@ while ($row_CondicionPago = sqlsrv_fetch_array($SQL_CondicionPago)) {?>
 										<select name="MedioPago" class="form-control select2" id="MedioPago" required>
 										<?php
 while ($row_MedioPago = sqlsrv_fetch_array($SQL_MedioPago)) {?>
-												<option value="<?php echo $row_MedioPago['IdMedioPago']; ?>" <?php if (($sw_error == 1) && (strcmp($row_MedioPago['IdMedioPago'], $_POST['MedioPago']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_MedioPago['DeMedioPago']; ?></option>
+												<option value="<?php echo $row_MedioPago['IdMedioPago']; ?>" <?php if (($sw_error == 1) && (strcmp($row_MedioPago['IdMedioPago'], $_POST['MedioPago']) == 0)) {echo "selected=\"selected\"";} elseif (strcmp($row_MedioPago['IdMedioPago'], ObtenerValorDefecto(2, "IdMedioPago")) == 0) {echo "selected=\"selected\"";}?>><?php echo $row_MedioPago['DeMedioPago']; ?></option>
 										<?php }?>
 										</select>
 									</div>
