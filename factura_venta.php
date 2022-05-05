@@ -465,9 +465,13 @@ function BuscarArticulo(dato){
 	posicion_y=(screen.height/2)-(500/2);
 
 	let idlistaprecio = document.getElementById("IdListaPrecio").value; // SMM, 25/02/2022
+
+	let proyecto = document.getElementById("PrjCode").value; // SMM, 04/05/2022
+	let empleado = document.getElementById("EmpleadoVentas").value; // SMM, 04/05/2022
+
 	if(dato!=""){
 		if((cardcode!="")&&(almacen!="")&&(idlistaprecio!="")){
-			remote=open('buscar_articulo.php?dato='+dato+'&cardcode='+cardcode+'&whscode='+almacen+'&idlistaprecio='+idlistaprecio+'&doctype=<?php if ($edit == 0) {echo "15";} else {echo "16";}?>&idfacturaventa=<?php if ($edit == 1) {echo base64_encode($row['ID_FacturaVenta']);} else {echo "0";}?>&evento=<?php if ($edit == 1) {echo base64_encode($row['IdEvento']);} else {echo "0";}?>&tipodoc=2&dim1='+dim1+'&dim2='+dim2+'&dim3='+dim3,'remote',"width=1200,height=500,location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=no,fullscreen=no,directories=no,status=yes,left="+posicion_x+",top="+posicion_y+"");
+			remote=open('buscar_articulo.php?dato='+dato+'&prjcode='+proyecto+'&empventas='+empleado+'&cardcode='+cardcode+'&whscode='+almacen+'&idlistaprecio='+idlistaprecio+'&doctype=<?php if ($edit == 0) {echo "15";} else {echo "16";}?>&idfacturaventa=<?php if ($edit == 1) {echo base64_encode($row['ID_FacturaVenta']);} else {echo "0";}?>&evento=<?php if ($edit == 1) {echo base64_encode($row['IdEvento']);} else {echo "0";}?>&tipodoc=2&dim1='+dim1+'&dim2='+dim2+'&dim3='+dim3,'remote',"width=1200,height=500,location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=no,fullscreen=no,directories=no,status=yes,left="+posicion_x+",top="+posicion_y+"");
 			remote.focus();
 		}else{
 			Swal.fire({
@@ -522,6 +526,10 @@ function MostrarRet(){
 
 			// Lista de precio en el SN, SMM 20/01/2022
 			let cardcode = carcode;
+
+			// SMM, 05/05/2022
+			document.cookie = `cardcode=${cardcode}`;
+			
 			$.ajax({
 				url:"ajx_buscar_datos_json.php",
 				data: {
@@ -1248,18 +1256,19 @@ if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
 					TarifaIVA, VatSum IVATotalLinea, DiscPrcnt PorcenDescuento, LineTotal TotalLinea, CDU_AreasControladas AreasControladas,
 					OcrCode IdDimension1, OcrCode2 IdDimension2, OcrCode3 IdDimension3, OcrCode4 IdDimension4, OcrCode5 IdDimension5, PrjCode IdProyecto";?>
 
+					<?php $cookie_cardcode = 0;?>
 					<?php if ($edit == 1) {?>
 						<?php $ID_FacturaVenta = $row['ID_FacturaVenta'];?>
 						<?php $Evento = $row['IdEvento'];?>
 						<?php $consulta_detalle = "SELECT $filtro_consulta FROM uvw_tbl_FacturaVentaDetalle WHERE ID_FacturaVenta='$ID_FacturaVenta' AND IdEvento='$Evento' AND Metodo <> 3";?>
 					<?php } else {?>
 						<?php $Usuario = $_SESSION['CodUser'];?>
-						<?php $CardCode = $row['CardCode'] ?? ($row_Cliente['CodigoCliente'] ?? '');?>
-						<?php $consulta_detalle = "SELECT $filtro_consulta FROM uvw_tbl_FacturaVentaDetalleCarrito WHERE Usuario='$Usuario' AND CardCode='$CardCode'";?>
+						<?php $cookie_cardcode = 1;?>
+						<?php $consulta_detalle = "SELECT $filtro_consulta FROM uvw_tbl_FacturaVentaDetalleCarrito WHERE Usuario='$Usuario'";?>
 					<?php }?>
 
 					<div class="col-lg-1 pull-right">
-						<a href="exportar_excel.php?exp=20&Cons=<?php echo base64_encode($consulta_detalle); ?>">
+						<a href="exportar_excel.php?exp=20&cookie_cardcode=<?php echo $cookie_cardcode; ?>&Cons=<?php echo base64_encode($consulta_detalle); ?>">
 							<img src="css/exp_excel.png" width="50" height="30" alt="Exportar a Excel" title="Exportar a Excel"/>
 						</a>
 					</div>
