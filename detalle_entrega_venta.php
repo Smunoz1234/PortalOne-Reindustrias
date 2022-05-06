@@ -200,7 +200,6 @@ function CalcularLinea(line, totalizar=true) {
 	let PrcDescDecimal = parseFloat(PrcDescLinea.value.replace(/,/g, ''));
 	let TotalDecimal = parseFloat(TotalLinea.value.replace(/,/g, ''));
 
-
 	let SubTotalLinea = PrecioDecimal * CantDecimal; // SMM, 12/04/2022
 	let TotalDescLinea = (PrcDescDecimal * SubTotalLinea) / 100;
 	let SubTotalDesc = SubTotalLinea - TotalDescLinea; // Para, Totalizar()
@@ -225,16 +224,17 @@ function CalcularLinea(line, totalizar=true) {
 
 	let IvaLinea = NuevoValorIVA * CantDecimal; // Para, Totalizar()
 
-	if(!totalizar) {
+	<?php if ($type != 1) {?> // SMM, 05/05/2022
 		if(number_format(SubTotalDesc, 2) != number_format(TotalDecimal, 2)) {
 			console.log(`${number_format(SubTotalDesc, 2)} != ${number_format(TotalDecimal, 2)}`);
 			$(`#ControlDesc${line}`).prop("checked", true);
 
 		} else { // SMM, 15/04/2022
 			console.log(`${number_format(SubTotalDesc, 2)} == ${number_format(TotalDecimal, 2)}`);
-			$(`#ControlDesc${line}`).prop("checked", false);
+			// $(`#ControlDesc${line}`).prop("checked", false);
 		}
-	}
+	<?php }?>
+
 	ActualizarDatos('ControlDesc', line, Linea.value);
 
 	let NuevoSubTotal = SubTotalDesc;
@@ -263,7 +263,7 @@ function Totalizar(num, totalizar=true) {
 		let IvaLinea = ValoresLinea[1];
 
 		SubTotal = parseFloat(SubTotal) + parseFloat(NuevoSubTotal);
-		
+
 		let Exento = document.getElementById(`SujetoImpuesto${i}`);
 		if(!Exento.checked) {
 			Iva = parseFloat(Iva) + parseFloat(IvaLinea);
@@ -353,6 +353,9 @@ function ActStockAlmacen(name,id,line){//Actualizar el stock al cambiar el almac
 			if(response!="Error"){
 				document.getElementById("OnHand"+id).value=number_format(response,2);
 			}
+		},
+		error: function(error){
+			console.error(error.responseText);
 		}
 	});
 }
@@ -669,7 +672,7 @@ if ($sw == 1) {
 
         $i++;}
 
-	echo "<script>SujetoImpuesto();</script>";
+    echo "<script>SujetoImpuesto();</script>";
     echo "<script> Totalizar(" . ($i - 1) . ", false); </script>";
 }
 ?>
@@ -730,7 +733,7 @@ function CalcularTotal(line, totalizar=true){
 	if(CantLinea.value > 0) {
 		if(totalizar) {
 			$(`#ControlDesc${line}`).prop("checked", false);
-			
+
 			// alert("Totalizar");
 			Totalizar(<?php if (isset($i)) {echo $i - 1;} else {echo 0;}?>);
 		} else { // SMM 28/03/2022
@@ -745,6 +748,9 @@ function CalcularTotal(line, totalizar=true){
 
 				PrcDescLinea.value = number_format(PrcDesc, 4);
 				TotalLinea.value = number_format(TotalDecimal, 2);
+
+				// SMM, 04/05/2022
+				$(`#ControlDesc${line}`).prop("checked", true);
 
 				// SMM, 11/04/2022
 				ActualizarDatos('DiscPrcnt', line, Linea.value, 4);

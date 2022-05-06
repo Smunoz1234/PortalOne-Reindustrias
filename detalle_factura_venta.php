@@ -146,16 +146,17 @@ function CalcularLinea(line, totalizar=true) {
 
 	let IvaLinea = NuevoValorIVA * CantDecimal; // Para, Totalizar()
 
-	if(!totalizar) {
+	<?php if ($type != 1) {?> // SMM, 05/05/2022
 		if(number_format(SubTotalDesc, 2) != number_format(TotalDecimal, 2)) {
 			console.log(`${number_format(SubTotalDesc, 2)} != ${number_format(TotalDecimal, 2)}`);
 			$(`#ControlDesc${line}`).prop("checked", true);
 
 		} else { // SMM, 15/04/2022
 			console.log(`${number_format(SubTotalDesc, 2)} == ${number_format(TotalDecimal, 2)}`);
-			$(`#ControlDesc${line}`).prop("checked", false);
+			// $(`#ControlDesc${line}`).prop("checked", false);
 		}
-	}
+	<?php }?>
+	
 	ActualizarDatos('ControlDesc', line, Linea.value);
 
 	let NuevoSubTotal = SubTotalDesc;
@@ -538,7 +539,7 @@ if ($sw == 1) {
 
         // Cambio de Stock en Lote
         $LineNum = $row['LineNum'];
-        echo "<script> ActStockAlmacen('WhsCode', $i, $LineNum); </script>";
+        // echo "<script> ActStockAlmacen('WhsCode', $i, $LineNum); </script>";
         // SMM, 30/03/2022
 
         $i++;}
@@ -613,6 +614,9 @@ function CalcularTotal(line, totalizar=true){
 
 				PrcDescLinea.value = number_format(PrcDesc, 4);
 				TotalLinea.value = number_format(TotalDecimal, 2);
+
+				// SMM, 04/05/2022
+				$(`#ControlDesc${line}`).prop("checked", true);
 
 				// SMM, 11/04/2022
 				ActualizarDatos('DiscPrcnt', line, Linea.value, 4);

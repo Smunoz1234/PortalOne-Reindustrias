@@ -164,16 +164,17 @@ function CalcularLinea(line, totalizar=true) {
 
 	let IvaLinea = NuevoValorIVA * CantDecimal; // Para, Totalizar()
 
-	if(!totalizar) {
+	<?php if ($type != 1) {?> // SMM, 05/05/2022
 		if(number_format(SubTotalDesc, 2) != number_format(TotalDecimal, 2)) {
 			console.log(`${number_format(SubTotalDesc, 2)} != ${number_format(TotalDecimal, 2)}`);
 			$(`#ControlDesc${line}`).prop("checked", true);
 
 		} else { // SMM, 15/04/2022
 			console.log(`${number_format(SubTotalDesc, 2)} == ${number_format(TotalDecimal, 2)}`);
-			$(`#ControlDesc${line}`).prop("checked", false);
+			// $(`#ControlDesc${line}`).prop("checked", false);
 		}
-	}
+	<?php }?>
+
 	ActualizarDatos('ControlDesc', line, Linea.value);
 
 	let NuevoSubTotal = SubTotalDesc;
@@ -309,6 +310,9 @@ function ActStockAlmacen(name,id,line){//Actualizar el stock al cambiar el almac
 			if(response!="Error"){
 				document.getElementById("OnHand"+id).value=number_format(response,2);
 			}
+		},
+		error: function(error){
+			console.error(error.responseText);
 		}
 	});
 }
@@ -743,6 +747,9 @@ function CalcularTotal(line, totalizar=true){
 
 				PrcDescLinea.value = number_format(PrcDesc, 4);
 				TotalLinea.value = number_format(TotalDecimal, 2);
+
+				// SMM, 04/05/2022
+				$(`#ControlDesc${line}`).prop("checked", true);
 
 				// SMM, 11/04/2022
 				ActualizarDatos('DiscPrcnt', line, Linea.value, 4);

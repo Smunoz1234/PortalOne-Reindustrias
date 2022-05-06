@@ -164,16 +164,17 @@ function CalcularLinea(line, totalizar=true) {
 
 	let IvaLinea = NuevoValorIVA * CantDecimal; // Para, Totalizar()
 
-	if(!totalizar) {
+	<?php if ($type != 1) {?> // SMM, 05/05/2022
 		if(number_format(SubTotalDesc, 2) != number_format(TotalDecimal, 2)) {
 			console.log(`${number_format(SubTotalDesc, 2)} != ${number_format(TotalDecimal, 2)}`);
 			$(`#ControlDesc${line}`).prop("checked", true);
 
 		} else { // SMM, 15/04/2022
 			console.log(`${number_format(SubTotalDesc, 2)} == ${number_format(TotalDecimal, 2)}`);
-			$(`#ControlDesc${line}`).prop("checked", false);
+			// $(`#ControlDesc${line}`).prop("checked", false);
 		}
-	}
+	<?php }?>
+
 	ActualizarDatos('ControlDesc', line, Linea.value);
 
 	let NuevoSubTotal = SubTotalDesc;
@@ -275,10 +276,14 @@ function SujetoImpuesto() {
 		if(exento == 'N') {
 			console.log("Cliente extranjero, exento de IVA");
 
-			<?php if ($type == 1) {?>
-				$(".chkExento").prop("checked", true);
-				$(".chkExento").trigger('change');
-			<?php }?>
+			$(".chkExento").each(function() {
+				// console.log($(this).data("exento"));
+
+				if($(this).data("exento") != 'Y') {
+					$(this).prop("checked", true);
+					$(this).trigger('change');
+				}
+			});
 		}
 }
 // SMM, 23/04/2022
@@ -291,6 +296,9 @@ function ActStockAlmacen(name,id,line){//Actualizar el stock al cambiar el almac
 			if(response!="Error"){
 				document.getElementById("OnHand"+id).value=number_format(response,2);
 			}
+		},
+		error: function(error){
+			console.error(error.responseText);
 		}
 	});
 }
@@ -313,7 +321,27 @@ function BorrarLinea(){
 				console.log(response);
 			},
 			error: function(error){
-				console.error(error);
+				console.error(error.responseText);
+			}
+		});
+	}
+}
+
+// SMM, 27/04/2022
+function DuplicarLinea(){
+	if(confirm(String.fromCharCode(191)+'Est'+String.fromCharCode(225)+' seguro que desea duplicar estos registros?')){
+		$.ajax({
+			type: "GET",
+			<?php if ($type == 1) {?>
+			url: "includes/procedimientos.php?type=56&edit=<?php echo $type; ?>&linenum="+json+"&cardcode=<?php echo $CardCode; ?>",
+			<?php } else {?>
+			url: "includes/procedimientos.php?type=56&edit=<?php echo $type; ?>&linenum="+json+"&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
+			<?php }?>
+			success: function(response){
+				window.location.href="detalle_oferta_venta.php?<?php echo $_SERVER['QUERY_STRING']; ?>";
+			},
+			error: function(error) {
+				console.log(error.responseText);
 			}
 		});
 	}
@@ -343,8 +371,10 @@ function Seleccionar(ID){
 	}
 	if(cant>0){
 		$("#btnBorrarLineas").prop('disabled', false);
+		$("#btnDuplicarLineas").prop('disabled', false);
 	}else{
 		$("#btnBorrarLineas").prop('disabled', true);
+		$("#btnDuplicarLineas").prop('disabled', true);
 	}
 
 	//console.log(json);
@@ -357,6 +387,7 @@ function SeleccionarTodos(){
 		json=[];
 		cant=0;
 		$("#btnBorrarLineas").prop('disabled', true);
+		$("#btnDuplicarLineas").prop('disabled', true);
 	}
 	$(".chkSel:not(:disabled)").prop("checked", Check);
 
@@ -385,6 +416,7 @@ function ConsultarArticulo(articulo){
 				<th class="text-center form-inline w-150">
 					<div class="checkbox checkbox-success"><input type="checkbox" id="chkAll" value="" onChange="SeleccionarTodos();" title="Seleccionar todos"><label></label></div>
 					<button type="button" id="btnBorrarLineas" title="Borrar lineas" class="btn btn-danger btn-xs" disabled onClick="BorrarLinea();"><i class="fa fa-trash"></i></button>
+					<button type="button" id="btnDuplicarLineas" title="Duplicar lineas" class="btn btn-success btn-xs" disabled onClick="DuplicarLinea();"><i class="fa fa-copy"></i></button>
 				</th> <!-- SMM, 08/03/2022 -->
 				<th>Código artículo</th>
 				<th>Nombre artículo</th>
@@ -567,7 +599,7 @@ if ($sw == 1) {
 			</td>
 
 			<td>
-				<input type="checkbox" id="SujetoImpuesto<?php echo $i; ?>" name="SujetoImpuesto[]" class="form-control chkExento" onChange="ActualizarDatos('SujetoImpuesto',<?php echo $i; ?>, <?php echo $row['LineNum']; ?>);" <?php if (isset($row['SujetoImpuesto']) && ($row['SujetoImpuesto'] == "N")) {echo "checked";}?> disabled>
+				<input type="checkbox" id="SujetoImpuesto<?php echo $i; ?>" name="SujetoImpuesto[]" class="form-control chkExento" onChange="ActualizarDatos('SujetoImpuesto',<?php echo $i; ?>, <?php echo $row['LineNum']; ?>);" <?php if (isset($row['SujetoImpuesto']) && ($row['SujetoImpuesto'] == "N")) {echo "checked";}?> data-exento="<?php echo $row['SujetoImpuesto']; ?>" disabled>
 			</td>
 
 			<td><?php if ($row['Metodo'] == 0) {?><i class="fa fa-check-circle text-info" title="Sincronizado con SAP"></i><?php } else {?><i class="fa fa-times-circle text-danger" title="Aún no enviado a SAP"></i><?php }?></td>
@@ -656,6 +688,9 @@ function CalcularTotal(line, totalizar=true){
 
 				PrcDescLinea.value = number_format(PrcDesc, 4);
 				TotalLinea.value = number_format(TotalDecimal, 2);
+
+				// SMM, 04/05/2022
+				$(`#ControlDesc${line}`).prop("checked", true);
 
 				// SMM, 11/04/2022
 				ActualizarDatos('DiscPrcnt', line, Linea.value, 4);
