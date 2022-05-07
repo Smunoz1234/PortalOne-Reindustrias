@@ -73,7 +73,7 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
             //$Cons="Select * From uvw_Sap_tbl_Clientes_Sucursales Where CodigoCliente='".$_GET['id']."' and TipoDireccion='".$type_dir."' Order by TipoDireccion, NombreSucursal";
             //$SQL=sqlsrv_query($conexion,$Cons);
             if ($SQL) {
-                echo "<option value='-1'>Seleccione...</option>";
+                echo "<option value=''>Seleccione...</option>";
                 while ($row = sqlsrv_fetch_array($SQL)) {
                     if (($row['TipoDireccion'] == "B") && ($sw_dirB == 0)) {
                         echo "<optgroup label='Dirección de facturas'></optgroup>";
