@@ -167,11 +167,17 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
         if (!isset($_GET['id']) || ($_GET['id'] == "")) {
             echo "<option value=''>Seleccione...</option>";
         } else {
+            $asistente = $_GET['asistente'] ?? ''; // SMM, 07/05/2022
+
             $Cons = "Select * From uvw_Sap_tbl_SN_Municipio Where DeDepartamento='" . $_GET['id'] . "' Order by DE_Municipio";
             $SQL = sqlsrv_query($conexion, $Cons);
             if ($SQL) {
                 while ($row = sqlsrv_fetch_array($SQL)) {
-                    echo "<option value=\"" . $row['ID_Municipio'] . "\">" . $row['DE_Municipio'] . "</option>";
+                    if ($asistente != '' && (strcmp($row['ID_Municipio'], ObtenerValorDefecto(2, 'IdMunicipio')) == 0)) {
+                        echo "<option value=\"" . $row['ID_Municipio'] . "\" selected=\"selected\">" . $row['DE_Municipio'] . "</option>"; // SMM, 07/05/2022
+                    } else {
+                        echo "<option value=\"" . $row['ID_Municipio'] . "\">" . $row['DE_Municipio'] . "</option>";
+                    }
                 }
             } else {
                 echo "<option value=''>Seleccione...</option>";
@@ -262,12 +268,18 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
         if (!isset($_GET['id']) || ($_GET['id'] == "")) {
             echo "<option value=''>Seleccione...</option>";
         } else {
+            $asistente = $_GET['asistente'] ?? ''; // SMM, 07/05/2022
+
             $Cons = "Select * From uvw_Sap_tbl_Barrios Where IdMunicipio='" . $_GET['id'] . "' Order by DeBarrio";
             $SQL = sqlsrv_query($conexion, $Cons);
             if ($SQL) {
                 echo "<option value=''>Seleccione...</option>";
                 while ($row = sqlsrv_fetch_array($SQL)) {
-                    echo "<option value=\"" . $row['IdBarrio'] . "\">" . $row['DeBarrio'] . "</option>";
+                    if ($asistente != '' && (strcmp($row['IdBarrio'], ObtenerValorDefecto(2, 'IdBarrio')) == 0)) {
+                        echo "<option value=\"" . $row['IdBarrio'] . "\" selected=\"selected\">" . $row['DeBarrio'] . "</option>"; // SMM, 07/05/2022
+                    } else {
+                        echo "<option value=\"" . $row['IdBarrio'] . "\">" . $row['DeBarrio'] . "</option>";
+                    }
                 }
             } else {
                 echo "<option value=''>Seleccione...</option>";

@@ -664,19 +664,21 @@ function ConsultarDatosCliente(){
 					$('.ibox-content').toggleClass('sk-loading', false);
 				}
 			});
+			<?php }?>
 
-			// Recargar condición de pago.
-			$.ajax({
-				type: "POST",
-				url: "ajx_cbo_select.php?type=7&id="+carcode,
-				success: function(response){
-					$('#CondicionPago').html(response).fadeIn();
-				},
-				error: function(error) {
-					console.error(error.responseText);
-					$('.ibox-content').toggleClass('sk-loading', false);
-				}
-			});
+			<?php if ($edit == 0 && $sw_error == 0 && $dt_OF == 0) { // Recargar condición de pago. ?>
+				$.ajax({
+					type: "POST",
+					url: "ajx_cbo_select.php?type=7&id="+carcode,
+					success: function(response){
+						$('#CondicionPago').html(response).fadeIn();
+					},
+					error: function(error) {
+						console.error(error.responseText);
+						$('.ibox-content').toggleClass('sk-loading', false);
+					}
+				});
+				// En la llamada no hay condición de pago, por lo que se carga desde el cliente.
 			<?php }?>
 
 			<?php if ($edit == 0) {?>
@@ -1247,9 +1249,9 @@ if ($edit == 1 || $sw_error == 1) {
 							  <?php }?>
 							</select>
 						</div>
-						<label class="col-lg-1 control-label">Sucursal facturación</label>
+						<label class="col-lg-1 control-label">Sucursal facturación <span class="text-danger">*</span></label>
 						<div class="col-lg-5">
-							<select name="SucursalFacturacion" class="form-control select2" id="SucursalFacturacion" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "disabled='disabled'";}?>>
+							<select name="SucursalFacturacion" class="form-control select2" id="SucursalFacturacion" required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "disabled='disabled'";}?>>
 							      <option value="">Seleccione...</option>
 							  <?php if ($edit == 1 || $sw_error == 1 || $dt_LS == 1 || $dt_OF == 1) {?>
 								  <optgroup label='Dirección de facturas'></optgroup>
@@ -1408,7 +1410,7 @@ if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
 					<!-- Inicio, Proyecto -->
 					<label class="col-lg-1 control-label">Proyecto <span class="text-danger">*</span></label>
 					<div class="col-lg-3">
-						<select id="PrjCode" name="PrjCode" class="form-control select2" form="CrearOrdenVenta" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "disabled='disabled'";}?>>
+						<select id="PrjCode" name="PrjCode" class="form-control select2" required="required" form="CrearOrdenVenta" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "disabled='disabled'";}?>>
 								<option value="">(NINGUNO)</option>
 							<?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) {?>
 								<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if ((isset($row['PrjCode'])) && (strcmp($row_Proyecto['IdProyecto'], $row['PrjCode']) == 0)) {echo "selected=\"selected\"";} elseif ((isset($_GET['Proyecto'])) && (strcmp($row_Proyecto['IdProyecto'], base64_decode($_GET['Proyecto'])) == 0)) {echo "selected=\"selected\"";}?>>

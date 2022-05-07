@@ -266,7 +266,7 @@ $SQL_Industria = Seleccionar('uvw_Sap_tbl_Clientes_Industrias', '*', '', 'DeIndu
 $SQL_MedioPago = Seleccionar('tbl_MedioPagoSN', '*', '', 'DeMedioPago');
 
 //Departamentos
-$SQL_Dptos = Seleccionar('uvw_Sap_tbl_SN_Municipio', 'Distinct DeDepartamento', '', 'DeDepartamento');
+$SQL_Dptos = Seleccionar('uvw_Sap_tbl_SN_Municipio', 'Distinct DeDepartamento, IdDepartamento', '', 'DeDepartamento');
 
 //Propiedades
 $SQL_Prop = Seleccionar('uvw_Sap_tbl_SN_ListaPropiedades', '*');
@@ -449,7 +449,7 @@ while ($row_GruposClientes = sqlsrv_fetch_array($SQL_GruposClientes)) {?>
 											<option value="">Seleccione...</option>
 										<?php
 while ($row_Dptos = sqlsrv_fetch_array($SQL_Dptos)) {?>
-												<option value="<?php echo $row_Dptos['DeDepartamento']; ?>" <?php if (($sw_error == 1) && (strcmp($row_Dptos['DeDepartamento'], $_POST['County']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Dptos['DeDepartamento']; ?></option>
+												<option value="<?php echo $row_Dptos['DeDepartamento']; ?>" <?php if (($sw_error == 1) && (strcmp($row_Dptos['DeDepartamento'], $_POST['County']) == 0)) {echo "selected=\"selected\"";} elseif (strcmp($row_Dptos['IdDepartamento'], ObtenerValorDefecto(2, "IdDepartamento")) == 0) {echo "selected=\"selected\"";}?>><?php echo $row_Dptos['DeDepartamento']; ?></option>
 										<?php }?>
 										</select>
 									</div>
@@ -603,6 +603,9 @@ while ($row = sqlsrv_fetch_array($SQL_Prop)) {?>
 
 <script>
  $(document).ready(function(){
+	$('#County').trigger('change'); // SMM, 07/05/2022
+	$('#City').trigger('change'); // SMM, 07/05/2022
+
 	 $("#FrmCrear").validate({
 		submitHandler: function(form){
 			Swal.fire({
@@ -762,7 +765,7 @@ function BuscarCiudad(){
 	$('.ibox-content').toggleClass('sk-loading',true);
 	$.ajax({
 		type: "POST",
-		url: "ajx_cbo_select.php?type=8&id="+document.getElementById('County').value,
+		url: "ajx_cbo_select.php?type=8&id="+document.getElementById('County').value+"&asistente=1",
 		success: function(response){
 			$('#City').html(response).fadeIn();
 			$('#City').trigger('change');
@@ -775,7 +778,7 @@ function BuscarBarrio(){
 	$('.ibox-content').toggleClass('sk-loading',true);
 	$.ajax({
 		type: "POST",
-		url: "ajx_cbo_select.php?type=13&id="+document.getElementById('City').value,
+		url: "ajx_cbo_select.php?type=13&id="+document.getElementById('City').value+"&asistente=1",
 		success: function(response){
 			$('#Block').html(response).fadeIn();
 			$('#Block').trigger('change');
