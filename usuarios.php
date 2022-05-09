@@ -339,7 +339,7 @@ if ($edit == 1) { //Editar usuario
 
     //Proyetos asociados
     $SQL_ProyectosUsuario = Seleccionar("uvw_tbl_UsuariosProyectos", "*", "[ID_Usuario]='" . $IdUsuario . "'", 'DeProyecto');
-	// $SQL_ProyectosUsuario = Seleccionar("uvw_tbl_UsuariosProyectos", "*", "[ID_Usuario]='" . $IdUsuario . "'", 'DeProyecto', 'ASC', 1, 1);
+    // $SQL_ProyectosUsuario = Seleccionar("uvw_tbl_UsuariosProyectos", "*", "[ID_Usuario]='" . $IdUsuario . "'", 'DeProyecto', 'ASC', 1, 1);
     $row_ProyectosUsuario = sqlsrv_fetch_array($SQL_ProyectosUsuario);
 }
 
@@ -703,7 +703,7 @@ $return = QuitarParametrosURL($return, array("a"));
 									</div>
 									<div class="form-group">
 										<label class="col-lg-1 control-label">Time Out</label>
-										<div class="col-lg-3"><input name="TimeOut" type="text" required="required" class="form-control" id="TimeOut" value="900" maxlength="4" value="<?php if ($edit == 1) {echo $row['TimeOut'];}?>"></div>
+										<div class="col-lg-3"><input name="TimeOut" type="text" required="required" class="form-control" id="TimeOut" maxlength="4" value="<?php if ($edit == 1) {echo $row['TimeOut'] ?? 900;}?>"></div>
 										<label class="col-lg-1 control-label">Código SAP</label>
 										<div class="col-lg-3">
 											<select name="CodigoSAP" class="form-control select2" id="CodigoSAP">
@@ -897,11 +897,11 @@ while ($row_TiposDocumentos = sqlsrv_fetch_array($SQL_TiposDocumentos)) {
 										  <?php while ($row_Proyectos = sqlsrv_fetch_array($SQL_Proyectos)) {?>
 												<option value="<?php echo $row_Proyectos['IdProyecto']; ?>"
 												<?php if ($edit == 1) {
-														if (isset($row_ProyectosUsuario['IdProyecto']) && (strcmp($row_Proyectos['IdProyecto'], $row_ProyectosUsuario['IdProyecto']) == 0)) {
-															echo "selected=\"selected\""; 
-															$row_ProyectosUsuario = sqlsrv_fetch_array($SQL_ProyectosUsuario);
-														}
-													}?>>
+    if (isset($row_ProyectosUsuario['IdProyecto']) && (strcmp($row_Proyectos['IdProyecto'], $row_ProyectosUsuario['IdProyecto']) == 0)) {
+        echo "selected=\"selected\"";
+        $row_ProyectosUsuario = sqlsrv_fetch_array($SQL_ProyectosUsuario);
+    }
+}?>>
 													<?php echo $row_Proyectos['DeProyecto']; ?>
 												</option>
 										  <?php }?>
