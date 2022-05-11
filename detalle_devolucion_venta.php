@@ -286,7 +286,7 @@ function CalcularLinea(line, totalizar=true) {
 	let PrecioIVADecimal = parseFloat(PrecioIVALinea.value.replace(/,/g, '')); // Useless
 	let TarifaIVADecimal = parseFloat(TarifaIVALinea.value.replace(/,/g, ''));
 	let ValorIVADecimal = parseFloat(ValorIVALinea.value.replace(/,/g, '')); // Useless
-	let PrecioDescDecimal = parseFloat(PrecioDescLinea.value.replace(/,/g, '')); // Useless
+	let PrecioDescDecimal = parseFloat(PrecioDescLinea.value.replace(/,/g, ''));
 	let PrcDescDecimal = parseFloat(PrcDescLinea.value.replace(/,/g, ''));
 	let TotalDecimal = parseFloat(TotalLinea.value.replace(/,/g, ''));
 
@@ -316,13 +316,15 @@ function CalcularLinea(line, totalizar=true) {
 	let IvaLinea = NuevoValorIVA * CantDecimal; // Para, Totalizar()
 
 	<?php if ($type != 1) {?> // SMM, 05/05/2022
-		if(number_format(SubTotalDesc, 2) != number_format(TotalDecimal, 2)) {
-			console.log(`${number_format(SubTotalDesc, 2)} != ${number_format(TotalDecimal, 2)}`);
-			$(`#ControlDesc${line}`).prop("checked", true);
+		if(!totalizar) {
+			if(number_format(SubTotalDesc, 2) != number_format(TotalDecimal, 2)) {
+				console.log(`${number_format(SubTotalDesc, 2)} != ${number_format(TotalDecimal, 2)}`);
+				$(`#ControlDesc${line}`).prop("checked", true);
 
-		} else { // SMM, 15/04/2022
-			console.log(`${number_format(SubTotalDesc, 2)} == ${number_format(TotalDecimal, 2)}`);
-			// $(`#ControlDesc${line}`).prop("checked", false);
+			} else { // SMM, 15/04/2022
+				console.log(`${number_format(SubTotalDesc, 2)} == ${number_format(TotalDecimal, 2)}`);
+				// $(`#ControlDesc${line}`).prop("checked", false);
+			}
 		}
 	<?php }?>
 
@@ -337,7 +339,7 @@ function CalcularLinea(line, totalizar=true) {
 		NuevoIVA = TotalDecimal * (TarifaIVADecimal / 100);
 	}
 
-	return [NuevoSubTotal, NuevoIVA, Linea, SubTotalLinea, CantLinea, PrcDescLinea, TotalLinea, TotalDecimal];
+	return [NuevoSubTotal, NuevoIVA, Linea, SubTotalLinea, CantLinea, PrcDescLinea, TotalLinea, TotalDecimal, PrecioDescDecimal];
 }
 
 function Totalizar(num, totalizar=true) {
@@ -354,7 +356,7 @@ function Totalizar(num, totalizar=true) {
 		let IvaLinea = ValoresLinea[1];
 
 		SubTotal = parseFloat(SubTotal) + parseFloat(NuevoSubTotal);
-		
+
 		let Exento = document.getElementById(`SujetoImpuesto${i}`);
 		if(!Exento.checked) {
 			Iva = parseFloat(Iva) + parseFloat(IvaLinea);
@@ -369,7 +371,7 @@ function Totalizar(num, totalizar=true) {
 
 	window.parent.document.getElementById('Redondeo').value = number_format(Math.floor(Math.round(Total)) - parseFloat(parseFloat(Total).toFixed(2)), 2);
 	window.parent.document.getElementById('TotalDevolucion').value = number_format(Math.floor(Math.round(Total)), 2);
-		
+
 	window.parent.document.getElementById('TotalItems').value = num;
 }
 
@@ -381,8 +383,8 @@ function ActualizarDatos(name, id, line, round=0) { // Actualizar datos asincron
 
 	if(round > 0) {
 		elemento.value = number_format(valor, round);
-	} 
-	
+	}
+
 	if(name == "ControlDesc"){ // SMM, 11/04/2022
 		if(elemento.checked) {
 			valor = 'T';
@@ -498,6 +500,7 @@ function ConsultarArticulo(articulo){
 				<th>Precio con Desc.</th><!-- SMM, 05/04/2022 -->
 				<th>% Desc.</th>
 				<th>Total</th>
+				<th>CtrlDesc</th><!-- SMM, 10/05/2022 -->
 				<th>Exento</th><!-- SMM, 23/04/2022 -->
 				<th><i class="fa fa-refresh"></i></th>
 			</tr>
@@ -627,11 +630,11 @@ if ($sw == 1) {
 				<?php }?>
 			</td>
 			<td><input size="50" type="text" id="FreeTxt<?php echo $i; ?>" name="FreeTxt[]" class="form-control" value="<?php echo $row['FreeTxt']; ?>" onChange="ActualizarDatos('FreeTxt',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" maxlength="100" <?php if (($row['LineStatus'] == 'C') || ($type == 2)) {echo "readonly";}?>></td>
-			
+
 			<td>
 				<input size="15" type="text" id="Price<?php echo $i; ?>" name="Price[]" class="form-control" value="<?php echo number_format($row['Price'], 2); ?>" onChange="ActualizarDatos('Price',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>, 2);" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if (($row['LineStatus'] == 'C') || ($type == 2) || !PermitirFuncion(420)) {echo "readonly";}?> onFocus="focalizarValores(this)">
 			</td>
-			
+
 			<td>
 				<input size="15" type="text" id="PriceTax<?php echo $i; ?>" name="PriceTax[]" class="form-control" value="<?php echo number_format($row['PriceTax'], 2); ?>" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" readonly onFocus="focalizarValores(this)">
 				<input type="hidden" id="TarifaIVA<?php echo $i; ?>" name="TarifaIVA[]" value="<?php echo number_format($row['TarifaIVA'], 0); ?>">
@@ -648,7 +651,10 @@ if ($sw == 1) {
 
 			<td>
 				<input size="15" type="text" id="LineTotal<?php echo $i; ?>" name="LineTotal[]" class="form-control" value="<?php echo number_format($row['LineTotal'], 2); ?>" onChange="ActualizarDatos('LineTotal',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>, 2);" onBlur="CalcularTotal(<?php echo $i; ?>, false);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if ($row['LineStatus'] == 'C' || ($type == 2)) {echo "readonly";}?> autocomplete="off" onFocus="focalizarValores(this)">
-				<input style="display: none;" type="checkbox" id="ControlDesc<?php echo $i; ?>" name="ControlDesc[]" class="form-control" onChange="ActualizarDatos('ControlDesc',<?php echo $i; ?>, <?php echo $row['LineNum']; ?>);" <?php if(isset($row['ControlDesc']) && ($row['ControlDesc'] == "T")) { echo "checked"; }?>>
+			</td>
+
+			<td>
+				<input type="checkbox" id="ControlDesc<?php echo $i; ?>" name="ControlDesc[]" class="form-control" onChange="ActualizarDatos('ControlDesc',<?php echo $i; ?>, <?php echo $row['LineNum']; ?>);" <?php if (isset($row['ControlDesc']) && ($row['ControlDesc'] == "T")) {echo "checked";}?> disabled>
 			</td>
 
 			<td>
@@ -666,7 +672,7 @@ if ($sw == 1) {
 
         $i++;}
 
-	echo "<script>SujetoImpuesto();</script>";
+    echo "<script>SujetoImpuesto();</script>";
     echo "<script> Totalizar(" . ($i - 1) . ", false); </script>";
 }
 ?>
@@ -709,8 +715,10 @@ function focalizarValores(elemento) {
 	elemento.value = parseFloat(elemento.value.replace(/,/g, ''));
 }
 
-function CalcularTotal(line, totalizar=true){
-	let ValoresLinea = CalcularLinea(line);
+function CalcularTotal(line, totalizar=true) {
+	console.log(`CalcularTotal(${line}, ${totalizar})`);
+
+	let ValoresLinea = CalcularLinea(line, totalizar);
 
 	let Linea = ValoresLinea[2];
 	let SubTotalLinea = ValoresLinea[3];
@@ -718,15 +726,16 @@ function CalcularTotal(line, totalizar=true){
 	let PrcDescLinea = ValoresLinea[5];
 	let TotalLinea = ValoresLinea[6];
 	let TotalDecimal = ValoresLinea[7];
+	let PrecioDescDecimal = ValoresLinea[8];
 
 	// console.log("TotalDecimal", TotalDecimal);
-	console.log(`CalcularTotal(${line}, ${totalizar})`);
+	// console.log("PrecioDescDecimal", PrecioDescDecimal);
 
 	if(CantLinea.value > 0) {
 		if(totalizar) {
 			$(`#ControlDesc${line}`).prop("checked", false);
-			
-			// alert("Totalizar");
+
+			console.log("TOTALIZAR");
 			Totalizar(<?php if (isset($i)) {echo $i - 1;} else {echo 0;}?>);
 		} else { // SMM 28/03/2022
 			// console.log("SubTotalLinea", SubTotalLinea);
@@ -741,8 +750,10 @@ function CalcularTotal(line, totalizar=true){
 				PrcDescLinea.value = number_format(PrcDesc, 4);
 				TotalLinea.value = number_format(TotalDecimal, 2);
 
-				// SMM, 04/05/2022
-				$(`#ControlDesc${line}`).prop("checked", true);
+				// SMM, 10/05/2022
+				if(TotalDecimal != PrecioDescDecimal) {
+					$(`#ControlDesc${line}`).prop("checked", true);
+				} // Para que no se afecte con la tecla [TAB]
 
 				// SMM, 11/04/2022
 				ActualizarDatos('DiscPrcnt', line, Linea.value, 4);
