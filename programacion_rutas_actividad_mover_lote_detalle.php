@@ -39,8 +39,31 @@ $ParamRec = array(
 );
 
 $SQL_Recursos = EjecutarSP("sp_ConsultarTecnicos", $ParamRec);
-
 ?>
+
+<style>
+	/* SMM, 09/05/2022 */
+	.p_overflow {
+    	/*white-space: nowrap;*/
+    	overflow: hidden;
+    	text-overflow: ellipsis;
+		/*max-width: 100ch;*/
+    	max-width: 100px;
+	}
+
+	.w_155 {
+		width: 155px;
+	}
+
+	.w_85 {
+		width: 85px;
+	}
+
+	.w_55 {
+		width: 55px;
+	}
+</style>
+
 <script>
 var json=[];
 var cant=0;
@@ -58,15 +81,59 @@ function BorrarLinea(){
 }
 
 function DuplicarLinea(){
-	if(confirm(String.fromCharCode(191)+'Est'+String.fromCharCode(225)+' seguro que desea duplicar estos registros?')){
-		$.ajax({
-			type: "GET",
-			url: "includes/procedimientos.php?type=52&linenum="+json,
-			success: function(response){
-				FiltrarDatos(3);
-			}
-		});
-	}
+	Swal.fire({
+		title: "¿Desea duplicar estos registros con el técnico seleccionado?",
+		icon: "question",
+		html: `<br><br>
+				<div class="row m-4">
+					<div class="col-lg-4">
+						<label class="control-label"><b>Técnico asignado: </b></label>
+					</div>
+					<div class="col-lg-8">
+						<select class="form-control" id="EmpleadoDuplicar" name="EmpleadoDuplicar">
+							<?php while ($row_Recursos = sqlsrv_fetch_array($SQL_Recursos)) {?>
+								<option value="<?php echo $row_Recursos['ID_Empleado']; ?>"><?php echo $row_Recursos['NombreEmpleado']; ?></option>
+						    <?php }?>
+						</select>
+					</div>
+				</div>`,
+		showCloseButton: true,
+		showDenyButton: true,
+		showCancelButton: true,
+		confirmButtonText: "Si",
+		denyButtonText: "No, mantener técnico",
+		cancelButtonText: "Cancelar"
+	}).then((result) => {
+		if (result.isConfirmed) {
+			let EmpleadoDuplicar = document.getElementById("EmpleadoDuplicar").value;
+
+			$.ajax({
+				type: "GET",
+				url: `includes/procedimientos.php?type=58&empleado=${EmpleadoDuplicar}&linenum=${json}`,
+				success: function(response){
+					FiltrarDatos(3);
+				},
+				error: function(error) {
+					console.error(error.responseText);
+				}
+			});
+		} else if (result.isDenied) {
+			$.ajax({
+				type: "GET",
+				url: "includes/procedimientos.php?type=52&linenum="+json,
+				success: function(response){
+					FiltrarDatos(3);
+				},
+				error: function(error) {
+					console.error(error.responseText);
+				}
+			});
+		} else if(result.dismiss === Swal.DismissReason.cancel) {
+			console.log("cancel");
+		} else {
+			console.log("close");
+		}
+	});
 }
 
 function ValidarDatosDetalle(name,id,line){//Actualizar datos asincronicamente
@@ -284,6 +351,8 @@ while ($row_Recursos = sqlsrv_fetch_array($SQL_Recursos)) {?>
 			<th>Actividad</th>
 			<th>Cliente</th>
 			<th>Sucursal</th>
+			<th>Placa</th>
+			<th>Comentario</th>
 			<th>Fecha inicio <span class="text-danger">*</span></th>
 			<th>Hora inicio <span class="text-danger">*</span></th>
 			<th>Fecha fin <span class="text-danger">*</span></th>
@@ -302,7 +371,6 @@ while ($row = sqlsrv_fetch_array($SQL)) {
     );
 
     $SQL_Recursos = EjecutarSP("sp_ConsultarTecnicos", $ParamRec, -1);
-
     ?>
 			 <tr class="gradeX odd" id="tr_<?php echo $row['ID']; ?>">
 				<td class="text-center">
@@ -317,21 +385,23 @@ while ($row = sqlsrv_fetch_array($SQL)) {
 				<td><?php echo $row['NombreClienteLlamada']; ?></td>
 				<td><?php echo $row['NombreSucursal']; ?></td>
 
-				<td><input type="text" id="FechaInicioActividad<?php echo $i; ?>" name="FechaInicioActividad" class="form-control" value="<?php if ($row['FechaInicioActividad'] != "") {echo $row['FechaInicioActividad']->format('Y-m-d');}?>" placeholder="YYYY-MM-DD" onChange="ValidarDatosDetalle('FechaInicioActividad',<?php echo $i; ?>,<?php echo $row['ID']; ?>);" autocomplete="off"></td>
+				<td><?php echo $row['SerialArticuloLlamada']; ?></td>
+				<td><p class="p_overflow"><?php echo $row['ComentarioLlamada']; ?></p></td>
 
-				<td><input name="HoraInicioActividad" type="text" class="form-control" id="HoraInicioActividad<?php echo $i; ?>" placeholder="HH:MM" onChange="ValidarDatosDetalle('HoraInicioActividad',<?php echo $i; ?>,<?php echo $row['ID']; ?>);" value="<?php if ($row['HoraInicioActividad'] != "") {echo $row['HoraInicioActividad']->format('H:i');}?>" autocomplete="off"></td>
+				<td><input type="text" id="FechaInicioActividad<?php echo $i; ?>" name="FechaInicioActividad" class="w_85 form-control" value="<?php if ($row['FechaInicioActividad'] != "") {echo $row['FechaInicioActividad']->format('Y-m-d');}?>" placeholder="YYYY-MM-DD" onChange="ValidarDatosDetalle('FechaInicioActividad',<?php echo $i; ?>,<?php echo $row['ID']; ?>);" autocomplete="off"></td>
 
-				<td><input type="text" id="FechaFinActividad<?php echo $i; ?>" name="FechaFinActividad" class="form-control" value="<?php if ($row['FechaFinActividad'] != "") {echo $row['FechaFinActividad']->format('Y-m-d');}?>" placeholder="YYYY-MM-DD" onChange="ValidarDatosDetalle('FechaFinActividad',<?php echo $i; ?>,<?php echo $row['ID']; ?>);" autocomplete="off"></td>
+				<td><input name="HoraInicioActividad" type="text" class="w_55 form-control" id="HoraInicioActividad<?php echo $i; ?>" placeholder="HH:MM" onChange="ValidarDatosDetalle('HoraInicioActividad',<?php echo $i; ?>,<?php echo $row['ID']; ?>);" value="<?php if ($row['HoraInicioActividad'] != "") {echo $row['HoraInicioActividad']->format('H:i');}?>" autocomplete="off"></td>
 
-				<td><input name="HoraFinActividad" type="text" class="form-control" id="HoraFinActividad<?php echo $i; ?>" placeholder="HH:MM" onChange="ValidarDatosDetalle('HoraFinActividad',<?php echo $i; ?>,<?php echo $row['ID']; ?>);" value="<?php if ($row['HoraFinActividad'] != "") {echo $row['HoraFinActividad']->format('H:i');}?>" autocomplete="off"></td>
+				<td><input type="text" id="FechaFinActividad<?php echo $i; ?>" name="FechaFinActividad" class="w_85 form-control" value="<?php if ($row['FechaFinActividad'] != "") {echo $row['FechaFinActividad']->format('Y-m-d');}?>" placeholder="YYYY-MM-DD" onChange="ValidarDatosDetalle('FechaFinActividad',<?php echo $i; ?>,<?php echo $row['ID']; ?>);" autocomplete="off"></td>
+
+				<td><input name="HoraFinActividad" type="text" class="w_55 form-control" id="HoraFinActividad<?php echo $i; ?>" placeholder="HH:MM" onChange="ValidarDatosDetalle('HoraFinActividad',<?php echo $i; ?>,<?php echo $row['ID']; ?>);" value="<?php if ($row['HoraFinActividad'] != "") {echo $row['HoraFinActividad']->format('H:i');}?>" autocomplete="off"></td>
 
 			   	<td>
-				 <select name="ID_EmpleadoActividad" id="ID_EmpleadoActividad<?php echo $i; ?>" class="select2 form-control" style="width: 100%" onChange="ActualizarDatos('ID_EmpleadoActividad',<?php echo $i; ?>,<?php echo $row['ID']; ?>);">
-				   <?php
-while ($row_Recursos = sqlsrv_fetch_array($SQL_Recursos)) {?>
+				 	<select name="ID_EmpleadoActividad" id="ID_EmpleadoActividad<?php echo $i; ?>" class="select2 w_155 form-control" onChange="ActualizarDatos('ID_EmpleadoActividad',<?php echo $i; ?>,<?php echo $row['ID']; ?>);">
+				   		<?php while ($row_Recursos = sqlsrv_fetch_array($SQL_Recursos)) {?>
 							<option value="<?php echo $row_Recursos['ID_Empleado']; ?>" <?php if ((isset($row['ID_EmpleadoActividad']) && ($row['ID_EmpleadoActividad'] != "")) && (strcmp($row_Recursos['ID_Empleado'], $row['ID_EmpleadoActividad']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Recursos['NombreEmpleado']; ?></option>
-					  <?php }?>
-				    </select>
+						<?php }?>
+					</select>
 			   </td>
 			</tr>
 		<?php $i++;}?>

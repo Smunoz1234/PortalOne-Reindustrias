@@ -973,7 +973,7 @@ if ($sw_ext == 0) {?>
 								<?php }?>
 							</div>
 							<div class="col-lg-3 pull-right">
-								<?php if (($edit == 1) && (PermitirFuncion(302))) {?>
+								<?php if ($edit == 1) {?>
 									<div class="btn-group">
 										<button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i class="fa fa-plus-circle"></i> Agregar documento <i class="fa fa-caret-down"></i></button>
 										<ul class="dropdown-menu">

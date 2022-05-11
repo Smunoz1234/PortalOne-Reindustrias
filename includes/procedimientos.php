@@ -782,7 +782,9 @@ if (isset($_GET['type']) && $_GET['type'] != "") {
     // SMM, 14/03/2022
     elseif ($_GET['type'] == 52) { // Duplicar lineas en el asistente de mover actividades en lote
         $Parametros = array(
+            1,
             "'" . $_GET['linenum'] . "'",
+            "''",
             "'" . $_SESSION['CodUser'] . "'",
         );
         $SQL = EjecutarSP('sp_tbl_Actividades_Rutas_Mover_Lote_DuplicarLine', $Parametros);
@@ -913,6 +915,20 @@ if (isset($_GET['type']) && $_GET['type'] != "") {
             if ($SQL) {
                 echo "*Ok*";
             }
+        }
+    }
+
+    // SMM, 14/03/2022
+    elseif ($_GET['type'] == 58) { // Duplicar lineas en el asistente de mover actividades en lote
+        $Parametros = array(
+            2,
+            "'" . $_GET['linenum'] . "'",
+            "'" . $_GET['empleado'] . "'",
+            "'" . $_SESSION['CodUser'] . "'",
+        );
+        $SQL = EjecutarSP('sp_tbl_Actividades_Rutas_Mover_Lote_DuplicarLine', $Parametros);
+        if ($SQL) {
+            echo "*Ok*";
         }
     }
 
