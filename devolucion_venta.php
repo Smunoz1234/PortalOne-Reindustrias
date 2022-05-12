@@ -211,17 +211,6 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
 }
 // Fin, Grabar Devolución de Venta
 
-//
-//
-//
-//
-//
-//
-// "Ajuste del número de línea con respecto a la entrega"
-//
-//
-//
-//
 // Inicio, Verificar que viene de una Entrega de Ventas
 if (isset($_GET['dt_ET']) && ($_GET['dt_ET']) == 1) {
     $dt_ET = 1;
@@ -261,6 +250,46 @@ if (isset($_GET['dt_ET']) && ($_GET['dt_ET']) == 1) {
     $SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . base64_decode($_GET['LS']) . "'");
 }
 // Fin, Verificar que viene de una Entrega de Ventas
+
+// SMM, 07/03/2022
+if (isset($_GET['dt_DV']) && ($_GET['dt_DV']) == 1) { // Verificar que viene de una Devolucion de ventas (Duplicar)
+    $dt_ET = 1;
+
+    $ParametrosCopiarDevolucionToDevolucion = array(
+        "'" . base64_decode($_GET['DV']) . "'",
+        "'" . base64_decode($_GET['Evento']) . "'",
+        "'" . base64_decode($_GET['Almacen']) . "'",
+        "'" . base64_decode($_GET['Cardcode']) . "'",
+        "'" . $_SESSION['CodUser'] . "'",
+    );
+
+    $SQL_CopiarDevolucionToDevolucion = EjecutarSP('sp_tbl_DevolucionVentaDet_To_DevolucionVentaDet', $ParametrosCopiarDevolucionToDevolucion);
+    if (!$SQL_CopiarDevolucionToDevolucion) {
+        echo "<script>
+		$(document).ready(function() {
+			Swal.fire({
+				title: '¡Ha ocurrido un error!',
+				text: 'No se pudo duplicar la Devolucion de venta.',
+				icon: 'error'
+			});
+		});
+		</script>";
+    }
+
+    //Clientes
+    $SQL_Cliente = Seleccionar('uvw_Sap_tbl_Clientes', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreCliente');
+    $row_Cliente = sqlsrv_fetch_array($SQL_Cliente);
+
+    //Contacto cliente
+    $SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreContacto');
+
+    //Sucursales, SMM 06/05/2022
+    $SQL_SucursalDestino = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "' AND TipoDireccion='S'", 'NombreSucursal');
+    $SQL_SucursalFacturacion = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "' AND TipoDireccion='B'", 'NombreSucursal');
+
+    //Orden de servicio
+    $SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . base64_decode($_GET['LS']) . "'");
+}
 
 // Inicio, Verificar que viene de una Llamada de servicio (Datos Llamada servicio).
 if (isset($_GET['dt_LS']) && ($_GET['dt_LS']) == 1) {
@@ -687,11 +716,12 @@ function ConsultarDatosCliente(){
 			$('.ibox-content').toggleClass('sk-loading',true);
 
 			var Serie=document.getElementById('Serie').value;
-			let Dim2=document.getElementById('Dim2').value; // SMM, 02/05/2022
+			// let Dim2=document.getElementById('Dim2').value; // SMM, 02/05/2022
+			console.log("CIUDAD: <?php echo base64_decode($_GET['Dim2'] ?? ""); ?>")
 
 			$.ajax({
 				type: "POST",
-				url: `ajx_cbo_select.php?type=19&id=${Serie}&Dim2=${Dim2}`,
+				url: `ajx_cbo_select.php?type=19&id=${Serie}&Dim2=<?php echo isset($_GET['Dim2']) ? base64_decode($_GET['Dim2']) : ($row['OcrCode2'] ?? ""); ?>`, // Modificación Dim2, SMM 11/05/2022
 				success: function(response){
 					$('#Dim2').html(response).fadeIn();
 					$('.ibox-content').toggleClass('sk-loading',false);
@@ -1000,6 +1030,61 @@ function ConsultarDatosCliente(){
             </div>
 
          <div class="wrapper wrapper-content">
+			<!-- Inicio, modalSN -->
+			<div class="modal inmodal fade" id="modalSN" tabindex="-1" role="dialog" aria-hidden="true">
+				<div class="modal-dialog modal-lg" style="width: 70% !important;">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h4 class="modal-title">Cambiar Socio de Negocio en el Nuevo Documento</h4>
+						</div>
+
+						<form id="formCambiarSN">
+							<div class="modal-body">
+								<div class="row">
+									<div class="col-lg-1"></div>
+									<div class="col-lg-5">
+										<label class="control-label">
+											<i onClick="ConsultarDatosClienteSN();" title="Consultar cliente" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Cliente <span class="text-danger">*</span>
+										</label>
+										<input type="hidden" id="ClienteSN" name="ClienteSN" >
+										<input type="text" class="form-control" id="NombreClienteSN" name="NombreClienteSN"  placeholder="Digite para buscar..." required="required">
+									</div>
+									<div class="col-lg-5">
+										<label class="control-label">Contacto</label>
+										<select class="form-control" id="ContactoSN" name="ContactoSN">
+											<option value="">Seleccione...</option>
+										</select>
+									</div>
+									<div class="col-lg-1"></div>
+								</div>
+								<br><br>
+								<div class="row">
+									<div class="col-lg-1"></div>
+									<div class="col-lg-5">
+										<label class="control-label">Sucursal</label>
+										<select class="form-control" id="SucursalSN" name="SucursalSN">
+											<option value="">Seleccione...</option>
+										</select>
+									</div>
+									<div class="col-lg-5">
+										<label class="control-label">Dirección</label>
+										<input type="text" class="form-control" id="DireccionSN" name="DireccionSN" maxlength="100">
+									</div>
+									<div class="col-lg-1"></div>
+								</div>
+							</div>
+
+							<div class="modal-footer">
+								<button type="submit" class="btn btn-success m-t-md"><i class="fa fa-check"></i> Aceptar</button>
+								<button type="button" class="btn btn-secondary m-t-md CancelarSN" data-dismiss="modal"><i class="fa fa-times"></i> Cancelar</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+			<!-- Fin, modalSN -->
+
+
 		 <?php if ($edit == 1) {?>
 			<div class="row">
 				<div class="col-lg-3">
@@ -1226,7 +1311,7 @@ if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
 							<?php }?>
 
 							<?php while ($row_Series = sqlsrv_fetch_array($SQL_Series)) {?>
-								<option value="<?php echo $row_Series['IdSeries']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['IdSeries'])) && (strcmp($row_Series['IdSeries'], $row['IdSeries']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Series['DeSeries']; ?></option>
+								<option value="<?php echo $row_Series['IdSeries']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['IdSeries'])) && (strcmp($row_Series['IdSeries'], $row['IdSeries']) == 0)) {echo "selected=\"selected\"";} elseif (isset($_GET['Serie']) && (strcmp($row_Series['IdSeries'], base64_decode($_GET['Serie'])) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Series['DeSeries']; ?></option>
 							<?php }?>
 						</select>
                	  	</div>
@@ -1493,6 +1578,28 @@ $return = QuitarParametrosURL($return, array("a"));
 ?>
 						<a href="<?php echo $return; ?>" class="btn btn-outline btn-default"><i class="fa fa-arrow-circle-o-left"></i> Regresar</a>
 					</div>
+
+					<!-- SMM, 11/05/2022-->
+					<?php if (($edit == 1) && ($row['Cod_Estado'] != 'C')) {?>
+					<div class="col-lg-3">
+						<div class="btn-group dropup pull-right">
+                            <button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i class="fa fa-mail-forward"></i> Copiar a <i class="fa fa-caret-up"></i></button>
+                            <ul class="dropdown-menu">
+                                <li><a class="alkin dropdown-item d-venta" href="devolucion_venta.php?dt_DV=1&DV=<?php echo base64_encode($row['ID_DevolucionVenta']); ?>&pag=<?php echo $_GET['pag']; ?>&return=<?php echo $_GET['return']; ?>&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Dim1=<?php echo base64_encode($row['OcrCode']); ?>&Dim2=<?php echo base64_encode($row['OcrCode2']); ?>&Dim3=<?php echo base64_encode($row['OcrCode3']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&SucursalFact=<?php echo base64_encode($row['SucursalFacturacion']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&LS=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>&CondicionPago=<?php echo base64_encode($row['IdCondicionPago']); ?>&Serie=<?php echo base64_encode($row['IdSeries']); ?>">Devolucion de venta (Duplicar)</a></li>
+                            </ul>
+                        </div>
+					</div>
+					<?php } elseif (($edit == 1) && $row['Cod_Estado'] == 'C') {?>
+					<div class="col-lg-3">
+						<div class="btn-group dropup pull-right">
+                            <button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i class="fa fa-mail-forward"></i> Copiar a <i class="fa fa-caret-up"></i></button>
+                            <ul class="dropdown-menu">
+							<li><a class="alkin dropdown-item d-venta" href="devolucion_venta.php?dt_DV=1&DV=<?php echo base64_encode($row['ID_DevolucionVenta']); ?>&pag=<?php echo $_GET['pag']; ?>&return=<?php echo $_GET['return']; ?>&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Dim1=<?php echo base64_encode($row['OcrCode']); ?>&Dim2=<?php echo base64_encode($row['OcrCode2']); ?>&Dim3=<?php echo base64_encode($row['OcrCode3']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&SucursalFact=<?php echo base64_encode($row['SucursalFacturacion']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&LS=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>&CondicionPago=<?php echo base64_encode($row['IdCondicionPago']); ?>&Serie=<?php echo base64_encode($row['IdSeries']); ?>">Devolucion de venta (Duplicar)</a></li>
+                            </ul>
+                        </div>
+					</div>
+					<?php }?>
+
 				</div>
 				<input type="hidden" form="CrearDevolucionVenta" id="P" name="P" value="54" />
 				<input type="hidden" form="CrearDevolucionVenta" id="IdDevolucionVenta" name="IdDevolucionVenta" value="<?php if ($edit == 1) {echo base64_encode($row['ID_DevolucionVenta']);}?>" />
@@ -1541,6 +1648,131 @@ $return = QuitarParametrosURL($return, array("a"));
 		 $(".alkin").on('click', function(){
 				 $('.ibox-content').toggleClass('sk-loading');
 			});
+
+
+		// Cambiar SN en las copias
+		$(".d-venta").on("click", function(event){
+			<?php if (PermitirFuncion(419)) {?>
+				event.preventDefault(); // Evitar redirección del ancla
+				console.log(event);
+
+				Swal.fire({
+					title: "¿Desea cambiar de socio de negocio?",
+					icon: "question",
+					showCancelButton: true,
+					confirmButtonText: "Si, confirmo",
+					cancelButtonText: "No"
+				}).then((result) => {
+					if (result.isConfirmed) {
+						let qs = "";
+						[url, qs] = $(this).attr('href').split('?');
+						params = Object.fromEntries(new URLSearchParams(qs));
+
+						$('#modalSN').modal("show");
+					} else {
+						location.href = $(this).attr('href');
+					}
+				});
+			<?php } else {?>
+				console.log("Permiso 419, no esta activo");
+			<?php }?>
+		});
+
+		let optionsSN = {
+			url: function(phrase) {
+				return "ajx_buscar_datos_json.php?type=7&id="+phrase;
+			},
+			adjustWidth: false,
+			getValue: "NombreBuscarCliente",
+			requestDelay: 400,
+			list: {
+				match: {
+					enabled: true
+				},
+				onClickEvent: function() {
+					var value = $("#NombreClienteSN").getSelectedItemData().CodigoCliente;
+					$("#ClienteSN").val(value).trigger("change");
+				}
+			}
+		};
+
+		$("#NombreClienteSN").easyAutocomplete(optionsSN);
+
+		$(".CancelarSN").on("click", function() {
+			$('.ibox-content').toggleClass('sk-loading', false);
+		});
+
+		$("#formCambiarSN").on("submit", function(event) {
+			event.preventDefault(); // Evitar redirección del formulario
+
+			let ClienteSN = document.getElementById('ClienteSN').value;
+			let ContactoSN = document.getElementById('ContactoSN').value;
+			let SucursalSN = document.getElementById('SucursalSN').value;
+			let DireccionSN = document.getElementById('DireccionSN').value;
+
+			params.Cardcode = Base64.encode(ClienteSN);
+			params.Contacto = Base64.encode(ContactoSN);
+			params.Sucursal = Base64.encode(SucursalSN);
+			params.Direccion = Base64.encode(DireccionSN);
+
+			let qs = new URLSearchParams(params).toString();
+			location.href = `${url}?${qs}`;
+		});
+
+		$("#ClienteSN").change(function() {
+			let ClienteSN = document.getElementById('ClienteSN').value;
+
+			$.ajax({
+				type: "POST",
+				url: "ajx_cbo_select.php?type=2&id="+ClienteSN,
+				success: function(response) {
+					$('#ContactoSN').html(response).fadeIn();
+					$('#ContactoSN').trigger('change');
+				},
+				error: function(error) {
+					console.error("ContactoSN", error.responseText);
+				}
+			});
+			$.ajax({
+				type: "POST",
+				url: "ajx_cbo_select.php?type=3&id="+ClienteSN,
+				success: function(response) {
+					console.log(response);
+
+					$('#SucursalSN').html(response).fadeIn();
+					$('#SucursalSN').trigger('change');
+				},
+				error: function(error) {
+					console.error("SucursalSN", error.responseText);
+				}
+			});
+		});
+
+		$("#SucursalSN").change(function() {
+			let ClienteSN = document.getElementById('ClienteSN').value;
+			let SucursalSN = document.getElementById('SucursalSN').value;
+
+			if (SucursalSN != -1 && SucursalSN != '') {
+				$.ajax({
+					url:"ajx_buscar_datos_json.php",
+					data: {
+						type: 1,
+						CardCode: ClienteSN,
+						Sucursal: SucursalSN
+					},
+					dataType:'json',
+					success: function(data) {
+						document.getElementById('DireccionSN').value=data.Direccion;
+					},
+					error: function(error) {
+						console.error("SucursalSN", error.responseText);
+					}
+				});
+			}
+		});
+		// SMM, 11/05/2022
+
+
 		 <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'O') || ($edit == 0))) {?>
 		 $('#DocDate').datepicker({
                 todayBtn: "linked",
@@ -1575,9 +1807,9 @@ $return = QuitarParametrosURL($return, array("a"));
 
 		 <?php
 if ($edit == 1) {?>
-		 $('#Serie option:not(:selected)').attr('disabled',true);
+		 // $('#Serie option:not(:selected)').attr('disabled',true);
 		 $('#Sucursal option:not(:selected)').attr('disabled',true);
-		 $('#Almacen option:not(:selected)').attr('disabled',true);
+		 // $('#Almacen option:not(:selected)').attr('disabled',true);
 	 	 <?php }?>
 
 		 <?php
@@ -1612,7 +1844,13 @@ if (!PermitirFuncion(403)) {?>
 		 $('#Serie').trigger('change');
 	 	<?php }?>
 
+		 $('#Serie').trigger('change'); // SMM, 11/05/2022
 		 $('#CardCode').trigger('change'); // SMM, 24/02/2022
+
+		// SMM, 11/05/2022
+		<?php if (isset($_GET['SucursalFact'])) {?>
+			$('#SucursalFacturacion').trigger('change');
+	 	<?php }?>
 	});
 </script>
 <script>

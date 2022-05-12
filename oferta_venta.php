@@ -1776,6 +1776,11 @@ if (!PermitirFuncion(403)) {?>
 	 	<?php }?>
 
 		 $('#CardCode').trigger('change'); // SMM, 26/04/2022
+
+		// SMM, 11/05/2022
+		<?php if (isset($_GET['SucursalFact'])) {?>
+			$('#SucursalFacturacion').trigger('change');
+	 	<?php }?>
 	});
 </script>
 <script>
