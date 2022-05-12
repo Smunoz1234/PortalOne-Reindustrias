@@ -375,8 +375,11 @@ while ($row = sqlsrv_fetch_array($SQL)) {
 			 <tr class="gradeX odd" id="tr_<?php echo $row['ID']; ?>">
 				<td class="text-center">
 					<label class="custom-control custom-checkbox checkbox-lg">
-					  <input type="checkbox" class="custom-control-input chkSel" id="chkSel<?php echo $row['ID']; ?>" value="" onChange="Seleccionar('<?php echo $row['ID']; ?>');">
-					  <span class="custom-control-label"></span>
+						<input type="checkbox" class="custom-control-input chkSel" id="chkSel<?php echo $row['ID']; ?>" value="" onChange="Seleccionar('<?php echo $row['ID']; ?>');">
+						<span class="custom-control-label"></span>
+						<?php if (isset($row['Metodo']) && $row['Metodo'] == 1) {?>
+							<p><i class="far fa-clone"></i></p>
+						<?php }?>
 					</label>
 				</td>
 				<td><?php echo $i; ?></td>
