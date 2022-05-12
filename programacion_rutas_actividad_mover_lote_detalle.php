@@ -383,7 +383,11 @@ while ($row = sqlsrv_fetch_array($SQL)) {
 					</label>
 				</td>
 				<td><?php echo $i; ?></td>
-				<td><?php echo $row['ID_LlamadaServicio']; ?></td>
+				<td class="text-center">
+					<a href="llamada_servicio.php?id=<?php echo base64_encode($row['callID']); ?>&tl=1&pag=<?php echo base64_encode('gestionar_llamadas_servicios.php'); ?>" class="btn btn-primary btn-xs" target="_blank">
+						<i class="far fa-folder-open"></i><?php echo $row['ID_LlamadaServicio']; ?>
+					</a>
+				</td>
 				<td><?php echo $row['ID_Actividad']; ?></td>
 				<td><?php echo $row['NombreClienteLlamada']; ?></td>
 				<td><?php echo $row['NombreSucursal']; ?></td>
