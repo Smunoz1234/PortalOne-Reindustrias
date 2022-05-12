@@ -644,7 +644,12 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
             if ($Num) {
                 echo "<option value=''>Seleccione...</option>";
                 while ($row = sqlsrv_fetch_array($SQL)) {
-                    echo "<option value=\"" . $row['SerialInterno'] . "\">SN Fabricante: " . $row['SerialFabricante'] . " - Núm. Serie: " . $row['SerialInterno'] . "</option>";
+                    if (isset($_GET['Serial']) && ($_GET['Serial'] == $row['SerialInterno'])) {
+                        echo "<option value=\"" . $row['SerialInterno'] . "\" selected=\"selected\">SN Fabricante: " . $row['SerialFabricante'] . " - Núm. Serie: " . $row['SerialInterno'] . "</option>";
+                    } else {
+                        echo "<option value=\"" . $row['SerialInterno'] . "\">SN Fabricante: " . $row['SerialFabricante'] . " - Núm. Serie: " . $row['SerialInterno'] . "</option>";
+                    }
+
                 }
             } else {
                 echo "<option value=''>Seleccione...</option>";

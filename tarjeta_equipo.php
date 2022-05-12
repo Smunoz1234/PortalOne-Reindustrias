@@ -602,6 +602,7 @@ function mayus(e) {
 								<div class="ibox-content">
 									<div class="form-group">
 										<div class="col-lg-6">
+
 											<div class="btn-group">
 												<button data-toggle="dropdown" class="btn btn-outline btn-success dropdown-toggle"><i class="fa fa-download"></i> Descargar formato <i class="fa fa-caret-down"></i></button>
 												<ul class="dropdown-menu">
@@ -613,7 +614,12 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=176 and VerEnD
 														</li>
 													<?php }?>
 												</ul>
+
+												<!-- Crear llamada -->
+												<a style="margin-left: 10px;" class="btn btn-outline btn-info" href="llamada_servicio.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Serial=<?php echo base64_encode($row['SerialInterno']); ?>" target="_blank"><i class="fa fa-plus-circle"></i> Crear llamada de servicio</a>
+												<!-- SMM, 11/05/2022 -->
 											</div>
+
 										</div>
 									</div>
 								</div>
@@ -809,7 +815,7 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Concesionario" class="form-control select2" required="required" id="CDU_Concesionario">
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_Concesionario = sqlsrv_fetch_array($SQL_Concesionario)) {?>
-										<option value="<?php echo $row_Concesionario['NombreConcesionario']; //['CodigoConcesionario'];                                                                                                                                                  ?>"
+										<option value="<?php echo $row_Concesionario['NombreConcesionario']; ?>"
 										<?php if (isset($row['CDU_Concesionario']) && (strcmp($row_Concesionario['NombreConcesionario'], $row['CDU_Concesionario']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_Concesionario['NombreConcesionario']; ?>
 										</option>
@@ -835,7 +841,7 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Cilindraje" class="form-control select2" required="required" id="CDU_Cilindraje">
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_Cilindraje = sqlsrv_fetch_array($SQL_CilindrajeVehiculo)) {?>
-										<option value="<?php echo $row_Cilindraje['DescripcionCilindraje']; //['CodigoCilindraje'];                                                                                                                                     ?>"
+										<option value="<?php echo $row_Cilindraje['DescripcionCilindraje']; ?>"
 										<?php if (isset($row['CDU_Cilindraje']) && (strcmp($row_Cilindraje['DescripcionCilindraje'], $row['CDU_Cilindraje']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_Cilindraje['DescripcionCilindraje']; ?>
 										</option>
@@ -847,7 +853,7 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_TipoServicio" class="form-control select2" required="required" id="CDU_TipoServicio">
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_TipoServicio = sqlsrv_fetch_array($SQL_TipoServicio)) {?>
-										<option value="<?php echo $row_TipoServicio['NombreTipoServicio']; //['CodigoTipoServicio'];                                                                                                                                                 ?>"
+										<option value="<?php echo $row_TipoServicio['NombreTipoServicio']; ?>"
 										<?php if (isset($row['CDU_TipoServicio']) && (strcmp($row_TipoServicio['NombreTipoServicio'], $row['CDU_TipoServicio']) == 0)) {echo "selected=\"selected\"";}?>>
 											<?php echo $row_TipoServicio['NombreTipoServicio']; ?>
 										</option>
