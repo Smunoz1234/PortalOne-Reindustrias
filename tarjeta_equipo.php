@@ -82,9 +82,9 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
             "'" . $_POST['CardCodeCompras'] . "'",
             "'" . $_POST['CardNameCompras'] . "'",
             isset($_POST['DocEntryEntrega']) ? $_POST['DocEntryEntrega'] : "''",
-            "'" . $_POST['DocNumEntrega'] . "'",
+            $_POST['DocNumEntrega'],
             isset($_POST['DocEntryFactura']) ? $_POST['DocEntryFactura'] : "''",
-            "'" . $_POST['DocNumFactura'] . "'",
+            $_POST['DocNumFactura'],
             "'" . $_POST['Calle'] . "'",
             isset($_POST['CalleNum']) ? $_POST['CalleNum'] : "''",
             isset($_POST['Edificio']) ? $_POST['Edificio'] : "''",
@@ -1116,22 +1116,22 @@ while ($row_ContratoServicio = sqlsrv_fetch_array($SQL_ContratosServicio)) {?>
 									<div class="form-group">
 										<label class="col-lg-1 control-label">Código</label>
 										<div class="col-lg-3">
-											<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="CardCodeCompras" type="text" required="required" class="form-control" id="CardCodeCompras" maxlength="150" value="<?php if (isset($row['CardCodeCompras'])) {echo $row['CardCodeCompras'];}?>">
+											<input readonly='readonly' autocomplete="off" name="CardCodeCompras" type="text" required="required" class="form-control" id="CardCodeCompras" maxlength="150" value="<?php if (isset($row['CardCodeCompras'])) {echo $row['CardCodeCompras'];}?>">
 										</div>
 										<label class="col-lg-1 control-label">Nombre</label>
 										<div class="col-lg-3">
-											<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="CardNameCompras" type="text" required="required" class="form-control" id="CardNameCompras" maxlength="150" value="<?php if (isset($row['CardNameCompras'])) {echo $row['CardNameCompras'];}?>">
+											<input readonly='readonly' autocomplete="off" name="CardNameCompras" type="text" required="required" class="form-control" id="CardNameCompras" maxlength="150" value="<?php if (isset($row['CardNameCompras'])) {echo $row['CardNameCompras'];}?>">
 										</div>
 									</div>
 									<label style="margin-bottom: 10px; color: darkgray;"><u>Entrega y Factura</u></label>
 									<div class="form-group">
 										<label class="col-lg-1 control-label">Entrega</label>
 										<div class="col-lg-3">
-											<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="DocNumEntrega" type="text" required="required" class="form-control" id="DocNumEntrega" maxlength="150" value="<?php if (isset($row['DocNumEntrega'])) {echo $row['DocNumEntrega'];}?>">
+											<input readonly='readonly' autocomplete="off" name="DocNumEntrega" type="number" required="required" class="form-control" id="DocNumEntrega" maxlength="150" value="<?php if (isset($row['DocNumEntrega'])) {echo $row['DocNumEntrega'];}?>">
 										</div>
 										<label class="col-lg-1 control-label">Factura</label>
 										<div class="col-lg-3">
-											<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="DocNumFactura" type="text" required="required" class="form-control" id="DocNumFactura" maxlength="150" value="<?php if (isset($row['DocNumFactura'])) {echo $row['DocNumFactura'];}?>">
+											<input readonly='readonly' autocomplete="off" name="DocNumFactura" type="number" required="required" class="form-control" id="DocNumFactura" maxlength="150" value="<?php if (isset($row['DocNumFactura'])) {echo $row['DocNumFactura'];}?>">
 										</div>
 									</div>
 								</div>

@@ -1,3 +1,9 @@
+<style>
+/* SMM, 14/05/2022 */
+.fc-highlight {
+	background-color: lightblue !important;
+}
+</style>
 
 <?php
 require_once "includes/conexion.php";
@@ -185,6 +191,10 @@ if ($type == 1) { //Si estoy refrescando datos ya cargados
 					type: 'resourceTimeGrid',
 					duration: { days: 4 },
 					buttonText: '4 dias'
+				  },
+				  // SMM, 14/05/2022
+				  dayGridMonth: {
+					selectable: true
 				  }
 				},
 			    resources: [
@@ -201,6 +211,20 @@ if ($sw == 1) {
 }?>
 			    ],
 				resourceOrder: 'title',
+				// Evento de CLICK en una fecha con la tecla ALT. SMM, 14/05/2022
+				dateClick: function(info) {
+					if(info.jsEvent.altKey && (info.view.type === "dayGridMonth")) {
+						calendar.changeView('resourceTimeGridDay', info.dateStr);
+					} else {
+						console.log("info.view.type", info.view.type);
+					}
+				},
+				// Seleccionar solamente un día del mes. SMM, 14/05/2022
+				selectAllow: function (e) {
+					if (e.end.getTime() / 1000 - e.start.getTime() / 1000 <= 86400) {
+						return true;
+					}
+				},
 				eventWillUnmount: function(info) {
 					console.log('Se ejecuto eventWillUnmount en el calendario');
 					$('.tooltip').remove();
