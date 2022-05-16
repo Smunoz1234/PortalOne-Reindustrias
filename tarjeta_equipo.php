@@ -82,9 +82,9 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
             "'" . $_POST['CardCodeCompras'] . "'",
             "'" . $_POST['CardNameCompras'] . "'",
             isset($_POST['DocEntryEntrega']) ? $_POST['DocEntryEntrega'] : "''",
-            $_POST['DocNumEntrega'],
+            (isset($_POST['DocNumEntrega']) && $_POST['DocNumEntrega'] != '') ? $_POST['DocNumEntrega'] : "NULL",
             isset($_POST['DocEntryFactura']) ? $_POST['DocEntryFactura'] : "''",
-            $_POST['DocNumFactura'],
+            (isset($_POST['DocNumFactura']) && $_POST['DocNumFactura'] != '') ? $_POST['DocNumFactura'] : "NULL",
             "'" . $_POST['Calle'] . "'",
             isset($_POST['CalleNum']) ? $_POST['CalleNum'] : "''",
             isset($_POST['Edificio']) ? $_POST['Edificio'] : "''",
@@ -766,8 +766,8 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 						</div>
 						<div class="form-group">
 							<div class="col-lg-4">
-								<label class="control-label">No_Motor</label>
-								<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="CDU_No_Motor" type="text" class="form-control" id="CDU_No_Motor" maxlength="100"
+								<label class="control-label">No_Motor <span class="text-danger">*</span></label>
+								<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> autocomplete="off" name="CDU_No_Motor" required="required" type="text" class="form-control" id="CDU_No_Motor" maxlength="100"
 								value="<?php if (isset($row['CDU_No_Motor'])) {echo $row['CDU_No_Motor'];}?>">
 							</div>
 						</div>
