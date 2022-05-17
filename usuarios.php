@@ -208,6 +208,35 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
                 }
             }
 
+            // Empleados asignados, SMM 16/05/2022
+            $ParamDeleteGruposEmpleados = array(
+                "'" . $ID . "'",
+                "NULL",
+                "2",
+            );
+            $SQL_DeleteGruposEmpleados = EjecutarSP('sp_InsertarUsuariosGruposEmpleados', $ParamDeleteGruposEmpleados, $_POST['P']);
+
+            // Insertamos los grupos, SMM 16/05/2022
+            if ($SQL_DeleteGruposEmpleados) {
+                $i = 0;
+                $CuentaGruposEmpleados = count($_POST['Grupo']);
+                while ($i < $CuentaGruposEmpleados) {
+                    if ($_POST['Grupo'][$i] != "") {
+                        $ParamGruposEmpleados = array(
+                            "'" . $ID . "'",
+                            "'" . $_POST['Grupo'][$i] . "'",
+                            "1",
+                        );
+                        $SQL_GruposEmpleados = EjecutarSP('sp_InsertarUsuariosGruposEmpleados', $ParamGruposEmpleados, $_POST['P']);
+                        if (!$SQL_GruposEmpleados) {
+                            $sw_error = 1;
+                            $msg_error = "No se pudo insertar el Grupo de Empleados";
+                        }
+                    }
+                    $i++;
+                }
+            }
+
             //Clientes
             if (isset($_POST['Cliente'])) {
                 $i = 0;
@@ -341,6 +370,10 @@ if ($edit == 1) { //Editar usuario
     $SQL_ProyectosUsuario = Seleccionar("uvw_tbl_UsuariosProyectos", "*", "[ID_Usuario]='" . $IdUsuario . "'", 'DeProyecto');
     // $SQL_ProyectosUsuario = Seleccionar("uvw_tbl_UsuariosProyectos", "*", "[ID_Usuario]='" . $IdUsuario . "'", 'DeProyecto', 'ASC', 1, 1);
     $row_ProyectosUsuario = sqlsrv_fetch_array($SQL_ProyectosUsuario);
+
+	// Empleados asignados, SMM 16/05/2022
+	$SQL_GruposUsuario = Seleccionar("uvw_tbl_UsuariosGruposEmpleados", "*", "[ID_Usuario]='" . $IdUsuario . "'", 'DeCargo');
+	$row_GruposUsuario = sqlsrv_fetch_array($SQL_GruposUsuario);
 }
 
 //Estados
@@ -370,6 +403,8 @@ $SQL_Dashboard = Seleccionar('tbl_Dashboard', '*');
 $SQL_AlmacenOrigen = Seleccionar('uvw_Sap_tbl_Almacenes', '*');
 $SQL_AlmacenDestino = Seleccionar('uvw_Sap_tbl_Almacenes', '*');
 
+// Grupos de empleados, SMM 14/05/2022
+$SQL_Grupos = Seleccionar('uvw_Sap_tbl_Recursos', 'DISTINCT IdCargo, DeCargo');
 ?>
 <!DOCTYPE html>
 <html><!-- InstanceBegin template="/Templates/PlantillaPrincipal.dwt.php" codeOutsideHTMLIsLocked="false" -->
@@ -965,6 +1000,33 @@ while ($row_TiposDocumentos = sqlsrv_fetch_array($SQL_TiposDocumentos)) {
 								 </div>
 								</div>
 							</div>
+							<!-- Acordeón de empleados asignados -->
+							<div class="ibox">
+								<div class="ibox-title bg-success">
+									<h5><i class="fa fa-briefcase"></i> Empleados asignados</h5>
+									 <a class="collapse-link pull-right">
+										<i class="fa fa-chevron-up"></i>
+									</a>
+								</div>
+								<div class="ibox-content">
+								  <div class="form-group">
+									 <label class="col-lg-1 control-label">Grupos de Empleados</label>
+									 <div class="col-lg-4">
+										 <select data-placeholder="Digite para buscar..." name="Grupo[]" class="form-control select2" id="Grupo" multiple>
+										  <?php while ($row_Grupos = sqlsrv_fetch_array($SQL_Grupos)) {?>
+												<option value="<?php echo $row_Grupos['IdCargo']; ?>"
+												<?php if (($edit == 1) && (isset($row_GruposUsuario['IdCargo']) && (strcmp($row_Grupos['IdCargo'], $row_GruposUsuario['IdCargo']) == 0))) {?>
+												<?php $row_GruposUsuario = sqlsrv_fetch_array($SQL_GruposUsuario);?>
+												<?php echo "selected=\"selected\"";} ?>> <!-- Fin de sentencia PHP, (3 líneas) -->
+													<?php echo $row_Grupos['DeCargo']; ?>
+												</option>
+										  <?php }?>
+										</select>
+									 </div>
+								 </div>
+								</div>
+							</div>
+							<!-- SMM, 14/05/2022 -->
 						</div>
 						<div id="tab-2" class="tab-pane">
 							<div id="dv_clientes" class="panel-body">

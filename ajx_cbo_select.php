@@ -634,9 +634,9 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
             $cliente = "'" . $_GET['clt'] . "'";
 
             if ($codigoArticulo == "''") {
-                $Consulta = "SELECT SerialInterno, SerialFabricante FROM uvw_Sap_tbl_TarjetasEquipos WHERE CardCode=$cliente";
+                $Consulta = "SELECT SerialInterno, SerialFabricante FROM uvw_Sap_tbl_TarjetasEquipos WHERE CardCode=$cliente AND CodEstado = 'A'";
             } else {
-                $Consulta = "SELECT SerialInterno, SerialFabricante FROM uvw_Sap_tbl_TarjetasEquipos WHERE ItemCode=$codigoArticulo AND CardCode=$cliente";
+                $Consulta = "SELECT SerialInterno, SerialFabricante FROM uvw_Sap_tbl_TarjetasEquipos WHERE ItemCode=$codigoArticulo AND CardCode=$cliente AND CodEstado = 'A'";
             }
             //echo $Consulta;
             $SQL = sqlsrv_query($conexion, $Consulta, array(), array("Scrollable" => 'Static'));
