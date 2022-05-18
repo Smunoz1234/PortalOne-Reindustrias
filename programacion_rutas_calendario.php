@@ -71,7 +71,17 @@ if ($type == 1) { //Si estoy refrescando datos ya cargados
     // var_dump($ParamRec);
 }
 
+// Grupos de Empleados, SMM 16/05/2022
+$SQL_GruposUsuario = Seleccionar("uvw_tbl_UsuariosGruposEmpleados", "*", "[ID_Usuario]='" . $_SESSION['CodUser'] . "'", 'DeCargo');
+
+$ids_grupos = array();
+while ($row_GruposUsuario = sqlsrv_fetch_array($SQL_GruposUsuario)) {
+    $ids_grupos[] = $row_GruposUsuario['IdCargo'];
+}
+
+$ids_recursos = array();
 ?>
+
 <div id="calendario"></div>
 <script>
 
@@ -198,18 +208,27 @@ if ($type == 1) { //Si estoy refrescando datos ya cargados
 				  }
 				},
 			    resources: [
-					<?php
-if ($sw == 1) {
-    while ($row_Recursos = sqlsrv_fetch_array($SQL_Recursos)) {
-        //$newColor=GenerarColor();
-        ?>
-				 			{
-								id: '<?php echo $row_Recursos['ID_Empleado']; ?>',
-								title: '<?php echo $row_Recursos['NombreEmpleado']; ?>'
-							},
-					<?php }
-}?>
+					<?php if ($sw == 1) {?>
+						<?php while ($row_Recursos = sqlsrv_fetch_array($SQL_Recursos)) {?>
+							<?php if ((count($ids_grupos) == 0) || in_array($row_Recursos['IdCargo'], $ids_grupos)) {?>
+								<?php $ids_recursos[] = $row_Recursos['ID_Empleado'];?>
+								{
+									id: '<?php echo $row_Recursos['ID_Empleado']; ?>',
+									title: '<?php echo $row_Recursos['NombreEmpleado'] . ' (' . $row_Recursos['DeCargo'] . ')'; ?>'
+								},
+							<?php } else {?> // Aqui estaria el permiso.
+								{
+									id: '<?php echo $row_Recursos['ID_Empleado']; ?>',
+									title: '<?php echo $row_Recursos['NombreEmpleado'] . ' (BLOQUEADO)'; ?>'
+								},
+							<?php }?>
+						<?php }?>
+					<?php }?>
 			    ],
+				// SMM, 17/05/2022
+				eventConstraint: {
+					resourceIds: [ <?php echo implode(",", $ids_recursos); ?> ]
+				},
 				resourceOrder: 'title',
 				// Evento de CLICK en una fecha con la tecla ALT. SMM, 14/05/2022
 				dateClick: function(info) {
