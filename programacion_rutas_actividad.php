@@ -58,7 +58,26 @@ if ($type_act == 1) {
     $SQL_AnexoActividad = Seleccionar('uvw_Sap_tbl_DocumentosSAP_Anexos', '*', "AbsEntry='" . $row['IdAnexoActividad'] . "'");
 }
 
+// Grupos de Empleados, SMM 19/05/2022
+$SQL_GruposUsuario = Seleccionar("uvw_tbl_UsuariosGruposEmpleados", "*", "[ID_Usuario]='" . $_SESSION['CodUser'] . "'", 'DeCargo');
+
+$ids_grupos = array();
+while ($row_GruposUsuario = sqlsrv_fetch_array($SQL_GruposUsuario)) {
+    $ids_grupos[] = $row_GruposUsuario['IdCargo'];
+}
+
+$disabled = "";
+if (isset($row['ID_EmpleadoActividad']) && (count($ids_grupos) > 0)) {
+    $ID_Empleado = "'" . $row['ID_EmpleadoActividad'] . "'";
+    $SQL_Empleado = Seleccionar('uvw_Sap_tbl_Empleados', '*', "ID_Empleado = $ID_Empleado");
+    $row_Empleado = sql_fetch_array($SQL_Empleado);
+
+    if (isset($row_Empleado['IdCargo']) && (!in_array($row_Empleado['IdCargo'], $ids_grupos))) {
+        $disabled = "disabled";
+    }
+}
 ?>
+
 <form id="frmActividad" method="post">
 <div class="modal-content">
   <div class="modal-header">
@@ -73,20 +92,20 @@ if ($type_act == 1) {
 			<?php /*?><div class="input-group-prepend">
 <span class="input-group-text" id="basic-addon1"><i class="fas fa-calendar-alt d-block"></i></span>
 </div><?php */?>
-			<input name="FechaInicio" type="text" required="required" class="form-control" id="FechaInicio" value="<?php echo $row['FechaInicioActividad']; ?>" <?php if (($type_act == 1) && ($row['IdEstadoActividad'] == 'Y')) {echo "readonly='readonly'";}?>>
+			<input <?php echo $disabled ?> name="FechaInicio" type="text" required="required" class="form-control" id="FechaInicio" value="<?php echo $row['FechaInicioActividad']; ?>" <?php if (($type_act == 1) && ($row['IdEstadoActividad'] == 'Y')) {echo "readonly='readonly'";}?>>
 		</div>
 		<div class="col-lg-2 input-group">
-			<input name="HoraInicio" id="HoraInicio" type="text" class="form-control" value="<?php echo $row['HoraInicioActividad']; ?>" required="required" onChange="ValidarHoras();" <?php if (($type_act == 1) && ($row['IdEstadoActividad'] == 'Y')) {echo "readonly='readonly'";}?>>
+			<input <?php echo $disabled ?> name="HoraInicio" id="HoraInicio" type="text" class="form-control" value="<?php echo $row['HoraInicioActividad']; ?>" required="required" onChange="ValidarHoras();" <?php if (($type_act == 1) && ($row['IdEstadoActividad'] == 'Y')) {echo "readonly='readonly'";}?>>
 			<?php /*?><div class="input-group-prepend">
 <span class="input-group-text" id="basic-addon1"><i class="fas fa-clock d-block"></i></span>
 </div><?php */?>
 		</div>
 		<label class="col-lg-2 col-form-label">Fecha inicio ejecución</label>
 		<div class="col-lg-2 input-group">
-			<input name="FechaInicioEjecucion" type="text" class="form-control" id="FechaInicioEjecucion" value="<?php echo $row['CDU_FechaInicioEjecucionActividad']; ?>" readonly="readonly">
+			<input <?php echo $disabled ?> name="FechaInicioEjecucion" type="text" class="form-control" id="FechaInicioEjecucion" value="<?php echo $row['CDU_FechaInicioEjecucionActividad']; ?>" readonly="readonly">
 		</div>
 		<div class="col-lg-2">
-			<input name="HoraInicioEjecucion" type="text" class="form-control" id="HoraInicioEjecucion" value="<?php echo $row['CDU_HoraInicioEjecucionActividad']; ?>" readonly="readonly">
+			<input <?php echo $disabled ?> name="HoraInicioEjecucion" type="text" class="form-control" id="HoraInicioEjecucion" value="<?php echo $row['CDU_HoraInicioEjecucionActividad']; ?>" readonly="readonly">
 		</div>
 	</div>
 	<div class="form-group row">
@@ -95,26 +114,26 @@ if ($type_act == 1) {
 			<?php /*?><div class="input-group-prepend">
 <span class="input-group-text" id="basic-addon1"><i class="fas fa-calendar-alt d-block"></i></span>
 </div><?php */?>
-			<input name="FechaFin" type="text" required="required" class="form-control" id="FechaFin" value="<?php echo $row['FechaFinActividad']; ?>" <?php if (($type_act == 1) && ($row['IdEstadoActividad'] == 'Y')) {echo "readonly='readonly'";}?>>
+			<input <?php echo $disabled ?> name="FechaFin" type="text" required="required" class="form-control" id="FechaFin" value="<?php echo $row['FechaFinActividad']; ?>" <?php if (($type_act == 1) && ($row['IdEstadoActividad'] == 'Y')) {echo "readonly='readonly'";}?>>
 		</div>
 		<div class="col-lg-2 input-group">
-			<input name="HoraFin" id="HoraFin" type="text" class="form-control" value="<?php echo $row['HoraFinActividad']; ?>" required="required" onChange="ValidarHoras();" <?php if (($type_act == 1) && ($row['IdEstadoActividad'] == 'Y')) {echo "readonly='readonly'";}?>>
+			<input <?php echo $disabled ?> name="HoraFin" id="HoraFin" type="text" class="form-control" value="<?php echo $row['HoraFinActividad']; ?>" required="required" onChange="ValidarHoras();" <?php if (($type_act == 1) && ($row['IdEstadoActividad'] == 'Y')) {echo "readonly='readonly'";}?>>
 			<?php /*?><div class="input-group-prepend">
 <span class="input-group-text" id="basic-addon1"><i class="fas fa-clock d-block"></i></span>
 </div><?php */?>
 		</div>
 		<label class="col-lg-2 col-form-label">Fecha fin ejecución</label>
 		<div class="col-lg-2 input-group">
-			<input name="FechaFinEjecucion" type="text" class="form-control" id="FechaFinEjecucion" value="<?php echo $row['CDU_FechaFinEjecucionActividad']; ?>" readonly="readonly">
+			<input <?php echo $disabled ?> name="FechaFinEjecucion" type="text" class="form-control" id="FechaFinEjecucion" value="<?php echo $row['CDU_FechaFinEjecucionActividad']; ?>" readonly="readonly">
 		</div>
 		<div class="col-lg-2">
-			<input name="HoraFinEjecucion" type="text" class="form-control" id="HoraFinEjecucion" value="<?php echo $row['CDU_HoraFinEjecucionActividad']; ?>" readonly="readonly">
+			<input <?php echo $disabled ?> name="HoraFinEjecucion" type="text" class="form-control" id="HoraFinEjecucion" value="<?php echo $row['CDU_HoraFinEjecucionActividad']; ?>" readonly="readonly">
 		</div>
 	</div>
 	<div class="form-group row">
 		<label class="col-lg-2 col-form-label">Tipo estado actividad <span class="text-danger">*</span></label>
 		<div class="col-lg-4">
-			<select name="TipoEstadoActividad" class="form-control" id="TipoEstadoActividad" required="required" <?php if (($type_act == 1) && ($row['IdEstadoActividad'] == 'Y')) {echo "disabled='disabled'";}?>>
+			<select <?php echo $disabled ?> name="TipoEstadoActividad" class="form-control" id="TipoEstadoActividad" required="required" <?php if (($type_act == 1) && ($row['IdEstadoActividad'] == 'Y')) {echo "disabled='disabled'";}?>>
 				<option value="">Seleccione...</option>
 			  <?php while ($row_TiposEstadoActividad = sqlsrv_fetch_array($SQL_TiposEstadoActividad)) {?>
 					<option value="<?php echo $row_TiposEstadoActividad['ID_TipoEstadoServicio']; ?>" data-color="<?php echo $row_TiposEstadoActividad['ColorEstadoServicio']; ?>" style="color: <?php echo $row_TiposEstadoActividad['ColorEstadoServicio']; ?>;font-weight: bold;" <?php if ((isset($row['IdTipoEstadoActividad'])) && (strcmp($row_TiposEstadoActividad['ID_TipoEstadoServicio'], $row['IdTipoEstadoActividad']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_TiposEstadoActividad['DE_TipoEstadoServicio']; ?></option>
@@ -123,7 +142,7 @@ if ($type_act == 1) {
 		</div>
 		<label class="col-lg-2 col-form-label">Asignado a <span class="text-danger">*</span></label>
 		<div class="col-lg-4">
-			<select name="EmpleadoActividad" class="form-control select2" style="width: 100%" required id="EmpleadoActividad" <?php if (($type_act == 1) && ($row['IdEstadoActividad'] == 'Y')) {echo "disabled='disabled'";}?>>
+			<select <?php echo $disabled ?> name="EmpleadoActividad" class="form-control select2" style="width: 100%" required id="EmpleadoActividad" <?php if (($type_act == 1) && ($row['IdEstadoActividad'] == 'Y')) {echo "disabled='disabled'";}?>>
 					<option value="">(Sin asignar)</option>
 			  <?php while ($row_EmpleadoActividad = sqlsrv_fetch_array($SQL_EmpleadoActividad)) {?>
 					<option value="<?php echo $row_EmpleadoActividad['ID_Empleado']; ?>" <?php if ((isset($row['ID_EmpleadoActividad'])) && (strcmp($row_EmpleadoActividad['ID_Empleado'], $row['ID_EmpleadoActividad']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_EmpleadoActividad['NombreEmpleado']; ?></option>
@@ -134,7 +153,7 @@ if ($type_act == 1) {
 	<div class="form-group row">
 		<label class="col-lg-2 col-form-label">Estado actividad <span class="text-danger">*</span></label>
 		<div class="col-lg-4">
-			<select name="EstadoActividad" class="form-control" id="EstadoActividad" <?php if (($type_act == 1) && ($row['IdEstadoActividad'] == 'Y')) {echo "disabled='disabled'";}?>>
+			<select <?php echo $disabled ?> name="EstadoActividad" class="form-control" id="EstadoActividad" <?php if (($type_act == 1) && ($row['IdEstadoActividad'] == 'Y')) {echo "disabled='disabled'";}?>>
 			  <?php while ($row_EstadoActividad = sqlsrv_fetch_array($SQL_EstadoActividad)) {?>
 					<option value="<?php echo $row_EstadoActividad['Cod_Estado']; ?>" <?php if ((isset($row['IdEstadoActividad'])) && (strcmp($row_EstadoActividad['Cod_Estado'], $row['IdEstadoActividad']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_EstadoActividad['NombreEstado']; ?></option>
 			  <?php }?>
@@ -142,7 +161,7 @@ if ($type_act == 1) {
 		</div>
 		<label class="col-lg-2 col-form-label">Turno técnico</label>
 		<div class="col-lg-4">
-			<select name="TurnoTecnico" class="form-control" id="TurnoTecnico" <?php if (($type_act == 1) && ($row['IdEstadoActividad'] == 'Y')) {echo "disabled='disabled'";}?>>
+			<select <?php echo $disabled ?> name="TurnoTecnico" class="form-control" id="TurnoTecnico" <?php if (($type_act == 1) && ($row['IdEstadoActividad'] == 'Y')) {echo "disabled='disabled'";}?>>
 					<option value="">Seleccione...</option>
 			  <?php while ($row_TurnoTecnicos = sqlsrv_fetch_array($SQL_TurnoTecnicos)) {?>
 					<option value="<?php echo $row_TurnoTecnicos['CodigoTurno']; ?>" <?php if ((isset($row['CDU_IdTurnoTecnico'])) && (strcmp($row_TurnoTecnicos['CodigoTurno'], $row['CDU_IdTurnoTecnico']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_TurnoTecnicos['NombreTurno']; ?></option>
@@ -197,11 +216,11 @@ if ($type_act == 1) {
 			<div class="form-group row">
 				<div class="col-lg-8">
 					<label class="col-form-label">Titulo de actividad <span class="text-danger">*</span></label>
-					<input name="TituloActividad" type="text" class="form-control" id="TituloActividad" required value="<?php echo $row['TituloActividad']; ?>" <?php if (($type_act == 1) && ($row['IdEstadoActividad'] == 'Y')) {echo "readonly='readonly'";}?>>
+					<input <?php echo $disabled ?> name="TituloActividad" type="text" class="form-control" id="TituloActividad" required value="<?php echo $row['TituloActividad']; ?>" <?php if (($type_act == 1) && ($row['IdEstadoActividad'] == 'Y')) {echo "readonly='readonly'";}?>>
 				</div>
 				<div class="col-lg-4">
 					<label class="col-form-label">Asunto <span class="text-danger">*</span></label>
-					<select name="AsuntoActividad" class="form-control" id="AsuntoActividad" required="required" <?php if (($type_act == 1) && ($row['IdEstadoActividad'] == 'Y')) {echo "disabled='disabled'";}?>>
+					<select <?php echo $disabled ?> name="AsuntoActividad" class="form-control" id="AsuntoActividad" required="required" <?php if (($type_act == 1) && ($row['IdEstadoActividad'] == 'Y')) {echo "disabled='disabled'";}?>>
 						<?php if ($type_act == 0) {?><option value="">Seleccione...</option><?php }?>
 						<?php while ($row_AsuntoActividad = sqlsrv_fetch_array($SQL_AsuntoActividad)) {?>
 							<option value="<?php echo $row_AsuntoActividad['ID_AsuntoActividad']; ?>" <?php if ((isset($row['ID_AsuntoActividad'])) && (strcmp($row_AsuntoActividad['ID_AsuntoActividad'], $row['ID_AsuntoActividad']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_AsuntoActividad['DE_AsuntoActividad']; ?></option>
@@ -212,7 +231,7 @@ if ($type_act == 1) {
 			<div class="form-group row">
 				<div class="col-lg-4">
 					<label class="col-form-label">Comentarios para el técnico</label>
-					<textarea name="Comentarios" rows="2" maxlength="1000" class="form-control" id="Comentarios" type="text" <?php if (($type_act == 1) && ($row['IdEstadoActividad'] == 'Y')) {echo "readonly='readonly'";}?>><?php echo $row['ComentariosActividad']; ?></textarea>
+					<textarea <?php echo $disabled ?> name="Comentarios" rows="2" maxlength="1000" class="form-control" id="Comentarios" type="text" <?php if (($type_act == 1) && ($row['IdEstadoActividad'] == 'Y')) {echo "readonly='readonly'";}?>><?php echo $row['ComentariosActividad']; ?></textarea>
 				</div>
 				<div class="col-lg-4">
 					<label class="col-form-label">Comentarios de la llamada de servicio</label>

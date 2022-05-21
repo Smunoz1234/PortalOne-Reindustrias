@@ -371,9 +371,13 @@ if ($edit == 1) { //Editar usuario
     // $SQL_ProyectosUsuario = Seleccionar("uvw_tbl_UsuariosProyectos", "*", "[ID_Usuario]='" . $IdUsuario . "'", 'DeProyecto', 'ASC', 1, 1);
     $row_ProyectosUsuario = sqlsrv_fetch_array($SQL_ProyectosUsuario);
 
-	// Empleados asignados, SMM 16/05/2022
-	$SQL_GruposUsuario = Seleccionar("uvw_tbl_UsuariosGruposEmpleados", "*", "[ID_Usuario]='" . $IdUsuario . "'", 'DeCargo');
-	$row_GruposUsuario = sqlsrv_fetch_array($SQL_GruposUsuario);
+    // Empleados asignados, SMM 16/05/2022
+    $SQL_GruposUsuario = Seleccionar("uvw_tbl_UsuariosGruposEmpleados", "*", "[ID_Usuario]='" . $IdUsuario . "'", 'DeCargo');
+
+    $ids_grupos = array();
+    while ($row_GruposUsuario = sqlsrv_fetch_array($SQL_GruposUsuario)) {
+        $ids_grupos[] = $row_GruposUsuario['IdCargo'];
+    }
 }
 
 //Estados
@@ -1015,9 +1019,7 @@ while ($row_TiposDocumentos = sqlsrv_fetch_array($SQL_TiposDocumentos)) {
 										 <select data-placeholder="Digite para buscar..." name="Grupo[]" class="form-control select2" id="Grupo" multiple>
 										  <?php while ($row_Grupos = sqlsrv_fetch_array($SQL_Grupos)) {?>
 												<option value="<?php echo $row_Grupos['IdCargo']; ?>"
-												<?php if (($edit == 1) && (isset($row_GruposUsuario['IdCargo']) && (strcmp($row_Grupos['IdCargo'], $row_GruposUsuario['IdCargo']) == 0))) {?>
-												<?php $row_GruposUsuario = sqlsrv_fetch_array($SQL_GruposUsuario);?>
-												<?php echo "selected=\"selected\"";} ?>> <!-- Fin de sentencia PHP, (3 líneas) -->
+												<?php if (in_array($row_Grupos['IdCargo'], $ids_grupos)) {echo "selected=\"selected\"";}?>>
 													<?php echo $row_Grupos['DeCargo']; ?>
 												</option>
 										  <?php }?>

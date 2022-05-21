@@ -32,7 +32,16 @@ $fecha = date('Y-m-d');
 $nuevafecha = strtotime ('+'.ObtenerVariable("DiasRangoFechasDocSAP").' day');
 $nuevafecha = date ( 'Y-m-d' , $nuevafecha);
 $FechaFinal=$nuevafecha;
+
+// Grupos de Empleados, SMM 19/05/2022
+$SQL_GruposUsuario = Seleccionar("uvw_tbl_UsuariosGruposEmpleados", "*", "[ID_Usuario]='" . $_SESSION['CodUser'] . "'", 'DeCargo');
+
+$ids_grupos = array();
+while ($row_GruposUsuario = sqlsrv_fetch_array($SQL_GruposUsuario)) {
+    $ids_grupos[] = $row_GruposUsuario['IdCargo'];
+}
 ?>
+
 <script type="text/javascript">
 	$(document).ready(function() {//Cargar los almacenes dependiendo del proyecto
 		$("#NombreClienteLote").change(function(){
@@ -133,7 +142,8 @@ $FechaFinal=$nuevafecha;
 					   <option value="">(Todos)</option>
 					   <?php
 					   while($row_Recursos=sqlsrv_fetch_array($SQL_Recursos)){?>
-							<option value="<?php echo $row_Recursos['ID_Empleado'];?>" <?php if((isset($_GET['RecursosLote'])&&($_GET['RecursosLote']!=""))&&(strcmp($row_Recursos['ID_Empleado'],$_GET['RecursosLote'])==0)){ echo "selected=\"selected\"";}?>><?php echo $row_Recursos['NombreEmpleado'];?></option>
+							<option value="<?php echo $row_Recursos['ID_Empleado'];?>" <?php if((isset($_GET['RecursosLote'])&&($_GET['RecursosLote']!=""))&&(strcmp($row_Recursos['ID_Empleado'],$_GET['RecursosLote'])==0)){ echo "selected=\"selected\"";}?>
+							<?php if ((!PermitirFuncion(321)) && (count($ids_grupos) > 0) && (!in_array($row_Recursos['IdCargo'], $ids_grupos))) {echo "disabled=\"disabled\"";}?>><?php echo $row_Recursos['NombreEmpleado'];?></option>
 					  <?php }?>
 				  </select>
 				</div>

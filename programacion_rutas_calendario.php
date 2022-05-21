@@ -216,10 +216,10 @@ $ids_recursos = array();
 									id: '<?php echo $row_Recursos['ID_Empleado']; ?>',
 									title: '<?php echo $row_Recursos['NombreEmpleado'] . ' (' . $row_Recursos['DeCargo'] . ')'; ?>'
 								},
-							<?php } else {?> // Aqui estaria el permiso.
+							<?php } elseif (PermitirFuncion(321)) {?>
 								{
 									id: '<?php echo $row_Recursos['ID_Empleado']; ?>',
-									title: '<?php echo $row_Recursos['NombreEmpleado'] . ' (BLOQUEADO)'; ?>'
+									title: '<?php echo $row_Recursos['NombreEmpleado'] . ' [BLOQUEADO]'; ?>'
 								},
 							<?php }?>
 						<?php }?>
@@ -240,6 +240,7 @@ $ids_recursos = array();
 				},
 				// Seleccionar solamente un día del mes. SMM, 14/05/2022
 				selectAllow: function (e) {
+					console.log("selectAllow");
 					if (e.end.getTime() / 1000 - e.start.getTime() / 1000 <= 86400) {
 						return true;
 					}
@@ -308,7 +309,6 @@ if ($sw == 1) {
 						resourceId: '<?php echo $row_Actividad['ID_EmpleadoActividad']; ?>',
 						textColor: '#fff',
 						backgroundColor: '<?php echo $row_Actividad['ColorEstadoServicio']; ?>',
-						borderColor: '<?php echo $row_Actividad['ColorEstadoServicio']; ?>',
 						classNames: [<?php echo $classAdd; ?>],
 						tl:'<?php echo ($row_Actividad['IdActividadPortal'] == 0) ? 1 : 0; ?>',
 						estado:'<?php echo $row_Actividad['IdEstadoActividad']; ?>',
@@ -316,7 +316,14 @@ if ($sw == 1) {
 						estadoLlamadaServ: '<?php echo $row_Actividad['IdEstadoLlamada']; ?>',
 						comentario: '<?php echo preg_replace('([^A-Za-z0-9 ])', '', $row_Actividad['ComentarioLlamada']); ?>', // SMM, 03/05/2022
 						informacionAdicional: '<?php echo $row_Actividad['InformacionAdicional']; ?>',
-						manualChange:'0'
+						manualChange:'0',
+						// SMM, 18/05/2022
+						<?php if (!in_array($row_Actividad['ID_EmpleadoActividad'], $ids_recursos)) {?>
+							startEditable: false,
+							durationEditable: false,
+							resourceEditable: false,
+						<?php }?>
+						borderColor: '<?php echo in_array($row_Actividad['ID_EmpleadoActividad'], $ids_recursos) ? $row_Actividad['ColorEstadoServicio'] : 'red'; ?>'
 					},
 					<?php }
 }?>

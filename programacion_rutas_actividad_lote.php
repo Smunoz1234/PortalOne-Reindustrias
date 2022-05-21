@@ -30,7 +30,7 @@ $nuevafecha = strtotime('+' . ObtenerVariable("DiasRangoFechasDocSAP") . ' day')
 $nuevafecha = date('Y-m-d', $nuevafecha);
 $FechaFinal = $nuevafecha;
 
-// Grupos de Empleados, SMM 16/05/2022
+// Grupos de Empleados, SMM 19/05/2022
 $SQL_GruposUsuario = Seleccionar("uvw_tbl_UsuariosGruposEmpleados", "*", "[ID_Usuario]='" . $_SESSION['CodUser'] . "'", 'DeCargo');
 
 $ids_grupos = array();
@@ -140,7 +140,7 @@ while ($row_Suc = sqlsrv_fetch_array($SQL_Suc)) {?>
 					   <?php
 while ($row_Recursos = sqlsrv_fetch_array($SQL_Recursos)) {?>
 							<option value="<?php echo $row_Recursos['ID_Empleado']; ?>" <?php if ((isset($_GET['RecursosLote']) && ($_GET['RecursosLote'] != "")) && (strcmp($row_Recursos['ID_Empleado'], $_GET['RecursosLote']) == 0)) {echo "selected=\"selected\"";}?>
-							<?php if ((count($ids_grupos) > 0) && (!in_array($row_Recursos['IdCargo'], $ids_grupos))) {echo "disabled=\"disabled\"";}?>><?php echo $row_Recursos['IdCargo'] . $row_Recursos['NombreEmpleado'] . implode(",", $ids_grupos); ?></option>
+							<?php if ((count($ids_grupos) > 0) && (!in_array($row_Recursos['IdCargo'], $ids_grupos))) {echo "disabled=\"disabled\"";}?>><?php echo $row_Recursos['NombreEmpleado']; ?></option>
 					  <?php }?>
 				  </select>
 				</div>

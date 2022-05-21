@@ -610,15 +610,29 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
             } else {
                 $Todos = 0;
             }
+
+            // Grupos de Empleados
+            $SQL_GruposUsuario = Seleccionar("uvw_tbl_UsuariosGruposEmpleados", "*", "[ID_Usuario]='" . $_SESSION['CodUser'] . "'", 'DeCargo');
+
+            $ids_grupos = array();
+            while ($row_GruposUsuario = sqlsrv_fetch_array($SQL_GruposUsuario)) {
+                $ids_grupos[] = $row_GruposUsuario['IdCargo'];
+            }
+            // SMM 19/05/2022
+
             if ($Num) {
                 if ($Todos == 1) {
                     echo "<option value=''>(Todos)</option>";
                 }
                 while ($row = sqlsrv_fetch_array($SQL)) {
                     echo "<optgroup label='" . $row['DeCargo'] . "'></optgroup>";
+
+                    // SMM 19/05/2022
+                    $disabled = ((count($ids_grupos) > 0) && (!in_array($row['IdCargo'], $ids_grupos))) ? "disabled" : "";
+
                     $SQL_Rec = Seleccionar('uvw_Sap_tbl_Recursos', 'ID_Empleado, NombreEmpleado', "CentroCosto2='" . $_GET['id'] . "' and IdCargo='" . $row['IdCargo'] . "'", 'NombreEmpleado');
                     while ($row_Rec = sqlsrv_fetch_array($SQL_Rec)) {
-                        echo "<option value=\"" . $row_Rec['ID_Empleado'] . "\">" . $row_Rec['NombreEmpleado'] . "</option>";
+                        echo "<option value=\"" . $row_Rec['ID_Empleado'] . "\" $disabled>" . $row_Rec['NombreEmpleado'] . "</option>";
                     }
                 }
             } else {
@@ -634,9 +648,9 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
             $cliente = "'" . $_GET['clt'] . "'";
 
             if ($codigoArticulo == "''") {
-                $Consulta = "SELECT SerialInterno, SerialFabricante FROM uvw_Sap_tbl_TarjetasEquipos WHERE CardCode=$cliente AND CodEstado = 'A'";
+                $Consulta = "SELECT SerialInterno, SerialFabricante, IdTarjetaEquipo, ItemCode FROM uvw_Sap_tbl_TarjetasEquipos WHERE CardCode=$cliente AND CodEstado = 'A'";
             } else {
-                $Consulta = "SELECT SerialInterno, SerialFabricante FROM uvw_Sap_tbl_TarjetasEquipos WHERE ItemCode=$codigoArticulo AND CardCode=$cliente AND CodEstado = 'A'";
+                $Consulta = "SELECT SerialInterno, SerialFabricante, IdTarjetaEquipo, ItemCode FROM uvw_Sap_tbl_TarjetasEquipos WHERE ItemCode=$codigoArticulo AND CardCode=$cliente AND CodEstado = 'A'";
             }
             //echo $Consulta;
             $SQL = sqlsrv_query($conexion, $Consulta, array(), array("Scrollable" => 'Static'));
@@ -644,10 +658,14 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
             if ($Num) {
                 echo "<option value=''>Seleccione...</option>";
                 while ($row = sqlsrv_fetch_array($SQL)) {
+                    // SMM, 19/05/2022
+                    $IdTarjetaEquipo = $row['IdTarjetaEquipo'] ?? '';
+                    $ItemCode = $row['ItemCode'] ?? '';
+
                     if (isset($_GET['Serial']) && ($_GET['Serial'] == $row['SerialInterno'])) {
-                        echo "<option value=\"" . $row['SerialInterno'] . "\" selected=\"selected\">SN Fabricante: " . $row['SerialFabricante'] . " - Núm. Serie: " . $row['SerialInterno'] . "</option>";
+                        echo "<option value=\"" . $row['SerialInterno'] . "\" selected=\"selected\" data-id='$IdTarjetaEquipo' data-itemcode='$ItemCode'>SN Fabricante: " . $row['SerialFabricante'] . " - Núm. Serie: " . $row['SerialInterno'] . "</option>";
                     } else {
-                        echo "<option value=\"" . $row['SerialInterno'] . "\">SN Fabricante: " . $row['SerialFabricante'] . " - Núm. Serie: " . $row['SerialInterno'] . "</option>";
+                        echo "<option value=\"" . $row['SerialInterno'] . "\" data-id='$IdTarjetaEquipo' data-itemcode='$ItemCode'>SN Fabricante: " . $row['SerialFabricante'] . " - Núm. Serie: " . $row['SerialInterno'] . "</option>";
                     }
 
                 }

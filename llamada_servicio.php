@@ -1103,10 +1103,18 @@ if (isset($sw_error) && ($sw_error == 1)) {
 			var ID=document.getElementById('NumeroSerie').value;
 			var Cliente=document.getElementById('ClienteLlamada').value;
 
+			// SMM, 19/05/2022
+			let IdTarjetaEquipo = $("#NumeroSerie").find(':selected').data('id');
+
 			if(ID != "") {
 				$.ajax({
 					url:"ajx_buscar_datos_json.php",
-					data:{type:44, id:ID, clt:Cliente},
+					data:{
+						type:44,
+						id:IdTarjetaEquipo, // Antes, ID.
+						clt:Cliente,
+						si:0 // SMM, 19/05/2022
+					},
 					dataType:'json',
 					success: function(data){
 						// console.log(data);
@@ -1186,9 +1194,19 @@ function ConsultarArticulo(){
 }
 function ConsultarEquipo(){
 	var numSerie=document.getElementById('NumeroSerie');
+
 	if(numSerie.value!=""){
 		self.name='opener';
-		remote=open('tarjeta_equipo.php?id='+Base64.encode(numSerie.value)+'&ext=1&tl=1','remote','location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
+
+		let parametros = "";
+		if(true) {
+			let IdTarjetaEquipo = $("#NumeroSerie").find(':selected').data('id');
+			parametros = `id='${Base64.encode(IdTarjetaEquipo + "")}'&tl=1`;
+		} else {
+			parametros = `id='${Base64.encode(numSerie.value)}'&ext=1&tl=1`;
+		}
+
+		remote=open('tarjeta_equipo.php?'+parametros,'remote','location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
 		remote.focus();
 	}
 }

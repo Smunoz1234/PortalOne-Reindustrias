@@ -632,10 +632,21 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
         if ($SerialInterno != "''") {
             $cliente = isset($_GET['clt']) ? "'" . $_GET['clt'] . "'" : "";
 
-            if ($cliente == "") {
-                $SQL = Seleccionar("uvw_Sap_tbl_TarjetasEquipos", "*", "SerialInterno=$SerialInterno");
+            if (isset($_GET['si']) && ($_GET['si'] == 0)) {
+                // Ruta nueva, SMM 19/05/2022
+                $IdTarjetaEquipo = $SerialInterno;
+                if ($cliente == "") {
+                    $SQL = Seleccionar("uvw_Sap_tbl_TarjetasEquipos", "*", "IdTarjetaEquipo=$IdTarjetaEquipo");
+                } else {
+                    $SQL = Seleccionar("uvw_Sap_tbl_TarjetasEquipos", "*", "IdTarjetaEquipo=$IdTarjetaEquipo AND CardCode=$cliente");
+                }
             } else {
-                $SQL = Seleccionar("uvw_Sap_tbl_TarjetasEquipos", "*", "SerialInterno=$SerialInterno AND CardCode=$cliente");
+                // Ruta normal
+                if ($cliente == "") {
+                    $SQL = Seleccionar("uvw_Sap_tbl_TarjetasEquipos", "*", "SerialInterno=$SerialInterno");
+                } else {
+                    $SQL = Seleccionar("uvw_Sap_tbl_TarjetasEquipos", "*", "SerialInterno=$SerialInterno AND CardCode=$cliente");
+                }
             }
 
             $row = sqlsrv_fetch_array($SQL);

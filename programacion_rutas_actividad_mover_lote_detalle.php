@@ -39,6 +39,14 @@ $ParamRec = array(
 );
 
 $SQL_Recursos = EjecutarSP("sp_ConsultarTecnicos", $ParamRec);
+
+// Grupos de Empleados, SMM 19/05/2022
+$SQL_GruposUsuario = Seleccionar("uvw_tbl_UsuariosGruposEmpleados", "*", "[ID_Usuario]='" . $_SESSION['CodUser'] . "'", 'DeCargo');
+
+$ids_grupos = array();
+while ($row_GruposUsuario = sqlsrv_fetch_array($SQL_GruposUsuario)) {
+    $ids_grupos[] = $row_GruposUsuario['IdCargo'];
+}
 ?>
 
 <style>
@@ -92,13 +100,17 @@ function DuplicarLinea(){
 					<div class="col-lg-8">
 						<select class="form-control" id="EmpleadoDuplicar" name="EmpleadoDuplicar">
 							<?php while ($row_Recursos = sqlsrv_fetch_array($SQL_Recursos)) {?>
-								<option value="<?php echo $row_Recursos['ID_Empleado']; ?>"><?php echo $row_Recursos['NombreEmpleado']; ?></option>
+
+								<option value="<?php echo $row_Recursos['ID_Empleado']; ?>"
+								<?php if ((count($ids_grupos) > 0) && (!in_array($row_Recursos['IdCargo'], $ids_grupos))) {echo "disabled=\"disabled\"";}?>>
+									<?php echo $row_Recursos['NombreEmpleado']; ?>
+								</option>
 						    <?php }?>
 						</select>
 					</div>
 				</div>`,
 		showCloseButton: true,
-		showDenyButton: true,
+		showDenyButton: <?php echo (PermitirFuncion(321) && (count($ids_grupos) > 0)) ? 'false' : 'true'; ?>,
 		showCancelButton: true,
 		confirmButtonText: "Si",
 		denyButtonText: "No, mantener técnico",
@@ -372,6 +384,7 @@ while ($row = sqlsrv_fetch_array($SQL)) {
 
     $SQL_Recursos = EjecutarSP("sp_ConsultarTecnicos", $ParamRec, -1);
     ?>
+			<?php if ((count($ids_grupos) == 0) || in_array($row['IdCargo'], $ids_grupos)) {?>
 			 <tr class="gradeX odd" id="tr_<?php echo $row['ID']; ?>">
 				<td class="text-center">
 					<label class="custom-control custom-checkbox checkbox-lg">
@@ -406,11 +419,54 @@ while ($row = sqlsrv_fetch_array($SQL)) {
 			   	<td>
 				 	<select name="ID_EmpleadoActividad" id="ID_EmpleadoActividad<?php echo $i; ?>" class="select2 w_155 form-control" onChange="ActualizarDatos('ID_EmpleadoActividad',<?php echo $i; ?>,<?php echo $row['ID']; ?>);">
 				   		<?php while ($row_Recursos = sqlsrv_fetch_array($SQL_Recursos)) {?>
-							<option value="<?php echo $row_Recursos['ID_Empleado']; ?>" <?php if ((isset($row['ID_EmpleadoActividad']) && ($row['ID_EmpleadoActividad'] != "")) && (strcmp($row_Recursos['ID_Empleado'], $row['ID_EmpleadoActividad']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Recursos['NombreEmpleado']; ?></option>
+							<option value="<?php echo $row_Recursos['ID_Empleado']; ?>" <?php if ((isset($row['ID_EmpleadoActividad']) && ($row['ID_EmpleadoActividad'] != "")) && (strcmp($row_Recursos['ID_Empleado'], $row['ID_EmpleadoActividad']) == 0)) {echo "selected=\"selected\"";}?>
+							<?php if ((count($ids_grupos) > 0) && (!in_array($row_Recursos['IdCargo'], $ids_grupos))) {echo "disabled=\"disabled\"";}?>><?php echo $row_Recursos['NombreEmpleado']; ?></option>
 						<?php }?>
 					</select>
 			   </td>
-			</tr>
+			 </tr>
+			<?php } elseif (PermitirFuncion(321)) {?>
+			 <tr class="gradeX odd" id="tr_<?php echo $row['ID']; ?>">
+				<td class="text-center">
+					<label class="custom-control custom-checkbox checkbox-lg">
+						<input type="checkbox" class="custom-control-input chkSel" id="chkSel<?php echo $row['ID']; ?>" value="" onChange="Seleccionar('<?php echo $row['ID']; ?>');">
+						<span class="custom-control-label"></span>
+						<?php if (isset($row['Metodo']) && $row['Metodo'] == 1) {?>
+							<p><i class="far fa-clone"></i></p>
+						<?php }?>
+					</label>
+				</td>
+				<td><?php echo $i; ?></td>
+				<td class="text-center">
+					<a href="llamada_servicio.php?id=<?php echo base64_encode($row['callID']); ?>&tl=1&pag=<?php echo base64_encode('gestionar_llamadas_servicios.php'); ?>" class="btn btn-primary btn-xs" target="_blank">
+						<i class="far fa-folder-open"></i><?php echo $row['ID_LlamadaServicio']; ?>
+					</a>
+				</td>
+				<td><?php echo $row['ID_Actividad']; ?></td>
+				<td><?php echo $row['NombreClienteLlamada']; ?></td>
+				<td><?php echo $row['NombreSucursal']; ?></td>
+
+				<td><?php echo $row['SerialArticuloLlamada']; ?></td>
+				<td><p class="p_overflow"><?php echo $row['ComentarioLlamada']; ?></p></td>
+
+				<td><input readonly type="text" id="FechaInicioActividad<?php echo $i; ?>" name="FechaInicioActividad" class="w_85 form-control" value="<?php if ($row['FechaInicioActividad'] != "") {echo $row['FechaInicioActividad']->format('Y-m-d');}?>" placeholder="YYYY-MM-DD" onChange="ValidarDatosDetalle('FechaInicioActividad',<?php echo $i; ?>,<?php echo $row['ID']; ?>);" autocomplete="off"></td>
+
+				<td><input readonly name="HoraInicioActividad" type="text" class="w_55 form-control" id="HoraInicioActividad<?php echo $i; ?>" placeholder="HH:MM" onChange="ValidarDatosDetalle('HoraInicioActividad',<?php echo $i; ?>,<?php echo $row['ID']; ?>);" value="<?php if ($row['HoraInicioActividad'] != "") {echo $row['HoraInicioActividad']->format('H:i');}?>" autocomplete="off"></td>
+
+				<td><input readonly type="text" id="FechaFinActividad<?php echo $i; ?>" name="FechaFinActividad" class="w_85 form-control" value="<?php if ($row['FechaFinActividad'] != "") {echo $row['FechaFinActividad']->format('Y-m-d');}?>" placeholder="YYYY-MM-DD" onChange="ValidarDatosDetalle('FechaFinActividad',<?php echo $i; ?>,<?php echo $row['ID']; ?>);" autocomplete="off"></td>
+
+				<td><input readonly name="HoraFinActividad" type="text" class="w_55 form-control" id="HoraFinActividad<?php echo $i; ?>" placeholder="HH:MM" onChange="ValidarDatosDetalle('HoraFinActividad',<?php echo $i; ?>,<?php echo $row['ID']; ?>);" value="<?php if ($row['HoraFinActividad'] != "") {echo $row['HoraFinActividad']->format('H:i');}?>" autocomplete="off"></td>
+
+			   	<td>
+				 	<select disabled name="ID_EmpleadoActividad" id="ID_EmpleadoActividad<?php echo $i; ?>" class="select2 w_155 form-control" onChange="ActualizarDatos('ID_EmpleadoActividad',<?php echo $i; ?>,<?php echo $row['ID']; ?>);">
+				   		<?php while ($row_Recursos = sqlsrv_fetch_array($SQL_Recursos)) {?>
+							<option value="<?php echo $row_Recursos['ID_Empleado']; ?>" <?php if ((isset($row['ID_EmpleadoActividad']) && ($row['ID_EmpleadoActividad'] != "")) && (strcmp($row_Recursos['ID_Empleado'], $row['ID_EmpleadoActividad']) == 0)) {echo "selected=\"selected\"";}?>
+							<?php if ((count($ids_grupos) > 0) && (!in_array($row_Recursos['IdCargo'], $ids_grupos))) {echo "disabled=\"disabled\"";}?>><?php echo $row_Recursos['NombreEmpleado']; ?></option>
+						<?php }?>
+					</select>
+			   </td>
+			 </tr>
+			<?php }?>
 		<?php $i++;}?>
 	  </tbody>
 	</table>
