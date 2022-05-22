@@ -2805,6 +2805,12 @@ if (isset($_GET['exp']) && $_GET['exp'] != "" && $_GET['Cons'] != "") {
             // exit();
         }
 
+        if (isset($_GET['b64']) && ($_GET['b64'] == 0)) {
+            $Cons = $_GET['Cons'];
+            // echo $Cons;
+            // exit();
+        }
+
         $SQL = sqlsrv_query($conexion, $Cons);
 
         // $Num = sqlsrv_has_rows($SQL);

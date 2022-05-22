@@ -224,6 +224,14 @@ if ($sw == 1) {
 								<button type="submit" class="btn btn-outline btn-success pull-right"><i class="fa fa-search"></i> Buscar</button>
 							</div>
 						</div>
+
+						<div class="form-group">
+							<div class="col-lg-10">
+								<a href="exportar_excel.php?exp=20&b64=0&Cons=<?php echo $Cons; ?>">
+									<img src="css/exp_excel.png" width="50" height="30" alt="Exportar a Excel" title="Exportar a Excel"/>
+								</a>
+							</div>
+						</div>
 				 </form>
 			</div>
 			</div>
