@@ -663,7 +663,9 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
                     $ItemCode = $row['ItemCode'] ?? '';
 
                     if (isset($_GET['Serial']) && ($_GET['Serial'] == $row['SerialInterno'])) {
-                        echo "<option value=\"" . $row['SerialInterno'] . "\" selected=\"selected\" data-id='$IdTarjetaEquipo' data-itemcode='$ItemCode'>SN Fabricante: " . $row['SerialFabricante'] . " - Núm. Serie: " . $row['SerialInterno'] . "</option>";
+                        if ((!isset($_GET['IdTE'])) || (isset($_GET['IdTE']) && ($_GET['IdTE'] == $IdTarjetaEquipo))) { // SMM, 23/05/2022
+                            echo "<option value=\"" . $row['SerialInterno'] . "\" selected=\"selected\" data-id='$IdTarjetaEquipo' data-itemcode='$ItemCode'>SN Fabricante: " . $row['SerialFabricante'] . " - Núm. Serie: " . $row['SerialInterno'] . "</option>";
+                        }
                     } else {
                         echo "<option value=\"" . $row['SerialInterno'] . "\" data-id='$IdTarjetaEquipo' data-itemcode='$ItemCode'>SN Fabricante: " . $row['SerialFabricante'] . " - Núm. Serie: " . $row['SerialInterno'] . "</option>";
                     }

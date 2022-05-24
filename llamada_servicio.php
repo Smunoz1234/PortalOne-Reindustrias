@@ -871,7 +871,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 			});
 			$.ajax({
 					type: "POST",
-					url: "ajx_cbo_select.php?type=28&id=&clt="+Cliente+"&<?php echo isset($_GET['Serial']) ? ("Serial=" . base64_decode($_GET['Serial'])) : ""; ?>",
+					url: "ajx_cbo_select.php?type=28&id=&clt="+Cliente+"&<?php echo isset($_GET['Serial']) ? ("Serial=" . base64_decode($_GET['Serial'])) : ""; ?>&<?php echo isset($_GET['IdTE']) ? ("IdTE=" . base64_decode($_GET['IdTE'])) : ""; ?>",
 					success: function(response){
 						// console.log(response);
 
