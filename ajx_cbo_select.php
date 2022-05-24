@@ -612,11 +612,14 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
             }
 
             // Grupos de Empleados
-            $SQL_GruposUsuario = Seleccionar("uvw_tbl_UsuariosGruposEmpleados", "*", "[ID_Usuario]='" . $_SESSION['CodUser'] . "'", 'DeCargo');
-
             $ids_grupos = array();
-            while ($row_GruposUsuario = sqlsrv_fetch_array($SQL_GruposUsuario)) {
-                $ids_grupos[] = $row_GruposUsuario['IdCargo'];
+
+            if (isset($_GET['bloquear']) && ($_GET['bloquear'] == 1)) { // SMM, 23/05/2022
+                $SQL_GruposUsuario = Seleccionar("uvw_tbl_UsuariosGruposEmpleados", "*", "[ID_Usuario]='" . $_SESSION['CodUser'] . "'", 'DeCargo');
+
+                while ($row_GruposUsuario = sqlsrv_fetch_array($SQL_GruposUsuario)) {
+                    $ids_grupos[] = $row_GruposUsuario['IdCargo'];
+                }
             }
             // SMM 19/05/2022
 

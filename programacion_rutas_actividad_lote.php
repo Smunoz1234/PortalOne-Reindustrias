@@ -62,7 +62,7 @@ while ($row_GruposUsuario = sqlsrv_fetch_array($SQL_GruposUsuario)) {
 		$("#SedeLote").change(function(){
 			$.ajax({
 				type: "POST",
-				url: "ajx_cbo_select.php?type=27&id="+document.getElementById('SedeLote').value,
+				url: "ajx_cbo_select.php?type=27&bloquear=1&id="+document.getElementById('SedeLote').value,
 				success: function(response){
 					$('#RecursosLote').html(response);
 					$("#RecursosLote").trigger("change");

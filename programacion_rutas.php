@@ -208,7 +208,7 @@ if ($sw == 1) {
 
 			$.ajax({
 				type: "POST",
-				url: "ajx_cbo_select.php?type=27&id="+document.getElementById('Sede').value,
+				url: "ajx_cbo_select.php?type=27&bloquear=<?php echo PermitirFuncion(321) ? 0 : 1; ?>&id="+document.getElementById('Sede').value,
 				success: function(response){
 					$('#Recursos').html(response);
 					$("#Recursos").trigger("change");
@@ -230,7 +230,7 @@ if ($sw == 1) {
 			}else{
 				$.ajax({
 					type: "POST",
-					url: "ajx_cbo_select.php?type=27&id="+document.getElementById('Sede').value,
+					url: "ajx_cbo_select.php?type=27&bloquear=<?php echo PermitirFuncion(321) ? 0 : 1; ?>&id="+document.getElementById('Sede').value,
 					success: function(response){
 						$('#Recursos').html(response);
 						$("#Recursos").trigger("change");
