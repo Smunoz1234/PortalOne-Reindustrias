@@ -1289,6 +1289,23 @@ if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
 				<div class="form-group">
 					<label class="col-xs-12"><h3 class="bg-success p-xs b-r-sm"><i class="fa fa-list"></i> Contenido de la factura</h3></label>
 				</div>
+				<!-- Inicio, descuento aseguradora -->
+				<?php if ($edit == 0) {?>
+					<div class="form-group">
+						<label class="col-lg-1 control-label">Valor descuento</label>
+						<div class="col-lg-3">
+							<input type="text" id="ValorDescuento" name="ValorDescuento" class="form-control" placeholder="Digite el valor del descuento de aseguradora..." onBlur="this.value=number_format(this.value,2);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" autocomplete="off" <?php if ($edit == 1) {echo "readonly";}?>>
+						</div>
+						<label class="col-lg-1 control-label">% descuento</label>
+						<div class="col-lg-1">
+							<input type="text" id="PorcentajeDescuento" name="PorcentajeDescuento" value="0.0000" class="form-control" readonly>
+						</div>
+						<div class="col-lg-2">
+							<button class="btn btn-success" type="button" id="AplicarDescuento">Aplicar descuento de aseguradora</button>
+						</div>
+					</div>
+				<?php }?>
+				<!-- Fin, descuento aseguradora -->
 				<div class="form-group">
 					<label class="col-lg-1 control-label">Buscar articulo</label>
 					<div class="col-lg-4">
@@ -1483,6 +1500,50 @@ $return = QuitarParametrosURL($return, array("a"));
 <!-- InstanceBeginEditable name="EditRegion4" -->
 <script>
 	 $(document).ready(function(){
+		// Inicio, calcular descuento.
+		$("#ValorDescuento").on("change", function() {
+			let SubTotal = parseFloat($("#SubTotal").val().replace(/,/g, ''));
+			let ValorDescuento = parseFloat($("#ValorDescuento").val().replace(/,/g, ''));
+
+			$("#PorcentajeDescuento").val((100*(ValorDescuento/SubTotal)).toFixed(4));
+		});
+		// Fin, calcular descuento.
+
+		// Inicio, aplicar descuento.
+		$("#AplicarDescuento").on("click", function() {
+			let frame=document.getElementById('DataGrid');
+
+			let DiscPrcnt=document.getElementById('PorcentajeDescuento').value;
+			let CardCode=document.getElementById('CardCode').value;
+			let TotalItems=document.getElementById('TotalItems').value;
+
+			if(DiscPrcnt!="" && CardCode!="" && TotalItems!="0"){
+				Swal.fire({
+					title: "¿Desea actualizar las líneas?",
+					icon: "question",
+					showCancelButton: true,
+					confirmButtonText: "Si, confirmo",
+					cancelButtonText: "No"
+				}).then((result) => {
+					if (result.isConfirmed) {
+						$.ajax({
+							type: "GET",
+							url: "registro.php?P=36&doctype=9&type=1&name=DiscPrcnt&value="+Base64.encode(DiscPrcnt)+"&line=0&cardcode="+CardCode+"&whscode=0&actodos=1",
+							success: function(response){
+								frame.src="detalle_factura_venta.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+CardCode;
+							}
+						});
+					}
+				});
+			} else {
+				Swal.fire({
+					title: "Debe ingresar un cliente, y al menos un artículo.",
+					icon: "warning"
+				});
+			}
+		});
+		// Fin, aplicar descuento.
+
 		 $("#CrearFacturaVenta").validate({
 			 submitHandler: function(form){
 				if(Validar()){
