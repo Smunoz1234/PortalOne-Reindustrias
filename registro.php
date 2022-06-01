@@ -3326,6 +3326,13 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                         "'" . $_SESSION['CodUser'] . "'",
                         "'" . $_GET['actodos'] . "'",
                     );
+
+                    /*
+                    if (isset($_GET['custom'])) {
+                        array_push($Parametros, "'" . $_GET['custom'] . "'");
+                    }
+                    */
+
                     $SQL = EjecutarSP('sp_tbl_FacturaVentaDetalleCarritoUpdCampos', $Parametros, 36);
                     if ($SQL) {
                         sqlsrv_close($conexion);

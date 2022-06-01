@@ -1293,7 +1293,7 @@ if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
 				<?php if ($edit == 0) {?>
 					<div class="form-group">
 						<label class="col-lg-1 control-label">Valor descuento</label>
-						<div class="col-lg-3">
+						<div class="col-lg-4">
 							<input type="text" id="ValorDescuento" name="ValorDescuento" class="form-control" placeholder="Digite el valor del descuento de aseguradora..." onBlur="this.value=number_format(this.value,2);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" autocomplete="off" <?php if ($edit == 1) {echo "readonly";}?>>
 						</div>
 						<label class="col-lg-1 control-label">% descuento</label>
@@ -1527,7 +1527,7 @@ $return = QuitarParametrosURL($return, array("a"));
 				}).then((result) => {
 					if (result.isConfirmed) {
 						$.ajax({
-							type: "GET",
+							type: "GET", // custom=1&
 							url: "registro.php?P=36&doctype=9&type=1&name=DiscPrcnt&value="+Base64.encode(DiscPrcnt)+"&line=0&cardcode="+CardCode+"&whscode=0&actodos=1",
 							success: function(response){
 								frame.src="detalle_factura_venta.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+CardCode;
@@ -1537,7 +1537,7 @@ $return = QuitarParametrosURL($return, array("a"));
 				});
 			} else {
 				Swal.fire({
-					title: "Debe ingresar un cliente, y al menos un artículo.",
+					title: "Debe ingresar un cliente y al menos un artículo.",
 					icon: "warning"
 				});
 			}
