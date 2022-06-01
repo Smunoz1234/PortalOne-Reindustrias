@@ -158,6 +158,7 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
             "NULL",
             "'" . $_POST['CDU_ListaMateriales'] . "'",
             isset($_POST['CDU_TiempoTarea']) ? $_POST['CDU_TiempoTarea'] : 0, // int
+            isset($_POST['CDU_IdTecnicoAdicional']) ? $_POST['CDU_IdTecnicoAdicional'] : 0, // SMM, 25/05/2022
         );
         $SQL_InsLlamada = EjecutarSP('sp_tbl_LlamadaServicios', $ParamInsLlamada, 32);
         if ($SQL_InsLlamada) {
@@ -336,6 +337,7 @@ if (isset($_POST['P']) && ($_POST['P'] == 33)) { //Actualizar llamada de servici
             "NULL",
             "'" . $_POST['CDU_ListaMateriales'] . "'",
             isset($_POST['CDU_TiempoTarea']) ? $_POST['CDU_TiempoTarea'] : 0, // int
+            isset($_POST['CDU_IdTecnicoAdicional']) ? $_POST['CDU_IdTecnicoAdicional'] : 0, // SMM, 25/05/2022
         );
 
         // Actualizar la llamada de servicio.
@@ -604,6 +606,9 @@ $SQL_Proyecto = Seleccionar('uvw_Sap_tbl_Proyectos', '*', '', 'DeProyecto');
 
 //Tecnicos
 $SQL_Tecnicos = Seleccionar('uvw_Sap_tbl_Recursos', '*', '', 'NombreEmpleado');
+
+// Tecnicos Adicionales, SMM 25/05/2022
+$SQL_TecnicosAdicionales = Seleccionar('uvw_Sap_tbl_Recursos', '*', '', 'NombreEmpleado');
 
 //Estado llamada
 $SQL_EstadoLlamada = Seleccionar('uvw_tbl_EstadoLlamada', '*');
@@ -1797,6 +1802,15 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 										<option value="">Seleccione...</option>
 								  <?php while ($row_Tecnicos = sqlsrv_fetch_array($SQL_Tecnicos)) {?>
 										<option value="<?php echo $row_Tecnicos['ID_Empleado']; ?>" <?php if ((isset($row['IdTecnico'])) && (strcmp($row_Tecnicos['ID_Empleado'], $row['IdTecnico']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Tecnicos['NombreEmpleado']; ?></option>
+								  <?php }?>
+								</select>
+							</div>
+							<div class="col-lg-4">
+								<label class="control-label">Técnico/Asesor Adicional</label>
+								<select name="CDU_IdTecnicoAdicional" class="form-control select2" id="CDU_IdTecnicoAdicional" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
+										<option value="">Seleccione...</option>
+								  <?php while ($row_Tecnicos = sqlsrv_fetch_array($SQL_TecnicosAdicionales)) {?>
+										<option value="<?php echo $row_Tecnicos['ID_Empleado']; ?>" <?php if ((isset($row['CDU_IdTecnicoAdicional'])) && (strcmp($row_Tecnicos['ID_Empleado'], $row['CDU_IdTecnicoAdicional']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Tecnicos['NombreEmpleado']; ?></option>
 								  <?php }?>
 								</select>
 							</div>
