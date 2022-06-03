@@ -581,9 +581,9 @@ if ($sw_error == 1) {
     // Lista de materiales
     $SQL_ListaMateriales = Seleccionar('uvw_Sap_tbl_ListaMateriales', '*', "CDU_IdMarca='" . $CDU_IdMarca_TarjetaEquipo . "' AND CDU_IdLinea='" . $CDU_IdLinea_TarjetaEquipo . "'");
 
-	// Stiven Muñoz Murillo, 02/06/2022
-	$SQL_Articulo = Seleccionar('uvw_Sap_tbl_ArticulosLlamadas', '*', "ItemCode='" . $row['IdArticuloLlamada'] . "'");
-	$row_Articulo = sqlsrv_fetch_array($SQL_Articulo);
+    // Stiven Muñoz Murillo, 02/06/2022
+    $SQL_Articulo = Seleccionar('uvw_Sap_tbl_ArticulosLlamadas', '*', "ItemCode='" . $row['IdArticuloLlamada'] . "'");
+    $row_Articulo = sqlsrv_fetch_array($SQL_Articulo);
 }
 
 //Serie de llamada
@@ -658,6 +658,7 @@ if ($testMode) {
     echo "<script> console.log($cadena); </script>";
 }
 ?>
+
 <!DOCTYPE html>
 <html><!-- InstanceBegin template="/Templates/PlantillaPrincipal.dwt.php" codeOutsideHTMLIsLocked="false" -->
 
@@ -1701,7 +1702,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 							<div class="col-lg-4">
 								<label class="control-label">Fecha Agenda <span class="text-danger">*</span></label>
 								<div class="input-group date">
-									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaAgenda" type="text" required="required" class="form-control" id="FechaAgenda" value="<?php if (($type_llmd == 1) && ($row['FechaAgenda'] != "")) {echo $row['FechaAgenda']->format('Y-m-d');} else {echo date('Y-m-d');}?>">
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaAgenda" type="text" required="required" class="form-control" id="FechaAgenda" value="<?php if (($type_llmd == 1) && ($row['FechaAgenda'] != "")) {echo is_string($row['FechaAgenda']) ? date("Y-m-d", strtotime($row['FechaAgenda'])) : $row['FechaAgenda']->format("Y-m-d");} else {echo date('Y-m-d');}?>">
 								</div>
 							</div>
 							<!-- 01/06/2022 -->
@@ -1732,7 +1733,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 									<span class="input-group-addon">
 										<span class="fa fa-clock-o"></span>
 									</span>
-									<input name="HoraAgenda" id="HoraAgenda" type="text" class="form-control" value="<?php if (($type_llmd == 1) && ($row['HoraAgenda'] != "")) {echo $row['HoraAgenda']->format('H:i');} else {echo date('H:i');}?>" required="required">
+									<input name="HoraAgenda" id="HoraAgenda" type="text" class="form-control" value="<?php if (($type_llmd == 1) && ($row['HoraAgenda'] != "")) {echo is_string($row['FechaAgenda']) ? date("H:i", strtotime($row['HoraAgenda'])) : $row['HoraAgenda']->format("H:i");} else {echo date('H:i');}?>" required="required">
 								</div>
 							</div>
 							<!-- 01/06/2022 -->
