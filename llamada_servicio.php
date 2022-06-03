@@ -158,6 +158,9 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
             "NULL",
             "'" . $_POST['CDU_ListaMateriales'] . "'",
             isset($_POST['CDU_TiempoTarea']) ? $_POST['CDU_TiempoTarea'] : 0, // int
+            "'" . $_POST['CDU_IdTecnicoAdicional'] . "'", // SMM, 25/05/2022
+            "'" . FormatoFecha($_POST['FechaAgenda'], $_POST['HoraAgenda']) . "'", // SMM 01/06/2022
+            "'" . FormatoFecha($_POST['FechaAgenda'], $_POST['HoraAgenda']) . "'", // SMM 01/06/2022
         );
         $SQL_InsLlamada = EjecutarSP('sp_tbl_LlamadaServicios', $ParamInsLlamada, 32);
         if ($SQL_InsLlamada) {
@@ -336,6 +339,9 @@ if (isset($_POST['P']) && ($_POST['P'] == 33)) { //Actualizar llamada de servici
             "NULL",
             "'" . $_POST['CDU_ListaMateriales'] . "'",
             isset($_POST['CDU_TiempoTarea']) ? $_POST['CDU_TiempoTarea'] : 0, // int
+            "'" . $_POST['CDU_IdTecnicoAdicional'] . "'", // SMM, 25/05/2022
+            "'" . FormatoFecha($_POST['FechaAgenda'], $_POST['HoraAgenda']) . "'", // SMM 01/06/2022
+            "'" . FormatoFecha($_POST['FechaAgenda'], $_POST['HoraAgenda']) . "'", // SMM 01/06/2022
         );
 
         // Actualizar la llamada de servicio.
@@ -574,6 +580,10 @@ if ($sw_error == 1) {
 
     // Lista de materiales
     $SQL_ListaMateriales = Seleccionar('uvw_Sap_tbl_ListaMateriales', '*', "CDU_IdMarca='" . $CDU_IdMarca_TarjetaEquipo . "' AND CDU_IdLinea='" . $CDU_IdLinea_TarjetaEquipo . "'");
+
+	// Stiven Muñoz Murillo, 02/06/2022
+	$SQL_Articulo = Seleccionar('uvw_Sap_tbl_ArticulosLlamadas', '*', "ItemCode='" . $row['IdArticuloLlamada'] . "'");
+	$row_Articulo = sqlsrv_fetch_array($SQL_Articulo);
 }
 
 //Serie de llamada
@@ -604,6 +614,9 @@ $SQL_Proyecto = Seleccionar('uvw_Sap_tbl_Proyectos', '*', '', 'DeProyecto');
 
 //Tecnicos
 $SQL_Tecnicos = Seleccionar('uvw_Sap_tbl_Recursos', '*', '', 'NombreEmpleado');
+
+// Tecnicos Adicionales, SMM 25/05/2022
+$SQL_TecnicosAdicionales = Seleccionar('uvw_Sap_tbl_Recursos', '*', '', 'NombreEmpleado');
 
 //Estado llamada
 $SQL_EstadoLlamada = Seleccionar('uvw_tbl_EstadoLlamada', '*');
@@ -1359,6 +1372,7 @@ function CrearLead(){
 										<select class="form-control" id="ClienteFactSN" name="ClienteFactSN" required>
 											<option value="">Seleccione...</option>
 										</select>
+										<small class="form-text text-muted">Sólo se listan los clientes con entregas abiertas.</small>
 									</div>
 									<div class="col-lg-5">
 										<label class="control-label">Contacto</label>
@@ -1618,7 +1632,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								<label class="control-label text-danger">Información básica</label>
 							</div>
 							<div class="col-lg-3 border-bottom ">
-								<label class="control-label text-danger">Estados de servicio</label>
+								<label class="control-label text-danger">Programación</label>
 							</div>
 						</div>
 						<div class="form-group">
@@ -1643,12 +1657,10 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								<input autocomplete="off" name="CallID" type="text" class="form-control" id="CallID" maxlength="50" readonly="readonly" value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['ID_LlamadaServicio'];}?>">
 							</div>
 							<div class="col-lg-4">
-								<label class="control-label">Estado <span class="text-danger">*</span></label>
-								<select name="EstadoLlamada" class="form-control" id="EstadoLlamada" required="required" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
-								  <?php while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) {?>
-										<option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['IdEstadoLlamada'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['IdEstadoLlamada']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option>
-								  <?php }?>
-								</select>
+								<label class="control-label">Fecha de creación <span class="text-danger">*</span></label>
+								<div class="input-group date">
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaCreacion" type="text" required="required" class="form-control" id="FechaCreacion" value="<?php if (($type_llmd == 1) && ($row['FechaCreacionLLamada']) != "") {echo $row['FechaCreacionLLamada'];} else {echo date('Y-m-d');}?>" readonly='readonly'>
+								</div>
 							</div>
 						</div>
 						<div class="form-group">
@@ -1657,9 +1669,12 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								<input autocomplete="off" name="AsuntoLlamada" type="text" required="required" class="form-control" id="AsuntoLlamada" maxlength="150" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "readonly='readonly'";}?> value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['AsuntoLlamada'];} else {echo $TituloLlamada;}?>">
 							</div>
 							<div class="col-lg-4">
-								<label class="control-label">Fecha de creación <span class="text-danger">*</span></label>
-								<div class="input-group date">
-									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaCreacion" type="text" required="required" class="form-control" id="FechaCreacion" value="<?php if (($type_llmd == 1) && ($row['FechaCreacionLLamada']) != "") {echo $row['FechaCreacionLLamada'];} else {echo date('Y-m-d');}?>" readonly='readonly'>
+								<label class="control-label">Hora de creación <span class="text-danger">*</span></label>
+								<div class="input-group clockpicker" data-autoclose="true">
+									<span class="input-group-addon">
+										<span class="fa fa-clock-o"></span>
+									</span>
+									<input name="HoraCreacion" id="HoraCreacion" type="text" class="form-control" value="<?php if ($type_llmd == 1) {echo $row['FechaHoraCreacionLLamada']->format('H:i');} else {echo date('H:i');}?>" required="required" readonly='readonly'>
 								</div>
 							</div>
 						</div>
@@ -1682,15 +1697,14 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								  <?php }?>
 								</select>
 							</div>
+							<!-- SMM -->
 							<div class="col-lg-4">
-								<label class="control-label">Hora de creación <span class="text-danger">*</span></label>
-								<div class="input-group clockpicker" data-autoclose="true">
-									<span class="input-group-addon">
-										<span class="fa fa-clock-o"></span>
-									</span>
-									<input name="HoraCreacion" id="HoraCreacion" type="text" class="form-control" value="<?php if ($type_llmd == 1) {echo $row['FechaHoraCreacionLLamada']->format('H:i');} else {echo date('H:i');}?>" required="required" readonly='readonly'>
+								<label class="control-label">Fecha Agenda <span class="text-danger">*</span></label>
+								<div class="input-group date">
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaAgenda" type="text" required="required" class="form-control" id="FechaAgenda" value="<?php if (($type_llmd == 1) && ($row['FechaAgenda'] != "")) {echo $row['FechaAgenda']->format('Y-m-d');} else {echo date('Y-m-d');}?>">
 								</div>
 							</div>
+							<!-- 01/06/2022 -->
 						</div>
 						<div class="form-group">
 							<div class="col-lg-4">
@@ -1711,14 +1725,17 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								  <?php }?>
 								</select>
 							</div>
+							<!-- SMM -->
 							<div class="col-lg-4">
-								<label class="control-label">Estado de servicio <span class="text-danger">*</span></label>
-								<select name="CDU_EstadoServicio" class="form-control" id="CDU_EstadoServicio" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?> required>
-								  <?php while ($row_EstServLlamada = sqlsrv_fetch_array($SQL_EstServLlamada)) {?>
-										<option value="<?php echo $row_EstServLlamada['IdEstadoServicio']; ?>" <?php if ((($type_llmd == 0) && ($row_EstServLlamada['IdEstadoServicio'] == 0)) || ((isset($row['CDU_EstadoServicio'])) && (strcmp($row_EstServLlamada['IdEstadoServicio'], $row['CDU_EstadoServicio']) == 0))) {echo "selected=\"selected\"";}?>><?php echo $row_EstServLlamada['DeEstadoServicio']; ?></option>
-								  <?php }?>
-								</select>
+								<label class="control-label">Hora Agenda <span class="text-danger">*</span></label>
+								<div class="input-group clockpicker" data-autoclose="true">
+									<span class="input-group-addon">
+										<span class="fa fa-clock-o"></span>
+									</span>
+									<input name="HoraAgenda" id="HoraAgenda" type="text" class="form-control" value="<?php if (($type_llmd == 1) && ($row['HoraAgenda'] != "")) {echo $row['HoraAgenda']->format('H:i');} else {echo date('H:i');}?>" required="required">
+								</div>
 							</div>
+							<!-- 01/06/2022 -->
 						</div>
 						<div class="form-group">
 							<div class="col-lg-4">
@@ -1737,14 +1754,6 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								  <?php /*while($row_ColaLlamada=sqlsrv_fetch_array($SQL_ColaLlamada)){?>
 <option value="<?php echo $row_ColaLlamada['IdColaLlamada'];?>" <?php if((isset($row['IdColaLlamada']))&&(strcmp($row_ColaLlamada['IdColaLlamada'],$row['IdColaLlamada'])==0)){ echo "selected=\"selected\"";}?>><?php echo $row_ColaLlamada['DeColaLlamada'];?></option>
 <?php }*/?>
-								</select>
-							</div>
-							<div class="col-lg-4">
-								<label class="control-label">Cancelado por <span class="text-danger">*</span></label>
-								<select name="CDU_CanceladoPor" class="form-control" id="CDU_CanceladoPor" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?> required>
-								  <?php while ($row_CanceladoPorLlamada = sqlsrv_fetch_array($SQL_CanceladoPorLlamada)) {?>
-										<option value="<?php echo $row_CanceladoPorLlamada['IdCanceladoPor']; ?>" <?php if ((isset($row['CDU_CanceladoPor'])) && (strcmp($row_CanceladoPorLlamada['IdCanceladoPor'], $row['CDU_CanceladoPor']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_CanceladoPorLlamada['DeCanceladoPor']; ?></option>
-								  <?php }?>
 								</select>
 							</div>
 						</div>
@@ -1780,6 +1789,9 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 							<div class="col-lg-8 border-bottom">
 								<label class="control-label text-danger">Información de responsables</label>
 							</div>
+							<div class="col-lg-4 border-bottom">
+								<label class="control-label text-danger">Estados de servicio</label>
+							</div>
 						</div>
 						<div class="form-group">
 							<div class="col-lg-4">
@@ -1800,6 +1812,14 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								  <?php }?>
 								</select>
 							</div>
+							<div class="col-lg-4">
+								<label class="control-label">Estado <span class="text-danger">*</span></label>
+								<select name="EstadoLlamada" class="form-control" id="EstadoLlamada" required="required" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
+								  <?php while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) {?>
+										<option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['IdEstadoLlamada'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['IdEstadoLlamada']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option>
+								  <?php }?>
+								</select>
+							</div>
 						</div>
 						<div class="form-group">
 							<div class="col-lg-4">
@@ -1811,11 +1831,36 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								  <?php }?>
 								</select>
 							</div>
+							<div class="col-lg-4">
+								<label class="control-label">Técnico/Asesor Adicional</label>
+								<select name="CDU_IdTecnicoAdicional" class="form-control select2" id="CDU_IdTecnicoAdicional" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
+										<option value="">Seleccione...</option>
+								  <?php while ($row_Tecnicos = sqlsrv_fetch_array($SQL_TecnicosAdicionales)) {?>
+										<option value="<?php echo $row_Tecnicos['ID_Empleado']; ?>" <?php if ((isset($row['CDU_IdTecnicoAdicional'])) && (strcmp($row_Tecnicos['ID_Empleado'], $row['CDU_IdTecnicoAdicional']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Tecnicos['NombreEmpleado']; ?></option>
+								  <?php }?>
+								</select>
+							</div>
+							<div class="col-lg-4">
+								<label class="control-label">Estado de servicio <span class="text-danger">*</span></label>
+								<select name="CDU_EstadoServicio" class="form-control" id="CDU_EstadoServicio" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?> required>
+								  <?php while ($row_EstServLlamada = sqlsrv_fetch_array($SQL_EstServLlamada)) {?>
+										<option value="<?php echo $row_EstServLlamada['IdEstadoServicio']; ?>" <?php if ((($type_llmd == 0) && ($row_EstServLlamada['IdEstadoServicio'] == 0)) || ((isset($row['CDU_EstadoServicio'])) && (strcmp($row_EstServLlamada['IdEstadoServicio'], $row['CDU_EstadoServicio']) == 0))) {echo "selected=\"selected\"";}?>><?php echo $row_EstServLlamada['DeEstadoServicio']; ?></option>
+								  <?php }?>
+								</select>
+							</div>
 						</div>
 						<div class="form-group">
 							<div class="col-lg-8">
 								<label class="control-label">Comentario <span class="text-danger">*</span></label>
 								<textarea name="ComentarioLlamada" rows="7" maxlength="3000" required="required" class="form-control" id="ComentarioLlamada" type="text" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "readonly='readonly'";}?>><?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['ComentarioLlamada'];}?></textarea>
+							</div>
+							<div class="col-lg-4">
+								<label class="control-label">Cancelado por <span class="text-danger">*</span></label>
+								<select name="CDU_CanceladoPor" class="form-control" id="CDU_CanceladoPor" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?> required>
+								  <?php while ($row_CanceladoPorLlamada = sqlsrv_fetch_array($SQL_CanceladoPorLlamada)) {?>
+										<option value="<?php echo $row_CanceladoPorLlamada['IdCanceladoPor']; ?>" <?php if ((isset($row['CDU_CanceladoPor'])) && (strcmp($row_CanceladoPorLlamada['IdCanceladoPor'], $row['CDU_CanceladoPor']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_CanceladoPorLlamada['DeCanceladoPor']; ?></option>
+								  <?php }?>
+								</select>
 							</div>
 						</div>
 					</div>
@@ -2382,7 +2427,7 @@ $return = QuitarParametrosURL($return, array("a"));?>
 		maxLength('CDU_Areas'); // SMM, 02/03/2022
 
 		 <?php if (($type_llmd == 0) || (($type_llmd == 1) && (PermitirFuncion(302) && ($row['IdEstadoLlamada'] != '-1')))) {?>
-		 $('#FechaCreacion').datepicker({
+		 $('#FechaCreacion, #FechaAgenda').datepicker({
                 todayBtn: "linked",
                 keyboardNavigation: false,
                 forceParse: false,
