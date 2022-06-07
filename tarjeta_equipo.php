@@ -813,14 +813,14 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 						<div class="form-group">
 						<div class="col-lg-4">
 								<label class="control-label">Concesionario <span class="text-danger">*</span></label>
-								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Concesionario" class="form-control select2" required="required" id="CDU_Concesionario">
-										<option value="" disabled selected>Seleccione...</option>
-								  <?php while ($row_Concesionario = sqlsrv_fetch_array($SQL_Concesionario)) {?>
+								<select <?php if (!PermitirFuncion(1602) || (($edit == 0) && (!PermitirFuncion(1603))) || (($edit == 1) && (!PermitirFuncion(1604)))) {echo "disabled='disabled'";}?> name="CDU_Concesionario" class="form-control select2" required="required" id="CDU_Concesionario">
+									<?php while ($row_Concesionario = sqlsrv_fetch_array($SQL_Concesionario)) {?>
 										<option value="<?php echo $row_Concesionario['NombreConcesionario']; ?>"
-										<?php if (isset($row['CDU_Concesionario']) && (strcmp($row_Concesionario['NombreConcesionario'], $row['CDU_Concesionario']) == 0)) {echo "selected=\"selected\"";}?>>
+										<?php if (isset($row['CDU_Concesionario']) && (strcmp($row_Concesionario['NombreConcesionario'], $row['CDU_Concesionario']) == 0)) {echo "selected=\"selected\"";} elseif (($edit == 0) && (strcmp($row_Concesionario['NombreConcesionario'], ObtenerValorDefecto(176, "IdConcesionario")) == 0)) {echo "selected='selected'";}?>>
+
 											<?php echo $row_Concesionario['NombreConcesionario']; ?>
 										</option>
-								  <?php }?>
+								  	<?php }?>
 								</select>
 							</div>
 							<div class="col-lg-4">
