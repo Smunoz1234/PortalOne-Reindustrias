@@ -419,6 +419,7 @@ $row_encode = isset($row) ? json_encode($row) : "";
 $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'Not Found'";
 // echo "<script> console.log($cadena); </script>";
 ?>
+
 <!DOCTYPE html>
 <html><!-- InstanceBegin template="/Templates/PlantillaPrincipal.dwt.php" codeOutsideHTMLIsLocked="false" -->
 
@@ -813,10 +814,10 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 						<div class="form-group">
 						<div class="col-lg-4">
 								<label class="control-label">Concesionario <span class="text-danger">*</span></label>
-								<select <?php if (!PermitirFuncion(1602) || (($edit == 0) && (!PermitirFuncion(1603))) || (($edit == 1) && (!PermitirFuncion(1604)))) {echo "disabled='disabled'";}?> name="CDU_Concesionario" class="form-control select2" required="required" id="CDU_Concesionario">
+								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Concesionario" class="form-control select2" required="required" id="CDU_Concesionario">
 									<?php while ($row_Concesionario = sqlsrv_fetch_array($SQL_Concesionario)) {?>
 										<option value="<?php echo $row_Concesionario['NombreConcesionario']; ?>"
-										<?php if (isset($row['CDU_Concesionario']) && (strcmp($row_Concesionario['NombreConcesionario'], $row['CDU_Concesionario']) == 0)) {echo "selected=\"selected\"";} elseif (($edit == 0) && (strcmp($row_Concesionario['NombreConcesionario'], ObtenerValorDefecto(176, "IdConcesionario")) == 0)) {echo "selected='selected'";}?>>
+										<?php if (isset($row['CDU_Concesionario']) && (strcmp($row_Concesionario['NombreConcesionario'], $row['CDU_Concesionario']) == 0)) {echo "selected=\"selected\"";} elseif (($edit == 0) && (strcmp($row_Concesionario['NombreConcesionario'], ObtenerValorDefecto(176, "IdConcesionario", false)) == 0)) {echo "selected='selected'";} elseif (($edit == 0) && (ObtenerValorDefecto(176, "IdConcesionario", false) == "") && (strcmp($row_Concesionario['NombreConcesionario'], "Otro") == 0)) {echo "selected='selected'";}?>>
 
 											<?php echo $row_Concesionario['NombreConcesionario']; ?>
 										</option>
@@ -1241,6 +1242,14 @@ while ($row_ContratoServicio = sqlsrv_fetch_array($SQL_ContratosServicio)) {?>
 	 $(document).ready(function(){
 		<?php if ($dt_TE == 1) {?>
 			$('#ClienteEquipo').trigger('change'); // SMM, 17/02/2022
+		<?php }?>
+
+		// SMM, 07/06/2022
+		<?php if ((($edit == 0) && (!PermitirFuncion(1603))) || (($edit == 1) && (!PermitirFuncion(1604)))) {?>
+			let CDU_Concesionario_Options=$('#CDU_Concesionario').find('option');
+			$.each(CDU_Concesionario_Options,function() {
+				$(this).is(":selected") ? "" :$(this).attr('disabled', true);
+			});
 		<?php }?>
 
 		 $("#CrearTarjetaEquipo").validate({

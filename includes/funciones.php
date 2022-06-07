@@ -406,13 +406,13 @@ function ObtenerVariable($Variable)
     return $row['Valor'];
 }
 
-function ObtenerValorDefecto($TipoObjeto, $NombreCampo)
+function ObtenerValorDefecto($TipoObjeto, $NombreCampo, $validar = true)
 { //Obtener valor por defecto configurado en el usuario dependiendo del documento
     global $conexion;
     $SQL = Seleccionar('uvw_tbl_CamposValoresDefecto_Detalle', 'ValorCampo', "TipoObjeto='" . $TipoObjeto . "' AND NombreCampo='" . $NombreCampo . "' AND ID_Usuario='" . $_SESSION['CodUser'] . "'");
     $row = sqlsrv_fetch_array($SQL);
     //$Num=sqlsrv_num_rows($SQL);
-    if (!isset($row['ValorCampo'])) {echo "La variable $NombreCampo no tiene un valor por defecto.";}
+    if (!isset($row['ValorCampo']) && $validar) {echo "La variable $NombreCampo no tiene un valor por defecto.";}
     return $row['ValorCampo'] ?? "";
 }
 
