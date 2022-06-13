@@ -407,8 +407,8 @@ $SQL_Dashboard = Seleccionar('tbl_Dashboard', '*');
 $SQL_AlmacenOrigen = Seleccionar('uvw_Sap_tbl_Almacenes', '*');
 $SQL_AlmacenDestino = Seleccionar('uvw_Sap_tbl_Almacenes', '*');
 
-// Grupos de empleados, SMM 14/05/2022
-$SQL_Grupos = Seleccionar('uvw_Sap_tbl_Recursos', 'DISTINCT IdCargo, DeCargo');
+// Grupos de empleados, SMM 14/05/2022-  modificado por NDG 09/06/2022
+$SQL_Grupos = Seleccionar('uvw_Sap_tbl_RecursosGrupos', 'IdCargo, DeCargo');
 ?>
 <!DOCTYPE html>
 <html><!-- InstanceBegin template="/Templates/PlantillaPrincipal.dwt.php" codeOutsideHTMLIsLocked="false" -->
