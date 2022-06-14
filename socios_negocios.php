@@ -792,6 +792,8 @@ function SeleccionarFactura(Num, Obj, Frm){
 	}
 }
 
+
+<?php if (PermitirFuncion(510)) {?>
 function CrearNombre(){
 	var TipoEntidad=document.getElementById("TipoEntidad");
 	var Nombre=document.getElementById("PNNombres");
@@ -816,6 +818,32 @@ function CrearNombre(){
 		AliasName.value=CardName.value;
 	}
 }
+<?php } else {?>
+function CrearNombre(){
+	var TipoEntidad=document.getElementById("TipoEntidad");
+	var Nombre=document.getElementById("PNNombres");
+	var PrimerApellido=document.getElementById("PNApellido1");
+	var SegundoApellido=document.getElementById("PNApellido2");
+	var CardName=document.getElementById("CardName");
+	var AliasName=document.getElementById("AliasName");
+
+	if(TipoEntidad.value==1){//Natural
+	if(Nombre.value!=""&&PrimerApellido.value!=""){
+		CardName.value=Nombre.value + ' ' + PrimerApellido.value + ' ' + SegundoApellido.value;
+		AliasName.value=CardName.value;
+	}else{
+		CardName.value="";
+		AliasName.value=CardName.value;
+	}
+
+	<?php if ($edit == 0 || $Metod == 4) {?>
+	CopiarNombreCont();
+	<?php }?>
+	}else{//Juridica
+		AliasName.value=CardName.value;
+	}
+}
+<?php }?>
 
 <?php if ($edit == 0) {?>
 function CopiarNombreCont(){
@@ -1087,15 +1115,15 @@ if ($sw_ext == 0) {?>
 								    <div class="form-group">
 										<label class="col-lg-1 control-label">Nombres</label>
 										<div class="col-lg-3">
-											<input name="PNNombres" type="text" class="form-control" id="PNNombres" onkeyup="mayus(this);" readonly="readonly" value="<?php if ($edit == 1 || $sw_error == 1) {echo ($row['U_HBT_Nombres']);}?>" onChange="CrearNombre();">
+											<input name="PNNombres" type="text" class="form-control" id="PNNombres" onkeyup="mayus(this);" readonly="readonly" value="<?php if ($edit == 1 || $sw_error == 1) {echo strtoupper($row['U_HBT_Nombres']);}?>" onChange="CrearNombre();">
 										</div>
 										<label class="col-lg-1 control-label">Primer apellido</label>
 										<div class="col-lg-3">
-											<input name="PNApellido1" type="text" class="form-control" id="PNApellido1" onkeyup="mayus(this);" readonly="readonly" value="<?php if ($edit == 1 || $sw_error == 1) {echo ($row['U_HBT_Apellido1']);}?>" onChange="CrearNombre();">
+											<input name="PNApellido1" type="text" class="form-control" id="PNApellido1" onkeyup="mayus(this);" readonly="readonly" value="<?php if ($edit == 1 || $sw_error == 1) {echo strtoupper($row['U_HBT_Apellido1']);}?>" onChange="CrearNombre();">
 										</div>
 										<label class="col-lg-1 control-label">Segundo apellido</label>
 										<div class="col-lg-3">
-											<input name="PNApellido2" type="text" class="form-control" id="PNApellido2" onkeyup="mayus(this);" readonly="readonly" value="<?php if ($edit == 1 || $sw_error == 1) {echo ($row['U_HBT_Apellido2']);}?>" onChange="CrearNombre();">
+											<input name="PNApellido2" type="text" class="form-control" id="PNApellido2" onkeyup="mayus(this);" readonly="readonly" value="<?php if ($edit == 1 || $sw_error == 1) {echo strtoupper($row['U_HBT_Apellido2']);}?>" onChange="CrearNombre();">
 										</div>
 									</div>
 									<div class="form-group">
@@ -1432,11 +1460,11 @@ while ($row_ResponsabilidadFiscal = sqlsrv_fetch_array($SQL_ResponsabilidadFisca
 									<td><?php echo "$" . number_format($row_FactPend['ValorPagoDocumento'], 2); ?></td>
 									<td><?php echo number_format($row_FactPend['DiasVencidos'], 0); ?></td>
 									<td><?php echo "$" . number_format($row_FactPend['SaldoDocumento'], 2); ?></td>
-									
+
 									<td> <!-- SMM, 11/03/2022 -->
 										<a onClick="MostrarPlazos('<?php echo $row_FactPend['NoDocumento']; ?>');"><?php echo $row_FactPend['CantidadPlazo']; ?></a>
 									</td>
-									
+
 									<td>
 										<a href="factura_venta.php?id=<?php echo base64_encode($row_FactPend['NoInterno']); ?>&id_portal=<?php echo base64_encode($row_FactPend['IdDocPortal']); ?>&tl=1" class="btn btn-success btn-xs" target="_blank"><i class="fa fa-folder-open-o"></i> Abrir</a>
 										<a href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row_FactPend['NoInterno']); ?>&ObType=<?php echo base64_encode('13'); ?>&IdFrm=<?php echo base64_encode($row_FactPend['IdSeries']); ?>" target="_blank" class="btn btn-warning btn-xs"><i class="fa fa-download"></i> Descargar</a>
