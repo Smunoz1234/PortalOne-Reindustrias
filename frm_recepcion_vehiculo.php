@@ -893,7 +893,7 @@ function ConsultarEquipo(){
 						<div class="form-group">
 							<label class="col-lg-1 control-label">Observaciones <span class="text-danger">*</span></label>
 							<div class="col-lg-8">
-								<textarea name="observaciones" id="observaciones" rows="5" type="text" maxlength="250" class="form-control" required="required" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?>><?php if (($type_frm == 1) || ($sw_error == 1)) {echo utf8_decode($row['ComentariosCierre']);}?></textarea>
+								<textarea name="observaciones" id="observaciones" rows="5" type="text" maxlength="3000" class="form-control" required="required" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?>><?php if (($type_frm == 1) || ($sw_error == 1)) {echo utf8_decode($row['ComentariosCierre']);}?></textarea>
 							</div>
 						</div>
 					</div>
