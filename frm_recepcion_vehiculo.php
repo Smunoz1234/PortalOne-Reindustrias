@@ -259,9 +259,11 @@ $SQL_Preguntas = Seleccionar('tbl_RecepcionVehiculos_Preguntas', '*');
 
 					document.getElementById('km_actual').value = data.CDU_Kilometros; // SMM, 02/03/2022
 
-					document.getElementById('responsable_cliente').value = data.CDU_NombreContacto; // SMM, 15/02/2022
-					document.getElementById('telefono_responsable_cliente').value = data.CDU_TelefonoContacto; // SMM, 22/02/2022
-					document.getElementById('correo_responsable_cliente').value = data.CDU_CorreoContacto; // SMM, 22/02/2022
+					<?php if (PermitirFuncion(1708)) {?> // SMM, 14/06/2022
+						document.getElementById('responsable_cliente').value = data.CDU_NombreContacto; // SMM, 15/02/2022
+						document.getElementById('telefono_responsable_cliente').value = data.CDU_TelefonoContacto; // SMM, 22/02/2022
+						document.getElementById('correo_responsable_cliente').value = data.CDU_CorreoContacto; // SMM, 22/02/2022
+					<?php }?> // Se deben llenar sólo con el permiso.
 
 					if(data.CDU_IdMarca !== null) {
 						document.getElementById('id_marca').value = data.CDU_IdMarca;
@@ -744,6 +746,7 @@ function ConsultarEquipo(){
 				</div>
 				<!-- IBOX, Fin -->
 				<!-- IBOX, Inicio -->
+				<?php if (PermitirFuncion(1708)) {?>
 				<div class="ibox">
 					<div class="ibox-title bg-success">
 						<h5 class="collapse-link"><i class="fa fa-image"></i> Registros fotográficos</h5>
@@ -895,8 +898,10 @@ function ConsultarEquipo(){
 						</div>
 					</div>
 				</div>
+				<?php }?>
 				<!-- IBOX, Fin -->
 				<!-- IBOX, Inicio -->
+				<?php if (PermitirFuncion(1708)) {?>
 				<div class="ibox">
 					<div class="ibox-title bg-success">
 						<h5 class="collapse-link"><i class="fa fa-pencil-square-o"></i> Firmas</h5>
@@ -909,6 +914,12 @@ function ConsultarEquipo(){
 							<label class="col-lg-1 control-label">Responsable del cliente <span class="text-danger">*</span></label>
 							<div class="col-lg-4">
 								<input autocomplete="off" name="responsable_cliente" type="text" class="form-control" required="required" id="responsable_cliente"  <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['ResponsableCliente'];}?>">
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-lg-1 control-label">Cédula de contacto <span class="text-danger">*</span></label>
+							<div class="col-lg-4">
+								<input autocomplete="off" name="cedula_responsable_cliente" type="text" class="form-control" required="required" id="cedula_responsable_cliente"  <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?>>
 							</div>
 						</div>
 						<div class="form-group">
@@ -944,6 +955,7 @@ function ConsultarEquipo(){
 						</div>
 					</div>
 				</div>
+				<?php }?>
 				<!-- IBOX, Fin -->
 
 <!-- Inicio, relacionado al $return -->
@@ -1222,52 +1234,63 @@ $(document).ready(function(){
 					"icon": "warning"
 				});
 			} else {
-				$('.ibox-content').toggleClass('sk-loading', true); // Carga iniciada.
+				Swal.fire({
+					title: "¿Desea continuar con el registro?",
+					icon: "question",
+					showCancelButton: true,
+					confirmButtonText: "Si, confirmo",
+					cancelButtonText: "No"
+				}).then((result) => {
+					if (result.isConfirmed) {
+						$('.ibox-content').toggleClass('sk-loading', true); // Carga iniciada.
 
-				let formData = new FormData(form);
-				Object.entries(photos).forEach(([key, value]) => formData.append(key, value));
-				Object.entries(anexos).forEach(([key, value]) => formData.append(`Anexo${key}`, value));
+						let formData = new FormData(form);
+						Object.entries(photos).forEach(([key, value]) => formData.append(key, value));
+						Object.entries(anexos).forEach(([key, value]) => formData.append(`Anexo${key}`, value));
 
-				// Agregar valores de las listas
-				formData.append("id_llamada_servicio", $("#id_llamada_servicio").val());
-				formData.append("id_marca", $("#id_marca").val());
-				formData.append("id_linea", $("#id_linea").val());
-				formData.append("id_annio", $("#id_annio").val());
-				formData.append("id_color", $("#id_color").val());
+						// Agregar valores de las listas
+						formData.append("id_llamada_servicio", $("#id_llamada_servicio").val());
+						formData.append("id_marca", $("#id_marca").val());
+						formData.append("id_linea", $("#id_linea").val());
+						formData.append("id_annio", $("#id_annio").val());
+						formData.append("id_color", $("#id_color").val());
 
+						let json = Object.fromEntries(formData);
+						localStorage.recepcionForm = JSON.stringify(json);
 
-				let json = Object.fromEntries(formData);
-				localStorage.recepcionForm = JSON.stringify(json);
+						console.log("Line 1790", json);
 
-				console.log("Line 1790", json);
+						// Inicio, AJAX
+						$.ajax({
+							url: 'frm_recepcion_vehiculo_ws.php',
+							type: 'POST',
+							data: formData,
+							processData: false,  // tell jQuery not to process the data
+							contentType: false,   // tell jQuery not to set contentType
+							success: function(response) {
+								console.log("Line 1805", response);
 
-				// Inicio, AJAX
-				$.ajax({
-					url: 'frm_recepcion_vehiculo_ws.php',
-					type: 'POST',
-					data: formData,
-					processData: false,  // tell jQuery not to process the data
-					contentType: false,   // tell jQuery not to set contentType
-					success: function(response) {
-						console.log("Line 1805", response);
+								let json_response = JSON.parse(response);
+								Swal.fire(json_response).then(() => {
+									if (json_response.hasOwnProperty('return')) {
+										window.location = json_response.return;
+									}
+								});
 
-						let json_response = JSON.parse(response);
-						Swal.fire(json_response).then(() => {
-							if (json_response.hasOwnProperty('return')) {
-								window.location = json_response.return;
+								$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
+							},
+							error: function(response) {
+								console.error("server error")
+								console.error(response);
+
+								$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
 							}
 						});
-
-						$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
-					},
-					error: function(response) {
-						console.error("server error")
-						console.error(response);
-
-						$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
+						// Fin, AJAX
+					} else {
+						console.log("Registro NO confirmado.")
 					}
-				});
-				// Fin, AJAX
+				}); // SMM, 14/06/2022
 			}
 		}
 	});

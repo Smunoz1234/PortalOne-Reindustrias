@@ -72,7 +72,7 @@ if (isset($Cabecera["Anexo0"])) {
         // Inicio, copiar anexos a la ruta log y main.
         $source = CrearObtenerDirRuta(ObtenerVariable("CarpetaTmp") . "/recepcion_vehiculos/" . $_SESSION['CodUser'] . "/");
         $source .= $Cabecera["Anexo$a"];
-        
+
         $dest = $dir_log . $nombre_anexo;
         copy($source, $dest);
         $dest = $dir_main . $nombre_anexo;
@@ -85,32 +85,36 @@ if (isset($Cabecera["Anexo0"])) {
 // Fin, agregar anexos al JSON.
 
 // Inicio, copiar firma a la ruta log y main, y agregarlas al JSON.
-$Cabecera["firma_responsable_cliente"] = base64_decode($Cabecera["SigCliente"]) ?? "";
-unset($Cabecera["SigCliente"]);
+if (isset($Cabecera["SigCliente"])) {
+    $Cabecera["firma_responsable_cliente"] = base64_decode($Cabecera["SigCliente"]) ?? "";
+    unset($Cabecera["SigCliente"]);
 
-if ($Cabecera["firma_responsable_cliente"] != "") {
-    $source = CrearObtenerDirTempFirma() . $Cabecera["firma_responsable_cliente"];
+    if ($Cabecera["firma_responsable_cliente"] != "") {
+        $source = CrearObtenerDirTempFirma() . $Cabecera["firma_responsable_cliente"];
 
-    $dest = $dir_log . $Cabecera["firma_responsable_cliente"];
-    copy($source, $dest);
+        $dest = $dir_log . $Cabecera["firma_responsable_cliente"];
+        copy($source, $dest);
 
-    $dest = $dir_main . $Cabecera["firma_responsable_cliente"];
-    copy($source, $dest);
+        $dest = $dir_main . $Cabecera["firma_responsable_cliente"];
+        copy($source, $dest);
+    }
 }
 // Fin, copiar firma a la ruta log y main, y agregarlas al JSON.
 
 // Inicio, copiar fotografias a la ruta log y main, y agregarlas al JSON.
-$Cabecera["fotografias"] = [
-    array(
-        "id_recepcion_vehiculo" => 0, // Por defecto
-        "id_recepcion_fotografia" => 0, // Por defecto
-        "anexo_frente" => $Cabecera["Img1"] ?? "",
-        "anexo_lateral_izquierdo" => $Cabecera["Img2"] ?? "",
-        "anexo_lateral_derecho" => $Cabecera["Img3"] ?? "",
-        "anexo_trasero" => $Cabecera["Img4"] ?? "",
-        "anexo_capot" => $Cabecera["Img5"] ?? "",
-    ),
-];
+if (PermitirFuncion(1708)) {
+    $Cabecera["fotografias"] = [
+        array(
+            "id_recepcion_vehiculo" => 0, // Por defecto
+            "id_recepcion_fotografia" => 0, // Por defecto
+            "anexo_frente" => $Cabecera["Img1"] ?? "",
+            "anexo_lateral_izquierdo" => $Cabecera["Img2"] ?? "",
+            "anexo_lateral_derecho" => $Cabecera["Img3"] ?? "",
+            "anexo_trasero" => $Cabecera["Img4"] ?? "",
+            "anexo_capot" => $Cabecera["Img5"] ?? "",
+        ),
+    ];
+} // SMM, 14/06/2022
 
 $route = CrearObtenerDirRuta(ObtenerVariable("CarpetaTmp") . "/recepcion_vehiculos/" . $_SESSION['CodUser'] . "/");
 if (isset($Cabecera["Img1"])) {
