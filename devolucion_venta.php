@@ -2,6 +2,7 @@
 PermitirAcceso(410);
 
 // Dimensiones, SMM 14/06/2022
+$DimSeries = intval(ObtenerVariable("DimensionSeries"));
 $SQL_Dimensiones = Seleccionar('uvw_Sap_tbl_Dimensiones', '*', "DimActive='Y'");
 
 $array_Dimensiones = [];
@@ -790,16 +791,23 @@ function ConsultarDatosCliente(){
 				var frame = document.getElementById('DataGrid');
 				var DimIdPO = document.getElementById('<?php echo $dim['IdPortalOne']; ?>').value;
 
-				<?php if ($DimCode == 2) {?>
-					let Serie=document.getElementById('Serie').value;
+				<?php if ($DimCode == $DimSeries) {?>
+					$('.ibox-content').toggleClass('sk-loading',true);
+
+					let tDoc = 17;
+					let Serie = document.getElementById('Serie').value;
 
 					$.ajax({
 						type: "POST",
-						url: `ajx_cbo_select.php?type=20&id=${DimIdPO}&serie=${Serie}&tdoc=16&WhsCode=<?php echo isset($_GET['Almacen']) ? base64_decode($_GET['Almacen']) : ($row['WhsCode'] ?? ""); ?>`,
+						url: `ajx_cbo_select.php?type=20&id=${DimIdPO}&serie=${Serie}&tdoc=${tDoc}&WhsCode=<?php echo isset($_GET['Almacen']) ? base64_decode($_GET['Almacen']) : ($row['WhsCode'] ?? ""); ?>`,
 						success: function(response){
 							$('#Almacen').html(response).fadeIn();
-							$('.ibox-content').toggleClass('sk-loading',false);
 							// $('#Almacen').trigger('change');
+
+							$('.ibox-content').toggleClass('sk-loading',false);
+						},
+						error: function(error) {
+							console.log("Line 807", error.responseText);
 						}
 					});
 				<?php }?>
