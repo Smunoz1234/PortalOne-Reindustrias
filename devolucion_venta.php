@@ -511,9 +511,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 function BuscarArticulo(dato){
 	var almacen= document.getElementById("Almacen").value;
 	var cardcode= document.getElementById("CardCode").value;
-	var dim1= document.getElementById("Dim1").value;
-	var dim2= document.getElementById("Dim2").value;
-	var dim3= document.getElementById("Dim3").value;
+
 	var posicion_x;
 	var posicion_y;
 	posicion_x=(screen.width/2)-(1200/2);
@@ -524,9 +522,16 @@ function BuscarArticulo(dato){
 	let proyecto = document.getElementById("PrjCode").value; // SMM, 04/05/2022
 	let empleado = document.getElementById("EmpleadoVentas").value; // SMM, 04/05/2022
 
+	// SMM, 16/06/2022
+	var dim1= document.getElementById("Dim1").value;
+	var dim2= document.getElementById("Dim2").value;
+	var dim3= document.getElementById("Dim3").value;
+	var dim4= document.getElementById("Dim4").value;
+	var dim5= document.getElementById("Dim5").value;
+
 	if(dato!=""){
 		if((cardcode!="")&&(almacen!="")&&(idlistaprecio!="")){
-			remote=open('buscar_articulo.php?dato='+dato+'&prjcode='+proyecto+'&empventas='+empleado+'&cardcode='+cardcode+'&whscode='+almacen+'&idlistaprecio='+idlistaprecio+'&doctype=<?php if ($edit == 0) {echo "13";} else {echo "14";}?>&iddevolucionventa=<?php if ($edit == 1) {echo base64_encode($row['ID_DevolucionVenta']);} else {echo "0";}?>&evento=<?php if ($edit == 1) {echo base64_encode($row['IdEvento']);} else {echo "0";}?>&tipodoc=2&dim1='+dim1+'&dim2='+dim2+'&dim3='+dim3,'remote',"width=1200,height=500,location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=no,fullscreen=no,directories=no,status=yes,left="+posicion_x+",top="+posicion_y+"");
+			remote=open('buscar_articulo.php?dato='+dato+'&prjcode='+proyecto+'&empventas='+empleado+'&cardcode='+cardcode+'&whscode='+almacen+'&idlistaprecio='+idlistaprecio+'&doctype=<?php if ($edit == 0) {echo "13";} else {echo "14";}?>&iddevolucionventa=<?php if ($edit == 1) {echo base64_encode($row['ID_DevolucionVenta']);} else {echo "0";}?>&evento=<?php if ($edit == 1) {echo base64_encode($row['IdEvento']);} else {echo "0";}?>&tipodoc=2&dim1='+dim1+'&dim2='+dim2+'&dim3='+dim3+'&dim4='+dim4+'&dim5='+dim5,'remote',"width=1200,height=500,location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=no,fullscreen=no,directories=no,status=yes,left="+posicion_x+",top="+posicion_y+"");
 			remote.focus();
 		}else{
 			Swal.fire({
@@ -794,13 +799,18 @@ function ConsultarDatosCliente(){
 				<?php if ($DimCode == $DimSeries) {?>
 					$('.ibox-content').toggleClass('sk-loading',true);
 
-					let tDoc = 17;
+					let tDoc = 16;
 					let Serie = document.getElementById('Serie').value;
+
+					var url20 = `ajx_cbo_select.php?type=20&id=${DimIdPO}&serie=${Serie}&tdoc=${tDoc}&WhsCode=<?php echo isset($_GET['Almacen']) ? base64_decode($_GET['Almacen']) : ($row['WhsCode'] ?? ""); ?>`;
 
 					$.ajax({
 						type: "POST",
-						url: `ajx_cbo_select.php?type=20&id=${DimIdPO}&serie=${Serie}&tdoc=${tDoc}&WhsCode=<?php echo isset($_GET['Almacen']) ? base64_decode($_GET['Almacen']) : ($row['WhsCode'] ?? ""); ?>`,
+						url: url20,
 						success: function(response){
+							console.log(url20);
+							console.log("ajx_cbo_select.php?type=20");
+
 							$('#Almacen').html(response).fadeIn();
 							// $('#Almacen').trigger('change');
 
@@ -850,13 +860,15 @@ function ConsultarDatosCliente(){
 						}
 					});
 				} else  {
-					console.log("No se cumple la siguiente condición en la <?php echo $dim['DimName']; ?>");
+					if(false) {
+						console.log("No se cumple la siguiente condición en la <?php echo $dim['DimName']; ?>");
 
-					console.log(`DimIdPO == ${DimIdPO}`);
-					console.log(`CardCode == ${CardCode}`);
-					console.log(`TotalItems == ${TotalItems}`);
+						console.log(`DimIdPO == ${DimIdPO}`);
+						console.log(`CardCode == ${CardCode}`);
+						console.log(`TotalItems == ${TotalItems}`);
 
-					$('.ibox-content').toggleClass('sk-loading',false);
+						$('.ibox-content').toggleClass('sk-loading',false);
+					}
 				}
 			});
 
@@ -1512,25 +1524,37 @@ $return = QuitarParametrosURL($return, array("a"));
 						<a href="<?php echo $return; ?>" class="btn btn-outline btn-default"><i class="fa fa-arrow-circle-o-left"></i> Regresar</a>
 					</div>
 
-					<!-- SMM, 11/05/2022-->
+<!-- Dimensiones dinámicas, SMM 16/06/2022 -->
+<?php if ($edit == 1) {
+    $CopyDim = "";
+    foreach ($array_Dimensiones as &$dim) {
+        $DimCode = intval($dim['DimCode']);
+        $OcrId = ($DimCode == 1) ? "" : $DimCode;
+
+        $DimIdPO = $dim['IdPortalOne'];
+        $encode_OcrCode = base64_encode($row["OcrCode$OcrId"]);
+        $CopyDim .= "$DimIdPO=$encode_OcrCode&";
+    }
+}?>
+					<!-- SMM, 11/05/2022 -->
 					<?php if (($edit == 1) && ($row['Cod_Estado'] != 'C')) {?>
-					<div class="col-lg-3">
-						<div class="btn-group dropup pull-right">
-                            <button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i class="fa fa-mail-forward"></i> Copiar a <i class="fa fa-caret-up"></i></button>
-                            <ul class="dropdown-menu">
-                                <li><a class="alkin dropdown-item d-venta" href="devolucion_venta.php?dt_DV=1&DV=<?php echo base64_encode($row['ID_DevolucionVenta']); ?>&pag=<?php echo $_GET['pag']; ?>&return=<?php echo $_GET['return']; ?>&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Dim1=<?php echo base64_encode($row['OcrCode']); ?>&Dim2=<?php echo base64_encode($row['OcrCode2']); ?>&Dim3=<?php echo base64_encode($row['OcrCode3']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&SucursalFact=<?php echo base64_encode($row['SucursalFacturacion']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&LS=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>&CondicionPago=<?php echo base64_encode($row['IdCondicionPago']); ?>&Serie=<?php echo base64_encode($row['IdSeries']); ?>">Devolucion de venta (Duplicar)</a></li>
-                            </ul>
-                        </div>
-					</div>
+						<div class="col-lg-3">
+							<div class="btn-group dropup pull-right">
+								<button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i class="fa fa-mail-forward"></i> Copiar a <i class="fa fa-caret-up"></i></button>
+								<ul class="dropdown-menu">
+									<li><a class="alkin dropdown-item d-venta" href="devolucion_venta.php?<?php echo $CopyDim; ?>dt_DV=1&DV=<?php echo base64_encode($row['ID_DevolucionVenta']); ?>&pag=<?php echo $_GET['pag']; ?>&return=<?php echo $_GET['return']; ?>&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&SucursalFact=<?php echo base64_encode($row['SucursalFacturacion']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&LS=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>&CondicionPago=<?php echo base64_encode($row['IdCondicionPago']); ?>&Serie=<?php echo base64_encode($row['IdSeries']); ?>">Devolucion de venta (Duplicar)</a></li>
+								</ul>
+							</div>
+						</div>
 					<?php } elseif (($edit == 1) && $row['Cod_Estado'] == 'C') {?>
-					<div class="col-lg-3">
-						<div class="btn-group dropup pull-right">
-                            <button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i class="fa fa-mail-forward"></i> Copiar a <i class="fa fa-caret-up"></i></button>
-                            <ul class="dropdown-menu">
-							<li><a class="alkin dropdown-item d-venta" href="devolucion_venta.php?dt_DV=1&DV=<?php echo base64_encode($row['ID_DevolucionVenta']); ?>&pag=<?php echo $_GET['pag']; ?>&return=<?php echo $_GET['return']; ?>&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Dim1=<?php echo base64_encode($row['OcrCode']); ?>&Dim2=<?php echo base64_encode($row['OcrCode2']); ?>&Dim3=<?php echo base64_encode($row['OcrCode3']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&SucursalFact=<?php echo base64_encode($row['SucursalFacturacion']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&LS=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>&CondicionPago=<?php echo base64_encode($row['IdCondicionPago']); ?>&Serie=<?php echo base64_encode($row['IdSeries']); ?>">Devolucion de venta (Duplicar)</a></li>
-                            </ul>
-                        </div>
-					</div>
+						<div class="col-lg-3">
+							<div class="btn-group dropup pull-right">
+								<button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i class="fa fa-mail-forward"></i> Copiar a <i class="fa fa-caret-up"></i></button>
+								<ul class="dropdown-menu">
+								<li><a class="alkin dropdown-item d-venta" href="devolucion_venta.php?<?php echo $CopyDim; ?>dt_DV=1&DV=<?php echo base64_encode($row['ID_DevolucionVenta']); ?>&pag=<?php echo $_GET['pag']; ?>&return=<?php echo $_GET['return']; ?>&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&SucursalFact=<?php echo base64_encode($row['SucursalFacturacion']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&LS=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>&CondicionPago=<?php echo base64_encode($row['IdCondicionPago']); ?>&Serie=<?php echo base64_encode($row['IdSeries']); ?>">Devolucion de venta (Duplicar)</a></li>
+								</ul>
+							</div>
+						</div>
 					<?php }?>
 
 				</div>
