@@ -523,11 +523,11 @@ function BuscarArticulo(dato){
 	let empleado = document.getElementById("EmpleadoVentas").value; // SMM, 04/05/2022
 
 	// SMM, 16/06/2022
-	var dim1= document.getElementById("Dim1").value;
-	var dim2= document.getElementById("Dim2").value;
-	var dim3= document.getElementById("Dim3").value;
-	var dim4= document.getElementById("Dim4").value;
-	var dim5= document.getElementById("Dim5").value;
+	var dim1= ((document.getElementById("Dim1") || {}).value) || "";
+	var dim2= ((document.getElementById("Dim2") || {}).value) || "";
+	var dim3= ((document.getElementById("Dim3") || {}).value) || "";
+	var dim4= ((document.getElementById("Dim4") || {}).value) || "";
+	var dim5= ((document.getElementById("Dim5") || {}).value) || "";
 
 	if(dato!=""){
 		if((cardcode!="")&&(almacen!="")&&(idlistaprecio!="")){
