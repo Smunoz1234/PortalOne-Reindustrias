@@ -712,9 +712,11 @@ function MostrarRet(){
 			$('.ibox-content').toggleClass('sk-loading',true);
 
 			var Serie=document.getElementById('Serie').value;
+			var SDim=document.getElementById('Dim2').value; // SMM, 16/06/2022
+
 			$.ajax({
 				type: "POST",
-				url: "ajx_cbo_select.php?type=19&id="+Serie,
+				url: `ajx_cbo_select.php?type=19&id=${Serie}&SDim=${SDim}`,
 				success: function(response){
 					$('#Dim2').html(response).fadeIn();
 					$('.ibox-content').toggleClass('sk-loading',false);

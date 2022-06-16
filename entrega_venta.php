@@ -719,10 +719,11 @@ function ConsultarDatosCliente(){
 			$('.ibox-content').toggleClass('sk-loading',true);
 
 			var Serie=document.getElementById('Serie').value;
-			let Dim2=document.getElementById('Dim2').value; // SMM, 04/02/2022
+			var SDim=document.getElementById('Dim2').value; // SMM, 04/02/2022
+			
 			$.ajax({
 				type: "POST",
-				url: `ajx_cbo_select.php?type=19&id=${Serie}&Dim2=${Dim2}`,
+				url: `ajx_cbo_select.php?type=19&id=${Serie}&SDim=${SDim}`,
 				success: function(response){
 					$('#Dim2').html(response).fadeIn();
 					$('.ibox-content').toggleClass('sk-loading',false);

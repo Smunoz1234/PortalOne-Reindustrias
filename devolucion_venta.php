@@ -5,6 +5,9 @@ PermitirAcceso(410);
 $DimSeries = intval(ObtenerVariable("DimensionSeries"));
 $SQL_Dimensiones = Seleccionar('uvw_Sap_tbl_Dimensiones', '*', "DimActive='Y'");
 
+// Pruebas
+// $SQL_Dimensiones = Seleccionar('uvw_Sap_tbl_Dimensiones', '*', 'DimCode IN (1,2)');
+
 $array_Dimensiones = [];
 while ($row_Dimension = sqlsrv_fetch_array($SQL_Dimensiones)) {
     array_push($array_Dimensiones, $row_Dimension);
@@ -720,23 +723,41 @@ function ConsultarDatosCliente(){
 			});
 		});
 
+
+// Dimensión de serie dinámica.
+<?php foreach ($array_Dimensiones as &$dim) {
+    $DimCode = intval($dim['DimCode']);
+    $OcrId = ($DimCode == 1) ? "" : $DimCode;
+
+    if ($DimCode == $DimSeries) {
+        $decode_SDim = base64_decode($_GET[strval($dim['IdPortalOne'])] ?? "");
+        $rowValue_SDim = ($row["OcrCode$OcrId"] ?? "");
+
+        $console_Msg = $dim['DimDesc'] . " (GET): $decode_SDim";
+        $console_Msg .= "& " . $dim['DimDesc'] . " (ROW): $rowValue_SDim";
+
+        $SDimPO = $dim['IdPortalOne'];
+    }
+}?> // SMM, 16/06/2022
+
 		$("#Serie").change(function() {
 			$('.ibox-content').toggleClass('sk-loading',true);
 
-			var Serie=document.getElementById('Serie').value;
-			// let Dim2=document.getElementById('Dim2').value; // SMM, 02/05/2022
-			console.log("CIUDAD: <?php echo base64_decode($_GET['Dim2'] ?? ""); ?>")
+			console.log("SDim Message,\n<?php echo $console_Msg; ?>"); // SMM, 16/06/2022
 
+			var Serie=document.getElementById('Serie').value;
+			var SDim = document.getElementById('<?php echo $SDimPO; ?>').value;
 			$.ajax({
 				type: "POST",
-				url: `ajx_cbo_select.php?type=19&id=${Serie}&Dim2=<?php echo isset($_GET['Dim2']) ? base64_decode($_GET['Dim2']) : ($row['OcrCode2'] ?? ""); ?>`, // Modificación Dim2, SMM 11/05/2022
+				url: `ajx_cbo_select.php?type=19&id=${Serie}&SDim=${SDim}`,
 				success: function(response){
-					$('#Dim2').html(response).fadeIn();
+					$('#<?php echo $SDimPO; ?>').html(response).fadeIn();
+					$('#<?php echo $SDimPO; ?>').trigger('change');
+
 					$('.ibox-content').toggleClass('sk-loading',false);
-					$('#Dim2').trigger('change');
 				},
 				error: function(error) {
-					console.error("Line 677", error.responseText);
+					console.error("Line 757", error.responseText);
 					$('.ibox-content').toggleClass('sk-loading', false);
 				}
 			});
