@@ -957,6 +957,15 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 								</div>
 							</div>
 						</div>
+						<div class="form-group">
+							<div class="col-lg-4">
+								<label class="control-label">Fecha Factura</label>
+								<div class="input-group date">
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input readonly name="CDU_FechaFactura" id="CDU_FechaFactura" type="text" class="form-control"
+									 placeholder="YYYY-MM-DD" value="<?php if (isset($row['CDU_FechaFactura'])) {echo date_format($row['CDU_FechaFactura'], 'Y-m-d');} //else {echo 'AAAA-mm-dd';}?>">
+								</div>
+							</div>
+						</div>
 						<!-- Agregado, hasta aquí -->
 					</div>
 				</div>
