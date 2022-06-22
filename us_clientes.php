@@ -63,7 +63,7 @@ $Cont = 1;
       <div class="col-lg-3"> <span class="text-primary font-bold">Fecha asignación</span> </div>
     </div>
     <?php  
-			  $SQL_SucursalCliente=Seleccionar('uvw_tbl_SucursalesClienteUsuario','NombreSucursal, NombreUsuarioAct, FechaAct',"ID_Usuario='".$IdUsuario."' and CodigoCliente='".$row_ClienteUsuario['CodigoCliente']."'",'NombreSucursal'); 
+			  $SQL_SucursalCliente=Seleccionar('uvw_tbl_SucursalesClienteUsuario','NombreSucursal, NombreUsuarioAct, FechaAct', "TipoDireccion='S' AND ID_Usuario='$IdUsuario' AND CodigoCliente='".$row_ClienteUsuario['CodigoCliente']."'",'NombreSucursal'); 
 			  $row_SucursalCliente=sqlsrv_fetch_array($SQL_SucursalCliente);
 		  do{
 		 ?>
