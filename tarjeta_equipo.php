@@ -1024,6 +1024,7 @@ if ($edit == 1 && $hasRowsLlamadaServicio === true) {?>
 													<tr>
 														<th>Número de llamada</th>
 														<th>Fecha de creación</th>
+														<th>Tipo Problema</th>
 														<th>Asunto</th>
 														<th>Número de artículo</th>
 														<th>Número de serie</th>
@@ -1041,6 +1042,7 @@ while ($row_LlamadaServicio = sqlsrv_fetch_array($SQL_LlamadasServicio)) {?>
 															</a>
 														</td>
 														<td><?php echo $row_LlamadaServicio['FechaHoraCreacionLLamada']->format('Y-m-d h:m:i'); ?></td>
+														<td><?php echo $row_LlamadaServicio['DeTipoProblemaLlamada']; ?></td>
 														<td><?php echo $row_LlamadaServicio['AsuntoLlamada']; ?></td>
 														<td><?php echo $row_LlamadaServicio['ItemCode']; ?></td>
 														<td><?php echo $row_LlamadaServicio['SerialFabricante']; ?></td>
