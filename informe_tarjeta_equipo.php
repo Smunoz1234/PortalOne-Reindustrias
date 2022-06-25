@@ -1,128 +1,48 @@
 <?php require_once "includes/conexion.php";
-PermitirAcceso(1601);
+PermitirAcceso(1605);
 
 $sw = 0;
-
-//Clientes
-/*if(PermitirFuncion(205)){
-$SQL_Cliente=Seleccionar("uvw_Sap_tbl_Clientes","CodigoCliente, NombreCliente","",'NombreCliente');
-}else{
-$Where="ID_Usuario = ".$_SESSION['CodUser'];
-$SQL_Cliente=Seleccionar("uvw_tbl_ClienteUsuario","CodigoCliente, NombreCliente",$Where);
-}*/
-
-//Empleados
-$SQL_EmpleadoActividad = Seleccionar('uvw_Sap_tbl_Empleados', '*', '', 'NombreEmpleado');
-
-//Usuarios
-$SQL_UsuariosActividad = Seleccionar('uvw_Sap_tbl_Actividades', 'DISTINCT IdAsignadoPor, DeAsignadoPor', '', 'DeAsignadoPor');
-
-//Estado actividad
-$SQL_EstadoActividad = Seleccionar('uvw_tbl_EstadoActividad', '*');
-
-//Tipos de actividad
-$SQL_TipoActividad = Seleccionar('uvw_Sap_tbl_TiposActividad', '*', '', 'DE_TipoActividad');
-
-//Fechas
-if (isset($_GET['FechaInicial']) && $_GET['FechaInicial'] != "") {
-    $FechaInicial = $_GET['FechaInicial'];
+if (isset($_GET['Marca']) && $_GET['Marca'] != "") {
     $sw = 1;
+}
+
+// Clientes
+if (PermitirFuncion(205)) {
+    $SQL_Cliente = Seleccionar("uvw_Sap_tbl_Clientes", "CodigoCliente, NombreCliente", "", 'NombreCliente');
 } else {
-    //Restar 7 dias a la fecha actual
-    $fecha = date('Y-m-d');
-    $nuevafecha = strtotime('-' . ObtenerVariable("DiasRangoFechasDocSAP") . ' day');
-    $nuevafecha = date('Y-m-d', $nuevafecha);
-    $FechaInicial = $nuevafecha;
-}
-if (isset($_GET['FechaFinal']) && $_GET['FechaFinal'] != "") {
-    $FechaFinal = $_GET['FechaFinal'];
-    $sw = 1;
-} else {
-    $FechaFinal = date('Y-m-d');
+    $Where = "ID_Usuario = " . $_SESSION['CodUser'];
+    $SQL_Cliente = Seleccionar("uvw_tbl_ClienteUsuario", "CodigoCliente, NombreCliente", $Where);
 }
 
-//Filtros
-$Filtro = "TipoEquipo <> ''";
-if (isset($_GET['TipoEquipo']) && $_GET['TipoEquipo'] != "") {
-    $Filtro .= " and TipoEquipo='" . $_GET['TipoEquipo'] . "'";
-    $sw = 1;
-}
-if (isset($_GET['SerialEquipo']) && $_GET['SerialEquipo'] != "") {
-    $Filtro .= " and (SerialFabricante LIKE '%" . $_GET['SerialEquipo'] . "%' OR SerialInterno LIKE '%" . $_GET['SerialEquipo'] . "%')";
-    $sw = 1;
-}
-if (isset($_GET['EstadoEquipo']) && $_GET['EstadoEquipo'] != "") {
-    $Filtro .= " and CodEstado='" . $_GET['EstadoEquipo'] . "'";
-    $sw = 1;
-}
-if (isset($_GET['ClienteEquipo'])) {
-    if ($_GET['ClienteEquipo'] != "") { //Si se selecciono el cliente
-        $Filtro .= " and CardCode='" . $_GET['ClienteEquipo'] . "'";
-        $sw = 1;
-    } else {
-        if (!PermitirFuncion(205)) {
-            $Where = "ID_Usuario = " . $_SESSION['CodUser'];
-            $SQL_Cliente = Seleccionar("uvw_tbl_ClienteUsuario", "CodigoCliente, NombreCliente", $Where);
-            $k = 0;
-            $FiltroCliente = "";
-            while ($row_Cliente = sqlsrv_fetch_array($SQL_Cliente)) {
-                //Clientes
-                $WhereCliente[$k] = "ID_CodigoCliente='" . $row_Cliente['CodigoCliente'] . "'";
-                $FiltroCliente = implode(" OR ", $WhereCliente);
+// Marcas de vehiculo
+$SQL_Marca = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_MarcaVehiculo', '*');
 
-                $k++;
-            }
-            if ($FiltroCliente != "") {
-                $Filtro .= " and (" . $FiltroCliente . ")";
-            } /*else{
-            $Filtro.=" and (ID_CodigoCliente='".$FiltroCliente."')";
-            }*/
+// Concesionarios en la tarjeta de equipo
+$SQL_Concesionario = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_Concesionario', '*');
 
-            $Where = "ID_Usuario = " . $_SESSION['CodUser'];
-            $SQL_Cliente = Seleccionar("uvw_tbl_ClienteUsuario", "CodigoCliente, NombreCliente", $Where);
-        }
-    }
-} else { //Si no se selecciono el cliente
-    if (!PermitirFuncion(205)) {
-        $Where = "ID_Usuario = " . $_SESSION['CodUser'];
-        $SQL_Cliente = Seleccionar("uvw_tbl_ClienteUsuario", "CodigoCliente, NombreCliente", $Where);
-        $k = 0;
-        $FiltroCliente = "";
-        while ($row_Cliente = sqlsrv_fetch_array($SQL_Cliente)) {
-            //Clientes
-            $WhereCliente[$k] = "ID_CodigoCliente='" . $row_Cliente['CodigoCliente'] . "'";
-            $FiltroCliente = implode(" OR ", $WhereCliente);
-            //$FiltroSuc=implode(" OR ",$WhereSuc);
-            $k++;
-        }
-        if ($FiltroCliente != "") {
-            $Filtro .= " and (" . $FiltroCliente . ")";
-        } /*else{
-        $Filtro.=" and (ID_CodigoCliente='".$FiltroCliente."')";
-        }*/
-
-        //Recargar consultas para los combos
-        $Where = "ID_Usuario = " . $_SESSION['CodUser'];
-        $SQL_Cliente = Seleccionar("uvw_tbl_ClienteUsuario", "CodigoCliente, NombreCliente", $Where);
-
-    }
-}
-
-if (isset($_GET['BuscarDato']) && $_GET['BuscarDato'] != "") {
-    $Filtro .= " and (Calle LIKE '%" . $_GET['BuscarDato'] . "%' OR CodigoPostal LIKE '%" . $_GET['BuscarDato'] . "%' OR Barrio LIKE '%" . $_GET['BuscarDato'] . "%' OR Ciudad LIKE '%" . $_GET['BuscarDato'] . "%' OR Distrito LIKE '%" . $_GET['BuscarDato'] . "%')";
-    $sw = 1;
-}
+// Filtros
+$Cliente = $_GET['ClienteEquipo'] ?? "";
+$IdMarca = $_GET['Marca'] ?? "";
+$Ciudad = $_GET['Ciudad'] ?? "";
+$IdConcesionario = $_GET['Concesionario'] ?? "";
+$FechaMatriculo = (isset($_GET['CDU_FechaMatricula']) && strtotime($_GET['CDU_FechaMatricula'])) ? ("'" . FormatoFecha($_GET['CDU_FechaMatricula']) . "'") : "NULL";
+$FechaUltMnto = (isset($_GET['CDU_FechaUlt_Mant']) && strtotime($_GET['CDU_FechaUlt_Mant'])) ? ("'" . FormatoFecha($_GET['CDU_FechaUlt_Mant']) . "'") : "NULL";
+$FechaProxMnto = (isset($_GET['CDU_FechaProx_Mant']) && strtotime($_GET['CDU_FechaProx_Mant'])) ? ("'" . FormatoFecha($_GET['CDU_FechaProx_Mant']) . "'") : "NULL";
 
 if ($sw == 1) {
-    $Cons = "Select * From uvw_Sap_tbl_TarjetasEquipos Where $Filtro ORDER BY IdTarjetaEquipo DESC";
-    $SQL = sqlsrv_query($conexion, $Cons);
-} else {
-    $Cons = "Select TOP 100 * From uvw_Sap_tbl_TarjetasEquipos Where $Filtro ORDER BY IdTarjetaEquipo DESC";
-    $SQL = sqlsrv_query($conexion, $Cons);
+    $Param = array(
+        "'" . $Cliente . "'",
+        "'" . $IdMarca . "'",
+        "'" . $Ciudad . "'",
+        "'" . $IdConcesionario . "'",
+        $FechaMatriculo,
+        $FechaUltMnto,
+        $FechaProxMnto,
+    );
+    $SQL = EjecutarSP('usp_inf_GestionTarjetaEquipos', $Param);
 }
-//echo $Cons;
-
 ?>
+
 <!DOCTYPE html>
 <html><!-- InstanceBegin template="/Templates/PlantillaPrincipal.dwt.php" codeOutsideHTMLIsLocked="false" -->
 
@@ -184,63 +104,85 @@ if ($sw == 1) {
 				<div class="col-lg-12">
 			    <div class="ibox-content">
 					 <?php include "includes/spinner.php";?>
-				  <form action="consultar_tarjeta_equipo.php" method="get" id="formBuscar" class="form-horizontal">
-					   <div class="form-group">
+				  <form action="informe_tarjeta_equipo.php" method="get" id="formBuscar" class="form-horizontal">
+					    <div class="form-group">
 							<label class="col-xs-12"><h3 class="bg-success p-xs b-r-sm"><i class="fa fa-filter"></i> Datos para filtrar</h3></label>
 						</div>
 						<div class="form-group">
-							<label class="col-lg-1 control-label">Tipo de equipo</label>
+							<label class="col-lg-1 control-label">Marca <span class="text-danger">*</span></label>
 							<div class="col-lg-3">
-								<select name="TipoEquipo" class="form-control" id="TipoEquipo">
-									<option value="">(Todos)</option>
-									<option value="P" <?php if ((isset($_GET['TipoEquipo'])) && (strcmp("P", $_GET['TipoEquipo']) == 0)) {echo "selected=\"selected\"";}?>>Compras</option>
-									<option value="R" <?php if ((isset($_GET['TipoEquipo'])) && (strcmp("R", $_GET['TipoEquipo']) == 0)) {echo "selected=\"selected\"";}?>>Ventas</option>
+								<select name="Marca" class="form-control" id="Marca" required>
+										<option value="" disabled selected>Seleccione...</option>
+								  <?php while ($row_Marca = sqlsrv_fetch_array($SQL_Marca)) {?>
+										<option value="<?php echo $row_Marca['IdMarcaVehiculo']; ?>" <?php if ((isset($_GET['Marca'])) && (strcmp($row_Marca['IdMarcaVehiculo'], $_GET['Marca']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Marca['DeMarcaVehiculo']; ?></option>
+								  <?php }?>
 								</select>
-               	  			</div>
-							<label class="col-lg-1 control-label">Serial</label>
-							<div class="col-lg-3">
-								<input name="SerialEquipo" type="text" class="form-control" id="SerialEquipo" maxlength="100" value="<?php if (isset($_GET['SerialEquipo']) && ($_GET['SerialEquipo'] != "")) {echo $_GET['SerialEquipo'];}?>" placeholder="Serial fabricante o interno">
 							</div>
-							<label class="col-lg-1 control-label">Estado de equipo</label>
+
+							<label class="col-lg-1 control-label">Concesionario</label>
 							<div class="col-lg-3">
-								<select name="EstadoEquipo" class="form-control" id="EstadoEquipo">
-									<option value="">(Todos)</option>
-									<option value="A" <?php if ((isset($_GET['EstadoEquipo'])) && (strcmp("A", $_GET['EstadoEquipo']) == 0)) {echo "selected=\"selected\"";}?>>Activo</option>
-									<option value="R" <?php if ((isset($_GET['EstadoEquipo'])) && (strcmp("R", $_GET['EstadoEquipo']) == 0)) {echo "selected=\"selected\"";}?>>Devuelto</option>
-									<option value="T" <?php if ((isset($_GET['EstadoEquipo'])) && (strcmp("T", $_GET['EstadoEquipo']) == 0)) {echo "selected=\"selected\"";}?>>Finalizado</option>
-									<option value="L" <?php if ((isset($_GET['EstadoEquipo'])) && (strcmp("L", $_GET['EstadoEquipo']) == 0)) {echo "selected=\"selected\"";}?>>Concedido en prestamo</option>
-									<option value="I" <?php if ((isset($_GET['EstadoEquipo'])) && (strcmp("I", $_GET['EstadoEquipo']) == 0)) {echo "selected=\"selected\"";}?>>En laboratorio de reparación</option>
+								<select name="Concesionario" class="form-control" id="Concesionario">
+										<option value="">(Todos)</option>
+								  <?php while ($row_Concesionario = sqlsrv_fetch_array($SQL_Concesionario)) {?>
+										<option value="<?php echo $row_Concesionario['CodigoConcesionario']; ?>" <?php if ((isset($_GET['Concesionario'])) && (strcmp($row_Concesionario['CodigoConcesionario'], $_GET['Concesionario']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Concesionario['NombreConcesionario']; ?></option>
+								  <?php }?>
 								</select>
+							</div>
+
+							<label class="col-lg-1 control-label">Ciudad</label>
+							<div class="col-lg-3">
+								<input name="Ciudad" type="text" class="form-control" id="Ciudad" maxlength="100" value="<?php if (isset($_GET['Ciudad']) && ($_GET['Ciudad'] != "")) {echo $_GET['Ciudad'];}?>">
 							</div>
 						</div>
+
 					  	<div class="form-group">
-							<label class="col-lg-1 control-label">Cliente</label>
+						  	<label class="col-lg-1 control-label">Cliente</label>
 							<div class="col-lg-3">
 								<input name="ClienteEquipo" type="hidden" id="ClienteEquipo" value="<?php if (isset($_GET['ClienteEquipo']) && ($_GET['ClienteEquipo'] != "")) {echo $_GET['ClienteEquipo'];}?>">
 								<input name="NombreClienteEquipo" type="text" class="form-control" id="NombreClienteEquipo" placeholder="Para TODOS, dejar vacio..." value="<?php if (isset($_GET['NombreClienteEquipo']) && ($_GET['NombreClienteEquipo'] != "")) {echo $_GET['NombreClienteEquipo'];}?>">
 							</div>
-							<label class="col-lg-1 control-label">Buscar dato</label>
-							<div class="col-lg-3">
-								<input name="BuscarDato" type="text" class="form-control" id="BuscarDato" maxlength="100" value="<?php if (isset($_GET['BuscarDato']) && ($_GET['BuscarDato'] != "")) {echo $_GET['BuscarDato'];}?>">
+
+							<label class="col-lg-1 control-label">Fecha Ult. Mantenimiento</label>
+								<div class="col-lg-3 input-group date">
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="CDU_FechaUlt_Mant" id="CDU_FechaUlt_Mant" type="text" class="form-control"
+									 placeholder="YYYY-MM-DD" value="<?php if (isset($_GET['CDU_FechaUlt_Mant']) && strtotime($_GET['CDU_FechaUlt_Mant'])) {echo date('Y-m-d', strtotime($_GET['CDU_FechaUlt_Mant']));}?>">
+								</div>
+
+							<label class="col-lg-1 control-label">Fecha Prox. Mantenimiento</label>
+							<div class="col-lg-3 input-group date">
+									<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="CDU_FechaProx_Mant" id="CDU_FechaProx_Mant" type="text" class="form-control"
+									placeholder="YYYY-MM-DD" value="<?php if (isset($_GET['CDU_FechaProx_Mant']) && strtotime($_GET['CDU_FechaProx_Mant'])) {echo date('Y-m-d', strtotime($_GET['CDU_FechaProx_Mant']));}?>">
 							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-lg-1 control-label">Fecha Matricula</label>
+							<div class="col-lg-3 input-group date">
+								<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="CDU_FechaMatricula" id="CDU_FechaMatricula" type="text" class="form-control"
+								placeholder="YYYY-MM-DD" value="<?php if (isset($_GET['CDU_FechaMatricula']) && strtotime($_GET['CDU_FechaMatricula'])) {echo date('Y-m-d', strtotime($_GET['CDU_FechaMatricula']));}?>">
+							</div>
+
 							<div class="col-lg-4">
 								<button type="submit" class="btn btn-outline btn-success pull-right"><i class="fa fa-search"></i> Buscar</button>
 							</div>
 						</div>
 
-						<div class="form-group">
+						<?php if ($sw == 1) {?>
+					  	<div class="form-group">
 							<div class="col-lg-10">
-								<a href="exportar_excel.php?exp=20&b64=0&Cons=<?php echo $Cons; ?>">
+								<a href="exportar_excel.php?exp=10&Cons=<?php echo base64_encode(implode(",", $Param)); ?>&sp=<?php echo base64_encode("usp_inf_GestionTarjetaEquipos"); ?>">
 									<img src="css/exp_excel.png" width="50" height="30" alt="Exportar a Excel" title="Exportar a Excel"/>
 								</a>
 							</div>
 						</div>
+					   <?php }?>
 				 </form>
 			</div>
 			</div>
 		  </div>
          <br>
-			 <?php //echo $Cons;?>
+
+		<?php if ($sw == 1) {?>
           <div class="row">
            <div class="col-lg-12">
 			    <div class="ibox-content">
@@ -251,13 +193,15 @@ if ($sw == 1) {
                     <tr>
 						<th>Núm.</th>
 						<th>Código cliente</th>
-						<th>Cliente</th>
-						<th>Serial fabricante</th>
-                        <th>Serial interno</th>
-                        <th>Código de artículo</th>
-						<th>Artículo</th>
-						<th>Tipo de equipo</th>
+						<th>Serial interno</th>
+                        <th>Marca vehículo</th>
+						<th>Ciudad</th>
+						<th>Concesionario</th>
+						<th>Fecha Matricula</th>
+                        <th>Fecha Ult. Mant.</th>
+						<th>Fecha Prox. Mant.</th>
 						<th>Estado</th>
+						<th>Acciones</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -265,14 +209,13 @@ if ($sw == 1) {
 						 <tr class="gradeX tooltip-demo">
 							<td><?php echo $row['IdTarjetaEquipo']; ?></td>
 							<td><?php echo $row['CardCode']; ?></td>
-							<td><?php echo $row['CardName']; ?></td>
-							<td><?php echo $row['SerialFabricante']; ?></td>
 							<td><?php echo $row['SerialInterno']; ?></td>
-							<td><?php echo $row['ItemCode']; ?></td>
-							<td><?php echo $row['ItemName']; ?></td>
-							<td>
-								<?php if ($row['TipoEquipo'] === 'P') {echo 'Compras';} elseif ($row['TipoEquipo'] === 'R') {echo 'Ventas';}?>
-							</td>
+							<td><?php echo $row['CDU_Marca']; ?></td>
+							<td><?php echo $row['Ciudad']; ?></td>
+							<td><?php echo $row['CDU_Concesionario']; ?></td>
+							<td><?php echo ($row['CDU_FechaMatricula'] != "") ? $row['CDU_FechaMatricula']->format('Y-m-d') : ""; ?></td>
+							<td><?php echo ($row['CDU_FechaUlt_Mant'] != "") ? $row['CDU_FechaUlt_Mant']->format('Y-m-d') : ""; ?></td>
+							<td><?php echo ($row['CDU_FechaProx_Mant'] != "") ? $row['CDU_FechaProx_Mant']->format('Y-m-d') : ""; ?></td>
 							<td>
 								<?php if ($row['CodEstado'] == 'A') {?>
 									<span  class='label label-info'>Activo</span>
@@ -286,6 +229,7 @@ if ($sw == 1) {
 									<span  class='label label-warning'>En laboratorio de reparación</span>
 								<?php }?>
 							</td>
+							<td><a href="tarjeta_equipo.php?id=<?php echo base64_encode($row['IdTarjetaEquipo']); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('consultar_tarjeta_equipo.php'); ?>&tl=1" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i> Abrir</a></td>
 						</tr>
 					<?php }?>
                     </tbody>
@@ -294,7 +238,9 @@ if ($sw == 1) {
 			</div>
 			 </div>
           </div>
-        </div>
+		<?php }?>
+
+		</div>
         <!-- InstanceEndEditable -->
         <?php include "includes/footer.php";?>
 

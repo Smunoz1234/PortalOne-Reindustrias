@@ -251,6 +251,15 @@ $Num_Menu = sqlsrv_num_rows($SQL_Menu);
 								<?php if (PermitirFuncion(412)) {?><li><a class="alnk" href="consultar_factura_venta.php">Consultar factura de venta</a></li><?php }?>
 							</ul>
 						</li>
+						<?php if (PermitirFuncion([421, 422])) {?>
+						<li>
+                   			<a href="#">Consultas borradores <span class="fa arrow"></span></a>
+							<ul class='nav nav-third-level'>
+								<?php if (PermitirFuncion(421)) {?><li><a class="alnk" href="consultar_orden_venta_borrador.php">Consultar orden de venta borrador</a></li><?php }?>
+								<?php if (PermitirFuncion(422)) {?><li><a class="alnk" href="consultar_entrega_venta_borrador.php">Consultar entrega de venta borrador</a></li><?php }?>
+							</ul>
+						</li>
+						<?php }?>
 						<?php if (PermitirFuncion([408, 414])) {?>
 						<li>
 							<a href="#">Asistentes <span class="fa arrow"></span></a>
@@ -381,7 +390,16 @@ $Num_Menu = sqlsrv_num_rows($SQL_Menu);
                     <ul class="nav nav-second-level">
 						<?php if (PermitirFuncion(1601)) {?><li><a class="alnk" href="consultar_tarjeta_equipo.php">Tarjetas de equipos</a></li><?php }?>
 						<?php if (PermitirFuncion(1601)) {?><li><a class="alnk" href="#">Base de datos de soluciones</a></li><?php }?>
-                    </ul>
+
+						<?php if (PermitirFuncion(1605)) {?>
+						<li>
+                   			<a href="#">Informes <span class="fa arrow"></span></a>
+							<ul class='nav nav-third-level'>
+								<?php if (PermitirFuncion(1605)) {?><li><a class="alnk" href="informe_tarjeta_equipo.php">Gestión tarjetas de equipo</a></li><?php }?>
+							</ul>
+						</li>
+						<?php }?>
+					</ul>
                 </li>
 				<?php }?>
 	            <li>
