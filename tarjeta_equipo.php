@@ -120,6 +120,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
             strtotime($_POST['CDU_FechaProx_AlinBalan']) ? ("'" . FormatoFecha($_POST['CDU_FechaProx_AlinBalan']) . "'") : "NULL",
             "'" . $_POST['CDU_TipoServicio'] . "'",
             "'" . $_POST['TelefonoCliente'] . "'",
+            "'" . $_POST['CDU_Novedad'] . "'", // SMM, 23/06/2022
         );
 
         // Insertar a la tabla de PortalOne
@@ -217,8 +218,11 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
                 "CDU_id_cilindraje" => $_POST['CDU_Cilindraje'],
                 "CDU_id_tipo_servicio" => $_POST['CDU_TipoServicio'],
                 "CDU_no_motor" => $_POST['CDU_No_Motor'],
+                "CDU_id_novedad" => $_POST['CDU_Novedad'], // SMM, 25/06/2022
                 "anexos" => (count($Anexos) > 0) ? $Anexos : null,
             );
+			
+			// Posiblemente, CDU_fecha_factura =>
 
             // Agregar fechas, inicio.
             if (isset($row_json['CDU_FechaMatricula'])) {
@@ -398,6 +402,9 @@ $SQL_CilindrajeVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_CilindrajeVeh
 
 // Tipos de servicio en la tarjeta de equipo
 $SQL_TipoServicio = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_TipoServicio', '*');
+
+// Novedades en la tarjeta de equipo, SMM, 23/06/2022
+$SQL_Novedades = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_Novedades', '*');
 
 // Stiven Muñoz Murillo, 08/02/2022
 if (isset($_GET['dt_TE']) && ($_GET['dt_TE']) == 1) { //Verificar que viene de una Tarjeta de Equipo (Datos Tarjeta de Equipo)
@@ -964,6 +971,18 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input readonly name="CDU_FechaFactura" id="CDU_FechaFactura" type="text" class="form-control"
 									 placeholder="YYYY-MM-DD" value="<?php if (isset($row['CDU_FechaFactura'])) {echo date_format($row['CDU_FechaFactura'], 'Y-m-d');} //else {echo 'AAAA-mm-dd';}?>">
 								</div>
+							</div>
+							<div class="col-lg-4">
+								<label class="control-label">Novedad</label>
+								<select <?php if (!PermitirFuncion(1602)) {echo "disabled='disabled'";}?> name="CDU_Novedad" id="CDU_Novedad" class="form-control select2">
+									<option value="" disabled selected>Seleccione...</option>
+								  <?php while ($row_Novedad = sqlsrv_fetch_array($SQL_Novedades)) {?>
+									<option value="<?php echo $row_Novedad['IdNovedad']; ?>"
+									<?php if ((isset($row['CDU_Novedad'])) && (strcmp($row_Novedad['IdNovedad'], $row['CDU_Novedad']) == 0)) {echo "selected=\"selected\"";}?>>
+										<?php echo $row_Novedad['DeNovedad']; ?>
+									</option>
+								  <?php }?>
+								</select>
 							</div>
 						</div>
 						<!-- Agregado, hasta aquí -->
