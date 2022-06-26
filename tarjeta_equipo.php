@@ -221,8 +221,8 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
                 "CDU_id_novedad" => $_POST['CDU_Novedad'], // SMM, 25/06/2022
                 "anexos" => (count($Anexos) > 0) ? $Anexos : null,
             );
-			
-			// Posiblemente, CDU_fecha_factura =>
+
+            // Posiblemente, CDU_fecha_factura =>
 
             // Agregar fechas, inicio.
             if (isset($row_json['CDU_FechaMatricula'])) {
@@ -879,14 +879,14 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 							<div class="col-lg-4">
 								<label class="control-label">Fecha Matricula</label>
 								<div class="input-group date">
-									<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> name="CDU_FechaMatricula" id="CDU_FechaMatricula" type="text" class="form-control"
+									<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input autocomplete="off" <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> name="CDU_FechaMatricula" id="CDU_FechaMatricula" type="text" class="form-control"
 									placeholder="YYYY-MM-DD" value="<?php if (isset($row['CDU_FechaMatricula'])) {echo date_format($row['CDU_FechaMatricula'], 'Y-m-d');} //else {echo 'AAAA-mm-dd';}?>">
 								</div>
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">Fecha SOAT</label>
 								<div class="input-group date">
-									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> name="CDU_Fecha_SOAT" id="CDU_Fecha_SOAT" type="text" class="form-control"
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input autocomplete="off" <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> name="CDU_Fecha_SOAT" id="CDU_Fecha_SOAT" type="text" class="form-control"
 									 placeholder="YYYY-MM-DD" value="<?php if (isset($row['CDU_Fecha_SOAT'])) {echo date_format($row['CDU_Fecha_SOAT'], 'Y-m-d');} //else {echo 'AAAA-mm-dd';}?>">
 								</div>
 							</div>
@@ -895,7 +895,7 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 							<div class="col-lg-4">
 								<label class="control-label">Fecha Tecnicomecanica</label>
 								<div class="input-group date">
-									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> name="CDU_Fecha_Tecno" id="CDU_Fecha_Tecno" type="text" class="form-control"
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input autocomplete="off" <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> name="CDU_Fecha_Tecno" id="CDU_Fecha_Tecno" type="text" class="form-control"
 									 placeholder="YYYY-MM-DD" value="<?php if (isset($row['CDU_Fecha_Tecno'])) {echo date_format($row['CDU_Fecha_Tecno'], 'Y-m-d');} //else {echo 'AAAA-mm-dd';}?>">
 								</div>
 							</div>
@@ -904,14 +904,14 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 							<div class="col-lg-4">
 								<label class="control-label">Fecha Ult. Cambio de Aceite</label>
 								<div class="input-group date">
-									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> name="CDU_FechaUlt_CambAceite" id="CDU_FechaUlt_CambAceite" type="text" class="form-control"
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input autocomplete="off" <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> name="CDU_FechaUlt_CambAceite" id="CDU_FechaUlt_CambAceite" type="text" class="form-control"
 									 placeholder="YYYY-MM-DD" value="<?php if (isset($row['CDU_FechaUlt_CambAceite'])) {echo date_format($row['CDU_FechaUlt_CambAceite'], 'Y-m-d');} //else {echo 'AAAA-mm-dd';}?>">
 								</div>
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">Fecha Prox. Cambio de Aceite</label>
 								<div class="input-group date">
-									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input readonly name="CDU_FechaProx_CambAceite" id="CDU_FechaProx_CambAceite" type="text" class="form-control"
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input autocomplete="off" readonly name="CDU_FechaProx_CambAceite" id="CDU_FechaProx_CambAceite" type="text" class="form-control"
 									 placeholder="YYYY-MM-DD" value="<?php if (isset($row['CDU_FechaProx_CambAceite'])) {echo date_format($row['CDU_FechaProx_CambAceite'], 'Y-m-d');} //else {echo 'AAAA-mm-dd';}?>">
 								</div>
 							</div>
@@ -920,14 +920,14 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 							<div class="col-lg-4">
 								<label class="control-label">Fecha Ult. Mantenimiento</label>
 								<div class="input-group date">
-									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> name="CDU_FechaUlt_Mant" id="CDU_FechaUlt_Mant" type="text" class="form-control"
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input autocomplete="off" <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> name="CDU_FechaUlt_Mant" id="CDU_FechaUlt_Mant" type="text" class="form-control"
 									 placeholder="YYYY-MM-DD" value="<?php if (isset($row['CDU_FechaUlt_Mant'])) {echo date_format($row['CDU_FechaUlt_Mant'], 'Y-m-d');} //else {echo 'AAAA-mm-dd';}?>">
 								</div>
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">Fecha Prox. Mantenimiento</label>
 								<div class="input-group date">
-									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input readonly name="CDU_FechaProx_Mant" id="CDU_FechaProx_Mant" type="text" class="form-control"
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input autocomplete="off" readonly name="CDU_FechaProx_Mant" id="CDU_FechaProx_Mant" type="text" class="form-control"
 									 placeholder="YYYY-MM-DD" value="<?php if (isset($row['CDU_FechaProx_Mant'])) {echo date_format($row['CDU_FechaProx_Mant'], 'Y-m-d');} //else {echo 'AAAA-mm-dd';}?>">
 								</div>
 							</div>
@@ -936,14 +936,14 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 							<div class="col-lg-4">
 								<label class="control-label">Fecha Ult. Cambio de Llantas</label>
 								<div class="input-group date">
-									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> name="CDU_FechaUlt_CambLlantas" id="CDU_FechaUlt_CambLlantas" type="text" class="form-control"
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input autocomplete="off" <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> name="CDU_FechaUlt_CambLlantas" id="CDU_FechaUlt_CambLlantas" type="text" class="form-control"
 									 placeholder="YYYY-MM-DD" value="<?php if (isset($row['CDU_FechaUlt_CambLlantas'])) {echo date_format($row['CDU_FechaUlt_CambLlantas'], 'Y-m-d');} //else {echo 'AAAA-mm-dd';}?>">
 								</div>
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">Fecha Prox. Cambio de Llantas</label>
 								<div class="input-group date">
-									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input readonly name="CDU_FechaProx_CambLlantas" id="CDU_FechaProx_CambLlantas" type="text" class="form-control"
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input autocomplete="off" readonly name="CDU_FechaProx_CambLlantas" id="CDU_FechaProx_CambLlantas" type="text" class="form-control"
 									 placeholder="YYYY-MM-DD" value="<?php if (isset($row['CDU_FechaProx_CambLlantas'])) {echo date_format($row['CDU_FechaProx_CambLlantas'], 'Y-m-d');} //else {echo 'AAAA-mm-dd';}?>">
 								</div>
 							</div>
@@ -952,14 +952,14 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 							<div class="col-lg-4">
 								<label class="control-label">Fecha Ult. Alineación y Balanceo</label>
 								<div class="input-group date">
-									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> name="CDU_FechaUlt_AlinBalan" id="CDU_FechaUlt_AlinBalan" type="text" class="form-control"
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input autocomplete="off" <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> name="CDU_FechaUlt_AlinBalan" id="CDU_FechaUlt_AlinBalan" type="text" class="form-control"
 									 placeholder="YYYY-MM-DD" value="<?php if (isset($row['CDU_FechaUlt_AlinBalan'])) {echo date_format($row['CDU_FechaUlt_AlinBalan'], 'Y-m-d');} //else {echo 'AAAA-mm-dd';}?>">
 								</div>
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">Fecha Prox. Alineación y Balanceo</label>
 								<div class="input-group date">
-									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input readonly name="CDU_FechaProx_AlinBalan" id="CDU_FechaProx_AlinBalan" type="text" class="form-control"
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input autocomplete="off" readonly name="CDU_FechaProx_AlinBalan" id="CDU_FechaProx_AlinBalan" type="text" class="form-control"
 									 placeholder="YYYY-MM-DD" value="<?php if (isset($row['CDU_FechaProx_AlinBalan'])) {echo date_format($row['CDU_FechaProx_AlinBalan'], 'Y-m-d');} //else {echo 'AAAA-mm-dd';}?>">
 								</div>
 							</div>
@@ -968,7 +968,7 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 							<div class="col-lg-4">
 								<label class="control-label">Fecha Factura</label>
 								<div class="input-group date">
-									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input readonly name="CDU_FechaFactura" id="CDU_FechaFactura" type="text" class="form-control"
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input autocomplete="off" readonly name="CDU_FechaFactura" id="CDU_FechaFactura" type="text" class="form-control"
 									 placeholder="YYYY-MM-DD" value="<?php if (isset($row['CDU_FechaFactura'])) {echo date_format($row['CDU_FechaFactura'], 'Y-m-d');} //else {echo 'AAAA-mm-dd';}?>">
 								</div>
 							</div>
@@ -1391,15 +1391,15 @@ function EnviarFrm(P=29){
 		 }
 	};
 
-	// Agregado por Stiven, 06/12/2021
-	$('.date input').datepicker({
-                todayBtn: "linked",
-                keyboardNavigation: false,
-                forceParse: false,
-                calendarWeeks: true,
-                autoclose: true,
-				format: 'yyyy-mm-dd',
-			 	todayHighlight: true
+	// Agregado por Stiven, 25/06/2022
+	$('.date input:not([readonly])').datepicker({
+		todayBtn: "linked",
+		keyboardNavigation: false,
+		forceParse: false,
+		calendarWeeks: true,
+		autoclose: true,
+		format: 'yyyy-mm-dd',
+		todayHighlight: true
     });
 </script>
 <!-- InstanceEndEditable -->
