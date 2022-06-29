@@ -120,7 +120,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
             strtotime($_POST['CDU_FechaProx_AlinBalan']) ? ("'" . FormatoFecha($_POST['CDU_FechaProx_AlinBalan']) . "'") : "NULL",
             "'" . $_POST['CDU_TipoServicio'] . "'",
             "'" . $_POST['TelefonoCliente'] . "'",
-            "'" . $_POST['CDU_Novedad'] . "'", // SMM, 23/06/2022
+            "'" . ($_POST['CDU_Novedad'] ?? '') . "'", // SMM, 23/06/2022
         );
 
         // Insertar a la tabla de PortalOne
@@ -218,7 +218,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
                 "CDU_id_cilindraje" => $_POST['CDU_Cilindraje'],
                 "CDU_id_tipo_servicio" => $_POST['CDU_TipoServicio'],
                 "CDU_no_motor" => $_POST['CDU_No_Motor'],
-                "CDU_id_novedad" => $_POST['CDU_Novedad'], // SMM, 25/06/2022
+                "CDU_id_novedad" => ($_POST['CDU_Novedad'] ?? ''), // SMM, 25/06/2022
                 "anexos" => (count($Anexos) > 0) ? $Anexos : null,
             );
 
