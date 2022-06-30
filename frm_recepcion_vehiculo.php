@@ -416,9 +416,9 @@ function ConsultarEquipo(){
 								<input name="celular" type="text" class="form-control" id="celular" maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['CelularContacto'];} elseif ($dt_LS == 1) {echo isset($_GET['Celular']) ? base64_decode($_GET['Celular']) : "";}?>">
 							</div>
 							<div class="col-lg-4">
-								<label class="control-label">Correo</label>
+								<label class="control-label">Correo <span class="text-danger">*</span></label>
 
-								<input name="correo" type="email" class="form-control" id="correo" maxlength="100" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['CorreoContacto'];} elseif ($dt_LS == 1) {echo isset($_GET['Correo']) ? base64_decode($_GET['Correo']) : "";}?>">
+								<input name="correo" type="email" class="form-control" id="correo" required="required" maxlength="100" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "readonly='readonly'";}?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {echo $row['CorreoContacto'];} elseif ($dt_LS == 1) {echo isset($_GET['Correo']) ? base64_decode($_GET['Correo']) : "";}?>">
 							</div>
 						</div>
 						<div class="form-group">
