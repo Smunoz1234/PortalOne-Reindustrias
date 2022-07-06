@@ -297,6 +297,7 @@ while ($row_Empleados = sqlsrv_fetch_array($SQL_Empleados)) {?>
 								<th>Usuario creación</th>
 								<th>Fecha cierre</th>
 								<th>Usuario cierre</th>
+								<th>App</th>
 								<th>Estado</th>
 								<th>Acciones</th>
 								<th class="text-center"><div class="checkbox checkbox-success"><input type="checkbox" id="chkAll" value="" onChange="SeleccionarTodos();" title="Seleccionar todos"><label></label></div></th>
@@ -315,6 +316,7 @@ while ($row_Empleados = sqlsrv_fetch_array($SQL_Empleados)) {?>
 									<td><?php echo $row['nombre_usuario_creacion']; ?></td>
 									<td><?php echo ($row['fecha_cierre'] != "") ? $row['fecha_cierre']->format('Y-m-d H:i') : ""; ?></td>
 									<td><?php echo $row['nombre_usuario_cierre']; ?></td>
+									<td><?php echo $row['app']; ?></td>
 									<td><span id="lblEstado<?php echo $row['id_recepcion_vehiculo']; ?>" <?php if ($row['estado'] == 'O') {echo "class='label label-info'";} elseif ($row['estado'] == 'A') {echo "class='label label-danger'";} else {echo "class='label label-primary'";}?>><?php echo $row['nombre_estado']; ?></span></td>
 									<td class="text-center form-inline w-80">
 										<?php if ($row['estado'] == 'O') {?>
