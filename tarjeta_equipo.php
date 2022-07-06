@@ -345,8 +345,8 @@ if ($edit == 1 && $sw_error == 0) { //Editando la tarjeta de equipo
     //Contratos de servicio
     $SQL_ContratosServicio = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_Contratos', '*', "IdTarjetaEquipo='" . $IdTarjetaEquipo . "'", 'ID_Contrato');
 
-    //Operaciones
-    //$SQL_Operaciones=Seleccionar('','*',"='".$row['CardCode']."'",'');
+    //Historico de gestiones, SMM 01/07/2022
+    $SQL_HistGestion = Seleccionar('uvw_tbl_Cartera_Gestion', 'TOP 10 *', "CardCode='" . $row['CardCode'] . "'", 'FechaRegistro');
 }
 
 if ($sw_error == 1) {
@@ -369,8 +369,8 @@ if ($sw_error == 1) {
     //Contratos de servicio
     $SQL_ContratosServicio = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_Contratos', '*', "IdTarjetaEquipo='" . $row['IdTarjetaEquipo'] . "'", 'ID_Contrato');
 
-    //Operaciones
-    //$SQL_Operaciones=Seleccionar('','*',"ID_CodigoCliente='".$row['CardCode']."'",'AsuntoLlamada');
+    //Historico de gestiones, SMM 01/07/2022
+    $SQL_HistGestion = Seleccionar('uvw_tbl_Cartera_Gestion', 'TOP 10 *', "CardCode='" . $row['CardCode'] . "'", 'FechaRegistro');
 }
 
 //Tecnicos
@@ -564,6 +564,26 @@ function ConsultarDatosCliente(){
 function mayus(e) {
 	e.value = e.value.toUpperCase();
 }
+
+// SMM, 01/07/2022
+function MostrarCostos(id_llamada){
+	$('.ibox-content').toggleClass('sk-loading',true);
+	$.ajax({
+		type: "POST",
+		async: false,
+		url: "md_articulos_documentos.php",
+		data:{
+			pre:3,
+			DocEntry:id_llamada
+		},
+		success: function(response){
+			$('.ibox-content').toggleClass('sk-loading',false);
+			$('#ContenidoModal').html(response);
+			$('#TituloModal').html('Precios IVA Incluido (Entregas (+) / Devoluciones (-))');
+			$('#myModal').modal("show");
+		}
+	});
+}
 </script>
 <!-- InstanceEndEditable -->
 </head>
@@ -595,6 +615,22 @@ function mayus(e) {
             </div>
 
       <div class="wrapper wrapper-content">
+		<!-- Inicio, myModal -->
+		<div class="modal inmodal fade" id="myModal" tabindex="-1" role="dialog" aria-hidden="true">
+			<div class="modal-dialog modal-lg" style="width: 70% !important;">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h4 class="modal-title" id="TituloModal"></h4>
+					</div>
+					<div class="modal-body" id="ContenidoModal"></div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-success m-t-md" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Fin, myModal -->
+
 		<?php if ($edit == 1) {?>
 				<div class="ibox-content">
 				<?php include "includes/spinner.php";?>
@@ -995,8 +1031,8 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 						<li class="active"><a data-toggle="tab" href="#tab-address"><i class="fa fa-address-book-o"></i> Dirección</a></li>
 						<li><a data-toggle="tab" href="#tab-service-calls"><i class="fa fa-table"></i> Llamadas de servicio</a></li>
 						<li><a data-toggle="tab" href="#tab-service-contracts"><i class="fa fa-table"></i> Contratos de servicio</a></li>
-						<li><a data-toggle="tab" href="#tab-sales-data"><i class="fa fa-table"></i> Datos de ventas</a></liclass=>
-						<li><a data-toggle="tab" href="#tab-operations"><i class="fa fa-table"></i> Operaciones</a></li>
+						<li><a data-toggle="tab" href="#tab-sales-data"><i class="fa fa-table"></i> Datos de ventas</a></li>
+						<li><a data-toggle="tab" href="#tab-crm"><i class="fa fa-suitcase"></i> Gestión de CRM</a></li>
 						<li><a data-toggle="tab" href="#tab-annexes"><i class="fa fa-paperclip"></i> Anexos</a></li>
 					</ul>
 					<div class="tab-content">
@@ -1041,7 +1077,7 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 						<div id="tab-service-calls" class="tab-pane">
 							<!-- Table Llamadas de servicio -->
 							<div class="row">
-								<div class="col-12">
+								<div class="col-12 text-center">
 									<div class="ibox-content">
 										<?php
 $hasRowsLlamadaServicio = (isset($SQL_LlamadasServicio)) ? sqlsrv_has_rows($SQL_LlamadasServicio) : false;
@@ -1051,6 +1087,7 @@ if ($edit == 1 && $hasRowsLlamadaServicio === true) {?>
 												<thead>
 													<tr>
 														<th>Número de llamada</th>
+														<th>Artículos/Costos</th>
 														<th>Fecha de creación</th>
 														<th>Tipo Problema</th>
 														<th>Asunto</th>
@@ -1068,6 +1105,9 @@ while ($row_LlamadaServicio = sqlsrv_fetch_array($SQL_LlamadasServicio)) {?>
 															<a href="llamada_servicio.php?id=<?php echo base64_encode($row_LlamadaServicio['ID_LlamadaServicio']); ?>&tl=1&pag=<?php echo base64_encode('gestionar_llamadas_servicios.php'); ?>" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i>
 																<?php echo $row_LlamadaServicio['DocNum']; ?>
 															</a>
+														</td>
+														<td>
+															<a class="btn btn-primary btn-xs" id="btnPreCostos" name="btnPreCostos" onClick="MostrarCostos('<?php echo $row_LlamadaServicio['ID_LlamadaServicio']; ?>');"><i class="fa fa-money"></i> Previsualizar Precios</a>
 														</td>
 														<td><?php echo $row_LlamadaServicio['FechaHoraCreacionLLamada']->format('Y-m-d h:m:i'); ?></td>
 														<td><?php echo $row_LlamadaServicio['DeTipoProblemaLlamada']; ?></td>
@@ -1170,19 +1210,52 @@ while ($row_ContratoServicio = sqlsrv_fetch_array($SQL_ContratosServicio)) {?>
 							</div>
 						</div>
 
-						<!-- Operaciones -->
-						<div id="tab-operations" class="tab-pane">
-							<!-- Table operaciones -->
+						<!-- Inicio Gestión CRM, SMM 01/07/2022 -->
+						<div id="tab-crm" class="tab-pane">
 							<div class="row">
-								<div class="col-12 text-center">
-									<div class="ibox-content">
-										<i class="fa fa-search" style="font-size: 18px; color: lightgray;"></i>
-										<span style="font-size: 13px; color: lightgray;">No hay registros de operaciones</span>
+								<div class="col-lg-12 text-center">
+									<?php if (sqlsrv_has_rows($SQL_HistGestion)) {?>
+									<div class="table-responsive" style="max-height: 230px; overflow: hidden; overflow-y: auto;">
+										<table class="table table-striped table-bordered table-hover dataTables-example">
+											<thead>
+											<tr>
+												<th>Tipo gestión</th>
+												<th>Destino</th>
+												<th>Evento</th>
+												<th>Resultado</th>
+												<th>Comentario</th>
+												<th>Causa no pago</th>
+												<th>Acuerdo de pago</th>
+												<th>Fecha registro</th>
+												<th>Usuario</th>
+											</tr>
+											</thead>
+											<tbody>
+											<?php while ($row_HistGestion = sqlsrv_fetch_array($SQL_HistGestion)) {?>
+												<tr class="gradeX">
+													<td><?php echo $row_HistGestion['TipoGestion']; ?></td>
+													<td><?php echo $row_HistGestion['Destino']; ?></td>
+													<td><?php echo $row_HistGestion['NombreEvento']; ?></td>
+													<td><?php echo $row_HistGestion['ResultadoGestion']; ?></td>
+													<td><?php echo $row_HistGestion['Comentarios']; ?></td>
+													<td><?php echo $row_HistGestion['CausaNoPago']; ?></td>
+													<td><?php if ($row_HistGestion['AcuerdoPago'] == 1) {echo "SI";} else {echo "NO";}?></td>
+													<td><?php echo $row_HistGestion['FechaRegistro']->format('Y-m-d H:i'); ?></td>
+													<td><?php echo $row_HistGestion['Usuario']; ?></td>
+												</tr>
+											<?php }?>
+											</tbody>
+										</table>
 									</div>
+									<?php } else {?>
+										<br>
+										<i class="fa fa-search" style="font-size: 18px; color: lightgray;"></i>
+										<span style="font-size: 13px; color: lightgray;">No hay registros de cartera</span>
+									<?php }?>
 								</div>
 							</div>
-							<!-- End Table operaciones -->
 						</div>
+						<!-- Fin Gestión CRM, SMM 01/07/2022 -->
 
 						<!-- Anexos -->
 						<div id="tab-annexes" class="tab-pane">
