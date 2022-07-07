@@ -38,13 +38,19 @@ if (isset($_GET['type']) && $_GET['type'] != "") {
         }
         //echo json_encode($result);
     } elseif ($_GET['type'] == 4) { //Eliminar una linea del carrito en la Orden de venta
+        $borrador = '';
+
+        if (isset($_GET['borrador']) && $_GET['borrador'] == 1) {
+            $borrador = '_Borrador';
+        }
+
         if ($_GET['edit'] == 1) {
             $linenum = $_GET['linenum'];
             $cardcode = $_GET['cardcode'];
             $coduser = $_SESSION['CodUser'];
 
             // Stiven Muñoz Murillo, 27/01/2022
-            $Cons = "DELETE FROM tbl_OrdenVentaDetalleCarrito WHERE LineNum IN (SELECT VALUE FROM STRING_SPLIT('$linenum', ',')) AND CardCode='$cardcode' AND Usuario='$coduser'";
+            $Cons = "DELETE FROM tbl_OrdenVentaDetalleCarrito$borrador WHERE LineNum IN (SELECT VALUE FROM STRING_SPLIT('$linenum', ',')) AND CardCode='$cardcode' AND Usuario='$coduser'";
 
             $SQL_Cons = sqlsrv_query($conexion, $Cons);
             if ($SQL_Cons) {
@@ -59,7 +65,8 @@ if (isset($_GET['type']) && $_GET['type'] != "") {
                     "'" . $_GET['id'] . "'",
                     "'" . $_GET['evento'] . "'",
                 );
-                $LimpiarOrden = EjecutarSP('sp_tbl_OrdenVentaDetalle_DelLine', $Parametros);
+
+                $LimpiarOrden = EjecutarSP("sp_tbl_OrdenVentaDetalle_DelLine$borrador", $Parametros);
                 if ($LimpiarOrden) {
                     echo "*Ok*";
                 }
@@ -820,13 +827,20 @@ if (isset($_GET['type']) && $_GET['type'] != "") {
 
     // SMM, 29/04/2022
     elseif ($_GET['type'] == 54) { // Duplicar una linea del detalle de la Orden de Venta
+        $borrador = '';
+
+        if (isset($_GET['borrador']) && $_GET['borrador'] == 1) {
+            $borrador = '_Borrador';
+        }
+
         if ($_GET['edit'] == 1) {
             $Parametros = array(
                 "'" . $_GET['linenum'] . "'",
                 "'" . $_GET['cardcode'] . "'",
                 "'" . $_SESSION['CodUser'] . "'",
             );
-            $SQL = EjecutarSP('sp_tbl_OrdenVentaDetalleCarrito_DuplicarLine', $Parametros);
+
+            $SQL = EjecutarSP("sp_tbl_OrdenVentaDetalleCarrito_DuplicarLine$borrador", $Parametros);
             if ($SQL) {
                 echo "*Ok*";
             }
@@ -836,7 +850,8 @@ if (isset($_GET['type']) && $_GET['type'] != "") {
                 "'" . $_GET['id'] . "'",
                 "'" . $_GET['evento'] . "'",
             );
-            $SQL = EjecutarSP('sp_tbl_OrdenVentaDetalle_DuplicarLine', $Parametros);
+
+            $SQL = EjecutarSP("sp_tbl_OrdenVentaDetalle_DuplicarLine$borrador", $Parametros);
             if ($SQL) {
                 echo "*Ok*";
             }
@@ -845,13 +860,20 @@ if (isset($_GET['type']) && $_GET['type'] != "") {
 
     // SMM, 29/04/2022
     elseif ($_GET['type'] == 55) { // Duplicar una linea del detalle de la Entrega de Venta
+        $borrador = '';
+
+        if (isset($_GET['borrador']) && $_GET['borrador'] == 1) {
+            $borrador = '_Borrador';
+        }
+
         if ($_GET['edit'] == 1) {
             $Parametros = array(
                 "'" . $_GET['linenum'] . "'",
                 "'" . $_GET['cardcode'] . "'",
                 "'" . $_SESSION['CodUser'] . "'",
             );
-            $SQL = EjecutarSP('sp_tbl_EntregaVentaDetalleCarrito_DuplicarLine', $Parametros);
+
+            $SQL = EjecutarSP("sp_tbl_EntregaVentaDetalleCarrito_DuplicarLine$borrador", $Parametros);
             if ($SQL) {
                 echo "*Ok*";
             }
@@ -861,7 +883,8 @@ if (isset($_GET['type']) && $_GET['type'] != "") {
                 "'" . $_GET['id'] . "'",
                 "'" . $_GET['evento'] . "'",
             );
-            $SQL = EjecutarSP('sp_tbl_EntregaVentaDetalle_DuplicarLine', $Parametros);
+
+            $SQL = EjecutarSP("sp_tbl_EntregaVentaDetalle_DuplicarLine$borrador", $Parametros);
             if ($SQL) {
                 echo "*Ok*";
             }
