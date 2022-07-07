@@ -691,6 +691,8 @@ function ObtenerComentario(){
 						<li class="active"><a data-toggle="tab" href="#tab-1"><i class="fa fa-briefcase"></i> Registrar gestión</a></li>
 						<li class=""><a data-toggle="tab" href="#tab-2" onClick="ConsultarTab('2');"><i class="fa fa-money"></i> Pagos realizados</a></li>
 						<li class=""><a data-toggle="tab" href="#tab-3"><i class="fa fa-calendar"></i> Historico de gestión</a></li>
+						<li><a data-toggle="tab" href="#tab-4" onClick="ConsultarTab('4');"><i class="fa fa-phone"></i> Llamadas de servicios</a></li>
+						<li><a data-toggle="tab" href="#tab-5" onClick="ConsultarTab('5');"><i class="fa fa-car"></i> Tarjetas de equipo</a></li>
 					</ul>
 				  <div class="tab-content">
 					  <div id="tab-1" class="tab-pane active">
@@ -756,6 +758,29 @@ while ($row_FacturasPendientes = sqlsrv_fetch_array($SQL_FacturasPendientes)) {?
 									</div>
 									<div class="form-group">
 										<label class="col-lg-12"><h3 class="bg-success p-xs b-r-sm"><i class="fa fa-briefcase"></i> Registrar gestión</h3></label>
+									</div>
+									<div class="form-group">
+										<label class="col-lg-2 control-label">Sucursal <span class="text-danger">*</span></label>
+										<div class="col-lg-4">
+											<select name="SucursalCliente" class="form-control select2" id="SucursalCliente" required="required" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
+												<option value="" disabled selected>Seleccione...</option>
+												<?php while ($row_SucursalCliente = sqlsrv_fetch_array($SQL_SucursalCliente)) {?>
+													<option value="<?php echo $row_SucursalCliente['NombreSucursal']; ?>" <?php if (isset($row['NombreSucursal']) && (strcmp($row_SucursalCliente['NombreSucursal'], $row['NombreSucursal']) == 0)) {echo "selected=\"selected\"";} elseif (isset($row['NombreSucursal']) && (strcmp($row_SucursalCliente['NumeroLinea'], $row['IdNombreSucursal']) == 0)) {echo "selected=\"selected\"";
+    $sw_valDir = 1;}?>><?php echo $row_SucursalCliente['NombreSucursal']; ?></option>
+												<?php }?>
+											</select>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-lg-2 control-label"><i onClick="ConsultarEquipo();" title="Consultar tarjeta de equipo" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Tarjeta de equipo</label>
+										<div class="col-lg-4">
+											<select name="NumeroSerie" class="form-control select2" id="NumeroSerie" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
+													<option value="">Seleccione...</option>
+												<?php if (($type_llmd == 1) || ($sw_error == 1)) {while ($row_NumeroSerie = sqlsrv_fetch_array($SQL_NumeroSerie)) {?>
+													<option value="<?php echo $row_NumeroSerie['SerialInterno']; ?>" data-id="<?php echo $row_NumeroSerie['IdTarjetaEquipo'] ?? ""; ?>" <?php if ((isset($row_NumeroSerie['SerialInterno'])) && (strcmp($row_NumeroSerie['SerialInterno'], $row['IdNumeroSerie']) == 0)) {echo "selected=\"selected\"";} elseif ((isset($_GET['Serial'])) && (strcmp(base64_decode($_GET['Serial']), $row_NumeroSerie['SerialInterno']) == 0)) {echo "selected=\"selected\"";}?>><?php echo "SN Fabricante: " . $row_NumeroSerie['SerialFabricante'] . " - Núm. Serie: " . $row_NumeroSerie['SerialInterno']; ?></option>
+												<?php }}?>
+											</select>
+										</div>
 									</div>
 									<div class="form-group">
 										<label class="col-lg-2 control-label">Tipo gestión</label>
@@ -1084,8 +1109,8 @@ while ($row_CausaNoPago = sqlsrv_fetch_array($SQL_CausaNoPago)) {?>
 									</tr>
 									</thead>
 									<tbody>
-									<?php $i = 1;
-while ($row_HistGestion = sqlsrv_fetch_array($SQL_HistGestion)) {?>
+									<?php $i = 1;?>
+									<?php while ($row_HistGestion = sqlsrv_fetch_array($SQL_HistGestion)) {?>
 										 <tr class="gradeX">
 											<td><?php echo $i; ?></td>
 											<td><?php echo $row_HistGestion['TipoGestion']; ?><?php if ($row_HistGestion['CallFile'] != "") {?><a href="recorddownload.php?file=<?php echo base64_encode($row_HistGestion['ID_Gestion']); ?>" target="_blank" class="btn btn-link btn-xs" title="Descargar grabación"><i class="fa fa-phone"></i></a><?php }?></td>
@@ -1191,6 +1216,19 @@ while ($row_HistGestion = sqlsrv_fetch_array($SQL_HistGestion)) {?>
 						 	</div>
 						</div>
 					  </div>
+
+					<!-- INICIO (OT & TE), SMM 07/07/2022 -->
+					<div id="tab-4" class="tab-pane">
+						<div id="dv_llamadasrv" class="panel-body">
+							<!-- sn_llamadas_servicios.php -->
+						</div>
+					</div>
+					<div id="tab-5" class="tab-pane">
+						<div id="dv_tarjetas" class="panel-body">
+							<!-- sn_tarjetas_equipo.php -->
+						</div>
+					</div>
+					<!-- FIN (OT & TE), SMM 07/07/2022 -->
 				  </div>
 			   </div>
 			   </div>
@@ -1312,6 +1350,8 @@ while ($row_HistGestion = sqlsrv_fetch_array($SQL_HistGestion)) {?>
 <script>
 //Variables de tab
 var tab_2=0;
+var tab_4=0;
+var tab_5=0;
 
 function ConsultarTab(type){
 	if(type==2){//Pagos realizados
@@ -1324,6 +1364,35 @@ function ConsultarTab(type){
 					$('#dv_pagosreal').html(response).fadeIn();
 					$('.ibox-content').toggleClass('sk-loading',false);
 					tab_2=1;
+				}
+			});
+		}
+	}
+
+	// Stiven Muñoz Murillo, 07/07/2022
+	else if(type==4) { // Llamada de servicio
+		if(tab_4==0){
+			$('.ibox-content').toggleClass('sk-loading',true);
+			$.ajax({
+				type: "POST",
+				url: "sn_llamadas_servicios.php?id=<?php echo base64_encode($row_Cliente['CodigoCliente']); ?>",
+				success: function(response){
+					$('#dv_llamadasrv').html(response).fadeIn();
+					$('.ibox-content').toggleClass('sk-loading',false);
+					tab_4=1;
+				}
+			});
+		}
+	} else if(type==5){ // Tarjetas de equipo
+		if(tab_5==0){
+			$('.ibox-content').toggleClass('sk-loading',true);
+			$.ajax({
+				type: "POST",
+				url: "sn_tarjetas_equipo.php?id=<?php echo base64_encode($row_Cliente['CodigoCliente']); ?>",
+				success: function(response){
+					$('#dv_tarjetas').html(response).fadeIn();
+					$('.ibox-content').toggleClass('sk-loading',false);
+					tab_5=1;
 				}
 			});
 		}
