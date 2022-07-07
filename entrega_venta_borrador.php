@@ -1,5 +1,5 @@
 <?php require_once "includes/conexion.php";
-PermitirAcceso(407);
+PermitirAcceso(422);
 
 $dt_LS = 0; //sw para saber si vienen datos de la llamada de servicio. 0 no vienen. 1 si vienen.
 $dt_OV = 0; //sw para saber si vienen datos de una Orden de venta.
@@ -117,7 +117,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
             "'" . $_SESSION['CodUser'] . "'",
             "$Type",
         );
-        $SQL_CabeceraEntregaVenta = EjecutarSP('sp_tbl_EntregaVenta', $ParametrosCabEntregaVenta, $_POST['P']);
+        $SQL_CabeceraEntregaVenta = EjecutarSP('sp_tbl_EntregaVenta_Borrador', $ParametrosCabEntregaVenta, $_POST['P']);
         if ($SQL_CabeceraEntregaVenta) {
             if ($Type == 1) {
                 $row_CabeceraEntregaVenta = sqlsrv_fetch_array($SQL_CabeceraEntregaVenta);
@@ -188,10 +188,10 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
                 } else {
                     if ($_POST['tl'] == 0) { //Creando Entrega
                         //Consultar ID creado para cargar el documento
-                        $SQL_ConsID = Seleccionar('uvw_Sap_tbl_EntregasVentas', 'ID_EntregaVenta', "IdDocPortal='" . $IdEntregaVenta . "'");
+                        $SQL_ConsID = Seleccionar('uvw_Sap_tbl_EntregasVentas_Borrador', 'ID_EntregaVenta', "IdDocPortal='" . $IdEntregaVenta . "'");
                         $row_ConsID = sqlsrv_fetch_array($SQL_ConsID);
                         sqlsrv_close($conexion);
-                        header('Location:entrega_venta.php?id=' . base64_encode($row_ConsID['ID_EntregaVenta']) . '&id_portal=' . base64_encode($IdEntregaVenta) . '&tl=1&a=' . base64_encode("OK_EVenAdd"));
+                        header('Location:entrega_venta_borrador.php?id=' . base64_encode($row_ConsID['ID_EntregaVenta']) . '&id_portal=' . base64_encode($IdEntregaVenta) . '&tl=1&a=' . base64_encode("OK_EVenAdd"));
                     } else { //Actualizando Entrega
                         sqlsrv_close($conexion);
                         header('Location:' . base64_decode($_POST['return']) . '&a=' . base64_encode("OK_EVenUpd"));
@@ -339,15 +339,17 @@ if ($edit == 1 && $sw_error == 0) {
         "'" . $IdPortal . "'",
         "'" . $_SESSION['CodUser'] . "'",
     );
-    $LimpiarEntrega = EjecutarSP('sp_EliminarDatosEntregaVenta', $ParametrosLimpiar);
+    $LimpiarEntrega = EjecutarSP('sp_EliminarDatosEntregaVenta_Borrador', $ParametrosLimpiar);
 
     $SQL_IdEvento = sqlsrv_fetch_array($LimpiarEntrega);
     $IdEvento = $SQL_IdEvento[0];
 
     //Entrega de venta
-    $Cons = "Select * From uvw_tbl_EntregaVenta Where DocEntry='" . $IdEntrega . "' AND IdEvento='" . $IdEvento . "'";
+    $Cons = "Select * From uvw_tbl_EntregaVenta_Borrador Where DocEntry='" . $IdEntrega . "' AND IdEvento='" . $IdEvento . "'";
     $SQL = sqlsrv_query($conexion, $Cons);
     $row = sqlsrv_fetch_array($SQL);
+
+    // echo "<br>" . $Cons . "<br>";
 
     //Clientes
     $SQL_Cliente = Seleccionar('uvw_Sap_tbl_Clientes', '*', "CodigoCliente='" . $row['CardCode'] . "'", 'NombreCliente');
@@ -376,7 +378,7 @@ if ($edit == 1 && $sw_error == 0) {
 if ($sw_error == 1) {
 
     //Entrega de venta
-    $Cons = "Select * From uvw_tbl_EntregaVenta Where ID_EntregaVenta='" . $IdEntregaVenta . "' AND IdEvento='" . $IdEvento . "'";
+    $Cons = "Select * From uvw_tbl_EntregaVenta_Borrador Where ID_EntregaVenta='" . $IdEntregaVenta . "' AND IdEvento='" . $IdEvento . "'";
     $SQL = sqlsrv_query($conexion, $Cons);
     $row = sqlsrv_fetch_array($SQL);
 
@@ -457,7 +459,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 <head>
 <?php include_once "includes/cabecera.php";?>
 <!-- InstanceBeginEditable name="doctitle" -->
-<title>Entrega de venta | <?php echo NOMBRE_PORTAL; ?></title>
+<title>Entrega de venta borrador | <?php echo NOMBRE_PORTAL; ?></title>
 <?php
 if (isset($_GET['a']) && $_GET['a'] == base64_encode("OK_EVenAdd")) {
     echo "<script>
@@ -660,15 +662,15 @@ function ConsultarDatosCliente(){
 
 			<?php if ($edit == 0) {?>
 				if(carcode!=""){
-					frame.src="detalle_entrega_venta.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+carcode;
+					frame.src="detalle_entrega_venta_borrador.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+carcode;
 				}else{
-					frame.src="detalle_entrega_venta.php";
+					frame.src="detalle_entrega_venta_borrador.php";
 				}
 			<?php } else {?>
 				if(carcode!=""){
-					frame.src="detalle_entrega_venta.php?id=<?php echo base64_encode($row['ID_EntregaVenta']); ?>&evento=<?php echo base64_encode($row['IdEvento']); ?>&docentry=<?php echo base64_encode($row['DocEntry']); ?>&type=2";
+					frame.src="detalle_entrega_venta_borrador.php?id=<?php echo base64_encode($row['ID_EntregaVenta']); ?>&evento=<?php echo base64_encode($row['IdEvento']); ?>&docentry=<?php echo base64_encode($row['DocEntry']); ?>&type=2";
 				}else{
-					frame.src="detalle_entrega_venta.php";
+					frame.src="detalle_entrega_venta_borrador.php";
 				}
 			<?php }?>
 
@@ -720,7 +722,7 @@ function ConsultarDatosCliente(){
 
 			var Serie=document.getElementById('Serie').value;
 			var SDim=document.getElementById('Dim2').value; // SMM, 04/02/2022
-			
+
 			$.ajax({
 				type: "POST",
 				url: `ajx_cbo_select.php?type=19&id=${Serie}&SDim=${SDim}`,
@@ -754,7 +756,7 @@ function ConsultarDatosCliente(){
 							type: "GET",
 							url: "registro.php?P=36&doctype=3&type=1&name=WhsCode&value="+Base64.encode(document.getElementById('Almacen').value)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
 							success: function(response){
-								frame.src="detalle_entrega_venta.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
+								frame.src="detalle_entrega_venta_borrador.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
 								$('.ibox-content').toggleClass('sk-loading',false);
 							}
 						});
@@ -763,7 +765,7 @@ function ConsultarDatosCliente(){
 							type: "GET",
 							url: "registro.php?P=36&doctype=3&type=2&name=WhsCode&value="+Base64.encode(document.getElementById('Almacen').value)+"&line=0&id=<?php echo $row['ID_EntregaVenta']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
 							success: function(response){
-								frame.src="detalle_entrega_venta.php?id=<?php echo base64_encode($row['ID_EntregaVenta']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
+								frame.src="detalle_entrega_venta_borrador.php?id=<?php echo base64_encode($row['ID_EntregaVenta']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
 								$('.ibox-content').toggleClass('sk-loading',false);
 							}
 						});
@@ -792,7 +794,7 @@ function ConsultarDatosCliente(){
 							type: "GET",
 							url: "registro.php?P=36&doctype=3&type=1&name=OcrCode&value="+Base64.encode(document.getElementById('Dim1').value)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
 							success: function(response){
-								frame.src="detalle_entrega_venta.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
+								frame.src="detalle_entrega_venta_borrador.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
 								$('.ibox-content').toggleClass('sk-loading',false);
 							}
 						});
@@ -801,7 +803,7 @@ function ConsultarDatosCliente(){
 							type: "GET",
 							url: "registro.php?P=36&doctype=3&type=2&name=OcrCode&value="+Base64.encode(document.getElementById('Dim1').value)+"&line=0&id=<?php echo $row['ID_EntregaVenta']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
 							success: function(response){
-								frame.src="detalle_entrega_venta.php?id=<?php echo base64_encode($row['ID_EntregaVenta']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
+								frame.src="detalle_entrega_venta_borrador.php?id=<?php echo base64_encode($row['ID_EntregaVenta']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
 								$('.ibox-content').toggleClass('sk-loading',false);
 							}
 						});
@@ -848,7 +850,7 @@ function ConsultarDatosCliente(){
 							type: "GET",
 							url: "registro.php?P=36&doctype=3&type=1&name=OcrCode2&value="+Base64.encode(document.getElementById('Dim2').value)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
 							success: function(response){
-								frame.src="detalle_entrega_venta.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
+								frame.src="detalle_entrega_venta_borrador.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
 								$('.ibox-content').toggleClass('sk-loading',false);
 							}
 						});
@@ -857,7 +859,7 @@ function ConsultarDatosCliente(){
 							type: "GET",
 							url: "registro.php?P=36&doctype=3&type=2&name=OcrCode2&value="+Base64.encode(document.getElementById('Dim2').value)+"&line=0&id=<?php echo $row['ID_EntregaVenta']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
 							success: function(response){
-								frame.src="detalle_entrega_venta.php?id=<?php echo base64_encode($row['ID_EntregaVenta']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
+								frame.src="detalle_entrega_venta_borrador.php?id=<?php echo base64_encode($row['ID_EntregaVenta']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
 								$('.ibox-content').toggleClass('sk-loading',false);
 							}
 						});
@@ -894,7 +896,7 @@ function ConsultarDatosCliente(){
 							type: "GET",
 							url: "registro.php?P=36&doctype=3&type=1&name=OcrCode3&value="+Base64.encode(Dim3)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
 							success: function(response){
-								frame.src="detalle_entrega_venta.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
+								frame.src="detalle_entrega_venta_borrador.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
 								$('.ibox-content').toggleClass('sk-loading',false);
 							},
 							error: function(error) {
@@ -907,7 +909,7 @@ function ConsultarDatosCliente(){
 							type: "GET",
 							url: "registro.php?P=36&doctype=3&type=2&name=OcrCode3&value="+Base64.encode(Dim3)+"&line=0&id=<?php echo $row['ID_EntregaVenta']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
 							success: function(response){
-								frame.src="detalle_entrega_venta.php?id=<?php echo base64_encode($row['ID_EntregaVenta']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
+								frame.src="detalle_entrega_venta_borrador.php?id=<?php echo base64_encode($row['ID_EntregaVenta']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
 								$('.ibox-content').toggleClass('sk-loading',false);
 							},
 							error: function(error) {
@@ -946,7 +948,7 @@ function ConsultarDatosCliente(){
 							type: "GET", // "EmpVentas" es el nombre que tiene el registro en el detalle.
 							url: "registro.php?P=36&doctype=3&type=1&name=EmpVentas&value="+Base64.encode(document.getElementById('EmpleadoVentas').value)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
 							success: function(response){
-								frame.src="detalle_entrega_venta.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
+								frame.src="detalle_entrega_venta_borrador.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
 								$('.ibox-content').toggleClass('sk-loading',false);
 							}
 						});
@@ -955,7 +957,7 @@ function ConsultarDatosCliente(){
 							type: "GET", // "EmpVentas" es el nombre que tiene el registro en el detalle.
 							url: "registro.php?P=36&doctype=3&type=2&name=EmpVentas&value="+Base64.encode(document.getElementById('EmpleadoVentas').value)+"&line=0&id=<?php echo $row['ID_EntregaVenta']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
 							success: function(response){
-								frame.src="detalle_entrega_venta.php?id=<?php echo base64_encode($row['ID_EntregaVenta']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
+								frame.src="detalle_entrega_venta_borrador.php?id=<?php echo base64_encode($row['ID_EntregaVenta']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
 								$('.ibox-content').toggleClass('sk-loading',false);
 							}
 						});
@@ -984,7 +986,7 @@ function ConsultarDatosCliente(){
 							type: "GET",
 							url: "registro.php?P=36&doctype=3&type=1&name=PrjCode&value="+Base64.encode(document.getElementById('PrjCode').value)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
 							success: function(response){
-								frame.src="detalle_entrega_venta.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
+								frame.src="detalle_entrega_venta_borrador.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
 								$('.ibox-content').toggleClass('sk-loading',false);
 							}
 						});
@@ -993,7 +995,7 @@ function ConsultarDatosCliente(){
 							type: "GET",
 							url: "registro.php?P=36&doctype=3&type=2&name=PrjCode&value="+Base64.encode(document.getElementById('PrjCode').value)+"&line=0&id=<?php echo $row['ID_EntregaVenta']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
 							success: function(response){
-								frame.src="detalle_entrega_venta.php?id=<?php echo base64_encode($row['ID_EntregaVenta']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
+								frame.src="detalle_entrega_venta_borrador.php?id=<?php echo base64_encode($row['ID_EntregaVenta']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
 								$('.ibox-content').toggleClass('sk-loading',false);
 							}
 						});
@@ -1019,7 +1021,7 @@ function ConsultarDatosCliente(){
         <!-- InstanceBeginEditable name="Contenido" -->
         <div class="row wrapper border-bottom white-bg page-heading">
                 <div class="col-sm-8">
-                    <h2>Entrega de venta</h2>
+                    <h2>Entrega de venta borrador</h2>
                     <ol class="breadcrumb">
                         <li>
                             <a href="index1.php">Inicio</a>
@@ -1028,7 +1030,7 @@ function ConsultarDatosCliente(){
                             <a href="#">Ventas - Clientes</a>
                         </li>
                         <li class="active">
-                            <strong>Entrega de venta</strong>
+                            <strong>Entrega de venta borrador</strong>
                         </li>
                     </ol>
                 </div>
@@ -1155,7 +1157,7 @@ function ConsultarDatosCliente(){
 								<a href="orden_venta.php?id=<?php echo base64_encode($row['DocBaseDocEntry']); ?>&id_portal=<?php echo base64_encode($row['DocBaseIdPortal']); ?>&tl=1" target="_blank" class="btn btn-outline btn-primary pull-right"><i class="fa fa-mail-reply"></i> Ir a documento base</a>
 							<?php }?>
 							<?php if ($row['Cod_Estado'] == 'O') {?>
-								<button type="button" onClick="javascript:location.href='actividad.php?dt_DM=1&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&DM_type=<?php echo base64_encode('15'); ?>&DM=<?php echo base64_encode($row['DocEntry']); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('entrega_venta.php'); ?>'" class="alkin btn btn-outline btn-primary pull-right"><i class="fa fa-plus-circle"></i> Agregar actividad</button>
+								<button type="button" onClick="javascript:location.href='actividad.php?dt_DM=1&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&DM_type=<?php echo base64_encode('15'); ?>&DM=<?php echo base64_encode($row['DocEntry']); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('entrega_venta_borrador.php'); ?>'" class="alkin btn btn-outline btn-primary pull-right"><i class="fa fa-plus-circle"></i> Agregar actividad</button>
 						<?php }?>
 						</div>
 					</div>
@@ -1168,7 +1170,7 @@ function ConsultarDatosCliente(){
 				 <?php include "includes/spinner.php";?>
           <div class="row">
            <div class="col-lg-12">
-              <form action="entrega_venta.php" method="post" class="form-horizontal" enctype="multipart/form-data" id="CrearEntregaVenta">
+              <form action="entrega_venta_borrador.php" method="post" class="form-horizontal" enctype="multipart/form-data" id="CrearEntregaVenta">
 				  <?php
 $_GET['obj'] = "15";
 include_once 'md_frm_campos_adicionales.php';
@@ -1424,11 +1426,11 @@ if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
 					<?php if ($edit == 1) {?>
 						<?php $ID_EntregaVenta = $row['ID_EntregaVenta'];?>
 						<?php $Evento = $row['IdEvento'];?>
-						<?php $consulta_detalle = "SELECT $filtro_consulta FROM uvw_tbl_EntregaVentaDetalle WHERE ID_EntregaVenta='$ID_EntregaVenta' AND IdEvento='$Evento' AND Metodo <> 3";?>
+						<?php $consulta_detalle = "SELECT $filtro_consulta FROM uvw_tbl_EntregaVentaDetalle_Borrador WHERE ID_EntregaVenta='$ID_EntregaVenta' AND IdEvento='$Evento' AND Metodo <> 3";?>
 					<?php } else {?>
 						<?php $Usuario = $_SESSION['CodUser'];?>
 						<?php $cookie_cardcode = 1;?>
-						<?php $consulta_detalle = "SELECT $filtro_consulta FROM uvw_tbl_EntregaVentaDetalleCarrito WHERE Usuario='$Usuario'";?>
+						<?php $consulta_detalle = "SELECT $filtro_consulta FROM uvw_tbl_EntregaVentaDetalleCarrito_Borrador WHERE Usuario='$Usuario'";?>
 					<?php }?>
 
 					<div class="col-lg-1 pull-right">
@@ -1447,7 +1449,7 @@ if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
 					</ul>
 					<div class="tab-content">
 						<div id="tab-1" class="tab-pane active">
-							<iframe id="DataGrid" name="DataGrid" style="border: 0;" width="100%" height="300" src="<?php if ($edit == 0 && $sw_error == 0) {echo "detalle_entrega_venta.php";} elseif ($edit == 0 && $sw_error == 1) {echo "detalle_entrega_venta.php?id=0&type=1&usr=" . $_SESSION['CodUser'] . "&cardcode=" . $row['CardCode'];} else {echo "detalle_entrega_venta.php?id=" . base64_encode($row['ID_EntregaVenta']) . "&evento=" . base64_encode($row['IdEvento']) . "&docentry=" . base64_encode($row['DocEntry']) . "&type=2&status=" . base64_encode($row['Cod_Estado']);}?>"></iframe>
+							<iframe id="DataGrid" name="DataGrid" style="border: 0;" width="100%" height="300" src="<?php if ($edit == 0 && $sw_error == 0) {echo "detalle_entrega_venta_borrador.php";} elseif ($edit == 0 && $sw_error == 1) {echo "detalle_entrega_venta_borrador.php?id=0&type=1&usr=" . $_SESSION['CodUser'] . "&cardcode=" . $row['CardCode'];} else {echo "detalle_entrega_venta_borrador.php?id=" . base64_encode($row['ID_EntregaVenta']) . "&evento=" . base64_encode($row['IdEvento']) . "&docentry=" . base64_encode($row['DocEntry']) . "&type=2&status=" . base64_encode($row['Cod_Estado']);}?>"></iframe>
 						</div>
 						<?php if ($edit == 1) {?>
 						<div id="tab-2" class="tab-pane">
@@ -1584,29 +1586,20 @@ if (isset($_GET['return'])) {
 } elseif (isset($_POST['return'])) {
     $return = base64_decode($_POST['return']);
 } else {
-    $return = "entrega_venta.php?" . $_SERVER['QUERY_STRING'];
+    $return = "entrega_venta_borrador.php?" . $_SERVER['QUERY_STRING'];
 }
 $return = QuitarParametrosURL($return, array("a"));
 ?>
 						<a href="<?php echo $return; ?>" class="btn btn-outline btn-default"><i class="fa fa-arrow-circle-o-left"></i> Regresar</a>
 					</div>
-					<?php if (($edit == 1) && ($row['Cod_Estado'] != 'C')) {?>
+					<?php if (false) {?>
 					<div class="col-lg-3">
 						<div class="btn-group dropup pull-right">
                             <button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i class="fa fa-mail-forward"></i> Copiar a <i class="fa fa-caret-up"></i></button>
                             <ul class="dropdown-menu">
                                 <li><a class="alkin dropdown-item" href="devolucion_venta.php?dt_ET=1&ET=<?php echo base64_encode($row['ID_EntregaVenta']); ?>&Referencia=<?php echo base64_encode($row['NumAtCard']); ?>&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Dim1=<?php echo base64_encode($row['OcrCode']); ?>&Dim2=<?php echo base64_encode($row['OcrCode2']); ?>&Dim3=<?php echo base64_encode($row['OcrCode3']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&SucursalFact=<?php echo base64_encode($row['SucursalFacturacion']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&LS=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>&CondicionPago=<?php echo base64_encode($row['IdCondicionPago']); ?>">Devolución de venta</a></li>
 								<!-- &Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>&CondicionPago=<?php echo base64_encode($row['IdCondicionPago']); ?>-->
-								<li><a class="alkin dropdown-item d-venta" href="entrega_venta.php?dt_ET=1&ET=<?php echo base64_encode($row['ID_EntregaVenta']); ?>&pag=<?php echo $_GET['pag']; ?>&return=<?php echo $_GET['return']; ?>&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Dim1=<?php echo base64_encode($row['OcrCode']); ?>&Dim2=<?php echo base64_encode($row['OcrCode2']); ?>&Dim3=<?php echo base64_encode($row['OcrCode3']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&SucursalFact=<?php echo base64_encode($row['SucursalFacturacion']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&LS=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>&CondicionPago=<?php echo base64_encode($row['IdCondicionPago']); ?>&Serie=<?php echo base64_encode($row['IdSeries']); ?>">Entrega de venta (Duplicar)</a></li>
-                            </ul>
-                        </div>
-					</div>
-					<?php } elseif (($edit == 1) && $row['Cod_Estado'] == 'C') {?>
-					<div class="col-lg-3">
-						<div class="btn-group dropup pull-right">
-                            <button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i class="fa fa-mail-forward"></i> Copiar a <i class="fa fa-caret-up"></i></button>
-                            <ul class="dropdown-menu">
-							<li><a class="alkin dropdown-item d-venta" href="entrega_venta.php?dt_ET=1&ET=<?php echo base64_encode($row['ID_EntregaVenta']); ?>&pag=<?php echo $_GET['pag']; ?>&return=<?php echo $_GET['return']; ?>&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Dim1=<?php echo base64_encode($row['OcrCode']); ?>&Dim2=<?php echo base64_encode($row['OcrCode2']); ?>&Dim3=<?php echo base64_encode($row['OcrCode3']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&SucursalFact=<?php echo base64_encode($row['SucursalFacturacion']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&LS=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>&CondicionPago=<?php echo base64_encode($row['IdCondicionPago']); ?>&Serie=<?php echo base64_encode($row['IdSeries']); ?>">Entrega de venta (Duplicar)</a></li>
+								<li><a class="alkin dropdown-item d-venta" href="entrega_venta_borrador.php?dt_ET=1&ET=<?php echo base64_encode($row['ID_EntregaVenta']); ?>&pag=<?php echo $_GET['pag']; ?>&return=<?php echo $_GET['return']; ?>&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Dim1=<?php echo base64_encode($row['OcrCode']); ?>&Dim2=<?php echo base64_encode($row['OcrCode2']); ?>&Dim3=<?php echo base64_encode($row['OcrCode3']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&SucursalFact=<?php echo base64_encode($row['SucursalFacturacion']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&LS=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>&CondicionPago=<?php echo base64_encode($row['IdCondicionPago']); ?>&Serie=<?php echo base64_encode($row['IdSeries']); ?>">Entrega de venta (Duplicar)</a></li>
                             </ul>
                         </div>
 					</div>

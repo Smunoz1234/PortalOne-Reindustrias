@@ -24,16 +24,16 @@ if (isset($_GET['id']) && ($_GET['id'] != "")) {
     }
     if ($type == 1) { //Creando Entrega de Venta
         $where = "Usuario='" . $_GET['usr'] . "' and CardCode='" . $_GET['cardcode'] . "'";
-        $SQL = Seleccionar("uvw_tbl_EntregaVentaDetalleCarrito", "*", $where);
+        $SQL = Seleccionar("uvw_tbl_EntregaVentaDetalleCarrito_Borrador", "*", $where);
         // echo $where;
 
         //Contar si hay articulos con lote
-        $SQL_Lotes = Seleccionar("uvw_tbl_EntregaVentaDetalleCarrito", "Count(ID_EntregaVentaDetalleCarrito) AS Cant", "Usuario='" . $_GET['usr'] . "' and CardCode='" . $_GET['cardcode'] . "' and ManBtchNum='Y'");
+        $SQL_Lotes = Seleccionar("uvw_tbl_EntregaVentaDetalleCarrito_Borrador", "Count(ID_EntregaVentaDetalleCarrito) AS Cant", "Usuario='" . $_GET['usr'] . "' and CardCode='" . $_GET['cardcode'] . "' and ManBtchNum='Y'");
         $row_Lotes = sqlsrv_fetch_array($SQL_Lotes);
         $Lotes = $row_Lotes['Cant'];
 
         //Contar si hay articulos con seriales
-        $SQL_Seriales = Seleccionar("uvw_tbl_EntregaVentaDetalleCarrito", "Count(ID_EntregaVentaDetalleCarrito) AS Cant", "Usuario='" . $_GET['usr'] . "' and CardCode='" . $_GET['cardcode'] . "' and ManSerNum='Y'");
+        $SQL_Seriales = Seleccionar("uvw_tbl_EntregaVentaDetalleCarrito_Borrador", "Count(ID_EntregaVentaDetalleCarrito) AS Cant", "Usuario='" . $_GET['usr'] . "' and CardCode='" . $_GET['cardcode'] . "' and ManSerNum='Y'");
         $row_Seriales = sqlsrv_fetch_array($SQL_Seriales);
         $Seriales = $row_Seriales['Cant'];
 
@@ -60,15 +60,15 @@ if (isset($_GET['id']) && ($_GET['id'] != "")) {
         $Id = base64_decode($_GET['id']);
         $Evento = base64_decode($_GET['evento']);
 
-        $SQL = Seleccionar("uvw_tbl_EntregaVentaDetalle", "*", "ID_EntregaVenta='" . base64_decode($_GET['id']) . "' and IdEvento='" . base64_decode($_GET['evento']) . "' and Metodo <> 3");
+        $SQL = Seleccionar("uvw_tbl_EntregaVentaDetalle_Borrador", "*", "ID_EntregaVenta='" . base64_decode($_GET['id']) . "' and IdEvento='" . base64_decode($_GET['evento']) . "' and Metodo <> 3");
 
         //Contar si hay articulos con lote
-        $SQL_Lotes = Seleccionar("uvw_tbl_EntregaVentaDetalle", "Count(ID_EntregaVenta) AS Cant", "ID_EntregaVenta='" . base64_decode($_GET['id']) . "' and IdEvento='" . base64_decode($_GET['evento']) . "' and Metodo <> 3 and ManBtchNum='Y'");
+        $SQL_Lotes = Seleccionar("uvw_tbl_EntregaVentaDetalle_Borrador", "Count(ID_EntregaVenta) AS Cant", "ID_EntregaVenta='" . base64_decode($_GET['id']) . "' and IdEvento='" . base64_decode($_GET['evento']) . "' and Metodo <> 3 and ManBtchNum='Y'");
         $row_Lotes = sqlsrv_fetch_array($SQL_Lotes);
         $Lotes = $row_Lotes['Cant'];
 
         //Contar si hay articulos con seriales
-        $SQL_Seriales = Seleccionar("uvw_tbl_EntregaVentaDetalle", "Count(ID_EntregaVenta) AS Cant", "ID_EntregaVenta='" . base64_decode($_GET['id']) . "' and IdEvento='" . base64_decode($_GET['evento']) . "' and Metodo <> 3 and ManSerNum='Y'");
+        $SQL_Seriales = Seleccionar("uvw_tbl_EntregaVentaDetalle_Borrador", "Count(ID_EntregaVenta) AS Cant", "ID_EntregaVenta='" . base64_decode($_GET['id']) . "' and IdEvento='" . base64_decode($_GET['evento']) . "' and Metodo <> 3 and ManSerNum='Y'");
         $row_Seriales = sqlsrv_fetch_array($SQL_Seriales);
         $Seriales = $row_Seriales['Cant'];
 
@@ -345,9 +345,9 @@ function ActualizarDatos(name, id, line, round=0) { // Actualizar datos asincron
 	$.ajax({
 		type: "GET",
 		<?php if ($type == 1) {?>
-		url: "registro.php?P=36&doctype=3&type=1&name="+name+"&value="+Base64.encode(valor)+"&line="+line+"&cardcode=<?php echo $CardCode; ?>&whscode=<?php echo $Almacen; ?>&actodos=0",
+		url: "registro.php?P=36&borrador=1&doctype=3&type=1&name="+name+"&value="+Base64.encode(valor)+"&line="+line+"&cardcode=<?php echo $CardCode; ?>&whscode=<?php echo $Almacen; ?>&actodos=0",
 		<?php } else {?>
-		url: "registro.php?P=36&doctype=3&type=2&name="+name+"&value="+Base64.encode(valor)+"&line="+line+"&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>&actodos=0",
+		url: "registro.php?P=36&borrador=1&doctype=3&type=2&name="+name+"&value="+Base64.encode(valor)+"&line="+line+"&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>&actodos=0",
 		<?php }?>
 		success: function(response){
 			if(response!="Error"){
@@ -403,12 +403,12 @@ function BorrarLinea(){
 		$.ajax({
 			type: "GET",
 			<?php if ($type == 1) {?>
-			url: "includes/procedimientos.php?type=8&edit=<?php echo $type; ?>&linenum="+json+"&cardcode=<?php echo $CardCode; ?>",
+			url: "includes/procedimientos.php?type=8&borrador=1&edit=<?php echo $type; ?>&linenum="+json+"&cardcode=<?php echo $CardCode; ?>",
 			<?php } else {?>
-			url: "includes/procedimientos.php?type=8&edit=<?php echo $type; ?>&linenum="+json+"&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
+			url: "includes/procedimientos.php?type=8&borrador=1&edit=<?php echo $type; ?>&linenum="+json+"&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
 			<?php }?>
 			success: function(response){
-				window.location.href="detalle_entrega_venta.php?<?php echo $_SERVER['QUERY_STRING']; ?>";
+				window.location.href="detalle_entrega_venta_borrador.php?<?php echo $_SERVER['QUERY_STRING']; ?>";
 				console.log(response);
 			},
 			error: function(error){
@@ -424,12 +424,12 @@ function DuplicarLinea(){
 		$.ajax({
 			type: "GET",
 			<?php if ($type == 1) {?>
-			url: "includes/procedimientos.php?type=55&edit=<?php echo $type; ?>&linenum="+json+"&cardcode=<?php echo $CardCode; ?>",
+			url: "includes/procedimientos.php?type=55&borrador=1&edit=<?php echo $type; ?>&linenum="+json+"&cardcode=<?php echo $CardCode; ?>",
 			<?php } else {?>
-			url: "includes/procedimientos.php?type=55&edit=<?php echo $type; ?>&linenum="+json+"&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
+			url: "includes/procedimientos.php?type=55&borrador=1&edit=<?php echo $type; ?>&linenum="+json+"&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
 			<?php }?>
 			success: function(response){
-				window.location.href="detalle_entrega_venta.php?<?php echo $_SERVER['QUERY_STRING']; ?>";
+				window.location.href="detalle_entrega_venta_borrador.php?<?php echo $_SERVER['QUERY_STRING']; ?>";
 			},
 			error: function(error) {
 				console.log(error.responseText);
@@ -868,12 +868,12 @@ function CalcularTotal(line, totalizar=true) {
 					$.ajax({
 						type: "GET",
 						<?php if ($type == 1) {?>
-						url: "registro.php?P=35&doctype=5&item="+IdArticulo+"&whscode="+CodAlmacen+"&cardcode=<?php echo $CardCode; ?>",
+						url: "registro.php?P=35&borrador=1&doctype=5&item="+IdArticulo+"&whscode="+CodAlmacen+"&cardcode=<?php echo $CardCode; ?>",
 						<?php } else {?>
-						url: "registro.php?P=35&doctype=6&item="+IdArticulo+"&whscode="+CodAlmacen+"&cardcode=0&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
+						url: "registro.php?P=35&borrador=1&doctype=6&item="+IdArticulo+"&whscode="+CodAlmacen+"&cardcode=0&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
 						<?php }?>
 						success: function(response){
-							window.location.href="detalle_entrega_venta.php?<?php echo $_SERVER['QUERY_STRING']; ?>";
+							window.location.href="detalle_entrega_venta_borrador.php?<?php echo $_SERVER['QUERY_STRING']; ?>";
 						}
 					});
 				}

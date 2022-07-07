@@ -21,7 +21,7 @@ if (isset($_GET['id']) && ($_GET['id'] != "")) {
     }
     if ($type == 1) { //Creando Orden de Venta
         $where = "Usuario='" . $_GET['usr'] . "' and CardCode='" . $_GET['cardcode'] . "'";
-        $SQL = Seleccionar("uvw_tbl_OrdenVentaDetalleCarrito", "*", $where);
+        $SQL = Seleccionar("uvw_tbl_OrdenVentaDetalleCarrito_Borrador", "*", $where);
         // echo $where;
 
         if ($SQL) {
@@ -42,7 +42,7 @@ if (isset($_GET['id']) && ($_GET['id'] != "")) {
         }
 
         $where = base64_decode($_GET['id']) . "' and IdEvento='" . base64_decode($_GET['evento']) . "' and Metodo <> 3";
-        $SQL = Seleccionar("uvw_tbl_OrdenVentaDetalle", "*", "ID_OrdenVenta='" . $where);
+        $SQL = Seleccionar("uvw_tbl_OrdenVentaDetalle_Borrador", "*", "ID_OrdenVenta='" . $where);
 
         // Editando Orden de venta
         // echo $where;
@@ -287,9 +287,9 @@ function ActualizarDatos(name, id, line, round=0) { // Actualizar datos asincron
 	$.ajax({
 		type: "GET",
 		<?php if ($type == 1) {?>
-		url: "registro.php?P=36&doctype=1&type=1&name="+name+"&value="+Base64.encode(valor)+"&line="+line+"&cardcode=<?php echo $CardCode; ?>&whscode=<?php echo $Almacen; ?>&actodos=0",
+		url: "registro.php?P=36&borrador=1&doctype=1&type=1&name="+name+"&value="+Base64.encode(valor)+"&line="+line+"&cardcode=<?php echo $CardCode; ?>&whscode=<?php echo $Almacen; ?>&actodos=0",
 		<?php } else {?>
-		url: "registro.php?P=36&doctype=1&type=2&name="+name+"&value="+Base64.encode(valor)+"&line="+line+"&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>&actodos=0",
+		url: "registro.php?P=36&borrador=1&doctype=1&type=2&name="+name+"&value="+Base64.encode(valor)+"&line="+line+"&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>&actodos=0",
 		<?php }?>
 		success: function(response){
 			if(response!="Error"){
@@ -359,12 +359,12 @@ function BorrarLinea(){
 		$.ajax({
 			type: "GET",
 			<?php if ($type == 1) {?>
-			url: "includes/procedimientos.php?type=4&edit=<?php echo $type; ?>&linenum="+json+"&cardcode=<?php echo $CardCode; ?>",
+			url: "includes/procedimientos.php?type=4&borrador=1&edit=<?php echo $type; ?>&linenum="+json+"&cardcode=<?php echo $CardCode; ?>",
 			<?php } else {?>
-			url: "includes/procedimientos.php?type=4&edit=<?php echo $type; ?>&linenum="+json+"&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
+			url: "includes/procedimientos.php?type=4&borrador=1&edit=<?php echo $type; ?>&linenum="+json+"&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
 			<?php }?>
 			success: function(response){
-				window.location.href="detalle_orden_venta.php?<?php echo $_SERVER['QUERY_STRING']; ?>";
+				window.location.href="detalle_orden_venta_borrador.php?<?php echo $_SERVER['QUERY_STRING']; ?>";
 				console.log(response);
 			},
 			error: function(error){
@@ -380,12 +380,12 @@ function DuplicarLinea(){
 		$.ajax({
 			type: "GET",
 			<?php if ($type == 1) {?>
-			url: "includes/procedimientos.php?type=54&edit=<?php echo $type; ?>&linenum="+json+"&cardcode=<?php echo $CardCode; ?>",
+			url: "includes/procedimientos.php?type=54&borrador=1&edit=<?php echo $type; ?>&linenum="+json+"&cardcode=<?php echo $CardCode; ?>",
 			<?php } else {?>
-			url: "includes/procedimientos.php?type=54&edit=<?php echo $type; ?>&linenum="+json+"&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
+			url: "includes/procedimientos.php?type=54&borrador=1&edit=<?php echo $type; ?>&linenum="+json+"&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
 			<?php }?>
 			success: function(response){
-				window.location.href="detalle_orden_venta.php?<?php echo $_SERVER['QUERY_STRING']; ?>";
+				window.location.href="detalle_orden_venta_borrador.php?<?php echo $_SERVER['QUERY_STRING']; ?>";
 			},
 			error: function(error) {
 				console.log(error.responseText);
@@ -399,9 +399,9 @@ function BorrarLineaPrincipal(){
 	$.ajax({
 		type: "GET",
 		<?php if ($type == 1) {?>
-		url: "includes/procedimientos.php?type=4&edit=<?php echo $type; ?>&linenum=0&cardcode=<?php echo $CardCode; ?>",
+		url: "includes/procedimientos.php?type=4&borrador=1&edit=<?php echo $type; ?>&linenum=0&cardcode=<?php echo $CardCode; ?>",
 		<?php } else {?>
-		url: "includes/procedimientos.php?type=4&edit=<?php echo $type; ?>&linenum=0&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
+		url: "includes/procedimientos.php?type=4&borrador=1&edit=<?php echo $type; ?>&linenum=0&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
 		<?php }?>
 		success: function(response){
 			console.log(response);
@@ -855,12 +855,12 @@ $(document).ready(function(){
 			$.ajax({
 				type: "GET",
 				<?php if ($type == 1) {?>
-				url: "registro.php?P=35&doctype=1&item="+IdArticulo+"&whscode="+CodAlmacen+"&cardcode=<?php echo $CardCode; ?>",
+				url: "registro.php?P=35&borrador=1&doctype=1&item="+IdArticulo+"&whscode="+CodAlmacen+"&cardcode=<?php echo $CardCode; ?>",
 				<?php } else {?>
-				url: "registro.php?P=35&doctype=2&item="+IdArticulo+"&whscode="+CodAlmacen+"&cardcode=0&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
+				url: "registro.php?P=35&borrador=1&doctype=2&item="+IdArticulo+"&whscode="+CodAlmacen+"&cardcode=0&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
 				<?php }?>
 				success: function(response){
-					window.location.href="detalle_orden_venta.php?<?php echo $_SERVER['QUERY_STRING']; ?>";
+					window.location.href="detalle_orden_venta_borrador.php?<?php echo $_SERVER['QUERY_STRING']; ?>";
 				}
 			});
 		}

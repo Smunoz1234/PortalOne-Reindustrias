@@ -261,6 +261,7 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_EVenUpd"))) {
                     <thead>
                     <tr>
                         <th>Número</th>
+						<th>ID</th>
 						<th>Serie</th>
 						<th>Fecha orden</th>
 						<th>Socio de negocio</th>
@@ -281,6 +282,7 @@ if ($sw == 1) {
     while ($row = sqlsrv_fetch_array($SQL)) {?>
 						 <tr class="gradeX">
 							<td><?php echo $row['DocNum']; ?></td>
+							<td><?php echo $row['ID_EntregaVenta']; ?></td>
 							<td><?php echo $row['DeSeries']; ?></td>
 							<td><?php echo $row['DocDate']; ?></td>
 							<td><?php echo $row['NombreCliente']; ?></td>
@@ -292,7 +294,7 @@ if ($sw == 1) {
 							<td><?php if ($row['DocDestinoDocEntry'] != "") {?><a href="<?php if ($row['DocDestinoObjeto'] == 16) {echo "devolucion_venta";} else {echo "factura_venta";}?>.php?id=<?php echo base64_encode($row['DocDestinoDocEntry']); ?>&id_portal=<?php echo base64_encode($row['DocDestinoIdPortal']); ?>&tl=1" target="_blank"><?php echo $row['DocDestinoDocNum']; ?></a><?php } else {echo "--";}?></td>
 							<td><?php echo $row['UsuarioCreacion']; ?></td>
 							<td><span <?php if ($row['Cod_Estado'] == 'O') {echo "class='label label-info'";} else {echo "class='label label-danger'";}?>><?php echo $row['NombreEstado']; ?></span></td>
-							<td><a href="entrega_venta.php?id=<?php echo base64_encode($row['ID_EntregaVenta']); ?>&id_portal=<?php echo base64_encode($row['IdDocPortal']); ?>&tl=1&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('consultar_entrega_venta.php'); ?>" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i> Abrir</a> <a href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row['ID_EntregaVenta']); ?>&ObType=<?php echo base64_encode('15'); ?>&IdFrm=<?php echo base64_encode($row['IdSeries']); ?>" target="_blank" class="btn btn-warning btn-xs"><i class="fa fa-download"></i> Descargar</a></td>
+							<td><a href="entrega_venta_borrador.php?id=<?php echo base64_encode($row['ID_EntregaVenta']); ?>&id_portal=<?php echo base64_encode($row['IdDocPortal']); ?>&tl=1&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('consultar_entrega_venta.php'); ?>" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i> Abrir</a> <a href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row['ID_EntregaVenta']); ?>&ObType=<?php echo base64_encode('15'); ?>&IdFrm=<?php echo base64_encode($row['IdSeries']); ?>" target="_blank" class="btn btn-warning btn-xs"><i class="fa fa-download"></i> Descargar</a></td>
 						</tr>
 					<?php }
 }?>
