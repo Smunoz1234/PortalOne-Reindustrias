@@ -256,6 +256,8 @@ $ids_recursos = array();
 					// SMM, 10/03/2022
 					$(info.el).tooltip({
 						title: `${info.event.title} "${info.event.extendedProps.comentario}"` // SMM, 03/05/2022
+						, animation: false
+						, placement: "right"
 					});
 
 					if(info.view.type!='dayGridMonth' && info.view.type!='listWeek'){

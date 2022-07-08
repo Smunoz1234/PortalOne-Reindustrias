@@ -54,9 +54,11 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar gestion
             "'" . $chkLiqIntereses . "'",
             "'" . $chkRegAcuerdo . "'",
             "'" . base64_decode($_POST['cllName']) . "'",
-            "1",
+            "'" . $_POST['SucursalCliente'] . "'", // SMM 08/07/2022
+            "'" . $_POST['NumeroSerie'] . "'", // TE, SMM 08/07/2022
+            "1", // Metodo
             "'" . $_SESSION['CodUser'] . "'",
-            "1",
+            "1", // Type
         );
         $SQL_InsGestion = EjecutarSP('sp_tbl_Cartera_Gestion', $ParametrosInsGestion, 43);
         if ($SQL_InsGestion) {
@@ -1135,6 +1137,8 @@ while ($row_CausaNoPago = sqlsrv_fetch_array($SQL_CausaNoPago)) {?>
 										<th>Acuerdo de pago</th>
 										<th>Fecha registro</th>
 										<th>Usuario</th>
+										<th>Sucursal</th>
+										<th>Tarjeta de Equipo</th>
 									</tr>
 									</thead>
 									<tbody>
@@ -1151,6 +1155,8 @@ while ($row_CausaNoPago = sqlsrv_fetch_array($SQL_CausaNoPago)) {?>
 											<td><?php if ($row_HistGestion['AcuerdoPago'] == 1) {echo "SI";} else {echo "NO";}?></td>
 											<td><?php echo $row_HistGestion['FechaRegistro']->format('Y-m-d H:i'); ?></td>
 											<td><?php echo $row_HistGestion['Usuario']; ?></td>
+											<td><?php echo $row_HistGestion['SucursalCliente']; ?></td>
+											<td><?php echo $row_HistGestion['NumeroSerie']; ?></td>
 										</tr>
 									<?php $i++;}?>
 									</tbody>
