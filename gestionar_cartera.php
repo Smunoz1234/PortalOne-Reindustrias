@@ -319,6 +319,11 @@ if ((isset($_POST['Cliente']) && ($_POST['Cliente']) != "") || (isset($_GET['Clt
     //Historico de liquidaciones
     $SQL_LiqIntereses = Seleccionar('uvw_tbl_Cartera_LiquidacionIntereses', '*', "CardCode='" . $Cliente . "'", 'FechaRegistro', 'Desc');
 
+    // Sucursales, SMM 07/07/2022
+    $SQL_SucursalCliente = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', '*', "CodigoCliente='$Cliente' AND TipoDireccion='S'", 'TipoDireccion, NombreSucursal');
+
+    //Numero de series -> Tarjeta de equipo
+    $SQL_NumeroSerie = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', '*', "CardCode='$Cliente'", 'SerialFabricante');
 }
 
 ?>
@@ -537,6 +542,26 @@ function ConsultarDatosCliente(){
 		self.name='opener';
 	remote=open('socios_negocios.php?id='+Base64.encode(Cliente)+'&ext=1&tl=1','remote','location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
 	remote.focus();
+	}
+}
+
+// SMM 07/07/2022
+function ConsultarEquipo(){
+	var numSerie=document.getElementById('NumeroSerie');
+
+	if(numSerie.value!=""){
+		self.name='opener';
+
+		let parametros = "";
+		let IdTarjetaEquipo = $("#NumeroSerie").find(':selected').data('id');
+		if(((typeof IdTarjetaEquipo) !== 'undefined') && (IdTarjetaEquipo != null && IdTarjetaEquipo != "")) {
+			parametros = `id='${Base64.encode(IdTarjetaEquipo + "")}'&tl=1`;
+		} else {
+			parametros = `id='${Base64.encode(numSerie.value)}'&ext=1&tl=1`;
+		}
+
+		remote=open('tarjeta_equipo.php?'+parametros,'remote','location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
+		remote.focus();
 	}
 }
 
@@ -762,11 +787,12 @@ while ($row_FacturasPendientes = sqlsrv_fetch_array($SQL_FacturasPendientes)) {?
 									<div class="form-group">
 										<label class="col-lg-2 control-label">Sucursal <span class="text-danger">*</span></label>
 										<div class="col-lg-4">
-											<select name="SucursalCliente" class="form-control select2" id="SucursalCliente" required="required" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
+											<select name="SucursalCliente" class="form-control select2" id="SucursalCliente" required>
 												<option value="" disabled selected>Seleccione...</option>
 												<?php while ($row_SucursalCliente = sqlsrv_fetch_array($SQL_SucursalCliente)) {?>
-													<option value="<?php echo $row_SucursalCliente['NombreSucursal']; ?>" <?php if (isset($row['NombreSucursal']) && (strcmp($row_SucursalCliente['NombreSucursal'], $row['NombreSucursal']) == 0)) {echo "selected=\"selected\"";} elseif (isset($row['NombreSucursal']) && (strcmp($row_SucursalCliente['NumeroLinea'], $row['IdNombreSucursal']) == 0)) {echo "selected=\"selected\"";
-    $sw_valDir = 1;}?>><?php echo $row_SucursalCliente['NombreSucursal']; ?></option>
+													<option value="<?php echo $row_SucursalCliente['NombreSucursal']; ?>">
+														<?php echo $row_SucursalCliente['NombreSucursal']; ?>
+													</option>
 												<?php }?>
 											</select>
 										</div>
@@ -774,11 +800,13 @@ while ($row_FacturasPendientes = sqlsrv_fetch_array($SQL_FacturasPendientes)) {?
 									<div class="form-group">
 										<label class="col-lg-2 control-label"><i onClick="ConsultarEquipo();" title="Consultar tarjeta de equipo" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Tarjeta de equipo</label>
 										<div class="col-lg-4">
-											<select name="NumeroSerie" class="form-control select2" id="NumeroSerie" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
-													<option value="">Seleccione...</option>
-												<?php if (($type_llmd == 1) || ($sw_error == 1)) {while ($row_NumeroSerie = sqlsrv_fetch_array($SQL_NumeroSerie)) {?>
-													<option value="<?php echo $row_NumeroSerie['SerialInterno']; ?>" data-id="<?php echo $row_NumeroSerie['IdTarjetaEquipo'] ?? ""; ?>" <?php if ((isset($row_NumeroSerie['SerialInterno'])) && (strcmp($row_NumeroSerie['SerialInterno'], $row['IdNumeroSerie']) == 0)) {echo "selected=\"selected\"";} elseif ((isset($_GET['Serial'])) && (strcmp(base64_decode($_GET['Serial']), $row_NumeroSerie['SerialInterno']) == 0)) {echo "selected=\"selected\"";}?>><?php echo "SN Fabricante: " . $row_NumeroSerie['SerialFabricante'] . " - Núm. Serie: " . $row_NumeroSerie['SerialInterno']; ?></option>
-												<?php }}?>
+											<select name="NumeroSerie" class="form-control select2" id="NumeroSerie">
+												<option value="" disabled selected>Seleccione...</option>
+												<?php while ($row_NumeroSerie = sqlsrv_fetch_array($SQL_NumeroSerie)) {?>
+													<option value="<?php echo $row_NumeroSerie['SerialInterno']; ?>" data-id="<?php echo $row_NumeroSerie['IdTarjetaEquipo'] ?? ""; ?>">
+														<?php echo "SN Fabricante: " . $row_NumeroSerie['SerialFabricante'] . " - Núm. Serie: " . $row_NumeroSerie['SerialInterno']; ?>
+													</option>
+												<?php }?>
 											</select>
 										</div>
 									</div>
@@ -787,10 +815,11 @@ while ($row_FacturasPendientes = sqlsrv_fetch_array($SQL_FacturasPendientes)) {?
 										<div class="col-lg-3">
 											<select name="TipoGestion" class="form-control select2" id="TipoGestion" required>
 													<option value="">Seleccione...</option>
-												<?php
-while ($row_TipoGestion = sqlsrv_fetch_array($SQL_TipoGestion)) {?>
-													<option value="<?php echo $row_TipoGestion['ID_TipoGestion']; ?>"><?php echo $row_TipoGestion['TipoGestion']; ?></option>
-											  <?php }?>
+													<?php while ($row_TipoGestion = sqlsrv_fetch_array($SQL_TipoGestion)) {?>
+														<option value="<?php echo $row_TipoGestion['ID_TipoGestion']; ?>">
+															<?php echo $row_TipoGestion['TipoGestion']; ?>
+														</option>
+													<?php }?>
 											</select>
 											<input type="hidden" name="TipoDestino" id="TipoDestino" value="" />
 										</div>
