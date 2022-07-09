@@ -1,6 +1,6 @@
 <?php
 require_once "includes/conexion.php";
-PermitirAcceso(406);
+PermitirAcceso(423);
 $sw = 0;
 //$Proyecto="";
 $Almacen = "";

@@ -1,5 +1,5 @@
 <?php require_once "includes/conexion.php";
-PermitirAcceso(406);
+PermitirAcceso(423);
 
 $dt_LS = 0; //sw para saber si vienen datos de la llamada de servicio. 0 no vienen. 1 si vienen.
 $dt_OV = 0; //sw para saber si vienen datos de una Orden de venta.
@@ -452,7 +452,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 <head>
 <?php include_once "includes/cabecera.php";?>
 <!-- InstanceBeginEditable name="doctitle" -->
-<title>Factura de venta | <?php echo NOMBRE_PORTAL; ?></title>
+<title>Factura de venta borrador | <?php echo NOMBRE_PORTAL; ?></title>
 <?php
 if (isset($_GET['a']) && $_GET['a'] == base64_encode("OK_FactVentAdd")) {
     echo "<script>
@@ -1002,7 +1002,7 @@ function MostrarRet(){
         <!-- InstanceBeginEditable name="Contenido" -->
         <div class="row wrapper border-bottom white-bg page-heading">
                 <div class="col-sm-8">
-                    <h2>Factura de venta</h2>
+                    <h2>Factura de venta borrador</h2>
                     <ol class="breadcrumb">
                         <li>
                             <a href="index1.php">Inicio</a>
@@ -1011,7 +1011,7 @@ function MostrarRet(){
                             <a href="#">Ventas - Clientes</a>
                         </li>
                         <li class="active">
-                            <strong>Factura de venta</strong>
+                            <strong>Factura de venta borrador</strong>
                         </li>
                     </ol>
                 </div>
