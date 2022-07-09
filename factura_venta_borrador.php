@@ -103,7 +103,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Factura de venta
             "'" . $_SESSION['CodUser'] . "'",
             "$Type",
         );
-        $SQL_CabeceraFacturaVenta = EjecutarSP('sp_tbl_FacturaVenta', $ParametrosCabFacturaVenta, $_POST['P']);
+        $SQL_CabeceraFacturaVenta = EjecutarSP('sp_tbl_FacturaVenta_Borrador', $ParametrosCabFacturaVenta, $_POST['P']);
         if ($SQL_CabeceraFacturaVenta) {
             if ($Type == 1) {
                 $row_CabeceraFacturaVenta = sqlsrv_fetch_array($SQL_CabeceraFacturaVenta);
@@ -335,15 +335,16 @@ if ($edit == 1 && $sw_error == 0) {
         "'" . $IdPortal . "'",
         "'" . $_SESSION['CodUser'] . "'",
     );
-    $LimpiarFactura = EjecutarSP('sp_EliminarDatosFacturaVenta', $ParametrosLimpiar);
+    $LimpiarFactura = EjecutarSP('sp_EliminarDatosFacturaVenta_Borrador', $ParametrosLimpiar);
 
     $SQL_IdEvento = sqlsrv_fetch_array($LimpiarFactura);
     $IdEvento = $SQL_IdEvento[0];
 
     //Factura de venta
-    $Cons = "Select * From uvw_tbl_FacturaVenta Where DocEntry='" . $IdFactura . "' AND IdEvento='" . $IdEvento . "'";
+    $Cons = "Select * From uvw_tbl_FacturaVenta_Borrador Where DocEntry='" . $IdFactura . "' AND IdEvento='" . $IdEvento . "'";
     $SQL = sqlsrv_query($conexion, $Cons);
     $row = sqlsrv_fetch_array($SQL);
+	// echo $Cons;
 
     //Clientes
     $SQL_Cliente = Seleccionar('uvw_Sap_tbl_Clientes', '*', "CodigoCliente='" . $row['CardCode'] . "'", 'NombreCliente');
@@ -372,7 +373,7 @@ if ($edit == 1 && $sw_error == 0) {
 if ($sw_error == 1) {
 
     //Factura de venta
-    $Cons = "Select * From uvw_tbl_FacturaVenta Where ID_FacturaVenta='" . $IdFacturaVenta . "' AND IdEvento='" . $IdEvento . "'";
+    $Cons = "Select * From uvw_tbl_FacturaVenta_Borrador Where ID_FacturaVenta='" . $IdFacturaVenta . "' AND IdEvento='" . $IdEvento . "'";
     $SQL = sqlsrv_query($conexion, $Cons);
     $row = sqlsrv_fetch_array($SQL);
 
@@ -653,15 +654,15 @@ function MostrarRet(){
 
 			<?php if ($edit == 0) {?>
 				if(carcode!=""){
-					frame.src="detalle_factura_venta.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+carcode;
+					frame.src="detalle_factura_venta_borrador.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+carcode;
 				}else{
-					frame.src="detalle_factura_venta.php";
+					frame.src="detalle_factura_venta_borrador.php";
 				}
 			<?php } else {?>
 				if(carcode!=""){
-					frame.src="detalle_factura_venta.php?id=<?php echo base64_encode($row['ID_FacturaVenta']); ?>&evento=<?php echo base64_encode($row['IdEvento']); ?>&docentry=<?php echo base64_encode($row['DocEntry']); ?>&type=2";
+					frame.src="detalle_factura_venta_borrador.php?id=<?php echo base64_encode($row['ID_FacturaVenta']); ?>&evento=<?php echo base64_encode($row['IdEvento']); ?>&docentry=<?php echo base64_encode($row['DocEntry']); ?>&type=2";
 				}else{
-					frame.src="detalle_factura_venta.php";
+					frame.src="detalle_factura_venta_borrador.php";
 				}
 			<?php }?>
 
@@ -747,7 +748,7 @@ function MostrarRet(){
 							type: "GET",
 							url: "registro.php?P=36&doctype=9&type=1&name=WhsCode&value="+Base64.encode(document.getElementById('Almacen').value)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
 							success: function(response){
-								frame.src="detalle_factura_venta.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
+								frame.src="detalle_factura_venta_borrador.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
 								$('.ibox-content').toggleClass('sk-loading',false);
 							}
 						});
@@ -756,7 +757,7 @@ function MostrarRet(){
 							type: "GET",
 							url: "registro.php?P=36&doctype=9&type=2&name=WhsCode&value="+Base64.encode(document.getElementById('Almacen').value)+"&line=0&id=<?php echo $row['ID_FacturaVenta']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
 							success: function(response){
-								frame.src="detalle_factura_venta.php?id=<?php echo base64_encode($row['ID_FacturaVenta']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
+								frame.src="detalle_factura_venta_borrador.php?id=<?php echo base64_encode($row['ID_FacturaVenta']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
 								$('.ibox-content').toggleClass('sk-loading',false);
 							}
 						});
@@ -785,7 +786,7 @@ function MostrarRet(){
 							type: "GET",
 							url: "registro.php?P=36&doctype=9&type=1&name=OcrCode&value="+Base64.encode(document.getElementById('Dim1').value)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
 							success: function(response){
-								frame.src="detalle_factura_venta.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
+								frame.src="detalle_factura_venta_borrador.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
 								$('.ibox-content').toggleClass('sk-loading',false);
 							}
 						});
@@ -794,7 +795,7 @@ function MostrarRet(){
 							type: "GET",
 							url: "registro.php?P=36&doctype=9&type=2&name=OcrCode&value="+Base64.encode(document.getElementById('Dim1').value)+"&line=0&id=<?php echo $row['ID_FacturaVenta']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
 							success: function(response){
-								frame.src="detalle_factura_venta.php?id=<?php echo base64_encode($row['ID_FacturaVenta']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
+								frame.src="detalle_factura_venta_borrador.php?id=<?php echo base64_encode($row['ID_FacturaVenta']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
 								$('.ibox-content').toggleClass('sk-loading',false);
 							}
 						});
@@ -837,7 +838,7 @@ function MostrarRet(){
 							type: "GET",
 							url: "registro.php?P=36&doctype=9&type=1&name=OcrCode2&value="+Base64.encode(document.getElementById('Dim2').value)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
 							success: function(response){
-								frame.src="detalle_factura_venta.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
+								frame.src="detalle_factura_venta_borrador.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
 								$('.ibox-content').toggleClass('sk-loading',false);
 							}
 						});
@@ -846,7 +847,7 @@ function MostrarRet(){
 							type: "GET",
 							url: "registro.php?P=36&doctype=9&type=2&name=OcrCode2&value="+Base64.encode(document.getElementById('Dim2').value)+"&line=0&id=<?php echo $row['ID_FacturaVenta']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
 							success: function(response){
-								frame.src="detalle_factura_venta.php?id=<?php echo base64_encode($row['ID_FacturaVenta']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
+								frame.src="detalle_factura_venta_borrador.php?id=<?php echo base64_encode($row['ID_FacturaVenta']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
 								$('.ibox-content').toggleClass('sk-loading',false);
 							}
 						});
@@ -882,7 +883,7 @@ function MostrarRet(){
 							type: "GET",
 							url: "registro.php?P=36&doctype=9&type=1&name=OcrCode3&value="+Base64.encode(Dim3)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
 							success: function(response){
-								frame.src="detalle_factura_venta.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
+								frame.src="detalle_factura_venta_borrador.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
 								$('.ibox-content').toggleClass('sk-loading',false);
 							},
 							error: function(error) {
@@ -896,7 +897,7 @@ function MostrarRet(){
 							type: "GET",
 							url: "registro.php?P=36&doctype=9&type=2&name=OcrCode3&value="+Base64.encode(Dim3)+"&line=0&id=<?php echo $row['ID_FacturaVenta']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
 							success: function(response){
-								frame.src="detalle_factura_venta.php?id=<?php echo base64_encode($row['ID_FacturaVenta']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
+								frame.src="detalle_factura_venta_borrador.php?id=<?php echo base64_encode($row['ID_FacturaVenta']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
 								$('.ibox-content').toggleClass('sk-loading',false);
 							},
 							error: function(error) {
@@ -929,7 +930,7 @@ function MostrarRet(){
 							type: "GET", // "EmpVentas" es el nombre que tiene el registro en el detalle.
 							url: "registro.php?P=36&doctype=9&type=1&name=EmpVentas&value="+Base64.encode(document.getElementById('EmpleadoVentas').value)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
 							success: function(response){
-								frame.src="detalle_factura_venta.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
+								frame.src="detalle_factura_venta_borrador.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
 								$('.ibox-content').toggleClass('sk-loading',false);
 							}
 						});
@@ -938,7 +939,7 @@ function MostrarRet(){
 							type: "GET", // "EmpVentas" es el nombre que tiene el registro en el detalle.
 							url: "registro.php?P=36&doctype=9&type=2&name=EmpVentas&value="+Base64.encode(document.getElementById('EmpleadoVentas').value)+"&line=0&id=<?php echo $row['ID_FacturaVenta']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
 							success: function(response){
-								frame.src="detalle_factura_venta.php?id=<?php echo base64_encode($row['ID_FacturaVenta']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
+								frame.src="detalle_factura_venta_borrador.php?id=<?php echo base64_encode($row['ID_FacturaVenta']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
 								$('.ibox-content').toggleClass('sk-loading',false);
 							}
 						});
@@ -967,7 +968,7 @@ function MostrarRet(){
 							type: "GET",
 							url: "registro.php?P=36&doctype=9&type=1&name=PrjCode&value="+Base64.encode(document.getElementById('PrjCode').value)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
 							success: function(response){
-								frame.src="detalle_factura_venta.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
+								frame.src="detalle_factura_venta_borrador.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
 								$('.ibox-content').toggleClass('sk-loading',false);
 							}
 						});
@@ -976,7 +977,7 @@ function MostrarRet(){
 							type: "GET",
 							url: "registro.php?P=36&doctype=9&type=2&name=PrjCode&value="+Base64.encode(document.getElementById('PrjCode').value)+"&line=0&id=<?php echo $row['ID_FacturaVenta']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
 							success: function(response){
-								frame.src="detalle_factura_venta.php?id=<?php echo base64_encode($row['ID_FacturaVenta']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
+								frame.src="detalle_factura_venta_borrador.php?id=<?php echo base64_encode($row['ID_FacturaVenta']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
 								$('.ibox-content').toggleClass('sk-loading',false);
 							}
 						});
@@ -1042,7 +1043,7 @@ function MostrarRet(){
 								<a href="entrega_venta.php?id=<?php echo base64_encode($row['DocBaseDocEntry']); ?>&id_portal=<?php echo base64_encode($row['DocBaseIdPortal']); ?>&tl=1" target="_blank" class="btn btn-outline btn-primary pull-right"><i class="fa fa-mail-reply"></i> Ir a documento base</a>
 							<?php }?>
 							<?php if ($row['Cod_Estado'] == 'O') {?>
-								<button type="button" onClick="javascript:location.href='actividad.php?dt_DM=1&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&DM_type=<?php echo base64_encode('13'); ?>&DM=<?php echo base64_encode($row['DocEntry']); ?>&dt_LS=1&LS=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('factura_venta.php'); ?>'" class="alkin btn btn-outline btn-primary pull-right"><i class="fa fa-plus-circle"></i> Agregar actividad</button>
+								<button type="button" onClick="javascript:location.href='actividad.php?dt_DM=1&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&DM_type=<?php echo base64_encode('13'); ?>&DM=<?php echo base64_encode($row['DocEntry']); ?>&dt_LS=1&LS=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('factura_venta_borrador.php'); ?>'" class="alkin btn btn-outline btn-primary pull-right"><i class="fa fa-plus-circle"></i> Agregar actividad</button>
 						<?php }?>
 						</div>
 					</div>
@@ -1055,7 +1056,7 @@ function MostrarRet(){
 				 <?php include "includes/spinner.php";?>
           <div class="row">
            <div class="col-lg-12">
-              <form action="factura_venta.php" method="post" class="form-horizontal" enctype="multipart/form-data" id="CrearFacturaVenta">
+              <form action="factura_venta_borrador.php" method="post" class="form-horizontal" enctype="multipart/form-data" id="CrearFacturaVenta">
 				  <?php
 $_GET['obj'] = "13";
 include_once 'md_frm_campos_adicionales.php';
@@ -1324,11 +1325,11 @@ if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
 					<?php if ($edit == 1) {?>
 						<?php $ID_FacturaVenta = $row['ID_FacturaVenta'];?>
 						<?php $Evento = $row['IdEvento'];?>
-						<?php $consulta_detalle = "SELECT $filtro_consulta FROM uvw_tbl_FacturaVentaDetalle WHERE ID_FacturaVenta='$ID_FacturaVenta' AND IdEvento='$Evento' AND Metodo <> 3";?>
+						<?php $consulta_detalle = "SELECT $filtro_consulta FROM uvw_tbl_FacturaVentaDetalle_Borrador WHERE ID_FacturaVenta='$ID_FacturaVenta' AND IdEvento='$Evento' AND Metodo <> 3";?>
 					<?php } else {?>
 						<?php $Usuario = $_SESSION['CodUser'];?>
 						<?php $cookie_cardcode = 1;?>
-						<?php $consulta_detalle = "SELECT $filtro_consulta FROM uvw_tbl_FacturaVentaDetalleCarrito WHERE Usuario='$Usuario'";?>
+						<?php $consulta_detalle = "SELECT $filtro_consulta FROM uvw_tbl_FacturaVentaDetalleCarrito_Borrador WHERE Usuario='$Usuario'";?>
 					<?php }?>
 
 					<div class="col-lg-1 pull-right">
@@ -1347,7 +1348,7 @@ if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
 					</ul>
 					<div class="tab-content">
 						<div id="tab-1" class="tab-pane active">
-							<iframe id="DataGrid" name="DataGrid" style="border: 0;" width="100%" height="300" src="<?php if ($edit == 0 && $sw_error == 0) {echo "detalle_factura_venta.php";} elseif ($edit == 0 && $sw_error == 1) {echo "detalle_factura_venta.php?id=0&type=1&usr=" . $_SESSION['CodUser'] . "&cardcode=" . $row['CardCode'];} else {echo "detalle_factura_venta.php?id=" . base64_encode($row['ID_FacturaVenta']) . "&evento=" . base64_encode($row['IdEvento']) . "&docentry=" . base64_encode($row['DocEntry']) . "&type=2&status=" . base64_encode($row['Cod_Estado']);}?>"></iframe>
+							<iframe id="DataGrid" name="DataGrid" style="border: 0;" width="100%" height="300" src="<?php if ($edit == 0 && $sw_error == 0) {echo "detalle_factura_venta_borrador.php";} elseif ($edit == 0 && $sw_error == 1) {echo "detalle_factura_venta_borrador.php?id=0&type=1&usr=" . $_SESSION['CodUser'] . "&cardcode=" . $row['CardCode'];} else {echo "detalle_factura_venta_borrador.php?id=" . base64_encode($row['ID_FacturaVenta']) . "&evento=" . base64_encode($row['IdEvento']) . "&docentry=" . base64_encode($row['DocEntry']) . "&type=2&status=" . base64_encode($row['Cod_Estado']);}?>"></iframe>
 						</div>
 						<?php if ($edit == 1) {?>
 						<div id="tab-2" class="tab-pane">
@@ -1473,7 +1474,7 @@ if (isset($_GET['return'])) {
 } elseif (isset($_POST['return'])) {
     $return = base64_decode($_POST['return']);
 } else {
-    $return = "factura_venta.php?";
+    $return = "factura_venta_borrador.php?";
 }
 $return = QuitarParametrosURL($return, array("a"));
 ?>
@@ -1532,7 +1533,7 @@ $return = QuitarParametrosURL($return, array("a"));
 							type: "GET", // custom=1&
 							url: "registro.php?P=36&doctype=9&type=1&name=DiscPrcnt&value="+Base64.encode(DiscPrcnt)+"&line=0&cardcode="+CardCode+"&whscode=0&actodos=1",
 							success: function(response){
-								frame.src="detalle_factura_venta.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+CardCode;
+								frame.src="detalle_factura_venta_borrador.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+CardCode;
 							}
 						});
 					}
