@@ -1021,6 +1021,22 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 								</select>
 							</div>
 						</div>
+						<div class="form-group">
+							<div class="col-lg-4">
+								<label class="control-label">Fecha Agenda</label>
+								<div class="input-group date">
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input autocomplete="off" readonly name="CDU_FechaAgenda" id="CDU_FechaAgenda" type="text" class="form-control"
+									 placeholder="YYYY-MM-DD" value="<?php if (isset($row['CDU_FechaAgenda'])) {echo date_format($row['CDU_FechaAgenda'], 'Y-m-d');} //else {echo 'AAAA-mm-dd';}?>">
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="col-lg-4">
+									<label class="control-label">Sede Venta</label>
+									<input readonly='readonly' name="CDU_SedeVenta"  id="CDU_SedeVenta" autocomplete="off" maxlength="100"
+									type="text" class="form-control" value="<?php if (isset($row['CDU_SedeVenta'])) {echo $row['CDU_SedeVenta'];}?>">
+								</div>
+							</div>
+						</div>
 						<!-- Agregado, hasta aquí -->
 					</div>
 				</div>
@@ -1228,10 +1244,12 @@ while ($row_ContratoServicio = sqlsrv_fetch_array($SQL_ContratosServicio)) {?>
 												<th>Acuerdo de pago</th>
 												<th>Fecha registro</th>
 												<th>Usuario</th>
+												<th>Sucursal</th>
 											</tr>
 											</thead>
 											<tbody>
 											<?php while ($row_HistGestion = sqlsrv_fetch_array($SQL_HistGestion)) {?>
+												<?php if (false || (isset($row['SerialInterno']) && ($row_HistGestion['NumeroSerie'] == $row['SerialInterno']))) {?>
 												<tr class="gradeX">
 													<td><?php echo $row_HistGestion['TipoGestion']; ?></td>
 													<td><?php echo $row_HistGestion['Destino']; ?></td>
@@ -1242,7 +1260,9 @@ while ($row_ContratoServicio = sqlsrv_fetch_array($SQL_ContratosServicio)) {?>
 													<td><?php if ($row_HistGestion['AcuerdoPago'] == 1) {echo "SI";} else {echo "NO";}?></td>
 													<td><?php echo $row_HistGestion['FechaRegistro']->format('Y-m-d H:i'); ?></td>
 													<td><?php echo $row_HistGestion['Usuario']; ?></td>
+													<td><?php echo $row_HistGestion['SucursalCliente']; ?></td>
 												</tr>
+												<?php }?>
 											<?php }?>
 											</tbody>
 										</table>
