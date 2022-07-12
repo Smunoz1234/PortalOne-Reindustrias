@@ -1215,9 +1215,9 @@ function ConsultarEquipo(){
 		let parametros = "";
 		let IdTarjetaEquipo = $("#NumeroSerie").find(':selected').data('id');
 		if(((typeof IdTarjetaEquipo) !== 'undefined') && (IdTarjetaEquipo != null && IdTarjetaEquipo != "")) {
-			parametros = `id='${Base64.encode(IdTarjetaEquipo + "")}'&tl=1`;
+			parametros = `id='${Base64.encode(IdTarjetaEquipo + "")}'&ext=1&tl=1`;
 		} else {
-			parametros = `id='${Base64.encode(numSerie.value)}'&ext=1&tl=1`;
+			parametros = `id='${Base64.encode(numSerie.value)}'&ext=1&tl=1&te=1`;
 		}
 
 		remote=open('tarjeta_equipo.php?'+parametros,'remote','location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
@@ -2109,9 +2109,11 @@ $return = QuitarParametrosURL($return, array("a"));?>
 							</div>
 						<?php }?>
 						<?php if (($type_llmd == 1) && (PermitirFuncion(302) && ($row['IdEstadoLlamada'] == '-1'))) {?>
-							<div class="col-lg-2">
-								<button class="btn btn-success" type="submit" form="CrearLlamada" onClick="EnviarFrm('40');" id="Reabrir"><i class="fa fa-reply"></i> Reabrir</button>
-							</div>
+							<?php if (PermitirFuncion(322)) {?>
+								<div class="col-lg-2">
+									<button class="btn btn-success" type="submit" form="CrearLlamada" onClick="EnviarFrm('40');" id="Reabrir"><i class="fa fa-reply"></i> Reabrir</button>
+								</div>
+							<?php }?>
 						<?php }?>
 						<?php if ($type_llmd == 0) {?>
 							<div class="col-lg-2">
