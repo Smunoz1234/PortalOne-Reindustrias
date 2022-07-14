@@ -255,8 +255,8 @@ if ($sw == 1) {
 													<td><?php echo $row['ID_Cola']; ?></td>
 													<td><?php echo $row['FechaEntrada']->format('Y-m-d h:m:i'); ?></td>
 													<td><?php echo $row['DE_Cola']; ?></td>
-													<td><?php echo $row['TipoDocumento']; ?></td>
 													<td><?php echo $row['ID_Documento']; ?></td>
+													<td><?php echo $row['TipoDocumento']; ?></td>
 													<td><?php echo $row['MensajeDelProceso']; ?></td>
 													<td>
 		<?php echo "<span id='lblEstado" . $row['ID_Cola'] . "'";
