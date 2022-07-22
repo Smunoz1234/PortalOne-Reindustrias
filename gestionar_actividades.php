@@ -157,7 +157,7 @@ if($sw==1){
 //echo $Cons;
 
 if(isset($_GET['IDActividad'])&&$_GET['IDActividad']!=""){
-	$Where="ID_Actividad LIKE '%".$_GET['IDActividad']."%'";
+	$Where="ID_Actividad LIKE '%".trim($_GET['IDActividad'])."%'";
 	$SQL=Seleccionar('uvw_Sap_tbl_Actividades','*',$Where);
 }else{
 	
@@ -289,9 +289,9 @@ if(isset($_GET['a'])&&($_GET['a']==base64_encode("OK_OpenAct"))){
 							<label class="col-lg-1 control-label">Fechas</label>
 							<div class="col-lg-3">
 								<div class="input-daterange input-group" id="datepicker">
-									<input name="FechaInicial" type="text" class="input-sm form-control" id="FechaInicial" placeholder="Fecha inicial" value="<?php echo $FechaInicial;?>"/>
+									<input name="FechaInicial" autocomplete="off" type="text" class="input-sm form-control" id="FechaInicial" placeholder="Fecha inicial" value="<?php echo $FechaInicial;?>"/>
 									<span class="input-group-addon">hasta</span>
-									<input name="FechaFinal" type="text" class="input-sm form-control" id="FechaFinal" placeholder="Fecha final" value="<?php echo $FechaFinal;?>" />
+									<input name="FechaFinal" autocomplete="off" type="text" class="input-sm form-control" id="FechaFinal" placeholder="Fecha final" value="<?php echo $FechaFinal;?>" />
 								</div>
 							</div>
 							<label class="col-lg-1 control-label">Tipo</label>

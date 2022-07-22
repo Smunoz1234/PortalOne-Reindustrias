@@ -237,7 +237,7 @@ if($sw==1){
 }
 
 if(isset($_GET['IDTicket'])&&$_GET['IDTicket']!=""){
-	$Where="DocNum LIKE '%".$_GET['IDTicket']."%'";
+	$Where="DocNum LIKE '%".trim($_GET['IDTicket'])."%'";
 	
 	$FilSerie="";
 	$i=0;
@@ -370,9 +370,9 @@ if(isset($_GET['a'])&&($_GET['a']==base64_encode("OK_ClosLlam"))){
 							<label class="col-lg-1 control-label">Fechas</label>
 							<div class="col-lg-3">
 								<div class="input-daterange input-group" id="datepicker">
-									<input name="FechaInicial" type="text" class="input-sm form-control" id="FechaInicial" placeholder="Fecha inicial" value="<?php echo $FechaInicial;?>"/>
+									<input name="FechaInicial" autocomplete="off" type="text" class="input-sm form-control" id="FechaInicial" placeholder="Fecha inicial" value="<?php echo $FechaInicial;?>"/>
 									<span class="input-group-addon">hasta</span>
-									<input name="FechaFinal" type="text" class="input-sm form-control" id="FechaFinal" placeholder="Fecha final" value="<?php echo $FechaFinal;?>" />
+									<input name="FechaFinal" autocomplete="off" type="text" class="input-sm form-control" id="FechaFinal" placeholder="Fecha final" value="<?php echo $FechaFinal;?>" />
 								</div>
 							</div>
 							<label class="col-lg-1 control-label">Estado</label>
