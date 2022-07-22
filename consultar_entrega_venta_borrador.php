@@ -93,6 +93,26 @@ if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
     $Cons = "Select * From uvw_Sap_tbl_EntregasVentas_Borrador Where $Where";
 }
 
+// SMM, 22/07/2022
+if (isset($_GET['DocNum']) && $_GET['DocNum'] != "") {
+    $Where = "DocNum LIKE '%" . trim($_GET['DocNum']) . "%'";
+
+    $FilSerie = "";
+    $i = 0;
+    while ($row_Series = sqlsrv_fetch_array($SQL_Series)) {
+        if ($i == 0) {
+            $FilSerie .= "'" . $row_Series['IdSeries'] . "'";
+        } else {
+            $FilSerie .= ",'" . $row_Series['IdSeries'] . "'";
+        }
+        $i++;
+    }
+    $Where .= " and [IdSeries] IN (" . $FilSerie . ")";
+    $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
+
+    $Cons = "Select * From uvw_Sap_tbl_EntregasVentas_Borrador Where $Where";
+}
+
 $SQL = sqlsrv_query($conexion, $Cons);
 // echo $Cons;
 ?>
@@ -185,9 +205,9 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_EVenUpd"))) {
 							<label class="col-lg-1 control-label">Fechas</label>
 							<div class="col-lg-3">
 								<div class="input-daterange input-group" id="datepicker">
-									<input name="FechaInicial" type="text" class="input-sm form-control" id="FechaInicial" placeholder="Fecha inicial" value="<?php echo $FechaInicial; ?>"/>
+									<input name="FechaInicial" autocomplete="off" type="text" class="input-sm form-control" id="FechaInicial" placeholder="Fecha inicial" value="<?php echo $FechaInicial; ?>"/>
 									<span class="input-group-addon">hasta</span>
-									<input name="FechaFinal" type="text" class="input-sm form-control" id="FechaFinal" placeholder="Fecha final" value="<?php echo $FechaFinal; ?>" />
+									<input name="FechaFinal" autocomplete="off" type="text" class="input-sm form-control" id="FechaFinal" placeholder="Fecha final" value="<?php echo $FechaFinal; ?>" />
 								</div>
 							</div>
 							<label class="col-lg-1 control-label">Estado</label>
@@ -242,6 +262,16 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_EVenUpd"))) {
 									<option value="1" <?php if (isset($_GET['TipoVenta']) && $_GET['TipoVenta'] == '1') {echo "selected=\"selected\"";}?>>SERVICIOS</option>
 								</select>
 							</div>
+						</div>
+
+						<div class="form-group">
+							<!-- Número de documento -->
+							<label class="col-lg-1 control-label">Número documento</label>
+							<div class="col-lg-3">
+								<input name="DocNum" type="text" class="form-control" id="DocNum" maxlength="50" placeholder="Digite un número completo, o una parte del mismo..." value="<?php if (isset($_GET['DocNum']) && ($_GET['DocNum'] != "")) {echo $_GET['DocNum'];}?>">
+							</div>
+							<!-- SMM, 22/07/2022 -->
+
 							<div class="col-lg-4">
 								<button type="submit" class="btn btn-outline btn-success pull-right"><i class="fa fa-search"></i> Buscar</button>
 							</div>

@@ -94,10 +94,30 @@ if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
     $Cons = "Select * From uvw_Sap_tbl_FacturasVentas_Borrador Where $Where";
 }
 
-$SQL = sqlsrv_query($conexion, $Cons);
+// SMM, 22/07/2022
+if (isset($_GET['DocNum']) && $_GET['DocNum'] != "") {
+    $Where = "DocNum LIKE '%" . trim($_GET['DocNum']) . "%'";
 
+    $FilSerie = "";
+    $i = 0;
+    while ($row_Series = sqlsrv_fetch_array($SQL_Series)) {
+        if ($i == 0) {
+            $FilSerie .= "'" . $row_Series['IdSeries'] . "'";
+        } else {
+            $FilSerie .= ",'" . $row_Series['IdSeries'] . "'";
+        }
+        $i++;
+    }
+    $Where .= " and [IdSeries] IN (" . $FilSerie . ")";
+    $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
+
+    $Cons = "Select * From uvw_Sap_tbl_FacturasVentas_Borrador Where $Where";
+}
+
+$SQL = sqlsrv_query($conexion, $Cons);
 //echo $Cons;
 ?>
+
 <!DOCTYPE html>
 <html><!-- InstanceBegin template="/Templates/PlantillaPrincipal.dwt.php" codeOutsideHTMLIsLocked="false" -->
 
@@ -186,9 +206,9 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_FactVentUpd"))) {
 							<label class="col-lg-1 control-label">Fechas</label>
 							<div class="col-lg-3">
 								<div class="input-daterange input-group" id="datepicker">
-									<input name="FechaInicial" type="text" class="input-sm form-control" id="FechaInicial" placeholder="Fecha inicial" value="<?php echo $FechaInicial; ?>"/>
+									<input name="FechaInicial" type="text" autocomplete="off" class="input-sm form-control" id="FechaInicial" placeholder="Fecha inicial" value="<?php echo $FechaInicial; ?>"/>
 									<span class="input-group-addon">hasta</span>
-									<input name="FechaFinal" type="text" class="input-sm form-control" id="FechaFinal" placeholder="Fecha final" value="<?php echo $FechaFinal; ?>" />
+									<input name="FechaFinal" type="text" autocomplete="off" class="input-sm form-control" id="FechaFinal" placeholder="Fecha final" value="<?php echo $FechaFinal; ?>" />
 								</div>
 							</div>
 							<label class="col-lg-1 control-label">Estado</label>
@@ -235,11 +255,22 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_FactVentUpd"))) {
 							<div class="col-lg-3">
 								<input name="IDTicket" type="text" class="form-control" id="IDTicket" maxlength="50" placeholder="Digite un número completo, o una parte del mismo..." value="<?php if (isset($_GET['IDTicket']) && ($_GET['IDTicket'] != "")) {echo $_GET['IDTicket'];}?>">
 							</div>
+
+							<!-- Número de documento -->
+							<label class="col-lg-1 control-label">Número documento</label>
+							<div class="col-lg-3">
+								<input name="DocNum" type="text" class="form-control" id="DocNum" maxlength="50" placeholder="Digite un número completo, o una parte del mismo..." value="<?php if (isset($_GET['DocNum']) && ($_GET['DocNum'] != "")) {echo $_GET['DocNum'];}?>">
+							</div>
+							<!-- SMM, 22/07/2022 -->
+
 							<label class="col-lg-1 control-label">Fecha venc. servicio</label>
-								<div class="col-lg-2 input-group date">
-									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaVenc" type="text" class="form-control" id="FechaVenc" value="<?php if (isset($_GET['FechaVenc']) && ($_GET['FechaVenc'] != "")) {echo $_GET['FechaVenc'];}?>" readonly="readonly" placeholder="YYYY-MM-DD">
-								</div>
-							<div class="col-lg-5">
+							<div class="col-lg-2 input-group date">
+									<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaVenc" type="text" class="form-control" id="FechaVenc" value="<?php if (isset($_GET['FechaVenc']) && ($_GET['FechaVenc'] != "")) {echo $_GET['FechaVenc'];}?>" readonly="readonly" placeholder="YYYY-MM-DD">
+							</div>
+						</div>
+
+						<div class="form-group">
+							<div class="col-lg-4">
 								<button type="submit" class="btn btn-outline btn-success pull-right"><i class="fa fa-search"></i> Buscar</button>
 							</div>
 						</div>
