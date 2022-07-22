@@ -515,7 +515,7 @@ if ($type_act == 1 && $sw_error == 0) { //Editando la actividad
     $SQL_DocMarketing = EjecutarSP('sp_ConsultarDocMarketing', $ParametrosDoc);
 
     //Orden de servicio
-    $SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_CodigoCliente='" . $row['ID_CodigoCliente'] . "' and NombreSucursal='" . $row['NombreSucursal'] . "' And IdEstadoLlamada='-3'", 'AsuntoLlamada');
+    $SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_CodigoCliente='" . $row['ID_CodigoCliente'] . "' and NombreSucursal='" . $row['NombreSucursal'] . "' And IdEstadoLlamada<>'-1'", 'AsuntoLlamada');
 }
 
 if ($sw_error == 1) {
@@ -550,7 +550,7 @@ if ($sw_error == 1) {
     $SQL_DocMarketing = EjecutarSP('sp_ConsultarDocMarketing', $ParametrosDoc);
 
     //Orden de servicio
-    $SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_CodigoCliente='" . $row['ID_CodigoCliente'] . "' and NombreSucursal='" . $row['NombreSucursal'] . "' And IdEstadoLlamada='-3'", 'AsuntoLlamada');
+    $SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_CodigoCliente='" . $row['ID_CodigoCliente'] . "' and NombreSucursal='" . $row['NombreSucursal'] . "' And IdEstadoLlamada<>'-1'", 'AsuntoLlamada');
 }
 
 //Tipos de actividad
@@ -1212,7 +1212,7 @@ if ($dt_LS == 1) {
 						<div class="form-group">
 							<label class="col-lg-1 control-label">Fecha inicio <span class="text-danger">*</span></label>
 							<div class="col-lg-2 input-group date">
-								 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaInicio" type="text" required="required" class="form-control" id="FechaInicio" value="<?php if ((($type_act == 1) || ($sw_error == 1)) && ($row['FechaInicioActividad']) != "1900-01-01") {echo $row['FechaInicioActividad'];} else {echo date('Y-m-d');}?>" <?php if (($type_act == 1) && (!PermitirFuncion(304) || ($row['IdEstadoActividad'] == 'Y') || ($BloqEdit == 1))) {echo "readonly='readonly'";}?>>
+								 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaInicio" type="text" autocomplete="off" required="required" class="form-control" id="FechaInicio" value="<?php if ((($type_act == 1) || ($sw_error == 1)) && ($row['FechaInicioActividad']) != "1900-01-01") {echo $row['FechaInicioActividad'];} else {echo date('Y-m-d');}?>" <?php if (($type_act == 1) && (!PermitirFuncion(304) || ($row['IdEstadoActividad'] == 'Y') || ($BloqEdit == 1))) {echo "readonly='readonly'";}?>>
 							</div>
 							<div id="dv_HoraInicio" class="col-lg-2 input-group clockpicker" data-autoclose="true" <?php if (($type_act == 1) && ($row['TodoDia'] == 1)) {?>style="display: none;"<?php }?>>
 								<input name="HoraInicio" id="HoraInicio" type="text" class="form-control" value="<?php if ((($type_act == 1) || ($sw_error == 1)) && ($row['HoraInicioActividad'] != "00:00")) {echo $row['HoraInicioActividad'];} else {echo date('H:i');}?>" required="required" <?php if (($type_act == 1) && (!PermitirFuncion(304) || ($row['IdEstadoActividad'] == 'Y') || ($BloqEdit == 1))) {echo "readonly='readonly'";}?> onChange="ValidarHoras();">
@@ -1227,7 +1227,7 @@ if ($dt_LS == 1) {
 						<div class="form-group">
 					<label class="col-lg-1 control-label">Fecha fin <span class="text-danger">*</span></label>
 				  	<div class="col-lg-2 input-group date">
-                    	 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaFin" id="FechaFin" type="text" required="required" class="form-control" value="<?php if ((($type_act == 1) || ($sw_error == 1)) && ($row['FechaFinActividad']) != "1900-01-01") {echo $row['FechaFinActividad'];} else {echo date('Y-m-d');}?>" <?php if (($type_act == 1) && (!PermitirFuncion(304) || ($row['IdEstadoActividad'] == 'Y') || ($BloqEdit == 1))) {echo "readonly='readonly'";}?>>
+                    	 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaFin" id="FechaFin" type="text" required="required" autocomplete="off" class="form-control" value="<?php if ((($type_act == 1) || ($sw_error == 1)) && ($row['FechaFinActividad']) != "1900-01-01") {echo $row['FechaFinActividad'];} else {echo date('Y-m-d');}?>" <?php if (($type_act == 1) && (!PermitirFuncion(304) || ($row['IdEstadoActividad'] == 'Y') || ($BloqEdit == 1))) {echo "readonly='readonly'";}?>>
                	  	</div>
 					<div id="dv_HoraFin" class="col-lg-2 input-group clockpicker" data-autoclose="true" <?php if (($type_act == 1) && ($row['TodoDia'] == 1)) {?>style="display: none;"<?php }?>>
 						<?php
@@ -1307,7 +1307,7 @@ $nuevahora = date('H:i', $nuevahora);
 						<div class="form-group">
 							<label class="col-lg-1 control-label">Fecha inicio ejecución</label>
 							<div class="col-lg-2 input-group date">
-								 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaInicioEjecucion" type="text" class="form-control" id="FechaInicioEjecucion" value="<?php if ((($type_act == 1) || ($sw_error == 1)) && ($row['CDU_FechaInicioEjecucionActividad']) != "") {echo $row['CDU_FechaInicioEjecucionActividad'];}?>" <?php if (($type_act == 1) && (!PermitirFuncion(304) || ($row['IdEstadoActividad'] == 'Y'))) {echo "readonly='readonly'";}?>>
+								 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaInicioEjecucion" type="text" class="form-control" autocomplete="off" id="FechaInicioEjecucion" value="<?php if ((($type_act == 1) || ($sw_error == 1)) && ($row['CDU_FechaInicioEjecucionActividad']) != "") {echo $row['CDU_FechaInicioEjecucionActividad'];}?>" <?php if (($type_act == 1) && (!PermitirFuncion(304) || ($row['IdEstadoActividad'] == 'Y'))) {echo "readonly='readonly'";}?>>
 							</div>
 							<div class="col-lg-2 input-group clockpicker" data-autoclose="true">
 								<input name="HoraInicioEjecucion" id="HoraInicioEjecucion" type="text" class="form-control" value="<?php if ((($type_act == 1) || ($sw_error == 1)) && ($row['CDU_HoraInicioEjecucionActividad'] != "")) {echo $row['CDU_HoraInicioEjecucionActividad'];}?>" <?php if (($type_act == 1) && (!PermitirFuncion(304) || ($row['IdEstadoActividad'] == 'Y'))) {echo "readonly='readonly'";}?> onChange="ValidarHorasEjec();">
@@ -1319,7 +1319,7 @@ $nuevahora = date('H:i', $nuevahora);
 						<div class="form-group">
 					<label class="col-lg-1 control-label">Fecha fin ejecución</label>
 				  	<div class="col-lg-2 input-group date">
-                    	 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaFinEjecucion" id="FechaFinEjecucion" type="text" class="form-control" value="<?php if ((($type_act == 1) || ($sw_error == 1)) && ($row['CDU_FechaFinEjecucionActividad']) != "") {echo $row['CDU_FechaFinEjecucionActividad'];}?>" <?php if (($type_act == 1) && (!PermitirFuncion(304) || ($row['IdEstadoActividad'] == 'Y'))) {echo "readonly='readonly'";}?>>
+                    	 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaFinEjecucion" id="FechaFinEjecucion" type="text" autocomplete="off" class="form-control" value="<?php if ((($type_act == 1) || ($sw_error == 1)) && ($row['CDU_FechaFinEjecucionActividad']) != "") {echo $row['CDU_FechaFinEjecucionActividad'];}?>" <?php if (($type_act == 1) && (!PermitirFuncion(304) || ($row['IdEstadoActividad'] == 'Y'))) {echo "readonly='readonly'";}?>>
                	  	</div>
 					<div class="col-lg-2 input-group clockpicker" data-autoclose="true">
 						<?php
