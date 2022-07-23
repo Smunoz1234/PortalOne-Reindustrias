@@ -18,10 +18,8 @@ if ($edit == 1 && $id != "") {
     $Title = "Editar registro";
     $Metodo = 2;
     if ($doc == "Motivos") {
-        $SQL = Seleccionar('tbl_AutorizacionesMotivos', '*', "id_bodega_puerto='" . $id . "'");
+        $SQL = Seleccionar('tbl_Autorizaciones_Motivos', '*', "IdInterno='" . $id . "'");
         $row = sqlsrv_fetch_array($SQL);
-
-        // $SQL_SucursalCliente = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', 'NombreSucursal, NumeroLinea', "CodigoCliente='" . $row['codigo_cliente'] . "'", 'NombreSucursal');
     } elseif ($doc == "Productos") {
         $SQL = Seleccionar('tbl_ProductosPuerto', '*', "id_producto_puerto='" . $id . "'");
         $row = sqlsrv_fetch_array($SQL);
@@ -54,15 +52,15 @@ if ($edit == 1 && $id != "") {
 			<?php if ($doc == "Motivos") {?>
 				<div class="form-group">
 					<label class="control-label">Id Motivo <span class="text-danger">*</span></label>
-					<input type="text" class="form-control" name="IdMotivoAutorizacion" id="IdMotivoAutorizacion" required autocomplete="off" value="<?php if ($edit == 1) {echo $row['id_bodega_puerto'];}?>">
+					<input type="text" class="form-control" name="IdMotivoAutorizacion" id="IdMotivoAutorizacion" required autocomplete="off" value="<?php if ($edit == 1) {echo $row['IdMotivoAutorizacion'];}?>">
 				</div>
 				<div class="form-group">
 					<label class="control-label">Motivo <span class="text-danger">*</span></label>
-					<input type="text" class="form-control" name="MotivoAutorizacion" id="MotivoAutorizacion" required autocomplete="off" value="<?php if ($edit == 1) {echo $row['bodega_puerto'];}?>">
+					<input type="text" class="form-control" name="MotivoAutorizacion" id="MotivoAutorizacion" required autocomplete="off" value="<?php if ($edit == 1) {echo $row['MotivoAutorizacion'];}?>">
 				</div>
 				<div class="form-group">
 					<label class="control-label">Comentarios</label>
-					<textarea name="Comentarios" rows="3" maxlength="3000" class="form-control" id="Comentarios" type="text"><?php if ($edit == 1) {echo $row['comentarios'];}?></textarea>
+					<textarea name="Comentarios" rows="3" maxlength="3000" class="form-control" id="Comentarios" type="text"><?php if ($edit == 1) {echo $row['Comentarios'];}?></textarea>
 				</div>
 				<div class="form-group">
 					<label class="control-label">Tipo de documento <span class="text-danger">*</span></label>
@@ -75,28 +73,28 @@ if ($edit == 1 && $id != "") {
 									<?php $CatActual = $row_TipoDoc['CategoriaObjeto'];?>
 								<?php }?>
 								<option value="<?php echo $row_TipoDoc['IdTipoDocumento']; ?>"
-								<?php if ((($edit == 1) && (isset($row_Data['ID_Objeto'])) && (strcmp($row_TipoDoc['IdTipoDocumento'], $row_Data['ID_Objeto']) == 0))) {echo "selected=\"selected\"";}?>>
+								<?php if ((($edit == 1) && (isset($row['IdTipoDocumento'])) && (strcmp($row_TipoDoc['IdTipoDocumento'], $row['IdTipoDocumento']) == 0))) {echo "selected=\"selected\"";}?>>
 									<?php echo $row_TipoDoc['DeTipoDocumento']; ?>
 								</option>
 						<?php }?>
 						<optgroup label='Otros'></optgroup>
-						<option value="OTRO" <?php if (($edit == 1) && ($swOtro == 1 && $row_Data['ID_Objeto'] != "")) {echo "selected=\"selected\"";}?>>OTRO</option>
+						<option value="OTRO" <?php if (($edit == 1) && ($swOtro == 1 && $row['IdTipoDocumento'] != "")) {echo "selected=\"selected\"";}?>>OTRO</option>
 					</select>
 				</div>
 				<div class="form-group">
 					<label class="control-label">Modelo autorización SAP B1 <span class="text-danger">*</span></label>
-					<select name="SucursalBodega" class="form-control select2" id="SucursalBodega" required>
+					<select name="IdFormato" class="form-control select2" id="IdFormato" required>
 						<option value="">Seleccione...</option>
 						<?php while ($row_ModeloAutorizacion = sqlsrv_fetch_array($SQL_ModeloAutorizacion)) {?>
-							<option value="<?php echo $row_ModeloAutorizacion['IdModeloAutorizacion']; ?>" <?php if ((isset($row['IdModeloAutorizacion'])) && (strcmp($row_ModeloAutorizacion['IdModeloAutorizacion'], $row['IdModeloAutorizacion']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_ModeloAutorizacion['ModeloAutorizacion']; ?></option>
+							<option value="<?php echo $row_ModeloAutorizacion['IdModeloAutorizacion']; ?>" <?php if ((isset($row['IdFormato'])) && (strcmp($row_ModeloAutorizacion['IdModeloAutorizacion'], $row['IdFormato']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_ModeloAutorizacion['ModeloAutorizacion']; ?></option>
 						<?php }?>
 					</select>
 				</div>
 				<div class="form-group">
 					<label class="control-label">Estado <span class="text-danger">*</span></label>
 					<select class="form-control" id="Estado" name="Estado">
-						<option value="Y" <?php if (($edit == 1) && ($row['estado'] == "Y")) {echo "selected=\"selected\"";}?>>ACTIVO</option>
-						<option value="N" <?php if (($edit == 1) && ($row['estado'] == "N")) {echo "selected=\"selected\"";}?>>INACTIVO</option>
+						<option value="Y" <?php if (($edit == 1) && ($row['Estado'] == "Y")) {echo "selected=\"selected\"";}?>>ACTIVO</option>
+						<option value="N" <?php if (($edit == 1) && ($row['Estado'] == "N")) {echo "selected=\"selected\"";}?>>INACTIVO</option>
 					</select>
 				</div>
 			<?php } elseif ($doc == "Transportes") {?>
@@ -189,7 +187,11 @@ if ($edit == 1 && $id != "") {
 </div>
 <div class="modal-footer">
 	<button type="submit" class="btn btn-success m-t-md"><i class="fa fa-check"></i> Aceptar</button>
+
+	<!-- Desactivado
 	<?php if ($edit == 1) {?><button type="button" class="btn btn-danger m-t-md pull-left" onClick="Eliminar('<?php echo $doc; ?>','<?php echo $id; ?>');"><i class="fa fa-trash"></i> Eliminar</button><?php }?>
+	Hasta aquí -->
+
 	<button type="button" class="btn btn-warning m-t-md" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
 </div>
 	<input type="hidden" id="TipoDoc" name="TipoDoc" value="<?php echo $doc; ?>" />

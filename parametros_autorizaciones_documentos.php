@@ -4,22 +4,50 @@ PermitirAcceso(216);
 
 $sw_error = 0;
 $dir_new = CrearObtenerDirAnx("formularios/monitoreos_temperaturas/planos");
-//Insertar datos
-if (isset($_POST['frmType']) && ($_POST['frmType'] != "")) {
+
+// SMM, 21/07/2022
+if (isset($_POST['Metodo']) && ($_POST['Metodo'] == 3)) {
+    try {
+        if ($_POST['TipoDoc'] = "Motivos") {
+            $Param = array(
+                $_POST['Metodo'], // 3 - Eliminar
+                isset($_POST['IdInterno']) ? $_POST['IdInterno'] : "NULL", // IdInterno
+            );
+            $SQL = EjecutarSP('sp_tbl_Autorizaciones_Motivos', $Param);
+            if (!$SQL) {
+                $sw_error = 1;
+                $msg_error = "No se pudo eliminar el motivo de autorización";
+            }
+        }
+    } catch (Exception $e) {
+        $sw_error = 1;
+        $msg_error = $e->getMessage();
+    }
+}
+
+//Insertar datos o actualizar datos
+if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) && (isset($_POST['Metodo']) && ($_POST['Metodo'] == 2))) {
     try {
 
         if ($_POST['TipoDoc'] = "Motivos") {
+            $FechaHora = "'" . FormatoFecha(date('Y-m-d'), date('H:i:s')) . "'";
+            $Usuario = "'" . $_SESSION['CodUser'] . "'";
+
             $Param = array(
+                $_POST['Metodo'], // 1 - Crear, 2 - Actualizar
+                isset($_POST['ID_Actual']) ? $_POST['ID_Actual'] : "NULL", // IdInterno
                 "'" . $_POST['IdMotivoAutorizacion'] . "'",
                 "'" . $_POST['MotivoAutorizacion'] . "'",
                 "'" . $_POST['IdTipoDocumento'] . "'",
+                "'" . $_POST['IdFormato'] . "'",
                 "'" . $_POST['Comentarios'] . "'",
                 "'" . $_POST['Estado'] . "'",
-                "'" . $_POST['Metodo'] . "'",
-                "'" . $_SESSION['CodUser'] . "'",
-                "'" . FormatoFecha(date('Y-m-d'), date('H:i:s')) . "'",
-                "'" . FormatoFecha(date('Y-m-d'), date('H:i:s')) . "'",
-                1,
+                $Usuario,
+                $FechaHora,
+                $FechaHora,
+                ($_POST['Metodo'] == 1) ? $Usuario : "NULL",
+                ($_POST['Metodo'] == 1) ? $FechaHora : "NULL",
+                ($_POST['Metodo'] == 1) ? $FechaHora : "NULL",
             );
             $SQL = EjecutarSP('sp_tbl_Autorizaciones_Motivos', $Param);
             if (!$SQL) {
@@ -36,24 +64,6 @@ if (isset($_POST['frmType']) && ($_POST['frmType'] != "")) {
                 "'" . $_POST['EstadoProducto'] . "'",
                 "'" . $_POST['Metodo'] . "'",
                 "'" . $_SESSION['CodUser'] . "'",
-            );
-            $SQL = EjecutarSP('sp_tbl_FrmPuerto', $Param);
-            if (!$SQL) {
-                $sw_error = 1;
-                $msg_error = "No se pudo insertar los datos";
-            }
-        } elseif ($_POST['TipoDoc'] == "Transportes") {
-            //Transportes
-            $Param = array(
-                "'" . $_POST['TipoDoc'] . "'",
-                "'" . $_POST['CodigoTransporte'] . "'",
-                "'" . $_POST['ID_Actual'] . "'",
-                "'" . $_POST['NombreTransporte'] . "'",
-                "'" . $_POST['ComentariosTransporte'] . "'",
-                "'" . $_POST['EstadoTransporte'] . "'",
-                "'" . $_POST['Metodo'] . "'",
-                "'" . $_SESSION['CodUser'] . "'",
-                "'" . $_POST['RegistroCap'] . "'",
             );
             $SQL = EjecutarSP('sp_tbl_FrmPuerto', $Param);
             if (!$SQL) {
@@ -89,7 +99,7 @@ if (isset($_POST['frmType']) && ($_POST['frmType'] != "")) {
 }
 
 // SMM, 21/07/2022
-$SQL_Motivo = Seleccionar("tbl_Autorizaciones_Motivos", "*");
+$SQL_Motivo = Seleccionar("uvw_tbl_Autorizaciones_Motivos", "*");
 
 $SQL_Productos = Seleccionar("tbl_ProductosPuerto", "*");
 
@@ -134,6 +144,17 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_PRUpd"))) {
 			Swal.fire({
                 title: '¡Listo!',
                 text: 'Datos actualizados exitosamente.',
+                icon: 'success'
+            });
+		});
+		</script>";
+}
+if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_PRDel"))) {
+    echo "<script>
+		$(document).ready(function() {
+			Swal.fire({
+                title: '¡Listo!',
+                text: 'Datos eliminados exitosamente.',
                 icon: 'success'
             });
 		});
@@ -207,92 +228,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 								<!-- Inicio, Lista de autorización -->
 								<div id="tab-1" class="tab-pane active">
 									<form class="form-horizontal">
-										<div class="ibox" id="TipoInfectacion">
-											<div class="ibox-title bg-success">
-												<h5 class="collapse-link"><i class="fa fa-list"></i> Tipo infestación productos</h5>
-												 <a class="collapse-link pull-right">
-													<i class="fa fa-chevron-up"></i>
-												</a>
-											</div>
-											<div class="ibox-content">
-												<div class="row m-b-md">
-													<div class="col-lg-12">
-														<button class="btn btn-primary pull-right" type="button" id="NewAlgo" onClick="CrearCampo('TipoInfectacion');"><i class="fa fa-plus-circle"></i> Agregar nuevo</button>
-													</div>
-												</div>
-												<div class="table-responsive">
-													<table class="table table-striped table-bordered table-hover dataTables-example">
-														<thead>
-															<tr>
-																<th>Código infestación</th>
-																<th>Nombre infestación</th>
-																<th>Comentarios</th>
-																<th>Estado</th>
-																<th>Acciones</th>
-															</tr>
-														</thead>
-														<tbody>
-														  <?php
-while ($row_TipoInfectacion = sqlsrv_fetch_array($SQL_TipoInfectacion)) {
-    ?>
-															<tr>
-																 <td><?php echo $row_TipoInfectacion['id_tipo_infectacion_producto']; ?></td>
-																 <td><?php echo $row_TipoInfectacion['tipo_infectacion_producto']; ?></td>
-																 <td><?php echo $row_TipoInfectacion['comentarios']; ?></td>
-																 <td><?php if ($row_TipoInfectacion['estado'] == 'Y') {echo "ACTIVO";} else {echo "INACTIVO";}?></td>
-																 <td>
-																	<button type="button" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_TipoInfectacion['id_tipo_infectacion_producto']; ?>','TipoInfectacion');"><i class="fa fa-pencil"></i> Editar</button>
-																 </td>
-															</tr>
-														 <?php }?>
-														</tbody>
-													</table>
-												</div>
-											</div>
-										</div>
-										<div class="ibox" id="GradoInfectacion">
-											<div class="ibox-title bg-success">
-												<h5 class="collapse-link"><i class="fa fa-list"></i> Grado infestación productos</h5>
-												 <a class="collapse-link pull-right">
-													<i class="fa fa-chevron-up"></i>
-												</a>
-											</div>
-											<div class="ibox-content">
-												<div class="row m-b-md">
-													<div class="col-lg-12">
-														<button class="btn btn-primary pull-right" type="button" id="NewAlgo" onClick="CrearCampo('GradoInfectacion');"><i class="fa fa-plus-circle"></i> Agregar nuevo</button>
-													</div>
-												</div>
-												<div class="table-responsive">
-													<table class="table table-striped table-bordered table-hover dataTables-example">
-														<thead>
-															<tr>
-																<th>Código grado infestación</th>
-																<th>Nombre grado infestación</th>
-																<th>Comentarios</th>
-																<th>Estado</th>
-																<th>Acciones</th>
-															</tr>
-														</thead>
-														<tbody>
-														  <?php
-while ($row_GradoInfectacion = sqlsrv_fetch_array($SQL_GradoInfectacion)) {
-    ?>
-															<tr>
-																 <td><?php echo $row_GradoInfectacion['id_grado_infectacion']; ?></td>
-																 <td><?php echo $row_GradoInfectacion['grado_infectacion']; ?></td>
-																 <td><?php echo $row_GradoInfectacion['comentarios']; ?></td>
-																 <td><?php if ($row_GradoInfectacion['estado'] == 'Y') {echo "ACTIVO";} else {echo "INACTIVO";}?></td>
-																 <td>
-																	<button type="button" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_GradoInfectacion['id_grado_infectacion']; ?>','GradoInfectacion');"><i class="fa fa-pencil"></i> Editar</button>
-																 </td>
-															</tr>
-														 <?php }?>
-														</tbody>
-													</table>
-												</div>
-											</div>
-										</div>
+										<!-- Inicio, ibox autorizaciones -->
 										<div class="ibox" id="Muelles">
 											<div class="ibox-title bg-success">
 												<h5 class="collapse-link"><i class="fa fa-list"></i> Muelles</h5>
@@ -318,9 +254,7 @@ while ($row_GradoInfectacion = sqlsrv_fetch_array($SQL_GradoInfectacion)) {
 															</tr>
 														</thead>
 														<tbody>
-														  <?php
-while ($row_Muelles = sqlsrv_fetch_array($SQL_Muelles)) {
-    ?>
+														  <?php while ($row_Muelles = sqlsrv_fetch_array($SQL_Muelles)) {?>
 															<tr>
 																 <td><?php echo $row_Muelles['id_muelle_puerto']; ?></td>
 																 <td><?php echo $row_Muelles['muelle_puerto']; ?></td>
@@ -336,15 +270,17 @@ while ($row_Muelles = sqlsrv_fetch_array($SQL_Muelles)) {
 												</div>
 											</div>
 										</div>
+										<!-- Inicio, ibox autorizaciones -->
 									</form>
 								</div>
 								<!-- Fin, lista de autorización -->
 								<!-- Inicio, lista motivo autorización -->
-								<div id="tab-2" class="tab-pane active">
+								<div id="tab-2" class="tab-pane">
 									<form class="form-horizontal">
+										<!-- Inicio, ibox motivos -->
 										<div class="ibox" id="Motivos">
 											<div class="ibox-title bg-success">
-												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista de autorizaciones</h5>
+												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista motivos de autorizaciones</h5>
 												 <a class="collapse-link pull-right">
 													<i class="fa fa-chevron-up"></i>
 												</a>
@@ -361,8 +297,8 @@ while ($row_Muelles = sqlsrv_fetch_array($SQL_Muelles)) {
 															<tr>
 																<th>ID Tipo Documento</th>
 																<th>Tipo Documento</th>
-																<th>ID Formato</th>
-																<th>Id Motivo Autorizacion (SAP B1)</th>
+																<th>Modelo autorización SAP B1</th>
+																<th>Id Motivo Autorizacion</th>
 																<th>Motivo Autorizacion</th>
 																<th>Comentarios</th>
 																<th>Fecha Actualizacion</th>
@@ -375,12 +311,12 @@ while ($row_Muelles = sqlsrv_fetch_array($SQL_Muelles)) {
 															<tr>
 																<td><?php echo $row_Motivo['IdTipoDocumento']; ?></td>
 																<td><?php echo $row_Motivo['TipoDocumento']; ?></td>
-																<td><?php echo $row_Motivo['IdFormato']; ?></td>
+																<td><?php echo $row_Motivo['ModeloAutorizacion']; ?></td>
 																<td><?php echo $row_Motivo['IdMotivoAutorizacion']; ?></td>
 																<td><?php echo $row_Motivo['MotivoAutorizacion']; ?></td>
 																<td><?php echo $row_Motivo['Comentarios']; ?></td>
-																<td><?php echo $row_Motivo['fecha_actualizacion']; ?></td>
-																<td><?php echo $row_Motivo['id_usuario_actualizacion']; ?></td>
+																<td><?php echo isset($row_Motivo['fecha_actualizacion']) ? date_format($row_Motivo['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
+																<td><?php echo $row_Motivo['usuario_actualizacion']; ?></td>
 																<td>
 																	<button type="button" id="btnEdit<?php echo $row_Motivo['IdInterno']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Motivo['IdInterno']; ?>','Motivos');"><i class="fa fa-pencil"></i> Editar</button>
 																	<button type="button" id="btnDelete<?php echo $row_Motivo['IdInterno']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Motivo['IdInterno']; ?>','Motivos');"><i class="fa fa-trash"></i> Eliminar</button>
@@ -392,93 +328,7 @@ while ($row_Muelles = sqlsrv_fetch_array($SQL_Muelles)) {
 												</div>
 											</div>
 										</div>
-										<div class="ibox" id="Productos">
-											<div class="ibox-title bg-success">
-												<h5 class="collapse-link"><i class="fa fa-list"></i> Productos</h5>
-												 <a class="collapse-link pull-right">
-													<i class="fa fa-chevron-up"></i>
-												</a>
-											</div>
-											<div class="ibox-content">
-												<div class="row m-b-md">
-													<div class="col-lg-12">
-														<button class="btn btn-primary pull-right" type="button" id="NewAlgo" onClick="CrearCampo('Productos');"><i class="fa fa-plus-circle"></i> Agregar nuevo</button>
-													</div>
-												</div>
-												<div class="table-responsive">
-													<table class="table table-striped table-bordered table-hover dataTables-example">
-														<thead>
-															<tr>
-																<th>Código producto</th>
-																<th>Nombre producto</th>
-																<th>Comentarios</th>
-																<th>Estado</th>
-																<th>Acciones</th>
-															</tr>
-														</thead>
-														<tbody>
-														  <?php
-while ($row_Productos = sqlsrv_fetch_array($SQL_Productos)) {
-    ?>
-															<tr>
-																 <td><?php echo $row_Productos['id_producto_puerto']; ?></td>
-																 <td><?php echo $row_Productos['producto_puerto']; ?></td>
-																 <td><?php echo $row_Productos['comentarios']; ?></td>
-																 <td><?php if ($row_Productos['estado'] == 'Y') {echo "ACTIVO";} else {echo "INACTIVO";}?></td>
-																 <td>
-																	<button type="button" id="btnEditProd<?php echo $row_Productos['id_producto_puerto']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Productos['id_producto_puerto']; ?>','Productos');"><i class="fa fa-pencil"></i> Editar</button>
-																 </td>
-															</tr>
-														 <?php }?>
-														</tbody>
-													</table>
-												</div>
-											</div>
-										</div>
-										<div class="ibox" id="Transportes">
-											<div class="ibox-title bg-success">
-												<h5 class="collapse-link"><i class="fa fa-list"></i> Motonave</h5>
-												 <a class="collapse-link pull-right">
-													<i class="fa fa-chevron-up"></i>
-												</a>
-											</div>
-											<div class="ibox-content">
-												<div class="row m-b-md">
-													<div class="col-lg-12">
-														<button class="btn btn-primary pull-right" type="button" id="NewAlgo" onClick="CrearCampo('Transportes');"><i class="fa fa-plus-circle"></i> Agregar nuevo</button>
-													</div>
-												</div>
-												<div class="table-responsive">
-													<table width="100%" class="table table-striped table-bordered table-hover dataTables-example">
-														<thead>
-															<tr>
-																<th>Código motonave</th>
-																<th>Nombre motonave</th>
-																<th>REG (Registro capitanía)</th>
-																<th>Comentarios</th>
-																<th>Estado</th>
-																<th>Acciones</th>
-															</tr>
-														</thead>
-														<tbody>
-														  <?php
-while ($row_Transporte = sqlsrv_fetch_array($SQL_Transporte)) {?>
-															<tr>
-																 <td><?php echo $row_Transporte['id_transporte_puerto']; ?></td>
-																 <td><?php echo $row_Transporte['transporte_puerto']; ?></td>
-																 <td><?php echo $row_Transporte['registro_capitania']; ?></td>
-																 <td><?php echo $row_Transporte['comentarios']; ?></td>
-																 <td><?php if ($row_Transporte['estado'] == 'Y') {echo "ACTIVO";} else {echo "INACTIVO";}?></td>
-																 <td>
-																	<button type="button" id="btnEditTrans<?php echo $row_Transporte['id_transporte_puerto']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Transporte['id_transporte_puerto']; ?>','Transportes');"><i class="fa fa-pencil"></i> Editar</button>
-																 </td>
-															</tr>
-														 <?php }?>
-														</tbody>
-													</table>
-												</div>
-											</div>
-										</div>
+										<!-- Fin, ibox motivos -->
 									</form>
 								</div>
 								<!-- Fin, lista motivo autorización -->
@@ -558,7 +408,7 @@ function EditarCampo(id, doc){
 
 	$.ajax({
 		type: "POST",
-		url: "md_frm_param_personalizados.php",
+		url: "md_autorizaciones_documentos.php",
 		data:{
 			doc:doc,
 			id:id,
@@ -570,6 +420,37 @@ function EditarCampo(id, doc){
 			$('#myModal').modal("show");
 		}
 	});
+}
+function EliminarCampo(id, doc){
+	Swal.fire({
+		title: "¿Está seguro que desea eliminar este registro?",
+		icon: "question",
+		showCancelButton: true,
+		confirmButtonText: "Si, confirmo",
+		cancelButtonText: "No"
+	}).then((result) => {
+		if (result.isConfirmed) {
+			//$('.ibox-content').toggleClass('sk-loading',true);
+			$.ajax({
+				type: "post",
+				url: "parametros_autorizaciones_documentos.php",
+				data: {
+					TipoDoc: doc,
+					IdInterno: id,
+					Metodo: 3
+					 },
+				async: false,
+				success: function(data){
+					location.href = "parametros_autorizaciones_documentos.php?a=<?php echo base64_encode("OK_PRDel"); ?>";
+				},
+				error: function(error) {
+					console.error("consulta erronea");
+				}
+			});
+		}
+	});
+
+	return result;
 }
 </script>
 <!-- InstanceEndEditable -->
