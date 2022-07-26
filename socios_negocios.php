@@ -1001,7 +1001,7 @@ if ($sw_ext == 0) {?>
 								<?php }?>
 							</div>
 							<div class="col-lg-3 pull-right">
-								<?php if ($edit == 1) {?>
+								<?php if ($edit == 1 && isset($row["TipoSN"]) && ($row["TipoSN"] == "CLIENTE")) {?>
 									<div class="btn-group">
 										<button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i class="fa fa-plus-circle"></i> Agregar documento <i class="fa fa-caret-down"></i></button>
 										<ul class="dropdown-menu">
@@ -1013,7 +1013,7 @@ if ($sw_ext == 0) {?>
 											</li>
 										</ul>
 									</div>
-								<?php }?>
+								<?php } else {echo "<script> console.log('El socio de negocio no es un cliente.') </script>";}?>
 							</div>
 						</div>
 						<div class="form-group">

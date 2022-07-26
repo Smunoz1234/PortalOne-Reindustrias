@@ -413,6 +413,7 @@ if (isset($_GET['dt_TE']) && ($_GET['dt_TE']) == 1) { //Verificar que viene de u
     //Clientes
     $SQL_Cliente = Seleccionar('uvw_Sap_tbl_Clientes', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreCliente');
     $row_Cliente = sqlsrv_fetch_array($SQL_Cliente);
+    // echo base64_decode($_GET['Cardcode']);
 
     //Contacto cliente
     $SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreContacto');
@@ -510,7 +511,12 @@ if (!$IdTE) {
 				data:{type:40,id:Cliente},
 				dataType:'json',
 				success: function(data){
-					console.log(data);
+					console.log("Line 514", data);
+					if(data.CodigoCliente == '') {
+						console.log("CodigoCliente no encontrado, posiblemente este en la vista [uvw_Sap_tbl_SociosNegocios]");
+						console.log("Código decodificado, <?php echo base64_decode($_GET['Cardcode']); ?>");
+					}
+
 					document.getElementById('TelefonoCliente').value=data.Telefono;
 					// Cargando información en pestaña 'Dirección'
 					document.getElementById('Calle').value=data.DirDestino;
@@ -521,7 +527,7 @@ if (!$IdTE) {
 					document.getElementById('Pais').value=data.PaisDestino;
 				},
 				error: function(data) {
-					console.error(data);
+					console.error("Line 530", data);
 				}
 			});
 			$('.ibox-content').toggleClass('sk-loading',false);
@@ -751,7 +757,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=176 and VerEnD
 						<div class="form-group">
 							<label class="col-lg-1 control-label"><i onClick="ConsultarDatosCliente();" title="Consultar cliente" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Socio de negocio <span class="text-danger">*</span></label>
 							<div class="col-lg-3">
-								<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> name="ClienteEquipo" type="hidden" id="ClienteEquipo" value="<?php if (($edit == 1) || ($sw_error == 1)) {echo $row['CardCode'];} elseif ($dt_TE == 1) {echo $row_Cliente['CodigoCliente'];}?>">
+								<input <?php if (!PermitirFuncion(1602)) {echo "readonly='readonly'";}?> name="ClienteEquipo" type="hidden" id="ClienteEquipo" value="<?php if (($edit == 1) || ($sw_error == 1)) {echo $row['CardCode'];} elseif ($dt_TE == 1) {echo $row_Cliente['CodigoCliente'] ?? "";}?>">
 
 								<input <?php if (!PermitirFuncion(1602) || ($dt_TE == 1)) {echo "readonly='readonly'";}?> name="NombreClienteEquipo" type="text" required="required" class="form-control" id="NombreClienteEquipo" placeholder="Digite para buscar..." value="<?php if (($edit == 1) || ($sw_error == 1)) {echo $row['CardName'] ?? "";} elseif ($dt_TE == 1) {echo $row_Cliente['NombreCliente'] ?? "";}?>">
 							</div>

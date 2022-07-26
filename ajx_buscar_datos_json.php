@@ -556,14 +556,15 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
         $records = array();
         $row = sqlsrv_fetch_array($SQL);
         $records = array(
-            'Telefono' => $row['Telefono'],
+            'CodigoCliente' => $_GET['id'] ?? '',
+            'Telefono' => $row['Telefono'] ?? '',
             // Cargando información en pestaña 'Dirección'
-            'DirDestino' => $row['DirDestino'],
-            'CodPostalDestino' => $row['CodPostalDestino'],
-            'Ciudad' => $row['CiudadDestino'],
-            'CodDepartamentoDestino' => $row['CodDepartamentoDestino'],
-            'DepartamentoDestino' => $row['DepartamentoDestino'],
-            'PaisDestino' => $row['PaisDestino'],
+            'DirDestino' => $row['DirDestino'] ?? '',
+            'CodPostalDestino' => $row['CodPostalDestino'] ?? '',
+            'Ciudad' => $row['CiudadDestino'] ?? '',
+            'CodDepartamentoDestino' => $row['CodDepartamentoDestino'] ?? '',
+            'DepartamentoDestino' => $row['DepartamentoDestino'] ?? '',
+            'PaisDestino' => $row['PaisDestino'] ?? '',
         );
         echo json_encode($records);
     } elseif ($type == 41) { //Consultar porcentaje de etapa oportunidad
