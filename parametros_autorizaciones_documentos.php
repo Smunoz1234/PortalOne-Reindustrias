@@ -221,61 +221,11 @@ if (isset($sw_error) && ($sw_error == 1)) {
 						<?php include "includes/spinner.php";?>
 						 <div class="tabs-container">
 							<ul class="nav nav-tabs">
-								<li class="active"><a data-toggle="tab" href="#tab-1"><i class="fa fa-list"></i> Lista de autorización</a></li>
-								<li><a data-toggle="tab" href="#tab-2"><i class="fa fa-list"></i> Lista motivo autorización</a></li>
+								<li class="active"><a data-toggle="tab" href="#tab-1"><i class="fa fa-list"></i> Lista motivo autorización</a></li>
 							</ul>
 							<div class="tab-content">
-								<!-- Inicio, Lista de autorización -->
-								<div id="tab-1" class="tab-pane active">
-									<form class="form-horizontal">
-										<!-- Inicio, ibox autorizaciones -->
-										<div class="ibox" id="Muelles">
-											<div class="ibox-title bg-success">
-												<h5 class="collapse-link"><i class="fa fa-list"></i> Muelles</h5>
-												 <a class="collapse-link pull-right">
-													<i class="fa fa-chevron-up"></i>
-												</a>
-											</div>
-											<div class="ibox-content">
-												<div class="row m-b-md">
-													<div class="col-lg-12">
-														<button class="btn btn-primary pull-right" type="button" onClick="CrearCampo('Muelles');"><i class="fa fa-plus-circle"></i> Agregar nuevo</button>
-													</div>
-												</div>
-												<div class="table-responsive">
-													<table class="table table-striped table-bordered table-hover dataTables-example">
-														<thead>
-															<tr>
-																<th>Código muelle</th>
-																<th>Nombre muelle</th>
-																<th>Comentarios</th>
-																<th>Estado</th>
-																<th>Acciones</th>
-															</tr>
-														</thead>
-														<tbody>
-														  <?php while ($row_Muelles = sqlsrv_fetch_array($SQL_Muelles)) {?>
-															<tr>
-																 <td><?php echo $row_Muelles['id_muelle_puerto']; ?></td>
-																 <td><?php echo $row_Muelles['muelle_puerto']; ?></td>
-																 <td><?php echo $row_Muelles['comentarios']; ?></td>
-																 <td><?php if ($row_Muelles['estado'] == 'Y') {echo "ACTIVO";} else {echo "INACTIVO";}?></td>
-																 <td>
-																	<button type="button" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Muelles['id_muelle_puerto']; ?>','Muelles');"><i class="fa fa-pencil"></i> Editar</button>
-																 </td>
-															</tr>
-														 <?php }?>
-														</tbody>
-													</table>
-												</div>
-											</div>
-										</div>
-										<!-- Inicio, ibox autorizaciones -->
-									</form>
-								</div>
-								<!-- Fin, lista de autorización -->
 								<!-- Inicio, lista motivo autorización -->
-								<div id="tab-2" class="tab-pane">
+								<div id="tab-1" class="tab-pane active">
 									<form class="form-horizontal">
 										<!-- Inicio, ibox motivos -->
 										<div class="ibox" id="Motivos">
