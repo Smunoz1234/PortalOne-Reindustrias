@@ -14,6 +14,9 @@ $dir_new = CrearObtenerDirAnx("formularios/monitoreos_temperaturas/planos");
 $SQL_TipoDoc = Seleccionar("uvw_tbl_ObjetosSAP", "*", "CategoriaObjeto = 'Documentos de ventas'", 'CategoriaObjeto, DeTipoDocumento');
 $SQL_ModeloAutorizacion = Seleccionar("uvw_Sap_tbl_ModelosAutorizaciones", "*");
 
+// Perfiles Usuarios, SMM 14/05/2022
+$SQL_Perfiles = Seleccionar('uvw_tbl_PerfilesUsuarios', '*');
+
 if ($edit == 1 && $id != "") {
     $Title = "Editar registro";
     $Metodo = 2;
@@ -23,22 +26,31 @@ if ($edit == 1 && $id != "") {
     } elseif ($doc == "Productos") {
         $SQL = Seleccionar('tbl_ProductosPuerto', '*', "id_producto_puerto='" . $id . "'");
         $row = sqlsrv_fetch_array($SQL);
-    } elseif ($doc == "Transportes") {
-        $SQL = Seleccionar('tbl_TransportesPuerto', '*', "id_transporte_puerto='" . $id . "'");
-        $row = sqlsrv_fetch_array($SQL);
-    } elseif ($doc == "TipoInfectacion") {
-        $SQL = Seleccionar('tbl_TipoInfectacionProductos', '*', "id_tipo_infectacion_producto='" . $id . "'");
-        $row = sqlsrv_fetch_array($SQL);
-    } elseif ($doc == "GradoInfectacion") {
-        $SQL = Seleccionar('tbl_GradoInfectacion', '*', "id_grado_infectacion='" . $id . "'");
-        $row = sqlsrv_fetch_array($SQL);
-    } elseif ($doc == "Muelles") {
-        $SQL = Seleccionar('tbl_MuellesPuerto', '*', "id_muelle_puerto='" . $id . "'");
-        $row = sqlsrv_fetch_array($SQL);
     }
 }
-
 ?>
+
+<style>
+	/*
+	* Estilos para el uso del componente select2-multiple en un modal.
+	*
+	* @author Stiven Muñoz Murillo
+	* @version 26/07/2022
+	*/
+
+	.select2-container {
+		z-index: 10000;
+	}
+
+	.select2-search--inline {
+    display: contents;
+	}
+
+	.select2-search__field:placeholder-shown {
+		width: 100% !important;
+	}
+</style>
+
 <form id="frm_NewParam" method="post" action="parametros_autorizaciones_documentos.php" enctype="multipart/form-data">
 <div class="modal-header">
 	<h4 class="modal-title">
@@ -97,6 +109,21 @@ if ($edit == 1 && $id != "") {
 						<option value="N" <?php if (($edit == 1) && ($row['Estado'] == "N")) {echo "selected=\"selected\"";}?>>INACTIVO</option>
 					</select>
 				</div>
+				<div class="form-group">
+					<label class="control-label">Perfiles Usuarios</label>
+					<select data-placeholder="Digite para buscar..." name="Perfiles[]" class="form-control select2" id="Perfiles" multiple>
+						<?php while ($row_Perfil = sqlsrv_fetch_array($SQL_Perfiles)) {?>
+							<option value="<?php echo $row_Perfil['ID_PerfilUsuario']; ?>"
+							<?php //if (in_array($row_Perfil['ID_PerfilUsuario'], $ids_perfiles)) {echo "selected";} ?>>
+								<?php echo $row_Perfil['PerfilUsuario']; ?>
+							</option>
+						<?php }?>
+					</select>
+				</div>
+				<div class="form-group">
+					<label class="control-label">Condiciones</label>
+					<textarea name="Condiciones" rows="3" maxlength="3000" class="form-control" id="Condiciones" type="text"><?php if ($edit == 1) {echo $row['Condiciones'];}?></textarea>
+				</div>
 			<?php } elseif ($doc == "Transportes") {?>
 			<div class="form-group">
 				<label class="control-label">Código de motonave <span class="text-danger">*</span></label>
@@ -121,66 +148,6 @@ if ($edit == 1 && $id != "") {
 					 <option value="N" <?php if (($edit == 1) && ($row['estado'] == "N")) {echo "selected=\"selected\"";}?>>INACTIVO</option>
 				 </select>
 			</div>
-			<?php } elseif ($doc == "TipoInfectacion") {?>
-			<div class="form-group">
-				<label class="control-label">Código de infestación <span class="text-danger">*</span></label>
-				<input type="text" class="form-control" name="Codigo" id="Codigo" required autocomplete="off" value="<?php if ($edit == 1) {echo $row['id_tipo_infectacion_producto'];}?>">
-			</div>
-			<div class="form-group">
-				<label class="control-label">Nombre de infestación <span class="text-danger">*</span></label>
-				<input type="text" class="form-control" name="Nombre" id="Nombre" required autocomplete="off" value="<?php if ($edit == 1) {echo $row['tipo_infectacion_producto'];}?>">
-			</div>
-			<div class="form-group">
-				<label class="control-label">Comentarios</label>
-				<textarea name="Comentarios" rows="3" maxlength="3000" class="form-control" id="Comentarios" type="text"><?php if ($edit == 1) {echo $row['comentarios'];}?></textarea>
-			</div>
-			<div class="form-group">
-				<label class="control-label">Estado <span class="text-danger">*</span></label>
-				<select class="form-control" id="Estado" name="Estado">
-					 <option value="Y" <?php if (($edit == 1) && ($row['estado'] == "Y")) {echo "selected=\"selected\"";}?>>ACTIVO</option>
-					 <option value="N" <?php if (($edit == 1) && ($row['estado'] == "N")) {echo "selected=\"selected\"";}?>>INACTIVO</option>
-				 </select>
-			</div>
-			<?php } elseif ($doc == "GradoInfectacion") {?>
-			<div class="form-group">
-				<label class="control-label">Código de grado infestación <span class="text-danger">*</span></label>
-				<input type="text" class="form-control" name="Codigo" id="Codigo" required autocomplete="off" value="<?php if ($edit == 1) {echo $row['id_grado_infectacion'];}?>">
-			</div>
-			<div class="form-group">
-				<label class="control-label">Nombre de grado infestación <span class="text-danger">*</span></label>
-				<input type="text" class="form-control" name="Nombre" id="Nombre" required autocomplete="off" value="<?php if ($edit == 1) {echo $row['grado_infectacion'];}?>">
-			</div>
-			<div class="form-group">
-				<label class="control-label">Comentarios</label>
-				<textarea name="Comentarios" rows="3" maxlength="3000" class="form-control" id="Comentarios" type="text"><?php if ($edit == 1) {echo $row['comentarios'];}?></textarea>
-			</div>
-			<div class="form-group">
-				<label class="control-label">Estado <span class="text-danger">*</span></label>
-				<select class="form-control" id="Estado" name="Estado">
-					 <option value="Y" <?php if (($edit == 1) && ($row['estado'] == "Y")) {echo "selected=\"selected\"";}?>>ACTIVO</option>
-					 <option value="N" <?php if (($edit == 1) && ($row['estado'] == "N")) {echo "selected=\"selected\"";}?>>INACTIVO</option>
-				 </select>
-			</div>
-			<?php } elseif ($doc == "Muelles") {?>
-			<div class="form-group">
-				<label class="control-label">Código de muelle <span class="text-danger">*</span></label>
-				<input type="text" class="form-control" name="Codigo" id="Codigo" required autocomplete="off" value="<?php if ($edit == 1) {echo $row['id_muelle_puerto'];}?>">
-			</div>
-			<div class="form-group">
-				<label class="control-label">Nombre de muelle <span class="text-danger">*</span></label>
-				<input type="text" class="form-control" name="Nombre" id="Nombre" required autocomplete="off" value="<?php if ($edit == 1) {echo $row['muelle_puerto'];}?>">
-			</div>
-			<div class="form-group">
-				<label class="control-label">Comentarios</label>
-				<textarea name="Comentarios" rows="3" maxlength="3000" class="form-control" id="Comentarios" type="text"><?php if ($edit == 1) {echo $row['comentarios'];}?></textarea>
-			</div>
-			<div class="form-group">
-				<label class="control-label">Estado <span class="text-danger">*</span></label>
-				<select class="form-control" id="Estado" name="Estado">
-					 <option value="Y" <?php if (($edit == 1) && ($row['estado'] == "Y")) {echo "selected=\"selected\"";}?>>ACTIVO</option>
-					 <option value="N" <?php if (($edit == 1) && ($row['estado'] == "N")) {echo "selected=\"selected\"";}?>>INACTIVO</option>
-				 </select>
-			</div>
 			<?php }?>
 		</div>
 	</div>
@@ -200,30 +167,33 @@ if ($edit == 1 && $id != "") {
 	<input type="hidden" id="frmType" name="frmType" value="1" />
 </form>
 <script>
- $(document).ready(function(){
-	 $("#frm_NewParam").validate({
-		 submitHandler: function(form){
-			 let Metodo = document.getElementById("Metodo").value;
-			 if(Metodo!="3"){
-				 Swal.fire({
-					title: "¿Está seguro que desea guardar los datos?",
-					icon: "question",
-					showCancelButton: true,
-					confirmButtonText: "Si, confirmo",
-					cancelButtonText: "No"
-				}).then((result) => {
-					if (result.isConfirmed) {
-						$('.ibox-content').toggleClass('sk-loading',true);
-						form.submit();
-					}
-				});
-			 }else{
-				$('.ibox-content').toggleClass('sk-loading',true);
-				form.submit();
-			 }
-		}
+$(document).ready(function(){
+	$("#frm_NewParam").validate({
+		submitHandler: function(form){
+			let Metodo = document.getElementById("Metodo").value;
+			if(Metodo!="3"){
+				Swal.fire({
+				title: "¿Está seguro que desea guardar los datos?",
+				icon: "question",
+				showCancelButton: true,
+				confirmButtonText: "Si, confirmo",
+				cancelButtonText: "No"
+			}).then((result) => {
+				if (result.isConfirmed) {
+					$('.ibox-content').toggleClass('sk-loading',true);
+					form.submit();
+				}
+			});
+			}else{
+			$('.ibox-content').toggleClass('sk-loading',true);
+			form.submit();
+			}
+	}
 	 });
 	$('.chosen-select').chosen({width: "100%"});
+
+	// SMM, 26/07/2022
+	$(".select2").select2();
 
 	<?php if ($doc == "Bodegas") {?>
 
