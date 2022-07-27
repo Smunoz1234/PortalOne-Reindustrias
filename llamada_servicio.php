@@ -521,7 +521,7 @@ if ($type_llmd == 1 && $sw_error == 0) {
     $SQL_ListaMateriales = Seleccionar('uvw_Sap_tbl_ListaMateriales', '*', "CDU_IdMarca='" . $CDU_IdMarca_TarjetaEquipo . "' AND CDU_IdLinea='" . $CDU_IdLinea_TarjetaEquipo . "'");
 
     //Activides relacionadas
-    $SQL_Actividad = Seleccionar('uvw_Sap_tbl_Actividades', 'IdEstadoActividad,FechaFinActividad,ID_Actividad,DeAsignadoPor,NombreEmpleado,TituloActividad,FechaHoraInicioActividad,FechaHoraFinActividad,DeEstadoActividad', "ID_LlamadaServicio='" . $IdLlamada . "'", 'ID_Actividad');
+    $SQL_Actividad = Seleccionar('uvw_Sap_tbl_Actividades', '*', "ID_LlamadaServicio='" . $IdLlamada . "'", 'ID_Actividad');
 
     //Documentos relacionados
     $SQL_DocRel = Seleccionar('uvw_Sap_tbl_LlamadasServiciosDocRelacionados', '*', "ID_LlamadaServicio='" . $IdLlamada . "'");
@@ -563,7 +563,7 @@ if ($sw_error == 1) {
     $SQL_NumeroSerie = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', '*', "ItemCode='" . $row['IdArticuloLlamada'] . "'", 'SerialFabricante');
 
     //Activides relacionadas
-    $SQL_Actividad = Seleccionar('uvw_Sap_tbl_Actividades', 'IdEstadoActividad,FechaFinActividad,ID_Actividad,DeAsignadoPor,NombreEmpleado,TituloActividad,FechaHoraInicioActividad,FechaHoraFinActividad,DeEstadoActividad', "ID_LlamadaServicio='" . $row['DocEntry'] . "'", 'ID_Actividad');
+    $SQL_Actividad = Seleccionar('uvw_Sap_tbl_Actividades', '*', "ID_LlamadaServicio='" . $row['DocEntry'] . "'", 'ID_Actividad');
 
     //Documentos relacionados
     $SQL_DocRel = Seleccionar('uvw_Sap_tbl_LlamadasServiciosDocRelacionados', '*', "ID_LlamadaServicio='" . $row['DocEntry'] . "'");
@@ -2161,6 +2161,7 @@ $return = QuitarParametrosURL($return, array("a"));?>
 												<th>Fecha limite</th>
 												<th>Dias venc.</th>
 												<th>Estado</th>
+												<th>Estado Servicio</th>
 												<th>Acciones</th>
 											</tr>
 											</thead>
@@ -2181,7 +2182,33 @@ $return = QuitarParametrosURL($return, array("a"));?>
 													<td><?php if ($row_Actividad['FechaHoraFinActividad'] != "") {echo $row_Actividad['FechaHoraFinActividad']->format('Y-m-d H:s');} else {?><p class="text-muted">--</p><?php }?></td>
 													<td><p class='<?php echo $DVenc[0]; ?>'><?php echo $DVenc[1]; ?></p></td>
 													<td><span <?php if ($row_Actividad['IdEstadoActividad'] == 'N') {echo "class='label label-info'";} else {echo "class='label label-danger'";}?>><?php echo $row_Actividad['DeEstadoActividad']; ?></span></td>
-													<td><a href="actividad.php?tl=1&id=<?php echo base64_encode($row_Actividad['ID_Actividad']); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('llamada_servicio.php'); ?>" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i> Abrir</a></td>
+
+													<td>
+														<?php $SQL_TiposEstadoServ = Seleccionar("uvw_tbl_TipoEstadoServicio", "*");?>
+														<?php while ($row_TipoEstadoServ = sqlsrv_fetch_array($SQL_TiposEstadoServ)) {?>
+															<?php if ($row_Actividad['IdTipoEstadoActividad'] == $row_TipoEstadoServ['ID_TipoEstadoServicio']) {?>
+																<span class='label text-white' style="background-color: <?php echo $row_TipoEstadoServ['ColorEstadoServicio']; ?>;"><?php echo $row_Actividad['DeTipoEstadoActividad']; ?></span>
+															<?php }?>
+														<?php }?>
+													</td>
+
+													<td>
+														<a href="actividad.php?tl=1&id=<?php echo base64_encode($row_Actividad['ID_Actividad']); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('llamada_servicio.php'); ?>" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i> Abrir</a>
+
+														<!-- Botón de descarga -->
+														<div class="btn-group">
+															<button data-toggle="dropdown" class="btn btn-xs btn-warning dropdown-toggle"><i class="fa fa-download"></i> Descargar formato <i class="fa fa-caret-down"></i></button>
+															<ul class="dropdown-menu">
+																<?php $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=66 and VerEnDocumento='Y'");?>
+    															<?php while ($row_Formato = sqlsrv_fetch_array($SQL_Formato)) {?>
+																	<li>
+																		<a class="dropdown-item" target="_blank" href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row_Actividad['ID_Actividad']); ?>&ObType=<?php echo base64_encode('66'); ?>&IdFrm=<?php echo base64_encode($row_Formato['IdFormato']); ?>&IdReg=<?php echo base64_encode($row_Formato['ID']); ?>"><?php echo $row_Formato['NombreVisualizar']; ?></a>
+																	</li>
+																<?php }?>
+															</ul>
+														</div>
+														<!-- SMM, 25/07/2022 -->
+													</td>
 												</tr>
 											<?php }?>
 											</tbody>
@@ -2253,24 +2280,30 @@ $return = QuitarParametrosURL($return, array("a"));?>
 										<table class="table table-striped table-bordered table-hover dataTables-example" >
 											<thead>
 											<tr>
+												<th>Nombre cliente</th>
 												<th>Tipo de documento</th>
 												<th>Número de documento</th>
 												<th>Fecha de documento</th>
 												<th>Autorización</th>
 												<th>Estado de documento</th>
 												<th>Creado por</th>
+												<th>Artículos/Costos</th>
 												<th>Acciones</th>
 											</tr>
 											</thead>
 											<tbody>
 											<?php while ($row_DocRel = sqlsrv_fetch_array($SQL_DocRel)) {?>
 												 <tr class="gradeX">
-													<td><?php echo $row_DocRel['DeObjeto']; ?></td>
+												 	<td><?php echo $row_DocRel['NombreCliente']; ?></td>
+												 	<td><?php echo $row_DocRel['DeObjeto']; ?></td>
 													<td><?php echo $row_DocRel['DocNum']; ?></td>
 													<td><?php echo $row_DocRel['DocDate']; ?></td>
 													<td><?php echo $row_DocRel['DeAuthPortal']; ?></td>
 													<td><span <?php if ($row_DocRel['Cod_Estado'] == 'O') {echo "class='label label-info'";} else {echo "class='label label-danger'";}?>><?php echo $row_DocRel['NombreEstado']; ?></span></td>
 													<td><?php echo $row_DocRel['Usuario']; ?></td>
+													<td>
+														<a class="btn btn-primary btn-xs" id="btnPreCostos" name="btnPreCostos" onClick="MostrarCostos_Documentos('<?php echo $row_DocRel['DocNum']; ?>', '<?php echo $row_DocRel['IdObjeto']; ?>', '<?php echo $row_DocRel['DeObjeto']; ?>');"><i class="fa fa-money"></i> Previsualizar Precios</a>
+													</td>
 													<td>
 													<?php if ($row_DocRel['Link'] != "") {?>
 														<a href="<?php echo $row_DocRel['Link']; ?>.php?id=<?php echo base64_encode($row_DocRel['DocEntry']); ?>&id_portal=<?php echo base64_encode($row_DocRel['IdPortal']); ?>&tl=1&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('llamada_servicio.php'); ?>" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i> Abrir</a>
@@ -2657,6 +2690,27 @@ function MostrarCostos(id_llamada){
 			$('.ibox-content').toggleClass('sk-loading',false);
 			$('#ContenidoModal').html(response);
 			$('#TituloModal').html('Precios IVA Incluido (Entregas (+) / Devoluciones (-))');
+			$('#myModal').modal("show");
+		}
+	});
+}
+
+// SMM, 26/07/2022
+function MostrarCostos_Documentos(docnum, id_objeto, de_objeto){
+	$('.ibox-content').toggleClass('sk-loading',true);
+	$.ajax({
+		type: "POST",
+		async: false,
+		url: "md_articulos_documentos.php",
+		data:{
+			pre: 4,
+			DocNum: docnum,
+			IdObjeto: id_objeto
+		},
+		success: function(response){
+			$('.ibox-content').toggleClass('sk-loading',false);
+			$('#ContenidoModal').html(response);
+			$('#TituloModal').html(`Precios IVA Incluido (${de_objeto}: ${docnum})`);
 			$('#myModal').modal("show");
 		}
 	});
