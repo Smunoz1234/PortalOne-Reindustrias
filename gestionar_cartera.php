@@ -10,6 +10,14 @@ if (isset($_POST['swError']) && ($_POST['swError'] != "")) { //Para saber si ha 
     $sw_error = 0;
 }
 
+// SMM, 14/07/2022
+if (isset($_GET['TE']) && ($_GET['TE'] != "")) {
+    $SQL_TE = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', '*', "IdTarjetaEquipo='" . base64_decode($_GET['TE']) . "'");
+    $row_TE = sqlsrv_fetch_array($SQL_TE);
+} else {
+    $row_TE = [];
+}
+
 //Clientes
 /*if(PermitirFuncion(205)){
 $SQL_Cliente=Seleccionar("uvw_Sap_tbl_Clientes","CodigoCliente, NombreCliente","",'NombreCliente',"ASC");
@@ -328,7 +336,25 @@ if ((isset($_POST['Cliente']) && ($_POST['Cliente']) != "") || (isset($_GET['Clt
     $SQL_NumeroSerie = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', '*', "CardCode='$Cliente'", 'SerialFabricante');
 }
 
+// SMM, 14/07/2022
+if (isset($row_TE['CDU_Fecha_SOAT'])) {
+    $Fecha_SOAT = '-' . ObtenerVariable("DiasAlertaVencimientoVehiculo") . ' day';
+    $Fecha_SOAT = strtotime($row_TE['CDU_Fecha_SOAT']->format('Y-m-d') . $Fecha_SOAT);
+    $Fecha_SOAT = date('Y-m-d', $Fecha_SOAT);
+
+    $Exp_SOAT = $Fecha_SOAT < date('Y-m-d');
+}
+
+// SMM, 14/07/2022
+if (isset($row_TE['CDU_Fecha_Tecno'])) {
+    $Fecha_Tecno = '-' . ObtenerVariable("DiasAlertaVencimientoVehiculo") . ' day';
+    $Fecha_Tecno = strtotime($row_TE['CDU_Fecha_Tecno']->format('Y-m-d') . $Fecha_Tecno);
+    $Fecha_Tecno = date('Y-m-d', $Fecha_Tecno);
+
+    $Exp_Tecno = $Fecha_Tecno < date('Y-m-d');
+}
 ?>
+
 <!DOCTYPE html>
 <html><!-- InstanceBegin template="/Templates/PlantillaPrincipal.dwt.php" codeOutsideHTMLIsLocked="false" -->
 
@@ -783,6 +809,22 @@ while ($row_FacturasPendientes = sqlsrv_fetch_array($SQL_FacturasPendientes)) {?
 											</div>
 										</div>
 									</div>
+
+									<!-- Mensajes de aviso, vencimiento -->
+									<?php if (isset($row_TE['CDU_Fecha_SOAT']) && $Exp_SOAT) {?>
+										<div class="alert alert-info alert-dismissible" style="font-size: 2em !important;">
+											<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+											<i class="fa fa-stethoscope"></i> El SOAT de este cliente esta próximo a vencerse.</p>
+										</div>
+									<?php }?>
+									<?php if (isset($row_TE['CDU_Fecha_Tecno']) && $Exp_Tecno) {?>
+										<div class="alert alert-success alert-dismissible" style="font-size: 2em !important;">
+											<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+											<i class="fa fa-wrench"></i> La Tecno. de este cliente esta próxima a vencerse.</p>
+										</div>
+									<?php }?>
+									<!-- SMM, 13/07/2022 -->
+
 									<div class="form-group">
 										<label class="col-lg-12"><h3 class="bg-success p-xs b-r-sm"><i class="fa fa-briefcase"></i> Registrar gestión</h3></label>
 									</div>
@@ -792,7 +834,7 @@ while ($row_FacturasPendientes = sqlsrv_fetch_array($SQL_FacturasPendientes)) {?
 											<select name="SucursalCliente" class="form-control select2" id="SucursalCliente" required>
 												<option value="" disabled selected>Seleccione...</option>
 												<?php while ($row_SucursalCliente = sqlsrv_fetch_array($SQL_SucursalCliente)) {?>
-													<option value="<?php echo $row_SucursalCliente['NombreSucursal']; ?>">
+													<option value="<?php echo $row_SucursalCliente['NombreSucursal']; ?>" <?php if ((isset($row_TE['Ciudad'])) && (strcmp($row_TE['Ciudad'], $row_SucursalCliente['NombreSucursal']) == 0)) {echo "selected='selected'";}?>>
 														<?php echo $row_SucursalCliente['NombreSucursal']; ?>
 													</option>
 												<?php }?>
@@ -805,7 +847,7 @@ while ($row_FacturasPendientes = sqlsrv_fetch_array($SQL_FacturasPendientes)) {?
 											<select name="NumeroSerie" class="form-control select2" id="NumeroSerie">
 												<option value="" disabled selected>Seleccione...</option>
 												<?php while ($row_NumeroSerie = sqlsrv_fetch_array($SQL_NumeroSerie)) {?>
-													<option value="<?php echo $row_NumeroSerie['SerialInterno']; ?>" data-id="<?php echo $row_NumeroSerie['IdTarjetaEquipo'] ?? ""; ?>">
+													<option value="<?php echo $row_NumeroSerie['SerialInterno']; ?>" data-id="<?php echo $row_NumeroSerie['IdTarjetaEquipo'] ?? ""; ?>" <?php if ((isset($row_TE['IdTarjetaEquipo'])) && (strcmp($row_TE['IdTarjetaEquipo'], $row_NumeroSerie['IdTarjetaEquipo']) == 0)) {echo "selected='selected'";}?>>
 														<?php echo "SN Fabricante: " . $row_NumeroSerie['SerialFabricante'] . " - Núm. Serie: " . $row_NumeroSerie['SerialInterno']; ?>
 													</option>
 												<?php }?>

@@ -20,6 +20,58 @@ $SQL_Marca = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_MarcaVehiculo', '*');
 // Concesionarios en la tarjeta de equipo
 $SQL_Concesionario = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_Concesionario', '*');
 
+//Fechas, SMM 13/07/2022
+if (isset($_GET['FI_FechaProx_Mant']) && $_GET['FI_FechaProx_Mant'] != "") {
+    $FI_FechaProx_Mant = $_GET['FI_FechaProx_Mant'];
+    $sw = 1;
+} else {
+    //Restar 7 dias a la fecha actual
+    $fecha = date('Y-m-d');
+    $nuevafecha = strtotime('-' . ObtenerVariable("DiasRangoFechasGestionar") . ' day');
+    $nuevafecha = date('Y-m-d', $nuevafecha);
+    $FI_FechaProx_Mant = $nuevafecha;
+}
+if (isset($_GET['FF_FechaProx_Mant']) && $_GET['FF_FechaProx_Mant'] != "") {
+    $FF_FechaProx_Mant = $_GET['FF_FechaProx_Mant'];
+    $sw = 1;
+} else {
+    $FF_FechaProx_Mant = date('Y-m-d');
+}
+
+if (isset($_GET['FI_Fecha_SOAT']) && $_GET['FI_Fecha_SOAT'] != "") {
+    $FI_Fecha_SOAT = $_GET['FI_Fecha_SOAT'];
+    $sw = 1;
+} else {
+    //Restar 7 dias a la fecha actual
+    $fecha = date('Y-m-d');
+    $nuevafecha = strtotime('-' . ObtenerVariable("DiasRangoFechasGestionar") . ' day');
+    $nuevafecha = date('Y-m-d', $nuevafecha);
+    $FI_Fecha_SOAT = $nuevafecha;
+}
+if (isset($_GET['FF_Fecha_SOAT']) && $_GET['FF_Fecha_SOAT'] != "") {
+    $FF_Fecha_SOAT = $_GET['FF_Fecha_SOAT'];
+    $sw = 1;
+} else {
+    $FF_Fecha_SOAT = date('Y-m-d');
+}
+
+if (isset($_GET['FI_Fecha_Tecno']) && $_GET['FI_Fecha_Tecno'] != "") {
+    $FI_Fecha_Tecno = $_GET['FI_Fecha_Tecno'];
+    $sw = 1;
+} else {
+    //Restar 7 dias a la fecha actual
+    $fecha = date('Y-m-d');
+    $nuevafecha = strtotime('-' . ObtenerVariable("DiasRangoFechasGestionar") . ' day');
+    $nuevafecha = date('Y-m-d', $nuevafecha);
+    $FI_Fecha_Tecno = $nuevafecha;
+}
+if (isset($_GET['FF_Fecha_Tecno']) && $_GET['FF_Fecha_Tecno'] != "") {
+    $FF_Fecha_Tecno = $_GET['FF_Fecha_Tecno'];
+    $sw = 1;
+} else {
+    $FF_Fecha_Tecno = date('Y-m-d');
+}
+
 // Filtros
 $Cliente = $_GET['ClienteEquipo'] ?? "";
 $IdMarca = $_GET['Marca'] ?? "";
@@ -27,7 +79,6 @@ $Ciudad = $_GET['Ciudad'] ?? "";
 $IdConcesionario = $_GET['Concesionario'] ?? "";
 $FechaMatriculo = (isset($_GET['CDU_FechaMatricula']) && strtotime($_GET['CDU_FechaMatricula'])) ? ("'" . FormatoFecha($_GET['CDU_FechaMatricula']) . "'") : "NULL";
 $FechaUltMnto = (isset($_GET['CDU_FechaUlt_Mant']) && strtotime($_GET['CDU_FechaUlt_Mant'])) ? ("'" . FormatoFecha($_GET['CDU_FechaUlt_Mant']) . "'") : "NULL";
-$FechaProxMnto = (isset($_GET['CDU_FechaProx_Mant']) && strtotime($_GET['CDU_FechaProx_Mant'])) ? ("'" . FormatoFecha($_GET['CDU_FechaProx_Mant']) . "'") : "NULL";
 
 if ($sw == 1) {
     $Param = array(
@@ -37,7 +88,12 @@ if ($sw == 1) {
         "'" . $IdConcesionario . "'",
         $FechaMatriculo,
         $FechaUltMnto,
-        $FechaProxMnto,
+        "'" . FormatoFecha($FI_FechaProx_Mant) . "'",
+        "'" . FormatoFecha($FF_FechaProx_Mant) . "'",
+        "'" . FormatoFecha($FI_Fecha_SOAT) . "'",
+        "'" . FormatoFecha($FF_Fecha_SOAT) . "'",
+        "'" . FormatoFecha($FI_Fecha_Tecno) . "'",
+        "'" . FormatoFecha($FF_Fecha_Tecno) . "'",
     );
     $SQL = EjecutarSP('usp_inf_GestionTarjetaEquipos', $Param);
 }
@@ -64,6 +120,12 @@ if ($sw == 1) {
 	});
 </script>
 <!-- InstanceEndEditable -->
+
+<style>
+	table.dataTable tbody tr.selected {
+		background-color: gray !important;
+	}
+</style>
 </head>
 
 <body>
@@ -142,26 +204,49 @@ if ($sw == 1) {
 								<input name="NombreClienteEquipo" type="text" class="form-control" id="NombreClienteEquipo" placeholder="Para TODOS, dejar vacio..." value="<?php if (isset($_GET['NombreClienteEquipo']) && ($_GET['NombreClienteEquipo'] != "")) {echo $_GET['NombreClienteEquipo'];}?>">
 							</div>
 
-							<label class="col-lg-1 control-label">Fecha Ult. Mantenimiento</label>
-								<div class="col-lg-3 input-group date">
-									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="CDU_FechaUlt_Mant" id="CDU_FechaUlt_Mant" type="text" class="form-control"
-									 placeholder="YYYY-MM-DD" value="<?php if (isset($_GET['CDU_FechaUlt_Mant']) && strtotime($_GET['CDU_FechaUlt_Mant'])) {echo date('Y-m-d', strtotime($_GET['CDU_FechaUlt_Mant']));}?>">
-								</div>
-
-							<label class="col-lg-1 control-label">Fecha Prox. Mantenimiento</label>
-							<div class="col-lg-3 input-group date">
-									<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="CDU_FechaProx_Mant" id="CDU_FechaProx_Mant" type="text" class="form-control"
-									placeholder="YYYY-MM-DD" value="<?php if (isset($_GET['CDU_FechaProx_Mant']) && strtotime($_GET['CDU_FechaProx_Mant'])) {echo date('Y-m-d', strtotime($_GET['CDU_FechaProx_Mant']));}?>">
-							</div>
-						</div>
-
-						<div class="form-group">
 							<label class="col-lg-1 control-label">Fecha Matricula</label>
 							<div class="col-lg-3 input-group date">
 								<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="CDU_FechaMatricula" id="CDU_FechaMatricula" type="text" class="form-control"
 								placeholder="YYYY-MM-DD" value="<?php if (isset($_GET['CDU_FechaMatricula']) && strtotime($_GET['CDU_FechaMatricula'])) {echo date('Y-m-d', strtotime($_GET['CDU_FechaMatricula']));}?>">
 							</div>
 
+							<label class="col-lg-1 control-label">Fecha Ult. Mantenimiento</label>
+							<div class="col-lg-3 input-group date">
+								<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="CDU_FechaUlt_Mant" id="CDU_FechaUlt_Mant" type="text" class="form-control"
+								placeholder="YYYY-MM-DD" value="<?php if (isset($_GET['CDU_FechaUlt_Mant']) && strtotime($_GET['CDU_FechaUlt_Mant'])) {echo date('Y-m-d', strtotime($_GET['CDU_FechaUlt_Mant']));}?>">
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-lg-1 control-label">Fecha Prox. Mantenimiento</label>
+							<div class="col-lg-3">
+								<div class="input-daterange input-group" id="datepicker">
+									<input name="FI_FechaProx_Mant" type="text" class="input-sm form-control" id="FI_FechaProx_Mant" placeholder="Fecha inicial" value="<?php echo $FI_FechaProx_Mant; ?>" autocomplete="off" />
+									<span class="input-group-addon">hasta</span>
+									<input name="FF_FechaProx_Mant" type="text" class="input-sm form-control" id="FF_FechaProx_Mant" placeholder="Fecha final" value="<?php echo $FF_FechaProx_Mant; ?>" autocomplete="off" />
+								</div>
+							</div>
+
+							<label class="col-lg-1 control-label">Fecha SOAT</label>
+							<div class="col-lg-3">
+								<div class="input-daterange input-group" id="datepicker">
+									<input name="FI_Fecha_SOAT" type="text" class="input-sm form-control" id="FI_Fecha_SOAT" placeholder="Fecha inicial" value="<?php echo $FI_Fecha_SOAT; ?>" autocomplete="off" />
+									<span class="input-group-addon">hasta</span>
+									<input name="FF_Fecha_SOAT" type="text" class="input-sm form-control" id="FF_Fecha_SOAT" placeholder="Fecha final" value="<?php echo $FF_Fecha_SOAT; ?>" autocomplete="off" />
+								</div>
+							</div>
+
+							<label class="col-lg-1 control-label">Fecha Tecno</label>
+							<div class="col-lg-3">
+								<div class="input-daterange input-group" id="datepicker">
+									<input name="FI_Fecha_Tecno" type="text" class="input-sm form-control" id="FI_Fecha_Tecno" placeholder="Fecha inicial" value="<?php echo $FI_Fecha_Tecno; ?>" autocomplete="off" />
+									<span class="input-group-addon">hasta</span>
+									<input name="FF_Fecha_Tecno" type="text" class="input-sm form-control" id="FF_Fecha_Tecno" placeholder="Fecha final" value="<?php echo $FF_Fecha_Tecno; ?>" autocomplete="off" />
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group">
 							<div class="col-lg-4">
 								<button type="submit" class="btn btn-outline btn-success pull-right"><i class="fa fa-search"></i> Buscar</button>
 							</div>
@@ -188,7 +273,7 @@ if ($sw == 1) {
 			    <div class="ibox-content">
 					 <?php include "includes/spinner.php";?>
 			<div class="table-responsive">
-                    <table class="table table-striped table-bordered table-hover dataTables-example" >
+                    <table class="table table-striped table-bordered table-hover dataTables-example" id="example">
                     <thead>
                     <tr>
 						<th>Núm.</th>
@@ -200,6 +285,8 @@ if ($sw == 1) {
 						<th>Fecha Matricula</th>
                         <th>Fecha Ult. Mant.</th>
 						<th>Fecha Prox. Mant.</th>
+						<th>Fecha SOAT</th>
+						<th>Fecha Tecno.</th>
 						<th>Estado</th>
 						<th>Acciones</th>
                     </tr>
@@ -216,6 +303,8 @@ if ($sw == 1) {
 							<td><?php echo ($row['CDU_FechaMatricula'] != "") ? $row['CDU_FechaMatricula']->format('Y-m-d') : ""; ?></td>
 							<td><?php echo ($row['CDU_FechaUlt_Mant'] != "") ? $row['CDU_FechaUlt_Mant']->format('Y-m-d') : ""; ?></td>
 							<td><?php echo ($row['CDU_FechaProx_Mant'] != "") ? $row['CDU_FechaProx_Mant']->format('Y-m-d') : ""; ?></td>
+							<td><?php echo ($row['CDU_Fecha_SOAT'] != "") ? $row['CDU_Fecha_SOAT']->format('Y-m-d') : ""; ?></td>
+							<td><?php echo ($row['CDU_Fecha_Tecno'] != "") ? $row['CDU_Fecha_Tecno']->format('Y-m-d') : ""; ?></td>
 							<td>
 								<?php if ($row['CodEstado'] == 'A') {?>
 									<span  class='label label-info'>Activo</span>
@@ -229,7 +318,12 @@ if ($sw == 1) {
 									<span  class='label label-warning'>En laboratorio de reparación</span>
 								<?php }?>
 							</td>
-							<td><a href="tarjeta_equipo.php?id=<?php echo base64_encode($row['IdTarjetaEquipo']); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('consultar_tarjeta_equipo.php'); ?>&tl=1" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i> Abrir</a></td>
+							<td>
+								<div>
+									<a href="tarjeta_equipo.php?id=<?php echo base64_encode($row['IdTarjetaEquipo']); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('informe_tarjeta_equipo.php'); ?>&tl=1" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i> Abrir</a>
+									<a target="_blank" href="gestionar_cartera.php?Clt=<?php echo base64_encode($row['CardCode']); ?>&TE=<?php echo base64_encode($row['IdTarjetaEquipo']); ?>" class="btn btn-info btn-xs"><i class="fa fa-plus"></i> Crear Gestión CRM</a>
+								</div>
+							</td>
 						</tr>
 					<?php }?>
                     </tbody>
@@ -250,6 +344,15 @@ if ($sw == 1) {
 <!-- InstanceBeginEditable name="EditRegion4" -->
  <script>
         $(document).ready(function(){
+			$('#example tbody').on('click', 'tr', function () {
+				if ($(this).hasClass('selected')) {
+					$(this).removeClass('selected');
+				} else {
+					$('#example tr.selected').removeClass('selected');
+					$(this).addClass('selected');
+				}
+			});
+
 			$("#formBuscar").validate({
 			 submitHandler: function(form){
 				 $('.ibox-content').toggleClass('sk-loading');
