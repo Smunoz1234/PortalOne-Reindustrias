@@ -239,6 +239,7 @@ function AgregarLMT(){
 										<option value="2019" <?php if((isset($Anno))&&(strcmp(2019,$Anno)==0)){ echo "selected=\"selected\"";}?>>2019</option>
 										<option value="2020" <?php if((isset($Anno))&&(strcmp(2020,$Anno)==0)){ echo "selected=\"selected\"";}?>>2020</option>
 										<option value="2021" <?php if((isset($Anno))&&(strcmp(2021,$Anno)==0)){ echo "selected=\"selected\"";}?>>2021</option>
+										<option value="2022" <?php if((isset($Anno))&&(strcmp(2022,$Anno)==0)){ echo "selected=\"selected\"";}?>>2022</option>
 									</select>
 								</div>
 							</div>
