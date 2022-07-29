@@ -66,7 +66,11 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Orden de venta
             $IdOrdenVenta = "NULL";
             $IdEvento = "0";
             $Type = 1;
+
+            // Comprobar motivos de autorización en la creación, SMM 29/07/2022
+            $SQL_Motivos = Seleccionar("uvw_tbl_Autorizaciones_Motivos", "*");
         }
+
         $ParametrosCabOrdenVenta = array(
             $IdOrdenVenta,
             $IdEvento,
@@ -569,7 +573,13 @@ function ConsultarDatosCliente(){
 		remote.focus();
 	}
 }
+
+// SMM, 15/07/2022
+function verAutorizacion() {
+	$('#modalAUT').modal('show');
+}
 </script>
+
 <script type="text/javascript">
 	$(document).ready(function() { // Cargar los combos dependiendo de otros
 		$("#CardCode").change(function() {
@@ -743,7 +753,7 @@ function ConsultarDatosCliente(){
 
 			var Serie=document.getElementById('Serie').value;
 			var SDim=document.getElementById('Dim2').value; // SMM, 04/02/2022
-			
+
 			$.ajax({
 				type: "POST",
 				url: `ajx_cbo_select.php?type=19&id=${Serie}&SDim=${SDim}`,
@@ -1111,6 +1121,90 @@ function ConsultarDatosCliente(){
 				</div>
 			</div>
 			<!-- Fin, modalSN -->
+
+			<!-- Inicio, modalAUT -->
+			<div class="modal inmodal fade" id="modalAUT" tabindex="-1" role="dialog" aria-hidden="true">
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h4 class="modal-title">Autorización</h4>
+						</div>
+
+						<form id="formAUT">
+							<div class="modal-body">
+								<div class="ibox-content">
+									<div class="form-group">
+										<label class="col-lg-2">Motivo <span class="text-danger">*</span></label>
+										<div class="col-lg-10">
+											<select class="form-control" name="Motivo" id="Motivo" required="required">
+												<option value="" disabled selected>Seleccione...</option>
+												<?php while ($row_EmpleadosVentas = sqlsrv_fetch_array($SQL_EmpleadosVentas) && false) {?>
+														<option value="<?php echo $row_EmpleadosVentas['ID_EmpVentas']; ?>"><?php echo $row_EmpleadosVentas['DE_EmpVentas']; ?></option>
+												<?php }?>
+											</select>
+										</div>
+									</div>
+									<br><br><br>
+									<div class="form-group">
+										<label class="col-lg-2">Comentarios autor</label>
+										<div class="col-lg-10">
+											<textarea type="text" maxlength="200" rows="4" class="form-control" name="ComentariosAutor" id="ComentariosAutor"><?php if ($edit == 1 || $sw_error == 1) {echo $row['Comentarios'];} elseif (isset($_GET['Comentarios'])) {echo base64_decode($_GET['Comentarios']);}?></textarea>
+										</div>
+									</div>
+									<br><br><br>
+
+									<!-- Inicio, Componente Fecha y Hora -->
+									<br><br><br>
+									<div class="form-group">
+										<div class="row">
+											<label class="col-lg-6 control-label" style="text-align: left !important;">Fecha y hora decisión SAP B1</label>
+										</div>
+										<div class="row">
+											<div class="col-lg-6 input-group date">
+												<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="fecha_autoriza_campana" type="text" autocomplete="off" class="form-control" id="fecha_autoriza_campana" value="<?php if ((isset($row['fecha_autoriza_campana'])) && ($row['fecha_autoriza_campana']->format('Y-m-d')) != "1900-01-01") {echo $row['fecha_autoriza_campana']->format('Y-m-d');} //else {echo date('Y-m-d');}?>" placeholder="YYYY-MM-DD">
+											</div>
+											<div class="col-lg-6 input-group clockpicker" data-autoclose="true">
+												<input name="hora_autoriza_campana" id="hora_autoriza_campana" type="text" autocomplete="off" class="form-control" value="<?php if ((isset($row['fecha_autoriza_campana'])) && ($row['fecha_autoriza_campana']->format('Y-m-d')) != "1900-01-01") {echo $row['fecha_autoriza_campana']->format('H:i');} //else {echo date('H:i');}?>" placeholder="hh:mm">
+												<span class="input-group-addon">
+													<span class="fa fa-clock-o"></span>
+												</span>
+											</div>
+										</div>
+									</div>
+									<!-- Fin, Componente Fecha y Hora -->
+
+									<br>
+									<div class="form-group">
+										<label class="col-lg-2">Decisión</label>
+										<div class="col-lg-10">
+											<select class="form-control" name="Motivo" id="Motivo">
+												<option value="" disabled selected>Seleccione...</option>
+												<option value="1">Autorizado</option>
+												<option value="2">Pendiente</option>
+												<option value="3">Rechazado</option>
+											</select>
+										</div>
+									</div>
+									<br><br><br>
+									<div class="form-group">
+										<label class="col-lg-2">Comentarios autorizador</label>
+										<div class="col-lg-10">
+											<textarea type="text" maxlength="200" rows="4" class="form-control" name="ComentariosAutorizador" id="ComentariosAutorizador"><?php if ($edit == 1 || $sw_error == 1) {echo $row['Comentarios'];} elseif (isset($_GET['Comentarios'])) {echo base64_decode($_GET['Comentarios']);}?></textarea>
+										</div>
+									</div>
+									<br><br><br><br>
+								</div>
+							</div>
+
+							<div class="modal-footer">
+								<button type="submit" class="btn btn-success m-t-md"><i class="fa fa-check"></i> Enviar</button>
+								<button type="button" class="btn btn-warning m-t-md" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+			<!-- Fin, modalAUT -->
 
 		 <?php if ($edit == 1) {?>
 			<div class="row">
@@ -1515,19 +1609,20 @@ if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
 							  <?php }?>
 							</select>
 						</div>
-
-
 					</div>
 					<div class="form-group">
 						<label class="col-lg-2">Comentarios</label>
 						<div class="col-lg-10">
-							<textarea name="Comentarios" form="CrearOrdenVenta" rows="4" id="Comentarios" class="form-control" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "readonly";}?>><?php if ($edit == 1 || $sw_error == 1) {echo $row['Comentarios'];} elseif (isset($_GET['Comentarios'])) {echo base64_decode($_GET['Comentarios']);}?></textarea>
+							<textarea type="text" maxlength="2000" name="Comentarios" form="CrearOrdenVenta" rows="4" id="Comentarios" class="form-control" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "readonly";}?>><?php if ($edit == 1 || $sw_error == 1) {echo $row['Comentarios'];} elseif (isset($_GET['Comentarios'])) {echo base64_decode($_GET['Comentarios']);}?></textarea>
 						</div>
 					</div>
 					<div class="form-group">
 						<label class="col-lg-2">Información adicional</label>
-						<div class="col-lg-10">
+						<div class="col-lg-4">
 							<button class="btn btn-success" type="button" id="DatoAdicionales" onClick="VerCamposAdi();"><i class="fa fa-list"></i> Ver campos adicionales</button>
+						</div>
+						<div class="col-lg-6">
+							<button class="btn btn-success" type="button" onClick="verAutorizacion();"><i class="fa fa-eye"></i> Ver autorización</button>
 						</div>
 					</div>
 				</div>
@@ -1649,6 +1744,19 @@ $return = QuitarParametrosURL($return, array("a"));
 				}
 			}
 		 });
+
+		// SMM, 15/07/2022
+		$("#formAUT").on("submit", function(event) {
+			event.preventDefault(); // Evitar redirección del formulario
+
+			// let ClienteSN = document.getElementById('ClienteSN').value;
+
+			alert("Hola Mundo");
+		});
+
+		maxLength('Comentarios'); // SMM, 15/07/2022
+		maxLength('ComentariosAutor'); // SMM, 15/07/2022
+		maxLength('ComentariosAutorizador'); // SMM, 02/0/2022
 
 		$(".alkin").on('click', function(){
 			$('.ibox-content').toggleClass('sk-loading');
