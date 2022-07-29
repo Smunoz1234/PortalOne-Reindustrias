@@ -35,8 +35,11 @@ if(isset($_GET['BuscarDato'])&&$_GET['BuscarDato']!=""){
 	$Filtro.=" and (DocNum LIKE '%".$_GET['BuscarDato']."%' OR NombreContacto LIKE '%".$_GET['BuscarDato']."%' OR DocNumLlamadaServicio LIKE '%".$_GET['BuscarDato']."%' OR ID_LlamadaServicio LIKE '%".$_GET['BuscarDato']."%' OR IdDocPortal LIKE '%".$_GET['BuscarDato']."%' OR NombreEmpleadoVentas LIKE '%".$_GET['BuscarDato']."%' OR Comentarios LIKE '%".$_GET['BuscarDato']."%')";
 }
 
-$SQL=Seleccionar('uvw_Sap_tbl_OrdenesCompras','*',"CardCode='".$_SESSION['CodigoSAPProv']."' $WhereFecha $Filtro");
+$vista = 'uvw_Sap_tbl_OrdenesCompras';
+$where = "CardCode='".$_SESSION['CodigoSAPProv']."' $WhereFecha $Filtro";
+$SQL=Seleccionar($vista, '*', $where);
 
+// echo "SELECT * FROM $vista WHERE $where";
 ?>
 
 <!DOCTYPE html>

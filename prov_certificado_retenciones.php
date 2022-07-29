@@ -1,6 +1,6 @@
 <?php require_once("includes/conexion.php");
 PermitirAcceso(601);
-function PrimerDiaMes(){
+function PrimerDiaMesRetenciones(){
   $month = date('m');
   $year = date('Y');
   return date('Y-m-d', mktime(0,0,0, $month, 1, $year));
@@ -59,7 +59,7 @@ function PrimerDiaMes(){
 						  	<label class="col-lg-1 control-label">Período</label>
 							<div class="col-lg-3" id="data_5">
                                 <div class="input-daterange input-group" id="datepicker">
-                                    <input type="text" class="form-control-sm form-control" name="FechaInicial" id="FechaInicial" value="<?php echo PrimerDiaMes();?>" />
+                                    <input type="text" class="form-control-sm form-control" name="FechaInicial" id="FechaInicial" value="<?php echo PrimerDiaMesRetenciones();?>" />
                                     <span class="input-group-addon">hasta</span>
                                     <input type="text" class="form-control-sm form-control" name="FechaFinal" id="FechaFinal" value="<?php echo date('Y-m-d');?>" />
                                 </div>
