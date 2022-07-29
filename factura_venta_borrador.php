@@ -1030,7 +1030,7 @@ function MostrarRet(){
 					<div class="form-group">
 						<div class="col-lg-6">
 							<a href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row['DocEntry']); ?>&ObType=<?php echo base64_encode('13'); ?>&IdFrm=<?php echo base64_encode($row['IdSeries']); ?>" target="_blank" class="btn btn-outline btn-success"><i class="fa fa-download"></i> Descargar formato</a>
-							<a href="#" class="btn btn-outline btn-info" onClick="VerMapaRel('<?php echo base64_encode($row['DocEntry']); ?>','<?php echo base64_encode('13'); ?>');"><i class="fa fa-sitemap"></i> Mapa de relaciones</a>
+							
 							<?php if ($row['URLVisorPublico'] != "") {?>
 								<a href="<?php echo $row['URLVisorPublico']; ?>" target="_blank" class="btn btn-outline btn-primary"><i class="fa fa-external-link"></i> Ver Fact. Eléctronica</a>
 							<?php }?>
@@ -1042,9 +1042,6 @@ function MostrarRet(){
 							<?php if ($row['DocBaseDocEntry'] != "") {?>
 								<a href="entrega_venta.php?id=<?php echo base64_encode($row['DocBaseDocEntry']); ?>&id_portal=<?php echo base64_encode($row['DocBaseIdPortal']); ?>&tl=1" target="_blank" class="btn btn-outline btn-primary pull-right"><i class="fa fa-mail-reply"></i> Ir a documento base</a>
 							<?php }?>
-							<?php if ($row['Cod_Estado'] == 'O') {?>
-								<button type="button" onClick="javascript:location.href='actividad.php?dt_DM=1&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&DM_type=<?php echo base64_encode('13'); ?>&DM=<?php echo base64_encode($row['DocEntry']); ?>&dt_LS=1&LS=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('factura_venta_borrador.php'); ?>'" class="alkin btn btn-outline btn-primary pull-right"><i class="fa fa-plus-circle"></i> Agregar actividad</button>
-						<?php }?>
 						</div>
 					</div>
 				</div>
