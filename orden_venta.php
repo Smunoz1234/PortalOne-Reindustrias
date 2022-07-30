@@ -8,6 +8,9 @@ $msg_error = ""; //Mensaje del error
 $IdOrden = 0;
 $IdPortal = 0; //Id del portal para las ordenes que fueron creadas en el portal, para eliminar el registro antes de cargar al editar
 
+// Motivos de autorización, SMM 29/07/2022
+$SQL_Motivos = Seleccionar("uvw_tbl_Autorizaciones_Motivos", "*", "IdTipoDocumento = 17");
+
 if (isset($_GET['id']) && ($_GET['id'] != "")) { //ID de la Orden de venta (DocEntry)
     $IdOrden = base64_decode($_GET['id']);
 }
@@ -66,10 +69,10 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Orden de venta
             $IdOrdenVenta = "NULL";
             $IdEvento = "0";
             $Type = 1;
-
-            // Comprobar motivos de autorización en la creación, SMM 29/07/2022
-            $SQL_Motivos = Seleccionar("uvw_tbl_Autorizaciones_Motivos", "*");
         }
+
+        echo $_POST['ComentariosAutor'];
+        exit();
 
         $ParametrosCabOrdenVenta = array(
             $IdOrdenVenta,
@@ -113,6 +116,32 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Orden de venta
                 $row_CabeceraOrdenVenta = sqlsrv_fetch_array($SQL_CabeceraOrdenVenta);
                 $IdOrdenVenta = $row_CabeceraOrdenVenta[0];
                 $IdEvento = $row_CabeceraOrdenVenta[1];
+
+                // Comprobar motivos de autorización en la creación, SMM 29/07/2022
+                $SQL_Motivos = Seleccionar("uvw_tbl_Autorizaciones_Motivos", "*", "IdTipoDocumento = 17");
+
+                while ($row_Motivo = sqlsrv_fetch_array($SQL_Motivos)) {
+                    $ids_perfiles = explode(";", $row_Motivo['Perfiles']);
+
+                    if (in_array($_SESSION['Perfil'], $ids_perfiles)) {
+                        $sql = $row_Motivo['Condiciones'] ?? '';
+                        $stmt = sqlsrv_query($conexion, $sql);
+
+                        $data = "";
+                        if ($stmt === false) {
+                            $data = json_encode(sqlsrv_errors(), JSON_PRETTY_PRINT);
+                        } else {
+                            $records = array();
+                            while ($obj = sqlsrv_fetch_object($stmt)) {
+                                array_push($records, $obj);
+                            }
+                            $data = json_encode($records, JSON_PRETTY_PRINT);
+                        }
+
+                        $dataString = "JSON.stringify($data, null, '\t')";
+                        echo "<script> console.log($dataString); </script>";
+                    }
+                }
             } else {
                 $IdOrdenVenta = base64_decode($_POST['IdOrdenVenta']); //Lo coloco otra vez solo para saber que tiene ese valor
                 $IdEvento = base64_decode($_POST['IdEvento']);
@@ -532,6 +561,18 @@ if (isset($sw_error) && ($sw_error == 1)) {
 	}
 	.nav-tabs > li > a{
 		padding: 14px 20px 14px 25px !important;
+	}
+
+	/**
+	* Stiven Muñoz Murillo
+	* 30/07/2022
+	 */
+	.bootstrap-maxlength {
+		background-color: black;
+		z-index: 9999999;
+	}
+	.swal2-container {
+		z-index: 9999999 !important;
 	}
 </style>
 <script>
@@ -1130,25 +1171,28 @@ function verAutorizacion() {
 							<h4 class="modal-title">Autorización</h4>
 						</div>
 
-						<form id="formAUT">
+						<!-- form id="formAUT" -->
 							<div class="modal-body">
 								<div class="ibox-content">
 									<div class="form-group">
 										<label class="col-lg-2">Motivo <span class="text-danger">*</span></label>
 										<div class="col-lg-10">
-											<select class="form-control" name="Motivo" id="Motivo" required="required">
-												<option value="" disabled selected>Seleccione...</option>
-												<?php while ($row_EmpleadosVentas = sqlsrv_fetch_array($SQL_EmpleadosVentas) && false) {?>
-														<option value="<?php echo $row_EmpleadosVentas['ID_EmpVentas']; ?>"><?php echo $row_EmpleadosVentas['DE_EmpVentas']; ?></option>
+											<select form="CrearOrdenVenta" class="form-control required" name="IdMotivoAutorizacion" id="IdMotivoAutorizacion" >
+												<!-- option value="" disabled selected>Seleccione...</option -->
+												<?php while ($row_MotivoAutorizacion = sqlsrv_fetch_array($SQL_Motivos)) {?>
+														<option value="<?php echo $row_MotivoAutorizacion['IdMotivoAutorizacion']; ?>"
+														<?php if ((isset($row['IdMotivoAutorizacion'])) && (strcmp($row_MotivoAutorizacion['IdMotivoAutorizacion'], $row['IdMotivoAutorizacion']) == 0)) {echo "selected=\"selected\"";}?>>
+															<?php echo $row_MotivoAutorizacion['MotivoAutorizacion']; ?>
+														</option>
 												<?php }?>
 											</select>
 										</div>
 									</div>
 									<br><br><br>
 									<div class="form-group">
-										<label class="col-lg-2">Comentarios autor</label>
+										<label class="col-lg-2">Comentarios autor <span class="text-danger">*</span></label>
 										<div class="col-lg-10">
-											<textarea type="text" maxlength="200" rows="4" class="form-control" name="ComentariosAutor" id="ComentariosAutor"><?php if ($edit == 1 || $sw_error == 1) {echo $row['Comentarios'];} elseif (isset($_GET['Comentarios'])) {echo base64_decode($_GET['Comentarios']);}?></textarea>
+											<textarea form="CrearOrdenVenta" class="form-control required" name="ComentariosAutor" id="ComentariosAutor" type="text" maxlength="250" rows="4"><?php if ($edit == 1 || $sw_error == 1) {echo $row['ComentariosAutor'];} elseif (isset($_GET['ComentariosAutor'])) {echo base64_decode($_GET['ComentariosAutor']);}?></textarea>
 										</div>
 									</div>
 									<br><br><br>
@@ -1161,10 +1205,10 @@ function verAutorizacion() {
 										</div>
 										<div class="row">
 											<div class="col-lg-6 input-group date">
-												<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="fecha_autoriza_campana" type="text" autocomplete="off" class="form-control" id="fecha_autoriza_campana" value="<?php if ((isset($row['fecha_autoriza_campana'])) && ($row['fecha_autoriza_campana']->format('Y-m-d')) != "1900-01-01") {echo $row['fecha_autoriza_campana']->format('Y-m-d');} //else {echo date('Y-m-d');}?>" placeholder="YYYY-MM-DD">
+												<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input readonly name="fecha_autoriza_campana" type="text" autocomplete="off" class="form-control" id="fecha_autoriza_campana" value="<?php if ((isset($row['fecha_autoriza_campana'])) && ($row['fecha_autoriza_campana']->format('Y-m-d')) != "1900-01-01") {echo $row['fecha_autoriza_campana']->format('Y-m-d');} //else {echo date('Y-m-d');}?>" placeholder="YYYY-MM-DD">
 											</div>
 											<div class="col-lg-6 input-group clockpicker" data-autoclose="true">
-												<input name="hora_autoriza_campana" id="hora_autoriza_campana" type="text" autocomplete="off" class="form-control" value="<?php if ((isset($row['fecha_autoriza_campana'])) && ($row['fecha_autoriza_campana']->format('Y-m-d')) != "1900-01-01") {echo $row['fecha_autoriza_campana']->format('H:i');} //else {echo date('H:i');}?>" placeholder="hh:mm">
+												<input readonly name="hora_autoriza_campana" id="hora_autoriza_campana" type="text" autocomplete="off" class="form-control" value="<?php if ((isset($row['fecha_autoriza_campana'])) && ($row['fecha_autoriza_campana']->format('Y-m-d')) != "1900-01-01") {echo $row['fecha_autoriza_campana']->format('H:i');} //else {echo date('H:i');}?>" placeholder="hh:mm">
 												<span class="input-group-addon">
 													<span class="fa fa-clock-o"></span>
 												</span>
@@ -1177,7 +1221,7 @@ function verAutorizacion() {
 									<div class="form-group">
 										<label class="col-lg-2">Decisión</label>
 										<div class="col-lg-10">
-											<select class="form-control" name="Motivo" id="Motivo">
+											<select disabled class="form-control" name="Motivo" id="Motivo">
 												<option value="" disabled selected>Seleccione...</option>
 												<option value="1">Autorizado</option>
 												<option value="2">Pendiente</option>
@@ -1189,7 +1233,7 @@ function verAutorizacion() {
 									<div class="form-group">
 										<label class="col-lg-2">Comentarios autorizador</label>
 										<div class="col-lg-10">
-											<textarea type="text" maxlength="200" rows="4" class="form-control" name="ComentariosAutorizador" id="ComentariosAutorizador"><?php if ($edit == 1 || $sw_error == 1) {echo $row['Comentarios'];} elseif (isset($_GET['Comentarios'])) {echo base64_decode($_GET['Comentarios']);}?></textarea>
+											<textarea readonly type="text" maxlength="200" rows="4" class="form-control" name="ComentariosAutorizador" id="ComentariosAutorizador"><?php if ($edit == 1 || $sw_error == 1) {echo $row['Comentarios'];} elseif (isset($_GET['Comentarios'])) {echo base64_decode($_GET['Comentarios']);}?></textarea>
 										</div>
 									</div>
 									<br><br><br><br>
@@ -1197,10 +1241,10 @@ function verAutorizacion() {
 							</div>
 
 							<div class="modal-footer">
-								<button type="submit" class="btn btn-success m-t-md"><i class="fa fa-check"></i> Enviar</button>
+								<button type="button" class="btn btn-success m-t-md" id="formAUT_button"><i class="fa fa-check"></i> Enviar</button>
 								<button type="button" class="btn btn-warning m-t-md" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
 							</div>
-						</form>
+						<!-- /form -->
 					</div>
 				</div>
 			</div>
@@ -1746,17 +1790,36 @@ $return = QuitarParametrosURL($return, array("a"));
 		 });
 
 		// SMM, 15/07/2022
-		$("#formAUT").on("submit", function(event) {
-			event.preventDefault(); // Evitar redirección del formulario
+		$("#formAUT_button").on("click", function(event) {
+			// event.preventDefault(); // Evitar redirección del formulario
 
-			// let ClienteSN = document.getElementById('ClienteSN').value;
+			let incompleto = false;
+			$('.required').each(function() {
+				if($(this).val() == null || $(this).val() == ""){
+					incompleto = true;
+				}
+			});
 
-			alert("Hola Mundo");
+			if(incompleto) {
+				Swal.fire({
+					"title": "¡Advertencia!",
+					"text": "Aún tiene campos sin completar.",
+					"icon": "warning"
+				});
+			} else {
+				Swal.fire({
+					"title": "¡Listo!",
+					"text": "Puede continuar con la creación del documento.",
+					"icon": "success"
+				});
+
+				// Cerrar modal.
+				$('#modalAUT').modal('hide');
+			}
 		});
 
 		maxLength('Comentarios'); // SMM, 15/07/2022
 		maxLength('ComentariosAutor'); // SMM, 15/07/2022
-		maxLength('ComentariosAutorizador'); // SMM, 02/0/2022
 
 		$(".alkin").on('click', function(){
 			$('.ibox-content').toggleClass('sk-loading');
