@@ -514,7 +514,7 @@ if (!$IdTE) {
 					console.log("Line 514", data);
 					if(data.CodigoCliente == '') {
 						console.log("CodigoCliente no encontrado, posiblemente este en la vista [uvw_Sap_tbl_SociosNegocios]");
-						console.log("Código decodificado, <?php echo base64_decode($_GET['Cardcode']); ?>");
+						console.log("Código decodificado, <?php echo base64_decode($_GET['Cardcode'] ?? ''); ?>");
 					}
 
 					document.getElementById('TelefonoCliente').value=data.Telefono;
