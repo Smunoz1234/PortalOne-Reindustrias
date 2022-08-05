@@ -1982,20 +1982,20 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 						</div>
 						<div class="col-lg-5 m-r-md">
 							<div class="form-group">
-								<label class="control-label">Nombre de contacto <?php if (PermitirFuncion(323)) {?><span class="text-danger">*</span><?php }?></label>
-								<input <?php if (PermitirFuncion(323)) {?> required <?php }?> autocomplete="off" name="CDU_NombreContacto" type="text" class="form-control" id="CDU_NombreContacto" maxlength="100" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "readonly='readonly'";}?> value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['CDU_NombreContacto'];}?>">
+								<label class="control-label">Nombre de contacto <?php if (PermitirFuncion(324)) {?><span class="text-danger">*</span><?php }?></label>
+								<input <?php if (PermitirFuncion(324)) {?> required <?php }?> autocomplete="off" name="CDU_NombreContacto" type="text" class="form-control" id="CDU_NombreContacto" maxlength="100" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "readonly='readonly'";}?> value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['CDU_NombreContacto'];}?>">
 							</div>
 							<div class="form-group">
-								<label class="control-label">Cargo de contacto <?php if (PermitirFuncion(323)) {?><span class="text-danger">*</span><?php }?></label>
-								<input <?php if (PermitirFuncion(323)) {?> required <?php }?> autocomplete="off" name="CDU_CargoContacto" type="text" class="form-control" id="CDU_CargoContacto" maxlength="100" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "readonly='readonly'";}?> value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['CDU_CargoContacto'];}?>">
+								<label class="control-label">Cargo de contacto <?php if (PermitirFuncion(324)) {?><span class="text-danger">*</span><?php }?></label>
+								<input <?php if (PermitirFuncion(324)) {?> required <?php }?> autocomplete="off" name="CDU_CargoContacto" type="text" class="form-control" id="CDU_CargoContacto" maxlength="100" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "readonly='readonly'";}?> value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['CDU_CargoContacto'];}?>">
 							</div>
 							<div class="form-group">
-								<label class="control-label">Teléfono de contacto <?php if (PermitirFuncion(323)) {?><span class="text-danger">*</span><?php }?></label>
-								<input <?php if (PermitirFuncion(323)) {?> required <?php }?> autocomplete="off" name="CDU_TelefonoContacto" type="text" class="form-control" id="CDU_TelefonoContacto" maxlength="100" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "readonly='readonly'";}?> value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['CDU_TelefonoContacto'];}?>">
+								<label class="control-label">Teléfono de contacto <?php if (PermitirFuncion(324)) {?><span class="text-danger">*</span><?php }?></label>
+								<input <?php if (PermitirFuncion(324)) {?> required <?php }?> autocomplete="off" name="CDU_TelefonoContacto" type="text" class="form-control" id="CDU_TelefonoContacto" maxlength="100" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "readonly='readonly'";}?> value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['CDU_TelefonoContacto'];}?>">
 							</div>
 							<div class="form-group">
-								<label class="control-label">Correo de contacto <?php if (PermitirFuncion(323)) {?><span class="text-danger">*</span><?php }?></label>
-								<input <?php if (PermitirFuncion(323)) {?> required <?php }?> autocomplete="off" name="CDU_CorreoContacto" type="email" class="form-control" id="CDU_CorreoContacto" maxlength="100" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "readonly='readonly'";}?> value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['CDU_CorreoContacto'];}?>">
+								<label class="control-label">Correo de contacto <?php if (PermitirFuncion(324)) {?><span class="text-danger">*</span><?php }?></label>
+								<input <?php if (PermitirFuncion(324)) {?> required <?php }?> autocomplete="off" name="CDU_CorreoContacto" type="email" class="form-control" id="CDU_CorreoContacto" maxlength="100" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "readonly='readonly'";}?> value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['CDU_CorreoContacto'];}?>">
 							</div>
 						</div>
 						<div class="col-lg-6">
@@ -2020,8 +2020,8 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 					<div class="ibox-content">
 						<div class="form-group">
 							<div class="col-lg-8">
-								<label class="control-label">Resolución de llamada <?php if (PermitirFuncion(323)) {?><span class="text-danger">*</span><?php }?></label>
-								<textarea name="ResolucionLlamada" <?php if (PermitirFuncion(323)) {?> required <?php }?> rows="5" maxlength="3000" type="text" class="form-control" id="ResolucionLlamada" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "readonly='readonly'";}?>><?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['ResolucionLlamada'];}?></textarea>
+								<label class="control-label">Resolución de llamada <?php if (PermitirFuncion(324)) {?><span class="text-danger">*</span><?php }?></label>
+								<textarea name="ResolucionLlamada" <?php if (PermitirFuncion(324)) {?> required <?php }?> rows="5" maxlength="3000" type="text" class="form-control" id="ResolucionLlamada" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "readonly='readonly'";}?>><?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['ResolucionLlamada'];}?></textarea>
 							</div>
 						</div>
 						<div class="form-group">
