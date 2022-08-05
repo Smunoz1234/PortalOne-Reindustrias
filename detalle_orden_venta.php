@@ -8,7 +8,7 @@ $CardCode = "";
 $Id = "";
 $Evento = "";
 $type = 1;
-$Estado = 1; //Abierto
+$Estado = 1; //Abierta
 
 //Dimensiones de reparto
 $SQL_DimReparto = Seleccionar('uvw_Sap_tbl_NombresDimensionesReparto', '*', '', "CodDim");
@@ -660,7 +660,7 @@ if ($sw == 1) {
 			<td><input size="50" type="text" id="FreeTxt<?php echo $i; ?>" name="FreeTxt[]" class="form-control" value="<?php echo $row['FreeTxt']; ?>" onChange="ActualizarDatos('FreeTxt',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" maxlength="100" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402))) {echo "readonly";}?>></td>
 
 			<td>
-				<input size="15" type="text" id="Price<?php echo $i; ?>" name="Price[]" class="form-control" value="<?php echo number_format($row['Price'], $dPrecios, $sDecimal, $sMillares); ?>" onChange="ActualizarDatos('Price',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>, 2);" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402)) || !PermitirFuncion(420)) {echo "readonly";}?> onFocus="focalizarValores(this)">
+				<input size="15" type="text" id="Price<?php echo $i; ?>" name="Price[]" class="form-control" value="<?php echo number_format($row['Price'], $dPrecios, $sDecimal, $sMillares); ?>" onChange="ActualizarDatos('Price',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>, <?php echo $dPrecios; ?>);" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402)) || !PermitirFuncion(420)) {echo "readonly";}?> onFocus="focalizarValores(this)">
 			</td>
 
 			<td>
@@ -794,7 +794,7 @@ function CalcularTotal(line, totalizar=true) {
 				} // Para que no se afecte con la tecla [TAB]
 
 				// SMM, 11/04/2022
-				ActualizarDatos('DiscPrcnt', line, Linea.value, 4);
+				ActualizarDatos('DiscPrcnt', line, Linea.value, dPorcentajes);
 				Totalizar(<?php if (isset($i)) {echo $i - 1;} else {echo 0;}?>, false);
 			} else {
 				console.log(`${TotalDecimal} >= ${SubTotalLinea}`);
@@ -805,7 +805,7 @@ function CalcularTotal(line, totalizar=true) {
 		alert("No puede solicitar cantidad en 0. Si ya no va a solicitar este articulo, borre la linea.");
 
 		CantLinea.value = "1.00";
-		ActualizarDatos('Quantity', line, Linea.value, 2);
+		ActualizarDatos('Quantity', line, Linea.value, dCantidades);
 	}
 }
 
