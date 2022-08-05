@@ -398,11 +398,11 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
                     echo "<option value=''>(Todos)</option>";
                 }
 
-                $Dim2 = $_GET['Dim2'] ?? ""; // SMM, 04/02/2022
+                $SDim = $_GET['SDim'] ?? ""; // SMM, 04/02/2022
                 echo "<option value=''>Seleccione...</option>"; // SMM, 27/01/22
 
                 while ($row = sqlsrv_fetch_array($SQL)) {
-                    if ($Dim2 == $row['IdSucursal']) {
+                    if ($SDim == $row['IdSucursal']) {
                         // Stiven Muñoz Murillo, 04/02/2022
                         echo "<option selected=\"selected\" value=\"" . $row['IdSucursal'] . "\" >" . $row['DeSucursal'] . "</option>";
                     } else {

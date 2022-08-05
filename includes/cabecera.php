@@ -21,7 +21,8 @@
 <link href="css/plugins/sweetalert/sweetalert2.min.css" rel="stylesheet">
 
 <!-- FooTable -->
-<link href="css/plugins/footable/footable.core.css" rel="stylesheet">
+<link href="plugins/footable-bootstrap/css/footable.bootstrap.min.css" rel="stylesheet">
+<!-- link href="css/plugins/footable/footable.core.css" rel="stylesheet" -->
 
 <!-- Toastr style -->
 <link href="css/plugins/toastr/toastr.min.css" rel="stylesheet">
@@ -43,7 +44,7 @@
 
 <!-- Date range picker -->
 <link href="css/plugins/daterangepicker/daterangepicker-bs3.css" rel="stylesheet">
- 
+
 <!-- Data picker -->
 <link href="css/plugins/datapicker/datepicker3.css" rel="stylesheet">
 
@@ -58,7 +59,7 @@
 
 <!-- Checkbox -->
 <link href="css/plugins/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css" rel="stylesheet">
- 
+
 <!-- Switchery -->
 <link href="css/plugins/switchery/switchery.css" rel="stylesheet">
 
@@ -127,7 +128,8 @@
 <script src="js/pnotify.custom.min.js" type="text/javascript"></script>
 
 <!-- FooTable -->
-<script src="js/plugins/footable/footable.all.min.js"></script>
+<script src="plugins/footable-bootstrap/js/footable.min.js"></script>
+<!-- script src="js/plugins/footable/footable.all.min.js"></script -->
 
 <!-- Custom and plugin javascript -->
 <script src="js/inspinia.js"></script>
@@ -141,7 +143,7 @@
 
  <!-- Tinycon -->
 <script src="js/plugins/tinycon/tinycon.min.js"></script>
- 
+
  <!-- jsTree -->
 <script src="js/plugins/jsTree/jstree.min.js"></script>
 
@@ -172,7 +174,7 @@
 
 <!-- Dual Listbox -->
 <script src="js/plugins/dualListbox/jquery.bootstrap-duallistbox.js"></script>
-	
+
 <!-- Touch Punch - Touch Event Support for jQuery UI -->
 <script src="js/plugins/touchpunch/jquery.ui.touch-punch.min.js"></script>
 
@@ -204,7 +206,7 @@
 
 <!-- Jasny -->
 <script src="js/plugins/jasny/jasny-bootstrap.min.js"></script>
-    
+
 <!-- DROPZONE -->
 <script src="js/plugins/dropzone/dropzone.js"></script>
 
