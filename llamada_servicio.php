@@ -161,6 +161,8 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
             "'" . $_POST['CDU_IdTecnicoAdicional'] . "'", // SMM, 25/05/2022
             "'" . FormatoFecha($_POST['FechaAgenda'], $_POST['HoraAgenda']) . "'", // SMM 01/06/2022
             "'" . FormatoFecha($_POST['FechaAgenda'], $_POST['HoraAgenda']) . "'", // SMM 01/06/2022
+            PermitirFuncion(323) ? "1" : "0", // CreacionActividad, SMM 28/07/2022
+            "0", // EnvioCorreo, SMM 28/07/2022
         );
         $SQL_InsLlamada = EjecutarSP('sp_tbl_LlamadaServicios', $ParamInsLlamada, 32);
         if ($SQL_InsLlamada) {
@@ -342,6 +344,8 @@ if (isset($_POST['P']) && ($_POST['P'] == 33)) { //Actualizar llamada de servici
             "'" . $_POST['CDU_IdTecnicoAdicional'] . "'", // SMM, 25/05/2022
             "'" . FormatoFecha($_POST['FechaAgenda'], $_POST['HoraAgenda']) . "'", // SMM 01/06/2022
             "'" . FormatoFecha($_POST['FechaAgenda'], $_POST['HoraAgenda']) . "'", // SMM 01/06/2022
+            "0", // CreacionActividad, SMM 28/07/2022
+            (PermitirFuncion(324) && ($_POST['EstadoLlamada'] == -1)) ? "1" : "0", // EnvioCorreo, SMM 28/07/2022
         );
 
         // Actualizar la llamada de servicio.
@@ -1700,9 +1704,9 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 							</div>
 							<!-- SMM -->
 							<div class="col-lg-4">
-								<label class="control-label">Fecha Agenda <span class="text-danger">*</span></label>
+								<label class="control-label">Fecha Agenda <?php if (PermitirFuncion(323)) {?><span class="text-danger">*</span><?php }?></label>
 								<div class="input-group date">
-									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaAgenda" type="text" required="required" class="form-control" id="FechaAgenda" value="<?php if (($type_llmd == 1) && ($row['FechaAgenda'] != "")) {echo is_string($row['FechaAgenda']) ? date("Y-m-d", strtotime($row['FechaAgenda'])) : $row['FechaAgenda']->format("Y-m-d");} else {echo date('Y-m-d');}?>">
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input <?php if ($type_llmd != 0) {?> readonly <?php }?> <?php if (PermitirFuncion(323)) {?> required <?php }?> name="FechaAgenda" type="text" class="form-control" id="FechaAgenda" value="<?php if (($type_llmd == 1) && ($row['FechaAgenda'] != "")) {echo is_string($row['FechaAgenda']) ? date("Y-m-d", strtotime($row['FechaAgenda'])) : $row['FechaAgenda']->format("Y-m-d");} else {echo date('Y-m-d');}?>">
 								</div>
 							</div>
 							<!-- 01/06/2022 -->
@@ -1728,12 +1732,12 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 							</div>
 							<!-- SMM -->
 							<div class="col-lg-4">
-								<label class="control-label">Hora Agenda <span class="text-danger">*</span></label>
+								<label class="control-label">Hora Agenda <?php if (PermitirFuncion(323)) {?><span class="text-danger">*</span><?php }?></label>
 								<div class="input-group clockpicker" data-autoclose="true">
 									<span class="input-group-addon">
 										<span class="fa fa-clock-o"></span>
 									</span>
-									<input name="HoraAgenda" id="HoraAgenda" type="text" class="form-control" value="<?php if (($type_llmd == 1) && ($row['HoraAgenda'] != "")) {echo is_string($row['FechaAgenda']) ? date("H:i", strtotime($row['HoraAgenda'])) : $row['HoraAgenda']->format("H:i");} else {echo date('H:i');}?>" required="required">
+									<input <?php if ($type_llmd != 0) {?> readonly <?php }?> <?php if (PermitirFuncion(323)) {?> required <?php }?> name="HoraAgenda" id="HoraAgenda" type="text" class="form-control" value="<?php if (($type_llmd == 1) && ($row['HoraAgenda'] != "")) {echo is_string($row['FechaAgenda']) ? date("H:i", strtotime($row['HoraAgenda'])) : $row['HoraAgenda']->format("H:i");} else {echo date('H:i');}?>" required="required">
 								</div>
 							</div>
 							<!-- 01/06/2022 -->
@@ -1805,8 +1809,8 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								</select>
 							</div>
 							<div class="col-lg-4">
-								<label class="control-label">Técnico/Asesor</label>
-								<select name="Tecnico" class="form-control select2" id="Tecnico" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
+								<label class="control-label">Técnico/Asesor <?php if (PermitirFuncion(323)) {?><span class="text-danger">*</span><?php }?></label>
+								<select <?php if (PermitirFuncion(323)) {?> required <?php }?> name="Tecnico" class="form-control select2" id="Tecnico" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 										<option value="">Seleccione...</option>
 								  <?php while ($row_Tecnicos = sqlsrv_fetch_array($SQL_Tecnicos)) {?>
 										<option value="<?php echo $row_Tecnicos['ID_Empleado']; ?>" <?php if ((isset($row['IdTecnico'])) && (strcmp($row_Tecnicos['ID_Empleado'], $row['IdTecnico']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Tecnicos['NombreEmpleado']; ?></option>
@@ -1978,20 +1982,20 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 						</div>
 						<div class="col-lg-5 m-r-md">
 							<div class="form-group">
-								<label class="control-label">Nombre de contacto</label>
-								<input autocomplete="off" name="CDU_NombreContacto" type="text" class="form-control" id="CDU_NombreContacto" maxlength="100" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "readonly='readonly'";}?> value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['CDU_NombreContacto'];}?>">
+								<label class="control-label">Nombre de contacto <?php if (PermitirFuncion(323)) {?><span class="text-danger">*</span><?php }?></label>
+								<input <?php if (PermitirFuncion(323)) {?> required <?php }?> autocomplete="off" name="CDU_NombreContacto" type="text" class="form-control" id="CDU_NombreContacto" maxlength="100" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "readonly='readonly'";}?> value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['CDU_NombreContacto'];}?>">
 							</div>
 							<div class="form-group">
-								<label class="control-label">Cargo de contacto</label>
-								<input autocomplete="off" name="CDU_CargoContacto" type="text" class="form-control" id="CDU_CargoContacto" maxlength="100" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "readonly='readonly'";}?> value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['CDU_CargoContacto'];}?>">
+								<label class="control-label">Cargo de contacto <?php if (PermitirFuncion(323)) {?><span class="text-danger">*</span><?php }?></label>
+								<input <?php if (PermitirFuncion(323)) {?> required <?php }?> autocomplete="off" name="CDU_CargoContacto" type="text" class="form-control" id="CDU_CargoContacto" maxlength="100" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "readonly='readonly'";}?> value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['CDU_CargoContacto'];}?>">
 							</div>
 							<div class="form-group">
-								<label class="control-label">Teléfono de contacto</label>
-								<input autocomplete="off" name="CDU_TelefonoContacto" type="text" class="form-control" id="CDU_TelefonoContacto" maxlength="100" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "readonly='readonly'";}?> value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['CDU_TelefonoContacto'];}?>">
+								<label class="control-label">Teléfono de contacto <?php if (PermitirFuncion(323)) {?><span class="text-danger">*</span><?php }?></label>
+								<input <?php if (PermitirFuncion(323)) {?> required <?php }?> autocomplete="off" name="CDU_TelefonoContacto" type="text" class="form-control" id="CDU_TelefonoContacto" maxlength="100" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "readonly='readonly'";}?> value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['CDU_TelefonoContacto'];}?>">
 							</div>
 							<div class="form-group">
-								<label class="control-label">Correo de contacto</label>
-								<input autocomplete="off" name="CDU_CorreoContacto" type="email" class="form-control" id="CDU_CorreoContacto" maxlength="100" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "readonly='readonly'";}?> value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['CDU_CorreoContacto'];}?>">
+								<label class="control-label">Correo de contacto <?php if (PermitirFuncion(323)) {?><span class="text-danger">*</span><?php }?></label>
+								<input <?php if (PermitirFuncion(323)) {?> required <?php }?> autocomplete="off" name="CDU_CorreoContacto" type="email" class="form-control" id="CDU_CorreoContacto" maxlength="100" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "readonly='readonly'";}?> value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['CDU_CorreoContacto'];}?>">
 							</div>
 						</div>
 						<div class="col-lg-6">
@@ -2016,8 +2020,8 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 					<div class="ibox-content">
 						<div class="form-group">
 							<div class="col-lg-8">
-								<label class="control-label">Resolución de llamada</label>
-								<textarea name="ResolucionLlamada" rows="5" maxlength="3000" type="text" class="form-control" id="ResolucionLlamada" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "readonly='readonly'";}?>><?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['ResolucionLlamada'];}?></textarea>
+								<label class="control-label">Resolución de llamada <?php if (PermitirFuncion(323)) {?><span class="text-danger">*</span><?php }?></label>
+								<textarea name="ResolucionLlamada" <?php if (PermitirFuncion(323)) {?> required <?php }?> rows="5" maxlength="3000" type="text" class="form-control" id="ResolucionLlamada" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "readonly='readonly'";}?>><?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['ResolucionLlamada'];}?></textarea>
 							</div>
 						</div>
 						<div class="form-group">
@@ -2117,7 +2121,7 @@ $return = QuitarParametrosURL($return, array("a"));?>
 						<?php }?>
 						<?php if ($type_llmd == 0) {?>
 							<div class="col-lg-2">
-								<button class="btn btn-primary" form="CrearLlamada" type="submit" id="Crear"><i class="fa fa-check"></i> Crear llamada</button>
+								<button class="btn btn-primary" form="CrearLlamada" type="submit" id="Crear"><i class="fa fa-check"></i> Crear llamada <?php if (PermitirFuncion(323)) {?>y actividad<?php }?></button>
 							</div>
 						<?php }?>
 							<div class="col-lg-2">
