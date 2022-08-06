@@ -2020,8 +2020,8 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 					<div class="ibox-content">
 						<div class="form-group">
 							<div class="col-lg-8">
-								<label class="control-label">Resolución de llamada <?php if (PermitirFuncion(324)) {?><span class="text-danger">*</span><?php }?></label>
-								<textarea name="ResolucionLlamada" <?php if (PermitirFuncion(324)) {?> required <?php }?> rows="5" maxlength="3000" type="text" class="form-control" id="ResolucionLlamada" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "readonly='readonly'";}?>><?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['ResolucionLlamada'];}?></textarea>
+								<label class="control-label">Resolución de llamada</label>
+								<textarea name="ResolucionLlamada" rows="5" maxlength="3000" type="text" class="form-control" id="ResolucionLlamada" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "readonly='readonly'";}?>><?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['ResolucionLlamada'];}?></textarea>
 							</div>
 						</div>
 						<div class="form-group">
@@ -2601,6 +2601,7 @@ if ($type_llmd == 1) {?>
             });
 	});
 
+// Validación de la llamada de servicio, se ejecuta al momento de crear o actualizar.
 function Validar(){
 	let res=true;
 
@@ -2610,7 +2611,8 @@ function Validar(){
 	let EstadoServicio = document.getElementById("CDU_EstadoServicio");
 	let CanceladoPor = document.getElementById("CDU_CanceladoPor");
 
-	if(vP.value!=40){
+	// ($_POST['P'] == 40), Reabrir llamada de servicio
+	if(vP.value!=40) {
 		if(EstLlamada.value=='-1'){
 			if(txtResol.value==''){
 				res=false;
@@ -2630,7 +2632,6 @@ function Validar(){
 				});
 			}
 		}
-
 
 		if(EstadoServicio.value=='2'){
 			if (CanceladoPor.value=='' || CanceladoPor.value=='1.N/A'){
