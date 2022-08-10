@@ -316,8 +316,8 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_OVenUpd"))) {
                     <table class="table table-striped table-bordered table-hover dataTables-example" >
                     <thead>
                     <tr>
+						<th>ID Borrador</th>
                         <th>Número</th>
-						<th>ID</th>
 						<th>Serie</th>
 						<th>Fecha orden</th>
 						<th>Socio de negocio</th>
@@ -337,8 +337,8 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_OVenUpd"))) {
 if ($sw == 1) {
     while ($row = sqlsrv_fetch_array($SQL)) {?>
 						 <tr class="gradeX">
-							<td><?php echo $row['DocNum']; ?></td>
-							<td><?php echo $row['ID_OrdenVenta']; ?></td>
+						 	<td><?php echo $row['ID_OrdenVenta']; ?></td>	
+						 	<td><?php echo $row['DocNum']; ?></td>
 							<td><?php echo $row['DeSeries']; ?></td>
 							<td><?php echo $row['DocDate']; ?></td>
 							<td><?php echo $row['NombreCliente']; ?></td>

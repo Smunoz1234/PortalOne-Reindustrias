@@ -1,384 +1,270 @@
 <?php
-//Serie de llamada
+// Filtrar estados
+$Filtro = "";
+$Filtro .= " AND [IdEstadoLlamada] <> -1";
+
+// Obtener series de llamada
 $ParamSerie = array(
     "'" . $_SESSION['CodUser'] . "'",
     "'191'",
     1,
 );
-$SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
+$SQL_SeriesLlamada = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 
-//Fechas
-if (isset($_GET['FechaInicial']) && $_GET['FechaInicial'] != "") {
-    $FechaInicial = $_GET['FechaInicial'];
-    $sw = 1;
-} else {
-    //Restar 7 dias a la fecha actual
-    $fecha = date('Y-m-d');
-    $nuevafecha = strtotime('-' . ObtenerVariable("DiasRangoFechasDocSAP") . ' day');
-    $nuevafecha = date('Y-m-d', $nuevafecha);
-    $FechaInicial = $nuevafecha;
-}
-if (isset($_GET['FechaFinal']) && $_GET['FechaFinal'] != "") {
-    $FechaFinal = $_GET['FechaFinal'];
-    $sw = 1;
-} else {
-    $FechaFinal = date('Y-m-d');
-}
-
-//Filtros
-$Filtro = ""; //Filtro
-if (isset($_GET['EstadoLlamada']) && $_GET['EstadoLlamada'] != "") {
-    $Filtro .= " and [IdEstadoLlamada]='" . $_GET['EstadoLlamada'] . "'";
-    $sw = 1;
-}
-
-//Cliente
-if (isset($_GET['Cliente'])) {
-    if ($_GET['Cliente'] != "") { //Si se selecciono el cliente
-        $Filtro .= " and ID_CodigoCliente='" . $_GET['Cliente'] . "'";
-        $sw_suc = 1; //Cuando se ha seleccionado una sucursal
-        if (isset($_GET['Sucursal'])) {
-            if ($_GET['Sucursal'] == "") {
-                //Sucursales
-                if (PermitirFuncion(205)) {
-                    $Where = "CodigoCliente='" . $_GET['Cliente'] . "'";
-                    $SQL_Sucursal = Seleccionar("uvw_Sap_tbl_Clientes_Sucursales", "NombreSucursal", $Where);
-                } else {
-                    $Where = "CodigoCliente='" . $_GET['Cliente'] . "' and ID_Usuario = " . $_SESSION['CodUser'];
-                    $SQL_Sucursal = Seleccionar("uvw_tbl_SucursalesClienteUsuario", "NombreSucursal", $Where);
-                }
-                $j = 0;
-                unset($WhereSuc);
-                $WhereSuc = array();
-                while ($row_Sucursal = sqlsrv_fetch_array($SQL_Sucursal)) {
-                    $WhereSuc[$j] = "NombreSucursal='" . $row_Sucursal['NombreSucursal'] . "'";
-                    $j++;
-                }
-                $FiltroSuc = implode(" OR ", $WhereSuc);
-                $Filtro .= " and (" . $FiltroSuc . ")";
-            } else {
-                $Filtro .= " and NombreSucursal='" . $_GET['Sucursal'] . "'";
-            }
-        }
-
+// Filtrar series
+$FilSerie = "";
+$i = 0;
+while ($row_Series = sqlsrv_fetch_array($SQL_SeriesLlamada)) {
+    if ($i == 0) {
+        $FilSerie .= "'" . $row_Series['IdSeries'] . "'";
     } else {
-        if (!PermitirFuncion(205)) {
-            $Where = "ID_Usuario = " . $_SESSION['CodUser'];
-            $SQL_Cliente = Seleccionar("uvw_tbl_ClienteUsuario", "CodigoCliente, NombreCliente", $Where);
-            $k = 0;
-            while ($row_Cliente = sqlsrv_fetch_array($SQL_Cliente)) {
-
-                //Sucursales
-                $Where = "CodigoCliente='" . $row_Cliente['CodigoCliente'] . "' and ID_Usuario = " . $_SESSION['CodUser'];
-                $SQL_Sucursal = Seleccionar("uvw_tbl_SucursalesClienteUsuario", "NombreSucursal", $Where);
-
-                $j = 0;
-                unset($WhereSuc);
-                $WhereSuc = array();
-                while ($row_Sucursal = sqlsrv_fetch_array($SQL_Sucursal)) {
-                    $WhereSuc[$j] = "NombreSucursal='" . $row_Sucursal['NombreSucursal'] . "'";
-                    $j++;
-                }
-
-                $FiltroSuc = implode(" OR ", $WhereSuc);
-
-                if ($k == 0) {
-                    $Filtro .= " AND (ID_CodigoCliente='" . $row_Cliente['CodigoCliente'] . "' AND (" . $FiltroSuc . "))";
-                } else {
-                    $Filtro .= " OR (ID_CodigoCliente='" . $row_Cliente['CodigoCliente'] . "' AND (" . $FiltroSuc . "))";
-                }
-
-                $k++;
-            }
-        }
+        $FilSerie .= ",'" . $row_Series['IdSeries'] . "'";
     }
-} else {
-    if (!PermitirFuncion(205)) {
-        $Where = "ID_Usuario = " . $_SESSION['CodUser'];
-        $SQL_Cliente = Seleccionar("uvw_tbl_ClienteUsuario", "CodigoCliente, NombreCliente", $Where);
-        $k = 0;
-        while ($row_Cliente = sqlsrv_fetch_array($SQL_Cliente)) {
+    $i++;
+}
+$Filtro .= " AND [Series] IN (" . $FilSerie . ")";
+$SQL_SeriesLlamada = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 
-            //Sucursales
-            $Where = "CodigoCliente='" . $row_Cliente['CodigoCliente'] . "' and ID_Usuario = " . $_SESSION['CodUser'];
-            $SQL_Sucursal = Seleccionar("uvw_tbl_SucursalesClienteUsuario", "NombreSucursal", $Where);
-
-            $j = 0;
-            unset($WhereSuc);
-            $WhereSuc = array();
-            while ($row_Sucursal = sqlsrv_fetch_array($SQL_Sucursal)) {
-                $WhereSuc[$j] = "NombreSucursal='" . $row_Sucursal['NombreSucursal'] . "'";
-                $j++;
-            }
-
-            $FiltroSuc = implode(" OR ", $WhereSuc);
-
-            if ($k == 0) {
-                $Filtro .= " AND (ID_CodigoCliente='" . $row_Cliente['CodigoCliente'] . "' AND (" . $FiltroSuc . "))";
-            } else {
-                $Filtro .= " OR (ID_CodigoCliente='" . $row_Cliente['CodigoCliente'] . "' AND (" . $FiltroSuc . "))";
-            }
-
-            $k++;
-        }
-    }
+// Filtrar cliente y sucursales
+$ID_CodigoCliente = "";
+if (($edit == 1) || ($sw_error == 1)) {
+    $ID_CodigoCliente = $row['CardCode'];
+} elseif ((isset($dt_LS) && ($dt_LS == 1)) || (isset($dt_OV) && ($dt_OV == 1)) || (isset($dt_ET) && ($dt_ET == 1))) {
+    $ID_CodigoCliente = $row_Cliente['CodigoCliente'];
 }
 
-if (isset($_GET['Series']) && $_GET['Series'] != "") {
-    $Filtro .= " and [Series]='" . $_GET['Series'] . "'";
-    $sw = 1;
-} else {
-    $FilSerie = "";
-    $i = 0;
-    while ($row_Series = sqlsrv_fetch_array($SQL_Series)) {
-        if ($i == 0) {
-            $FilSerie .= "'" . $row_Series['IdSeries'] . "'";
-        } else {
-            $FilSerie .= ",'" . $row_Series['IdSeries'] . "'";
-        }
-        $i++;
-    }
-    $Filtro .= " and [Series] IN (" . $FilSerie . ")";
-    $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
+if ($ID_CodigoCliente != "") {
+    $Filtro .= " AND ID_CodigoCliente = '$ID_CodigoCliente'";
+
+    $Where = "CodigoCliente = '$ID_CodigoCliente'";
+    $SQL_ClienteLlamada = Seleccionar("uvw_tbl_ClienteUsuario", "NombreCliente", $Where);
+    $row_ClienteLlamada = sqlsrv_fetch_array($SQL_ClienteLlamada);
+
+    // Obtener sucursales
+    $SQL_Sucursal = Seleccionar("uvw_Sap_tbl_Clientes_Sucursales", "NombreSucursal", $Where);
 }
 
-if ($sw == 1) {
-    //$Where="([FechaCreacionLLamada] Between '$FechaInicial' and '$FechaFinal') $Filtro";
-    //$SQL=Seleccionar('uvw_Sap_tbl_LlamadasServicios','*',$Where);
-    $Cons = "Select * From uvw_Sap_tbl_LlamadasServicios Where (FechaCreacionLLamada Between '$FechaInicial' and '$FechaFinal') $Filtro";
-    $SQL = sqlsrv_query($conexion, $Cons);
+// Filtrar fechas
+$fecha = date('Y-m-d');
+$nuevafecha = strtotime('-' . ObtenerVariable("DiasRangoFechasDocSAP") . ' day');
+$nuevafecha = date('Y-m-d', $nuevafecha);
 
-    //echo $Cons;
-    // echo "<br>sw==1";
-} else {
-    $Where = "([FechaCreacionLLamada] Between '$FechaInicial' and '$FechaFinal') $Filtro";
-    $SQL = Seleccionar('uvw_Sap_tbl_LlamadasServicios', 'TOP 10 *', $Where);
-    //$Cons="Select TOP 100 * From uvw_Sap_tbl_LlamadasServicios ";
-    //$Cons="";
+$FechaInicial = $nuevafecha;
+$FechaFinal = $fecha;
 
-    //echo "sw!=1";
-}
-
-if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
-    $Where = "DocNum LIKE '%" . trim($_GET['IDTicket']) . "%'";
-
-    $FilSerie = "";
-    $i = 0;
-    while ($row_Series = sqlsrv_fetch_array($SQL_Series)) {
-        if ($i == 0) {
-            $FilSerie .= "'" . $row_Series['IdSeries'] . "'";
-        } else {
-            $FilSerie .= ",'" . $row_Series['IdSeries'] . "'";
-        }
-        $i++;
-    }
-    $Where .= " and [Series] IN (" . $FilSerie . ")";
-    $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
-
-    $SQL = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', $Where);
-}
+// Realizar consulta con filtros
+$Where = "Metodo = 0 AND ([FechaCreacionLLamada] BETWEEN '$FechaInicial' AND '$FechaFinal') $Filtro";
+$SQL_Llamadas = Seleccionar('uvw_Sap_tbl_LlamadasServicios', 'TOP 100 *', $Where);
 ?>
 
- <div class="modal inmodal fade" id="mdOT" tabindex="1" role="dialog" aria-hidden="true">
-	<div class="modal-dialog modal-lg">
+<div class="modal inmodal fade" id="mdOT" tabindex="1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog modal-lg" style="width: 60% !important;">
 		<div class="modal-content">
-				<div class="modal-header">
-					<h4 class="modal-title">
-						Campos adicionales del documento
-					</h4>
-				</div>
-				<div class="modal-body">
-					<!-- Inicio filtros -->
-					<div class="row">
-				<div class="col-lg-12">
-			    <div class="ibox-content">
-					 <?php include "includes/spinner.php";?>
-				  <form action="gestionar_llamadas_servicios.php" method="get" id="formBuscar" class="form-horizontal">
-					   <div class="form-group">
-						<label class="col-xs-12"><h3 class="bg-success p-xs b-r-sm"><i class="fa fa-filter"></i> Datos para filtrar</h3></label>
-					   </div>
-						<div class="form-group">
-							<label class="col-lg-1 control-label">Fechas</label>
-							<div class="col-lg-3">
-								<div class="input-daterange input-group" id="datepicker">
-									<input name="FechaInicial" autocomplete="off" type="text" class="input-sm form-control" id="FechaInicial" placeholder="Fecha inicial" value="<?php echo $FechaInicial; ?>"/>
-									<span class="input-group-addon">hasta</span>
-									<input name="FechaFinal" autocomplete="off" type="text" class="input-sm form-control" id="FechaFinal" placeholder="Fecha final" value="<?php echo $FechaFinal; ?>" />
+			<div class="modal-header">
+				<h4 class="modal-title">
+					Consultar llamadas de servicio
+				</h4>
+			</div>
+			<div class="modal-body">
+
+				<!-- Inicio, filtros -->
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="ibox-content">
+							<form id="formBuscar" class="form-horizontal">
+								<div class="form-group">
+									<label class="col-xs-12"><h3 class="bg-success p-xs b-r-sm"><i class="fa fa-filter"></i> Datos para filtrar</h3></label>
 								</div>
-							</div>
-							<label class="col-lg-1 control-label">Estado</label>
-							<div class="col-lg-3">
-								<select name="EstadoLlamada" class="form-control" id="EstadoLlamada">
-										<option value="">(Todos)</option>
-								  <?php while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) {?>
-										<option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($_GET['EstadoLlamada'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $_GET['EstadoLlamada']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option>
-								  <?php }?>
-								</select>
-							</div>
-							<label class="col-lg-1 control-label">Serie</label>
-							<div class="col-lg-2">
-								<select name="Series" class="form-control" id="Series">
-										<option value="">(Todos)</option>
-								  <?php while ($row_Series = sqlsrv_fetch_array($SQL_Series)) {?>
-										<option value="<?php echo $row_Series['IdSeries']; ?>" <?php if ((isset($_GET['Series'])) && (strcmp($row_Series['IdSeries'], $_GET['Series']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Series['DeSeries']; ?></option>
-								  <?php }?>
-								</select>
-							</div>
-							<?php /*?><label class="col-lg-1 control-label">Tipo problema</label>
-<div class="col-lg-3">
-<select name="TipoProblema" class="form-control " id="TipoProblema">
-<option value="">(Todos)</option>
-<?php while($row_TipoProblema=sqlsrv_fetch_array($SQL_TipoProblema)){?>
-<option value="<?php echo $row_TipoProblema['IdTipoProblemaLlamada'];?>" <?php if((isset($_GET['TipoProblema']))&&(strcmp($row_TipoProblema['IdTipoProblemaLlamada'],$_GET['TipoProblema'])==0)){ echo "selected=\"selected\"";}?>><?php echo $row_TipoProblema['DeTipoProblemaLlamada'];?></option>
-<?php }?>
-</select>
-</div><?php */?>
-							<?php /*?><label class="col-lg-1 control-label">Tipo tarea</label>
-<div class="col-lg-2">
-<select name="TipoTarea" class="form-control " id="TipoTarea">
-<option value="" selected="selected">(Todos)</option>
-<option value="Externa" <?php if((isset($_GET['TipoTarea']))&&($_GET['TipoTarea']=='Externa')){ echo "selected=\"selected\"";}?>>Externa</option>
-<option value="Interna" <?php if((isset($_GET['TipoTarea']))&&($_GET['TipoTarea']=='Interna')){ echo "selected=\"selected\"";}?>>Interna</option>
-</select>
-</div><?php */?>
-						</div>
-					  	<div class="form-group">
-							<label class="col-lg-1 control-label">Cliente</label>
-							<div class="col-lg-3">
-								<input name="Cliente" type="hidden" id="Cliente" value="<?php if (isset($_GET['Cliente']) && ($_GET['Cliente'] != "")) {echo $_GET['Cliente'];}?>">
-								<input name="NombreCliente" type="text" class="form-control" id="NombreCliente" placeholder="Para TODOS, dejar vacio..." value="<?php if (isset($_GET['NombreCliente']) && ($_GET['NombreCliente'] != "")) {echo $_GET['NombreCliente'];}?>">
-							</div>
-							<label class="col-lg-1 control-label">Sucursal</label>
-							<div class="col-lg-3">
-							 <select id="Sucursal" name="Sucursal" class="form-control">
-								<option value="">(Todos)</option>
-								<?php
-if ($sw_suc == 1) { //Cuando se ha seleccionado una opción
-    if (PermitirFuncion(205)) {
-        $Where = "CodigoCliente='" . $_GET['Cliente'] . "'";
-        $SQL_Sucursal = Seleccionar("uvw_Sap_tbl_Clientes_Sucursales", "NombreSucursal", $Where);
-    } else {
-        $Where = "CodigoCliente='" . $_GET['Cliente'] . "' and ID_Usuario = " . $_SESSION['CodUser'];
-        $SQL_Sucursal = Seleccionar("uvw_tbl_SucursalesClienteUsuario", "NombreSucursal", $Where);
-    }
-    while ($row_Sucursal = sqlsrv_fetch_array($SQL_Sucursal)) {?>
-										<option value="<?php echo $row_Sucursal['NombreSucursal']; ?>" <?php if (strcmp($row_Sucursal['NombreSucursal'], $_GET['Sucursal']) == 0) {echo "selected=\"selected\"";}?>><?php echo $row_Sucursal['NombreSucursal']; ?></option>
-								<?php }
-} elseif ($sw_suc == 2) { //Cuando no se ha seleccionado todavia, al entrar a la pagina
-    while ($row_Sucursal = sqlsrv_fetch_array($SQL_Sucursal)) {?>
-										<option value="<?php echo $row_Sucursal['NombreSucursal']; ?>"><?php echo $row_Sucursal['NombreSucursal']; ?></option>
-								<?php }
-}?>
-							</select>
-							</div>
-							<label class="col-lg-1 control-label">Buscar dato</label>
-							<div class="col-lg-3">
-								<input name="BuscarDato" type="text" class="form-control" id="BuscarDato" maxlength="100" value="<?php if (isset($_GET['BuscarDato']) && ($_GET['BuscarDato'] != "")) {echo $_GET['BuscarDato'];}?>">
-							</div>
-						</div>
-					  	<div class="form-group">
-							<label class="col-lg-1 control-label">Asignado por</label>
-							<div class="col-lg-3">
-								<select data-placeholder="(Todos)" name="AsignadoPor[]" class="form-control chosen-select" multiple id="AsignadoPor">
-								  <?php $j = 0;
-while ($row_AsignadoPor = sqlsrv_fetch_array($SQL_AsignadoPor)) {?>
-										<option value="<?php echo $row_AsignadoPor['IdAsignadoPor']; ?>" <?php if ((isset($_GET['AsignadoPor'][$j]) && ($_GET['AsignadoPor'][$j]) != "") && (strcmp($row_AsignadoPor['IdAsignadoPor'], $_GET['AsignadoPor'][$j]) == 0)) {echo "selected=\"selected\"";
-    $j++;}?>><?php echo $row_AsignadoPor['DeAsignadoPor']; ?></option>
-								  <?php }?>
-								</select>
-							</div>
-							<label class="col-lg-1 control-label">Estado servicio</label>
-							<div class="col-lg-3">
-								<select name="EstadoServicio" class="form-control" id="EstadoServicio">
-										<option value="">(Todos)</option>
-								  <?php while ($row_EstServLlamada = sqlsrv_fetch_array($SQL_EstServLlamada)) {?>
-										<option value="<?php echo $row_EstServLlamada['IdEstadoServicio']; ?>" <?php if ((isset($_GET['EstadoServicio'])) && (strcmp($row_EstServLlamada['IdEstadoServicio'], $_GET['EstadoServicio']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_EstServLlamada['DeEstadoServicio']; ?></option>
-								  <?php }?>
-								</select>
-							</div>
-							<label class="col-lg-1 control-label">Ticket</label>
-							<div class="col-lg-2">
-								<input name="IDTicket" type="text" class="form-control" id="IDTicket" maxlength="50" placeholder="Digite un número completo, o una parte del mismo..." value="<?php if (isset($_GET['IDTicket']) && ($_GET['IDTicket'] != "")) {echo $_GET['IDTicket'];}?>">
-							</div>
-							<div class="col-lg-1 pull-right">
-								<button type="submit" class="btn btn-outline btn-success pull-right"><i class="fa fa-search"></i> Buscar</button>
-							</div>
-					  	</div>
-				 </form>
-			</div>
-			</div>
-		  </div>
-					<!-- Fin, filtros -->
-					<!-- Inicio, tabla -->
-					<div class="row">
-           <div class="col-lg-12">
-			    <div class="ibox-content">
-					 <?php include "includes/spinner.php";?>
-			<div class="table-responsive">
-                    <table class="table table-striped table-bordered table-hover dataTables-example" >
-                    <thead>
-                    <tr>
-                        <th>Ticket</th>
-						<th>Asignado por</th>
-						<th>Estado servicio</th>
-						<th>Asunto</th>
-                        <th>Tipo problema</th>
-						<th>Tipo llamada</th>
-						<th>Cliente</th>
-						<th>Sucursal</th>
-						<th>Serial Interno</th>
-                        <th>Fecha creación</th>
-						<th>Estado</th>
-						<th>Acciones</th>
-						<th><i class="fa fa-refresh"></i></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <?php while ($row = sql_fetch_array($SQL)) {?>
-						<tr class="gradeX">
-							<td><?php echo $row['DocNum']; ?></td>
-							<td><?php echo $row['DeAsignadoPor']; ?></td>
-							<td><span <?php if ($row['CDU_EstadoServicio'] == '0') {echo "class='label label-warning'";} elseif ($row['CDU_EstadoServicio'] == '1') {echo "class='label label-primary'";} else {echo "class='label label-danger'";}?>><?php echo $row['DeEstadoServicio']; ?></span></td>
-							<td><?php echo $row['AsuntoLlamada']; ?></td>
-							<td><?php echo $row['DeTipoProblemaLlamada']; ?></td>
-							<td><?php echo $row['DeTipoLlamada']; ?></td>
-							<td><?php echo $row['NombreClienteLlamada']; ?></td>
-							<td><?php echo $row['NombreSucursal']; ?></td>
-							<td><?php echo $row['IdNumeroSerie']; ?></td>
-							<td><?php echo $row['FechaHoraCreacionLLamada']->format('Y-m-d H:i'); ?></td>
-							<td><span <?php if ($row['IdEstadoLlamada'] == '-3') {echo "class='label label-info'";} elseif ($row['IdEstadoLlamada'] == '-2') {echo "class='label label-warning'";} else {echo "class='label label-danger'";}?>><?php echo $row['DeEstadoLlamada']; ?></span></td>
-							<td>
-								<a href="llamada_servicio.php?id=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&tl=1&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('gestionar_llamadas_servicios.php'); ?>" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i> Abrir</a>
-								<a href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&ObType=<?php echo base64_encode('191'); ?>&IdFrm=<?php echo base64_encode($row['Series']); ?>" target="_blank" class="btn btn-warning btn-xs"><i class="fa fa-download"></i> Descargar</a>
-							</td>
-							<td><?php if ($row['Metodo'] == 0) {?><i class="fa fa-check-circle text-info" title="Sincronizado con SAP"></i><?php } else {?><i class="fa fa-times-circle text-danger" title="Error de sincronización con SAP"></i><?php }?></td>
-						</tr>
-					<?php }?>
-                    </tbody>
-                    </table>
-              </div>
-			</div>
-			 </div>
-          </div>
-					<!-- Fin, tabla -->
+								<div class="form-group">
+									<label class="col-lg-1 control-label">Fechas</label>
+									<div class="col-lg-5">
+										<div class="input-daterange input-group" id="datepicker">
+											<input name="FechaInicial" autocomplete="off" type="text" class="input-sm form-control" id="FechaInicial" placeholder="Fecha inicial" value="<?php echo $FechaInicial; ?>"/>
+											<span class="input-group-addon">hasta</span>
+											<input name="FechaFinal" autocomplete="off" type="text" class="input-sm form-control" id="FechaFinal" placeholder="Fecha final" value="<?php echo $FechaFinal; ?>" />
+										</div>
+									</div>
+									<label class="col-lg-1 control-label">Cliente</label>
+									<div class="col-lg-5">
+										<input name="Cliente" type="hidden" id="Cliente" value="<?php echo $ID_CodigoCliente ?? ''; ?>">
+										<input name="NombreCliente" type="text" class="form-control" id="NombreCliente" placeholder="Para TODOS, dejar vacio..." value="<?php echo $row_ClienteLlamada['NombreCliente'] ?? ''; ?>">
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-lg-1 control-label">Serie</label>
+									<div class="col-lg-5">
+										<select name="Series" class="form-control" id="Series">
+											<option value="">(Todos)</option>
+											<?php while ($row_Series = sqlsrv_fetch_array($SQL_SeriesLlamada)) {?>
+												<option value="<?php echo $row_Series['IdSeries']; ?>"><?php echo $row_Series['DeSeries']; ?></option>
+											<?php }?>
+										</select>
+									</div>
+									<label class="col-lg-1 control-label">Sucursal</label>
+									<div class="col-lg-5">
+										<select id="Sucursal" name="Sucursal" class="form-control">
+											<option value="">(Todos)</option>
+											<?php while ($row_Sucursal = sqlsrv_fetch_array($SQL_Sucursal)) {?>
+												<option value="<?php echo $row_Sucursal['NombreSucursal']; ?>"><?php echo $row_Sucursal['NombreSucursal']; ?></option>
+											<?php }?>
+										</select>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-lg-1 control-label">Ticket</label>
+									<div class="col-lg-6">
+										<input name="IDTicket" type="text" class="form-control" id="IDTicket" maxlength="50" placeholder="Digite un número completo, o una parte del mismo..." value="<?php if (isset($_GET['IDTicket']) && ($_GET['IDTicket'] != "")) {echo $_GET['IDTicket'];}?>">
+									</div>
+									<div class="col-lg-4"> <!-- pull-right -->
+										<button type="submit" class="btn btn-outline btn-success"><i class="fa fa-search"></i> Buscar</button>
+									</div>
+								</div>
+							</form>
+						</div> <!-- ibox-content -->
+					</div> <!-- col-lg-12 -->
 				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-danger m-t-md" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
+				<!-- Fin, filtros -->
+
+				<!-- Inicio, tabla -->
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="ibox-content">
+							<div class="table-responsive" id="tableContainer">
+								<table id="footable" class="table" data-paging="true" data-sorting="true">
+									<thead>
+										<tr>
+											<th>Fecha creación</th>
+											<th>Sucursal</th>
+											<th>Cliente</th>
+											<th>Estado</th>
+											<th>Tipo llamada</th>
+											<th>Asunto</th>
+											<th>Ticket</th>
+											<th data-breakpoints="all">Serial Interno</th>
+											<th data-breakpoints="all">Asignado por</th>
+											<th data-breakpoints="all">Tipo problema</th>
+											<th data-breakpoints="all">Estado servicio</th>
+											<th data-breakpoints="all">Acciones</th>
+										</tr>
+									</thead>
+									<tbody>
+									<?php while ($row_Llamadas = sql_fetch_array($SQL_Llamadas)) {?>
+										<tr>
+											<td><?php echo $row_Llamadas['FechaHoraCreacionLLamada']->format('Y-m-d H:i'); ?></td>
+											<td><?php echo $row_Llamadas['NombreSucursal']; ?></td>
+											<td><?php echo $row_Llamadas['NombreClienteLlamada']; ?></td>
+											<td>
+												<span <?php if ($row_Llamadas['IdEstadoLlamada'] == '-3') {echo "class='label label-info'";} elseif ($row_Llamadas['IdEstadoLlamada'] == '-2') {echo "class='label label-warning'";} else {echo "class='label label-danger'";}?>>
+													<?php echo $row_Llamadas['DeEstadoLlamada']; ?>
+												</span>
+											</td>
+											<td><?php echo $row_Llamadas['DeTipoLlamada']; ?></td>
+											<td><?php echo $row_Llamadas['AsuntoLlamada']; ?></td>
+											<td>
+												<a type="button" class="btn btn-success btn-xs" onclick="cambiarOT('<?php echo $row_Llamadas['ID_LlamadaServicio']; ?>', '<?php echo $row_Llamadas['DocNum'] . ' - ' . $row_Llamadas['AsuntoLlamada'] . ' (' . $row_Llamadas['DeTipoLlamada'] . ')'; ?>')"><b><?php echo $row_Llamadas['DocNum']; ?></b></a>
+											</td>
+											<td><?php echo $row_Llamadas['IdNumeroSerie']; ?></td>
+											<td><?php echo $row_Llamadas['DeAsignadoPor']; ?></td>
+											<td><?php echo $row_Llamadas['DeTipoProblemaLlamada']; ?></td>
+											<td>
+												<span <?php if ($row_Llamadas['CDU_EstadoServicio'] == '0') {echo "class='label label-warning'";} elseif ($row_Llamadas['CDU_EstadoServicio'] == '1') {echo "class='label label-primary'";} else {echo "class='label label-danger'";}?>>
+													<?php echo $row_Llamadas['DeEstadoServicio']; ?>
+												</span>
+											</td>
+											<td>
+												<a target="_blank" href="llamada_servicio.php?id=<?php echo base64_encode($row_Llamadas['ID_LlamadaServicio']); ?>&tl=1" class="btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i> Abrir</a>
+											</td>
+										</tr>
+									<?php }?>
+									</tbody>
+								</table>
+							</div> <!-- table-responsive -->
+						</div> <!-- ibox-content -->
+					</div> <!-- col-lg-12 -->
 				</div>
-		</div>
-	</div>
- </div>
+				<!-- Fin, tabla -->
+
+			</div> <!-- modal-body -->
+			<div class="modal-footer">
+				<button type="button" class="btn btn-danger m-t-md" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
+			</div>
+		</div> <!-- modal-content -->
+	</div> <!-- modal-dialog -->
+</div>
 
 <script>
+function cambiarOT(orden_trabajo, descripcion_ot){
+	$("#OrdenServicioCliente").val(orden_trabajo);
+	$("#Desc_OrdenServicioCliente").val(descripcion_ot);
+	$('#mdOT').modal('hide');
+}
+
+
+
 $(document).ready(function(){
+	$('#footable').footable();
+
+	// Inicio, cambio asincrono de sucursal en base al cliente.
+	$("#NombreCliente").on("change", function() {
+		var NomCliente=document.getElementById("NombreCliente");
+		var Cliente=document.getElementById("Cliente");
+
+		if(NomCliente.value==""){
+			Cliente.value="";
+			$("#Cliente").trigger("change");
+		}
+	});
+
+	$("#Cliente").change(function(){
+		var Cliente=document.getElementById("Cliente");
+
+		$.ajax({
+			type: "POST",
+			url: "ajx_cbo_sucursales_clientes_simple.php?CardCode="+Cliente.value,
+			success: function(response){
+				$('#Sucursal').html(response).fadeIn();
+			}
+		});
+	});
+	// Fin, cambio asincrono de sucursal en base al cliente.
+
+	$('#formBuscar').on('submit', function (event) {
+		// Stiven Muñoz Murillo, 04/08/2022
+		event.preventDefault();
+	});
+
 	$("#formBuscar").validate({
 		submitHandler: function(form){
 			$('.ibox-content').toggleClass('sk-loading');
-			form.submit();
+
+			let formData = new FormData(form);
+
+			let json = Object.fromEntries(formData);
+			console.log("Line 250", json);
+
+			// Inicio, AJAX
+			$.ajax({
+				url: 'md_consultar_llamadas_servicios_ws.php',
+				type: 'POST',
+				data: formData,
+				processData: false,  // tell jQuery not to process the data
+				contentType: false,   // tell jQuery not to set contentType
+				success: function(response) {
+					// console.log("Line 260", response);
+
+					$("#tableContainer").html(response);
+					$('#footable').footable();
+
+					$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
+				},
+				error: function(error) {
+					console.error(error.responseText);
+
+					$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
+				}
+			});
+			// Fin, AJAX
 		}
-	});
-	$(".alkin").on('click', function(){
-		$('.ibox-content').toggleClass('sk-loading');
 	});
 	$('#FechaInicial').datepicker({
 		todayBtn: "linked",
@@ -400,6 +286,7 @@ $(document).ready(function(){
 	});
 	$('.chosen-select').chosen({width: "100%"});
 	var options = {
+		adjustWidth: false,
 		url: function(phrase) {
 			return "ajx_buscar_datos_json.php?type=7&id="+phrase;
 		},
@@ -416,35 +303,5 @@ $(document).ready(function(){
 		}
 	};
 	$("#NombreCliente").easyAutocomplete(options);
-	$('.dataTables-example').DataTable({
-		pageLength: 25,
-		order: [[ 0, "desc" ]],
-		dom: '<"html5buttons"B>lTfgitp',
-		language: {
-			"decimal":        "",
-			"emptyTable":     "No se encontraron resultados.",
-			"info":           "Mostrando _START_ - _END_ de _TOTAL_ registros",
-			"infoEmpty":      "Mostrando 0 - 0 de 0 registros",
-			"infoFiltered":   "(filtrando de _MAX_ registros)",
-			"infoPostFix":    "",
-			"thousands":      ",",
-			"lengthMenu":     "Mostrar _MENU_ registros",
-			"loadingRecords": "Cargando...",
-			"processing":     "Procesando...",
-			"search":         "Filtrar:",
-			"zeroRecords":    "Ningún registro encontrado",
-			"paginate": {
-				"first":      "Primero",
-				"last":       "Último",
-				"next":       "Siguiente",
-				"previous":   "Anterior"
-			},
-			"aria": {
-				"sortAscending":  ": Activar para ordenar la columna ascendente",
-				"sortDescending": ": Activar para ordenar la columna descendente"
-			}
-		},
-		buttons: []
-	});
 });
 </script>

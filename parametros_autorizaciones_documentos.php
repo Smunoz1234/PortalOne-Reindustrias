@@ -26,22 +26,29 @@ if (isset($_POST['Metodo']) && ($_POST['Metodo'] == 3)) {
 }
 
 //Insertar datos o actualizar datos
-if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) && (isset($_POST['Metodo']) && ($_POST['Metodo'] == 2))) {
+if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Metodo']) && ($_POST['Metodo'] == 2))) {
     try {
 
         if ($_POST['TipoDoc'] = "Motivos") {
             $FechaHora = "'" . FormatoFecha(date('Y-m-d'), date('H:i:s')) . "'";
             $Usuario = "'" . $_SESSION['CodUser'] . "'";
 
+            $Perfiles = implode(";", $_POST['Perfiles']);
+            $Perfiles = count($_POST['Perfiles']) > 0 ? "'$Perfiles'" : "''";
+
+            $IdInterno = (isset($_POST['ID_Actual']) && ($_POST['ID_Actual'] != "")) ? $_POST['ID_Actual'] : "NULL";
+
             $Param = array(
-                $_POST['Metodo'], // 1 - Crear, 2 - Actualizar
-                isset($_POST['ID_Actual']) ? $_POST['ID_Actual'] : "NULL", // IdInterno
+                $_POST['Metodo'] ?? 1, // 1 - Crear, 2 - Actualizar
+                $IdInterno,
                 "'" . $_POST['IdMotivoAutorizacion'] . "'",
                 "'" . $_POST['MotivoAutorizacion'] . "'",
                 "'" . $_POST['IdTipoDocumento'] . "'",
                 "'" . $_POST['IdFormato'] . "'",
                 "'" . $_POST['Comentarios'] . "'",
                 "'" . $_POST['Estado'] . "'",
+                "'" . $_POST['Condiciones'] . "'",
+                $Perfiles,
                 $Usuario,
                 $FechaHora,
                 $FechaHora,
@@ -113,7 +120,10 @@ $SQL_Muelles = Seleccionar("tbl_MuellesPuerto", "*");
 
 $SQL_Cliente = Seleccionar('uvw_Sap_tbl_Clientes', 'CodigoCliente, NombreCliente', '', 'NombreCliente');
 
+// Perfiles Usuarios, SMM 26/07/2022
+$SQL_Perfiles = Seleccionar('uvw_tbl_PerfilesUsuarios', '*');
 ?>
+
 <!DOCTYPE html>
 <html><!-- InstanceBegin template="/Templates/PlantillaPrincipal.dwt.php" codeOutsideHTMLIsLocked="false" -->
 
@@ -251,6 +261,8 @@ if (isset($sw_error) && ($sw_error == 1)) {
 																<th>Id Motivo Autorizacion</th>
 																<th>Motivo Autorizacion</th>
 																<th>Comentarios</th>
+																<th>Perfiles</th>
+																<th>Condiciones</th>
 																<th>Fecha Actualizacion</th>
 																<th>Usuario Actualizacion</th>
 																<th>Acciones</th>
@@ -265,6 +277,23 @@ if (isset($sw_error) && ($sw_error == 1)) {
 																<td><?php echo $row_Motivo['IdMotivoAutorizacion']; ?></td>
 																<td><?php echo $row_Motivo['MotivoAutorizacion']; ?></td>
 																<td><?php echo $row_Motivo['Comentarios']; ?></td>
+
+																<td>
+																	<?php sqlsrv_fetch($SQL_Perfiles, SQLSRV_SCROLL_ABSOLUTE, -1);?>
+																	<?php $ids_perfiles = explode(";", $row_Motivo['Perfiles']);?>
+
+																	<?php $cadenaPerfiles = "";?>
+																	<?php while ($row_Perfil = sqlsrv_fetch_array($SQL_Perfiles)) {?>
+																		<?php if (in_array($row_Perfil['ID_PerfilUsuario'], $ids_perfiles)) {?>
+																			<!-- ?php echo $row_Perfil['PerfilUsuario']; ?>
+																			<br><br -->
+																			<?php $cadenaPerfiles .= $row_Perfil['PerfilUsuario'] . "; ";?>
+																		<?php }?>
+																	<?php }?>
+																	<?php echo $cadenaPerfiles; ?>
+																</td>
+
+																<td><?php echo $row_Motivo['Condiciones']; ?></td>
 																<td><?php echo isset($row_Motivo['fecha_actualizacion']) ? date_format($row_Motivo['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
 																<td><?php echo $row_Motivo['usuario_actualizacion']; ?></td>
 																<td>
