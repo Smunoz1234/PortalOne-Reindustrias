@@ -37,8 +37,9 @@ if ($ID_CodigoCliente != "") {
     $Filtro .= " AND ID_CodigoCliente = '$ID_CodigoCliente'";
 
     $Where = "CodigoCliente = '$ID_CodigoCliente'";
-    $SQL_ClienteLlamada = Seleccionar("uvw_tbl_ClienteUsuario", "NombreCliente", $Where);
+    $SQL_ClienteLlamada = Seleccionar("uvw_Sap_tbl_SociosNegocios", "NombreCliente", $Where);
     $row_ClienteLlamada = sqlsrv_fetch_array($SQL_ClienteLlamada);
+    // var_dump($row_ClienteLlamada);
 
     // Obtener sucursales
     $SQL_Sucursal = Seleccionar("uvw_Sap_tbl_Clientes_Sucursales", "NombreSucursal", $Where);
@@ -55,6 +56,7 @@ $FechaFinal = $fecha;
 // Realizar consulta con filtros
 $Where = "Metodo = 0 AND ([FechaCreacionLLamada] BETWEEN '$FechaInicial' AND '$FechaFinal') $Filtro";
 $SQL_Llamadas = Seleccionar('uvw_Sap_tbl_LlamadasServicios', 'TOP 100 *', $Where);
+// echo "SELECT TOP 100 * FROM uvw_Sap_tbl_LlamadasServicios WHERE $Where";
 ?>
 
 <div class="modal inmodal fade" id="mdOT" tabindex="1" role="dialog" aria-hidden="true">
