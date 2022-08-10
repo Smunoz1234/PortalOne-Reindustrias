@@ -2116,15 +2116,25 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     "'" . $_REQUEST['pricelist'] . "'", // SMM, 25/02/2022
                     "'" . $_REQUEST['empventas'] . "'", // SMM, 04/05/2022
                 );
-                $SQL_Insert = EjecutarSP('sp_tbl_OrdenVentaDetalleCarritoInsert', $ParametrosInsert, 35);
+
+                $borrador = '';
+
+                if (isset($_GET['borrador']) && $_GET['borrador'] == 1) {
+                    $borrador = '_Borrador';
+                }
+
+                $SQL_Insert = EjecutarSP('sp_tbl_OrdenVentaDetalleCarritoInsert' . $borrador, $ParametrosInsert, 35);
+
                 if ($SQL_Insert) {
                     $ParametrosCount = array(
                         "'" . $WhsCode . "'",
                         "'" . $CardCode . "'",
                         "'" . $_SESSION['CodUser'] . "'",
                     );
-                    $SQL_ConCount = EjecutarSP('sp_tbl_OrdenVentaDetalleCarritoInsert_Count', $ParametrosCount, 35);
+
+                    $SQL_ConCount = EjecutarSP('sp_tbl_OrdenVentaDetalleCarritoInsert_Count' . $borrador, $ParametrosCount, 35);
                     $row_ConCount = sqlsrv_fetch_array($SQL_ConCount);
+
                     sqlsrv_close($conexion);
                     echo $row_ConCount['Cuenta'];
                 } else {
@@ -2156,14 +2166,24 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     "'" . $_REQUEST['pricelist'] . "'", // SMM, 25/02/2022
                     "'" . $_REQUEST['empventas'] . "'", // SMM, 04/05/2022
                 );
-                $SQL_Insert = EjecutarSP('sp_tbl_OrdenVentaDetalleInsert', $ParametrosInsert, 35);
+
+                $borrador = '';
+
+                if (isset($_REQUEST['borrador']) && $_REQUEST['borrador'] == 1) {
+                    $borrador = '_Borrador';
+                }
+
+                $SQL_Insert = EjecutarSP("sp_tbl_OrdenVentaDetalleInsert$borrador", $ParametrosInsert, 35);
+
                 if ($SQL_Insert) {
                     $ParametrosCount = array(
                         "'" . $id . "'",
                         "'" . $evento . "'",
                     );
-                    $SQL_ConCount = EjecutarSP('sp_tbl_OrdenVentaDetalleInsert_Count', $ParametrosCount, 35);
+
+                    $SQL_ConCount = EjecutarSP("sp_tbl_OrdenVentaDetalleInsert_Count$borrador", $ParametrosCount, 35);
                     $row_ConCount = sqlsrv_fetch_array($SQL_ConCount);
+
                     sqlsrv_close($conexion);
                     echo $row_ConCount['Cuenta'];
                 } else {
@@ -2258,15 +2278,25 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     "'" . $_REQUEST['pricelist'] . "'", // SMM, 25/02/2022
                     "'" . $_REQUEST['empventas'] . "'", // SMM, 04/05/2022
                 );
-                $SQL_Insert = EjecutarSP('sp_tbl_EntregaVentaDetalleCarritoInsert', $ParametrosInsert, 35);
+
+                $borrador = '';
+
+                if (isset($_GET['borrador']) && $_GET['borrador'] == 1) {
+                    $borrador = '_Borrador';
+                }
+
+                $SQL_Insert = EjecutarSP('sp_tbl_EntregaVentaDetalleCarritoInsert' . $borrador, $ParametrosInsert, 35);
+
                 if ($SQL_Insert) {
                     $ParametrosCount = array(
                         "'" . $WhsCode . "'",
                         "'" . $CardCode . "'",
                         "'" . $_SESSION['CodUser'] . "'",
                     );
-                    $SQL_ConCount = EjecutarSP('sp_tbl_EntregaVentaDetalleCarritoInsert_Count', $ParametrosCount, 35);
+
+                    $SQL_ConCount = EjecutarSP('sp_tbl_EntregaVentaDetalleCarritoInsert_Count' . $borrador, $ParametrosCount, 35);
                     $row_ConCount = sqlsrv_fetch_array($SQL_ConCount);
+
                     sqlsrv_close($conexion);
                     echo $row_ConCount['Cuenta'];
                 } else {
@@ -2298,14 +2328,24 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     "'" . $_REQUEST['pricelist'] . "'", // SMM, 25/02/2022
                     "'" . $_REQUEST['empventas'] . "'", // SMM, 04/05/2022
                 );
-                $SQL_Insert = EjecutarSP('sp_tbl_EntregaVentaDetalleInsert', $ParametrosInsert, 35);
+
+                $borrador = '';
+
+                if (isset($_GET['borrador']) && $_GET['borrador'] == 1) {
+                    $borrador = '_Borrador';
+                }
+
+                $SQL_Insert = EjecutarSP('sp_tbl_EntregaVentaDetalleInsert' . $borrador, $ParametrosInsert, 35);
+
                 if ($SQL_Insert) {
                     $ParametrosCount = array(
                         "'" . $id . "'",
                         "'" . $evento . "'",
                     );
-                    $SQL_ConCount = EjecutarSP('sp_tbl_EntregaVentaDetalleInsert_Count', $ParametrosCount, 35);
+
+                    $SQL_ConCount = EjecutarSP('sp_tbl_EntregaVentaDetalleInsert_Count' . $borrador, $ParametrosCount, 35);
                     $row_ConCount = sqlsrv_fetch_array($SQL_ConCount);
+
                     sqlsrv_close($conexion);
                     echo $row_ConCount['Cuenta'];
                 } else {
@@ -2499,11 +2539,11 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     "'" . $WhsCode . "'",
                     "'" . $CardCode . "'",
                     "'" . $_SESSION['CodUser'] . "'",
-                    "'" . $_REQUEST['dim1'] . "'",
-                    "'" . $_REQUEST['dim2'] . "'",
-                    "'" . $_REQUEST['dim3'] . "'",
-                    "''", //dim4
-                    "''", //dim5
+                    "'" . ($_REQUEST['dim1'] ?? "") . "'", // SMM, 21/05/2022
+                    "'" . ($_REQUEST['dim2'] ?? "") . "'", // SMM, 21/05/2022
+                    "'" . ($_REQUEST['dim3'] ?? "") . "'", // SMM, 21/05/2022
+                    "'" . ($_REQUEST['dim4'] ?? "") . "'", // SMM, 21/05/2022
+                    "'" . ($_REQUEST['dim5'] ?? "") . "'", // SMM, 21/05/2022
                     "'" . $_REQUEST['prjcode'] . "'", // SMM, 04/05/2022
                     "'" . $_REQUEST['pricelist'] . "'", // SMM, 25/02/2022
                     "'" . $_REQUEST['empventas'] . "'", // SMM, 04/05/2022
@@ -2539,11 +2579,11 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     "'" . $id . "'",
                     "'" . $evento . "'",
                     "'" . $_SESSION['CodUser'] . "'",
-                    "'" . $_REQUEST['dim1'] . "'",
-                    "'" . $_REQUEST['dim2'] . "'",
-                    "'" . $_REQUEST['dim3'] . "'",
-                    "''", //dim4
-                    "''", //dim5
+                    "'" . ($_REQUEST['dim1'] ?? "") . "'", // SMM, 21/05/2022
+                    "'" . ($_REQUEST['dim2'] ?? "") . "'", // SMM, 21/05/2022
+                    "'" . ($_REQUEST['dim3'] ?? "") . "'", // SMM, 21/05/2022
+                    "'" . ($_REQUEST['dim4'] ?? "") . "'", // SMM, 21/05/2022
+                    "'" . ($_REQUEST['dim5'] ?? "") . "'", // SMM, 21/05/2022
                     "'" . $_REQUEST['prjcode'] . "'", // SMM, 04/05/2022
                     "'" . $_REQUEST['pricelist'] . "'", // SMM, 25/02/2022
                     "'" . $_REQUEST['empventas'] . "'", // SMM, 04/05/2022
@@ -3023,7 +3063,15 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                         "'" . $_SESSION['CodUser'] . "'",
                         "'" . $_GET['actodos'] . "'",
                     );
-                    $SQL = EjecutarSP('sp_tbl_OrdenVentaDetalleCarritoUpdCampos', $Parametros, 36);
+
+                    $spDetalleCarrito = 'sp_tbl_OrdenVentaDetalleCarritoUpdCampos';
+
+                    if (isset($_GET['borrador']) && $_GET['borrador'] == 1) {
+                        $spDetalleCarrito = 'sp_tbl_OrdenVentaDetalleCarritoUpdCampos_Borrador';
+                    }
+
+                    $SQL = EjecutarSP($spDetalleCarrito, $Parametros, 36);
+
                     if ($SQL) {
                         sqlsrv_close($conexion);
                         echo date('h:i:s a');
@@ -3043,7 +3091,15 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                         "'" . $_SESSION['CodUser'] . "'",
                         "'" . $_GET['actodos'] . "'",
                     );
-                    $SQL = EjecutarSP('sp_tbl_OrdenVentaDetalleUpdCampos', $Parametros, 36);
+
+                    $spDetalle = 'sp_tbl_OrdenVentaDetalleUpdCampos';
+
+                    if (isset($_GET['borrador']) && $_GET['borrador'] == 1) {
+                        $spDetalle = 'sp_tbl_OrdenVentaDetalleUpdCampos_Borrador';
+                    }
+
+                    $SQL = EjecutarSP($spDetalle, $Parametros, 36);
+
                     if ($SQL) {
                         sqlsrv_close($conexion);
                         echo date('h:i:s a');
@@ -3105,7 +3161,15 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                         "'" . $_SESSION['CodUser'] . "'",
                         "'" . $_GET['actodos'] . "'",
                     );
-                    $SQL = EjecutarSP('sp_tbl_EntregaVentaDetalleCarritoUpdCampos', $Parametros, 36);
+
+                    $spDetalleCarrito = 'sp_tbl_OrdenVentaDetalleCarritoUpdCampos';
+
+                    if (isset($_GET['borrador']) && $_GET['borrador'] == 1) {
+                        $spDetalleCarrito = 'sp_tbl_OrdenVentaDetalleCarritoUpdCampos_Borrador';
+                    }
+
+                    $SQL = EjecutarSP($spDetalleCarrito, $Parametros, 36);
+
                     if ($SQL) {
                         sqlsrv_close($conexion);
                         echo date('h:i:s a');
@@ -3125,7 +3189,15 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                         "'" . $_SESSION['CodUser'] . "'",
                         "'" . $_GET['actodos'] . "'",
                     );
-                    $SQL = EjecutarSP('sp_tbl_EntregaVentaDetalleUpdCampos', $Parametros, 36);
+
+                    $spDetalle = 'sp_tbl_OrdenVentaDetalleUpdCampos';
+
+                    if (isset($_GET['borrador']) && $_GET['borrador'] == 1) {
+                        $spDetalle = 'sp_tbl_OrdenVentaDetalleUpdCampos_Borrador';
+                    }
+
+                    $SQL = EjecutarSP($spDetalle, $Parametros, 36);
+
                     if ($SQL) {
                         sqlsrv_close($conexion);
                         echo date('h:i:s a');
@@ -3329,9 +3401,9 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
 
                     /*
                     if (isset($_GET['custom'])) {
-                        array_push($Parametros, "'" . $_GET['custom'] . "'");
+                    array_push($Parametros, "'" . $_GET['custom'] . "'");
                     }
-                    */
+                     */
 
                     $SQL = EjecutarSP('sp_tbl_FacturaVentaDetalleCarritoUpdCampos', $Parametros, 36);
                     if ($SQL) {

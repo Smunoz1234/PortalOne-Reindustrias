@@ -247,8 +247,9 @@ if (isset($_GET['dt_OV']) && ($_GET['dt_OV']) == 1) {
     $SQL_SucursalDestino = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "' AND TipoDireccion='S'", 'NombreSucursal');
     $SQL_SucursalFacturacion = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "' AND TipoDireccion='B'", 'NombreSucursal');
 
-    //Orden de servicio
+    //Orden de servicio, SMM, 02/08/2022
     $SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . base64_decode($_GET['LS']) . "'");
+    $row_OrdenServicioCliente = sqlsrv_fetch_array($SQL_OrdenServicioCliente);
 }
 // Fin, Verificar que viene de una Orden de Ventas
 
@@ -288,8 +289,9 @@ if (isset($_GET['dt_ET']) && ($_GET['dt_ET']) == 1) { // Verificar que viene de 
     $SQL_SucursalDestino = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "' AND TipoDireccion='S'", 'NombreSucursal');
     $SQL_SucursalFacturacion = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "' AND TipoDireccion='B'", 'NombreSucursal');
 
-    //Orden de servicio
+    //Orden de servicio, SMM, 02/08/2022
     $SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . base64_decode($_GET['LS']) . "'");
+    $row_OrdenServicioCliente = sqlsrv_fetch_array($SQL_OrdenServicioCliente);
 }
 
 // Inicio, Verificar que viene de una Llamada de servicio (Datos Llamada servicio).
@@ -327,8 +329,9 @@ if (isset($_GET['dt_LS']) && ($_GET['dt_LS']) == 1) {
     $SQL_SucursalDestino = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "' AND TipoDireccion='S'", 'NombreSucursal');
     $SQL_SucursalFacturacion = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "' AND TipoDireccion='B'", 'NombreSucursal');
 
-    //Orden de servicio
+    //Orden de servicio, SMM, 02/08/2022
     $SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . base64_decode($_GET['LS']) . "'");
+    $row_OrdenServicioCliente = sqlsrv_fetch_array($SQL_OrdenServicioCliente);
 }
 // Fin, Verificar que viene de una LS
 
@@ -359,8 +362,9 @@ if ($edit == 1 && $sw_error == 0) {
     //Contacto cliente
     $SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', '*', "CodigoCliente='" . $row['CardCode'] . "'", 'NombreContacto');
 
-    //Orden de servicio
-    $SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_CodigoCliente='" . $row['CardCode'] . "' OR ID_LlamadaServicio='" . $row['ID_LlamadaServicio'] . "' AND IdEstadoLlamada<>'-1'");
+    //Orden de servicio, SMM, 02/08/2022
+    $SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . $row['ID_LlamadaServicio'] . "'");
+    $row_OrdenServicioCliente = sqlsrv_fetch_array($SQL_OrdenServicioCliente);
 
     //Sucursal
     $SQL_Sucursal = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'IdSucursal, DeSucursal', "IdSeries='" . $row['IdSeries'] . "'", "IdSucursal, DeSucursal");
@@ -390,8 +394,9 @@ if ($sw_error == 1) {
     //Contacto cliente
     $SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', '*', "CodigoCliente='" . $row['CardCode'] . "'", 'NombreContacto');
 
-    //Orden de servicio
-    $SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_CodigoCliente='" . $row['CardCode'] . "' OR ID_LlamadaServicio='" . $row['ID_LlamadaServicio'] . "' AND IdEstadoLlamada<>'-1'");
+    //Orden de servicio, SMM, 02/08/2022
+    $SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . $row['ID_LlamadaServicio'] . "'");
+    $row_OrdenServicioCliente = sqlsrv_fetch_array($SQL_OrdenServicioCliente);
 
     //Sucursal
     $SQL_Sucursal = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'IdSucursal, DeSucursal', "IdSeries='" . $row['IdSeries'] . "'", "IdSucursal, DeSucursal");
@@ -564,7 +569,9 @@ function ConsultarDatosCliente(){
 					$('#ContactoCliente').html(response).fadeIn();
 				},
 				error: function(error) {
-					console.error(error.responseText);
+					console.log(`ajx_cbo_select.php?type=2&id=${carcode}`);
+					console.log("Line 572", error.responseText);
+
 					$('.ibox-content').toggleClass('sk-loading', false);
 				}
 			});
@@ -591,7 +598,9 @@ function ConsultarDatosCliente(){
 					document.getElementById('Exento').value=data.SujetoImpuesto; // SMM, 23/04/2022
 				},
 				error: function(error) {
-					console.error(error.responseText);
+					console.log("El cliente no esta asociado a una lista de precios");
+					// console.log("Line 600", error.responseText);
+
 					$('.ibox-content').toggleClass('sk-loading', false);
 				}
 			});
@@ -600,20 +609,6 @@ function ConsultarDatosCliente(){
 			$.ajax({
 				type: "POST",
 				url: "includes/procedimientos.php?type=7&objtype=15&cardcode="+carcode
-			});
-
-			// Recargar lista de llamadas de servicio.
-			$.ajax({
-				type: "POST",
-				url: "ajx_cbo_select.php?type=6&id="+carcode,
-				success: function(response){
-					$('#OrdenServicioCliente').html(response).fadeIn();
-					$('#OrdenServicioCliente').trigger('change');
-				},
-				error: function(error) {
-					console.error(error.responseText);
-					$('.ibox-content').toggleClass('sk-loading', false);
-				}
 			});
 
 			// Recargar sucursales.
@@ -625,7 +620,7 @@ function ConsultarDatosCliente(){
 					$('#SucursalDestino').trigger('change');
 				},
 				error: function(error) {
-					console.error(error.responseText);
+					console.log("Line 636", error.responseText);
 					$('.ibox-content').toggleClass('sk-loading', false);
 				}
 			});
@@ -637,7 +632,7 @@ function ConsultarDatosCliente(){
 					$('#SucursalFacturacion').trigger('change');
 				},
 				error: function(error) {
-					console.error(error.responseText);
+					console.log("Line 648", error.responseText);
 					$('.ibox-content').toggleClass('sk-loading', false);
 				}
 			});
@@ -651,7 +646,7 @@ function ConsultarDatosCliente(){
 						$('#CondicionPago').html(response).fadeIn();
 					},
 					error: function(error) {
-						console.error(error.responseText);
+						console.log("Line 662", error.responseText);
 						$('.ibox-content').toggleClass('sk-loading', false);
 					}
 				});
@@ -689,7 +684,9 @@ function ConsultarDatosCliente(){
 					$('.ibox-content').toggleClass('sk-loading',false);
 				},
 				error: function(error) {
-					console.error("Line 637", error.responseText);
+					// console.log("Line 637", error.responseText);
+					console.log("El cliente no tiene una dirección destino");
+
 					$('.ibox-content').toggleClass('sk-loading',false);
 				}
 			});
@@ -709,7 +706,9 @@ function ConsultarDatosCliente(){
 					$('.ibox-content').toggleClass('sk-loading',false);
 				},
 				error: function(error) {
-					console.error("Line 658", error.responseText);
+					// console.log("Line 658", error.responseText);
+					console.log("El cliente no tiene una dirección de facturación");
+
 					$('.ibox-content').toggleClass('sk-loading',false);
 				}
 			});
@@ -720,7 +719,7 @@ function ConsultarDatosCliente(){
 
 			var Serie=document.getElementById('Serie').value;
 			var SDim=document.getElementById('Dim2').value; // SMM, 04/02/2022
-			
+
 			$.ajax({
 				type: "POST",
 				url: `ajx_cbo_select.php?type=19&id=${Serie}&SDim=${SDim}`,
@@ -730,7 +729,7 @@ function ConsultarDatosCliente(){
 					$('#Dim2').trigger('change');
 				},
 				error: function(error) {
-					console.error("Line 677", error.responseText);
+					console.log("Line 745", error.responseText);
 					$('.ibox-content').toggleClass('sk-loading', false);
 				}
 			});
@@ -898,7 +897,7 @@ function ConsultarDatosCliente(){
 								$('.ibox-content').toggleClass('sk-loading',false);
 							},
 							error: function(error) {
-								console.error(error.responseText);
+								console.log("Line 912", error.responseText);
 								$('.ibox-content').toggleClass('sk-loading',false);
 							}
 						});
@@ -911,7 +910,7 @@ function ConsultarDatosCliente(){
 								$('.ibox-content').toggleClass('sk-loading',false);
 							},
 							error: function(error) {
-								console.error(error.responseText);
+								console.log("Line 925", error.responseText);
 								$('.ibox-content').toggleClass('sk-loading',false);
 							}
 						});
@@ -1035,6 +1034,9 @@ function ConsultarDatosCliente(){
             </div>
 
          <div class="wrapper wrapper-content">
+			<!-- SMM, 02/08/2022 -->
+			<?php include_once 'md_consultar_llamadas_servicios.php';?>
+
 			<!-- Inicio, modalSN -->
 			<div class="modal inmodal fade" id="modalSN" tabindex="-1" role="dialog" aria-hidden="true">
 				<div class="modal-dialog modal-lg" style="width: 70% !important;">
@@ -1256,19 +1258,16 @@ if ($edit == 1 || $sw_error == 1) {
 						</div>
 					</div>
 					<div class="form-group">
-					<label class="col-lg-1 control-label"><?php if (($edit == 1) && ($row['ID_LlamadaServicio'] != 0)) {?><a href="llamada_servicio.php?id=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&tl=1" target="_blank" title="Consultar Llamada de servicio" class="btn-xs btn-success fa fa-search"></a> <?php }?>Orden servicio</label>
-				  	<div class="col-lg-11">
-                    	<select name="OrdenServicioCliente" class="form-control select2" id="OrdenServicioCliente" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "disabled='disabled'";}?>>
-                         	<option value="">(Ninguna)</option>
-							<?php
-if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
-    while ($row_OrdenServicioCliente = sqlsrv_fetch_array($SQL_OrdenServicioCliente)) {?>
-										<option value="<?php echo $row_OrdenServicioCliente['ID_LlamadaServicio']; ?>" <?php if ((isset($row['ID_LlamadaServicio'])) && (strcmp($row_OrdenServicioCliente['ID_LlamadaServicio'], $row['ID_LlamadaServicio']) == 0)) {echo "selected=\"selected\"";} elseif ((isset($_GET['LS'])) && (strcmp($row_OrdenServicioCliente['ID_LlamadaServicio'], base64_decode($_GET['LS'])) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_OrdenServicioCliente['DocNum'] . " - " . $row_OrdenServicioCliente['AsuntoLlamada'] . " (" . $row_OrdenServicioCliente['DeTipoLlamada'] . ")"; ?></option>
-							  <?php }
-}?>
-						</select>
-               	  	</div>
-				</div>
+						<label class="col-lg-1 control-label"><?php if (($edit == 1) && ($row['ID_LlamadaServicio'] != 0)) {?><a href="llamada_servicio.php?id=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&tl=1" target="_blank" title="Consultar Llamada de servicio" class="btn-xs btn-success fa fa-search"></a> <?php }?>Orden servicio</label>
+						<div class="col-lg-7">
+							<input type="hidden" class="form-control" name="OrdenServicioCliente" id="OrdenServicioCliente" value="<?php if (isset($row_OrdenServicioCliente['ID_LlamadaServicio']) && ($row_OrdenServicioCliente['ID_LlamadaServicio'] != 0)) {echo $row_OrdenServicioCliente['ID_LlamadaServicio'];}?>">
+							<input readonly type="text" class="form-control" name="Desc_OrdenServicioCliente" id="Desc_OrdenServicioCliente" placeholder="Haga clic en el botón"
+							value="<?php if (isset($row_OrdenServicioCliente['ID_LlamadaServicio']) && ($row_OrdenServicioCliente['ID_LlamadaServicio'] != 0)) {echo $row_OrdenServicioCliente['DocNum'] . " - " . $row_OrdenServicioCliente['AsuntoLlamada'] . " (" . $row_OrdenServicioCliente['DeTipoLlamada'] . ")";}?>">
+						</div>
+						<div class="col-lg-4">
+							<button class="btn btn-success" type="button" onClick="$('#mdOT').modal('show');"><i class="fa fa-refresh"></i> Cambiar orden servicio</button>
+						</div>
+					</div>
 				</div>
 				<div class="col-lg-4">
 					<div class="form-group">
@@ -1740,7 +1739,7 @@ $return = QuitarParametrosURL($return, array("a"));
 					$('#ContactoSN').trigger('change');
 				},
 				error: function(error) {
-					console.error("ContactoSN", error.responseText);
+					console.log("Line 1754", error.responseText);
 				}
 			});
 			$.ajax({
@@ -1753,7 +1752,7 @@ $return = QuitarParametrosURL($return, array("a"));
 					$('#SucursalSN').trigger('change');
 				},
 				error: function(error) {
-					console.error("SucursalSN", error.responseText);
+					console.log("Line 1767", error.responseText);
 				}
 			});
 		});
@@ -1775,7 +1774,7 @@ $return = QuitarParametrosURL($return, array("a"));
 						document.getElementById('DireccionSN').value=data.Direccion;
 					},
 					error: function(error) {
-						console.error("SucursalSN", error.responseText);
+						console.log("Line 1790", error.responseText);
 					}
 				});
 			}

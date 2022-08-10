@@ -221,8 +221,9 @@ if (isset($_GET['dt_LS']) && ($_GET['dt_LS']) == 1) { //Verificar que viene de u
     $SQL_SucursalDestino = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "' AND TipoDireccion='S'", 'NombreSucursal');
     $SQL_SucursalFacturacion = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "' AND TipoDireccion='B'", 'NombreSucursal');
 
-    //Orden de servicio
+    //Orden de servicio, SMM 05/08/2022
     $SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . base64_decode($_GET['LS']) . "'");
+    $row_OrdenServicioCliente = sqlsrv_fetch_array($SQL_OrdenServicioCliente);
 }
 
 // SMM, 26/04/2022
@@ -288,8 +289,9 @@ if ($edit == 1 && $sw_error == 0) {
     //Contacto cliente
     $SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', '*', "CodigoCliente='" . $row['CardCode'] . "'", 'NombreContacto');
 
-    //Orden de servicio
-    $SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_CodigoCliente='" . $row['CardCode'] . "' OR ID_LlamadaServicio='" . $row['ID_LlamadaServicio'] . "' AND IdEstadoLlamada<>'-1'");
+    //Orden de servicio, SMM 05/08/2022
+    $SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . $row['ID_LlamadaServicio'] . "'");
+    $row_OrdenServicioCliente = sqlsrv_fetch_array($SQL_OrdenServicioCliente);
 
     //Sucursal
     $SQL_Sucursal = Seleccionar('uvw_tbl_SeriesSucursalesAlmacenes', 'IdSucursal, DeSucursal', "IdSeries='" . $row['IdSeries'] . "'");
@@ -319,8 +321,9 @@ if ($sw_error == 1) {
     //Contacto cliente
     $SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', '*', "CodigoCliente='" . $row['CardCode'] . "'", 'NombreContacto');
 
-    //Orden de servicio
-    $SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_CodigoCliente='" . $row['CardCode'] . "' OR ID_LlamadaServicio='" . $row['ID_LlamadaServicio'] . "' AND IdEstadoLlamada<>'-1'");
+    //Orden de servicio, SMM 05/08/2022
+    $SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . $row['ID_LlamadaServicio'] . "'");
+    $row_OrdenServicioCliente = sqlsrv_fetch_array($SQL_OrdenServicioCliente);
 
     //Sucursal
     $SQL_Sucursal = Seleccionar('uvw_tbl_SeriesSucursalesAlmacenes', 'IdSucursal, DeSucursal', "IdSeries='" . $row['IdSeries'] . "'");
@@ -561,20 +564,6 @@ function CrearLead(){
 				url: "includes/procedimientos.php?type=7&objtype=23&cardcode="+carcode
 			});
 
-			// Recargar lista de llamadas de servicio.
-			$.ajax({
-				type: "POST",
-				url: "ajx_cbo_select.php?type=6&id="+carcode,
-				success: function(response){
-					$('#OrdenServicioCliente').html(response).fadeIn();
-					$('#OrdenServicioCliente').trigger('change');
-				},
-				error: function(error) {
-					console.error(error.responseText);
-					$('.ibox-content').toggleClass('sk-loading', false);
-				}
-			});
-
 			// Recargar sucursales.
 			$.ajax({
 				type: "POST",
@@ -679,7 +668,7 @@ function CrearLead(){
 
 			var Serie=document.getElementById('Serie').value;
 			var SDim=document.getElementById('Dim2').value; // SMM, 25/04/2022
-			
+
 			$.ajax({
 				type: "POST",
 				url: `ajx_cbo_select.php?type=19&id=${Serie}&SDim=${SDim}`,
@@ -979,8 +968,10 @@ function CrearLead(){
                 </div>
             </div>
          <div class="wrapper wrapper-content">
+			<!-- SMM, 02/08/2022 -->
+			<?php include_once 'md_consultar_llamadas_servicios.php';?>
 
-			 <!-- Inicio, modalSN -->
+			<!-- Inicio, modalSN -->
 			<div class="modal inmodal fade" id="modalSN" tabindex="-1" role="dialog" aria-hidden="true">
 				<div class="modal-dialog modal-lg" style="width: 70% !important;">
 					<div class="modal-content">
@@ -1201,19 +1192,15 @@ if ($edit == 1 || $sw_error == 1) {
 
 					<div class="form-group">
 						<label class="col-lg-1 control-label"><?php if (($edit == 1) && ($row['ID_LlamadaServicio'] != 0)) {?><a href="llamada_servicio.php?id=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&tl=1" target="_blank" title="Consultar Llamada de servicio" class="btn-xs btn-success fa fa-search"></a> <?php }?>Orden servicio</label>
-						<div class="col-lg-11">
-							<select name="OrdenServicioCliente" class="form-control select2" id="OrdenServicioCliente" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "disabled='disabled'";}?>>
-								<option value="">(Ninguna)</option>
-								<?php if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {?>
-									<?php while ($row_OrdenServicioCliente = sqlsrv_fetch_array($SQL_OrdenServicioCliente)) {?>
-										<option value="<?php echo $row_OrdenServicioCliente['ID_LlamadaServicio']; ?>" <?php if ((isset($row['ID_LlamadaServicio'])) && (strcmp($row_OrdenServicioCliente['ID_LlamadaServicio'], $row['ID_LlamadaServicio']) == 0)) {echo "selected=\"selected\"";} elseif ((isset($_GET['LS'])) && (strcmp($row_OrdenServicioCliente['ID_LlamadaServicio'], base64_decode($_GET['LS'])) == 0)) {echo "selected=\"selected\"";}?>>
-											<?php echo $row_OrdenServicioCliente['DocNum'] . " - " . $row_OrdenServicioCliente['AsuntoLlamada'] . " (" . $row_OrdenServicioCliente['DeTipoLlamada'] . ")"; ?>
-										</option>
-									<?php }?>
-								<?php }?>
-							</select>
+						<div class="col-lg-7">
+							<input type="hidden" class="form-control" name="OrdenServicioCliente" id="OrdenServicioCliente" value="<?php if (isset($row_OrdenServicioCliente['ID_LlamadaServicio']) && ($row_OrdenServicioCliente['ID_LlamadaServicio'] != 0)) {echo $row_OrdenServicioCliente['ID_LlamadaServicio'];}?>">
+							<input readonly type="text" class="form-control" name="Desc_OrdenServicioCliente" id="Desc_OrdenServicioCliente" placeholder="Haga clic en el botón"
+							value="<?php if (isset($row_OrdenServicioCliente['ID_LlamadaServicio']) && ($row_OrdenServicioCliente['ID_LlamadaServicio'] != 0)) {echo $row_OrdenServicioCliente['DocNum'] . " - " . $row_OrdenServicioCliente['AsuntoLlamada'] . " (" . $row_OrdenServicioCliente['DeTipoLlamada'] . ")";}?>">
 						</div>
-				</div>
+						<div class="col-lg-4">
+							<button class="btn btn-success" type="button" onClick="$('#mdOT').modal('show');"><i class="fa fa-refresh"></i> Cambiar orden servicio</button>
+						</div>
+					</div>
 				</div>
 				<div class="col-lg-4">
 					<div class="form-group">
