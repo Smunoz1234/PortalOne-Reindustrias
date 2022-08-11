@@ -30,7 +30,7 @@ $IdOrden = 0;
 $IdPortal = 0; //Id del portal para las ordenes que fueron creadas en el portal, para eliminar el registro antes de cargar al editar
 
 // Motivos de autorización, SMM 29/07/2022
-$SQL_Motivos = Seleccionar("uvw_tbl_Autorizaciones_Motivos", "*", "IdTipoDocumento = 17");
+$SQL_Motivos = Seleccionar("uvw_tbl_Autorizaciones_Motivos", "*", "Estado = 'Y' AND IdTipoDocumento = 17");
 
 if (isset($_GET['id']) && ($_GET['id'] != "")) { //ID de la Orden de venta (DocEntry)
     $IdOrden = base64_decode($_GET['id']);

@@ -12,7 +12,7 @@ $IdOrden = 0;
 $IdPortal = 0; //Id del portal para las ordenes que fueron creadas en el portal, para eliminar el registro antes de cargar al editar
 
 // Motivos de autorización, SMM 29/07/2022
-$SQL_Motivos = Seleccionar("uvw_tbl_Autorizaciones_Motivos", "*", "IdTipoDocumento = 17");
+$SQL_Motivos = Seleccionar("uvw_tbl_Autorizaciones_Motivos", "*", "Estado = 'Y' AND IdTipoDocumento = 17");
 
 if (isset($_GET['id']) && ($_GET['id'] != "")) { //ID de la Orden de venta (DocEntry)
     $IdOrden = base64_decode($_GET['id']);
@@ -232,7 +232,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Orden de venta
                         $msg_error = $Resultado->Mensaje;
                     } else {
                         if (isset($_POST['Autorizacion']) && ($_POST['Autorizacion'] == "P")) {
-                            header('Location:orden_venta.php');
+                            header('Location:orden_venta.php?a=' . base64_encode("OK_BorradorAdd"));
                         } else {
                             if ($_POST['P'] == 37) { //Creando orden
                                 //Consultar ID creado para cargar el documento
@@ -591,6 +591,19 @@ if (isset($sw_error) && ($sw_error == 1) && ($success == 1)) {
                 title: '¡Ha ocurrido un error!',
                 text: `" . LSiqmlObs($msg_error) . "`,
                 icon: 'warning'
+            });
+		});
+		</script>";
+}
+
+// SMM, 11/08/2022
+if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_BorradorAdd"))) {
+    echo "<script>
+		$(document).ready(function() {
+			Swal.fire({
+                title: '¡Listo!',
+                text: 'El documento en borrador se ha creado exitosamente.',
+                icon: 'success'
             });
 		});
 		</script>";
@@ -1243,7 +1256,7 @@ function verAutorizacion() {
 										<div class="form-group">
 											<label class="col-lg-2">Comentarios autor <span class="text-danger">*</span></label>
 											<div class="col-lg-10">
-												<textarea form="CrearOrdenVenta" class="form-control required" name="ComentariosAutor" id="ComentariosAutor" type="text" maxlength="250" rows="4"><?php if ($edit == 1 || $sw_error == 1) {echo $row['ComentariosAutor'];} elseif (isset($_GET['ComentariosAutor'])) {echo base64_decode($_GET['ComentariosAutor']);}?></textarea>
+												<textarea <?php if ($edit == 1) {echo "readonly";}?> form="CrearOrdenVenta" class="form-control required" name="ComentariosAutor" id="ComentariosAutor" type="text" maxlength="250" rows="4"><?php if ($edit == 1 || $sw_error == 1) {echo $row['ComentariosAutor'];} elseif (isset($_GET['ComentariosAutor'])) {echo base64_decode($_GET['ComentariosAutor']);}?></textarea>
 											</div>
 										</div>
 										<br><br><br>
