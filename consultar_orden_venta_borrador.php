@@ -337,7 +337,7 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_OVenUpd"))) {
 if ($sw == 1) {
     while ($row = sqlsrv_fetch_array($SQL)) {?>
 						 <tr class="gradeX">
-						 	<td><?php echo $row['ID_OrdenVenta']; ?></td>	
+						 	<td><?php echo $row['ID_OrdenVenta']; ?></td>
 						 	<td><?php echo $row['DocNum']; ?></td>
 							<td><?php echo $row['DeSeries']; ?></td>
 							<td><?php echo $row['DocDate']; ?></td>
@@ -458,7 +458,7 @@ if ($sw == 1) {
 					}
 				},
                 buttons: []
-
+				, order: [[0, 'DESC']] // SMM, 10/08/2022
             });
 
         });

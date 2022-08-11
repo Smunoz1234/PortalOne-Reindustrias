@@ -3162,10 +3162,10 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                         "'" . $_GET['actodos'] . "'",
                     );
 
-                    $spDetalleCarrito = 'sp_tbl_OrdenVentaDetalleCarritoUpdCampos';
+                    $spDetalleCarrito = 'sp_tbl_EntregaVentaDetalleCarritoUpdCampos';
 
                     if (isset($_GET['borrador']) && $_GET['borrador'] == 1) {
-                        $spDetalleCarrito = 'sp_tbl_OrdenVentaDetalleCarritoUpdCampos_Borrador';
+                        $spDetalleCarrito = 'sp_tbl_EntregaVentaDetalleCarritoUpdCampos_Borrador';
                     }
 
                     $SQL = EjecutarSP($spDetalleCarrito, $Parametros, 36);
@@ -3190,10 +3190,10 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                         "'" . $_GET['actodos'] . "'",
                     );
 
-                    $spDetalle = 'sp_tbl_OrdenVentaDetalleUpdCampos';
+                    $spDetalle = 'sp_tbl_EntregaVentaDetalleUpdCampos';
 
                     if (isset($_GET['borrador']) && $_GET['borrador'] == 1) {
-                        $spDetalle = 'sp_tbl_OrdenVentaDetalleUpdCampos_Borrador';
+                        $spDetalle = 'sp_tbl_EntregaVentaDetalleUpdCampos_Borrador';
                     }
 
                     $SQL = EjecutarSP($spDetalle, $Parametros, 36);
