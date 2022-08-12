@@ -151,9 +151,9 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Orden de venta
                 $IdMotivo = "";
                 $debug_Condiciones = false;
                 while ($row_Motivo = sqlsrv_fetch_array($SQL_Motivos)) {
-                    $ids_perfiles = explode(";", $row_Motivo['Perfiles']);
+                    $ids_perfiles = ($row_Motivo['Perfiles'] != "") ? explode(";", $row_Motivo['Perfiles']) : [];
 
-                    if (in_array($_SESSION['Perfil'], $ids_perfiles)) {
+                    if (in_array($_SESSION['Perfil'], $ids_perfiles) || (count($ids_perfiles) == 0)) {
                         $sql = $row_Motivo['Condiciones'] ?? '';
 
                         $sql = str_replace("[IdDocumento]", $IdOrdenVenta, $sql);
@@ -1188,7 +1188,7 @@ function verAutorizacion() {
 										<div class="form-group">
 											<label class="col-lg-2">Comentarios motivo</label>
 											<div class="col-lg-10">
-												<textarea readonly form="CrearOrdenVenta" class="form-control" name="ComentariosMotivo" id="ComentariosMotivo" type="text" maxlength="250" rows="4"><?php if ($mensajeMotivo != "") {echo $mensajeMotivo;} elseif ($edit == 1 || $sw_error == 1) {echo $row['ComentariosMotivo'];}?></textarea>
+												<textarea readonly form="CrearOrdenVenta" style="color: black; font-weight: bold;" class="form-control" name="ComentariosMotivo" id="ComentariosMotivo" type="text" maxlength="250" rows="4"><?php if ($mensajeMotivo != "") {echo $mensajeMotivo;} elseif ($edit == 1 || $sw_error == 1) {echo $row['ComentariosMotivo'];}?></textarea>
 											</div>
 										</div>
 										<br><br><br>
@@ -1840,18 +1840,26 @@ $return = QuitarParametrosURL($return, array("a"));
 			} else {
 				Swal.fire({
 					"title": "¡Listo!",
-					"text": "Puede continuar con la creación del documento.",
+					"text": "Puede continuar con la actualización del documento.",
 					"icon": "success"
 				});
 
 				// Cambiar estado de autorización a pendiente.
-				if($("#Autorizacion").val() == "N") {
-					$("#Autorizacion").val("P").change();
+				// if($("#Autorizacion").val() == "N") {
+				$("#Autorizacion").val("P").change();
 
-					// Corregir valores nulos en el combo de autorización.
-					$('#Autorizacion option:selected').attr('disabled', false);
-					$('#Autorizacion option:not(:selected)').attr('disabled', true);
-				}
+				// Corregir valores nulos en el combo de autorización.
+				$('#Autorizacion option:selected').attr('disabled', false);
+				$('#Autorizacion option:not(:selected)').attr('disabled', true);
+				// }
+
+				// SMM, 12/08/2022
+				$("#Actualizar").show();
+				$("#Actualizar2").hide();
+
+				$(".form-control").removeAttr('readonly');
+
+				// Ocultar Modal
 				$('#modalAUT').modal('hide');
 			}
 		});
@@ -2014,7 +2022,25 @@ $return = QuitarParametrosURL($return, array("a"));
             });
 	 	 <?php }?>
 		 //$('.chosen-select').chosen({width: "100%"});
-		 $(".select2").select2();
+
+
+		// SMM, 12/08/2022
+		<?php if (isset($row_Autorizaciones['IdEstadoAutorizacion']) && ($row_Autorizaciones['IdEstadoAutorizacion'] == 'Y')) {?>
+			$("#Actualizar").hide();
+
+			$(".form-control").attr('readonly', 'readonly');
+
+			<?php if (PermitirFuncion(424)) {?>
+				$("#ComentariosAutor").removeAttr('readonly');
+			<?php } else {?>
+				$("#formAUT_button").hide();
+			<?php }?>
+
+			$(".select2").select2("readonly", true);
+		<?php } else {?>
+			$(".select2").select2();
+		<?php }?>
+
 
 		 <?php
 if ($edit == 1) {?>

@@ -134,9 +134,9 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Orden de venta
                 $IdMotivo = "";
                 $debug_Condiciones = false;
                 while ($row_Motivo = sqlsrv_fetch_array($SQL_Motivos)) {
-                    $ids_perfiles = explode(";", $row_Motivo['Perfiles']);
+                    $ids_perfiles = ($row_Motivo['Perfiles'] != "") ? explode(";", $row_Motivo['Perfiles']) : [];
 
-                    if (in_array($_SESSION['Perfil'], $ids_perfiles)) {
+                    if (in_array($_SESSION['Perfil'], $ids_perfiles) || (count($ids_perfiles) == 0)) {
                         $sql = $row_Motivo['Condiciones'] ?? '';
 
                         $sql = str_replace("[IdDocumento]", $IdOrdenVenta, $sql);
@@ -1248,7 +1248,7 @@ function verAutorizacion() {
 										<div class="form-group">
 											<label class="col-lg-2">Comentarios motivo</label>
 											<div class="col-lg-10">
-												<textarea readonly form="CrearOrdenVenta" class="form-control" name="ComentariosMotivo" id="ComentariosMotivo" type="text" maxlength="250" rows="4"><?php if ($mensajeMotivo != "") {echo $mensajeMotivo;} elseif ($edit == 1 || $sw_error == 1) {echo $row['ComentariosMotivo'];}?></textarea>
+												<textarea readonly form="CrearOrdenVenta" style="color: black; font-weight: bold;" class="form-control" name="ComentariosMotivo" id="ComentariosMotivo" type="text" maxlength="250" rows="4"><?php if ($mensajeMotivo != "") {echo $mensajeMotivo;} elseif ($edit == 1 || $sw_error == 1) {echo $row['ComentariosMotivo'];}?></textarea>
 											</div>
 										</div>
 										<br><br><br>
@@ -1317,7 +1317,9 @@ function verAutorizacion() {
 								</div>
 
 								<div class="modal-footer">
-									<button type="button" class="btn btn-success m-t-md" id="formAUT_button"><i class="fa fa-check"></i> Enviar</button>
+									<?php if ($edit == 0) {?>
+										<button type="button" class="btn btn-success m-t-md" id="formAUT_button"><i class="fa fa-check"></i> Enviar</button>
+									<?php }?>
 									<button type="button" class="btn btn-warning m-t-md" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
 								</div>
 							<!-- /form -->
@@ -1613,7 +1615,7 @@ if ($edit == 1 || $sw_error == 1) {
 					</div>
 					<label class="col-lg-1 control-label">
 						Autorización
-						<?php if (($edit == 1) || ($success == 0)) {?>
+						<?php if ((isset($row_Autorizaciones['IdEstadoAutorizacion']) && ($edit == 1)) || ($success == 0)) {?>
 							<i onClick="verAutorizacion();" title="Ver Autorización" style="cursor: pointer" class="btn-xs btn-success fa fa-eye"></i>
 						<?php }?>
 					</label>

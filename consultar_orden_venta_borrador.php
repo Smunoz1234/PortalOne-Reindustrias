@@ -15,6 +15,9 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 //Estado autorizacion
 $SQL_EstadoAuth = Seleccionar('uvw_Sap_tbl_EstadosAuth', '*');
 
+//Estado autorizacion SAP, SMM 12/08/2022
+$SQL_EstadoAutorizacion = Seleccionar('tbl_EstadoAutorizacionesSAPB1', '*');
+
 //Empleado de ventas
 $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', '', 'DE_EmpVentas');
 
@@ -49,6 +52,11 @@ if (isset($_GET['Estado']) && $_GET['Estado'] != "") {
 
 if (isset($_GET['Autorizacion']) && $_GET['Autorizacion'] != "") {
     $Filtro .= " and AuthPortal='" . $_GET['Autorizacion'] . "'";
+}
+
+// SMM, 12/08/2022
+if (isset($_GET['AutorizacionSAP']) && $_GET['AutorizacionSAP'] != "") {
+    $Filtro .= " AND IdEstadoAutorizacion = '" . $_GET['AutorizacionSAP'] . "'";
 }
 
 if (isset($_GET['Cliente']) && $_GET['Cliente'] != "") {
@@ -223,21 +231,21 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_OVenUpd"))) {
 									<input name="FechaFinal" autocomplete="off" type="text" class="input-sm form-control" id="FechaFinal" placeholder="Fecha final" value="<?php echo $FechaFinal; ?>" />
 								</div>
 							</div>
-							<label class="col-lg-1 control-label">Estado</label>
-							<div class="col-lg-3">
-								<select name="Estado" class="form-control" id="Estado">
-										<option value="">(Todos)</option>
-								  <?php while ($row_Estado = sqlsrv_fetch_array($SQL_Estado)) {?>
-										<option value="<?php echo $row_Estado['Cod_Estado']; ?>" <?php if ((isset($_GET['Estado'])) && (strcmp($row_Estado['Cod_Estado'], $_GET['Estado']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Estado['NombreEstado']; ?></option>
-								  <?php }?>
-								</select>
-							</div>
 							<label class="col-lg-1 control-label">Serie</label>
 							<div class="col-lg-3">
 								<select name="Series" class="form-control" id="Series">
 										<option value="">(Todos)</option>
 								  <?php while ($row_Series = sqlsrv_fetch_array($SQL_Series)) {?>
 										<option value="<?php echo $row_Series['IdSeries']; ?>" <?php if ((isset($_GET['Series'])) && (strcmp($row_Series['IdSeries'], $_GET['Series']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Series['DeSeries']; ?></option>
+								  <?php }?>
+								</select>
+							</div>
+							<label class="col-lg-1 control-label">Estado</label>
+							<div class="col-lg-3">
+								<select name="Estado" class="form-control" id="Estado">
+										<option value="">(Todos)</option>
+								  <?php while ($row_Estado = sqlsrv_fetch_array($SQL_Estado)) {?>
+										<option value="<?php echo $row_Estado['Cod_Estado']; ?>" <?php if ((isset($_GET['Estado'])) && (strcmp($row_Estado['Cod_Estado'], $_GET['Estado']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Estado['NombreEstado']; ?></option>
 								  <?php }?>
 								</select>
 							</div>
@@ -252,7 +260,7 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_OVenUpd"))) {
 							<div class="col-lg-3">
 								<input name="BuscarDato" type="text" class="form-control" id="BuscarDato" maxlength="100" value="<?php if (isset($_GET['BuscarDato']) && ($_GET['BuscarDato'] != "")) {echo $_GET['BuscarDato'];}?>">
 							</div>
-							<label class="col-lg-1 control-label">Autorización</label>
+							<label class="col-lg-1 control-label">Autorización Portal One</label>
 							<div class="col-lg-3">
 								<select name="Autorizacion" class="form-control" id="Autorizacion">
 										<option value="">(Todos)</option>
@@ -276,9 +284,14 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_OVenUpd"))) {
 							<div class="col-lg-3">
 								<input name="IDTicket" type="text" class="form-control" id="IDTicket" maxlength="50" placeholder="Digite un número completo, o una parte del mismo..." value="<?php if (isset($_GET['IDTicket']) && ($_GET['IDTicket'] != "")) {echo $_GET['IDTicket'];}?>">
 							</div>
-							<label class="col-lg-1 control-label">Fecha venc. servicio</label>
-							<div class="col-lg-3 input-group date">
-								 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaVenc" type="text" class="form-control" id="FechaVenc" value="<?php if (isset($_GET['FechaVenc']) && ($_GET['FechaVenc'] != "")) {echo $_GET['FechaVenc'];}?>" readonly="readonly" placeholder="YYYY-MM-DD">
+							<label class="col-lg-1 control-label">Autorización SAP B1</label>
+							<div class="col-lg-3">
+								<select name="AutorizacionSAP" class="form-control" id="AutorizacionSAP">
+										<option value="">(Todos)</option>
+								   <?php while ($row_EstadoAutorizacion = sqlsrv_fetch_array($SQL_EstadoAutorizacion)) {?>
+										<option value="<?php echo $row_EstadoAutorizacion['IdEstadoAutorizacion']; ?>" <?php if (isset($_GET['AutorizacionSAP']) && (strcmp($row_EstadoAutorizacion['IdEstadoAutorizacion'], $_GET['AutorizacionSAP']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_EstadoAutorizacion['EstadoAutorizacion']; ?></option>
+								  <?php }?>
+								</select>
 							</div>
 						</div>
 						<div class="form-group">
@@ -298,7 +311,13 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_OVenUpd"))) {
 							</div>
 							<!-- SMM, 22/07/2022 -->
 
-							<div class="col-lg-4">
+							<label class="col-lg-1 control-label">Fecha venc. servicio</label>
+							<div class="col-lg-3 input-group date">
+								 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaVenc" type="text" class="form-control" id="FechaVenc" value="<?php if (isset($_GET['FechaVenc']) && ($_GET['FechaVenc'] != "")) {echo $_GET['FechaVenc'];}?>" readonly="readonly" placeholder="YYYY-MM-DD">
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-lg-12">
 								<button type="submit" class="btn btn-outline btn-success pull-right"><i class="fa fa-search"></i> Buscar</button>
 							</div>
 						</div>
@@ -324,11 +343,12 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_OVenUpd"))) {
 						<th>Comentarios</th>
 						<th>Empleado de venta</th>
 						<th>Tipo venta</th>
-						<th>Usuario Autoriza</th>
+						<th>Usuario Autoriza Portal One</th>
 						<th>Orden servicio</th>
-						<th>Documento destino</th>
 						<th>Usuario creación</th>
 						<th>Estado</th>
+						<th>Estado Autorización Portal One</th>
+						<th>Estado Autorización SAP B1</th>
 						<th>Acciones</th>
                     </tr>
                     </thead>
@@ -347,9 +367,18 @@ if ($sw == 1) {
 							<td><?php echo $row['TipoVenta']; ?></td>
 							<td><?php echo $row['UsuarioAutoriza']; ?></td>
 							<td><?php if ($row['ID_LlamadaServicio'] != 0) {?><a href="llamada_servicio.php?id=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('consultar_orden_venta_borrador.php'); ?>&tl=1" target="_blank"><?php echo $row['DocNumLlamadaServicio']; ?></a><?php } else {echo "--";}?></td>
-							<td><?php if ($row['DocDestinoDocEntry'] != "") {?><a href="entrega_venta.php?id=<?php echo base64_encode($row['DocDestinoDocEntry']); ?>&id_portal=<?php echo base64_encode($row['DocDestinoIdPortal']); ?>&tl=1" target="_blank"><?php echo $row['DocDestinoDocNum']; ?></a><?php } else {echo "--";}?></td>
 							<td><?php echo $row['UsuarioCreacion']; ?></td>
 							<td><span <?php if ($row['Cod_Estado'] == 'O') {echo "class='label label-info'";} else {echo "class='label label-danger'";}?>><?php echo $row['NombreEstado']; ?></span></td>
+							<td>
+								<span <?php if ($row['AuthPortal'] == 'Y') {echo "class='label label-info'";} elseif ($row['AuthPortal'] == 'P') {echo "class='label label-warning'";} else {echo "class='label label-secondary'";}?>>
+									<?php echo $row['DeAuthPortal']; ?>
+								</span>
+							</td>
+							<td>
+								<span class="label" style="background-color: <?php echo $row['ColorEstadoAutorizacion'] ?? "gray"; ?>; color: white;">
+									<?php echo $row['EstadoAutorizacion'] ?? "No Aplica"; ?>
+								</span>
+							</td>
 							<td><a href="orden_venta_borrador.php?id=<?php echo base64_encode($row['ID_OrdenVenta']); ?>&id_portal=<?php echo base64_encode($row['IdDocPortal']); ?>&tl=1&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('consultar_orden_venta_borrador.php'); ?>" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i> Abrir</a> <a href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row['ID_OrdenVenta']); ?>&ObType=<?php echo base64_encode('17'); ?>&IdFrm=<?php echo base64_encode($row['IdSeries']); ?>" target="_blank" class="btn btn-warning btn-xs"><i class="fa fa-download"></i> Descargar</a></td>
 						</tr>
 					<?php }
