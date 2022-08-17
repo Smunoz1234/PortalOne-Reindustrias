@@ -265,6 +265,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 																<th>Condiciones</th>
 																<th>Fecha Actualizacion</th>
 																<th>Usuario Actualizacion</th>
+																<th>Estado</th>
 																<th>Acciones</th>
 															</tr>
 														</thead>
@@ -296,6 +297,11 @@ if (isset($sw_error) && ($sw_error == 1)) {
 																<td><?php echo $row_Motivo['Condiciones']; ?></td>
 																<td><?php echo isset($row_Motivo['fecha_actualizacion']) ? date_format($row_Motivo['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
 																<td><?php echo $row_Motivo['usuario_actualizacion']; ?></td>
+																<td>
+																	<span class="label <?php echo ($row_Motivo['Estado'] == "Y") ? "label-info" : "label-danger"; ?>">
+																		<?php echo ($row_Motivo['Estado'] == "Y") ? "Activo" : "Inactivo"; ?>
+																	</span>
+																</td>
 																<td>
 																	<button type="button" id="btnEdit<?php echo $row_Motivo['IdInterno']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Motivo['IdInterno']; ?>','Motivos');"><i class="fa fa-pencil"></i> Editar</button>
 																	<button type="button" id="btnDelete<?php echo $row_Motivo['IdInterno']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Motivo['IdInterno']; ?>','Motivos');"><i class="fa fa-trash"></i> Eliminar</button>
