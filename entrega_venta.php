@@ -4,10 +4,16 @@ PermitirAcceso(407);
 $dt_LS = 0; //sw para saber si vienen datos de la llamada de servicio. 0 no vienen. 1 si vienen.
 $dt_OV = 0; //sw para saber si vienen datos de una Orden de venta.
 
+$success = 1; // Confirmación de autorización (1 - Autorizado / 0 - NO Autorizado), SMM 16/08/2022
+$mensajeMotivo = ""; // Comentario motivo, mensaje de salida del procedimiento almacenado.
+
 $msg_error = ""; //Mensaje del error
 $IdEntrega = 0;
 $IdPortal = 0; //Id del portal para las entregas que fueron creadas en el portal, para eliminar el registro antes de cargar al editar
 $NameFirma = "";
+
+// Motivos de autorización, SMM 16/08/2022
+$SQL_Motivos = Seleccionar("uvw_tbl_Autorizaciones_Motivos", "*", "Estado = 'Y' AND IdTipoDocumento = 15");
 
 if (isset($_GET['id']) && ($_GET['id'] != "")) { //ID de la Entrega de venta (DocEntry)
     $IdEntrega = base64_decode($_GET['id']);
@@ -33,6 +39,16 @@ if (isset($_REQUEST['tl']) && ($_REQUEST['tl'] != "")) { //0 Si se está creando
 } else {
     $edit = 0;
 }
+
+// Consulta decisión de autorización en la edición de documentos.
+// Stiven Muñoz Murillo, 16/08/2022
+if ($edit == 1) {
+    $DocEntry = "'" . $IdEntrega . "'";
+    $EsBorrador = (false) ? "DocumentoBorrador" : "Documento";
+    $SQL_Autorizaciones = Seleccionar("uvw_Sap_tbl_Autorizaciones", "*", "IdTipoDocumento = 15 AND DocEntry$EsBorrador = $DocEntry");
+    $row_Autorizaciones = sqlsrv_fetch_array($SQL_Autorizaciones);
+}
+// Hasta aquí, 16/08/2022
 
 // Inicio, Grabar Entrega de Venta
 if (isset($_POST['P']) && ($_POST['P'] != "")) {
@@ -116,13 +132,59 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
             "'" . $_SESSION['CodUser'] . "'",
             "'" . $_SESSION['CodUser'] . "'",
             "$Type",
+            // SMM, 16/08/2022
+            "'" . ($_POST['IdMotivoAutorizacion'] ?? "") . "'",
+            "'" . ($_POST['ComentariosAutor'] ?? "") . "'",
+            "'" . ($_POST['ComentariosMotivo'] ?? "") . "'",
         );
+
         $SQL_CabeceraEntregaVenta = EjecutarSP('sp_tbl_EntregaVenta', $ParametrosCabEntregaVenta, $_POST['P']);
         if ($SQL_CabeceraEntregaVenta) {
             if ($Type == 1) {
                 $row_CabeceraEntregaVenta = sqlsrv_fetch_array($SQL_CabeceraEntregaVenta);
                 $IdEntregaVenta = $row_CabeceraEntregaVenta[0];
                 $IdEvento = $row_CabeceraEntregaVenta[1];
+
+                // Comprobar motivos de autorización en la creación, SMM 16/08/2022
+                $IdMotivo = "";
+                $debug_Condiciones = false;
+                while ($row_Motivo = sqlsrv_fetch_array($SQL_Motivos)) {
+                    $ids_perfiles = ($row_Motivo['Perfiles'] != "") ? explode(";", $row_Motivo['Perfiles']) : [];
+
+                    if (in_array($_SESSION['Perfil'], $ids_perfiles) || (count($ids_perfiles) == 0)) {
+                        $sql = $row_Motivo['Condiciones'] ?? '';
+
+                        $sql = str_replace("[IdDocumento]", $IdEntregaVenta, $sql);
+                        $sql = str_replace("[IdEvento]", $IdEvento, $sql);
+
+                        $stmt = sqlsrv_query($conexion, $sql);
+
+                        $data = "";
+                        if ($stmt === false) {
+                            $data = json_encode(sqlsrv_errors(), JSON_PRETTY_PRINT);
+                        } else {
+                            $records = array();
+                            while ($obj = sqlsrv_fetch_object($stmt)) {
+                                if (isset($obj->success) && ($obj->success == 0)) {
+                                    $success = 0;
+                                    $IdMotivo = $obj->IdMotivo;
+                                    $mensajeMotivo = $obj->mensaje;
+                                }
+
+                                array_push($records, $obj);
+                            }
+                            $data = json_encode($records, JSON_PRETTY_PRINT);
+                        }
+
+                        if ($debug_Condiciones) {
+                            $dataString = "JSON.stringify($data, null, '\t')";
+                            echo "<script> console.log($dataString); </script>";
+                        }
+                    }
+                }
+                $SQL_Motivos = Seleccionar("uvw_tbl_Autorizaciones_Motivos", "*", "IdMotivoAutorizacion = '$IdMotivo'");
+                // Hasta aquí, 16/08/2022
+
             } else {
                 $IdEntregaVenta = base64_decode($_POST['IdEntregaVenta']); //Lo coloco otra vez solo para saber que tiene ese valor
                 $IdEvento = base64_decode($_POST['IdEvento']);
@@ -171,35 +233,54 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
             header('Location:'.base64_decode($_POST['return']).'&a='.base64_encode("OK_EVenUpd"));
             }*/
 
-            //Enviar datos al WebServices
-            try {
-                $Parametros = array(
-                    'id_documento' => intval($IdEntregaVenta),
-                    'id_evento' => intval($IdEvento),
-                );
-                $Metodo = "EntregasVentas";
-                $Resultado = EnviarWebServiceSAP($Metodo, $Parametros, true, true);
+            // Verificar que el documento cumpla las Condiciones o este Pendiente de Autorización.
+            // Stiven Muñoz Murillo, 16/08/2022
+            if (($success == 1) || ($_POST['Autorizacion'] == "P")) {
+                $success = 1;
 
-                if ($Resultado->Success == 0) {
-                    //InsertarLog(1, 0, 'Error al generar el informe');
-                    //throw new Exception('Error al generar el informe. Error de WebServices');
-                    $sw_error = 1;
-                    $msg_error = $Resultado->Mensaje;
-                } else {
-                    if ($_POST['tl'] == 0) { //Creando Entrega
-                        //Consultar ID creado para cargar el documento
-                        $SQL_ConsID = Seleccionar('uvw_Sap_tbl_EntregasVentas', 'ID_EntregaVenta', "IdDocPortal='" . $IdEntregaVenta . "'");
-                        $row_ConsID = sqlsrv_fetch_array($SQL_ConsID);
-                        sqlsrv_close($conexion);
-                        header('Location:entrega_venta.php?id=' . base64_encode($row_ConsID['ID_EntregaVenta']) . '&id_portal=' . base64_encode($IdEntregaVenta) . '&tl=1&a=' . base64_encode("OK_EVenAdd"));
-                    } else { //Actualizando Entrega
-                        sqlsrv_close($conexion);
-                        header('Location:' . base64_decode($_POST['return']) . '&a=' . base64_encode("OK_EVenUpd"));
+                //Enviar datos al WebServices
+                try {
+                    $Parametros = array(
+                        'id_documento' => intval($IdEntregaVenta),
+                        'id_evento' => intval($IdEvento),
+                    );
+                    $Metodo = "EntregasVentas";
+                    $Resultado = EnviarWebServiceSAP($Metodo, $Parametros, true, true);
+
+                    if ($Resultado->Success == 0) {
+                        //InsertarLog(1, 0, 'Error al generar el informe');
+                        //throw new Exception('Error al generar el informe. Error de WebServices');
+                        $sw_error = 1;
+                        $msg_error = $Resultado->Mensaje;
+                    } else {
+
+                        // SMM, 16/08/2022
+                        if (isset($_POST['Autorizacion']) && ($_POST['Autorizacion'] == "P")) {
+
+                            // SMM, 16/08/2022
+                            header('Location:entrega_venta.php?a=' . base64_encode("OK_BorradorAdd"));
+                        } else {
+                            if ($_POST['tl'] == 0) { //Creando Entrega
+                                //Consultar ID creado para cargar el documento
+                                $SQL_ConsID = Seleccionar('uvw_Sap_tbl_EntregasVentas', 'ID_EntregaVenta', "IdDocPortal='" . $IdEntregaVenta . "'");
+                                $row_ConsID = sqlsrv_fetch_array($SQL_ConsID);
+                                sqlsrv_close($conexion);
+                                header('Location:entrega_venta.php?id=' . base64_encode($row_ConsID['ID_EntregaVenta']) . '&id_portal=' . base64_encode($IdEntregaVenta) . '&tl=1&a=' . base64_encode("OK_EVenAdd"));
+                            } else { //Actualizando Entrega
+                                sqlsrv_close($conexion);
+                                header('Location:' . base64_decode($_POST['return']) . '&a=' . base64_encode("OK_EVenUpd"));
+                            }
+                        }
+
                     }
+                } catch (Exception $e) {
+                    echo 'Excepcion capturada: ', $e->getMessage(), "\n";
                 }
-            } catch (Exception $e) {
-                echo 'Excepcion capturada: ', $e->getMessage(), "\n";
+            } else {
+                $sw_error = 1;
+                $msg_error = "Este documento necesita autorización.";
             }
+            // Hasta aquí 16/08/2022
 
         } else {
             $sw_error = 1;
@@ -486,18 +567,36 @@ if (isset($_GET['a']) && $_GET['a'] == base64_encode("OK_EVenUpd")) {
 		});
 		</script>";
 }
+
+// SMM, 16/08/2022
 if (isset($sw_error) && ($sw_error == 1)) {
+    $error_title = ($success == 0) ? "Advertencia" : "Ha ocurrido un error";
+
     echo "<script>
 		$(document).ready(function() {
 			Swal.fire({
-                title: '¡Ha ocurrido un error!',
+                title: '¡$error_title!',
                 text: `" . LSiqmlObs($msg_error) . "`,
                 icon: 'warning'
             });
 		});
 		</script>";
 }
+
+// SMM, 16/08/2022
+if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_BorradorAdd"))) {
+    echo "<script>
+		$(document).ready(function() {
+			Swal.fire({
+                title: '¡Listo!',
+                text: 'El documento en borrador se ha creado exitosamente.',
+                icon: 'success'
+            });
+		});
+		</script>";
+}
 ?>
+
 <!-- InstanceEndEditable -->
 <!-- InstanceBeginEditable name="head" -->
 <style>
@@ -510,7 +609,20 @@ if (isset($sw_error) && ($sw_error == 1)) {
 	.nav-tabs > li > a{
 		padding: 14px 20px 14px 25px !important;
 	}
+
+	/**
+	* Stiven Muñoz Murillo
+	* 16/08/2022
+	 */
+	.bootstrap-maxlength {
+		background-color: black;
+		z-index: 9999999;
+	}
+	.swal2-container {
+		z-index: 9999999 !important;
+	}
 </style>
+
 <script>
 function BuscarArticulo(dato){
 	var almacen= document.getElementById("Almacen").value;
@@ -551,7 +663,12 @@ function ConsultarDatosCliente(){
 	}
 }
 
+// SMM, 16/08/2022
+function verAutorizacion() {
+	$('#modalAUT').modal('show');
+}
 </script>
+
 <script type="text/javascript">
 	$(document).ready(function() { // Cargar los combos dependiendo de otros
 		$("#CardCode").change(function() {
@@ -1091,6 +1208,118 @@ function ConsultarDatosCliente(){
 			</div>
 			<!-- Fin, modalSN -->
 
+			<!-- Inicio, modalAUT. SMM, 16/08/2022 -->
+			<?php if (($edit == 1) || ($success == 0)) {?>
+				<div class="modal inmodal fade" id="modalAUT" tabindex="-1" role="dialog" aria-hidden="true">
+					<div class="modal-dialog modal-lg">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h4 class="modal-title">Autorización</h4>
+							</div>
+
+							<!-- form id="formAUT" -->
+								<div class="modal-body">
+									<div class="ibox-content">
+										<div class="form-group">
+											<label class="col-lg-2">Motivo <span class="text-danger">*</span></label>
+											<div class="col-lg-10">
+												<select readonly form="CrearEntregaVenta" class="form-control required" name="IdMotivoAutorizacion" id="IdMotivoAutorizacion">
+													<!-- option value="" disabled selected>Seleccione...</option -->
+													<?php while ($row_MotivoAutorizacion = sqlsrv_fetch_array($SQL_Motivos)) {?>
+															<option data-comentarios="<?php echo $row_MotivoAutorizacion['Comentarios']; ?>"
+															value="<?php echo $row_MotivoAutorizacion['IdMotivoAutorizacion']; ?>"
+															<?php if ((isset($row['IdMotivoAutorizacion'])) && (strcmp($row_MotivoAutorizacion['IdMotivoAutorizacion'], $row['IdMotivoAutorizacion']) == 0)) {echo "selected=\"selected\"";}?>>
+																<?php echo $row_MotivoAutorizacion['IdMotivoAutorizacion'] . " - " . $row_MotivoAutorizacion['MotivoAutorizacion']; ?>
+															</option>
+													<?php }?>
+												</select>
+											</div>
+										</div>
+										<br><br><br>
+										<div class="form-group">
+											<label class="col-lg-2">Comentarios motivo</label>
+											<div class="col-lg-10">
+												<textarea readonly form="CrearEntregaVenta" style="color: black; font-weight: bold;" class="form-control" name="ComentariosMotivo" id="ComentariosMotivo" type="text" maxlength="250" rows="4"><?php if ($mensajeMotivo != "") {echo $mensajeMotivo;} elseif ($edit == 1 || $sw_error == 1) {echo $row['ComentariosMotivo'];}?></textarea>
+											</div>
+										</div>
+										<br><br><br>
+										<br><br><br>
+										<div class="form-group">
+											<label class="col-lg-2">Comentarios autor <span class="text-danger">*</span></label>
+											<div class="col-lg-10">
+												<textarea <?php if ($edit == 1) {echo "readonly";}?> form="CrearEntregaVenta" class="form-control required" name="ComentariosAutor" id="ComentariosAutor" type="text" maxlength="250" rows="4"><?php if ($edit == 1 || $sw_error == 1) {echo $row['ComentariosAutor'];} elseif (isset($_GET['ComentariosAutor'])) {echo base64_decode($_GET['ComentariosAutor']);}?></textarea>
+											</div>
+										</div>
+										<br><br><br>
+
+										<!-- Inicio, Componente Fecha y Hora -->
+										<br><br><br>
+										<div class="form-group">
+											<div class="row">
+												<label class="col-lg-6 control-label" style="text-align: left !important;">Fecha y hora decisión SAP B1</label>
+											</div>
+											<div class="row">
+												<div class="col-lg-6 input-group date">
+													<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input readonly name="FechaAutorizacion" type="text" autocomplete="off" class="form-control" id="FechaAutorizacion" value="<?php if (isset($row_Autorizaciones['FechaAutorizacion_SAPB1']) && ($row_Autorizaciones['FechaAutorizacion_SAPB1']->format('Y-m-d') != "1900-01-01")) {echo $row_Autorizaciones['FechaAutorizacion_SAPB1']->format('Y-m-d');}?>" placeholder="YYYY-MM-DD">
+												</div>
+												<div class="col-lg-6 input-group clockpicker" data-autoclose="true">
+													<input readonly name="HoraAutorizacion" id="HoraAutorizacion" type="text" autocomplete="off" class="form-control" value="<?php if (isset($row_Autorizaciones['HoraAutorizacion_SAPB1'])) {echo $row_Autorizaciones['HoraAutorizacion_SAPB1'];}?>" placeholder="hh:mm">
+													<span class="input-group-addon">
+														<span class="fa fa-clock-o"></span>
+													</span>
+												</div>
+											</div>
+										</div>
+										<!-- Fin, Componente Fecha y Hora -->
+
+										<br>
+										<div class="form-group">
+											<label class="col-lg-2">Decisión</label>
+											<div class="col-lg-10">
+												<?php if (isset($row_Autorizaciones['EstadoAutorizacion'])) {?>
+													<input type="text" class="form-control" name="IdEstadoAutorizacion" id="IdEstadoAutorizacion" readonly
+													value="<?php echo $row_Autorizaciones['EstadoAutorizacion']; ?>" style="font-weight: bold; color: white; background-color: <?php echo $row_Autorizaciones['ColorEstadoAutorizacion']; ?>;">
+												<?php } else {?>
+													<input type="text" class="form-control" name="IdEstadoAutorizacion" id="IdEstadoAutorizacion" readonly>
+												<?php }?>
+											</div>
+										</div>
+										<br><br><br>
+										<div class="form-group">
+											<label class="col-lg-2">Usuario autorizador</label>
+											<div class="col-lg-10">
+												<?php if (isset($row_Autorizaciones['IdUsuarioAutorizacion_SAPB1'])) {?>
+													<input type="text" class="form-control" name="IdUsuarioAutorizacion" id="IdUsuarioAutorizacion" readonly
+													value="<?php echo $row_Autorizaciones['NombreUsuarioAutorizacion_SAPB1']; ?>">
+												<?php } else {?>
+													<input type="text" class="form-control" name="IdUsuarioAutorizacion" id="IdUsuarioAutorizacion" readonly>
+												<?php }?>
+											</div>
+										</div>
+										<br><br><br>
+										<div class="form-group">
+											<label class="col-lg-2">Comentarios autorizador</label>
+											<div class="col-lg-10">
+												<textarea readonly type="text" maxlength="200" rows="4" class="form-control" name="ComentariosAutorizador" id="ComentariosAutorizador"><?php if (isset($row_Autorizaciones['ComentariosAutorizador_SAPB1'])) {echo $row_Autorizaciones['ComentariosAutorizador_SAPB1'];}?></textarea>
+											</div>
+										</div>
+										<br><br><br><br>
+									</div>
+								</div>
+
+								<div class="modal-footer">
+									<?php if ($edit == 0) {?>
+										<button type="button" class="btn btn-success m-t-md" id="formAUT_button"><i class="fa fa-check"></i> Enviar</button>
+									<?php }?>
+									<button type="button" class="btn btn-warning m-t-md" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
+								</div>
+							<!-- /form -->
+						</div>
+					</div>
+				</div>
+			<?php }?>
+			<!-- Fin, modalAUT. SMM, 16/08/2022 -->
+
 
 		 <?php if ($edit == 1) {?>
 			<div class="row">
@@ -1381,14 +1610,24 @@ if ($edit == 1 || $sw_error == 1) {
 						</select>
 					</div>
 
-					<label class="col-lg-1 control-label">Autorización</label>
+					<!-- SMM, 16/08/2022 -->
+					<label class="col-lg-1 control-label">
+						Autorización
+						<?php if ((isset($row_Autorizaciones['IdEstadoAutorizacion']) || ($edit == 1)) || ($success == 0)) {?>
+							<i onClick="verAutorizacion();" title="Ver Autorización" style="cursor: pointer" class="btn-xs btn-success fa fa-eye"></i>
+						<?php }?>
+					</label>
 					<div class="col-lg-3">
                     	<select name="Autorizacion" class="form-control" id="Autorizacion" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "disabled='disabled'";}?>>
                           <?php while ($row_EstadoAuth = sqlsrv_fetch_array($SQL_EstadoAuth)) {?>
-								<option value="<?php echo $row_EstadoAuth['IdAuth']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['AuthPortal'])) && (strcmp($row_EstadoAuth['IdAuth'], $row['AuthPortal']) == 0)) {echo "selected=\"selected\"";} elseif (($edit == 0 && $sw_error == 0) && ($row_EstadoAuth['IdAuth'] == 'N')) {echo "selected=\"selected\"";}?>><?php echo $row_EstadoAuth['DeAuth']; ?></option>
+								<option value="<?php echo $row_EstadoAuth['IdAuth']; ?>"
+								<?php if (($edit == 1 || $sw_error == 1) && (isset($row['AuthPortal'])) && (strcmp($row_EstadoAuth['IdAuth'], $row['AuthPortal']) == 0)) {echo "selected=\"selected\"";} elseif (isset($row_Autorizaciones['IdEstadoAutorizacion']) && ($row_Autorizaciones['IdEstadoAutorizacion'] == 'Y') && ($row_EstadoAuth['IdAuth'] == 'Y')) {echo "selected=\"selected\"";} elseif (isset($row_Autorizaciones['IdEstadoAutorizacion']) && ($row_Autorizaciones['IdEstadoAutorizacion'] == 'W') && ($row_EstadoAuth['IdAuth'] == 'P')) {echo "selected=\"selected\"";} elseif (($edit == 0 && $sw_error == 0) && ($row_EstadoAuth['IdAuth'] == 'N')) {echo "selected=\"selected\"";}?>>
+									<?php echo $row_EstadoAuth['DeAuth']; ?>
+								</option>
 						  <?php }?>
 						</select>
                	  	</div>
+					<!-- Hasta aquí, 16/08/2022 -->
 
 					<!-- Inicio, Proyecto -->
 					<label class="col-lg-1 control-label">Proyecto <span class="text-danger">*</span></label>
@@ -1560,7 +1799,7 @@ if ($edit == 1 || $sw_error == 1) {
 					<div class="form-group">
 						<label class="col-lg-7"><strong class="pull-right">Redondeo</strong></label>
 						<div class="col-lg-5">
-							<input type="text" name="Redondeo" form="CrearOrdenVenta" id="Redondeo" class="form-control" style="text-align: right; font-weight: bold;" value="0.00" readonly>
+							<input type="text" name="Redondeo" form="CrearEntregaVenta" id="Redondeo" class="form-control" style="text-align: right; font-weight: bold;" value="0.00" readonly>
 						</div>
 					</div>
 					<div class="form-group">
@@ -1654,10 +1893,68 @@ $return = QuitarParametrosURL($return, array("a"));
 			}
 		 });
 
-		 $(".alkin").on('click', function(){
-				 $('.ibox-content').toggleClass('sk-loading');
+		// Mostrar modal NO se cumplen las condiciones, SMM 16/08/2022
+		<?php if ($success == 0) {?>
+			$('#modalAUT').modal('show');
+		<?php }?>
+		// Hasta aquí, 16/08/2022
+
+		// SMM, 06/08/2022
+		$('#IdMotivoAutorizacion').on("change", function() {
+			let comentarios = $(this).find(':selected').data('comentarios');
+
+			<?php if (($edit == 0) && ($mensajeMotivo == "")) {?>
+				$('#ComentariosMotivo').val(comentarios);
+			<?php }?>
+		});
+		// Hasta aquí, 16/08/2022
+
+		// El orden importa, 16/08/2022
+		$('#IdMotivoAutorizacion').trigger('change');
+
+		// Almacenar campos de autorización, SMM, 16/08/2022
+		$("#formAUT_button").on("click", function(event) {
+			// event.preventDefault(); // Evitar redirección del formulario
+
+			let incompleto = false;
+			$('.required').each(function() {
+				if($(this).val() == null || $(this).val() == ""){
+					incompleto = true;
+				}
 			});
 
+			if(incompleto) {
+				Swal.fire({
+					"title": "¡Advertencia!",
+					"text": "Aún tiene campos sin completar.",
+					"icon": "warning"
+				});
+			} else {
+				Swal.fire({
+					"title": "¡Listo!",
+					"text": "Puede continuar con la creación del documento.",
+					"icon": "success"
+				});
+
+				// Cambiar estado de autorización a pendiente.
+				if($("#Autorizacion").val() == "N") {
+					$("#Autorizacion").val("P").change();
+
+					// Corregir valores nulos en el combo de autorización.
+					$('#Autorizacion option:selected').attr('disabled', false);
+					$('#Autorizacion option:not(:selected)').attr('disabled', true);
+				}
+				$('#modalAUT').modal('hide');
+			}
+		});
+		// Almacenar campos autorización, hasta aquí
+
+		maxLength('Comentarios'); // SMM, 16/08/2022
+		maxLength('ComentariosAutor'); // SMM, 16/08/2022
+
+		$(".alkin").on('click', function(){
+			$('.ibox-content').toggleClass('sk-loading');
+		});
 
 		// Cambiar SN en las copias
 		$(".d-venta").on("click", function(event){

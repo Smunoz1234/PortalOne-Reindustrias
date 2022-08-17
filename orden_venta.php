@@ -258,7 +258,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Orden de venta
                 }
             } else {
                 $sw_error = 1;
-                $msg_error = "No se autorizo la creación del documento.";
+                $msg_error = "Este documento necesita autorización.";
             }
 
         } else {
@@ -584,11 +584,15 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_ActAdd"))) {
 		});
 		</script>";
 }
-if (isset($sw_error) && ($sw_error == 1) && ($success == 1)) {
+
+// SMM, 16/08/2022
+if (isset($sw_error) && ($sw_error == 1)) {
+    $error_title = ($success == 0) ? "Advertencia" : "Ha ocurrido un error";
+
     echo "<script>
 		$(document).ready(function() {
 			Swal.fire({
-                title: '¡Ha ocurrido un error!',
+                title: '¡$error_title!',
                 text: `" . LSiqmlObs($msg_error) . "`,
                 icon: 'warning'
             });
