@@ -1614,7 +1614,7 @@ if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
 					<!-- SMM, 16/08/2022 -->
 					<label class="col-lg-1 control-label">
 						Autorización
-						<?php if ((isset($row_Autorizaciones['IdEstadoAutorizacion']) || ($edit == 1)) || ($success == 0)) {?>
+						<?php if ((isset($row_Autorizaciones['IdEstadoAutorizacion']) && ($edit == 1)) || ($success == 0)) {?>
 							<i onClick="verAutorizacion();" title="Ver Autorización" style="cursor: pointer" class="btn-xs btn-success fa fa-eye"></i>
 						<?php }?>
 					</label>
