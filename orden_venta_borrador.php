@@ -263,7 +263,8 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Orden de venta
                             $row_ConsID = sqlsrv_fetch_array($SQL_ConsID);
                             sqlsrv_close($conexion);
 
-                            header('Location:orden_venta_borrador.php?id=' . base64_encode($row_ConsID['ID_OrdenVenta']) . '&id_portal=' . base64_encode($row_ConsID['ID_OrdenVenta']) . '&tl=1&a=' . base64_encode("OK_OVenUpd"));
+                            header('Location:orden_venta.php');
+                            // header('Location:orden_venta_borrador.php?id=' . base64_encode($row_ConsID['ID_OrdenVenta']) . '&id_portal=' . base64_encode($row_ConsID['ID_OrdenVenta']) . '&tl=1&a=' . base64_encode("OK_OVenUpd"));
                             //header('Location:'.base64_decode($_POST['return']).'&a='.base64_encode("OK_OVenUpd"));
                         }
                     }

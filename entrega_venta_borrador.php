@@ -266,7 +266,8 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
                         } else { //Actualizando Entrega
                             sqlsrv_close($conexion);
 
-                            header('Location:entrega_venta_borrador.php?id=' . base64_encode($row_ConsID['ID_EntregaVenta']) . '&id_portal=' . base64_encode($row_ConsID['ID_EntregaVenta']) . '&tl=1&a=' . base64_encode("OK_EVenUpd"));
+                            header('Location:entrega_venta.php');
+                            // header('Location:entrega_venta_borrador.php?id=' . base64_encode($row_ConsID['ID_EntregaVenta']) . '&id_portal=' . base64_encode($row_ConsID['ID_EntregaVenta']) . '&tl=1&a=' . base64_encode("OK_EVenUpd"));
                             // header('Location:' . base64_decode($_POST['return']) . '&a=' . base64_encode("OK_EVenUpd"));
                         }
 
