@@ -1743,8 +1743,8 @@ if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
 				</div>
 				<div class="form-group">
 					<div class="col-lg-9">
-						<?php if ($edit == 0 && PermitirFuncion(402) && false) {?>
-							<button class="btn btn-primary" type="submit" form="CrearOrdenVenta" id="Crear"><i class="fa fa-check"></i> Crear Orden de venta</button>
+						<?php if ($edit == 0 && PermitirFuncion(402)) {?>
+							<!-- button class="btn btn-primary" type="submit" form="CrearOrdenVenta" id="Crear"><i class="fa fa-check"></i> Crear Orden de venta</button -->
 						<?php } elseif ($row['Cod_Estado'] == "O" && PermitirFuncion(402)) {?>
 							<?php if (isset($row_Autorizaciones['IdEstadoAutorizacion']) && ($row_Autorizaciones['IdEstadoAutorizacion'] == 'Y')) {?>
 								<button class="btn btn-primary" type="submit" form="CrearOrdenVenta" id="Actualizar2" onclick="CambiarDefinitivo();"><i class="fa fa-check"></i> Crear Orden de venta Definitiva</button>

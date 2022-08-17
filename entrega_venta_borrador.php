@@ -1812,8 +1812,8 @@ if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
 				</div>
 				<div class="form-group">
 					<div class="col-lg-9">
-						<?php if ($edit == 0 && PermitirFuncion(404) && false) {?>
-							<button class="btn btn-primary" type="submit" form="CrearEntregaVenta" id="Crear"><i class="fa fa-check"></i> Crear Entrega de venta</button>
+						<?php if ($edit == 0 && PermitirFuncion(404)) {?>
+							<!-- button class="btn btn-primary" type="submit" form="CrearEntregaVenta" id="Crear"><i class="fa fa-check"></i> Crear Entrega de venta</button -->
 						<?php } elseif ($edit == 1 && $row['Cod_Estado'] == "O" && PermitirFuncion(404)) {?>
 							<?php if (isset($row_Autorizaciones['IdEstadoAutorizacion']) && ($row_Autorizaciones['IdEstadoAutorizacion'] == 'Y')) {?>
 								<!-- SMM, 16/08/2022 -->
