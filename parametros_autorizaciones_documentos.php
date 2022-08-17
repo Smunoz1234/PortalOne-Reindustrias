@@ -290,7 +290,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 																			<?php $cadenaPerfiles .= $row_Perfil['PerfilUsuario'] . "; ";?>
 																		<?php }?>
 																	<?php }?>
-																	<?php echo $cadenaPerfiles; ?>
+																	<?php echo ($cadenaPerfiles == "") ? "(Todos)" : $cadenaPerfiles; ?>
 																</td>
 
 																<td><?php echo $row_Motivo['Condiciones']; ?></td>
