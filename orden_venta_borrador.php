@@ -63,6 +63,9 @@ if ($edit == 1) {
     $EsBorrador = (true) ? "DocumentoBorrador" : "Documento";
     $SQL_Autorizaciones = Seleccionar("uvw_Sap_tbl_Autorizaciones", "*", "IdTipoDocumento = 17 AND DocEntry$EsBorrador = $DocEntry");
     $row_Autorizaciones = sqlsrv_fetch_array($SQL_Autorizaciones);
+
+    // SMM, 17/08/2022
+    $SQL_Motivos = Seleccionar("uvw_tbl_Autorizaciones_Motivos", "*", "IdTipoDocumento = 17");
 }
 
 if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Orden de venta
