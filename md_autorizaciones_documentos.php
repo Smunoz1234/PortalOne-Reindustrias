@@ -257,47 +257,19 @@ $(document).ready(function(){
 	// SMM, 26/07/2022
 	$(".select2").select2();
 
-	<?php if ($doc == "Bodegas") {?>
+	// SMM, 17/08/2022
+	$("#IdTipoDocumento").on("change", function() {
+		var doctype = $(this).val();
 
-		 $("#NombreClienteBodega").change(function(){
-			var NomCliente=document.getElementById("NombreClienteBodega");
-			var Cliente=document.getElementById("ClienteBodega");
-			if(NomCliente.value==""){
-				Cliente.value="";
-				$("#ClienteBodega").trigger("change");
+		$.ajax({
+			type: "POST",
+			url: `ajx_cbo_select.php?type=43&doctype=${doctype}`,
+			success: function(response){
+				$('#IdFormato').html(response).fadeIn();
+				$('#IdFormato').trigger('change');
 			}
 		});
-		$("#ClienteBodega").change(function(){
-			var Cliente=document.getElementById("ClienteBodega");
-			$.ajax({
-				type: "POST",
-				url: "ajx_cbo_sucursales_clientes_simple.php?CardCode="+Cliente.value+"&sucline=1&selec=1",
-				success: function(response){
-					$("#SucursalBodega").chosen("destroy");
-					$('#SucursalBodega').html(response);
-					$('#SucursalBodega').chosen({width: "100%"});
-				}
-			});
-		});
-
-		  var options = {
-			  url: function(phrase) {
-				  return "ajx_buscar_datos_json.php?type=7&id="+phrase;
-			  },
-			  getValue: "NombreBuscarCliente",
-			  requestDelay: 400,
-			  list: {
-				  match: {
-					  enabled: true
-				  },
-				  onClickEvent: function() {
-					  var value = $("#NombreClienteBodega").getSelectedItemData().CodigoCliente;
-					  $("#ClienteBodega").val(value).trigger("change");
-				  }
-			  }
-		 };
-		$("#NombreClienteBodega").easyAutocomplete(options);
- 	<?php }?>
+	});
  });
 </script>
 <script>

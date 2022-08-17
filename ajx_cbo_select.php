@@ -986,6 +986,23 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
                 echo "<option value=''>Seleccione...</option>";
             }
         }
+    } elseif ($_GET['type'] == 43) { // Modelos de autorización según el tipo de documento.
+        if (!isset($_GET['doctype']) || ($_GET['doctype'] == "")) {
+            echo "<option value=''>Seleccione...</option>";
+        } else {
+            $doctype = "'" . $_GET['doctype'] . "'";
+
+            $SQL_ModeloAutorizacion = Seleccionar("uvw_Sap_tbl_ModelosAutorizaciones", "*", "IdTipoDocumento = $doctype");
+            $Num = sqlsrv_num_rows($SQL_ModeloAutorizacion);
+
+            if ($Num) {
+                while ($row = sqlsrv_fetch_array($SQL_ModeloAutorizacion)) {
+                    echo "<option value='" . $row['IdModeloAutorizacion'] . "'>" . $row['ModeloAutorizacion'] . "</option>";
+                }
+            } else {
+                echo "<option value=''>Seleccione...</option>";
+            }
+        }
     }
 
     sqlsrv_close($conexion);
