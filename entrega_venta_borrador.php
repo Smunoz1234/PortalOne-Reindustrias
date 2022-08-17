@@ -266,7 +266,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
                         } else { //Actualizando Entrega
                             sqlsrv_close($conexion);
 
-                            header('Location:entrega_venta.php');
+                            header('Location:entrega_venta_borrador.php?a=' . base64_encode("OK_BorradorAdd"));
                             // header('Location:entrega_venta_borrador.php?id=' . base64_encode($row_ConsID['ID_EntregaVenta']) . '&id_portal=' . base64_encode($row_ConsID['ID_EntregaVenta']) . '&tl=1&a=' . base64_encode("OK_EVenUpd"));
                             // header('Location:' . base64_decode($_POST['return']) . '&a=' . base64_encode("OK_EVenUpd"));
                         }
@@ -574,6 +574,19 @@ if (isset($sw_error) && ($sw_error == 1)) {
                 title: '¡$error_title!',
                 text: `" . LSiqmlObs($msg_error) . "`,
                 icon: 'warning'
+            });
+		});
+		</script>";
+}
+
+// SMM, 16/08/2022
+if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_BorradorAdd"))) {
+    echo "<script>
+		$(document).ready(function() {
+			Swal.fire({
+                title: '¡Listo!',
+                text: 'Se ha actualizado el documento en borrador.',
+                icon: 'success'
             });
 		});
 		</script>";
@@ -1235,7 +1248,7 @@ function verAutorizacion() {
 										<div class="form-group">
 											<label class="col-lg-2">Comentarios autor <span class="text-danger">*</span></label>
 											<div class="col-lg-10">
-												<textarea <?php if ($edit == 1) {echo "readonly";}?> form="CrearEntregaVenta" class="form-control required" name="ComentariosAutor" id="ComentariosAutor" type="text" maxlength="250" rows="4"><?php if ($edit == 1 || $sw_error == 1) {echo $row['ComentariosAutor'];} elseif (isset($_GET['ComentariosAutor'])) {echo base64_decode($_GET['ComentariosAutor']);}?></textarea>
+												<textarea form="CrearEntregaVenta" class="form-control required" name="ComentariosAutor" id="ComentariosAutor" type="text" maxlength="250" rows="4"><?php if ($edit == 1 || $sw_error == 1) {echo $row['ComentariosAutor'];} elseif (isset($_GET['ComentariosAutor'])) {echo base64_decode($_GET['ComentariosAutor']);}?></textarea>
 											</div>
 										</div>
 										<br><br><br>
@@ -1296,9 +1309,7 @@ function verAutorizacion() {
 								</div>
 
 								<div class="modal-footer">
-									<?php if ($edit == 0) {?>
-										<button type="button" class="btn btn-success m-t-md" id="formAUT_button"><i class="fa fa-check"></i> Enviar</button>
-									<?php }?>
+									<button type="button" class="btn btn-success m-t-md" id="formAUT_button"><i class="fa fa-check"></i> Enviar</button>
 									<button type="button" class="btn btn-warning m-t-md" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
 								</div>
 							<!-- /form -->
@@ -1801,7 +1812,7 @@ if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
 				</div>
 				<div class="form-group">
 					<div class="col-lg-9">
-						<?php if ($edit == 0 && PermitirFuncion(404)) {?>
+						<?php if ($edit == 0 && PermitirFuncion(404) && false) {?>
 							<button class="btn btn-primary" type="submit" form="CrearEntregaVenta" id="Crear"><i class="fa fa-check"></i> Crear Entrega de venta</button>
 						<?php } elseif ($edit == 1 && $row['Cod_Estado'] == "O" && PermitirFuncion(404)) {?>
 							<?php if (isset($row_Autorizaciones['IdEstadoAutorizacion']) && ($row_Autorizaciones['IdEstadoAutorizacion'] == 'Y')) {?>

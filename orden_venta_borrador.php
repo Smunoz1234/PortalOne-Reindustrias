@@ -263,7 +263,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Orden de venta
                             $row_ConsID = sqlsrv_fetch_array($SQL_ConsID);
                             sqlsrv_close($conexion);
 
-                            header('Location:orden_venta.php');
+                            header('Location:orden_venta_borrador.php?a=' . base64_encode("OK_BorradorAdd"));
                             // header('Location:orden_venta_borrador.php?id=' . base64_encode($row_ConsID['ID_OrdenVenta']) . '&id_portal=' . base64_encode($row_ConsID['ID_OrdenVenta']) . '&tl=1&a=' . base64_encode("OK_OVenUpd"));
                             //header('Location:'.base64_decode($_POST['return']).'&a='.base64_encode("OK_OVenUpd"));
                         }
@@ -550,7 +550,7 @@ $SQL_Proyecto = Seleccionar('uvw_Sap_tbl_Proyectos', '*', '', 'DeProyecto');
 // Stiven Muñoz Murillo, 02/03/2022
 $row_encode = isset($row) ? json_encode($row) : "";
 $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'Not Found'";
-echo "<script> console.log($cadena); </script>";
+// echo "<script> console.log($cadena); </script>";
 ?>
 
 <!DOCTYPE html>
@@ -605,6 +605,19 @@ if (isset($sw_error) && ($sw_error == 1)) {
                 title: '¡$error_title!',
                 text: `" . LSiqmlObs($msg_error) . "`,
                 icon: 'warning'
+            });
+		});
+		</script>";
+}
+
+// SMM, 16/08/2022
+if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_BorradorAdd"))) {
+    echo "<script>
+		$(document).ready(function() {
+			Swal.fire({
+                title: '¡Listo!',
+                text: 'Se ha actualizado el documento en borrador.',
+                icon: 'success'
             });
 		});
 		</script>";
@@ -1730,7 +1743,7 @@ if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
 				</div>
 				<div class="form-group">
 					<div class="col-lg-9">
-						<?php if ($edit == 0 && PermitirFuncion(402)) {?>
+						<?php if ($edit == 0 && PermitirFuncion(402) && false) {?>
 							<button class="btn btn-primary" type="submit" form="CrearOrdenVenta" id="Crear"><i class="fa fa-check"></i> Crear Orden de venta</button>
 						<?php } elseif ($row['Cod_Estado'] == "O" && PermitirFuncion(402)) {?>
 							<?php if (isset($row_Autorizaciones['IdEstadoAutorizacion']) && ($row_Autorizaciones['IdEstadoAutorizacion'] == 'Y')) {?>
