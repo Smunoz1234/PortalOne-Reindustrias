@@ -36,7 +36,7 @@ if ($edit == 1 && $id != "") {
 ?>
 
 <style>
-	/*
+	/**
 	* Estilos para el uso del componente select2-multiple en un modal.
 	*
 	* @author Stiven Muñoz Murillo
@@ -53,6 +53,22 @@ if ($edit == 1 && $id != "") {
 
 	.select2-search__field:placeholder-shown {
 		width: 100% !important;
+	}
+
+	/**
+	* Iconos del panel de información.
+	* SMM, 18/08/2022
+	*/
+	.panel-heading  a:before {
+		font-family: 'Glyphicons Halflings';
+		content: "\e114";
+		float: right;
+		transition: all 0.5s;
+	}
+	.panel-heading.active a:before {
+		-webkit-transform: rotate(180deg);
+		-moz-transform: rotate(180deg);
+		transform: rotate(180deg);
 	}
 </style>
 
@@ -128,47 +144,37 @@ if ($edit == 1 && $id != "") {
 				</div>
 
 				<br><br><br><br><br><br>
-				<div class="row">
-					<div class="col-md-12">
-						<div class="panel panel-info">
-							<div class="panel-heading">
+				<div class="panel panel-info">
+					<div class="panel-heading active" role="tab" id="headingOne">
+						<h4 class="panel-title">
+							<a role="button" data-toggle="collapse" href="#collapseOne" aria-controls="collapseOne">
 								<i class="fa fa-info-circle"></i> Parámetros de entrada y salida
-							</div>
-							<div class="panel-body">
-								<p>Puede utilizar las siguientes variables en el cuerpo del mensaje para referirse a los datos de los archivos:</p>
-								<ul>
-									<li><b style="color: red;">Parámetro de entrada</b>
-										<ul>
-											<li><strong>[IdDocumento]</strong> Campo llave del registro.</li>
-											<li><strong>[IdEvento]</strong> Identificación del evento relacionado al documento.</li>
-										</ul>
-									</li>
-									<li><b style="color: red;">Parámetros de salidas</b>
-										<ul>
-											<li><strong>[success]</strong> Bandera de confirmación (<b>0</b> - NO exitoso / <b>1</b> - exitoso).</li>
-											<li><strong>[mensaje]</strong> Descripción de la validación de la autorización.</li>
-											<li><strong>[IdMotivo]</strong> Identificación del motivo (se debe seleccionar del listado de motivos).</li>
-										</ul>
-									</li>
-								</ul>
-							</div>
-						</div>
+							</a>
+						</h4>
 					</div>
+					<div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+						<div class="panel-body">
+							<p>Puede utilizar las siguientes variables en el cuerpo del mensaje para referirse a los datos de los archivos:</p>
+							<ul>
+								<li><b style="color: red;">Parámetro de entrada</b>
+									<ul>
+										<li><strong>[IdDocumento]</strong> Campo llave del registro.</li>
+										<li><strong>[IdEvento]</strong> Identificación del evento relacionado al documento.</li>
+									</ul>
+								</li>
+								<li><b style="color: red;">Parámetros de salidas</b>
+									<ul>
+										<li><strong>[success]</strong> Bandera de confirmación (<b>0</b> - NO exitoso / <b>1</b> - exitoso).</li>
+										<li><strong>[mensaje]</strong> Descripción de la validación de la autorización.</li>
+										<li><strong>[IdMotivo]</strong> Identificación del motivo (se debe seleccionar del listado de motivos).</li>
+									</ul>
+								</li>
+							</ul>
+						</div> <!-- panel-body-->
+					</div> <!-- panel-collapse -->
 				</div>
 			<!-- Fin Procesos -->
 			<?php } elseif ($doc == "Motivos") {?>
-				<div class="form-group">
-					<div class="col-md-6">
-						<label class="control-label">Id Motivo <span class="text-danger">*</span></label>
-						<input type="text" class="form-control" name="IdMotivoAutorizacion" id="IdMotivoAutorizacion" required autocomplete="off" value="<?php if ($edit == 1) {echo $row['IdMotivoAutorizacion'];}?>">
-					</div>
-					<div class="col-md-6">
-						<label class="control-label">Motivo <span class="text-danger">*</span></label>
-						<input type="text" class="form-control" name="MotivoAutorizacion" id="MotivoAutorizacion" required autocomplete="off" value="<?php if ($edit == 1) {echo $row['MotivoAutorizacion'];}?>">
-					</div>
-				</div>
-
-				<br><br><br><br>
 				<div class="form-group">
 					<div class="col-md-12">
 						<label class="control-label">Comentarios</label>
@@ -198,12 +204,10 @@ if ($edit == 1 && $id != "") {
 						</select>
 					</div>
 					<div class="col-md-6">
-						<label class="control-label">Modelo autorización SAP B1 <span class="text-danger">*</span></label>
-						<select name="IdFormato" class="form-control select2" id="IdFormato" required>
-							<option value="">Seleccione...</option>
-							<?php while ($row_ModeloAutorizacion = sqlsrv_fetch_array($SQL_ModeloAutorizacion)) {?>
-								<option value="<?php echo $row_ModeloAutorizacion['IdModeloAutorizacion']; ?>" <?php if ((isset($row['IdFormato'])) && (strcmp($row_ModeloAutorizacion['IdModeloAutorizacion'], $row['IdFormato']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_ModeloAutorizacion['ModeloAutorizacion']; ?></option>
-							<?php }?>
+						<label class="control-label">Estado <span class="text-danger">*</span></label>
+						<select class="form-control" id="Estado" name="Estado">
+							<option value="Y" <?php if (($edit == 1) && ($row['Estado'] == "Y")) {echo "selected=\"selected\"";}?>>ACTIVO</option>
+							<option value="N" <?php if (($edit == 1) && ($row['Estado'] == "N")) {echo "selected=\"selected\"";}?>>INACTIVO</option>
 						</select>
 					</div>
 				</div>
@@ -211,10 +215,24 @@ if ($edit == 1 && $id != "") {
 				<br><br><br><br>
 				<div class="form-group">
 					<div class="col-md-6">
-						<label class="control-label">Estado <span class="text-danger">*</span></label>
-						<select class="form-control" id="Estado" name="Estado">
-							<option value="Y" <?php if (($edit == 1) && ($row['Estado'] == "Y")) {echo "selected=\"selected\"";}?>>ACTIVO</option>
-							<option value="N" <?php if (($edit == 1) && ($row['Estado'] == "N")) {echo "selected=\"selected\"";}?>>INACTIVO</option>
+						<label class="control-label">Id Motivo <span class="text-danger">*</span></label>
+						<input type="text" class="form-control" name="IdMotivoAutorizacion" id="IdMotivoAutorizacion" required autocomplete="off" value="<?php if ($edit == 1) {echo $row['IdMotivoAutorizacion'];}?>">
+					</div>
+					<div class="col-md-6">
+						<label class="control-label">Motivo <span class="text-danger">*</span></label>
+						<input type="text" class="form-control" name="MotivoAutorizacion" id="MotivoAutorizacion" required autocomplete="off" value="<?php if ($edit == 1) {echo $row['MotivoAutorizacion'];}?>">
+					</div>
+				</div>
+
+				<br><br><br><br>
+				<div class="form-group">
+					<div class="col-md-12">
+						<label class="control-label">Modelo autorización SAP B1 <span class="text-danger">*</span></label>
+						<select name="IdFormato" class="form-control select2" id="IdFormato" required>
+							<option value="">Seleccione...</option>
+							<?php while ($row_ModeloAutorizacion = sqlsrv_fetch_array($SQL_ModeloAutorizacion)) {?>
+								<option value="<?php echo $row_ModeloAutorizacion['IdModeloAutorizacion']; ?>" <?php if ((isset($row['IdFormato'])) && (strcmp($row_ModeloAutorizacion['IdModeloAutorizacion'], $row['IdFormato']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_ModeloAutorizacion['ModeloAutorizacion']; ?></option>
+							<?php }?>
 						</select>
 					</div>
 				</div>
@@ -250,6 +268,14 @@ if ($edit == 1 && $id != "") {
 </form>
 <script>
 $(document).ready(function(){
+	$('.panel-collapse').on('show.bs.collapse', function () {
+    $(this).siblings('.panel-heading').addClass('active');
+  });
+
+  $('.panel-collapse').on('hide.bs.collapse', function () {
+    $(this).siblings('.panel-heading').removeClass('active');
+  });
+
 	$("#frm_NewParam").validate({
 		submitHandler: function(form){
 			let Metodo = document.getElementById("Metodo").value;
