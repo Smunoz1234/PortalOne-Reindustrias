@@ -25,11 +25,12 @@ if ($edit == 1 && $id != "") {
         $SQL = Seleccionar('tbl_Autorizaciones_Motivos', '*', "IdInterno='" . $id . "'");
         $row = sqlsrv_fetch_array($SQL);
 
+    } elseif ($doc == "Procesos") {
+        $SQL = Seleccionar('tbl_Autorizaciones_Procesos', '*', "IdInterno='" . $id . "'");
+        $row = sqlsrv_fetch_array($SQL);
+
         // SMM 27/07/2022
         $ids_perfiles = isset($row['Perfiles']) ? explode(";", $row['Perfiles']) : [];
-    } elseif ($doc == "Productos") {
-        $SQL = Seleccionar('tbl_ProductosPuerto', '*', "id_producto_puerto='" . $id . "'");
-        $row = sqlsrv_fetch_array($SQL);
     }
 }
 ?>
@@ -65,7 +66,97 @@ if ($edit == 1 && $id != "") {
 	<div class="form-group">
 		<div class="ibox-content">
 			<?php include "includes/spinner.php";?>
-			<?php if ($doc == "Motivos") {?>
+			<?php if ($doc == "Procesos") {?>
+				<div class="form-group">
+					<div class="col-md-12">
+						<label class="control-label">Comentarios</label>
+						<textarea name="Comentarios" rows="3" maxlength="3000" class="form-control" id="Comentarios" type="text"><?php if ($edit == 1) {echo $row['Comentarios'];}?></textarea>
+					</div>
+				</div>
+
+				<br><br><br><br><br><br>
+				<div class="form-group">
+					<div class="col-md-6">
+						<label class="control-label">Tipo de documento <span class="text-danger">*</span></label>
+						<select name="IdTipoDocumento" class="form-control" id="IdTipoDocumento" required>
+								<option value="" selected disabled>Seleccione...</option>
+								<?php $CatActual = "";?>
+								<?php while ($row_TipoDoc = sqlsrv_fetch_array($SQL_TipoDoc)) {?>
+									<?php if ($CatActual != $row_TipoDoc['CategoriaObjeto']) {?>
+										<?php echo "<optgroup label='" . $row_TipoDoc['CategoriaObjeto'] . "'></optgroup>"; ?>
+										<?php $CatActual = $row_TipoDoc['CategoriaObjeto'];?>
+									<?php }?>
+									<option value="<?php echo $row_TipoDoc['IdTipoDocumento']; ?>"
+									<?php if ((($edit == 1) && (isset($row['IdTipoDocumento'])) && (strcmp($row_TipoDoc['IdTipoDocumento'], $row['IdTipoDocumento']) == 0))) {echo "selected=\"selected\"";}?>>
+										<?php echo $row_TipoDoc['DeTipoDocumento']; ?>
+									</option>
+							<?php }?>
+							<optgroup label='Otros'></optgroup>
+							<option value="OTRO" <?php if (($edit == 1) && ($swOtro == 1 && $row['IdTipoDocumento'] != "")) {echo "selected=\"selected\"";}?>>OTRO</option>
+						</select>
+					</div>
+					<div class="col-md-6">
+						<label class="control-label">Estado <span class="text-danger">*</span></label>
+						<select class="form-control" id="Estado" name="Estado">
+							<option value="Y" <?php if (($edit == 1) && ($row['Estado'] == "Y")) {echo "selected=\"selected\"";}?>>ACTIVO</option>
+							<option value="N" <?php if (($edit == 1) && ($row['Estado'] == "N")) {echo "selected=\"selected\"";}?>>INACTIVO</option>
+						</select>
+					</div>
+				</div>
+
+				<br><br><br><br>
+				<div class="form-group">
+					<div class="col-md-12">
+						<label class="control-label">Perfiles Usuarios</label>
+						<select data-placeholder="Digite para buscar..." name="Perfiles[]" class="form-control select2" id="Perfiles" multiple>
+							<?php while ($row_Perfil = sqlsrv_fetch_array($SQL_Perfiles)) {?>
+								<option value="<?php echo $row_Perfil['ID_PerfilUsuario']; ?>"
+								<?php if (in_array($row_Perfil['ID_PerfilUsuario'], $ids_perfiles)) {echo "selected";}?>>
+									<?php echo $row_Perfil['PerfilUsuario']; ?>
+								</option>
+							<?php }?>
+						</select>
+					</div>
+				</div>
+
+				<br><br><br><br>
+				<div class="form-group">
+					<div class="col-md-12">
+						<label class="control-label">Condiciones</label>
+						<textarea name="Condiciones" rows="3" maxlength="3000" class="form-control" id="Condiciones" type="text"><?php if ($edit == 1) {echo $row['Condiciones'];}?></textarea>
+					</div>
+				</div>
+
+				<br><br><br><br><br><br>
+				<div class="row">
+					<div class="col-md-12">
+						<div class="panel panel-info">
+							<div class="panel-heading">
+								<i class="fa fa-info-circle"></i> Parámetros de entrada y salida
+							</div>
+							<div class="panel-body">
+								<p>Puede utilizar las siguientes variables en el cuerpo del mensaje para referirse a los datos de los archivos:</p>
+								<ul>
+									<li><b style="color: red;">Parámetro de entrada</b>
+										<ul>
+											<li><strong>[IdDocumento]</strong> Campo llave del registro.</li>
+											<li><strong>[IdEvento]</strong> Identificación del evento relacionado al documento.</li>
+										</ul>
+									</li>
+									<li><b style="color: red;">Parámetros de salidas</b>
+										<ul>
+											<li><strong>[success]</strong> Bandera de confirmación (<b>0</b> - NO exitoso / <b>1</b> - exitoso).</li>
+											<li><strong>[mensaje]</strong> Descripción de la validación de la autorización.</li>
+											<li><strong>[IdMotivo]</strong> Identificación del motivo (se debe seleccionar del listado de motivos).</li>
+										</ul>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			<!-- Fin Procesos -->
+			<?php } elseif ($doc == "Motivos") {?>
 				<div class="form-group">
 					<div class="col-md-6">
 						<label class="control-label">Id Motivo <span class="text-danger">*</span></label>
@@ -126,80 +217,9 @@ if ($edit == 1 && $id != "") {
 							<option value="N" <?php if (($edit == 1) && ($row['Estado'] == "N")) {echo "selected=\"selected\"";}?>>INACTIVO</option>
 						</select>
 					</div>
-					<div class="col-md-6">
-						<label class="control-label">Perfiles Usuarios</label>
-						<select data-placeholder="Digite para buscar..." name="Perfiles[]" class="form-control select2" id="Perfiles" multiple>
-							<?php while ($row_Perfil = sqlsrv_fetch_array($SQL_Perfiles)) {?>
-								<option value="<?php echo $row_Perfil['ID_PerfilUsuario']; ?>"
-								<?php if (in_array($row_Perfil['ID_PerfilUsuario'], $ids_perfiles)) {echo "selected";}?>>
-									<?php echo $row_Perfil['PerfilUsuario']; ?>
-								</option>
-							<?php }?>
-						</select>
-					</div>
 				</div>
-
-				<br><br><br><br>
-				<div class="form-group">
-					<div class="col-md-12">
-						<label class="control-label">Condiciones</label>
-						<textarea name="Condiciones" rows="3" maxlength="3000" class="form-control" id="Condiciones" type="text"><?php if ($edit == 1) {echo $row['Condiciones'];}?></textarea>
-					</div>
-				</div>
-
-				<br><br><br><br><br><br>
-				<div class="row">
-					<div class="col-md-12">
-						<div class="panel panel-info">
-							<div class="panel-heading">
-								<i class="fa fa-info-circle"></i> Parámetros de entrada y salida
-							</div>
-							<div class="panel-body">
-								<p>Puede utilizar las siguientes variables en el cuerpo del mensaje para referirse a los datos de los archivos:</p>
-								<ul>
-									<li><b style="color: red;">Parámetro de entrada</b>
-										<ul>
-											<li><strong>[IdDocumento]</strong> Campo llave del registro.</li>
-											<li><strong>[IdEvento]</strong> Identificación del evento relacionado al documento.</li>
-										</ul>
-									</li>
-									<li><b style="color: red;">Parámetros de salidas</b>
-										<ul>
-											<li><strong>[success]</strong> Bandera de confirmación (<b>0</b> - NO exitoso / <b>1</b> - exitoso).</li>
-											<li><strong>[mensaje]</strong> Descripción de la validación de la autorización.</li>
-											<li><strong>[IdMotivo]</strong> Identificación del motivo (se debe seleccionar del listado de motivos).</li>
-										</ul>
-									</li>
-								</ul>
-							</div>
-						</div>
-					</div>
-				</div>
-			<?php } elseif ($doc == "Transportes") {?>
-			<div class="form-group">
-				<label class="control-label">Código de motonave <span class="text-danger">*</span></label>
-				<input type="text" class="form-control" name="CodigoTransporte" id="CodigoTransporte" required autocomplete="off" value="<?php if ($edit == 1) {echo $row['id_transporte_puerto'];}?>">
-			</div>
-			<div class="form-group">
-				<label class="control-label">Nombre de motonave <span class="text-danger">*</span></label>
-				<input type="text" class="form-control" name="NombreTransporte" id="NombreTransporte" required autocomplete="off" value="<?php if ($edit == 1) {echo $row['transporte_puerto'];}?>">
-			</div>
-			<div class="form-group">
-				<label class="control-label">REG (Registro capitanía)</label>
-				<input type="text" class="form-control" name="RegistroCap" id="RegistroCap" autocomplete="off" value="<?php if ($edit == 1) {echo $row['registro_capitania'];}?>">
-			</div>
-			<div class="form-group">
-				<label class="control-label">Comentarios</label>
-				<textarea name="ComentariosTransporte" rows="3" maxlength="3000" class="form-control" id="ComentariosTransporte" type="text"><?php if ($edit == 1) {echo $row['comentarios'];}?></textarea>
-			</div>
-			<div class="form-group">
-				<label class="control-label">Estado <span class="text-danger">*</span></label>
-				<select class="form-control" id="EstadoTransporte" name="EstadoTransporte">
-					 <option value="Y" <?php if (($edit == 1) && ($row['estado'] == "Y")) {echo "selected=\"selected\"";}?>>ACTIVO</option>
-					 <option value="N" <?php if (($edit == 1) && ($row['estado'] == "N")) {echo "selected=\"selected\"";}?>>INACTIVO</option>
-				 </select>
-			</div>
 			<?php }?>
+			<!-- Fin Motivos -->
 		</div>
 	</div>
 </div>
@@ -223,7 +243,7 @@ if ($edit == 1 && $id != "") {
 		<textarea rows="3" type="text" name="Validacion" id="Validacion" class="form-control text-muted" readonly>Resultado de la Validación</textarea>
 	</div>
 </div>
-	<input type="hidden" id="TipoDoc" name="TipoDoc" value="<?php echo $doc; ?>" />
+	<input type="text" id="TipoDoc" name="TipoDoc" value="<?php echo $doc; ?>" />
 	<input type="hidden" id="ID_Actual" name="ID_Actual" value="<?php echo $id; ?>" />
 	<input type="hidden" id="Metodo" name="Metodo" value="<?php echo $Metodo; ?>" />
 	<input type="hidden" id="frmType" name="frmType" value="1" />
