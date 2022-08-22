@@ -345,6 +345,7 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_OVenUpd"))) {
 						<th>Tipo venta</th>
 						<th>Usuario Autoriza Portal One</th>
 						<th>Orden servicio</th>
+						<th>Código de documento definitivo</th><!-- Agregado 22/08/2022 -->
 						<th>Usuario creación</th>
 						<th>Estado</th>
 						<th>Estado Autorización Portal One</th>
@@ -367,6 +368,13 @@ if ($sw == 1) {
 							<td><?php echo $row['TipoVenta']; ?></td>
 							<td><?php echo $row['UsuarioAutoriza']; ?></td>
 							<td><?php if ($row['ID_LlamadaServicio'] != 0) {?><a href="llamada_servicio.php?id=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('consultar_orden_venta_borrador.php'); ?>&tl=1" target="_blank"><?php echo $row['DocNumLlamadaServicio']; ?></a><?php } else {echo "--";}?></td>
+
+							<td>
+								<?php if (isset($row["DocEntryDocumentoDefinitivo"]) && isset($row["DocNumDocumentoDefinitivo"])) {?>
+									<a target="_blank" href="orden_venta.php?id=<?php echo base64_encode($row['DocEntryDocumentoDefinitivo']); ?>&id_portal=<?php echo base64_encode($row['DocNumDocumentoDefinitivo']); ?>&tl=1&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('consultar_orden_venta_borrador.php'); ?>" class="Xbtn Xbtn-success Xbtn-xs"><?php echo $row["DocNumDocumentoDefinitivo"]; ?></a>
+								<?php } else {echo "--";}?>
+							</td>
+
 							<td><?php echo $row['UsuarioCreacion']; ?></td>
 							<td><span <?php if ($row['Cod_Estado'] == 'O') {echo "class='label label-info'";} else {echo "class='label label-danger'";}?>><?php echo $row['NombreEstado']; ?></span></td>
 							<td>
@@ -379,7 +387,10 @@ if ($sw == 1) {
 									<?php echo $row['EstadoAutorizacion'] ?? "No Aplica"; ?>
 								</span>
 							</td>
-							<td><a href="orden_venta_borrador.php?id=<?php echo base64_encode($row['ID_OrdenVenta']); ?>&id_portal=<?php echo base64_encode($row['IdDocPortal']); ?>&tl=1&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('consultar_orden_venta_borrador.php'); ?>" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i> Abrir</a> <a href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row['ID_OrdenVenta']); ?>&ObType=<?php echo base64_encode('17'); ?>&IdFrm=<?php echo base64_encode($row['IdSeries']); ?>" target="_blank" class="btn btn-warning btn-xs"><i class="fa fa-download"></i> Descargar</a></td>
+							<td>
+								<a href="orden_venta_borrador.php?id=<?php echo base64_encode($row['ID_OrdenVenta']); ?>&id_portal=<?php echo base64_encode($row['IdDocPortal']); ?>&tl=1&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('consultar_orden_venta_borrador.php'); ?>" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i> Abrir</a>
+								<a href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row['ID_OrdenVenta']); ?>&ObType=<?php echo base64_encode('17'); ?>&IdFrm=<?php echo base64_encode($row['IdSeries']); ?>" target="_blank" class="btn btn-warning btn-xs"><i class="fa fa-download"></i> Descargar</a>
+							</td>
 						</tr>
 					<?php }
 }?>
