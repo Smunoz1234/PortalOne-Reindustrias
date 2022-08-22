@@ -22,15 +22,19 @@ $cadena_Dimensiones = "JSON.parse('$encode_Dimensiones'.replace(/\\n|\\r/g, ''))
 $dt_LS = 0; //sw para saber si vienen datos de la llamada de servicio. 0 no vienen. 1 si vienen.
 $dt_OF = 0; //sw para saber si vienen datos de una Oferta de venta.
 
+$IdMotivo = "";
+$motivoAutorizacion = "";
+$debug_Condiciones = false;
+
 $success = 1; // Confirmación de autorización (1 - Autorizado / 0 - NO Autorizado), SMM 01/08/2022
-$mensajeMotivo = ""; // Comentario motivo, mensaje de salida del procedimiento almacenado.
+$mensajeProceso = ""; // Mensaje proceso, mensaje de salida del procedimiento almacenado.
 
 $msg_error = ""; //Mensaje del error
 $IdOrden = 0;
 $IdPortal = 0; //Id del portal para las ordenes que fueron creadas en el portal, para eliminar el registro antes de cargar al editar
 
-// Motivos de autorización, SMM 29/07/2022
-$SQL_Motivos = Seleccionar("uvw_tbl_Autorizaciones_Motivos", "*", "Estado = 'Y' AND IdTipoDocumento = 17");
+// Procesos de autorización, SMM 19/08/2022
+$SQL_Procesos = Seleccionar("uvw_tbl_Autorizaciones_Procesos", "*", "Estado = 'Y' AND IdTipoDocumento = 17");
 
 if (isset($_GET['id']) && ($_GET['id'] != "")) { //ID de la Orden de venta (DocEntry)
     $IdOrden = base64_decode($_GET['id']);
@@ -64,8 +68,8 @@ if ($edit == 1) {
     $SQL_Autorizaciones = Seleccionar("uvw_Sap_tbl_Autorizaciones", "*", "IdTipoDocumento = 17 AND DocEntry$EsBorrador = $DocEntry");
     $row_Autorizaciones = sqlsrv_fetch_array($SQL_Autorizaciones);
 
-    // SMM, 17/08/2022
-    $SQL_Motivos = Seleccionar("uvw_tbl_Autorizaciones_Motivos", "*", "IdTipoDocumento = 17");
+    // SMM, 19/08/2022
+    $SQL_Procesos = Seleccionar("uvw_tbl_Autorizaciones_Procesos", "*", "IdTipoDocumento = 17");
 }
 
 if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Orden de venta
@@ -139,7 +143,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Orden de venta
             "$Type",
             "'" . ($_POST['IdMotivoAutorizacion'] ?? "") . "'",
             "'" . ($_POST['ComentariosAutor'] ?? "") . "'",
-            "'" . ($_POST['ComentariosMotivo'] ?? "") . "'",
+            "'" . ($_POST['MensajeProceso'] ?? "") . "'",
         );
 
         $SQL_CabeceraOrdenVenta = EjecutarSP('sp_tbl_OrdenVenta_Borrador', $ParametrosCabOrdenVenta, $_POST['P']);
@@ -150,14 +154,12 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Orden de venta
                 $IdOrdenVenta = $row_CabeceraOrdenVenta[0];
                 $IdEvento = $row_CabeceraOrdenVenta[1];
 
-                // Comprobar motivos de autorización en la creación, SMM 29/07/2022
-                $IdMotivo = "";
-                $debug_Condiciones = false;
-                while ($row_Motivo = sqlsrv_fetch_array($SQL_Motivos)) {
-                    $ids_perfiles = ($row_Motivo['Perfiles'] != "") ? explode(";", $row_Motivo['Perfiles']) : [];
+                // Comprobar procesos de autorización en la creación, SMM 20/08/2022
+                while ($row_Proceso = sqlsrv_fetch_array($SQL_Procesos)) {
+                    $ids_perfiles = ($row_Proceso['Perfiles'] != "") ? explode(";", $row_Proceso['Perfiles']) : [];
 
                     if (in_array($_SESSION['Perfil'], $ids_perfiles) || (count($ids_perfiles) == 0)) {
-                        $sql = $row_Motivo['Condiciones'] ?? '';
+                        $sql = $row_Proceso['Condiciones'] ?? '';
 
                         $sql = str_replace("[IdDocumento]", $IdOrdenVenta, $sql);
                         $sql = str_replace("[IdEvento]", $IdEvento, $sql);
@@ -173,7 +175,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Orden de venta
                                 if (isset($obj->success) && ($obj->success == 0)) {
                                     $success = 0;
                                     $IdMotivo = $obj->IdMotivo;
-                                    $mensajeMotivo = $obj->mensaje;
+                                    $mensajeProceso = $obj->mensaje;
                                 }
 
                                 array_push($records, $obj);
@@ -187,7 +189,11 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Orden de venta
                         }
                     }
                 }
+
+                // Consultar el motivo de autorización según el id, SMM 20/08/2022
                 $SQL_Motivos = Seleccionar("uvw_tbl_Autorizaciones_Motivos", "*", "IdMotivoAutorizacion = '$IdMotivo'");
+                $row_MotivoAutorizacion = sqlsrv_fetch_array($SQL_Motivos);
+                $motivoAutorizacion = $row_MotivoAutorizacion['MotivoAutorizacion'];
             } else {
                 $IdOrdenVenta = base64_decode($_POST['IdOrdenVenta']); //Lo coloco otra vez solo para saber que tiene ese valor
                 $IdEvento = base64_decode($_POST['IdEvento']);
@@ -549,6 +555,14 @@ $SQL_ListaPrecios = Seleccionar('uvw_Sap_tbl_ListaPrecios', '*');
 
 // Proyectos, SMM 04/03/2022
 $SQL_Proyecto = Seleccionar('uvw_Sap_tbl_Proyectos', '*', '', 'DeProyecto');
+
+// Consultar el motivo de autorización según el id, SMM 20/08/2022
+if (isset($row['IdMotivoAutorizacion']) && ($row['IdMotivoAutorizacion'] != "") && ($IdMotivo == "")) {
+    $IdMotivo = $row['IdMotivoAutorizacion'];
+    $SQL_Motivos = Seleccionar("uvw_tbl_Autorizaciones_Motivos", "*", "IdMotivoAutorizacion = '$IdMotivo'");
+    $row_MotivoAutorizacion = sqlsrv_fetch_array($SQL_Motivos);
+    $motivoAutorizacion = $row_MotivoAutorizacion['MotivoAutorizacion'] ?? "";
+}
 
 // Stiven Muñoz Murillo, 02/03/2022
 $row_encode = isset($row) ? json_encode($row) : "";
@@ -1180,12 +1194,12 @@ function verAutorizacion() {
 			<!-- Fin, modalSN -->
 
 			<!-- Inicio, modalAUT -->
-			<?php if (($edit == 1) || ($success == 0)) {?>
+			<?php if (($edit == 1) || ($success == 0) || ($sw_error == 1) || $debug_Condiciones) {?>
 				<div class="modal inmodal fade" id="modalAUT" tabindex="-1" role="dialog" aria-hidden="true">
 					<div class="modal-dialog modal-lg">
 						<div class="modal-content">
 							<div class="modal-header">
-								<h4 class="modal-title">Autorización</h4>
+								<h4 class="modal-title">Autorización de documento</h4>
 							</div>
 
 							<!-- form id="formAUT" -->
@@ -1194,23 +1208,15 @@ function verAutorizacion() {
 										<div class="form-group">
 											<label class="col-lg-2">Motivo <span class="text-danger">*</span></label>
 											<div class="col-lg-10">
-												<select readonly form="CrearOrdenVenta" class="form-control required" name="IdMotivoAutorizacion" id="IdMotivoAutorizacion">
-													<!-- option value="" disabled selected>Seleccione...</option -->
-													<?php while ($row_MotivoAutorizacion = sqlsrv_fetch_array($SQL_Motivos)) {?>
-															<option data-comentarios="<?php echo $row_MotivoAutorizacion['Comentarios']; ?>"
-															value="<?php echo $row_MotivoAutorizacion['IdMotivoAutorizacion']; ?>"
-															<?php if ((isset($row['IdMotivoAutorizacion'])) && (strcmp($row_MotivoAutorizacion['IdMotivoAutorizacion'], $row['IdMotivoAutorizacion']) == 0)) {echo "selected=\"selected\"";}?>>
-																<?php echo $row_MotivoAutorizacion['IdMotivoAutorizacion'] . " - " . $row_MotivoAutorizacion['MotivoAutorizacion']; ?>
-															</option>
-													<?php }?>
-												</select>
+												<input required type="hidden" form="CrearOrdenVenta" class="form-control" name="IdMotivoAutorizacion" id="IdMotivoAutorizacion" value="<?php echo $IdMotivo; ?>">
+												<input readonly type="text" style="color: black; font-weight: bold;" class="form-control" id="MotivoAutorizacion" value="<?php echo $motivoAutorizacion; ?>">
 											</div>
 										</div>
 										<br><br><br>
 										<div class="form-group">
-											<label class="col-lg-2">Comentarios motivo</label>
+											<label class="col-lg-2">Mensaje proceso</label>
 											<div class="col-lg-10">
-												<textarea readonly form="CrearOrdenVenta" style="color: black; font-weight: bold;" class="form-control" name="ComentariosMotivo" id="ComentariosMotivo" type="text" maxlength="250" rows="4"><?php if ($mensajeMotivo != "") {echo $mensajeMotivo;} elseif ($edit == 1 || $sw_error == 1) {echo $row['ComentariosMotivo'];}?></textarea>
+												<textarea readonly form="CrearOrdenVenta" style="color: black; font-weight: bold;" class="form-control" name="MensajeProceso" id="MensajeProceso" type="text" maxlength="250" rows="4"><?php if ($mensajeProceso != "") {echo $mensajeProceso;} elseif ($edit == 1 || $sw_error == 1) {echo $row['ComentariosMotivo'];}?></textarea>
 											</div>
 										</div>
 										<br><br><br>
@@ -1575,7 +1581,7 @@ if ($edit == 1 || $dt_LS == 1 || $sw_error == 1) {
 					</div>
 					<label class="col-lg-1 control-label">
 						Autorización
-						<?php if (($edit == 1) || ($success == 0)) {?>
+						<?php if (($edit == 1) || ($success == 0) || ($sw_error == 1) || $debug_Condiciones) {?>
 							<i onClick="verAutorizacion();" title="Ver Autorización" style="cursor: pointer" class="btn-xs btn-success fa fa-eye"></i>
 						<?php }?>
 					</label>
@@ -1829,18 +1835,6 @@ $return = QuitarParametrosURL($return, array("a"));
 		<?php if ($success == 0) {?>
 			$('#modalAUT').modal('show');
 		<?php }?>
-
-		// SMM, 01/08/2022
-		$('#IdMotivoAutorizacion').on("change", function() {
-			let comentarios = $(this).find(':selected').data('comentarios');
-
-			<?php if (($edit == 0) && ($mensajeMotivo == "")) {?>
-				$('#ComentariosMotivo').val(comentarios);
-			<?php }?>
-		});
-
-		// El orden importa.
-		$('#IdMotivoAutorizacion').trigger('change');
 
 		// SMM, 28/08/2022
 		$("#formAUT_button").on("click", function(event) {

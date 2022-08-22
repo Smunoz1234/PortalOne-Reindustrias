@@ -228,10 +228,10 @@ if ($edit == 1 && $id != "") {
 				<div class="form-group">
 					<div class="col-md-12">
 						<label class="control-label">Modelo autorización SAP B1 <span class="text-danger">*</span></label>
-						<select name="IdFormato" class="form-control select2" id="IdFormato" required>
+						<select name="IdModeloAutorizacionSAPB1" class="form-control select2" id="IdModeloAutorizacionSAPB1" required>
 							<option value="">Seleccione...</option>
 							<?php while ($row_ModeloAutorizacion = sqlsrv_fetch_array($SQL_ModeloAutorizacion)) {?>
-								<option value="<?php echo $row_ModeloAutorizacion['IdModeloAutorizacion']; ?>" <?php if ((isset($row['IdFormato'])) && (strcmp($row_ModeloAutorizacion['IdModeloAutorizacion'], $row['IdFormato']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_ModeloAutorizacion['ModeloAutorizacion']; ?></option>
+								<option value="<?php echo $row_ModeloAutorizacion['IdModeloAutorizacion']; ?>" <?php if ((isset($row['IdModeloAutorizacionSAPB1'])) && (strcmp($row_ModeloAutorizacion['IdModeloAutorizacion'], $row['IdModeloAutorizacionSAPB1']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_ModeloAutorizacion['ModeloAutorizacion']; ?></option>
 							<?php }?>
 						</select>
 					</div>
@@ -244,7 +244,9 @@ if ($edit == 1 && $id != "") {
 <div class="modal-footer">
 	<button type="submit" class="btn btn-success m-t-md"><i class="fa fa-check"></i> Aceptar</button>
 
-	<button type="button" class="btn btn-info m-t-md pull-left" onClick="Validar('<?php echo $doc; ?>','<?php echo $id; ?>');"><i class="fa fa-database"></i> Validar Condiciones</button>
+	<?php if ($doc == "Procesos") {?>
+		<button type="button" class="btn btn-info m-t-md pull-left" onClick="Validar('<?php echo $doc; ?>','<?php echo $id; ?>');"><i class="fa fa-database"></i> Validar Condiciones</button>
+	<?php }?>
 
 	<!-- Desactivado
 	<?php if ($edit == 1) {?><button type="button" class="btn btn-danger m-t-md pull-left" onClick="Eliminar('<?php echo $doc; ?>','<?php echo $id; ?>');"><i class="fa fa-trash"></i> Eliminar</button><?php }?>
@@ -261,13 +263,14 @@ if ($edit == 1 && $id != "") {
 		<textarea rows="3" type="text" name="Validacion" id="Validacion" class="form-control text-muted" readonly>Resultado de la Validación</textarea>
 	</div>
 </div>
-	<input type="text" id="TipoDoc" name="TipoDoc" value="<?php echo $doc; ?>" />
+	<input type="hidden" id="TipoDoc" name="TipoDoc" value="<?php echo $doc; ?>" />
 	<input type="hidden" id="ID_Actual" name="ID_Actual" value="<?php echo $id; ?>" />
 	<input type="hidden" id="Metodo" name="Metodo" value="<?php echo $Metodo; ?>" />
 	<input type="hidden" id="frmType" name="frmType" value="1" />
 </form>
 <script>
 $(document).ready(function(){
+	// SMM, 19/08/2022
 	$('.panel-collapse').on('show.bs.collapse', function () {
     $(this).siblings('.panel-heading').addClass('active');
   });
@@ -275,6 +278,7 @@ $(document).ready(function(){
   $('.panel-collapse').on('hide.bs.collapse', function () {
     $(this).siblings('.panel-heading').removeClass('active');
   });
+  // Hasta aquí, 19/08/2022
 
 	$("#frm_NewParam").validate({
 		submitHandler: function(form){
@@ -311,8 +315,8 @@ $(document).ready(function(){
 			type: "POST",
 			url: `ajx_cbo_select.php?type=43&doctype=${doctype}`,
 			success: function(response){
-				$('#IdFormato').html(response).fadeIn();
-				$('#IdFormato').trigger('change');
+				$('#IdModeloAutorizacionSAPB1').html(response).fadeIn();
+				$('#IdModeloAutorizacionSAPB1').trigger('change');
 			}
 		});
 	});

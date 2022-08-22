@@ -8,7 +8,7 @@ $sw_error = 0;
 if (isset($_POST['Metodo']) && ($_POST['Metodo'] == 3)) {
     try {
 
-        if ($_POST['TipoDoc'] = "Procesos") {
+        if ($_POST['TipoDoc'] == "Procesos") {
             $Param = array(
                 $_POST['Metodo'], // 3 - Eliminar
                 isset($_POST['IdInterno']) ? $_POST['IdInterno'] : "NULL", // IdInterno
@@ -18,7 +18,7 @@ if (isset($_POST['Metodo']) && ($_POST['Metodo'] == 3)) {
                 $sw_error = 1;
                 $msg_error = "No se pudo eliminar el proceso de autorización";
             }
-        } elseif ($_POST['TipoDoc'] = "Motivos") {
+        } elseif ($_POST['TipoDoc'] == "Motivos") {
             $Param = array(
                 $_POST['Metodo'], // 3 - Eliminar
                 isset($_POST['IdInterno']) ? $_POST['IdInterno'] : "NULL", // IdInterno
@@ -40,7 +40,7 @@ if (isset($_POST['Metodo']) && ($_POST['Metodo'] == 3)) {
 if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Metodo']) && ($_POST['Metodo'] == 2))) {
     try {
 
-        if ($_POST['TipoDoc'] = "Procesos") {
+        if ($_POST['TipoDoc'] == "Procesos") {
             $FechaHora = "'" . FormatoFecha(date('Y-m-d'), date('H:i:s')) . "'";
             $Usuario = "'" . $_SESSION['CodUser'] . "'";
 
@@ -69,7 +69,7 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
                 $sw_error = 1;
                 $msg_error = "No se pudo insertar los datos";
             }
-        } elseif ($_POST['TipoDoc'] = "Motivos") {
+        } elseif ($_POST['TipoDoc'] == "Motivos") {
             $FechaHora = "'" . FormatoFecha(date('Y-m-d'), date('H:i:s')) . "'";
             $Usuario = "'" . $_SESSION['CodUser'] . "'";
 
@@ -84,14 +84,12 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
                 "'" . $_POST['IdMotivoAutorizacion'] . "'",
                 "'" . $_POST['MotivoAutorizacion'] . "'",
                 "'" . $_POST['IdTipoDocumento'] . "'",
-                "'" . $_POST['IdFormato'] . "'",
+                "'" . $_POST['IdModeloAutorizacionSAPB1'] . "'",
                 "'" . $_POST['Comentarios'] . "'",
                 "'" . $_POST['Estado'] . "'",
-                "'" . $_POST['Condiciones'] . "'",
-                $Perfiles,
-                $Usuario,
-                $FechaHora,
-                $FechaHora,
+                $Usuario, // @id_usuario_actualizacion
+                $FechaHora, // @fecha_actualizacion
+                $FechaHora, // @hora_actualizacion
                 ($_POST['Metodo'] == 1) ? $Usuario : "NULL",
                 ($_POST['Metodo'] == 1) ? $FechaHora : "NULL",
                 ($_POST['Metodo'] == 1) ? $FechaHora : "NULL",
@@ -104,7 +102,8 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
         }
 
         if ($sw_error == 0) {
-            // header('Location:parametros_autorizaciones_documentos.php?a=' . base64_encode("OK_PRUpd") . '#' . $_POST['TipoDoc']);
+            $TipoDoc = $_POST['TipoDoc'];
+            header("Location:parametros_autorizaciones_documentos.php?doc=$TipoDoc&a=" . base64_encode("OK_PRUpd") . "#$TipoDoc");
         }
 
     } catch (Exception $e) {
@@ -231,12 +230,16 @@ if (isset($sw_error) && ($sw_error == 1)) {
 						<?php include "includes/spinner.php";?>
 						 <div class="tabs-container">
 							<ul class="nav nav-tabs">
-								<li class="active"><a data-toggle="tab" href="#tab-1"><i class="fa fa-list"></i> Lista procesos autorización</a></li>
-								<li><a data-toggle="tab" href="#tab-2"><i class="fa fa-list"></i> Lista motivos autorización</a></li>
+								<li class="<?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Procesos") || !isset($_GET['doc'])) ? "active" : ""; ?>">
+									<a data-toggle="tab" href="#tab-1"><i class="fa fa-list"></i> Lista procesos autorización</a>
+								</li>
+								<li class="<?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Motivos")) ? "active" : ""; ?>">
+									<a data-toggle="tab" href="#tab-2"><i class="fa fa-list"></i> Lista motivos autorización</a>
+								</li>
 							</ul>
 							<div class="tab-content">
 								<!-- Inicio, lista motivo autorización -->
-								<div id="tab-1" class="tab-pane active">
+								<div id="tab-1" class="tab-pane <?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Procesos") || !isset($_GET['doc'])) ? "active" : ""; ?>">
 									<form class="form-horizontal">
 										<!-- Inicio, ibox motivos -->
 										<div class="ibox" id="Procesos">
@@ -256,7 +259,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 													<table class="table table-striped table-bordered table-hover dataTables-example">
 														<thead>
 															<tr>
-																<th>ID Tipo Documento</th>
+																<!-- th>ID Tipo Documento</th -->
 																<th>Tipo Documento</th>
 																<th>Comentarios</th>
 																<th>Perfiles</th>
@@ -270,7 +273,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 														<tbody>
 															 <?php while ($row_Proceso = sqlsrv_fetch_array($SQL_Procesos)) {?>
 															<tr>
-																<td><?php echo $row_Proceso['IdTipoDocumento']; ?></td>
+																<!-- td><?php echo $row_Proceso['IdTipoDocumento']; ?></td -->
 																<td><?php echo $row_Proceso['TipoDocumento']; ?></td>
 																<td><?php echo $row_Proceso['Comentarios']; ?></td>
 
@@ -299,7 +302,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 																</td>
 																<td>
 																	<button type="button" id="btnEdit<?php echo $row_Proceso['IdInterno']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Proceso['IdInterno']; ?>','Procesos');"><i class="fa fa-pencil"></i> Editar</button>
-																	<button type="button" id="btnDelete<?php echo $row_Proceso['IdInterno']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Proceso['IdInterno']; ?>','Procesos');"><i class="fa fa-trash"></i> Eliminar</button>
+																	<!-- button type="button" id="btnDelete<?php //echo $row_Proceso['IdInterno']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php //echo $row_Proceso['IdInterno']; ?>','Procesos');"><i class="fa fa-trash"></i> Eliminar</button -->
 																</td>
 															</tr>
 															 <?php }?>
@@ -314,7 +317,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 								<!-- Fin, lista motivo autorización -->
 
 								<!-- Inicio, lista motivo autorización -->
-								<div id="tab-2" class="tab-pane">
+								<div id="tab-2" class="tab-pane <?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Motivos")) ? "active" : ""; ?>">
 									<form class="form-horizontal">
 										<!-- Inicio, ibox motivos -->
 										<div class="ibox" id="Motivos">
@@ -334,14 +337,12 @@ if (isset($sw_error) && ($sw_error == 1)) {
 													<table class="table table-striped table-bordered table-hover dataTables-example">
 														<thead>
 															<tr>
-																<th>ID Tipo Documento</th>
+																<!-- th>ID Tipo Documento</th -->
 																<th>Tipo Documento</th>
 																<th>Modelo autorización SAP B1</th>
 																<th>Id Motivo Autorizacion</th>
 																<th>Motivo Autorizacion</th>
 																<th>Comentarios</th>
-																<th>Perfiles</th>
-																<th>Condiciones</th>
 																<th>Fecha Actualizacion</th>
 																<th>Usuario Actualizacion</th>
 																<th>Estado</th>
@@ -351,29 +352,12 @@ if (isset($sw_error) && ($sw_error == 1)) {
 														<tbody>
 															 <?php while ($row_Motivo = sqlsrv_fetch_array($SQL_Motivos)) {?>
 															<tr>
-																<td><?php echo $row_Motivo['IdTipoDocumento']; ?></td>
+																<!-- td><?php echo $row_Motivo['IdTipoDocumento']; ?></td -->
 																<td><?php echo $row_Motivo['TipoDocumento']; ?></td>
 																<td><?php echo $row_Motivo['ModeloAutorizacion']; ?></td>
 																<td><?php echo $row_Motivo['IdMotivoAutorizacion']; ?></td>
 																<td><?php echo $row_Motivo['MotivoAutorizacion']; ?></td>
 																<td><?php echo $row_Motivo['Comentarios']; ?></td>
-
-																<td>
-																	<?php sqlsrv_fetch($SQL_Perfiles, SQLSRV_SCROLL_ABSOLUTE, -1);?>
-																	<?php $ids_perfiles = explode(";", $row_Motivo['Perfiles']);?>
-
-																	<?php $cadenaPerfiles = "";?>
-																	<?php while ($row_Perfil = sqlsrv_fetch_array($SQL_Perfiles)) {?>
-																		<?php if (in_array($row_Perfil['ID_PerfilUsuario'], $ids_perfiles)) {?>
-																			<!-- ?php echo $row_Perfil['PerfilUsuario']; ?>
-																			<br><br -->
-																			<?php $cadenaPerfiles .= $row_Perfil['PerfilUsuario'] . "; ";?>
-																		<?php }?>
-																	<?php }?>
-																	<?php echo ($cadenaPerfiles == "") ? "(Todos)" : $cadenaPerfiles; ?>
-																</td>
-
-																<td><?php echo $row_Motivo['Condiciones']; ?></td>
 																<td><?php echo isset($row_Motivo['fecha_actualizacion']) ? date_format($row_Motivo['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
 																<td><?php echo $row_Motivo['usuario_actualizacion']; ?></td>
 																<td>
