@@ -322,7 +322,7 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_EVenUpd"))) {
 						<th>Tipo venta</th>
 						<th>Usuario Autoriza Portal One</th> <!-- Modificado 16/08/2022 -->
 						<th>Orden servicio</th>
-						<th>Código de documento definitivo</th><!-- Agregado 22/08/2022 -->
+						<th>No. Documento Definitivo</th><!-- Agregado 22/08/2022 -->
 						<th>Documento destino</th>
 						<th>Usuario creación</th>
 						<th>Estado</th>
