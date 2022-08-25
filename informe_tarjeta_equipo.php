@@ -21,6 +21,8 @@ $SQL_Marca = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_MarcaVehiculo', '*');
 $SQL_Concesionario = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_Concesionario', '*');
 
 //Fechas, SMM 13/07/2022
+$FI_FechaProx_Mant = "";
+$FF_FechaProx_Mant = "";
 if (isset($_GET['FI_FechaProx_Mant']) && $_GET['FI_FechaProx_Mant'] != "") {
     $FI_FechaProx_Mant = $_GET['FI_FechaProx_Mant'];
     $sw = 1;
@@ -29,15 +31,17 @@ if (isset($_GET['FI_FechaProx_Mant']) && $_GET['FI_FechaProx_Mant'] != "") {
     $fecha = date('Y-m-d');
     $nuevafecha = strtotime('-' . ObtenerVariable("DiasRangoFechasGestionar") . ' day');
     $nuevafecha = date('Y-m-d', $nuevafecha);
-    $FI_FechaProx_Mant = $nuevafecha;
+    // $FI_FechaProx_Mant = $nuevafecha;
 }
 if (isset($_GET['FF_FechaProx_Mant']) && $_GET['FF_FechaProx_Mant'] != "") {
     $FF_FechaProx_Mant = $_GET['FF_FechaProx_Mant'];
     $sw = 1;
 } else {
-    $FF_FechaProx_Mant = date('Y-m-d');
+    // $FF_FechaProx_Mant = date('Y-m-d');
 }
 
+$FI_Fecha_SOAT = "";
+$FF_Fecha_SOAT = "";
 if (isset($_GET['FI_Fecha_SOAT']) && $_GET['FI_Fecha_SOAT'] != "") {
     $FI_Fecha_SOAT = $_GET['FI_Fecha_SOAT'];
     $sw = 1;
@@ -46,15 +50,17 @@ if (isset($_GET['FI_Fecha_SOAT']) && $_GET['FI_Fecha_SOAT'] != "") {
     $fecha = date('Y-m-d');
     $nuevafecha = strtotime('-' . ObtenerVariable("DiasRangoFechasGestionar") . ' day');
     $nuevafecha = date('Y-m-d', $nuevafecha);
-    $FI_Fecha_SOAT = $nuevafecha;
+    // $FI_Fecha_SOAT = $nuevafecha;
 }
 if (isset($_GET['FF_Fecha_SOAT']) && $_GET['FF_Fecha_SOAT'] != "") {
     $FF_Fecha_SOAT = $_GET['FF_Fecha_SOAT'];
     $sw = 1;
 } else {
-    $FF_Fecha_SOAT = date('Y-m-d');
+    // $FF_Fecha_SOAT = date('Y-m-d');
 }
 
+$FI_Fecha_Tecno = "";
+$FF_Fecha_Tecno = "";
 if (isset($_GET['FI_Fecha_Tecno']) && $_GET['FI_Fecha_Tecno'] != "") {
     $FI_Fecha_Tecno = $_GET['FI_Fecha_Tecno'];
     $sw = 1;
@@ -63,13 +69,13 @@ if (isset($_GET['FI_Fecha_Tecno']) && $_GET['FI_Fecha_Tecno'] != "") {
     $fecha = date('Y-m-d');
     $nuevafecha = strtotime('-' . ObtenerVariable("DiasRangoFechasGestionar") . ' day');
     $nuevafecha = date('Y-m-d', $nuevafecha);
-    $FI_Fecha_Tecno = $nuevafecha;
+    // $FI_Fecha_Tecno = $nuevafecha;
 }
 if (isset($_GET['FF_Fecha_Tecno']) && $_GET['FF_Fecha_Tecno'] != "") {
     $FF_Fecha_Tecno = $_GET['FF_Fecha_Tecno'];
     $sw = 1;
 } else {
-    $FF_Fecha_Tecno = date('Y-m-d');
+    // $FF_Fecha_Tecno = date('Y-m-d');
 }
 
 // Filtros
@@ -206,13 +212,13 @@ if ($sw == 1) {
 
 							<label class="col-lg-1 control-label">Fecha Matricula</label>
 							<div class="col-lg-3 input-group date">
-								<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="CDU_FechaMatricula" id="CDU_FechaMatricula" type="text" class="form-control"
+								<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="CDU_FechaMatricula" id="CDU_FechaMatricula" type="text" class="form-control fecha" autocomplete="off"
 								placeholder="YYYY-MM-DD" value="<?php if (isset($_GET['CDU_FechaMatricula']) && strtotime($_GET['CDU_FechaMatricula'])) {echo date('Y-m-d', strtotime($_GET['CDU_FechaMatricula']));}?>">
 							</div>
 
 							<label class="col-lg-1 control-label">Fecha Ult. Mantenimiento</label>
 							<div class="col-lg-3 input-group date">
-								<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="CDU_FechaUlt_Mant" id="CDU_FechaUlt_Mant" type="text" class="form-control"
+								<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="CDU_FechaUlt_Mant" id="CDU_FechaUlt_Mant" type="text" class="form-control fecha" autocomplete="off"
 								placeholder="YYYY-MM-DD" value="<?php if (isset($_GET['CDU_FechaUlt_Mant']) && strtotime($_GET['CDU_FechaUlt_Mant'])) {echo date('Y-m-d', strtotime($_GET['CDU_FechaUlt_Mant']));}?>">
 							</div>
 						</div>
@@ -220,34 +226,34 @@ if ($sw == 1) {
 						<div class="form-group">
 							<label class="col-lg-1 control-label">Fecha Prox. Mantenimiento</label>
 							<div class="col-lg-3">
-								<div class="input-daterange input-group" id="datepicker">
-									<input name="FI_FechaProx_Mant" type="text" class="input-sm form-control" id="FI_FechaProx_Mant" placeholder="Fecha inicial" value="<?php echo $FI_FechaProx_Mant; ?>" autocomplete="off" />
+								<div class="input-daterange input-group">
+									<input name="FI_FechaProx_Mant" type="text" class="input-sm form-control fecha" id="FI_FechaProx_Mant" placeholder="Fecha inicial" value="<?php echo $FI_FechaProx_Mant; ?>" autocomplete="off" />
 									<span class="input-group-addon">hasta</span>
-									<input name="FF_FechaProx_Mant" type="text" class="input-sm form-control" id="FF_FechaProx_Mant" placeholder="Fecha final" value="<?php echo $FF_FechaProx_Mant; ?>" autocomplete="off" />
+									<input name="FF_FechaProx_Mant" type="text" class="input-sm form-control fecha" id="FF_FechaProx_Mant" placeholder="Fecha final" value="<?php echo $FF_FechaProx_Mant; ?>" autocomplete="off" />
 								</div>
 							</div>
 
 							<label class="col-lg-1 control-label">Fecha SOAT</label>
 							<div class="col-lg-3">
-								<div class="input-daterange input-group" id="datepicker">
-									<input name="FI_Fecha_SOAT" type="text" class="input-sm form-control" id="FI_Fecha_SOAT" placeholder="Fecha inicial" value="<?php echo $FI_Fecha_SOAT; ?>" autocomplete="off" />
+								<div class="input-daterange input-group">
+									<input name="FI_Fecha_SOAT" type="text" class="input-sm form-control fecha" id="FI_Fecha_SOAT" placeholder="Fecha inicial" value="<?php echo $FI_Fecha_SOAT; ?>" autocomplete="off" />
 									<span class="input-group-addon">hasta</span>
-									<input name="FF_Fecha_SOAT" type="text" class="input-sm form-control" id="FF_Fecha_SOAT" placeholder="Fecha final" value="<?php echo $FF_Fecha_SOAT; ?>" autocomplete="off" />
+									<input name="FF_Fecha_SOAT" type="text" class="input-sm form-control fecha" id="FF_Fecha_SOAT" placeholder="Fecha final" value="<?php echo $FF_Fecha_SOAT; ?>" autocomplete="off" />
 								</div>
 							</div>
 
 							<label class="col-lg-1 control-label">Fecha Tecno</label>
 							<div class="col-lg-3">
-								<div class="input-daterange input-group" id="datepicker">
-									<input name="FI_Fecha_Tecno" type="text" class="input-sm form-control" id="FI_Fecha_Tecno" placeholder="Fecha inicial" value="<?php echo $FI_Fecha_Tecno; ?>" autocomplete="off" />
+								<div class="input-daterange input-group">
+									<input name="FI_Fecha_Tecno" type="text" class="input-sm form-control fecha" id="FI_Fecha_Tecno" placeholder="Fecha inicial" value="<?php echo $FI_Fecha_Tecno; ?>" autocomplete="off" />
 									<span class="input-group-addon">hasta</span>
-									<input name="FF_Fecha_Tecno" type="text" class="input-sm form-control" id="FF_Fecha_Tecno" placeholder="Fecha final" value="<?php echo $FF_Fecha_Tecno; ?>" autocomplete="off" />
+									<input name="FF_Fecha_Tecno" type="text" class="input-sm form-control fecha" id="FF_Fecha_Tecno" placeholder="Fecha final" value="<?php echo $FF_Fecha_Tecno; ?>" autocomplete="off" />
 								</div>
 							</div>
 						</div>
 
 						<div class="form-group">
-							<div class="col-lg-4">
+							<div class="col-lg-12">
 								<button type="submit" class="btn btn-outline btn-success pull-right"><i class="fa fa-search"></i> Buscar</button>
 							</div>
 						</div>
@@ -362,16 +368,9 @@ if ($sw == 1) {
 			 $(".alkin").on('click', function(){
 					$('.ibox-content').toggleClass('sk-loading');
 				});
-			 $('#FechaInicial').datepicker({
-                todayBtn: "linked",
-                keyboardNavigation: false,
-                forceParse: false,
-                calendarWeeks: true,
-                autoclose: true,
-				todayHighlight: true,
-				format: 'yyyy-mm-dd'
-            });
-			 $('#FechaFinal').datepicker({
+
+			// SMM, 25/08/2022
+			$('.fecha').datepicker({
                 todayBtn: "linked",
                 keyboardNavigation: false,
                 forceParse: false,
