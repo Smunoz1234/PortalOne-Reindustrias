@@ -10,6 +10,12 @@ $id = isset($_POST['id']) ? $_POST['id'] : "";
 
 $dir_new = CrearObtenerDirAnx("formularios/monitoreos_temperaturas/planos");
 
+// SMM, 26/08/2022
+$palabra = ($doc == "Procesos") ? "proceso" : "motivo";
+
+// Usuarios de SAP, (NO bloqueados).
+$SQL_UsuariosSAP = Seleccionar("uvw_Sap_tbl_UsuariosSAP", "*", "Locked = 'N'", "USER_CODE");
+
 // SMM, 18/07/2022
 $SQL_TipoDoc = Seleccionar("uvw_tbl_ObjetosSAP", "*", "CategoriaObjeto = 'Documentos de ventas'", 'CategoriaObjeto, DeTipoDocumento');
 $SQL_ModeloAutorizacion = Seleccionar("uvw_Sap_tbl_ModelosAutorizaciones", "*");
@@ -75,7 +81,7 @@ if ($edit == 1 && $id != "") {
 <form id="frm_NewParam" method="post" action="parametros_autorizaciones_documentos.php" enctype="multipart/form-data">
 <div class="modal-header">
 	<h4 class="modal-title">
-		<?php echo "Crear nuevo motivo autorización"; ?>
+		<?php echo "Crear nuevo $palabra de autorización"; ?>
 	</h4>
 </div>
 <div class="modal-body">
@@ -130,6 +136,19 @@ if ($edit == 1 && $id != "") {
 								<?php if (in_array($row_Perfil['ID_PerfilUsuario'], $ids_perfiles)) {echo "selected";}?>>
 									<?php echo $row_Perfil['PerfilUsuario']; ?>
 								</option>
+							<?php }?>
+						</select>
+					</div>
+				</div>
+
+				<br><br><br><br>
+				<div class="form-group">
+					<div class="col-md-12">
+						<label class="control-label">Usuario autorización SAP B1 <span class="text-danger">*</span></label>
+						<select name="IdUsuarioAutorizacion" class="form-control select2" id="IdUsuarioAutorizacion" required>
+							<option value="">Seleccione...</option>
+							<?php while ($row_UsuarioSAP = sqlsrv_fetch_array($SQL_UsuariosSAP)) {?>
+								<option value="<?php echo $row_UsuarioSAP['USERID']; ?>" <?php if ((isset($row['IdUsuarioAutorizacionSAPB1'])) && (strcmp($row_UsuarioSAP['USERID'], $row['IdUsuarioAutorizacionSAPB1']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_UsuarioSAP['USER_CODE']; ?></option>
 							<?php }?>
 						</select>
 					</div>
