@@ -1,15 +1,25 @@
 <?php
-if (file_exists("includes/conect_srv.php")) {
-    require_once "includes/conect_srv.php";
+
+// SMM, 27/08/2022
+if (file_exists("includes/configuracion.php")) {
+    require_once "includes/configuracion.php";
 } else {
-    require_once "conect_srv.php";
+    require_once "configuracion.php";
 }
 
-//if(file_exists("includes/conect_odbc.php")){
-//    require_once("includes/conect_odbc.php");
-//}else{
-//    require_once("conect_odbc.php");
-//}
+if ($tipo_base_datos == 1) {
+    if (file_exists("includes/conect_srv.php")) {
+        require_once "includes/conect_srv.php";
+    } else {
+        require_once "conect_srv.php";
+    }
+} else {
+    if (file_exists("includes/conect_odbc.php")) {
+        require_once "includes/conect_odbc.php";
+    } else {
+        require_once "conect_odbc.php";
+    }
+}
 
 function PermitirAcceso($Permiso)
 { //Para evitar acceder a la pagina
@@ -148,6 +158,11 @@ function SubComent($pComents, $Len = 100)
 
 function ReturnCons($pVista, $pCampos, $pWhere = '', $pOrderBy = '', $pOrderType = '', $pType = 1)
 { //Devolver la consulta generada
+
+    // SMM, 27/08/2022
+    global $tipo_base_datos;
+    $pType = $tipo_base_datos;
+
     if ($pType == 1) { //Consulta a SQL SERVER
         $Consulta = "EXEC sp_ConsultarTablasSAP '" . $pVista . "', '" . $pCampos . "', '" . str_replace("'", "''", $pWhere) . "', '" . $pOrderBy . "', '" . $pOrderType . "'";
         return $Consulta;
@@ -159,6 +174,11 @@ function ReturnCons($pVista, $pCampos, $pWhere = '', $pOrderBy = '', $pOrderType
 
 function Seleccionar($pVista, $pCampos, $pWhere = '', $pOrderBy = '', $pOrderType = '', $pType = 1, $pDebugMode = 0)
 { //Seleccionar datos de una tabla
+
+    // SMM, 27/08/2022
+    global $tipo_base_datos;
+    $pType = $tipo_base_datos;
+
     if ($pType == 1) { //Consulta a SQL SERVER
         global $conexion;
         $Consulta = "EXEC sp_ConsultarTablasSAP '" . $pVista . "', '" . $pCampos . "', '" . str_replace("'", "''", $pWhere) . "', '" . $pOrderBy . "', '" . $pOrderType . "'";
@@ -197,6 +217,11 @@ function Seleccionar($pVista, $pCampos, $pWhere = '', $pOrderBy = '', $pOrderTyp
 
 function SeleccionarGroupBy($pVista, $pCampos, $pWhere = '', $pGroupBy = '', $pOrderBy = '', $pOrderType = '', $pType = 1, $pDebugMode = 0)
 { //Seleccionar datos de una tabla
+
+    // SMM, 27/08/2022
+    global $tipo_base_datos;
+    $pType = $tipo_base_datos;
+
     if ($pType == 1) { //Consulta a SQL SERVER
         global $conexion;
         $Consulta = "EXEC sp_ConsultarTablasSAPGroupby '" . $pVista . "', '" . $pCampos . "', '" . str_replace("'", "''", $pWhere) . "',  '" . $pGroupBy . "', '" . $pOrderBy . "', '" . $pOrderType . "'";
@@ -231,6 +256,11 @@ function SeleccionarGroupBy($pVista, $pCampos, $pWhere = '', $pGroupBy = '', $pO
 
 function Eliminar($pVista, $pWhere = '', $pIdReg = 0, $pType = 1, $pDebugMode = 0)
 { //Eliminar datos de una tabla
+
+    // SMM, 27/08/2022
+    global $tipo_base_datos;
+    $pType = $tipo_base_datos;
+
     if ($pType == 1) { //Consulta a SQL SERVER
         global $conexion;
         $Consulta = "DELETE FROM " . $pVista;
@@ -285,6 +315,11 @@ function Eliminar($pVista, $pWhere = '', $pIdReg = 0, $pType = 1, $pDebugMode = 
 
 function sql_fetch_array($pSQL, $pType = 1)
 { //fetch_array SQL or HANNA
+
+    // SMM, 27/08/2022
+    global $tipo_base_datos;
+    $pType = $tipo_base_datos;
+
     if ($pType == 1) { //Consulta a SQL SERVER
         global $conexion;
         $row = sqlsrv_fetch_array($pSQL);
@@ -299,6 +334,11 @@ function sql_fetch_array($pSQL, $pType = 1)
 
 function sql_num_rows($pSQL, $pType = 1)
 { //fetch_array SQL or HANNA
+
+    // SMM, 27/08/2022
+    global $tipo_base_datos;
+    $pType = $tipo_base_datos;
+
     if ($pType == 1) { //Consulta a SQL SERVER
         global $conexion;
         $Num = sqlsrv_num_rows($pSQL);
@@ -313,6 +353,11 @@ function sql_num_rows($pSQL, $pType = 1)
 
 function EjecutarSP($pNameSP, $pParametros = "", $pIdReg = 0, $pType = 1, $pDebugMode = 0)
 { //Ejecutar un SP en la BD
+
+    // SMM, 27/08/2022
+    global $tipo_base_datos;
+    $pType = $tipo_base_datos;
+
     if ($pType == 1) { //Consulta a SQL SERVER
         global $conexion;
         $Param = "";
