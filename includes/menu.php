@@ -377,7 +377,7 @@ $Num_Menu = sqlsrv_num_rows($SQL_Menu);
 				<?php }?>
 				<?php if (PermitirFuncion(801)) {?>
 				<li>
-                    <a href="#"><i class="fa fa-suitcase"></i> <span class="nav-label">Cartera</span><span class="fa arrow"></span></a>
+                    <a href="#"><i class="fa fa-suitcase"></i> <span class="nav-label">Cartera/CRM</span><span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level">
 						<?php if (PermitirFuncion(801)) {?><li><a class="alnk" href="consultar_cliente_cartera.php">Consultar cliente</a></li><?php }?>
 						<?php if (PermitirFuncion(801)) {?><li><a class="alnk" href="consultar_gestiones.php">Consultar gestiones</a></li><?php }?>
