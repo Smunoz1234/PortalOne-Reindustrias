@@ -2441,15 +2441,17 @@ if (isset($_GET['exp']) && $_GET['exp'] != "" && $_GET['Cons'] != "") {
             $SQL = EjecutarSP(base64_decode($_GET['sp']), $ParamCons);
         }
 
-        //$Num=sqlsrv_has_rows($SQL);
-        //echo $Cons;
-        //exit();
+        // SMM, 30/08/2022
+        $Num = sqlsrv_has_rows($SQL);
+        // echo $Cons;
+        // echo $Num;
+        // exit();
 
         // Modificado, 30/08/2022
         $rawdata = array();
         $abc = array();
         $i = 0;
-        if ($SQL) {
+        if ($SQL && $Num) {
             require_once 'Classes/PHPExcel.php';
             $objExcel = new PHPExcel();
 
@@ -2556,13 +2558,28 @@ if (isset($_GET['exp']) && $_GET['exp'] != "" && $_GET['Cons'] != "") {
             $objExcel->setActiveSheetIndex(0);
 //            exit();
         }
-        header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="Reporte' . date('Ymd') . '.xlsx"');
-        header('Cache-Control: max-age=0');
 
-        $objWriter = PHPExcel_IOFactory::createWriter($objExcel, 'Excel2007');
-        $objWriter->save('php://output');
-        exit;
+        // SMM, 30/08/2022
+        if ($Num) {
+            $objWriter = PHPExcel_IOFactory::createWriter($objExcel, 'Excel2007');
+            ob_start();
+            $objWriter->save("php://output");
+            $xlsData = ob_get_contents();
+            ob_end_clean();
+
+            $response = array(
+                'op' => 'ok',
+                'file' => "data:application/vnd.ms-excel;base64," . base64_encode($xlsData),
+                'filename' => "Reporte" . date('Ymd') . ".xlsx",
+            );
+        } else {
+            $response = array(
+                'op' => 'nothing',
+            );
+        }
+
+        die(json_encode($response));
+        // Hasta aquí, 30/08/2022
     }
 
     // Exportar datos desde una Consulta

@@ -356,7 +356,7 @@ while ($row_EstServLlamada = sqlsrv_fetch_array($SQL_EstServLlamada)) {?>
 							<!-- Hasta aquí, 30/08/2022 -->
 
 							<div class="col-lg-4">
-								<a id="btn_excel" href="<?php echo $ruta_excel; ?>">
+								<a id="btn_excel" href="#">
 									<img src="css/exp_excel.png" width="50" height="30" alt="Exportar a Excel" title="Exportar a Excel"/>
 								</a>
 							</div>
@@ -458,9 +458,37 @@ while ($row_EstServLlamada = sqlsrv_fetch_array($SQL_EstServLlamada)) {?>
  <script>
         $(document).ready(function(){
 			// SMM, 30/08/2022
-			$("#TipoInforme").on('change', function(){
-				let ti = $(this).val();
-				$("#btn_excel").attr("href", `<?php echo $ruta_excel; ?>&TipoInforme=${ti}`);
+			$("#btn_excel").on("click", function() {
+				$('.ibox-content').toggleClass('sk-loading');
+				let ti = $("#TipoInforme").val();
+
+				$.ajax({
+					type:'POST',
+					url:`<?php echo $ruta_excel; ?>&TipoInforme=${ti}`,
+					data: {},
+					dataType:'json'
+				}).done(function(data){
+					if(data.op === "ok") {
+						let $a = $("<a>");
+
+						$a.attr("href", data.file);
+						$("body").append($a);
+						$a.attr("download", data.filename);
+						$a[0].click();
+						$a.remove();
+					} else {
+						alert("Consulta sin resultados.");
+					}
+
+					$('.ibox-content').toggleClass('sk-loading');
+				}).fail(function(error) {
+    				console.error("Error en la descarga.");
+
+					console.log(error.responseText);
+					console.log(`<?php echo $ruta_excel; ?>&TipoInforme=${ti}`);
+
+					$('.ibox-content').toggleClass('sk-loading');
+				});
 			});
 			// Hasta aquí, 30/08/2022
 
