@@ -1,63 +1,63 @@
-<?php 
-require_once("includes/conexion.php");
+<?php
+require_once "includes/conexion.php";
 PermitirAcceso(1206);
-$sw=0;
+$sw = 0;
 //$Proyecto="";
-$Almacen="";
-$CardCode="";
-$type=1;
-$Estado=1;//Abierto
-$dt_TI=0;
-if(isset($_GET['id'])&&($_GET['id']!="")){
-	if($_GET['type']==1){
-		$type=1;
-	}else{
-		$type=$_GET['type'];
-	}
-	
-	if(isset($_GET['dt_TI'])&&($_GET['dt_TI']!="")){
-		$dt_TI=$_GET['dt_TI'];
-	}else{
-		$dt_TI=0;
-	}
-	
-	if($dt_TI==1){
-		$Estado=2;
-	}
-	
-	if($type==1){//Creando Salida de inventario
-		$SQL=Seleccionar("uvw_tbl_SalidaInventarioDetalleCarrito","*","Usuario='".$_GET['usr']."' and CardCode='".$_GET['cardcode']."' and WhsCode='".$_GET['whscode']."'");
-		if($SQL){
-			$sw=1;
-			$CardCode=$_GET['cardcode'];
-			//$Proyecto=$_GET['prjcode'];
-			$Almacen=$_GET['whscode'];			
-		}else{
-			$CardCode="";
-			//$Proyecto="";
-			$Almacen="";
-		}
-		
-	}else{//Editando Salida de inventario
-		if(isset($_GET['status'])&&(base64_decode($_GET['status'])=="C")){
-			$Estado=2;
-		}else{
-			$Estado=1;
-		}
-		$SQL=Seleccionar("uvw_tbl_SalidaInventarioDetalle","*","ID_SalidaInv='".base64_decode($_GET['id'])."' and IdEvento='".base64_decode($_GET['evento'])."' and Metodo <> 3");
-		if($SQL){
-			$sw=1;
-		}
-	}
+$Almacen = "";
+$CardCode = "";
+$type = 1;
+$Estado = 1; //Abierto
+$dt_TI = 0;
+if (isset($_GET['id']) && ($_GET['id'] != "")) {
+    if ($_GET['type'] == 1) {
+        $type = 1;
+    } else {
+        $type = $_GET['type'];
+    }
+
+    if (isset($_GET['dt_TI']) && ($_GET['dt_TI'] != "")) {
+        $dt_TI = $_GET['dt_TI'];
+    } else {
+        $dt_TI = 0;
+    }
+
+    if ($dt_TI == 1) {
+        $Estado = 2;
+    }
+
+    if ($type == 1) { //Creando Salida de inventario
+        $SQL = Seleccionar("uvw_tbl_SalidaInventarioDetalleCarrito", "*", "Usuario='" . $_GET['usr'] . "' and CardCode='" . $_GET['cardcode'] . "' and WhsCode='" . $_GET['whscode'] . "'");
+        if ($SQL) {
+            $sw = 1;
+            $CardCode = $_GET['cardcode'];
+            //$Proyecto=$_GET['prjcode'];
+            $Almacen = $_GET['whscode'];
+        } else {
+            $CardCode = "";
+            //$Proyecto="";
+            $Almacen = "";
+        }
+
+    } else { //Editando Salida de inventario
+        if (isset($_GET['status']) && (base64_decode($_GET['status']) == "C")) {
+            $Estado = 2;
+        } else {
+            $Estado = 1;
+        }
+        $SQL = Seleccionar("uvw_tbl_SalidaInventarioDetalle", "*", "ID_SalidaInv='" . base64_decode($_GET['id']) . "' and IdEvento='" . base64_decode($_GET['evento']) . "' and Metodo <> 3");
+        if ($SQL) {
+            $sw = 1;
+        }
+    }
 }
 ?>
 <!doctype html>
 <html>
 <head>
-<?php include_once("includes/cabecera.php"); ?>
+<?php include_once "includes/cabecera.php";?>
 <style>
 	.ibox-content{
-		padding: 0px !important;	
+		padding: 0px !important;
 	}
 	body{
 		background-color: #ffffff;
@@ -77,16 +77,16 @@ function BorrarLinea(LineNum){
 	if(confirm(String.fromCharCode(191)+'Est'+String.fromCharCode(225)+' seguro que desea eliminar este item? Este proceso no se puede revertir.')){
 		$.ajax({
 			type: "GET",
-			<?php if($type==1){?>
-			url: "includes/procedimientos.php?type=10&edit=<?php echo $type;?>&linenum="+LineNum+"&cardcode=<?php echo $CardCode;?>",
-			<?php }else{?>
-			url: "includes/procedimientos.php?type=10&edit=<?php echo $type;?>&linenum="+LineNum+"&id=<?php echo base64_decode($_GET['id']);?>&evento=<?php echo base64_decode($_GET['evento']);?>",
-			<?php }?>			
+			<?php if ($type == 1) {?>
+			url: "includes/procedimientos.php?type=10&edit=<?php echo $type; ?>&linenum="+LineNum+"&cardcode=<?php echo $CardCode; ?>",
+			<?php } else {?>
+			url: "includes/procedimientos.php?type=10&edit=<?php echo $type; ?>&linenum="+LineNum+"&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
+			<?php }?>
 			success: function(response){
-				window.location.href="detalle_salida_inventario.php?<?php echo $_SERVER['QUERY_STRING'];?>";
+				window.location.href="detalle_salida_inventario.php?<?php echo $_SERVER['QUERY_STRING']; ?>";
 			}
 		});
-	}	
+	}
 }
 </script>
 <script>
@@ -105,7 +105,7 @@ function Totalizar(num){
 		var ValorIVALinea=document.getElementById('VatSum'+i);
 		var PrcDescuentoLinea=document.getElementById('DiscPrcnt'+i);
 		var CantLinea=document.getElementById('Quantity'+i);
-		
+
 		var Precio=parseFloat(PrecioLinea.value.replace(/,/g, ''));
 		var PrecioIVA=parseFloat(PrecioIVALinea.value.replace(/,/g, ''));
 		var TarifaIVA=TarifaIVALinea.value.replace(/,/g, '');
@@ -138,10 +138,10 @@ function Totalizar(num){
 function ActualizarDatos(name,id,line){//Actualizar datos asincronicamente
 	$.ajax({
 		type: "GET",
-		<?php if($type==1){?>
-		url: "registro.php?P=36&doctype=5&type=1&name="+name+"&value="+Base64.encode(document.getElementById(name+id).value)+"&line="+line+"&cardcode=<?php echo $CardCode;?>&whscode=<?php echo $Almacen;?>",
-		<?php }else{?>
-		url: "registro.php?P=36&doctype=5&type=2&name="+name+"&value="+Base64.encode(document.getElementById(name+id).value)+"&line="+line+"&id=<?php echo base64_decode($_GET['id']);?>&evento=<?php echo base64_decode($_GET['evento']);?>",
+		<?php if ($type == 1) {?>
+		url: "registro.php?P=36&doctype=5&type=1&name="+name+"&value="+Base64.encode(document.getElementById(name+id).value)+"&line="+line+"&cardcode=<?php echo $CardCode; ?>&whscode=<?php echo $Almacen; ?>",
+		<?php } else {?>
+		url: "registro.php?P=36&doctype=5&type=2&name="+name+"&value="+Base64.encode(document.getElementById(name+id).value)+"&line="+line+"&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
 		<?php }?>
 		success: function(response){
 			if(response!="Error"){
@@ -176,38 +176,38 @@ function ActualizarDatos(name,id,line){//Actualizar datos asincronicamente
 			</tr>
 		</thead>
 		<tbody>
-		<?php 
-		if($sw==1){
-			$i=1;
-			while($row=sqlsrv_fetch_array($SQL)){
-				/**** Campos definidos por el usuario ****/
-				
-				$Almacen=$row['WhsCode'];
-		?>
+		<?php
+if ($sw == 1) {
+    $i = 1;
+    while ($row = sqlsrv_fetch_array($SQL)) {
+        /**** Campos definidos por el usuario ****/
+
+        $Almacen = $row['WhsCode'];
+        ?>
 		<tr>
-			<td><?php if(($row['TreeType']!="T")&&($row['LineStatus']=="O")&&($dt_TI==0)&&($type==1)&&($Estado==1)){?><button type="button" title="Borrar linea" class="btn btn-default btn-xs" onClick="BorrarLinea(<?php echo $row['LineNum'];?>);"><i class="fa fa-trash"></i></button><?php }?></td>
-			<td><input size="20" type="text" id="ItemCode<?php echo $i;?>" name="ItemCode[]" class="form-control" readonly value="<?php echo $row['ItemCode'];?>"><input type="hidden" name="LineNum[]" id="LineNum<?php echo $i;?>" value="<?php echo $row['LineNum'];?>"></td>
-			<td><input size="50" type="text" id="ItemName<?php echo $i;?>" name="ItemName[]" class="form-control" value="<?php echo $row['ItemName'];?>" maxlength="100" onChange="ActualizarDatos('ItemName',<?php echo $i;?>,<?php echo $row['LineNum'];?>);" <?php if(($row['LineStatus']=='C')||($type==2)||($Estado==2)){echo "readonly";}?>></td>
-			<td><input size="15" type="text" id="UnitMsr<?php echo $i;?>" name="UnitMsr[]" class="form-control" readonly value="<?php echo $row['UnitMsr'];?>"></td>
-			<td><input size="15" type="text" id="Quantity<?php echo $i;?>" name="Quantity[]" class="form-control" value="<?php echo number_format($row['Quantity'],2);?>" onChange="ActualizarDatos('Quantity',<?php echo $i;?>,<?php echo $row['LineNum'];?>);" onBlur="CalcularTotal(<?php echo $i;?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if(($row['LineStatus']=='C')||($type==2)||($Estado==2)){echo "readonly";}?>></td>			
-			<td><input size="15" type="text" id="CantInicial<?php echo $i;?>" name="CantInicial[]" class="form-control" value="<?php echo number_format($row['CantInicial'],2);?>" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" readonly></td>
-			<td><input size="15" type="text" id="OnHand<?php echo $i;?>" name="OnHand[]" class="form-control" value="<?php echo number_format($row['OnHand'],2);?>" readonly></td>
-			<td><input size="50" type="text" id="FreeTxt<?php echo $i;?>" name="FreeTxt[]" class="form-control" value="<?php echo $row['FreeTxt'];?>" onChange="ActualizarDatos('FreeTxt',<?php echo $i;?>,<?php echo $row['LineNum'];?>);" maxlength="100" <?php if(($row['LineStatus']=='C')||($type==2)||($Estado==2)){echo "readonly";}?>></td>
-			<td><input size="15" type="text" id="Price<?php echo $i;?>" name="Price[]" class="form-control" value="<?php echo number_format($row['Price'],2);?>" onChange="ActualizarDatos('Price',<?php echo $i;?>,<?php echo $row['LineNum'];?>);" onBlur="CalcularTotal(<?php echo $i;?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if(($row['LineStatus']=='C')||($type==2)||($Estado==2)){echo "readonly";}?>></td>
-			<td><input size="15" type="text" id="PriceTax<?php echo $i;?>" name="PriceTax[]" class="form-control" value="<?php echo number_format($row['PriceTax'],2);?>" onBlur="CalcularTotal(<?php echo $i;?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" readonly><input type="hidden" id="TarifaIVA<?php echo $i;?>" name="TarifaIVA[]" value="<?php echo number_format($row['TarifaIVA'],0);?>"><input type="hidden" id="VatSum<?php echo $i;?>" name="VatSum[]" value="<?php echo number_format($row['VatSum'],2);?>"></td>
-			<td><input size="15" type="text" id="DiscPrcnt<?php echo $i;?>" name="DiscPrcnt[]" class="form-control" value="<?php echo number_format($row['DiscPrcnt'],2);?>" onChange="ActualizarDatos('DiscPrcnt',<?php echo $i;?>,<?php echo $row['LineNum'];?>);" onBlur="CalcularTotal(<?php echo $i;?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if(($row['LineStatus']=='C')||($type==2)||($Estado==2)){echo "readonly";}?>></td>
-			<td><input size="15" type="text" id="LineTotal<?php echo $i;?>" name="LineTotal[]" class="form-control" readonly value="<?php echo number_format($row['LineTotal'],2);?>"></td>
-			<td><input size="15" type="text" id="WhsCode<?php echo $i;?>" name="WhsCode[]" class="form-control" readonly value="<?php echo $row['WhsName'];?>"></td>
-			<td><?php if($row['Metodo']==0){?><i class="fa fa-check-circle text-info" title="Sincronizado con SAP"></i><?php }else{?><i class="fa fa-times-circle text-danger" title="Aún no enviado a SAP"></i><?php }?></td>
-		</tr>	
-		<?php 
-			$i++;}
-			echo "<script>
-			Totalizar(".($i-1).");
+			<td><?php if (($row['TreeType'] != "T") && ($row['LineStatus'] == "O") && ($dt_TI == 0) && ($type == 1) && ($Estado == 1)) {?><button type="button" title="Borrar linea" class="btn btn-default btn-xs" onClick="BorrarLinea(<?php echo $row['LineNum']; ?>);"><i class="fa fa-trash"></i></button><?php }?></td>
+			<td><input size="20" type="text" id="ItemCode<?php echo $i; ?>" name="ItemCode[]" class="form-control" readonly value="<?php echo $row['ItemCode']; ?>"><input type="hidden" name="LineNum[]" id="LineNum<?php echo $i; ?>" value="<?php echo $row['LineNum']; ?>"></td>
+			<td><input size="50" type="text" id="ItemName<?php echo $i; ?>" name="ItemName[]" class="form-control" value="<?php echo $row['ItemName']; ?>" maxlength="100" onChange="ActualizarDatos('ItemName',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if (($row['LineStatus'] == 'C') || ($type == 2) || ($Estado == 2)) {echo "readonly";}?>></td>
+			<td><input size="15" type="text" id="UnitMsr<?php echo $i; ?>" name="UnitMsr[]" class="form-control" readonly value="<?php echo $row['UnitMsr']; ?>"></td>
+			<td><input size="15" type="text" id="Quantity<?php echo $i; ?>" name="Quantity[]" class="form-control" value="<?php echo number_format($row['Quantity'], 2); ?>" onChange="ActualizarDatos('Quantity',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if (($row['LineStatus'] == 'C') || ($type == 2) || ($Estado == 2)) {echo "readonly";}?>></td>
+			<td><input size="15" type="text" id="CantInicial<?php echo $i; ?>" name="CantInicial[]" class="form-control" value="<?php echo number_format($row['CantInicial'], 2); ?>" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" readonly></td>
+			<td><input size="15" type="text" id="OnHand<?php echo $i; ?>" name="OnHand[]" class="form-control" value="<?php echo number_format($row['OnHand'], 2); ?>" readonly></td>
+			<td><input size="50" type="text" id="FreeTxt<?php echo $i; ?>" name="FreeTxt[]" class="form-control" value="<?php echo $row['FreeTxt']; ?>" onChange="ActualizarDatos('FreeTxt',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" maxlength="100" <?php if (($row['LineStatus'] == 'C') || ($type == 2) || ($Estado == 2)) {echo "readonly";}?>></td>
+			<td><input size="15" type="text" id="Price<?php echo $i; ?>" name="Price[]" class="form-control" value="<?php echo number_format($row['Price'], 2); ?>" onChange="ActualizarDatos('Price',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if (($row['LineStatus'] == 'C') || ($type == 2) || ($Estado == 2)) {echo "readonly";}?>></td>
+			<td><input size="15" type="text" id="PriceTax<?php echo $i; ?>" name="PriceTax[]" class="form-control" value="<?php echo number_format($row['PriceTax'], 2); ?>" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" readonly><input type="hidden" id="TarifaIVA<?php echo $i; ?>" name="TarifaIVA[]" value="<?php echo number_format($row['TarifaIVA'], 0); ?>"><input type="hidden" id="VatSum<?php echo $i; ?>" name="VatSum[]" value="<?php echo number_format($row['VatSum'], 2); ?>"></td>
+			<td><input size="15" type="text" id="DiscPrcnt<?php echo $i; ?>" name="DiscPrcnt[]" class="form-control" value="<?php echo number_format($row['DiscPrcnt'], 2); ?>" onChange="ActualizarDatos('DiscPrcnt',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if (($row['LineStatus'] == 'C') || ($type == 2) || ($Estado == 2)) {echo "readonly";}?>></td>
+			<td><input size="15" type="text" id="LineTotal<?php echo $i; ?>" name="LineTotal[]" class="form-control" readonly value="<?php echo number_format($row['LineTotal'], 2); ?>"></td>
+			<td><input size="15" type="text" id="WhsCode<?php echo $i; ?>" name="WhsCode[]" class="form-control" readonly value="<?php echo $row['WhsName']; ?>"></td>
+			<td><?php if ($row['Metodo'] == 0) {?><i class="fa fa-check-circle text-info" title="Sincronizado con SAP"></i><?php } else {?><i class="fa fa-times-circle text-danger" title="Aún no enviado a SAP"></i><?php }?></td>
+		</tr>
+		<?php
+$i++;}
+    echo "<script>
+			Totalizar(" . ($i - 1) . ");
 			</script>";
-		}
-		?>
-		<?php if($Estado==1){?>
+}
+?>
+		<?php if ($Estado == 1) {?>
 		<tr>
 			<td>&nbsp;</td>
 			<td><input size="20" type="text" id="ItemCodeNew" name="ItemCodeNew" class="form-control"></td>
@@ -239,7 +239,7 @@ function CalcularTotal(line){
 	var PrcDescuentoLinea=document.getElementById('DiscPrcnt'+line);
 	var CantLinea=document.getElementById('Quantity'+line);
 	var Linea=document.getElementById('LineNum'+line);
-	
+
 	if(CantLinea.value>0){
 		//if(parseFloat(PrecioLinea.value)>0){
 			//alert('Info');
@@ -254,7 +254,7 @@ function CalcularTotal(line){
 			var SubTotalLinea=PrecioIVA*Cant;
 			var PrcDesc=parseFloat(PrcDescuentoLinea.value.replace(/,/g, ''));
 			var TotalDesc=(PrcDesc*SubTotalLinea)/100;
-			
+
 			TotalLinea.value=number_format(SubTotalLinea-TotalDesc,2);
 		//}else{
 			//alert('Ult');
@@ -262,25 +262,25 @@ function CalcularTotal(line){
 			//var Cant=CantLinea.value.replace(/,/g, '');
 			//TotalLinea.value=parseFloat(number_format(Ult*Cant,2));
 		//}
-		Totalizar(<?php if(isset($i)){echo $i-1;}else{echo 0;}?>);
-		//window.parent.document.getElementById('TotalSolicitud').value='500';	
+		Totalizar(<?php if (isset($i)) {echo $i - 1;} else {echo 0;}?>);
+		//window.parent.document.getElementById('TotalSolicitud').value='500';
 	}else{
 		alert("No puede solicitar cantidad en 0. Si ya no va a solicitar este articulo, borre la linea.");
 		CantLinea.value="1.00";
 		//ActualizarDatos(1,line,Linea.value);
 	}
-	
+
 }
 </script>
 <script>
 	 $(document).ready(function(){
 		 $(".alkin").on('click', function(){
 				 $('.ibox-content').toggleClass('sk-loading');
-			}); 
+			});
 		  $(".select2").select2();
 		 var options = {
 			url: function(phrase) {
-				return "ajx_buscar_datos_json.php?type=12&data="+phrase+"&whscode=<?php echo $Almacen;?>&tipodoc=3";
+				return "ajx_buscar_datos_json.php?type=12&data="+phrase+"&whscode=<?php echo $Almacen; ?>&tipodoc=3";
 			},
 			getValue: "IdArticulo",
 			requestDelay: 400,
@@ -317,25 +317,25 @@ function CalcularTotal(line){
 					$("#WhsCodeNew").val(Almacen);
 					$.ajax({
 						type: "GET",
-						<?php if($type==1){?>
-						url: "registro.php?P=35&doctype=9&item="+IdArticulo+"&whscode="+CodAlmacen+"&cardcode=<?php echo $CardCode;?>",
-						<?php }else{?>
-						url: "registro.php?P=35&doctype=10&item="+IdArticulo+"&whscode="+CodAlmacen+"&cardcode=0&id=<?php echo base64_decode($_GET['id']);?>&evento=<?php echo base64_decode($_GET['evento']);?>",
+						<?php if ($type == 1) {?>
+						url: "registro.php?P=35&doctype=9&item="+IdArticulo+"&whscode="+CodAlmacen+"&cardcode=<?php echo $CardCode; ?>",
+						<?php } else {?>
+						url: "registro.php?P=35&doctype=10&item="+IdArticulo+"&whscode="+CodAlmacen+"&cardcode=0&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
 						<?php }?>
 						success: function(response){
-							window.location.href="detalle_salida_inventario.php?<?php echo $_SERVER['QUERY_STRING'];?>";
+							window.location.href="detalle_salida_inventario.php?<?php echo $_SERVER['QUERY_STRING']; ?>";
 						}
 					});
 				}
 			}
 		};
-		<?php if($sw==1&&$Estado==1&&PermitirFuncion(1205)){?> 
+		<?php if ($sw == 1 && $Estado == 1 && PermitirFuncion(1205)) {?>
 		$("#ItemCodeNew").easyAutocomplete(options);
 	 	<?php }?>
 	});
 </script>
 </body>
 </html>
-<?php 
-	sqlsrv_close($conexion);
+<?php
+sqlsrv_close($conexion);
 ?>
