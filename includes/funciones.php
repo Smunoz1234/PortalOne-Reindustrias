@@ -1496,3 +1496,18 @@ function InsertarLogWS($respuesta = '', $cuerpo = '', $detalles = '', $procedimi
         EjecutarSP('sp_tbl_LogWS', $params);
     }
 }
+
+// Trabajando con cookies. SMM, 02/09/2022
+function setCookiePHP($cname, $cvalue, $exdays)
+{
+    setcookie($cname, $cvalue, time() + (86400 * $exdays), "/"); // 86400 = 1 day
+}
+
+function getCookiePHP($cname)
+{
+    if (isset($_COOKIE[$cname])) {
+        return $_COOKIE[$cname];
+    }
+    return "";
+}
+// Tomado de https://www.w3schools.com/php/php_cookies.asp, 02/09/2022

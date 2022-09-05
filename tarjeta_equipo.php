@@ -1109,39 +1109,51 @@ if ($edit == 1 && $hasRowsLlamadaServicio === true) {?>
 												<thead>
 													<tr>
 														<th>Número de llamada</th>
+														<th>Estado</th>
 														<th>Artículos/Costos</th>
 														<th>Fecha de creación</th>
+														<th>Origen</th> <!-- SMM, 03/09/2022 -->
 														<th>Tipo Problema</th>
+														<th>Subtipo Problema</th> <!-- SMM, 03/09/2022 -->
 														<th>Asunto</th>
 														<th>Número de artículo</th>
 														<th>Número de serie</th>
 														<th>Nombre del cliente</th>
-														<th>Estado</th>
+
 													</tr>
 												</thead>
 												<tbody>
 													<?php
 while ($row_LlamadaServicio = sqlsrv_fetch_array($SQL_LlamadasServicio)) {?>
 													<tr class="gradeX">
-														<td class="text-center">
+														<td class="text-left">
 															<a href="llamada_servicio.php?id=<?php echo base64_encode($row_LlamadaServicio['ID_LlamadaServicio']); ?>&tl=1&pag=<?php echo base64_encode('gestionar_llamadas_servicios.php'); ?>" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i>
 																<?php echo $row_LlamadaServicio['DocNum']; ?>
 															</a>
 														</td>
-														<td>
-															<a class="btn btn-primary btn-xs" id="btnPreCostos" name="btnPreCostos" onClick="MostrarCostos('<?php echo $row_LlamadaServicio['ID_LlamadaServicio']; ?>');"><i class="fa fa-money"></i> Previsualizar Precios</a>
-														</td>
-														<td><?php echo $row_LlamadaServicio['FechaHoraCreacionLLamada']->format('Y-m-d h:m:i'); ?></td>
-														<td><?php echo $row_LlamadaServicio['DeTipoProblemaLlamada']; ?></td>
-														<td><?php echo $row_LlamadaServicio['AsuntoLlamada']; ?></td>
-														<td><?php echo $row_LlamadaServicio['ItemCode']; ?></td>
-														<td><?php echo $row_LlamadaServicio['SerialFabricante']; ?></td>
-														<td><?php echo $row_LlamadaServicio['CardName']; ?></td>
+
 														<td>
 															<span <?php if ($row_LlamadaServicio['IdEstadoLlamada'] == '-3') {echo "class='label label-info'";} elseif ($row_LlamadaServicio['IdEstadoLlamada'] == '-2') {echo "class='label label-warning'";} else {echo "class='label label-danger'";}?>>
 																<?php echo $row_LlamadaServicio['DeEstadoLlamada']; ?>
 															</span>
 														</td>
+
+														<td>
+															<a class="btn btn-primary btn-xs" id="btnPreCostos" name="btnPreCostos" onClick="MostrarCostos('<?php echo $row_LlamadaServicio['ID_LlamadaServicio']; ?>');"><i class="fa fa-money"></i> Previsualizar Precios</a>
+														</td>
+														<td><?php echo $row_LlamadaServicio['FechaHoraCreacionLLamada']->format('Y-m-d h:m:i'); ?></td>
+
+														<td><?php echo $row_LlamadaServicio["DeOrigenLlamada"]; ?></td>
+
+														<td><?php echo $row_LlamadaServicio['DeTipoProblemaLlamada']; ?></td>
+
+														<td><?php echo $row_LlamadaServicio["DeSubTipoProblemaLlamada"]; ?></td>
+
+														<td><?php echo $row_LlamadaServicio['AsuntoLlamada']; ?></td>
+														<td><?php echo $row_LlamadaServicio['ItemCode']; ?></td>
+														<td><?php echo $row_LlamadaServicio['SerialFabricante']; ?></td>
+														<td><?php echo $row_LlamadaServicio['CardName']; ?></td>
+
 													</tr>
 													<?php }?>
 												</tbody>

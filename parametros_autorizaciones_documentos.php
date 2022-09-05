@@ -58,6 +58,7 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
                 "'" . $_POST['Condiciones'] . "'",
                 $Perfiles,
                 "'" . $_POST['IdUsuarioAutorizacion'] . "'", // SMM, 26/08/2022
+                "'" . md5($_POST['PassUsuarioAutorizacion']) . "'", // SMM, 26/08/2022
                 $Usuario, // @id_usuario_actualizacion
                 $FechaHora, // @fecha_actualizacion
                 $FechaHora, // @hora_actualizacion

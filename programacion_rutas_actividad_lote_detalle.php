@@ -15,6 +15,12 @@ $FechaInicial = isset($_POST['FechaInicio']) ? $_POST['FechaInicio'] : "";
 $FechaFinal = isset($_POST['FechaFinal']) ? $_POST['FechaFinal'] : "";
 $Type = isset($_POST['type']) ? $_POST['type'] : "";
 
+// SMM, 02/09/2022
+$FiltrarActividades = "NULL";
+if (getCookiePHP("FiltrarActividades") == "true") {
+	$FiltrarActividades = "1";
+}
+
 //Consultamos la lista de OT pendientes
 $ParamOT = array(
     $Type,
@@ -25,6 +31,7 @@ $ParamOT = array(
     "'" . $NomSucursal . "'",
     "'" . FormatoFecha($FechaInicial) . "'",
     "'" . FormatoFecha($FechaFinal) . "'",
+	$FiltrarActividades, // SMM, 02/09/2022
     "''",
     "''",
     "''",

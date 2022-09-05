@@ -113,16 +113,71 @@ if (isset($_GET['BuscarDato']) && $_GET['BuscarDato'] != "") {
     $sw = 1;
 }
 
+$Campos = "
+	   [IdTarjetaEquipo]
+      ,[CardCode]
+      ,[CardName]
+      ,[TelefonoCliente]
+      ,[EmailCliente]
+      ,[SerialFabricante]
+      ,[SerialInterno]
+      ,[ItemCode]
+      ,[ItemName]
+      ,[CardCodeCompras]
+      ,[CardNameCompras]
+      ,[DocNumEntrega]
+      ,[DocNumFactura]
+      ,[Calle]
+      ,[CodigoPostal]
+      ,[Barrio]
+      ,[Ciudad]
+      ,[Distrito]
+      ,[Pais]
+      ,[CDU_Marca]
+      ,[CDU_Linea]
+      ,[CDU_DeAno]
+      ,[CDU_Concesionario]
+      ,[CDU_Color]
+      ,[CDU_Cilindraje]
+      ,[CDU_FechaUlt_CambAceite]
+      ,[CDU_FechaProx_CambAceite]
+      ,[CDU_FechaUlt_Mant]
+      ,[CDU_FechaProx_Mant]
+      ,[CDU_FechaMatricula]
+      ,[CDU_FechaUlt_CambLlantas]
+      ,[CDU_FechaProx_CambLlantas]
+      ,[CDU_Fecha_SOAT]
+      ,[CDU_Fecha_Tecno]
+      ,[CDU_FechaUlt_AlinBalan]
+      ,[CDU_FechaProx_AlinBalan]
+      ,[CDU_TipoServicio]
+      ,[CDU_FechaFactura]
+      ,[CDU_Novedad]
+      ,[CDU_FechaAgenda]
+      ,[CDU_SedeVenta]
+      ,[UsuarioCreacion]
+      ,[FechaCreacion]
+      ,[HoraCreacion]
+      ,[UsuarioActualizacion]
+      ,[FechaActualizacion]
+      ,[HoraActualizacion]
+";
+
 if ($sw == 1) {
-    $Cons = "Select * From uvw_Sap_tbl_TarjetasEquipos Where $Filtro ORDER BY IdTarjetaEquipo DESC";
+    $Cons = "Select $Campos,[TipoEquipo],[CodEstado] From uvw_Sap_tbl_TarjetasEquipos Where $Filtro ORDER BY IdTarjetaEquipo DESC";
     $SQL = sqlsrv_query($conexion, $Cons);
+
 } else {
-    $Cons = "Select TOP 100 * From uvw_Sap_tbl_TarjetasEquipos Where $Filtro ORDER BY IdTarjetaEquipo DESC";
+    $Cons = "Select TOP 100 $Campos,[TipoEquipo],[CodEstado] From uvw_Sap_tbl_TarjetasEquipos Where $Filtro ORDER BY IdTarjetaEquipo DESC";
     $SQL = sqlsrv_query($conexion, $Cons);
 }
+
 //echo $Cons;
 
+// SMM, 03/09/2022
+$Cons2 = "SELECT $Campos FROM uvw_Sap_tbl_TarjetasEquipos WHERE $Filtro ORDER BY IdTarjetaEquipo DESC";
 ?>
+
 <!DOCTYPE html>
 <html><!-- InstanceBegin template="/Templates/PlantillaPrincipal.dwt.php" codeOutsideHTMLIsLocked="false" -->
 
@@ -227,7 +282,7 @@ if ($sw == 1) {
 
 						<div class="form-group">
 							<div class="col-lg-10">
-								<a href="exportar_excel.php?exp=20&b64=0&Cons=<?php echo $Cons; ?>">
+								<a href="exportar_excel.php?exp=20&b64=0&Cons=<?php echo $Cons2; ?>" target="_blank">
 									<img src="css/exp_excel.png" width="50" height="30" alt="Exportar a Excel" title="Exportar a Excel"/>
 								</a>
 							</div>
@@ -237,7 +292,7 @@ if ($sw == 1) {
 			</div>
 		  </div>
          <br>
-			 <?php //echo $Cons;?>
+			 <?php //echo $Cons2;?>
           <div class="row">
            <div class="col-lg-12">
 			    <div class="ibox-content">

@@ -96,6 +96,12 @@ if ($sw == 1) {
 
     $SQL_Actividad = EjecutarSP("sp_ConsultarDatosCalendarioRutasRecargar", $ParamCons);
 
+    // SMM, 02/09/2022
+    $FiltrarActividades = "NULL";
+    if (getCookiePHP("FiltrarActividades") == "true") {
+        $FiltrarActividades = "1";
+    }
+
     //Consultamos la lista de OT pendientes
     $ParamOT = array(
         "1",
@@ -106,6 +112,7 @@ if ($sw == 1) {
         "'" . $NomSucursal . "'",
         "'" . FormatoFecha($FechaInicial) . "'",
         "'" . FormatoFecha($FechaFinal) . "'",
+        $FiltrarActividades, // SMM, 02/09/2022
     );
 
     // Procedimiento modificado, SMM 07/02/2022
@@ -349,17 +356,36 @@ if ($Sede != "") {$j = 0;
 							</div>
 						</div>
 						<div class="form-row">
-							<div class="form-group col-lg-3">
+							<div class="form-group col-lg-8">
 								<label class="form-label">Visualización</label>
-								<div class="input-group">
-									<label class="switcher">
-										<input type="checkbox" class="switcher-input" id="chkDatesAboveResources" checked="checked">
-										<span class="switcher-indicator">
-										<span class="switcher-yes"></span>
-										<span class="switcher-no"></span>
-										</span>
-										<span class="switcher-label">Mostrar fechas arriba de los técnicos</span>
-									</label>
+								<div class="row">
+									<div class="col-lg-4">
+										<div class="input-group">
+											<label class="switcher">
+												<input type="checkbox" class="switcher-input" id="chkDatesAboveResources" checked="checked">
+												<span class="switcher-indicator">
+													<span class="switcher-yes"></span>
+													<span class="switcher-no"></span>
+												</span>
+												<span class="switcher-label">Mostrar fechas arriba de los técnicos</span>
+											</label>
+										</div>
+									</div>
+
+									<!-- SMM, 02/09/2022 -->
+									<div class="col-lg-4">
+										<div class="input-group">
+											<label class="switcher">
+												<input type="checkbox" class="switcher-input" id="chkFiltrarActividades">
+												<span class="switcher-indicator">
+													<span class="switcher-yes"></span>
+													<span class="switcher-no"></span>
+												</span>
+												<span class="switcher-label">Mostrar OTs programadas</span>
+											</label>
+										</div>
+									</div>
+									<!-- Hasta aquí, 02/09/2022 -->
 								</div>
 							</div>
 						</div>
@@ -716,8 +742,26 @@ $(document).ready(function() {
 		}
 	});
 
+	// SMM, 02/09/2022
+	if(getCookie("FiltrarActividades") === "false") {
+		$("#chkFiltrarActividades").prop("checked", false);
+	} else if(getCookie("FiltrarActividades") === "true") {
+		$("#chkFiltrarActividades").prop("checked", true);
+	}
+
+	$("#chkFiltrarActividades").change(function() {
+		if($('#chkFiltrarActividades').prop('checked')) {
+			setCookie("FiltrarActividades", "true", 30);
+			alert("Recuerde que debe recargar la vista con el botón \"Filtrar datos\".");
+		} else {
+			setCookie("FiltrarActividades", "false", 30);
+			alert("Recuerde que debe recargar la vista con el botón \"Filtrar datos\".");
+		}
+	});
+	// Hasta aquí, 02/09/2022
 });
 </script>
+
 <script>
 function RefresarCalendario(){
 	blockUI();

@@ -54,6 +54,7 @@ if($sw==1){
 	$row=sqlsrv_fetch_array($SQL);
 }
 ?>
+
 <!DOCTYPE html>
 <html><!-- InstanceBegin template="/Templates/PlantillaPrincipal.dwt.php" codeOutsideHTMLIsLocked="false" -->
 
@@ -217,8 +218,8 @@ function ConsultarCant(){
 									<input name="FechaFinal" type="text" class="input-sm form-control" id="FechaFinal" placeholder="Fecha final" value="<?php echo $FechaFinal;?>" />
 								</div>
 							</div>
-							<label class="col-lg-1 control-label">Sucursal <span class="text-danger">*</span></label>
-							<div class="col-lg-2">
+							<label class="col-lg-1 control-label">Sede <span class="text-danger">*</span></label>
+							<div class="col-lg-3">
 								<select name="Sucursal" class="form-control" id="Sucursal" required>
 									<option value="">Seleccione...</option>
 								  <?php	while($row_Sucursal=sqlsrv_fetch_array($SQL_Sucursal)){?>
@@ -227,7 +228,7 @@ function ConsultarCant(){
 								</select>
 							</div>
 							<label class="col-lg-1 control-label">Serie <span class="text-danger">*</span></label>
-							<div class="col-lg-2">
+							<div class="col-lg-3">
 								<select name="Series" class="form-control" id="Series" required>
 										<option value="">Seleccione...</option>
 								  <?php if($sw==1){ 
@@ -240,7 +241,7 @@ function ConsultarCant(){
 						</div>
 					 	<div class="form-group">
 							<label class="col-lg-1 control-label">Estado OT <span class="text-danger">*</span></label>
-							<div class="col-lg-2">
+							<div class="col-lg-3">
 								<select name="EstadoLlamada" class="form-control" id="EstadoLlamada" required>
 										<option value="">Seleccione...</option>
 								  <?php while($row_EstadoLlamada=sqlsrv_fetch_array($SQL_EstadoLlamada)){?>
@@ -248,8 +249,7 @@ function ConsultarCant(){
 								  <?php }?>
 								</select>
 							</div>
-							<div class="col-lg-7"></div>
-							<div class="col-lg-2">
+							<div class="col-lg-8">
 								<button type="submit" class="btn btn-outline btn-success pull-right"><i class="fa fa-search"></i> Buscar</button>
 							</div>
 						</div>

@@ -16,6 +16,12 @@ $FechaInicio = isset($_GET['FechaInicio']) ? $_GET['FechaInicio'] : "";
 $FechaFinal = isset($_GET['FechaFinal']) ? $_GET['FechaFinal'] : "";
 $Cliente = (isset($_GET['Cliente']) && $_GET['Cliente'] != "") ? $_GET['Cliente'] : "";
 
+// SMM, 02/09/2022
+$FiltrarActividades = "NULL";
+if (getCookiePHP("FiltrarActividades") == "true") {
+    $FiltrarActividades = "1";
+}
+
 $ParamOT = array(
     "2",
     "'" . $_SESSION['CodUser'] . "'",
@@ -25,6 +31,7 @@ $ParamOT = array(
     "'" . utf8_encode(base64_decode($SucursalCliente)) . "'",
     "'" . FormatoFecha($FechaInicio) . "'",
     "'" . FormatoFecha($FechaFinal) . "'",
+    $FiltrarActividades, // SMM, 02/09/2022
     "'" . $DocNum . "'",
     "'" . $Series . "'",
     "'" . $Servicios . "'",

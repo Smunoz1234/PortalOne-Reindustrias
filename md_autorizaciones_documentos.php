@@ -143,7 +143,7 @@ if ($edit == 1 && $id != "") {
 
 				<br><br><br><br>
 				<div class="form-group">
-					<div class="col-md-12">
+					<div class="col-md-6">
 						<label class="control-label">Usuario autorización SAP B1 <span class="text-danger">*</span></label>
 						<select name="IdUsuarioAutorizacion" class="form-control select2" id="IdUsuarioAutorizacion" required>
 							<option value="">Seleccione...</option>
@@ -151,6 +151,11 @@ if ($edit == 1 && $id != "") {
 								<option value="<?php echo $row_UsuarioSAP['USERID']; ?>" <?php if ((isset($row['IdUsuarioAutorizacionSAPB1'])) && (strcmp($row_UsuarioSAP['USERID'], $row['IdUsuarioAutorizacionSAPB1']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_UsuarioSAP['USER_CODE']; ?></option>
 							<?php }?>
 						</select>
+					</div>
+					<div class="col-md-6">
+						<label class="control-label">Password usuario SAP B1 <span class="text-danger">*</span></label>
+						<input type="password" class="form-control" name="PassUsuarioAutorizacion" id="PassUsuarioAutorizacion" required autocomplete="off" placeholder="<?php if ($edit == 1) {echo "Cambiar password";}?>">
+						<a href="#" id="aVerPass" onClick="javascript:MostrarPassword();" title="Mostrar contrase&ntilde;a" class="btn btn-default btn-xs"><span id="VerPass" class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a>
 					</div>
 				</div>
 
@@ -425,5 +430,21 @@ function Validar(doc, id){
 			});
 		}
 	});
+}
+
+// SMM, 05/09/2022
+function MostrarPassword(){
+	let id = "PassUsuarioAutorizacion";
+	let e = document.getElementById(id).getAttribute("type");
+
+	if(e == "password"){
+		document.getElementById(id).setAttribute('type','text');
+		document.getElementById('VerPass').setAttribute('class','glyphicon glyphicon-eye-close');
+		document.getElementById('aVerPass').setAttribute('title','Ocultar contrase'+String.fromCharCode(241)+'a');
+	}else{
+		document.getElementById(id).setAttribute('type','password');
+		document.getElementById('VerPass').setAttribute('class','glyphicon glyphicon-eye-open');
+		document.getElementById('aVerPass').setAttribute('title','Mostrar contrase'+String.fromCharCode(241)+'a');
+	}
 }
 </script>
