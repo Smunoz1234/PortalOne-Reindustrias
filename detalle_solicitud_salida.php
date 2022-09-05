@@ -2,6 +2,19 @@
 require_once "includes/conexion.php";
 PermitirAcceso(1202);
 
+// Dimensiones, SMM 31/08/2022
+$DimSeries = intval(ObtenerVariable("DimensionSeries"));
+$SQL_Dimensiones = Seleccionar('uvw_Sap_tbl_Dimensiones', '*', "DimActive='Y'");
+
+// Pruebas, SMM 31/08/2022
+// $SQL_Dimensiones = Seleccionar('uvw_Sap_tbl_Dimensiones', '*', 'DimCode IN (1,2)');
+
+$array_Dimensiones = [];
+while ($row_Dimension = sqlsrv_fetch_array($SQL_Dimensiones)) {
+    array_push($array_Dimensiones, $row_Dimension);
+}
+// Hasta aquí, SMM 31/08/2022
+
 $sw = 0;
 //$Proyecto="";
 $Almacen = "";
@@ -62,23 +75,107 @@ if (isset($_GET['id']) && ($_GET['id'] != "")) {
 		vertical-align: middle;
 	}
 </style>
+
 <script>
-function BorrarLinea(LineNum){
+var json=[];
+var cant=0;
+
+function BorrarLinea(){
 	if(confirm(String.fromCharCode(191)+'Est'+String.fromCharCode(225)+' seguro que desea eliminar este item? Este proceso no se puede revertir.')){
 		$.ajax({
 			type: "GET",
 			<?php if ($type == 1) {?>
-			url: "includes/procedimientos.php?type=9&edit=<?php echo $type; ?>&linenum="+LineNum+"&cardcode=<?php echo $CardCode; ?>",
+			url: "includes/procedimientos.php?type=9&edit=<?php echo $type; ?>&linenum="+json+"&cardcode=<?php echo $CardCode; ?>",
 			<?php } else {?>
-			url: "includes/procedimientos.php?type=9&edit=<?php echo $type; ?>&linenum="+LineNum+"&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
+			url: "includes/procedimientos.php?type=9&edit=<?php echo $type; ?>&linenum="+json+"&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
 			<?php }?>
 			success: function(response){
 				window.location.href="detalle_solicitud_salida.php?<?php echo $_SERVER['QUERY_STRING']; ?>";
+				console.log(response);
+			},
+			error: function(error){
+				console.error(error.responseText);
 			}
 		});
 	}
 }
+
+function DuplicarLinea(){
+	if(confirm(String.fromCharCode(191)+'Est'+String.fromCharCode(225)+' seguro que desea duplicar estos registros?')){
+		$.ajax({
+			type: "GET",
+			<?php if ($type == 1) {?>
+			url: "includes/procedimientos.php?type=55&edit=<?php echo $type; ?>&linenum="+json+"&cardcode=<?php echo $CardCode; ?>",
+			<?php } else {?>
+			url: "includes/procedimientos.php?type=55&edit=<?php echo $type; ?>&linenum="+json+"&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
+			<?php }?>
+			success: function(response){
+				window.location.href="detalle_solicitud_salida.php?<?php echo $_SERVER['QUERY_STRING']; ?>";
+			},
+			error: function(error) {
+				console.log(error.responseText);
+			}
+		});
+	}
+}
+
+function Seleccionar(ID){
+	var btnBorrarLineas=document.getElementById('btnBorrarLineas');
+	var btnDuplicarLineas=document.getElementById('btnDuplicarLineas');
+	var Check = document.getElementById('chkSel'+ID).checked;
+	var sw=-1;
+	json.forEach(function(element,index){
+		// console.log(element,index);
+		// console.log(json[index]);
+
+		if(json[index]==ID){
+			sw=index;
+		}
+
+	});
+
+	if(sw>=0){
+		json.splice(sw, 1);
+		cant--;
+	}else if(Check){
+		json.push(ID);
+		cant++;
+	}
+	if(cant>0){
+		$("#btnBorrarLineas").prop('disabled', false);
+		$("#btnDuplicarLineas").prop('disabled', false);
+	}else{
+		$("#btnBorrarLineas").prop('disabled', true);
+		$("#btnDuplicarLineas").prop('disabled', true);
+	}
+
+	// console.log(json);
+}
+
+function SeleccionarTodos(){
+	var Check = document.getElementById('chkAll').checked;
+	if(Check==false){
+		json=[];
+		cant=0;
+		$("#btnBorrarLineas").prop('disabled', true);
+		$("#btnDuplicarLineas").prop('disabled', true);
+	}
+	$(".chkSel:not(:disabled)").prop("checked", Check);
+
+	if(Check){
+		$(".chkSel:not(:disabled)").trigger('change');
+	}
+}
+
+function ConsultarArticulo(articulo){
+	if(articulo!=""){
+		self.name='opener';
+		remote=open('articulos.php?id='+articulo+'&ext=1&tl=1','remote','location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
+		remote.focus();
+	}
+}
 </script>
+
 <script>
 function Totalizar(num){
 	//alert(num);
@@ -149,7 +246,14 @@ function ActualizarDatos(name,id,line){//Actualizar datos asincronicamente
 	<table width="100%" class="table table-bordered">
 		<thead>
 			<tr>
-				<th>&nbsp;</th>
+				<!-- SMM, 31/08/2022 -->
+				<th class="text-center form-inline w-150">
+					<div class="checkbox checkbox-success"><input type="checkbox" id="chkAll" value="" onChange="SeleccionarTodos();" title="Seleccionar todos"><label></label></div>
+					<button type="button" id="btnBorrarLineas" title="Borrar lineas" class="btn btn-danger btn-xs" disabled onClick="BorrarLinea();"><i class="fa fa-trash"></i></button>
+					<button type="button" id="btnDuplicarLineas" title="Duplicar lineas" class="btn btn-success btn-xs" disabled onClick="DuplicarLinea();"><i class="fa fa-copy"></i></button>
+				</th>
+				<!-- Hasta aquí, 31/08/2022 -->
+
 				<th>Código artículo</th>
 				<th>Nombre artículo</th>
 				<th>Unidad</th>
@@ -157,6 +261,13 @@ function ActualizarDatos(name,id,line){//Actualizar datos asincronicamente
 				<th>Cant. Inicial</th>
 				<th>Cant. Pendiente</th>
 				<th>Stock almacén</th>
+
+				<!-- Dimensiones dinámicas, SMM 31/08/2022 -->
+				<?php foreach ($array_Dimensiones as &$dim) {?>
+					<th><?php echo $dim["DimDesc"]; ?></th>
+				<?php }?>
+				<!-- Dimensiones dinámicas, hasta aquí -->
+
 				<th>Texto libre</th>
 				<th>Precio</th>
 				<th>Precio con IVA</th>
@@ -176,7 +287,13 @@ if ($sw == 1) {
         $Almacen = $row['WhsCode'];
         ?>
 		<tr>
-			<td><?php if (($row['TreeType'] != "T") && ($row['LineStatus'] == "O") && ($Estado == 1) && (PermitirFuncion(1201))) {?><button type="button" title="Borrar linea" class="btn btn-default btn-xs" onClick="BorrarLinea(<?php echo $row['LineNum']; ?>);"><i class="fa fa-trash"></i></button><?php }?></td>
+			<!-- SMM, 31/08/2022 -->
+			<td class="text-center form-inline w-150">
+				<div class="checkbox checkbox-success"><input type="checkbox" class="chkSel" id="chkSel<?php echo $row['LineNum']; ?>" value="" onChange="Seleccionar('<?php echo $row['LineNum']; ?>');" aria-label="Single checkbox One" <?php if (($row['LineStatus'] == "C") && ($type == 1)) {echo "disabled='disabled'";}?>><label></label></div>
+				<button type="button" class="btn btn-success btn-xs" onClick="ConsultarArticulo('<?php echo base64_encode($row['ItemCode']); ?>');" title="Consultar Articulo"><i class="fa fa-search"></i></button>
+			</td>
+			<!-- Hasta aquí, 31/08/2022 -->
+
 			<td><input size="20" type="text" id="ItemCode<?php echo $i; ?>" name="ItemCode[]" class="form-control" readonly value="<?php echo $row['ItemCode']; ?>"><input type="hidden" name="LineNum[]" id="LineNum<?php echo $i; ?>" value="<?php echo $row['LineNum']; ?>"></td>
 			<td><input size="50" type="text" id="ItemName<?php echo $i; ?>" name="ItemName[]" class="form-control" value="<?php echo $row['ItemName']; ?>" maxlength="100" onChange="ActualizarDatos('ItemName',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if ($row['LineStatus'] == 'C' || $Estado == 2 || (!PermitirFuncion(1201))) {echo "readonly";}?>></td>
 			<td><input size="15" type="text" id="UnitMsr<?php echo $i; ?>" name="UnitMsr[]" class="form-control" readonly value="<?php echo $row['UnitMsr']; ?>"></td>
@@ -184,6 +301,25 @@ if ($sw == 1) {
 			<td><input size="15" type="text" id="CantInicial<?php echo $i; ?>" name="CantInicial[]" class="form-control" value="<?php echo number_format($row['CantInicial'], 2); ?>" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" readonly></td>
 			<td><input size="15" type="text" id="OpenQty<?php echo $i; ?>" name="OpenQty[]" class="form-control" value="<?php echo number_format($row['OpenQty'], 2); ?>" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" readonly></td>
 			<td><input size="15" type="text" id="OnHand<?php echo $i; ?>" name="OnHand[]" class="form-control" value="<?php echo number_format($row['OnHand'], 2); ?>" readonly></td>
+
+			<!-- Dimensiones dinámicas, SMM 31/08/2022 -->
+			<?php foreach ($array_Dimensiones as &$dim) {?>
+				<?php $DimCode = intval($dim['DimCode']);?>
+				<?php $OcrId = ($DimCode == 1) ? "" : $DimCode;?>
+
+				<td>
+					<select id="OcrCode<?php echo $OcrId . $i; ?>" name="OcrCode<?php echo $OcrId; ?>[]" class="form-control select2" onChange="ActualizarDatos('OcrCode<?php echo $OcrId; ?>',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402))) {echo "disabled='disabled'";}?>>
+						<option value="">(NINGUNO)</option>
+
+						<?php $SQL_Dim = Seleccionar('uvw_Sap_tbl_DimensionesReparto', '*', "DimCode=$DimCode");?>
+						<?php while ($row_Dim = sqlsrv_fetch_array($SQL_Dim)) {?>
+							<option value="<?php echo $row_Dim['OcrCode']; ?>" <?php if ((isset($row["OcrCode$OcrId"])) && (strcmp($row_Dim['OcrCode'], $row["OcrCode$OcrId"]) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Dim['OcrName']; ?></option>
+						<?php }?>
+					</select>
+				</td>
+			<?php }?>
+			<!-- Dimensiones dinámicas, hasta aquí -->
+
 			<td><input size="50" type="text" id="FreeTxt<?php echo $i; ?>" name="FreeTxt[]" class="form-control" value="<?php echo $row['FreeTxt']; ?>" onChange="ActualizarDatos('FreeTxt',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" maxlength="100" <?php if ($row['LineStatus'] == 'C' || $Estado == 2 || (!PermitirFuncion(1201))) {echo "readonly";}?>></td>
 			<td><input size="15" type="text" id="Price<?php echo $i; ?>" name="Price[]" class="form-control" value="<?php echo number_format($row['Price'], 2); ?>" onChange="ActualizarDatos('Price',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" readonly></td>
 			<td><input size="15" type="text" id="PriceTax<?php echo $i; ?>" name="PriceTax[]" class="form-control" value="<?php echo number_format($row['PriceTax'], 2); ?>" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" readonly><input type="hidden" id="TarifaIVA<?php echo $i; ?>" name="TarifaIVA[]" value="<?php echo number_format($row['TarifaIVA'], 0); ?>"><input type="hidden" id="VatSum<?php echo $i; ?>" name="VatSum[]" value="<?php echo number_format($row['VatSum'], 2); ?>"></td>

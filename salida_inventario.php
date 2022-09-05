@@ -302,14 +302,14 @@ if ($edit == 1 && $sw_error == 0) {
 
     //Sucursales
     $SQL_SucursalFacturacion = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', '*', "CodigoCliente='" . $row['CardCode'] . "' and TipoDireccion='B'", 'NombreSucursal');
-
     $SQL_SucursalDestino = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', '*', "CodigoCliente='" . $row['CardCode'] . "' and TipoDireccion='S'", 'NombreSucursal');
 
     //Contacto cliente
     $SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', '*', "CodigoCliente='" . $row['CardCode'] . "'", 'NombreContacto');
 
-    //Orden de servicio
-    $SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_CodigoCliente='" . $row['CardCode'] . "' And IdEstadoLlamada='-3'");
+    // Orden de servicio, SMM, 31/08/2022
+    $SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . $row['ID_LlamadaServicio'] . "'");
+    $row_OrdenServicioCliente = sqlsrv_fetch_array($SQL_OrdenServicioCliente);
 
     //Sucursal
     $SQL_Sucursal = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'IdSucursal, DeSucursal', "IdSeries='" . $row['IdSeries'] . "'", "IdSucursal, DeSucursal");
@@ -340,8 +340,9 @@ if ($sw_error == 1) {
     //Contacto cliente
     $SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', '*', "CodigoCliente='" . $row['CardCode'] . "'", 'NombreContacto');
 
-    //Orden de servicio
-    $SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_CodigoCliente='" . $row['CardCode'] . "' And IdEstadoLlamada='-3'");
+    //Orden de servicio, SMM, 31/08/2022
+    $SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . $row['ID_LlamadaServicio'] . "'");
+    $row_OrdenServicioCliente = sqlsrv_fetch_array($SQL_OrdenServicioCliente);
 
     //Sucursal
     $SQL_Sucursal = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'IdSucursal, DeSucursal', "IdSeries='" . $row['IdSeries'] . "'", "IdSucursal, DeSucursal");
@@ -354,11 +355,7 @@ if ($sw_error == 1) {
 
 }
 
-//Normas de reparte (centros de costos)
-$SQL_ControCosto = Seleccionar('uvw_Sap_tbl_DimensionesReparto', '*', 'DimCode=1');
-
-//Normas de reparte (Unidad negocio)
-$SQL_UnidadNegocio = Seleccionar('uvw_Sap_tbl_DimensionesReparto', '*', 'DimCode=2');
+// Se eliminaron las dimensiones en esta parte, SMM 31/08/2022
 
 //Condiciones de pago
 $SQL_CondicionPago = Seleccionar('uvw_Sap_tbl_CondicionPago', '*', '', 'IdCondicionPago');
@@ -389,7 +386,13 @@ $ParamSerie = array(
 );
 $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 
+// Stiven Muñoz Murillo, 31/08/2022
+$row_encode = isset($row) ? json_encode($row) : "";
+$cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'Not Found'";
+// echo "<script> console.log('consulta principal'); </script>";
+// echo "<script> console.log($cadena); </script>";
 ?>
+
 <!DOCTYPE html>
 <html><!-- InstanceBegin template="/Templates/PlantillaPrincipal.dwt.php" codeOutsideHTMLIsLocked="false" -->
 
@@ -438,10 +441,20 @@ if (isset($sw_error) && ($sw_error == 1)) {
 function BuscarArticulo(dato){
 	var almacen= document.getElementById("Almacen").value;
 	var cardcode= document.getElementById("CardCode").value;
+
+	// SMM, 31/08/2022
+	var dim1= ((document.getElementById("Dim1") || {}).value) || "";
+	var dim2= ((document.getElementById("Dim2") || {}).value) || "";
+	var dim3= ((document.getElementById("Dim3") || {}).value) || "";
+	var dim4= ((document.getElementById("Dim4") || {}).value) || "";
+	var dim5= ((document.getElementById("Dim5") || {}).value) || "";
+	// Hasta aquí, 31/08/2022
+
 	var posicion_x;
 	var posicion_y;
 	posicion_x=(screen.width/2)-(1200/2);
 	posicion_y=(screen.height/2)-(500/2);
+
 	if(dato!=""){
 		if((cardcode!="")&&(almacen!="")){
 			remote=open('buscar_articulo.php?dato='+dato+'&cardcode='+cardcode+'&whscode='+almacen+'&doctype=<?php if ($edit == 0) {echo "9";} else {echo "10";}?>&idsalidainv=<?php if ($edit == 1) {echo base64_encode($row['ID_SalidaInv']);} else {echo "0";}?>&evento=<?php if ($edit == 1) {echo base64_encode($row['IdEvento']);} else {echo "0";}?>&tipodoc=3','remote',"width=1200,height=500,location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=no,fullscreen=no,directories=no,status=yes,left="+posicion_x+",top="+posicion_y+"");
@@ -465,13 +478,16 @@ function ConsultarDatosCliente(){
 	}
 }
 </script>
+
 <script type="text/javascript">
 	$(document).ready(function() {//Cargar los combos dependiendo de otros
 		$("#CardCode").change(function(){
 			$('.ibox-content').toggleClass('sk-loading',true);
+
 			var frame=document.getElementById('DataGrid');
 			var carcode=document.getElementById('CardCode').value;
 			var almacen=document.getElementById('Almacen').value;
+
 			$.ajax({
 				type: "POST",
 				url: "ajx_cbo_select.php?type=2&id="+carcode,
@@ -479,6 +495,7 @@ function ConsultarDatosCliente(){
 					$('#ContactoCliente').html(response).fadeIn();
 				}
 			});
+
 			<?php if ($dt_TI == 0) { //Para que no recargue las listas cuando vienen de una solicitud de salida.?>
 			$.ajax({
 				type: "POST",
@@ -489,14 +506,7 @@ function ConsultarDatosCliente(){
 				}
 			});
 			<?php }?>
-			$.ajax({
-				type: "POST",
-				url: "ajx_cbo_select.php?type=6&id="+carcode,
-				success: function(response){
-					$('#OrdenServicioCliente').html(response).fadeIn();
-					$('#OrdenServicioCliente').val(null).trigger('change');
-				}
-			});
+
 			$.ajax({
 				type: "POST",
 				url: "ajx_cbo_select.php?type=3&tdir=B&id="+carcode,
@@ -505,6 +515,7 @@ function ConsultarDatosCliente(){
 					$('#SucursalFacturacion').trigger('change');
 				}
 			});
+
 			$.ajax({
 				type: "POST",
 				url: "ajx_cbo_select.php?type=7&id="+carcode,
@@ -512,6 +523,7 @@ function ConsultarDatosCliente(){
 					$('#CondicionPago').html(response).fadeIn();
 				}
 			});
+
 			<?php if ($edit == 0) {?>
 				if(carcode!="" && almacen!=""){
 					frame.src="detalle_salida_inventario.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+carcode+"&whscode="+almacen+'&dt_TI=<?php echo $dt_TI; ?>';
@@ -525,49 +537,87 @@ function ConsultarDatosCliente(){
 					frame.src="detalle_salida_inventario.php";
 				}
 			<?php }?>
+
 			$('.ibox-content').toggleClass('sk-loading',false);
 		});
+
 		$("#SucursalDestino").change(function(){
 			$('.ibox-content').toggleClass('sk-loading',true);
+
 			var Cliente=document.getElementById('CardCode').value;
 			var Sucursal=document.getElementById('SucursalDestino').value;
+
 			$.ajax({
 				url:"ajx_buscar_datos_json.php",
 				data:{type:3,CardCode:Cliente,Sucursal:Sucursal},
 				dataType:'json',
 				success: function(data){
 					document.getElementById('DireccionDestino').value=data.Direccion;
+
 					$('.ibox-content').toggleClass('sk-loading',false);
 				}
 			});
 		});
+
 		$("#SucursalFacturacion").change(function(){
 			$('.ibox-content').toggleClass('sk-loading',true);
+
 			var Cliente=document.getElementById('CardCode').value;
 			var Sucursal=document.getElementById('SucursalFacturacion').value;
+
 			$.ajax({
 				url:"ajx_buscar_datos_json.php",
 				data:{type:3,CardCode:Cliente,Sucursal:Sucursal},
 				dataType:'json',
 				success: function(data){
 					document.getElementById('DireccionFacturacion').value=data.Direccion;
+
 					$('.ibox-content').toggleClass('sk-loading',false);
 				}
 			});
 		});
-		$("#Serie").change(function(){
+
+// Dimensión de serie dinámica.
+<?php foreach ($array_Dimensiones as &$dim) {
+    $DimCode = intval($dim['DimCode']);
+    $OcrId = ($DimCode == 1) ? "" : $DimCode;
+
+    if ($DimCode == $DimSeries) {
+        $decode_SDim = base64_decode($_GET[strval($dim['IdPortalOne'])] ?? "");
+        $rowValue_SDim = ($row["OcrCode$OcrId"] ?? "");
+
+        $console_Msg = $dim['DimDesc'] . " (GET): $decode_SDim";
+        $console_Msg .= "& " . $dim['DimDesc'] . " (ROW): $rowValue_SDim";
+
+        $SDimPO = $dim['IdPortalOne'];
+    }
+}?> // SMM, 31/08/2022
+
+		$("#Serie").change(function() {
 			$('.ibox-content').toggleClass('sk-loading',true);
+
+			console.log("SDim Message,\n<?php echo $console_Msg; ?>"); // SMM, 31/08/2022
+
 			var Serie=document.getElementById('Serie').value;
+			var SDim = document.getElementById('<?php echo $SDimPO; ?>').value; // SMM, 31/08/2022
+
 			$.ajax({
 				type: "POST",
-				url: "ajx_cbo_select.php?type=19&id="+Serie,
+				url: `ajx_cbo_select.php?type=19&id=${Serie}&SDim=${SDim}`, // SMM, 31/08/2022
 				success: function(response){
-					$('#Sucursal').html(response).fadeIn();
+					$('#<?php echo $SDimPO; ?>').html(response).fadeIn(); // SMM, 31/08/2022
+					$('#<?php echo $SDimPO; ?>').trigger('change'); // SMM, 31/08/2022
+
 					$('.ibox-content').toggleClass('sk-loading',false);
-					$('#Sucursal').trigger('change');
+				},
+				error: function(error) {
+					console.log("Line 903", error.responseText);
+
+					$('.ibox-content').toggleClass('sk-loading',false);
 				}
 			});
 		});
+
 		$("#Sucursal").change(function(){
 			$('.ibox-content').toggleClass('sk-loading',true);
 			var Sucursal=document.getElementById('Sucursal').value;
@@ -665,6 +715,9 @@ function ConsultarDatosCliente(){
             </div>
 
          <div class="wrapper wrapper-content">
+			<!-- SMM, 31/08/2022 -->
+			<?php include_once 'md_consultar_llamadas_servicios.php';?>
+
 		 <?php if ($edit == 1) {?>
 		 <div class="row">
 			<div class="col-lg-12">
@@ -749,20 +802,20 @@ if ($edit == 1 || $sw_error == 1) {
 							<input type="text" class="form-control" name="DireccionFacturacion" id="DireccionFacturacion" value="<?php if ($edit == 1 || $sw_error == 1) {echo $row['DireccionFacturacion'];}?>" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "readonly";}?>>
 						</div>
 					</div>
+
+					<!-- SMM, 31/08/2022 -->
 					<div class="form-group">
-					<label class="col-lg-1 control-label"><?php if (($edit == 1) && ($row['ID_LlamadaServicio'] != 0)) {?><a href="llamada_servicio.php?id=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&tl=1" target="_blank" title="Consultar Llamada de servicio" class="btn-xs btn-success fa fa-search"></a> <?php }?>Orden servicio</label>
-				  	<div class="col-lg-11">
-                    	<select name="OrdenServicioCliente" class="form-control select2" id="OrdenServicioCliente" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "disabled='disabled'";}?>>
-                         	<option value="">(Ninguna)</option>
-							<?php
-if ($edit == 1 || $sw_error == 1) {
-    while ($row_OrdenServicioCliente = sqlsrv_fetch_array($SQL_OrdenServicioCliente)) {?>
-										<option value="<?php echo $row_OrdenServicioCliente['ID_LlamadaServicio']; ?>" <?php if ((isset($row['ID_LlamadaServicio'])) && (strcmp($row_OrdenServicioCliente['ID_LlamadaServicio'], $row['ID_LlamadaServicio']) == 0)) {echo "selected=\"selected\"";} elseif ((isset($_GET['LS'])) && (strcmp($row_OrdenServicioCliente['ID_LlamadaServicio'], base64_decode($_GET['LS'])) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_OrdenServicioCliente['DocNum'] . " - " . $row_OrdenServicioCliente['AsuntoLlamada'] . " (" . $row_OrdenServicioCliente['DeTipoLlamada'] . ")"; ?></option>
-							  <?php }
-}?>
-						</select>
-               	  	</div>
-				</div>
+						<label class="col-lg-1 control-label"><?php if (($edit == 1) && ($row['ID_LlamadaServicio'] != 0)) {?><a href="llamada_servicio.php?id=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&tl=1" target="_blank" title="Consultar Llamada de servicio" class="btn-xs btn-success fa fa-search"></a> <?php }?>Orden servicio</label>
+						<div class="col-lg-7">
+							<input type="hidden" class="form-control" name="OrdenServicioCliente" id="OrdenServicioCliente" value="<?php if (isset($row_OrdenServicioCliente['ID_LlamadaServicio']) && ($row_OrdenServicioCliente['ID_LlamadaServicio'] != 0)) {echo $row_OrdenServicioCliente['ID_LlamadaServicio'];}?>">
+							<input readonly type="text" class="form-control" name="Desc_OrdenServicioCliente" id="Desc_OrdenServicioCliente" placeholder="Haga clic en el botón"
+							value="<?php if (isset($row_OrdenServicioCliente['ID_LlamadaServicio']) && ($row_OrdenServicioCliente['ID_LlamadaServicio'] != 0)) {echo $row_OrdenServicioCliente['DocNum'] . " - " . $row_OrdenServicioCliente['AsuntoLlamada'] . " (" . $row_OrdenServicioCliente['DeTipoLlamada'] . ")";}?>">
+						</div>
+						<div class="col-lg-4">
+							<button class="btn btn-success" type="button" onClick="$('#mdOT').modal('show');"><i class="fa fa-refresh"></i> Cambiar orden servicio</button>
+						</div>
+					</div>
+					<!-- Hasta aquí -->
 				</div>
 				<div class="col-lg-4">
 					<div class="form-group">
@@ -815,37 +868,31 @@ if ($edit == 1 || $sw_error == 1) {
                     	<input type="text" name="Referencia" id="Referencia" class="form-control" value="<?php if ($edit == 1) {echo $row['NumAtCard'];}?>" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "readonly";}?>>
                	  	</div>
 				</div>
+
+				<!-- Dimensiones dinámicas, SMM 31/08/2022 -->
 				<div class="form-group">
-					<label class="col-lg-1 control-label">Área</label>
-					<div class="col-lg-3">
-                    	<select name="UnidadNegocio" class="form-control" id="UnidadNegocio" required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "disabled='disabled'";}?>>
-							<option value="">Seleccione...</option>
-                          <?php while ($row_UnidadNegocio = sqlsrv_fetch_array($SQL_UnidadNegocio)) {?>
-									<option value="<?php echo $row_UnidadNegocio['OcrCode']; ?>" <?php if ((isset($row['OcrCode2']) && ($row['OcrCode2'] != "")) && (strcmp($row_UnidadNegocio['OcrCode'], $row['OcrCode2']) == 0)) {echo "selected=\"selected\"";} elseif (($edit == 0) && (!isset($_GET['CCosto'])) && ($row_DatosEmpleados['CentroCosto2'] != "") && (strcmp($row_DatosEmpleados['CentroCosto2'], $row_UnidadNegocio['OcrCode']) == 0)) {echo "selected=\"selected\"";} elseif (isset($_GET['CCosto']) && (strcmp($row_UnidadNegocio['OcrCode'], base64_decode($_GET['CCosto'])) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_UnidadNegocio['OcrName']; ?></option>
+					<?php foreach ($array_Dimensiones as &$dim) {?>
+						<label class="col-lg-1 control-label"><?php echo $dim['DescPortalOne']; ?> <span class="text-danger">*</span></label>
+						<div class="col-lg-3">
+							<select name="<?php echo $dim['IdPortalOne'] ?>" id="<?php echo $dim['IdPortalOne'] ?>" class="form-control select2" required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "disabled='disabled'";}?>>
+								<option value="">Seleccione...</option>
+
+							<?php $SQL_Dim = Seleccionar('uvw_Sap_tbl_DimensionesReparto', '*', 'DimCode=' . $dim['DimCode']);?>
+							<?php while ($row_Dim = sqlsrv_fetch_array($SQL_Dim)) {?>
+								<?php $DimCode = intval($dim['DimCode']);?>
+								<?php $OcrId = ($DimCode == 1) ? "" : $DimCode;?>
+
+								<option value="<?php echo $row_Dim['OcrCode']; ?>"
+								<?php if ((isset($row["OcrCode$OcrId"]) && ($row["OcrCode$OcrId"] != "")) && (strcmp($row_Dim['OcrCode'], $row["OcrCode$OcrId"]) == 0)) {echo "selected=\"selected\"";} elseif (($edit == 0) && (isset($_GET['LMT']) && !isset($_GET[strval($dim['IdPortalOne'])])) && ($row_DatosEmpleados["CentroCosto$DimCode"] != "") && (strcmp($row_DatosEmpleados["CentroCosto$DimCode"], $row_Dim['OcrCode']) == 0)) {echo "selected=\"selected\"";} elseif (isset($_GET[strval($dim['IdPortalOne'])]) && (strcmp($row_Dim['OcrCode'], base64_decode($_GET[strval($dim['IdPortalOne'])])) == 0)) {echo "selected=\"selected\"";}?>>
+									<?php echo $row_Dim['OcrName']; ?>
+								</option>
 							<?php }?>
-						</select>
-               	  	</div>
-					<label class="col-lg-1 control-label">Centro de costos</label>
-					<div class="col-lg-3">
-						<select name="CentroCosto" class="form-control" id="CentroCosto" required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "disabled='disabled'";}?>>
-							<option value="">Seleccione...</option>
-						  <?php while ($row_ControCosto = sqlsrv_fetch_array($SQL_ControCosto)) {?>
-								<option value="<?php echo $row_ControCosto['OcrCode']; ?>" <?php if ((isset($row['OcrCode']) && ($row['OcrCode'] != "")) && (strcmp($row_ControCosto['OcrCode'], $row['OcrCode']) == 0)) {echo "selected=\"selected\"";} elseif (($edit == 0) && (!isset($_GET['CCosto'])) && ($row_DatosEmpleados['CentroCosto1'] != "") && (strcmp($row_DatosEmpleados['CentroCosto1'], $row_ControCosto['OcrCode']) == 0)) {echo "selected=\"selected\"";} elseif (isset($_GET['Area']) && (strcmp($row_ControCosto['OcrCode'], base64_decode($_GET['Area'])) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_ControCosto['OcrName']; ?></option>
-						  <?php }?>
-						</select>
-					</div>
-					<label class="col-lg-1 control-label">Sucursal</label>
-					<div class="col-lg-3">
-                    	<select name="Sucursal" class="form-control" id="Sucursal" required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "disabled='disabled'";}?>>
-							<option value="">Seleccione...</option>
-                          <?php if ($edit == 1) {
-    while ($row_Sucursal = sqlsrv_fetch_array($SQL_Sucursal)) {?>
-									<option value="<?php echo $row_Sucursal['IdSucursal']; ?>" <?php if (($edit == 1) && (isset($row['OcrCode3'])) && (strcmp($row_Sucursal['IdSucursal'], $row['OcrCode3']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Sucursal['DeSucursal']; ?></option>
-							<?php }
-}?>
-						</select>
-               	  	</div>
+							</select>
+						</div>
+					<?php }?>
 				</div>
+				<!-- Dimensiones dinámicas, hasta aquí -->
+
 				<div class="form-group">
 					<label class="col-lg-1 control-label">Almacén</label>
 					<div class="col-lg-3">
@@ -1036,6 +1083,20 @@ if (isset($_GET['return'])) {
 ?>
 						<a href="<?php echo $return; ?>" class="btn btn-outline btn-default"><i class="fa fa-arrow-circle-o-left"></i> Regresar</a>
 					</div>
+
+<!-- Dimensiones dinámicas, SMM 31/08/2022 -->
+<?php if ($edit == 1) {
+    $CopyDim = "";
+    foreach ($array_Dimensiones as &$dim) {
+        $DimCode = intval($dim['DimCode']);
+        $OcrId = ($DimCode == 1) ? "" : $DimCode;
+
+        $DimIdPO = $dim['IdPortalOne'];
+        $encode_OcrCode = base64_encode($row["OcrCode$OcrId"]);
+        $CopyDim .= "$DimIdPO=$encode_OcrCode&";
+    }
+}?>
+<!-- Hasta aquí, 31/08/2022 -->
 				</div>
 				<input type="hidden" form="CrearSalidaInventario" id="P" name="P" value="51" />
 				<input type="hidden" form="CrearSalidaInventario" id="IdSalidaInv" name="IdSalidaInv" value="<?php if ($edit == 1) {echo base64_encode($row['ID_SalidaInv']);}?>" />
