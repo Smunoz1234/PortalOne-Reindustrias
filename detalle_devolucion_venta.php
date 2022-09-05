@@ -13,6 +13,11 @@ $array_Dimensiones = [];
 while ($row_Dimension = sqlsrv_fetch_array($SQL_Dimensiones)) {
     array_push($array_Dimensiones, $row_Dimension);
 }
+
+$encode_Dimensiones = json_encode($array_Dimensiones);
+$cadena_Dimensiones = "JSON.parse('$encode_Dimensiones'.replace(/\\n|\\r/g, ''))";
+// echo "<script> console.log('cadena_Dimensiones'); </script>";
+// echo "<script> console.log($cadena_Dimensiones); </script>";
 // Hasta aquí, SMM 21/06/2022
 
 $sw = 0;

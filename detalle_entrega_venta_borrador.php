@@ -1,6 +1,20 @@
 <?php
 require_once "includes/conexion.php";
 PermitirAcceso(407);
+
+// Dimensiones, SMM 22/08/2022
+$DimSeries = intval(ObtenerVariable("DimensionSeries"));
+$SQL_Dimensiones = Seleccionar('uvw_Sap_tbl_Dimensiones', '*', "DimActive='Y'");
+
+// Pruebas, SMM 22/08/2022
+// $SQL_Dimensiones = Seleccionar('uvw_Sap_tbl_Dimensiones', '*', 'DimCode IN (1,2)');
+
+$array_Dimensiones = [];
+while ($row_Dimension = sqlsrv_fetch_array($SQL_Dimensiones)) {
+    array_push($array_Dimensiones, $row_Dimension);
+}
+// Hasta aquí, SMM 22/08/2022
+
 $sw = 0;
 //$Proyecto="";
 $Almacen = "";
@@ -19,8 +33,7 @@ if (isset($_GET['autoriza']) && ($_GET['autoriza'] == "1")) {
     $bandera_autorizacion = false;
 }
 
-//Dimensiones de reparto
-$SQL_DimReparto = Seleccionar('uvw_Sap_tbl_NombresDimensionesReparto', '*', '', "CodDim");
+// Se eliminaron las dimensiones, 31/08/2022
 
 if (isset($_GET['id']) && ($_GET['id'] != "")) {
     if ($_GET['type'] == 1) {
@@ -103,11 +116,7 @@ $ParamSerie = array(
 );
 $SQL_Almacen = EjecutarSP('sp_ConsultarAlmacenesUsuario', $ParamSerie);
 
-$SQL_Dim1 = Seleccionar('uvw_Sap_tbl_DimensionesReparto', '*', 'DimCode=1');
-
-$SQL_Dim2 = Seleccionar('uvw_Sap_tbl_DimensionesReparto', '*', 'DimCode=2');
-
-$SQL_Dim3 = Seleccionar('uvw_Sap_tbl_DimensionesReparto', '*', 'DimCode=3');
+// Se eliminaron las dimensiones, 31/08/2022
 
 //Proyectos
 $SQL_Proyecto = Seleccionar('uvw_Sap_tbl_Proyectos', '*', '', 'DeProyecto');
@@ -522,12 +531,13 @@ function ConsultarArticulo(articulo){
 				<th>Almacén</th>
 				<th>Dosificación</th>
 				<th>Stock almacén</th>
-				<?php $row_DimReparto = sqlsrv_fetch_array($SQL_DimReparto);?>
-				<th><?php echo $row_DimReparto['NombreDim']; ?><!-- Dimension 1 --></th>
-				<?php $row_DimReparto = sqlsrv_fetch_array($SQL_DimReparto);?>
-				<th><?php echo $row_DimReparto['NombreDim']; ?><!-- Dimension 2 --></th>
-				<?php $row_DimReparto = sqlsrv_fetch_array($SQL_DimReparto);?>
-				<th><?php echo $row_DimReparto['NombreDim']; ?><!-- Dimension 3 --></th>
+
+				<!-- Dimensiones dinámicas, SMM 22/08/2022 -->
+				<?php foreach ($array_Dimensiones as &$dim) {?>
+					<th><?php echo $dim["DimDesc"]; ?></th>
+				<?php }?>
+				<!-- Dimensiones dinámicas, hasta aquí -->
+
 				<th>Proyecto</th>
 				<th>Empleado de ventas</th>
 				<th>Servicio</th>
@@ -555,9 +565,9 @@ if ($sw == 1) {
         sqlsrv_fetch($SQL_MetodoAplicacion, SQLSRV_SCROLL_ABSOLUTE, -1);
         sqlsrv_fetch($SQL_TipoPlaga, SQLSRV_SCROLL_ABSOLUTE, -1);
         sqlsrv_fetch($SQL_Almacen, SQLSRV_SCROLL_ABSOLUTE, -1);
-        sqlsrv_fetch($SQL_Dim1, SQLSRV_SCROLL_ABSOLUTE, -1);
-        sqlsrv_fetch($SQL_Dim2, SQLSRV_SCROLL_ABSOLUTE, -1);
-        sqlsrv_fetch($SQL_Dim3, SQLSRV_SCROLL_ABSOLUTE, -1);
+
+		// Se eliminaron las dimensiones, 31/08/2022
+
         sqlsrv_fetch($SQL_Proyecto, SQLSRV_SCROLL_ABSOLUTE, -1);
         sqlsrv_fetch($SQL_EmpleadosVentas, SQLSRV_SCROLL_ABSOLUTE, -1); // SMM, 22/02/2022
         ?>
@@ -594,32 +604,23 @@ if ($sw == 1) {
 			<td><input size="15" type="text" id="CDU_Dosificacion<?php echo $i; ?>" name="CDU_Dosificacion[]" class="form-control" value="<?php echo number_format($row['CDU_Dosificacion'], $dCantidades, $sDecimal, $sMillares); ?>" onChange="ActualizarDatos('CDU_Dosificacion',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if ($row['LineStatus'] == 'C') {echo "readonly";}?>></td>
 			<td><input size="15" type="text" id="OnHand<?php echo $i; ?>" name="OnHand[]" class="form-control" value="<?php echo number_format($row['OnHand'], $dCantidades, $sDecimal, $sMillares); ?>" readonly></td>
 
-			<td>
-				<select id="OcrCode<?php echo $i; ?>" name="OcrCode[]" class="form-control select2" onChange="ActualizarDatos('OcrCode',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402)) || $bandera_autorizacion) {echo "disabled='disabled'";}?>>
-				  <option value="">(NINGUNO)</option>
-				  <?php while ($row_Dim1 = sqlsrv_fetch_array($SQL_Dim1)) {?>
-						<option value="<?php echo $row_Dim1['OcrCode']; ?>" <?php if ((isset($row['OcrCode'])) && (strcmp($row_Dim1['OcrCode'], $row['OcrCode']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Dim1['OcrName']; ?></option>
-				  <?php }?>
-				</select>
-			</td>
+			<!-- Dimensiones dinámicas, SMM 22/08/2022 -->
+			<?php foreach ($array_Dimensiones as &$dim) {?>
+				<?php $DimCode = intval($dim['DimCode']);?>
+				<?php $OcrId = ($DimCode == 1) ? "" : $DimCode;?>
 
-			<td>
-				<select id="OcrCode2<?php echo $i; ?>" name="OcrCode2[]" class="form-control select2" onChange="ActualizarDatos('OcrCode2',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402)) || $bandera_autorizacion) {echo "disabled='disabled'";}?>>
-				  <option value="">(NINGUNO)</option>
-				  <?php while ($row_Dim2 = sqlsrv_fetch_array($SQL_Dim2)) {?>
-						<option value="<?php echo $row_Dim2['OcrCode']; ?>" <?php if ((isset($row['OcrCode2'])) && (strcmp($row_Dim2['OcrCode'], $row['OcrCode2']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Dim2['OcrName']; ?></option>
-				  <?php }?>
-				</select>
-			</td>
+				<td>
+					<select id="OcrCode<?php echo $OcrId . $i; ?>" name="OcrCode<?php echo $OcrId; ?>[]" class="form-control select2" onChange="ActualizarDatos('OcrCode<?php echo $OcrId; ?>',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402))) {echo "disabled='disabled'";}?>>
+						<option value="">(NINGUNO)</option>
 
-			<td>
-				<select id="OcrCode3<?php echo $i; ?>" name="OcrCode3[]" class="form-control select2" onChange="ActualizarDatos('OcrCode3',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402)) || $bandera_autorizacion) {echo "disabled='disabled'";}?>>
-				  <option value="">(NINGUNO)</option>
-				  <?php while ($row_Dim3 = sqlsrv_fetch_array($SQL_Dim3)) {?>
-						<option value="<?php echo $row_Dim3['OcrCode']; ?>" <?php if ((isset($row['OcrCode3'])) && (strcmp($row_Dim3['OcrCode'], $row['OcrCode3']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Dim3['OcrName']; ?></option>
-				  <?php }?>
-				</select>
-			</td>
+						<?php $SQL_Dim = Seleccionar('uvw_Sap_tbl_DimensionesReparto', '*', "DimCode=$DimCode");?>
+						<?php while ($row_Dim = sqlsrv_fetch_array($SQL_Dim)) {?>
+							<option value="<?php echo $row_Dim['OcrCode']; ?>" <?php if ((isset($row["OcrCode$OcrId"])) && (strcmp($row_Dim['OcrCode'], $row["OcrCode$OcrId"]) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Dim['OcrName']; ?></option>
+						<?php }?>
+					</select>
+				</td>
+			<?php }?>
+			<!-- Dimensiones dinámicas, hasta aquí -->
 
 			<td>
 				<select id="PrjCode<?php echo $i; ?>" name="PrjCode[]" class="form-control select2" onChange="ActualizarDatos('PrjCode',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402)) || $bandera_autorizacion) {echo "disabled='disabled'";}?>>
