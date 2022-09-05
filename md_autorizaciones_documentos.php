@@ -143,24 +143,6 @@ if ($edit == 1 && $id != "") {
 
 				<br><br><br><br>
 				<div class="form-group">
-					<div class="col-md-6">
-						<label class="control-label">Usuario autorización SAP B1 <span class="text-danger">*</span></label>
-						<select name="IdUsuarioAutorizacion" class="form-control select2" id="IdUsuarioAutorizacion" required>
-							<option value="">Seleccione...</option>
-							<?php while ($row_UsuarioSAP = sqlsrv_fetch_array($SQL_UsuariosSAP)) {?>
-								<option value="<?php echo $row_UsuarioSAP['USERID']; ?>" <?php if ((isset($row['IdUsuarioAutorizacionSAPB1'])) && (strcmp($row_UsuarioSAP['USERID'], $row['IdUsuarioAutorizacionSAPB1']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_UsuarioSAP['USER_CODE']; ?></option>
-							<?php }?>
-						</select>
-					</div>
-					<div class="col-md-6">
-						<label class="control-label">Password usuario SAP B1 <span class="text-danger">*</span></label>
-						<input type="password" class="form-control" name="PassUsuarioAutorizacion" id="PassUsuarioAutorizacion" required autocomplete="off" placeholder="<?php if ($edit == 1) {echo "Cambiar password";}?>">
-						<a href="#" id="aVerPass" onClick="javascript:MostrarPassword();" title="Mostrar contrase&ntilde;a" class="btn btn-default btn-xs"><span id="VerPass" class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a>
-					</div>
-				</div>
-
-				<br><br><br><br>
-				<div class="form-group">
 					<div class="col-md-12">
 						<label class="control-label">Condiciones</label>
 						<textarea name="Condiciones" rows="3" maxlength="3000" class="form-control" id="Condiciones" type="text"><?php if ($edit == 1) {echo $row['Condiciones'];}?></textarea>
@@ -258,6 +240,24 @@ if ($edit == 1 && $id != "") {
 								<option value="<?php echo $row_ModeloAutorizacion['IdModeloAutorizacion']; ?>" <?php if ((isset($row['IdModeloAutorizacionSAPB1'])) && (strcmp($row_ModeloAutorizacion['IdModeloAutorizacion'], $row['IdModeloAutorizacionSAPB1']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_ModeloAutorizacion['ModeloAutorizacion']; ?></option>
 							<?php }?>
 						</select>
+					</div>
+				</div>
+
+				<br><br><br><br>
+				<div class="form-group">
+					<div class="col-md-6">
+						<label class="control-label">Usuario autorización SAP B1 <span class="text-danger">*</span></label>
+						<select name="IdUsuarioAutorizacion" class="form-control select2" id="IdUsuarioAutorizacion" required>
+							<option value="">Seleccione...</option>
+							<?php while ($row_UsuarioSAP = sqlsrv_fetch_array($SQL_UsuariosSAP)) {?>
+								<option value="<?php echo $row_UsuarioSAP['USERID']; ?>" <?php if ((isset($row['IdUsuarioAutorizacionSAPB1'])) && (strcmp($row_UsuarioSAP['USERID'], $row['IdUsuarioAutorizacionSAPB1']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_UsuarioSAP['USER_CODE']; ?></option>
+							<?php }?>
+						</select>
+					</div>
+					<div class="col-md-6">
+						<label class="control-label">Password usuario SAP B1 <span class="text-danger">*</span></label>
+						<input type="password" class="form-control" name="PassUsuarioAutorizacion" id="PassUsuarioAutorizacion" required autocomplete="off" placeholder="<?php if ($edit == 1) {echo "Cambiar password";}?>">
+						<a href="#" id="aVerPass" onClick="javascript:MostrarPassword();" title="Mostrar contrase&ntilde;a" class="btn btn-default btn-xs"><span id="VerPass" class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a>
 					</div>
 				</div>
 			<?php }?>

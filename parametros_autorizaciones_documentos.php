@@ -57,8 +57,6 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
                 "'" . $_POST['Estado'] . "'",
                 "'" . $_POST['Condiciones'] . "'",
                 $Perfiles,
-                "'" . $_POST['IdUsuarioAutorizacion'] . "'", // SMM, 26/08/2022
-                "'" . md5($_POST['PassUsuarioAutorizacion']) . "'", // SMM, 26/08/2022
                 $Usuario, // @id_usuario_actualizacion
                 $FechaHora, // @fecha_actualizacion
                 $FechaHora, // @hora_actualizacion
@@ -87,6 +85,8 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
                 "'" . $_POST['MotivoAutorizacion'] . "'",
                 "'" . $_POST['IdTipoDocumento'] . "'",
                 "'" . $_POST['IdModeloAutorizacionSAPB1'] . "'",
+                "'" . $_POST['IdUsuarioAutorizacion'] . "'", // SMM, 26/08/2022
+                "'" . md5($_POST['PassUsuarioAutorizacion']) . "'", // SMM, 26/08/2022
                 "'" . $_POST['Comentarios'] . "'",
                 "'" . $_POST['Estado'] . "'",
                 $Usuario, // @id_usuario_actualizacion
@@ -266,7 +266,6 @@ if (isset($sw_error) && ($sw_error == 1)) {
 																<th>Comentarios</th>
 																<th>Perfiles</th>
 																<th>Condiciones</th>
-																<th>Usuario Autorización SAP B1</th> <!-- SMM, 26/08/2022 -->
 																<th>Fecha Actualizacion</th>
 																<th>Usuario Actualizacion</th>
 																<th>Estado</th>
@@ -296,10 +295,6 @@ if (isset($sw_error) && ($sw_error == 1)) {
 																</td>
 
 																<td><?php echo $row_Proceso['Condiciones']; ?></td>
-
-																<td>
-																	<?php echo $row_Proceso['UsuarioAutorizacionSAPB1']; ?>
-																</td>
 
 																<td><?php echo isset($row_Proceso['fecha_actualizacion']) ? date_format($row_Proceso['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
 																<td><?php echo $row_Proceso['usuario_actualizacion']; ?></td>
@@ -350,6 +345,9 @@ if (isset($sw_error) && ($sw_error == 1)) {
 																<th>Modelo autorización SAP B1</th>
 																<th>Id Motivo Autorizacion</th>
 																<th>Motivo Autorizacion</th>
+
+																<th>Usuario Autorización SAP B1</th> <!-- SMM, 26/08/2022 -->
+
 																<th>Comentarios</th>
 																<th>Fecha Actualizacion</th>
 																<th>Usuario Actualizacion</th>
@@ -365,6 +363,11 @@ if (isset($sw_error) && ($sw_error == 1)) {
 																<td><?php echo $row_Motivo['ModeloAutorizacion']; ?></td>
 																<td><?php echo $row_Motivo['IdMotivoAutorizacion']; ?></td>
 																<td><?php echo $row_Motivo['MotivoAutorizacion']; ?></td>
+
+																<td>
+																	<?php echo $row_Motivo['UsuarioAutorizacionSAPB1']; ?>
+																</td>
+
 																<td><?php echo $row_Motivo['Comentarios']; ?></td>
 																<td><?php echo isset($row_Motivo['fecha_actualizacion']) ? date_format($row_Motivo['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
 																<td><?php echo $row_Motivo['usuario_actualizacion']; ?></td>

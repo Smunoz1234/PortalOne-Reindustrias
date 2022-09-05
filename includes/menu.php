@@ -217,7 +217,7 @@ $Num_Menu = sqlsrv_num_rows($SQL_Menu);
 								</ul>
 							</li>
 						<?php }?>
-						<?php if (PermitirFuncion(314) || PermitirFuncion(315) || PermitirFuncion(408)) {?>
+						<?php if (PermitirFuncion(314) || PermitirFuncion(315) || PermitirFuncion(414) || PermitirFuncion(320)) {?>
 							<li>
 								<a href="#">Informes <span class="fa arrow"></span></a>
 								<ul class='nav nav-third-level'>

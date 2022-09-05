@@ -297,6 +297,9 @@ if ($edit == 1 && $sw_error == 0) {
     $SQL = sqlsrv_query($conexion, $Cons);
     $row = sqlsrv_fetch_array($SQL);
 
+	// SMM, 05/09/2022
+	// echo $Cons;
+
     //Clientes
     $SQL_Cliente = Seleccionar('uvw_Sap_tbl_Clientes', '*', "CodigoCliente='" . $row['CardCode'] . "'", 'NombreCliente');
 
