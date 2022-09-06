@@ -1355,9 +1355,10 @@ while ($row_ContratoServicio = sqlsrv_fetch_array($SQL_ContratosServicio)) {?>
 				<br><br>
 				<div class="form-group">
 					<?php if (PermitirFuncion(1602)) {?>
-					<div class="col-lg-9">
+					<div class="col-lg-12">
 						<?php if ($edit == 1) {?>
 							<button class="btn btn-warning" form="CrearTarjetaEquipo" type="submit" id="Actualizar"><i class="fa fa-refresh"></i> Actualizar tarjeta de equipo</button>
+							<a target="_blank" href="gestionar_cartera.php?Clt=<?php echo base64_encode($row['CardCode']); ?>&TE=<?php echo base64_encode($row['IdTarjetaEquipo']); ?>" class="btn btn-info pull-right"><i class="fa fa-plus"></i> Crear Gestión CRM</a>
 						<?php }?>
 						<?php if ($edit == 0) {?>
 							<button class="btn btn-primary" form="CrearTarjetaEquipo" type="submit" id="Crear"><i class="fa fa-check"></i> Crear tarjeta de equipo</button>

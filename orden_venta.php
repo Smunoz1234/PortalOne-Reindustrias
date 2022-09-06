@@ -55,6 +55,8 @@ if (isset($_POST['swError']) && ($_POST['swError'] != "")) { //Para saber si ha 
     $sw_error = 0;
 }
 
+
+// echo $_REQUEST['tl'];
 if (isset($_REQUEST['tl']) && ($_REQUEST['tl'] != "")) { //0 Si se está creando. 1 Se se está editando.
     $edit = $_REQUEST['tl'];
 } else {
@@ -202,7 +204,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Orden de venta
                 // Consultar el motivo de autorización según el id, SMM 20/08/2022
                 $SQL_Motivos = Seleccionar("uvw_tbl_Autorizaciones_Motivos", "*", "IdMotivoAutorizacion = '$IdMotivo'");
                 $row_MotivoAutorizacion = sqlsrv_fetch_array($SQL_Motivos);
-                $motivoAutorizacion = $row_MotivoAutorizacion['MotivoAutorizacion'];
+                $motivoAutorizacion = $row_MotivoAutorizacion['MotivoAutorizacion'] ?? "";
             } else {
                 $IdOrdenVenta = base64_decode($_POST['IdOrdenVenta']); //Lo coloco otra vez solo para saber que tiene ese valor
                 $IdEvento = base64_decode($_POST['IdEvento']);
@@ -270,13 +272,13 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Orden de venta
                         } else {
                             if ($_POST['P'] == 37) { //Creando orden
                                 //Consultar ID creado para cargar el documento
-                                if ($_POST['d_LS'] == 0) {
+                                if ($_POST['tl'] == 0 || $_POST['d_LS'] == 0) {
                                     $SQL_ConsID = Seleccionar('uvw_Sap_tbl_OrdenesVentas', 'ID_OrdenVenta', "IdDocPortal='" . $IdOrdenVenta . "'");
                                     $row_ConsID = sqlsrv_fetch_array($SQL_ConsID);
                                     sqlsrv_close($conexion);
                                     header('Location:orden_venta.php?id=' . base64_encode($row_ConsID['ID_OrdenVenta']) . '&id_portal=' . base64_encode($IdOrdenVenta) . '&tl=1&a=' . base64_encode("OK_OVenAdd"));
                                 } else {
-                                    header('Location:' . base64_decode($_POST['return']) . '&a=' . base64_encode("OK_OVenAdd"));
+									header('Location:orden_venta.php?a=' . base64_encode("OK_OVenAdd"));
                                 }
                             } else { //Actualizando orden
                                 $SQL_ConsID = Seleccionar('uvw_Sap_tbl_OrdenesVentas', 'ID_OrdenVenta', "IdDocPortal='" . $IdOrdenVenta . "'");
@@ -472,6 +474,9 @@ if ($edit == 1 && $sw_error == 0) {
     $Cons = "Select * From uvw_tbl_OrdenVenta Where DocEntry='" . $IdOrden . "' AND IdEvento='" . $IdEvento . "'";
     $SQL = sqlsrv_query($conexion, $Cons);
     $row = sqlsrv_fetch_array($SQL);
+
+	// SMM, 06/09/2022
+	// echo $Cons;
 
     //Clientes
     $SQL_Cliente = Seleccionar('uvw_Sap_tbl_Clientes', '*', "CodigoCliente='" . $row['CardCode'] . "'", 'NombreCliente');
