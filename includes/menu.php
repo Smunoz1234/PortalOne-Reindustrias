@@ -420,6 +420,7 @@ $Num_Menu = sqlsrv_num_rows($SQL_Menu);
 								<?php if (PermitirFuncion(211)) {?><li><a class="alnk" href="informes_sap_parametrizar.php">Parametrizar Informes SAP B1</a></li><?php }?>
 								<?php if (PermitirFuncion(1501)) {?><li><a class="alnk" href="parametros_fe.php">Parámetros Facturación Electrónica</a></li><?php }?>
 								<?php if (PermitirFuncion(215)) {?><li><a class="alnk" href="parametros_asistentes.php">Parámetros asistentes</a></li><?php }?>
+								<?php if (true) {?><li><a class="alnk" href="parametros_asistente_socios_negocio.php">Parámetros asistente de socios de negocio</a></li><?php }?>
 								<?php if (PermitirFuncion(803)) {?><li><a class="alnk" href="parametros_gestion_cartera.php">Parámetros de Gestión cartera</a></li><?php }?>
 								<?php if (PermitirFuncion(216)) {?><li><a class="alnk" href="parametros_frm_personalizados.php">Parámetros de formularios personalizados</a></li><?php }?>
 								<?php if (PermitirFuncion(217)) {?><li><a class="alnk" href="parametros_campos_adicionales.php">Campos adicionales en documentos</a></li><?php }?>
