@@ -256,7 +256,7 @@ while ($row_UsuariosGestion = sqlsrv_fetch_array($SQL_UsuariosGestion)) {?>
                	  			</div>
 						</div>
 					 	<div class="form-group">
-							<label class="col-lg-1 control-label">Causa no pago</label>
+							<label class="col-lg-1 control-label">Causa no pago/recordatorio</label>
 							<div class="col-lg-3">
 								<select name="NoPago" class="form-control" id="NoPago">
 										<option value="">(Todos)</option>
@@ -266,7 +266,7 @@ while ($row_UsuariosGestion = sqlsrv_fetch_array($SQL_UsuariosGestion)) {?>
 								  <?php }?>
 								</select>
                	  			</div>
-							<label class="col-lg-1 control-label">Acuerdo de pago</label>
+							<label class="col-lg-1 control-label">Acuerdo de pago/recordatorio</label>
 							<div class="col-lg-3">
 								<select name="AcuerdoPago" class="form-control" id="AcuerdoPago">
 									<option value="">(Todos)</option>
@@ -275,7 +275,7 @@ while ($row_UsuariosGestion = sqlsrv_fetch_array($SQL_UsuariosGestion)) {?>
 								</select>
                	  			</div>
 							<div class="form-group">
-								<label class="col-lg-1 control-label">Fecha comp.</label>
+								<label class="col-lg-1 control-label">Fecha compromiso/recordatorio</label>
 								<div class="col-lg-3 input-group date">
 									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaCompPago" type="text" class="form-control" id="FechaCompPago" value="<?php if (isset($_GET['FechaCompPago']) && ($_GET['FechaCompPago'] != "")) {echo $_GET['FechaCompPago'];}?>" readonly="readonly" placeholder="YYYY-MM-DD">
 								</div>
@@ -315,12 +315,12 @@ while ($row_UsuariosGestion = sqlsrv_fetch_array($SQL_UsuariosGestion)) {?>
 						<th>Evento</th>
 						<th>Resultado</th>
 
-						<th>Placa</th> <!-- SMM, 04/09/2022 -->
+						<th>Serial</th> <!-- SMM, 04/09/2022 -->
 
-						<th>Fecha C. Pago</th>
-						<th>Fecha Utl Pago</th>
-                        <th>Causa de no pago</th>
-						<th>Acuerdo de pago</th>
+						<th>Fecha C. Pago/Recordatorio</th>
+						<th>Fecha Utl Pago/Recordatorio</th>
+                        <th>Causa de no pago/Recordatorio</th>
+						<th>Acuerdo de pago/Recordatorio</th>
                         <th>Fecha registro</th>
 						<th>Usuario</th>
 						<th>Acciones</th>

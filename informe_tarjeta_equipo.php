@@ -21,23 +21,23 @@ $SQL_Marca = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_MarcaVehiculo', '*');
 $SQL_Concesionario = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_Concesionario', '*');
 
 //Fechas, SMM 13/07/2022
-$FI_FechaProx_Mant = "";
-$FF_FechaProx_Mant = "";
-if (isset($_GET['FI_FechaProx_Mant']) && $_GET['FI_FechaProx_Mant'] != "") {
-    $FI_FechaProx_Mant = $_GET['FI_FechaProx_Mant'];
+$FI_FechaMatricula = "";
+$FF_FechaMatricula = "";
+if (isset($_GET['FI_FechaMatricula']) && $_GET['FI_FechaMatricula'] != "") {
+    $FI_FechaMatricula = $_GET['FI_FechaMatricula'];
     $sw = 1;
 } else {
     //Restar 7 dias a la fecha actual
     $fecha = date('Y-m-d');
     $nuevafecha = strtotime('-' . ObtenerVariable("DiasRangoFechasGestionar") . ' day');
     $nuevafecha = date('Y-m-d', $nuevafecha);
-    // $FI_FechaProx_Mant = $nuevafecha;
+    // $FI_FechaMatricula = $nuevafecha;
 }
-if (isset($_GET['FF_FechaProx_Mant']) && $_GET['FF_FechaProx_Mant'] != "") {
-    $FF_FechaProx_Mant = $_GET['FF_FechaProx_Mant'];
+if (isset($_GET['FF_FechaMatricula']) && $_GET['FF_FechaMatricula'] != "") {
+    $FF_FechaMatricula = $_GET['FF_FechaMatricula'];
     $sw = 1;
 } else {
-    // $FF_FechaProx_Mant = date('Y-m-d');
+    // $FF_FechaMatricula = date('Y-m-d');
 }
 
 $FI_Fecha_SOAT = "";
@@ -78,29 +78,110 @@ if (isset($_GET['FF_Fecha_Tecno']) && $_GET['FF_Fecha_Tecno'] != "") {
     // $FF_Fecha_Tecno = date('Y-m-d');
 }
 
+$FI_FechaUlt_CambAceite = "";
+$FF_FechaUlt_CambAceite = "";
+if (isset($_GET['FI_FechaUlt_CambAceite']) && $_GET['FI_FechaUlt_CambAceite'] != "") {
+    $FI_FechaUlt_CambAceite = $_GET['FI_FechaUlt_CambAceite'];
+    $sw = 1;
+} else {
+    //Restar 7 dias a la fecha actual
+    $fecha = date('Y-m-d');
+    $nuevafecha = strtotime('-' . ObtenerVariable("DiasRangoFechasGestionar") . ' day');
+    $nuevafecha = date('Y-m-d', $nuevafecha);
+    // $FI_FechaUlt_CambAceite = $nuevafecha;
+}
+if (isset($_GET['FF_FechaUlt_CambAceite']) && $_GET['FF_FechaUlt_CambAceite'] != "") {
+    $FF_FechaUlt_CambAceite = $_GET['FF_FechaUlt_CambAceite'];
+    $sw = 1;
+} else {
+    // $FF_FechaUlt_CambAceite = date('Y-m-d');
+}
+
+$FI_FechaProx_CambAceite = "";
+$FF_FechaProx_CambAceite = "";
+if (isset($_GET['FI_FechaProx_CambAceite']) && $_GET['FI_FechaProx_CambAceite'] != "") {
+    $FI_FechaProx_CambAceite = $_GET['FI_FechaProx_CambAceite'];
+    $sw = 1;
+} else {
+    //Restar 7 dias a la fecha actual
+    $fecha = date('Y-m-d');
+    $nuevafecha = strtotime('-' . ObtenerVariable("DiasRangoFechasGestionar") . ' day');
+    $nuevafecha = date('Y-m-d', $nuevafecha);
+    // $FI_FechaProx_CambAceite = $nuevafecha;
+}
+if (isset($_GET['FF_FechaProx_CambAceite']) && $_GET['FF_FechaProx_CambAceite'] != "") {
+    $FF_FechaProx_CambAceite = $_GET['FF_FechaProx_CambAceite'];
+    $sw = 1;
+} else {
+    // $FF_FechaProx_CambAceite = date('Y-m-d');
+}
+
+$FI_FechaUlt_Mant = "";
+$FF_FechaUlt_Mant = "";
+if (isset($_GET['FI_FechaUlt_Mant']) && $_GET['FI_FechaUlt_Mant'] != "") {
+    $FI_FechaUlt_Mant = $_GET['FI_FechaUlt_Mant'];
+    $sw = 1;
+} else {
+    //Restar 7 dias a la fecha actual
+    $fecha = date('Y-m-d');
+    $nuevafecha = strtotime('-' . ObtenerVariable("DiasRangoFechasGestionar") . ' day');
+    $nuevafecha = date('Y-m-d', $nuevafecha);
+    // $FI_FechaUlt_Mant = $nuevafecha;
+}
+if (isset($_GET['FF_FechaUlt_Mant']) && $_GET['FF_FechaUlt_Mant'] != "") {
+    $FF_FechaUlt_Mant = $_GET['FF_FechaUlt_Mant'];
+    $sw = 1;
+} else {
+    // $FF_FechaUlt_Mant = date('Y-m-d');
+}
+
+$FI_FechaProx_Mant = "";
+$FF_FechaProx_Mant = "";
+if (isset($_GET['FI_FechaProx_Mant']) && $_GET['FI_FechaProx_Mant'] != "") {
+    $FI_FechaProx_Mant = $_GET['FI_FechaProx_Mant'];
+    $sw = 1;
+} else {
+    //Restar 7 dias a la fecha actual
+    $fecha = date('Y-m-d');
+    $nuevafecha = strtotime('-' . ObtenerVariable("DiasRangoFechasGestionar") . ' day');
+    $nuevafecha = date('Y-m-d', $nuevafecha);
+    // $FI_FechaProx_Mant = $nuevafecha;
+}
+if (isset($_GET['FF_FechaProx_Mant']) && $_GET['FF_FechaProx_Mant'] != "") {
+    $FF_FechaProx_Mant = $_GET['FF_FechaProx_Mant'];
+    $sw = 1;
+} else {
+    // $FF_FechaProx_Mant = date('Y-m-d');
+}
+
 // Filtros
 $Cliente = $_GET['ClienteEquipo'] ?? "";
 $IdMarca = $_GET['Marca'] ?? "";
-$Ciudad = $_GET['Ciudad'] ?? "";
+$CiudadSede = $_GET['CiudadSede'] ?? "";
 $IdConcesionario = $_GET['Concesionario'] ?? "";
-$FechaMatriculo = (isset($_GET['CDU_FechaMatricula']) && strtotime($_GET['CDU_FechaMatricula'])) ? ("'" . FormatoFecha($_GET['CDU_FechaMatricula']) . "'") : "NULL";
-$FechaUltMnto = (isset($_GET['CDU_FechaUlt_Mant']) && strtotime($_GET['CDU_FechaUlt_Mant'])) ? ("'" . FormatoFecha($_GET['CDU_FechaUlt_Mant']) . "'") : "NULL";
 
 if ($sw == 1) {
     $Param = array(
         "'" . $Cliente . "'",
         "'" . $IdMarca . "'",
-        "'" . $Ciudad . "'",
+        "'" . $CiudadSede . "'",
         "'" . $IdConcesionario . "'",
-        $FechaMatriculo,
-        $FechaUltMnto,
-        "'" . FormatoFecha($FI_FechaProx_Mant) . "'",
-        "'" . FormatoFecha($FF_FechaProx_Mant) . "'",
+        "'" . FormatoFecha($FI_FechaMatricula) . "'",
+        "'" . FormatoFecha($FF_FechaMatricula) . "'",
         "'" . FormatoFecha($FI_Fecha_SOAT) . "'",
         "'" . FormatoFecha($FF_Fecha_SOAT) . "'",
         "'" . FormatoFecha($FI_Fecha_Tecno) . "'",
         "'" . FormatoFecha($FF_Fecha_Tecno) . "'",
+        "'" . FormatoFecha($FI_FechaUlt_CambAceite) . "'",
+        "'" . FormatoFecha($FF_FechaUlt_CambAceite) . "'",
+        "'" . FormatoFecha($FI_FechaProx_CambAceite) . "'",
+        "'" . FormatoFecha($FF_FechaProx_CambAceite) . "'",
+        "'" . FormatoFecha($FI_FechaUlt_Mant) . "'",
+        "'" . FormatoFecha($FF_FechaUlt_Mant) . "'",
+        "'" . FormatoFecha($FI_FechaProx_Mant) . "'",
+        "'" . FormatoFecha($FF_FechaProx_Mant) . "'",
     );
+
     $SQL = EjecutarSP('usp_inf_GestionTarjetaEquipos', $Param);
 }
 ?>
@@ -197,9 +278,9 @@ if ($sw == 1) {
 								</select>
 							</div>
 
-							<label class="col-lg-1 control-label">Ciudad</label>
+							<label class="col-lg-1 control-label">Ciudad Sede</label>
 							<div class="col-lg-3">
-								<input name="Ciudad" type="text" class="form-control" id="Ciudad" maxlength="100" value="<?php if (isset($_GET['Ciudad']) && ($_GET['Ciudad'] != "")) {echo $_GET['Ciudad'];}?>">
+								<input name="CiudadSede" type="text" class="form-control" id="CiudadSede" maxlength="100" value="<?php if (isset($_GET['CiudadSede']) && ($_GET['CiudadSede'] != "")) {echo $_GET['CiudadSede'];}?>">
 							</div>
 						</div>
 
@@ -211,25 +292,11 @@ if ($sw == 1) {
 							</div>
 
 							<label class="col-lg-1 control-label">Fecha Matricula</label>
-							<div class="col-lg-3 input-group date">
-								<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="CDU_FechaMatricula" id="CDU_FechaMatricula" type="text" class="form-control fecha" autocomplete="off"
-								placeholder="YYYY-MM-DD" value="<?php if (isset($_GET['CDU_FechaMatricula']) && strtotime($_GET['CDU_FechaMatricula'])) {echo date('Y-m-d', strtotime($_GET['CDU_FechaMatricula']));}?>">
-							</div>
-
-							<label class="col-lg-1 control-label">Fecha Ult. Mantenimiento</label>
-							<div class="col-lg-3 input-group date">
-								<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="CDU_FechaUlt_Mant" id="CDU_FechaUlt_Mant" type="text" class="form-control fecha" autocomplete="off"
-								placeholder="YYYY-MM-DD" value="<?php if (isset($_GET['CDU_FechaUlt_Mant']) && strtotime($_GET['CDU_FechaUlt_Mant'])) {echo date('Y-m-d', strtotime($_GET['CDU_FechaUlt_Mant']));}?>">
-							</div>
-						</div>
-
-						<div class="form-group">
-							<label class="col-lg-1 control-label">Fecha Prox. Mantenimiento</label>
 							<div class="col-lg-3">
 								<div class="input-daterange input-group">
-									<input name="FI_FechaProx_Mant" type="text" class="input-sm form-control fecha" id="FI_FechaProx_Mant" placeholder="Fecha inicial" value="<?php echo $FI_FechaProx_Mant; ?>" autocomplete="off" />
+									<input name="FI_FechaMatricula" type="text" class="input-sm form-control fecha" id="FI_FechaMatricula" placeholder="Fecha inicial" value="<?php echo $FI_FechaMatricula; ?>" autocomplete="off" />
 									<span class="input-group-addon">hasta</span>
-									<input name="FF_FechaProx_Mant" type="text" class="input-sm form-control fecha" id="FF_FechaProx_Mant" placeholder="Fecha final" value="<?php echo $FF_FechaProx_Mant; ?>" autocomplete="off" />
+									<input name="FF_FechaMatricula" type="text" class="input-sm form-control fecha" id="FF_FechaMatricula" placeholder="Fecha final" value="<?php echo $FF_FechaMatricula; ?>" autocomplete="off" />
 								</div>
 							</div>
 
@@ -239,6 +306,26 @@ if ($sw == 1) {
 									<input name="FI_Fecha_SOAT" type="text" class="input-sm form-control fecha" id="FI_Fecha_SOAT" placeholder="Fecha inicial" value="<?php echo $FI_Fecha_SOAT; ?>" autocomplete="off" />
 									<span class="input-group-addon">hasta</span>
 									<input name="FF_Fecha_SOAT" type="text" class="input-sm form-control fecha" id="FF_Fecha_SOAT" placeholder="Fecha final" value="<?php echo $FF_Fecha_SOAT; ?>" autocomplete="off" />
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-lg-1 control-label">Fecha Ult. Mantenimiento</label>
+							<div class="col-lg-3">
+								<div class="input-daterange input-group">
+									<input name="FI_FechaUlt_Mant" type="text" class="input-sm form-control fecha" id="FI_FechaUlt_Mant" placeholder="Fecha inicial" value="<?php echo $FI_FechaUlt_Mant; ?>" autocomplete="off" />
+									<span class="input-group-addon">hasta</span>
+									<input name="FF_FechaUlt_Mant" type="text" class="input-sm form-control fecha" id="FF_FechaUlt_Mant" placeholder="Fecha final" value="<?php echo $FF_FechaUlt_Mant; ?>" autocomplete="off" />
+								</div>
+							</div>
+
+							<label class="col-lg-1 control-label">Fecha Ult. Camb. Aceite</label>
+							<div class="col-lg-3">
+								<div class="input-daterange input-group">
+									<input name="FI_FechaUlt_CambAceite" type="text" class="input-sm form-control fecha" id="FI_FechaUlt_CambAceite" placeholder="Fecha inicial" value="<?php echo $FI_FechaUlt_CambAceite; ?>" autocomplete="off" />
+									<span class="input-group-addon">hasta</span>
+									<input name="FF_FechaUlt_CambAceite" type="text" class="input-sm form-control fecha" id="FF_FechaUlt_CambAceite" placeholder="Fecha final" value="<?php echo $FF_FechaUlt_CambAceite; ?>" autocomplete="off" />
 								</div>
 							</div>
 
@@ -253,7 +340,25 @@ if ($sw == 1) {
 						</div>
 
 						<div class="form-group">
-							<div class="col-lg-12">
+							<label class="col-lg-1 control-label">Fecha Prox. Mantenimiento</label>
+							<div class="col-lg-3">
+								<div class="input-daterange input-group">
+									<input name="FI_FechaProx_Mant" type="text" class="input-sm form-control fecha" id="FI_FechaProx_Mant" placeholder="Fecha inicial" value="<?php echo $FI_FechaProx_Mant; ?>" autocomplete="off" />
+									<span class="input-group-addon">hasta</span>
+									<input name="FF_FechaProx_Mant" type="text" class="input-sm form-control fecha" id="FF_FechaProx_Mant" placeholder="Fecha final" value="<?php echo $FF_FechaProx_Mant; ?>" autocomplete="off" />
+								</div>
+							</div>
+
+							<label class="col-lg-1 control-label">Fecha Prox. Camb. Aceite</label>
+							<div class="col-lg-3">
+								<div class="input-daterange input-group">
+									<input name="FI_FechaProx_CambAceite" type="text" class="input-sm form-control fecha" id="FI_FechaProx_CambAceite" placeholder="Fecha inicial" value="<?php echo $FI_FechaProx_CambAceite; ?>" autocomplete="off" />
+									<span class="input-group-addon">hasta</span>
+									<input name="FF_FechaProx_CambAceite" type="text" class="input-sm form-control fecha" id="FF_FechaProx_CambAceite" placeholder="Fecha final" value="<?php echo $FF_FechaProx_CambAceite; ?>" autocomplete="off" />
+								</div>
+							</div>
+
+							<div class="col-lg-4">
 								<button type="submit" class="btn btn-outline btn-success pull-right"><i class="fa fa-search"></i> Buscar</button>
 							</div>
 						</div>
@@ -284,15 +389,19 @@ if ($sw == 1) {
                     <tr>
 						<th>Núm.</th>
 						<th>Código cliente</th>
+						<th>Nombre cliente</th>
 						<th>Serial interno</th>
                         <th>Marca vehículo</th>
-						<th>Ciudad</th>
+						<th>Ciudad Sede</th>
 						<th>Concesionario</th>
 						<th>Fecha Matricula</th>
-                        <th>Fecha Ult. Mant.</th>
-						<th>Fecha Prox. Mant.</th>
 						<th>Fecha SOAT</th>
 						<th>Fecha Tecno.</th>
+						<th>Fecha Ult. Camb. Aceite</th>
+						<th>Fecha Prox. Camb. Aceite</th>
+                        <th>Fecha Ult. Mant.</th>
+						<th>Fecha Prox. Mant.</th>
+						<!--th>Fecha Ult. Gest. CRM</th-->
 						<th>Estado</th>
 						<th>Acciones</th>
                     </tr>
@@ -302,15 +411,18 @@ if ($sw == 1) {
 						 <tr class="gradeX tooltip-demo">
 							<td><?php echo $row['IdTarjetaEquipo']; ?></td>
 							<td><?php echo $row['CardCode']; ?></td>
+							<td><?php echo $row['CardName']; ?></td>
 							<td><?php echo $row['SerialInterno']; ?></td>
 							<td><?php echo $row['CDU_Marca']; ?></td>
-							<td><?php echo $row['Ciudad']; ?></td>
+							<td><?php echo $row['CDU_SedeVenta']; ?></td>
 							<td><?php echo $row['CDU_Concesionario']; ?></td>
 							<td><?php echo ($row['CDU_FechaMatricula'] != "") ? $row['CDU_FechaMatricula']->format('Y-m-d') : ""; ?></td>
-							<td><?php echo ($row['CDU_FechaUlt_Mant'] != "") ? $row['CDU_FechaUlt_Mant']->format('Y-m-d') : ""; ?></td>
-							<td><?php echo ($row['CDU_FechaProx_Mant'] != "") ? $row['CDU_FechaProx_Mant']->format('Y-m-d') : ""; ?></td>
 							<td><?php echo ($row['CDU_Fecha_SOAT'] != "") ? $row['CDU_Fecha_SOAT']->format('Y-m-d') : ""; ?></td>
 							<td><?php echo ($row['CDU_Fecha_Tecno'] != "") ? $row['CDU_Fecha_Tecno']->format('Y-m-d') : ""; ?></td>
+							<td><?php echo ($row['CDU_FechaUlt_CambAceite'] != "") ? $row['CDU_FechaUlt_CambAceite']->format('Y-m-d') : ""; ?></td>
+							<td><?php echo ($row['CDU_FechaProx_CambAceite'] != "") ? $row['CDU_FechaProx_CambAceite']->format('Y-m-d') : ""; ?></td>
+							<td><?php echo ($row['CDU_FechaUlt_Mant'] != "") ? $row['CDU_FechaUlt_Mant']->format('Y-m-d') : ""; ?></td>
+							<td><?php echo ($row['CDU_FechaProx_Mant'] != "") ? $row['CDU_FechaProx_Mant']->format('Y-m-d') : ""; ?></td>
 							<td>
 								<?php if ($row['CodEstado'] == 'A') {?>
 									<span  class='label label-info'>Activo</span>

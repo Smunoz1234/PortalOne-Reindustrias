@@ -917,13 +917,13 @@ while ($row_Dirigido = sqlsrv_fetch_array($SQL_Dirigido)) {?>
 										</div>
 									</div>
 									<div class="form-group">
-										<label class="col-lg-2 control-label">Fecha de compromiso de pago</label>
+										<label class="col-lg-2 control-label">Fecha de compromiso de pago/recordatorio</label>
 										<div class="col-lg-2 input-group date">
 											 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaCompPago" type="text" class="form-control" id="FechaCompPago" value="" readonly="readonly" placeholder="YYYY-MM-DD">
 										</div>
 									</div>
 									<div class="form-group">
-										<label class="col-lg-2 control-label">Causa de no pago</label>
+										<label class="col-lg-2 control-label">Causa de no pago/recordatorio</label>
 										<div class="col-lg-4">
 											<select name="CausaNoPago" class="form-control select2" id="CausaNoPago">
 												<option value="1">(NINGUNA)</option>
