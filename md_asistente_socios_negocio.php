@@ -8,9 +8,6 @@ $edit = isset($_POST['edit']) ? $_POST['edit'] : 0;
 $doc = isset($_POST['doc']) ? $_POST['doc'] : "";
 $id = isset($_POST['id']) ? $_POST['id'] : "";
 
-// SMM, 26/08/2022
-$palabra = ($doc == "Procesos") ? "proceso" : "motivo";
-
 // Usuarios de SAP, (NO bloqueados).
 $SQL_UsuariosSAP = Seleccionar("uvw_Sap_tbl_UsuariosSAP", "*", "Locked = 'N'", "USER_CODE");
 
@@ -25,12 +22,9 @@ $ids_perfiles = array();
 if ($edit == 1 && $id != "") {
     $Title = "Editar registro";
     $Metodo = 2;
-    if ($doc == "Motivos") {
-        $SQL = Seleccionar('tbl_Autorizaciones_Motivos', '*', "IdInterno='" . $id . "'");
-        $row = sqlsrv_fetch_array($SQL);
 
-    } elseif ($doc == "Procesos") {
-        $SQL = Seleccionar('tbl_Autorizaciones_Procesos', '*', "IdInterno='" . $id . "'");
+    if ($doc == "Retencion") {
+        $SQL = Seleccionar('tbl_MunicipiosRetenciones', '*', "id='" . $id . "'");
         $row = sqlsrv_fetch_array($SQL);
 
         // SMM 27/07/2022
@@ -79,14 +73,25 @@ if ($edit == 1 && $id != "") {
 <form id="frm_NewParam" method="post" action="parametros_autorizaciones_documentos.php" enctype="multipart/form-data">
 <div class="modal-header">
 	<h4 class="modal-title">
-		<?php echo "Crear nuevo $palabra de autorización"; ?>
+		<?php echo $Title; ?>
 	</h4>
 </div>
 <div class="modal-body">
 	<div class="form-group">
 		<div class="ibox-content">
 			<?php include "includes/spinner.php";?>
-			<?php if ($doc == "Procesos") {?>
+			<?php if ($doc == "Retencion") {?>
+				<div class="form-group">
+					<div class="col-md-6">
+						<label class="control-label">ID Retencion <span class="text-danger">*</span></label>
+						<input type="text" class="form-control" name="id_retencion" id="id_retencion" required autocomplete="off" value="<?php if ($edit == 1) {echo $row['id_retencion'];}?>">
+					</div>
+					<div class="col-md-6">
+						<label class="control-label">Motivo <span class="text-danger">*</span></label>
+						<input type="text" class="form-control" name="MotivoAutorizacion" id="MotivoAutorizacion" required autocomplete="off" value="<?php if ($edit == 1) {echo $row['MotivoAutorizacion'];}?>">
+					</div>
+				</div>
+
 				<div class="form-group">
 					<div class="col-md-12">
 						<label class="control-label">Comentarios</label>
@@ -142,45 +147,6 @@ if ($edit == 1 && $id != "") {
 				<br><br><br><br>
 				<div class="form-group">
 					<div class="col-md-12">
-						<label class="control-label">Condiciones</label>
-						<textarea name="Condiciones" rows="3" maxlength="3000" class="form-control" id="Condiciones" type="text"><?php if ($edit == 1) {echo $row['Condiciones'];}?></textarea>
-					</div>
-				</div>
-
-				<br><br><br><br><br><br>
-				<div class="panel panel-info">
-					<div class="panel-heading active" role="tab" id="headingOne">
-						<h4 class="panel-title">
-							<a role="button" data-toggle="collapse" href="#collapseOne" aria-controls="collapseOne">
-								<i class="fa fa-info-circle"></i> Parámetros de entrada y salida
-							</a>
-						</h4>
-					</div>
-					<div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
-						<div class="panel-body">
-							<p>Puede utilizar las siguientes variables en el cuerpo del mensaje para referirse a los datos de los archivos:</p>
-							<ul>
-								<li><b style="color: red;">Parámetro de entrada</b>
-									<ul>
-										<li><strong>[IdDocumento]</strong> Campo llave del registro.</li>
-										<li><strong>[IdEvento]</strong> Identificación del evento relacionado al documento.</li>
-									</ul>
-								</li>
-								<li><b style="color: red;">Parámetros de salidas</b>
-									<ul>
-										<li><strong>[success]</strong> Bandera de confirmación (<b>0</b> - NO exitoso / <b>1</b> - exitoso).</li>
-										<li><strong>[mensaje]</strong> Descripción de la validación de la autorización.</li>
-										<li><strong>[IdMotivo]</strong> Identificación del motivo (se debe seleccionar del listado de motivos).</li>
-									</ul>
-								</li>
-							</ul>
-						</div> <!-- panel-body-->
-					</div> <!-- panel-collapse -->
-				</div>
-			<!-- Fin Procesos -->
-			<?php } elseif ($doc == "Motivos") {?>
-				<div class="form-group">
-					<div class="col-md-12">
 						<label class="control-label">Comentarios</label>
 						<textarea name="Comentarios" rows="3" maxlength="3000" class="form-control" id="Comentarios" type="text"><?php if ($edit == 1) {echo $row['Comentarios'];}?></textarea>
 					</div>
@@ -213,18 +179,6 @@ if ($edit == 1 && $id != "") {
 							<option value="Y" <?php if (($edit == 1) && ($row['Estado'] == "Y")) {echo "selected=\"selected\"";}?>>ACTIVO</option>
 							<option value="N" <?php if (($edit == 1) && ($row['Estado'] == "N")) {echo "selected=\"selected\"";}?>>INACTIVO</option>
 						</select>
-					</div>
-				</div>
-
-				<br><br><br><br>
-				<div class="form-group">
-					<div class="col-md-6">
-						<label class="control-label">Id Motivo <span class="text-danger">*</span></label>
-						<input type="text" class="form-control" name="IdMotivoAutorizacion" id="IdMotivoAutorizacion" required autocomplete="off" value="<?php if ($edit == 1) {echo $row['IdMotivoAutorizacion'];}?>">
-					</div>
-					<div class="col-md-6">
-						<label class="control-label">Motivo <span class="text-danger">*</span></label>
-						<input type="text" class="form-control" name="MotivoAutorizacion" id="MotivoAutorizacion" required autocomplete="off" value="<?php if ($edit == 1) {echo $row['MotivoAutorizacion'];}?>">
 					</div>
 				</div>
 
@@ -265,25 +219,7 @@ if ($edit == 1 && $id != "") {
 </div>
 <div class="modal-footer">
 	<button type="submit" class="btn btn-success m-t-md"><i class="fa fa-check"></i> Aceptar</button>
-
-	<?php if ($doc == "Procesos") {?>
-		<button type="button" class="btn btn-info m-t-md pull-left" onClick="Validar('<?php echo $doc; ?>','<?php echo $id; ?>');"><i class="fa fa-database"></i> Validar Condiciones</button>
-	<?php }?>
-
-	<!-- Desactivado
-	<?php if ($edit == 1) {?><button type="button" class="btn btn-danger m-t-md pull-left" onClick="Eliminar('<?php echo $doc; ?>','<?php echo $id; ?>');"><i class="fa fa-trash"></i> Eliminar</button><?php }?>
-	Hasta aquí -->
-
 	<button type="button" class="btn btn-warning m-t-md" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
-
-	<div class="form-group" id="CondicionesContainer" style="display: none;">
-		<br><br><br>
-
-		<label class="control-label pull-left text-muted">Validación de Condiciones</label>
-		<a class="btn btn-info btn-xs" id="Raw" target="_blank"><i class="fa fa-eye"></i> Ver respuesta en texto plano</a>
-
-		<textarea rows="3" type="text" name="Validacion" id="Validacion" class="form-control text-muted" readonly>Resultado de la Validación</textarea>
-	</div>
 </div>
 	<input type="hidden" id="TipoDoc" name="TipoDoc" value="<?php echo $doc; ?>" />
 	<input type="hidden" id="ID_Actual" name="ID_Actual" value="<?php echo $id; ?>" />

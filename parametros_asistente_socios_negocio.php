@@ -8,25 +8,15 @@ $sw_error = 0;
 if (isset($_POST['Metodo']) && ($_POST['Metodo'] == 3)) {
     try {
 
-        if ($_POST['TipoDoc'] == "Procesos") {
+        if ($_POST['TipoDoc'] == "Retencion") {
             $Param = array(
                 $_POST['Metodo'], // 3 - Eliminar
-                isset($_POST['IdInterno']) ? $_POST['IdInterno'] : "NULL", // IdInterno
+                isset($_POST['id']) ? $_POST['id'] : "NULL",
             );
             $SQL = EjecutarSP('sp_tbl_Autorizaciones_Procesos', $Param);
             if (!$SQL) {
                 $sw_error = 1;
                 $msg_error = "No se pudo eliminar el proceso de autorización";
-            }
-        } elseif ($_POST['TipoDoc'] == "Motivos") {
-            $Param = array(
-                $_POST['Metodo'], // 3 - Eliminar
-                isset($_POST['IdInterno']) ? $_POST['IdInterno'] : "NULL", // IdInterno
-            );
-            $SQL = EjecutarSP('sp_tbl_Autorizaciones_Motivos', $Param);
-            if (!$SQL) {
-                $sw_error = 1;
-                $msg_error = "No se pudo eliminar el motivo de autorización";
             }
         }
 
@@ -40,7 +30,7 @@ if (isset($_POST['Metodo']) && ($_POST['Metodo'] == 3)) {
 if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Metodo']) && ($_POST['Metodo'] == 2))) {
     try {
 
-        if ($_POST['TipoDoc'] == "Procesos") {
+        if ($_POST['TipoDoc'] == "Retencion") {
             $FechaHora = "'" . FormatoFecha(date('Y-m-d'), date('H:i:s')) . "'";
             $Usuario = "'" . $_SESSION['CodUser'] . "'";
 
@@ -69,43 +59,11 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
                 $sw_error = 1;
                 $msg_error = "No se pudo insertar los datos";
             }
-        } elseif ($_POST['TipoDoc'] == "Motivos") {
-            $FechaHora = "'" . FormatoFecha(date('Y-m-d'), date('H:i:s')) . "'";
-            $Usuario = "'" . $_SESSION['CodUser'] . "'";
-
-            $Perfiles = implode(";", $_POST['Perfiles']);
-            $Perfiles = count($_POST['Perfiles']) > 0 ? "'$Perfiles'" : "''";
-
-            $IdInterno = (isset($_POST['ID_Actual']) && ($_POST['ID_Actual'] != "")) ? $_POST['ID_Actual'] : "NULL";
-
-            $Param = array(
-                $_POST['Metodo'] ?? 1, // 1 - Crear, 2 - Actualizar
-                $IdInterno,
-                "'" . $_POST['IdMotivoAutorizacion'] . "'",
-                "'" . $_POST['MotivoAutorizacion'] . "'",
-                "'" . $_POST['IdTipoDocumento'] . "'",
-                "'" . $_POST['IdModeloAutorizacionSAPB1'] . "'",
-                "'" . $_POST['IdUsuarioAutorizacion'] . "'", // SMM, 26/08/2022
-                "'" . md5($_POST['PassUsuarioAutorizacion']) . "'", // SMM, 26/08/2022
-                "'" . $_POST['Comentarios'] . "'",
-                "'" . $_POST['Estado'] . "'",
-                $Usuario, // @id_usuario_actualizacion
-                $FechaHora, // @fecha_actualizacion
-                $FechaHora, // @hora_actualizacion
-                ($_POST['Metodo'] == 1) ? $Usuario : "NULL",
-                ($_POST['Metodo'] == 1) ? $FechaHora : "NULL",
-                ($_POST['Metodo'] == 1) ? $FechaHora : "NULL",
-            );
-            $SQL = EjecutarSP('sp_tbl_Autorizaciones_Motivos', $Param);
-            if (!$SQL) {
-                $sw_error = 1;
-                $msg_error = "No se pudo insertar los datos";
-            }
         }
 
         if ($sw_error == 0) {
             $TipoDoc = $_POST['TipoDoc'];
-            header("Location:parametros_autorizaciones_documentos.php?doc=$TipoDoc&a=" . base64_encode("OK_PRUpd") . "#$TipoDoc");
+            header("Location:parametros_asistente_socios_negocio.php?doc=$TipoDoc&a=" . base64_encode("OK_PRUpd") . "#$TipoDoc");
         }
 
     } catch (Exception $e) {
@@ -115,11 +73,8 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
 
 }
 
-// SMM, 18/08/2022
-$SQL_Procesos = Seleccionar("uvw_tbl_Autorizaciones_Procesos", "*");
-
-// SMM, 21/07/2022
-$SQL_Motivos = Seleccionar("uvw_tbl_Autorizaciones_Motivos", "*");
+// SMM, 06/09/2022
+$SQL_MunicipiosRetenciones = Seleccionar("uvw_tbl_MunicipiosRetenciones", "*");
 
 // Perfiles Usuarios, SMM 26/07/2022
 $SQL_Perfiles = Seleccionar('uvw_tbl_PerfilesUsuarios', '*');
@@ -131,7 +86,7 @@ $SQL_Perfiles = Seleccionar('uvw_tbl_PerfilesUsuarios', '*');
 <head>
 <?php include_once "includes/cabecera.php";?>
 <!-- InstanceBeginEditable name="doctitle" -->
-<title>Parámetros autorizaciones documentos | <?php echo NOMBRE_PORTAL; ?></title>
+<title>Parámetros asistente de socios de negocio | <?php echo NOMBRE_PORTAL; ?></title>
 <!-- InstanceEndEditable -->
 <!-- InstanceBeginEditable name="head" -->
 <style>
@@ -200,7 +155,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
         <!-- InstanceBeginEditable name="Contenido" -->
         <div class="row wrapper border-bottom white-bg page-heading">
                 <div class="col-sm-8">
-                    <h2>Parámetros autorizaciones documentos</h2>
+                    <h2>Parámetros asistente de socios de negocio</h2>
                     <ol class="breadcrumb">
                         <li>
                             <a href="index1.php">Inicio</a>
@@ -212,7 +167,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
                             <a href="#">Parámetros del sistema</a>
                         </li>
                         <li class="active">
-                            <strong>Parámetros autorizaciones documentos</strong>
+                            <strong>Parámetros asistente de socios de negocio</strong>
                         </li>
                     </ol>
                 </div>
@@ -232,21 +187,18 @@ if (isset($sw_error) && ($sw_error == 1)) {
 						<?php include "includes/spinner.php";?>
 						 <div class="tabs-container">
 							<ul class="nav nav-tabs">
-								<li class="<?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Procesos") || !isset($_GET['doc'])) ? "active" : ""; ?>">
-									<a data-toggle="tab" href="#tab-1"><i class="fa fa-list"></i> Lista procesos autorización</a>
-								</li>
-								<li class="<?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Motivos")) ? "active" : ""; ?>">
-									<a data-toggle="tab" href="#tab-2"><i class="fa fa-list"></i> Lista motivos autorización</a>
+								<li class="<?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Retencion") || !isset($_GET['doc'])) ? "active" : ""; ?>">
+									<a data-toggle="tab" href="#tab-1"><i class="fa fa-list"></i> Lista de retenciones</a>
 								</li>
 							</ul>
 							<div class="tab-content">
-								<!-- Inicio, lista motivo autorización -->
-								<div id="tab-1" class="tab-pane <?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Procesos") || !isset($_GET['doc'])) ? "active" : ""; ?>">
+								<!-- Inicio, lista retenciones autorización -->
+								<div id="tab-1" class="tab-pane <?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Retencion") || !isset($_GET['doc'])) ? "active" : ""; ?>">
 									<form class="form-horizontal">
-										<!-- Inicio, ibox motivos -->
-										<div class="ibox" id="Procesos">
+										<!-- Inicio, ibox Retenciones -->
+										<div class="ibox" id="Retencion">
 											<div class="ibox-title bg-success">
-												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista procesos de autorizaciones</h5>
+												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista de retenciones</h5>
 												 <a class="collapse-link pull-right">
 													<i class="fa fa-chevron-up"></i>
 												</a>
@@ -254,18 +206,16 @@ if (isset($sw_error) && ($sw_error == 1)) {
 											<div class="ibox-content">
 												<div class="row m-b-md">
 													<div class="col-lg-12">
-														<button class="btn btn-primary pull-right" type="button" id="NewMotivo" onClick="CrearCampo('Procesos');"><i class="fa fa-plus-circle"></i> Agregar nuevo</button>
+														<button class="btn btn-primary pull-right" type="button" id="NewRetencion" onClick="CrearCampo('Retencion');"><i class="fa fa-plus-circle"></i> Agregar nuevo</button>
 													</div>
 												</div>
 												<div class="table-responsive">
 													<table class="table table-striped table-bordered table-hover dataTables-example">
 														<thead>
 															<tr>
-																<!-- th>ID Tipo Documento</th -->
-																<th>Tipo Documento</th>
-																<th>Comentarios</th>
-																<th>Perfiles</th>
-																<th>Condiciones</th>
+																<th>ID Retencion</th>
+																<th>Entidad</th>
+																<th>Municipio</th>
 																<th>Fecha Actualizacion</th>
 																<th>Usuario Actualizacion</th>
 																<th>Estado</th>
@@ -273,39 +223,22 @@ if (isset($sw_error) && ($sw_error == 1)) {
 															</tr>
 														</thead>
 														<tbody>
-															 <?php while ($row_Proceso = sqlsrv_fetch_array($SQL_Procesos)) {?>
+															 <?php while ($row_Proceso = sqlsrv_fetch_array($SQL_MunicipiosRetenciones)) {?>
 															<tr>
-																<!-- td><?php echo $row_Proceso['IdTipoDocumento']; ?></td -->
-																<td><?php echo $row_Proceso['TipoDocumento']; ?></td>
-																<td><?php echo $row_Proceso['Comentarios']; ?></td>
-
-																<td>
-																	<?php sqlsrv_fetch($SQL_Perfiles, SQLSRV_SCROLL_ABSOLUTE, -1);?>
-																	<?php $ids_perfiles = explode(";", $row_Proceso['Perfiles']);?>
-
-																	<?php $cadenaPerfiles = "";?>
-																	<?php while ($row_Perfil = sqlsrv_fetch_array($SQL_Perfiles)) {?>
-																		<?php if (in_array($row_Perfil['ID_PerfilUsuario'], $ids_perfiles)) {?>
-																			<!-- ?php echo $row_Perfil['PerfilUsuario']; ?>
-																			<br><br -->
-																			<?php $cadenaPerfiles .= $row_Perfil['PerfilUsuario'] . "; ";?>
-																		<?php }?>
-																	<?php }?>
-																	<?php echo ($cadenaPerfiles == "") ? "(Todos)" : $cadenaPerfiles; ?>
-																</td>
-
-																<td><?php echo $row_Proceso['Condiciones']; ?></td>
+																<td><?php echo $row_Proceso['id_retencion']; ?></td>
+																<td><?php echo $row_Proceso['entidad']; ?></td>
+																<td><?php echo $row_Proceso['municipio']; ?></td>
 
 																<td><?php echo isset($row_Proceso['fecha_actualizacion']) ? date_format($row_Proceso['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
 																<td><?php echo $row_Proceso['usuario_actualizacion']; ?></td>
 																<td>
-																	<span class="label <?php echo ($row_Proceso['Estado'] == "Y") ? "label-info" : "label-danger"; ?>">
-																		<?php echo ($row_Proceso['Estado'] == "Y") ? "Activo" : "Inactivo"; ?>
+																	<span class="label <?php echo ($row_Proceso['estado'] == "Y") ? "label-info" : "label-danger"; ?>">
+																		<?php echo ($row_Proceso['estado'] == "Y") ? "Activo" : "Inactivo"; ?>
 																	</span>
 																</td>
 																<td>
-																	<button type="button" id="btnEdit<?php echo $row_Proceso['IdInterno']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Proceso['IdInterno']; ?>','Procesos');"><i class="fa fa-pencil"></i> Editar</button>
-																	<!-- button type="button" id="btnDelete<?php //echo $row_Proceso['IdInterno']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php //echo $row_Proceso['IdInterno']; ?>','Procesos');"><i class="fa fa-trash"></i> Eliminar</button -->
+																	<button type="button" id="btnEdit<?php echo $row_Proceso['id']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Proceso['id']; ?>','Retencion');"><i class="fa fa-pencil"></i> Editar</button>
+																	<button type="button" id="btnDelete<?php echo $row_Proceso['id']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Proceso['id']; ?>','Retencion');"><i class="fa fa-trash"></i> Eliminar</button>
 																</td>
 															</tr>
 															 <?php }?>
@@ -314,83 +247,10 @@ if (isset($sw_error) && ($sw_error == 1)) {
 												</div>
 											</div>
 										</div>
-										<!-- Fin, ibox motivos -->
+										<!-- Fin, ibox Retenciones -->
 									</form>
 								</div>
-								<!-- Fin, lista motivo autorización -->
-
-								<!-- Inicio, lista motivo autorización -->
-								<div id="tab-2" class="tab-pane <?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Motivos")) ? "active" : ""; ?>">
-									<form class="form-horizontal">
-										<!-- Inicio, ibox motivos -->
-										<div class="ibox" id="Motivos">
-											<div class="ibox-title bg-success">
-												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista motivos de autorizaciones</h5>
-												 <a class="collapse-link pull-right">
-													<i class="fa fa-chevron-up"></i>
-												</a>
-											</div>
-											<div class="ibox-content">
-												<div class="row m-b-md">
-													<div class="col-lg-12">
-														<button class="btn btn-primary pull-right" type="button" id="NewMotivo" onClick="CrearCampo('Motivos');"><i class="fa fa-plus-circle"></i> Agregar nuevo</button>
-													</div>
-												</div>
-												<div class="table-responsive">
-													<table class="table table-striped table-bordered table-hover dataTables-example">
-														<thead>
-															<tr>
-																<!-- th>ID Tipo Documento</th -->
-																<th>Tipo Documento</th>
-																<th>Modelo autorización SAP B1</th>
-																<th>Id Motivo Autorizacion</th>
-																<th>Motivo Autorizacion</th>
-
-																<th>Usuario Autorización SAP B1</th> <!-- SMM, 26/08/2022 -->
-
-																<th>Comentarios</th>
-																<th>Fecha Actualizacion</th>
-																<th>Usuario Actualizacion</th>
-																<th>Estado</th>
-																<th>Acciones</th>
-															</tr>
-														</thead>
-														<tbody>
-															 <?php while ($row_Motivo = sqlsrv_fetch_array($SQL_Motivos)) {?>
-															<tr>
-																<!-- td><?php echo $row_Motivo['IdTipoDocumento']; ?></td -->
-																<td><?php echo $row_Motivo['TipoDocumento']; ?></td>
-																<td><?php echo $row_Motivo['ModeloAutorizacion']; ?></td>
-																<td><?php echo $row_Motivo['IdMotivoAutorizacion']; ?></td>
-																<td><?php echo $row_Motivo['MotivoAutorizacion']; ?></td>
-
-																<td>
-																	<?php echo $row_Motivo['UsuarioAutorizacionSAPB1']; ?>
-																</td>
-
-																<td><?php echo $row_Motivo['Comentarios']; ?></td>
-																<td><?php echo isset($row_Motivo['fecha_actualizacion']) ? date_format($row_Motivo['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
-																<td><?php echo $row_Motivo['usuario_actualizacion']; ?></td>
-																<td>
-																	<span class="label <?php echo ($row_Motivo['Estado'] == "Y") ? "label-info" : "label-danger"; ?>">
-																		<?php echo ($row_Motivo['Estado'] == "Y") ? "Activo" : "Inactivo"; ?>
-																	</span>
-																</td>
-																<td>
-																	<button type="button" id="btnEdit<?php echo $row_Motivo['IdInterno']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Motivo['IdInterno']; ?>','Motivos');"><i class="fa fa-pencil"></i> Editar</button>
-																	<button type="button" id="btnDelete<?php echo $row_Motivo['IdInterno']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Motivo['IdInterno']; ?>','Motivos');"><i class="fa fa-trash"></i> Eliminar</button>
-																</td>
-															</tr>
-															 <?php }?>
-														</tbody>
-													</table>
-												</div>
-											</div>
-										</div>
-										<!-- Fin, ibox motivos -->
-									</form>
-								</div>
-								<!-- Fin, lista motivo autorización -->
+								<!-- Fin, lista retenciones -->
 							</div>
 						 </div>
 					</div>
@@ -451,7 +311,7 @@ function CrearCampo(doc){
 
 	$.ajax({
 		type: "POST",
-		url: "md_autorizaciones_documentos.php",
+		url: "md_asistente_socios_negocio.php",
 		data:{
 			doc:doc
 		},
@@ -467,7 +327,7 @@ function EditarCampo(id, doc){
 
 	$.ajax({
 		type: "POST",
-		url: "md_autorizaciones_documentos.php",
+		url: "md_asistente_socios_negocio.php",
 		data:{
 			doc:doc,
 			id:id,
