@@ -13,10 +13,10 @@ if (isset($_POST['Metodo']) && ($_POST['Metodo'] == 3)) {
                 $_POST['Metodo'], // 3 - Eliminar
                 isset($_POST['id']) ? $_POST['id'] : "NULL",
             );
-            $SQL = EjecutarSP('sp_tbl_Autorizaciones_Procesos', $Param);
+            $SQL = EjecutarSP('sp_tbl_MunicipiosRetenciones', $Param);
             if (!$SQL) {
                 $sw_error = 1;
-                $msg_error = "No se pudo eliminar el proceso de autorización";
+                $msg_error = "No se pudo eliminar el registro";
             }
         }
 
@@ -31,22 +31,18 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
     try {
 
         if ($_POST['TipoDoc'] == "Retencion") {
-            $FechaHora = "'" . FormatoFecha(date('Y-m-d'), date('H:i:s')) . "'";
+            $id = (isset($_POST['ID_Actual']) && ($_POST['ID_Actual'] != "")) ? $_POST['ID_Actual'] : "NULL";
+
             $Usuario = "'" . $_SESSION['CodUser'] . "'";
-
-            $Perfiles = implode(";", $_POST['Perfiles']);
-            $Perfiles = count($_POST['Perfiles']) > 0 ? "'$Perfiles'" : "''";
-
-            $IdInterno = (isset($_POST['ID_Actual']) && ($_POST['ID_Actual'] != "")) ? $_POST['ID_Actual'] : "NULL";
+            $FechaHora = "'" . FormatoFecha(date('Y-m-d'), date('H:i:s')) . "'";
 
             $Param = array(
                 $_POST['Metodo'] ?? 1, // 1 - Crear, 2 - Actualizar
-                $IdInterno,
-                "'" . $_POST['IdTipoDocumento'] . "'",
-                "'" . $_POST['Comentarios'] . "'",
-                "'" . $_POST['Estado'] . "'",
-                "'" . $_POST['Condiciones'] . "'",
-                $Perfiles,
+                $id,
+                "'" . $_POST['id_retencion'] . "'",
+                "'" . $_POST['id_tipo_entidad'] . "'",
+                "'" . $_POST['id_municipio'] . "'",
+                "'" . $_POST['estado'] . "'",
                 $Usuario, // @id_usuario_actualizacion
                 $FechaHora, // @fecha_actualizacion
                 $FechaHora, // @hora_actualizacion
@@ -54,7 +50,7 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
                 ($_POST['Metodo'] == 1) ? $FechaHora : "NULL",
                 ($_POST['Metodo'] == 1) ? $FechaHora : "NULL",
             );
-            $SQL = EjecutarSP('sp_tbl_Autorizaciones_Procesos', $Param);
+            $SQL = EjecutarSP('sp_tbl_MunicipiosRetenciones', $Param);
             if (!$SQL) {
                 $sw_error = 1;
                 $msg_error = "No se pudo insertar los datos";
@@ -75,9 +71,6 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
 
 // SMM, 06/09/2022
 $SQL_MunicipiosRetenciones = Seleccionar("uvw_tbl_MunicipiosRetenciones", "*");
-
-// Perfiles Usuarios, SMM 26/07/2022
-$SQL_Perfiles = Seleccionar('uvw_tbl_PerfilesUsuarios', '*');
 ?>
 
 <!DOCTYPE html>
@@ -192,7 +185,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 								</li>
 							</ul>
 							<div class="tab-content">
-								<!-- Inicio, lista retenciones autorización -->
+								<!-- Inicio, lista Retenciones -->
 								<div id="tab-1" class="tab-pane <?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Retencion") || !isset($_GET['doc'])) ? "active" : ""; ?>">
 									<form class="form-horizontal">
 										<!-- Inicio, ibox Retenciones -->
@@ -223,22 +216,22 @@ if (isset($sw_error) && ($sw_error == 1)) {
 															</tr>
 														</thead>
 														<tbody>
-															 <?php while ($row_Proceso = sqlsrv_fetch_array($SQL_MunicipiosRetenciones)) {?>
+															 <?php while ($row_MunicipiosRetenciones = sqlsrv_fetch_array($SQL_MunicipiosRetenciones)) {?>
 															<tr>
-																<td><?php echo $row_Proceso['id_retencion']; ?></td>
-																<td><?php echo $row_Proceso['entidad']; ?></td>
-																<td><?php echo $row_Proceso['municipio']; ?></td>
+																<td><?php echo $row_MunicipiosRetenciones['id_retencion']; ?></td>
+																<td><?php echo $row_MunicipiosRetenciones['entidad']; ?></td>
+																<td><?php echo $row_MunicipiosRetenciones['municipio']; ?></td>
 
-																<td><?php echo isset($row_Proceso['fecha_actualizacion']) ? date_format($row_Proceso['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
-																<td><?php echo $row_Proceso['usuario_actualizacion']; ?></td>
+																<td><?php echo isset($row_MunicipiosRetenciones['fecha_actualizacion']) ? date_format($row_MunicipiosRetenciones['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
+																<td><?php echo $row_MunicipiosRetenciones['usuario_actualizacion']; ?></td>
 																<td>
-																	<span class="label <?php echo ($row_Proceso['estado'] == "Y") ? "label-info" : "label-danger"; ?>">
-																		<?php echo ($row_Proceso['estado'] == "Y") ? "Activo" : "Inactivo"; ?>
+																	<span class="label <?php echo ($row_MunicipiosRetenciones['estado'] == "Y") ? "label-info" : "label-danger"; ?>">
+																		<?php echo ($row_MunicipiosRetenciones['estado'] == "Y") ? "Activo" : "Inactivo"; ?>
 																	</span>
 																</td>
 																<td>
-																	<button type="button" id="btnEdit<?php echo $row_Proceso['id']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Proceso['id']; ?>','Retencion');"><i class="fa fa-pencil"></i> Editar</button>
-																	<button type="button" id="btnDelete<?php echo $row_Proceso['id']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Proceso['id']; ?>','Retencion');"><i class="fa fa-trash"></i> Eliminar</button>
+																	<button type="button" id="btnEdit<?php echo $row_MunicipiosRetenciones['id']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_MunicipiosRetenciones['id']; ?>','Retencion');"><i class="fa fa-pencil"></i> Editar</button>
+																	<button type="button" id="btnDelete<?php echo $row_MunicipiosRetenciones['id']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_MunicipiosRetenciones['id']; ?>','Retencion');"><i class="fa fa-trash"></i> Eliminar</button>
 																</td>
 															</tr>
 															 <?php }?>
@@ -352,15 +345,15 @@ function EliminarCampo(id, doc){
 			//$('.ibox-content').toggleClass('sk-loading',true);
 			$.ajax({
 				type: "post",
-				url: "parametros_autorizaciones_documentos.php",
+				url: "parametros_asistente_socios_negocio.php",
 				data: {
 					TipoDoc: doc,
-					IdInterno: id,
+					id: id,
 					Metodo: 3
 					 },
 				async: false,
 				success: function(data){
-					location.href = "parametros_autorizaciones_documentos.php?a=<?php echo base64_encode("OK_PRDel"); ?>";
+					location.href = "parametros_asistente_socios_negocio.php?a=<?php echo base64_encode("OK_PRDel"); ?>";
 				},
 				error: function(error) {
 					console.error("consulta erronea");
