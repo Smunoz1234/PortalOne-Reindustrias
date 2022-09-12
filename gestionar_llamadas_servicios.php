@@ -487,17 +487,23 @@ while ($row_AsignadoPor = sqlsrv_fetch_array($SQL_AsignadoPor)) {?>
                     <thead>
                     <tr>
                         <th>Ticket</th>
-						<th>Asignado por</th>
+
+                        <th>Estado</th>
+						<th>Acciones</th>
 						<th>Estado servicio</th>
-						<th>Asunto</th>
+						
+                        <th>Asignado por</th>
+                        <th>Asunto</th>
                         <th>Tipo problema</th>
+
+                        <th>Subtipo problema</th>
+
 						<th>Tipo llamada</th>
 						<th>Cliente</th>
 						<th>Sucursal</th>
 						<th>Serial Interno</th>
                         <th>Fecha creación</th>
-						<th>Estado</th>
-						<th>Acciones</th>
+
 						<th><i class="fa fa-refresh"></i></th>
                     </tr>
                     </thead>
@@ -505,20 +511,26 @@ while ($row_AsignadoPor = sqlsrv_fetch_array($SQL_AsignadoPor)) {?>
                     <?php while ($row = sql_fetch_array($SQL)) {?>
 						<tr class="gradeX">
 							<td><?php echo $row['DocNum']; ?></td>
-							<td><?php echo $row['DeAsignadoPor']; ?></td>
-							<td><span <?php if ($row['CDU_EstadoServicio'] == '0') {echo "class='label label-warning'";} elseif ($row['CDU_EstadoServicio'] == '1') {echo "class='label label-primary'";} else {echo "class='label label-danger'";}?>><?php echo $row['DeEstadoServicio']; ?></span></td>
-							<td><?php echo $row['AsuntoLlamada']; ?></td>
-							<td><?php echo $row['DeTipoProblemaLlamada']; ?></td>
-							<td><?php echo $row['DeTipoLlamada']; ?></td>
-							<td><?php echo $row['NombreClienteLlamada']; ?></td>
-							<td><?php echo $row['NombreSucursal']; ?></td>
-							<td><?php echo $row['IdNumeroSerie']; ?></td>
-							<td><?php echo $row['FechaHoraCreacionLLamada']->format('Y-m-d H:i'); ?></td>
-							<td><span class="label" style="color: white; background-color: <?php echo $row['ColorEstadoLlamada']; ?>;"><?php echo $row['DeEstadoLlamada']; ?></span></td>
+							
+                            <td><span class="label" style="color: white; background-color: <?php echo $row['ColorEstadoLlamada']; ?>;"><?php echo $row['DeEstadoLlamada']; ?></span></td>
 							<td>
 								<a href="llamada_servicio.php?id=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&tl=1&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('gestionar_llamadas_servicios.php'); ?>" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i> Abrir</a>
 								<a href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&ObType=<?php echo base64_encode('191'); ?>&IdFrm=<?php echo base64_encode($row['Series']); ?>" target="_blank" class="btn btn-warning btn-xs"><i class="fa fa-download"></i> Descargar</a>
 							</td>
+							<td><span <?php if ($row['CDU_EstadoServicio'] == '0') {echo "class='label label-warning'";} elseif ($row['CDU_EstadoServicio'] == '1') {echo "class='label label-primary'";} else {echo "class='label label-danger'";}?>><?php echo $row['DeEstadoServicio']; ?></span></td>
+							
+                            <td><?php echo $row['DeAsignadoPor']; ?></td>
+                            <td><?php echo $row['AsuntoLlamada']; ?></td>
+							<td><?php echo $row['DeTipoProblemaLlamada']; ?></td>
+
+                            <td><?php echo $row['DeSubTipoProblemaLlamada']; ?></td>
+							
+                            <td><?php echo $row['DeTipoLlamada']; ?></td>
+							<td><?php echo $row['NombreClienteLlamada']; ?></td>
+							<td><?php echo $row['NombreSucursal']; ?></td>
+							<td><?php echo $row['IdNumeroSerie']; ?></td>
+							<td><?php echo $row['FechaHoraCreacionLLamada']->format('Y-m-d H:i'); ?></td>
+							
 							<td><?php if ($row['Metodo'] == 0) {?><i class="fa fa-check-circle text-info" title="Sincronizado con SAP"></i><?php } else {?><i class="fa fa-times-circle text-danger" title="Error de sincronización con SAP"></i><?php }?></td>
 						</tr>
 					<?php }?>
