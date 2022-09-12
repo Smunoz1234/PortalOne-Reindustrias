@@ -86,7 +86,7 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
                 "'" . $_POST['IdTipoDocumento'] . "'",
                 "'" . $_POST['IdModeloAutorizacionSAPB1'] . "'",
                 "'" . $_POST['IdUsuarioAutorizacion'] . "'", // SMM, 26/08/2022
-                "'" . md5($_POST['PassUsuarioAutorizacion']) . "'", // SMM, 26/08/2022
+                "'" . $_POST['PassUsuarioAutorizacion'] . "'", // Se quito la función md5(...)
                 "'" . $_POST['Comentarios'] . "'",
                 "'" . $_POST['Estado'] . "'",
                 $Usuario, // @id_usuario_actualizacion

@@ -254,7 +254,7 @@ if ($edit == 1 && $id != "") {
 					</div>
 					<div class="col-md-6">
 						<label class="control-label">Password usuario SAP B1 <span class="text-danger">*</span></label>
-						<input type="password" class="form-control" name="PassUsuarioAutorizacion" id="PassUsuarioAutorizacion" required autocomplete="off" placeholder="<?php if ($edit == 1) {echo "Cambiar password";}?>">
+						<input type="password" class="form-control" name="PassUsuarioAutorizacion" id="PassUsuarioAutorizacion" required autocomplete="off" value="<?php if ($edit == 1) {echo $row['PassUsuarioAutorizacionSAPB1'];}?>">
 						<a href="#" id="aVerPass" onClick="javascript:MostrarPassword();" title="Mostrar contrase&ntilde;a" class="btn btn-default btn-xs"><span id="VerPass" class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a>
 					</div>
 				</div>
