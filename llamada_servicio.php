@@ -1,7 +1,14 @@
 <?php require_once "includes/conexion.php";
 PermitirAcceso(303);
 $IdLlamada = "";
+
+$msg = ""; // Mensaje OK, 14/09/2022
 $msg_error = ""; //Mensaje del error
+
+if (isset($_GET['msg']) && ($_GET['msg'] != "")) {
+    $msg = base64_decode($_GET['msg']);
+}
+
 $dt_LS = 0; //sw para saber si vienen datos del SN. 0 no vienen. 1 si vienen.
 $sw_valDir = 0; //Validar si el nombre de la direccion cambio
 $TituloLlamada = ""; //Titulo por defecto cuando se está creando la llamada de servicio
@@ -151,11 +158,11 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
             "'" . $_POST['CDU_Ano'] . "'",
             "'" . $_POST['CDU_Concesionario'] . "'",
             "'" . $_POST['CDU_Aseguradora'] . "'",
-            "NULL",
+            "'" . $_POST['CDU_TipoPreventivo'] . "'", // SMM, 14/09/2022
             "'" . $_POST['CDU_TipoServicio'] . "'",
             isset($_POST['CDU_Kilometros']) ? $_POST['CDU_Kilometros'] : 0, // int
             "'" . $_POST['CDU_Contrato'] . "'",
-            "NULL",
+            "NULL", // CDU_Asesor
             "'" . $_POST['CDU_ListaMateriales'] . "'",
             isset($_POST['CDU_TiempoTarea']) ? $_POST['CDU_TiempoTarea'] : 0, // int
             "'" . $_POST['CDU_IdTecnicoAdicional'] . "'", // SMM, 25/05/2022
@@ -223,17 +230,18 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
                         $SQL_UpdEstado = sqlsrv_query($conexion, $UpdEstado);
                     }
                 } else {
+                    $msg = base64_encode($Resultado->Mensaje); // SMM, 14/09/2022
+
                     //Consultar la llamada para recargarla nuevamente y poder mantenerla
                     $SQL_Llamada = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '[ID_LlamadaServicio]', "[IdLlamadaPortal]='" . $IdLlamada . "'");
                     $row_Llamada = sqlsrv_fetch_array($SQL_Llamada);
                     sqlsrv_close($conexion);
-                    header('Location:llamada_servicio.php?id=' . base64_encode($row_Llamada['ID_LlamadaServicio']) . '&tl=1&a=' . base64_encode("OK_LlamAdd"));
+                    header("Location:llamada_servicio.php?msg=$msg&id=" . base64_encode($row_Llamada['ID_LlamadaServicio']) . '&tl=1&a=' . base64_encode("OK_LlamAdd"));
                 }
             } catch (Exception $e) {
                 echo 'Excepcion capturada: ', $e->getMessage(), "\n";
             }
-            //sqlsrv_close($conexion);
-            //header('Location:llamada_servicio.php?a='.base64_encode("OK_LlamAdd"));
+
         } else {
             $sw_error = 1;
             $msg_error = "Error al crear la llamada de servicio";
@@ -427,15 +435,15 @@ if (isset($_POST['P']) && ($_POST['P'] == 33)) { //Actualizar llamada de servici
                         $SQL_UpdEstado = sqlsrv_query($conexion, $UpdEstado);
                     }
                 } else {
+                    $msg = base64_encode($Resultado->Mensaje); // SMM, 14/09/2022
+
                     sqlsrv_close($conexion);
-                    header('Location:llamada_servicio.php?id=' . $_POST['DocEntry'] . '&tl=1&a=' . base64_encode("OK_UpdAdd"));
-                    //header('Location:llamada_servicio.php?a='.base64_encode("OK_UpdAdd"));
+                    header("Location:llamada_servicio.php?msg=$msg&id=" . $_POST['DocEntry'] . '&tl=1&a=' . base64_encode("OK_UpdAdd"));
                 }
             } catch (Exception $e) {
                 echo 'Excepcion capturada: ', $e->getMessage(), "\n";
             }
-            //sqlsrv_close($conexion);
-            //header('Location:llamada_servicio.php?id='.$_POST['DocEntry'].'&tl=1&a='.base64_encode("OK_UpdAdd"));
+
         } else {
             $sw_error = 1;
             $msg_error = "Error al actualizar la llamada de servicio";
@@ -644,7 +652,7 @@ $SQL_Concesionario = Seleccionar('uvw_Sap_tbl_LlamadasServicios_Concesionario', 
 $SQL_Aseguradora = Seleccionar('uvw_Sap_tbl_LlamadasServicios_Aseguradoras', '*');
 
 // Tipos preventivos en la llamada de servicio
-// $SQL_TipoPreventivo = Seleccionar('uvw_Sap_tbl_LlamadasServicios_TipoPreventivo', '*');
+$SQL_TipoPreventivo = Seleccionar('uvw_Sap_tbl_LlamadasServicios_TipoPreventivo', '*');
 
 // Tipos de servicio en la llamada de servicio
 $SQL_TipoServicio = Seleccionar('uvw_Sap_tbl_LlamadasServicios_TipoServicio', '*');
@@ -678,7 +686,7 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_LlamAdd"))) {
 		$(document).ready(function() {
 			Swal.fire({
                 title: '¡Listo!',
-                text: 'La llamada de servicio ha sido creada exitosamente.',
+                text: '" . LSiqmlObs($msg) . "',
                 icon: 'success'
             });
 		});
@@ -689,7 +697,7 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_UpdAdd"))) {
 		$(document).ready(function() {
 			Swal.fire({
                 title: '¡Listo!',
-                text: 'La llamada de servicio ha sido actualizada exitosamente.',
+                text: '" . LSiqmlObs($msg) . "',
                 icon: 'success'
             });
 		});
@@ -1889,6 +1897,22 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['CDU_Kilometros'];}?>" required="required"
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "readonly='readonly'";}?>>
 							</div>
+
+							<!-- SMM, 14/09/2022 -->
+							<div class="col-lg-4">
+								<label class="control-label">Tipo preventivo <span class="text-danger">*</span></label>
+								<select name="CDU_TipoPreventivo" class="form-control select2" required="required" id="CDU_TipoPreventivo"
+								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
+										<option value="" disabled selected>Seleccione...</option>
+								  <?php while ($row_TipoPreventivo = sqlsrv_fetch_array($SQL_TipoPreventivo)) {?>
+										<option value="<?php echo $row_TipoPreventivo['CodigoTipoPreventivo']; ?>"
+										<?php if ((isset($row['CDU_TipoPreventivo'])) && (strcmp($row_TipoPreventivo['CodigoTipoPreventivo'], $row['CDU_TipoPreventivo']) == 0)) {echo "selected=\"selected\"";}?>>
+											<?php echo $row_TipoPreventivo['TipoPreventivo']; ?>
+										</option>
+								  <?php }?>
+								</select>
+							</div>
+							<!-- Hasta aquí, 14/09/2022 -->
 						</div>
 						<div class="form-group">
 							<div class="col-lg-4">
@@ -2160,6 +2184,9 @@ $return = QuitarParametrosURL($return, array("a"));?>
 												<th>Número</th>
 												<th>Asignado por</th>
 												<th>Asignado a</th>
+												
+												<th>Perfil</th> <!-- SMM, 14/09/2022 -->
+
 												<th>Titulo</th>
 												<th>Fecha creación</th>
 												<th>Fecha limite</th>
@@ -2181,6 +2208,9 @@ $return = QuitarParametrosURL($return, array("a"));?>
 													<td><?php echo $row_Actividad['ID_Actividad']; ?></td>
 													<td><?php echo $row_Actividad['DeAsignadoPor']; ?></td>
 													<td><?php if ($row_Actividad['NombreEmpleado'] != "") {echo $row_Actividad['NombreEmpleado'];} else {echo "(Sin asignar)";}?></td>
+
+													<td><?php echo $row_Actividad['CargoEmpleado']; ?></td>
+
 													<td><?php echo $row_Actividad['TituloActividad']; ?></td>
 													<td><?php if ($row_Actividad['FechaHoraInicioActividad'] != "") {echo $row_Actividad['FechaHoraInicioActividad']->format('Y-m-d H:s');} else {?><p class="text-muted">--</p><?php }?></td>
 													<td><?php if ($row_Actividad['FechaHoraFinActividad'] != "") {echo $row_Actividad['FechaHoraFinActividad']->format('Y-m-d H:s');} else {?><p class="text-muted">--</p><?php }?></td>

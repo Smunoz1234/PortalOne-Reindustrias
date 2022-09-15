@@ -599,13 +599,15 @@ function ConsultarEquipo(){
 						<div class="form-group">
 							<div class="col-lg-4">
 								<label class="control-label">KM actual <span class="text-danger">*</span></label>
-								<input autocomplete="off" name="km_actual" required="required" type="text" class="form-control" id="km_actual" maxlength="100"
-								value="<?php if (isset($row['CDU_No_Motor'])) {echo $row['CDU_No_Motor'];}?>">
+								<input autocomplete="off" name="km_actual" required="required" type="text" class="form-control" id="km_actual" maxlength="100">
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">No. Campaña <span class="text-danger">*</span></label>
-								<input autocomplete="off" name="no_campana" required="required" type="text" class="form-control" id="no_campana" maxlength="100"
-								value="<?php if (isset($row['CDU_No_Motor'])) {echo $row['CDU_No_Motor'];}?>">
+								<input autocomplete="off" name="no_campana" required="required" type="text" class="form-control" id="no_campana" maxlength="100">
+							</div>
+							<div class="col-lg-4">
+								<label class="control-label">Profundidad Llantas</label>
+								<input autocomplete="off" name="profundidad_llantas" type="text" class="form-control" id="profundidad_llantas" maxlength="100">
 							</div>
 						</div>
 						<!-- Inicio, crono-info -->

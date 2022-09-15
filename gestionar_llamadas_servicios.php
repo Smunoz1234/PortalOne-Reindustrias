@@ -492,6 +492,9 @@ while ($row_AsignadoPor = sqlsrv_fetch_array($SQL_AsignadoPor)) {?>
 						<th>Acciones</th>
 						<th>Estado servicio</th>
 						
+                        <th>Técnico/Asesor</th> <!-- SMM, 14/09/2022 -->
+                        <th>Cargo Técnico/Asesor</th> <!-- SMM, 14/09/2022 -->
+
                         <th>Asignado por</th>
                         <th>Asunto</th>
                         <th>Tipo problema</th>
@@ -519,6 +522,9 @@ while ($row_AsignadoPor = sqlsrv_fetch_array($SQL_AsignadoPor)) {?>
 							</td>
 							<td><span <?php if ($row['CDU_EstadoServicio'] == '0') {echo "class='label label-warning'";} elseif ($row['CDU_EstadoServicio'] == '1') {echo "class='label label-primary'";} else {echo "class='label label-danger'";}?>><?php echo $row['DeEstadoServicio']; ?></span></td>
 							
+                            <td><?php echo $row['NombreTecnicoAsesor']; ?></td>
+                            <td><?php echo $row['CargoTecnicoAsesor']; ?></td>
+
                             <td><?php echo $row['DeAsignadoPor']; ?></td>
                             <td><?php echo $row['AsuntoLlamada']; ?></td>
 							<td><?php echo $row['DeTipoProblemaLlamada']; ?></td>

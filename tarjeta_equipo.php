@@ -1104,7 +1104,7 @@ while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) {?>
 										<?php
 $hasRowsLlamadaServicio = (isset($SQL_LlamadasServicio)) ? sqlsrv_has_rows($SQL_LlamadasServicio) : false;
 if ($edit == 1 && $hasRowsLlamadaServicio === true) {?>
-										<div class="table-responsive" style="max-height: 230px; overflow: hidden; overflow-y: auto;">
+										<div class="table" style="max-height: 230px; overflow-y: auto;">
 											<table class="table table-striped table-bordered table-hover dataTables-example">
 												<thead>
 													<tr>
