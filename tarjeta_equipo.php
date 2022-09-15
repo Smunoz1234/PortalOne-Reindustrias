@@ -590,8 +590,27 @@ function MostrarCostos(id_llamada){
 		}
 	});
 }
+
+// SMM, 15/09/2022
+function ConsultarDocVentas(tipo){
+	let palabra = ""
+	if(tipo == 1) {
+		palabra = "Entrega";
+	} else {
+		palabra = "Factura";
+	}
+
+	let doc = document.getElementById(`DocEntry${palabra}`);
+	if(doc.value != "") {
+		self.name='opener';
+		open(`${palabra.toLowerCase()}_venta.php?id=${Base64.encode(doc.value)}&tl=1`, "_blank");
+	} else {
+		console.log("El campo que se quiere consultar no puede estar vacio");
+	}
+}
 </script>
 <!-- InstanceEndEditable -->
+
 </head>
 
 <body <?php if ($sw_ext == 1) {echo "class='mini-navbar'";}?>>
@@ -1231,13 +1250,15 @@ while ($row_ContratoServicio = sqlsrv_fetch_array($SQL_ContratosServicio)) {?>
 									</div>
 									<label style="margin-bottom: 10px; color: darkgray;"><u>Entrega y Factura</u></label>
 									<div class="form-group">
-										<label class="col-lg-1 control-label">Entrega</label>
+										<label class="col-lg-1 control-label"><i onClick="ConsultarDocVentas(1);" title="Consultar documento de ventas" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i><br>Entrega</label>
 										<div class="col-lg-3">
 											<input readonly='readonly' autocomplete="off" name="DocNumEntrega" type="number" required="required" class="form-control" id="DocNumEntrega" maxlength="150" value="<?php if (isset($row['DocNumEntrega'])) {echo $row['DocNumEntrega'];}?>">
+											<input readonly='readonly' autocomplete="off" name="DocEntryEntrega" type="hidden" required="required" class="form-control" id="DocEntryEntrega" maxlength="150" value="<?php if (isset($row['DocEntryEntrega'])) {echo $row['DocEntryEntrega'];}?>">
 										</div>
-										<label class="col-lg-1 control-label">Factura</label>
+										<label class="col-lg-1 control-label"><i onClick="ConsultarDocVentas(2);" title="Consultar documento de ventas" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i><br>Factura</label>
 										<div class="col-lg-3">
 											<input readonly='readonly' autocomplete="off" name="DocNumFactura" type="number" required="required" class="form-control" id="DocNumFactura" maxlength="150" value="<?php if (isset($row['DocNumFactura'])) {echo $row['DocNumFactura'];}?>">
+											<input readonly='readonly' autocomplete="off" name="DocEntryFactura" type="hidden" required="required" class="form-control" id="DocEntryFactura" maxlength="150" value="<?php if (isset($row['DocEntryFactura'])) {echo $row['DocEntryFactura'];}?>">
 										</div>
 									</div>
 								</div>

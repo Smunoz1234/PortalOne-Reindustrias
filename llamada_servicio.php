@@ -168,7 +168,7 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
             "'" . $_POST['CDU_IdTecnicoAdicional'] . "'", // SMM, 25/05/2022
             "'" . FormatoFecha($_POST['FechaAgenda'], $_POST['HoraAgenda']) . "'", // SMM 01/06/2022
             "'" . FormatoFecha($_POST['FechaAgenda'], $_POST['HoraAgenda']) . "'", // SMM 01/06/2022
-            PermitirFuncion(323) ? "1" : "0", // CreacionActividad, SMM 28/07/2022
+            (PermitirFuncion(323) && PermitirFuncion(304)) ? "1" : "0", // CreacionActividad, SMM 28/07/2022
             "0", // EnvioCorreo, SMM 28/07/2022
         );
         $SQL_InsLlamada = EjecutarSP('sp_tbl_LlamadaServicios', $ParamInsLlamada, 32);
@@ -1712,9 +1712,9 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 							</div>
 							<!-- SMM -->
 							<div class="col-lg-4">
-								<label class="control-label">Fecha Agenda <?php if (PermitirFuncion(323)) {?><span class="text-danger">*</span><?php }?></label>
+								<label class="control-label">Fecha Agenda <?php if (PermitirFuncion(323) && PermitirFuncion(304)) {?><span class="text-danger">*</span><?php }?></label>
 								<div class="input-group date">
-									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input <?php if ($type_llmd != 0) {?> readonly <?php }?> <?php if (PermitirFuncion(323)) {?> required <?php }?> name="FechaAgenda" type="text" class="form-control" id="FechaAgenda" value="<?php if (($type_llmd == 1) && ($row['FechaAgenda'] != "")) {echo is_string($row['FechaAgenda']) ? date("Y-m-d", strtotime($row['FechaAgenda'])) : $row['FechaAgenda']->format("Y-m-d");} else {echo date('Y-m-d');}?>">
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input <?php if ($type_llmd != 0) {?> readonly <?php }?> <?php if (PermitirFuncion(323) && PermitirFuncion(304)) {?> required <?php }?> name="FechaAgenda" type="text" class="form-control" id="FechaAgenda" value="<?php if (($type_llmd == 1) && ($row['FechaAgenda'] != "")) {echo is_string($row['FechaAgenda']) ? date("Y-m-d", strtotime($row['FechaAgenda'])) : $row['FechaAgenda']->format("Y-m-d");} else {echo date('Y-m-d');}?>">
 								</div>
 							</div>
 							<!-- 01/06/2022 -->
@@ -1740,12 +1740,12 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 							</div>
 							<!-- SMM -->
 							<div class="col-lg-4">
-								<label class="control-label">Hora Agenda <?php if (PermitirFuncion(323)) {?><span class="text-danger">*</span><?php }?></label>
+								<label class="control-label">Hora Agenda <?php if (PermitirFuncion(323) && PermitirFuncion(304)) {?><span class="text-danger">*</span><?php }?></label>
 								<div class="input-group clockpicker" data-autoclose="true">
 									<span class="input-group-addon">
 										<span class="fa fa-clock-o"></span>
 									</span>
-									<input <?php if ($type_llmd != 0) {?> readonly <?php }?> <?php if (PermitirFuncion(323)) {?> required <?php }?> name="HoraAgenda" id="HoraAgenda" type="text" class="form-control" value="<?php if (($type_llmd == 1) && ($row['HoraAgenda'] != "")) {echo is_string($row['FechaAgenda']) ? date("H:i", strtotime($row['HoraAgenda'])) : $row['HoraAgenda']->format("H:i");} else {echo date('H:i');}?>" required="required">
+									<input <?php if ($type_llmd != 0) {?> readonly <?php }?> <?php if (PermitirFuncion(323) && PermitirFuncion(304)) {?> required <?php }?> name="HoraAgenda" id="HoraAgenda" type="text" class="form-control" value="<?php if (($type_llmd == 1) && ($row['HoraAgenda'] != "")) {echo is_string($row['FechaAgenda']) ? date("H:i", strtotime($row['HoraAgenda'])) : $row['HoraAgenda']->format("H:i");} else {echo date('H:i');}?>" required="required">
 								</div>
 							</div>
 							<!-- 01/06/2022 -->
@@ -1817,8 +1817,8 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								</select>
 							</div>
 							<div class="col-lg-4">
-								<label class="control-label">Técnico/Asesor <?php if (PermitirFuncion(323)) {?><span class="text-danger">*</span><?php }?></label>
-								<select <?php if (PermitirFuncion(323)) {?> required <?php }?> name="Tecnico" class="form-control select2" id="Tecnico" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
+								<label class="control-label">Técnico/Asesor <?php if (PermitirFuncion(323) && PermitirFuncion(304)) {?><span class="text-danger">*</span><?php }?></label>
+								<select <?php if (PermitirFuncion(323) && PermitirFuncion(304)) {?> required <?php }?> name="Tecnico" class="form-control select2" id="Tecnico" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {echo "disabled='disabled'";}?>>
 										<option value="">Seleccione...</option>
 								  <?php while ($row_Tecnicos = sqlsrv_fetch_array($SQL_Tecnicos)) {?>
 										<option value="<?php echo $row_Tecnicos['ID_Empleado']; ?>" <?php if ((isset($row['IdTecnico'])) && (strcmp($row_Tecnicos['ID_Empleado'], $row['IdTecnico']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Tecnicos['NombreEmpleado']; ?></option>
@@ -2145,7 +2145,7 @@ $return = QuitarParametrosURL($return, array("a"));?>
 						<?php }?>
 						<?php if ($type_llmd == 0) {?>
 							<div class="col-lg-2">
-								<button class="btn btn-primary" form="CrearLlamada" type="submit" id="Crear"><i class="fa fa-check"></i> Crear llamada <?php if (PermitirFuncion(323)) {?>y actividad<?php }?></button>
+								<button class="btn btn-primary" form="CrearLlamada" type="submit" id="Crear"><i class="fa fa-check"></i> Crear llamada <?php if (PermitirFuncion(323) && PermitirFuncion(304)) {?>y actividad<?php }?></button>
 							</div>
 						<?php }?>
 							<div class="col-lg-2">
@@ -2172,7 +2172,7 @@ $return = QuitarParametrosURL($return, array("a"));?>
 							<div id="tab-1" class="tab-pane active">
 								<div class="panel-body">
 									<div class="row">
-									<?php if (PermitirFuncion(302) && (($row['IdEstadoLlamada'] == '-3') || ($row['IdEstadoLlamada'] == '-2'))) {?>
+									<?php if (PermitirFuncion(304) && (($row['IdEstadoLlamada'] == '-3') || ($row['IdEstadoLlamada'] == '-2'))) {?>
 									<button type="button" onClick="javascript:location.href='actividad.php?dt_LS=1&TTarea=<?php echo base64_encode($row['TipoTarea']); ?>&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&Ciudad=<?php echo base64_encode($row['CiudadLlamada']); ?>&Barrio=<?php echo base64_encode($row['BarrioDireccionLlamada']); ?>&Telefono=<?php echo base64_encode($row['TelefonoContactoLlamada']); ?>&Correo=<?php echo base64_encode($row['CorreoContactoLlamada']); ?>&LS=<?php echo base64_encode($IdLlamada); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('llamada_servicio.php'); ?>'" class="alkin btn btn-primary btn-xs"><i class="fa fa-plus-circle"></i> Agregar actividad</button>
 									<?php }?>
 									</div>
@@ -2184,7 +2184,7 @@ $return = QuitarParametrosURL($return, array("a"));?>
 												<th>Número</th>
 												<th>Asignado por</th>
 												<th>Asignado a</th>
-												
+
 												<th>Perfil</th> <!-- SMM, 14/09/2022 -->
 
 												<th>Titulo</th>
