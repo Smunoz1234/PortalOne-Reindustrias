@@ -836,6 +836,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 		</script>";
 }
 ?>
+
 <style>
 	.ibox-title a{
 		color: inherit !important;
@@ -849,7 +850,13 @@ if (isset($sw_error) && ($sw_error == 1)) {
 	.swal2-container {
 		z-index: 9000;
 	}
+
+	/** SMM, 16/09/2022 */
+	.cierre-span {
+		display: none;
+	}
 </style>
+
 <script type="text/javascript">
 	$(document).ready(function() {
 		var borrarNumeroSerie = true;
@@ -1190,6 +1197,25 @@ if (isset($sw_error) && ($sw_error == 1)) {
 
 		$('#Series').trigger('change');
 		<?php }?>
+
+		$("#EstadoLlamada").on("change", function() {
+			let estado = $(this).val();
+
+			if(estado == "-1") {
+				console.log("el estado de la llamada cambio a cerrado.");
+
+				$(".cierre-span").css("display", "initial");
+				$(".cierre-input").prop("readonly", false);
+				$(".cierre-input").prop("disabled", false);
+				$(".cierre-input").prop("required", true);
+			} else {
+				console.log("cambio el estado de la llamada, diferente a cerrado.");
+
+				$(".cierre-span").css("display", "none");
+				$(".cierre-input").prop("readonly", true);
+				$(".cierre-input").prop("required", false);
+			}
+		});
 	});
 
 function HabilitarCampos(type=1){
@@ -1879,6 +1905,89 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 					</div>
 				</div>
 
+				<!-- SMM, 16/09/2022 -->
+				<?php if ($type_llmd == 1) {?>
+					<div class="ibox">
+						<div class="ibox-title bg-success">
+							<h5 class="collapse-link"><i class="fa fa-check-circle"></i> Cierre de llamada de servicio</h5>
+							<a class="collapse-link pull-right">
+								<i class="fa fa-chevron-up"></i>
+							</a>
+						</div> <!-- ibox-title -->
+						<div class="ibox-content">
+							<div class="form-group">
+								<div class="col-lg-5 border-bottom m-r-sm">
+									<label class="control-label text-danger">Información de cierre</label>
+								</div>
+								<div class="col-lg-6 border-bottom ">
+									<label class="control-label text-danger">Firma del cliente</label>
+								</div>
+							</div>
+							<div class="col-lg-5 m-r-md">
+								<div class="form-group">
+									<label class="control-label">Motivo cierre <span class="text-danger cierre-span">*</span></label>
+									<input readonly autocomplete="off" name="CDU_MotivoCierre" type="text" class="form-control cierre-input" id="CDU_MotivoCierre" maxlength="100" value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['CDU_MotivoCierre'] ?? "";}?>">
+								</div>
+								<div class="form-group">
+									<label class="control-label">Correo destinatario <span class="text-danger cierre-span">*</span></label>
+									<input readonly autocomplete="off" name="CDU_CorreoCierre" type="email" class="form-control cierre-input" id="CDU_CorreoCierre" maxlength="100" value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['CDU_CorreoCierre'] ?? "";}?>">
+								</div>
+								<div class="form-group">
+									<label class="control-label">Teléfono <span class="text-danger cierre-span">*</span></label>
+									<input readonly autocomplete="off" name="CDU_TelefonoCierre" type="text" class="form-control cierre-input" id="CDU_TelefonoCierre" maxlength="100" value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['CDU_TelefonoCierre'] ?? "";}?>">
+								</div>
+								<!-- Componente "select" -->
+								<div class="form-group">
+									<label class="control-label">Estado del servicio <span class="text-danger cierre-span">*</span></label>
+									<select disabled name="CDU_EstadoServicio" class="form-control cierre-input select2" id="CDU_EstadoServicio">
+											<option value="" disabled selected>Seleccione...</option>
+										<?php /*while ($row_EstadoServicio = sqlsrv_fetch_array($SQL_EstadoServicio)) {?>
+<option value="<?php echo $row_EstadoServicio['CodigoEstadoServicio']; ?>"
+<?php if ((isset($row['CDU_EstadoServicio'])) && (strcmp($row_EstadoServicio['CodigoEstadoServicio'], $row['CDU_EstadoServicio']) == 0)) {echo "selected=\"selected\"";}?>>
+<?php echo $row_EstadoServicio['EstadoServicio']; ?>
+</option>
+<?php }*/?>
+									</select>
+								</div>
+								<!-- Hasta aquí -->
+								<br><br><br>
+							</div>
+							<div class="col-lg-6">
+								<div class="form-group">
+									<label class="control-label">Nombre del cliente <span class="text-danger cierre-span">*</span></label>
+									<input readonly autocomplete="off" name="CDU_NombreCierre" type="text" class="form-control cierre-input" id="CDU_NombreCierre" maxlength="100" value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['CDU_NombreCierre'] ?? "";}?>">
+								</div>
+								<div class="form-group">
+									<label class="control-label">Cédula <span class="text-danger cierre-span">*</span></label>
+									<input readonly autocomplete="off" name="CDU_CedulaCierre" type="text" class="form-control cierre-input" id="CDU_CedulaCierre" maxlength="100" value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['CDU_CedulaCierre'] ?? "";}?>">
+								</div>
+								<!-- Componente "firma"-->
+								<br><br>
+								<div class="form-group">
+									<label class="col-lg-2">Firma del cliente <span class="text-danger cierre-span">*</span></label>
+									<?php if ($type_llmd == 1 && (isset($row['FirmaCliente']) && ($row['FirmaCliente'] != ""))) {?>
+									<div class="col-lg-10">
+										<span class="badge badge-primary">Firmado</span>
+									</div>
+									<?php } else { //LimpiarDirTempFirma();?>
+									<div class="col-lg-5">
+										<button class="btn btn-primary" type="button" id="FirmaCliente" onClick="AbrirFirma('SigCliente');"><i class="fa fa-pencil-square-o"></i> Realizar firma</button>
+										<br>
+										<input readonly type="text" id="SigCliente" name="SigCliente" style="width: 0; margin-left: -7px; visibility: hidden;" value="">
+										<div id="msgInfoSigCliente" style="display: none;" class="alert alert-info"><i class="fa fa-info-circle"></i> El documento ya ha sido firmado.</div>
+									</div>
+									<div class="col-lg-5">
+										<img id="ImgSigCliente" style="display: none; max-width: 100%; height: auto;" src="" alt="" />
+									</div>
+									<?php }?>
+								</div>
+								<!-- Hasta aquí -->
+							</div>
+						</div> <!-- ibox-content -->
+					</div> <!-- ibox -->
+				<?php }?>
+				<!-- Hasta aquí, 16/09/2022 -->
+
 				<!-- INICIO, información del vehículo y de la cita -->
 				<div class="ibox">
 					<div class="ibox-title bg-success">
@@ -2067,6 +2176,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 						</div>
 					</div>
 				</div>
+
 				<div class="ibox">
 					<div class="ibox-title bg-success">
 						<h5 class="collapse-link"><i class="fa fa-paperclip"></i> Anexos</h5>
