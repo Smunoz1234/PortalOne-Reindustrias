@@ -15,6 +15,33 @@ $TituloLlamada = ""; //Titulo por defecto cuando se está creando la llamada de 
 
 $testMode = false; // SMM, 04/03/2022
 
+// Inicio, copiar firma a la ruta log y main. SMM, 17/09/2022
+$FirmaContactoResponsable = "";
+if (isset($_POST['FirmaContactoResponsable']) && ($_POST['FirmaContactoResponsable'] != "") && isset($_POST['DocNum']) && ($_POST['DocNum'] != "")) {
+    $dir_name = "llamadas_servicios";
+    $FirmaContactoResponsable = base64_decode($_POST['FirmaContactoResponsable']);
+
+    $dir_log = CrearObtenerDirRuta(ObtenerVariable("RutaAnexosPortalOne") . "/" . $_SESSION['User'] . "/" . $dir_name . "/");
+    $dir_main = CrearObtenerDirRuta(ObtenerVariable("RutaAnexosLlamadaServicio"));
+    $source = CrearObtenerDirTempFirma() . $FirmaContactoResponsable;
+
+    if ($testMode) {
+        echo "<script> console.log('dir_log, " . str_replace("\\", "/", $dir_log) . "'); </script>";
+        echo "<script> console.log('dir_main, " . str_replace("\\", "/", $dir_main) . "'); </script>";
+        echo "<script> console.log('source, " . str_replace("\\", "/", $source) . "'); </script>";
+    }
+
+    // NuevoNombreArchivoFirma
+    $FirmaContactoResponsable = ObtenerVariable("PrefijoFormatoLlamadaServicioPortalOne") . base64_decode($_POST['DocNum']) . "Firma.jpg";
+
+    $dest = $dir_log . $FirmaContactoResponsable;
+    copy($source, $dest);
+
+    $dest = $dir_main . $FirmaContactoResponsable;
+    copy($source, $dest);
+}
+// Fin, copiar firma a la ruta log y main. SMM, 17/09/2022
+
 if (isset($_GET['id']) && ($_GET['id'] != "")) {
     $IdLlamada = base64_decode($_GET['id']);
 }
@@ -170,6 +197,11 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
             "'" . FormatoFecha($_POST['FechaAgenda'], $_POST['HoraAgenda']) . "'", // SMM 01/06/2022
             (PermitirFuncion(323) && PermitirFuncion(304)) ? "1" : "0", // CreacionActividad, SMM 28/07/2022
             "0", // EnvioCorreo, SMM 28/07/2022
+            "'" . $_POST['NombreContactoFirma'] . "'", // SMM, 16/09/2022
+            "'" . $_POST['CedulaContactoFirma'] . "'", // SMM, 16/09/2022
+            "'" . $_POST['TelefonosContactosFirma'] . "'", // SMM, 16/09/2022
+            "'" . $_POST['CorreosContactosFirma'] . "'", // SMM, 16/09/2022
+            "'" . $FirmaContactoResponsable . "'", // SMM, 16/09/2022
         );
         $SQL_InsLlamada = EjecutarSP('sp_tbl_LlamadaServicios', $ParamInsLlamada, 32);
         if ($SQL_InsLlamada) {
@@ -354,6 +386,11 @@ if (isset($_POST['P']) && ($_POST['P'] == 33)) { //Actualizar llamada de servici
             "'" . FormatoFecha($_POST['FechaAgenda'], $_POST['HoraAgenda']) . "'", // SMM 01/06/2022
             "0", // CreacionActividad, SMM 28/07/2022
             (PermitirFuncion(324) && ($_POST['EstadoLlamada'] == -1)) ? "1" : "0", // EnvioCorreo, SMM 28/07/2022
+            "'" . $_POST['NombreContactoFirma'] . "'", // SMM, 16/09/2022
+            "'" . $_POST['CedulaContactoFirma'] . "'", // SMM, 16/09/2022
+            "'" . $_POST['TelefonosContactosFirma'] . "'", // SMM, 16/09/2022
+            "'" . $_POST['CorreosContactosFirma'] . "'", // SMM, 16/09/2022
+            "'" . $FirmaContactoResponsable . "'", // SMM, 16/09/2022
         );
 
         // Actualizar la llamada de servicio.
@@ -855,6 +892,11 @@ if (isset($sw_error) && ($sw_error == 1)) {
 	.cierre-span {
 		display: none;
 	}
+
+	.badge-secondary {
+		margin: 10px;
+		cursor: pointer;
+	}
 </style>
 
 <script type="text/javascript">
@@ -1208,6 +1250,8 @@ if (isset($sw_error) && ($sw_error == 1)) {
 				$(".cierre-input").prop("readonly", false);
 				$(".cierre-input").prop("disabled", false);
 				$(".cierre-input").prop("required", true);
+
+				$("#CDU_NombreCierre").val($("#CDU_NombreContacto").val());
 			} else {
 				console.log("cambio el estado de la llamada, diferente a cerrado.");
 
@@ -1288,6 +1332,72 @@ function CrearLead(){
 	var posicion_x=parseInt((window.screen.width/2)-(anchura/2));
 	remote=open('popup_crear_lead.php','remote','width='+anchura+',height='+altura+',location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=no,status=yes,left='+posicion_x+',top='+posicion_y);
 	remote.focus();
+}
+
+// SMM, 16/09/2022
+function ValidarCorreo(evento, entrada) {
+	let CorreosDestinatarios = document.getElementById("CorreosDestinatarios");
+
+	if (event.code === 'Space') {
+		let re = /\S+@\S+\.\S+/;
+		let correo = entrada.value.trim();
+
+		entrada.value = "";
+		if(re.test(correo)) {
+			CorreosDestinatarios.innerHTML += `<span onclick="EliminarEsto(this)" class="badge badge-secondary">${correo}</span>`;	
+			LlenarCorreos();
+		} else {
+			alert("El correo no paso la validación.");
+		}
+	}
+}
+
+function LlenarCorreos() {
+	let badges = document.getElementById("CorreosContactosFirma");
+	badges.value = "";
+
+	$("#CorreosDestinatarios .badge").each(function() {
+		let badge = $(this).text();
+		console.log(badge);
+
+		badges.value += `${badge};`;
+	});
+}
+
+function ValidarTelefono(evento, entrada) {
+	let TelefonosDestinatarios = document.getElementById("TelefonosDestinatarios");
+
+	if (event.code === 'Space') {
+		let re = /\d{5,}/;
+		let telefono = entrada.value.trim();
+
+		entrada.value = "";
+		if(re.test(telefono)) {
+			TelefonosDestinatarios.innerHTML += `<span onclick="EliminarEsto(this)" class="badge badge-secondary">${telefono}</span>`;
+			LlenarTelefonos();
+		} else {
+			alert("El telefono no paso la validación.");
+		}
+	}
+}
+
+function LlenarTelefonos() {
+	let badges = document.getElementById("TelefonosContactosFirma");
+	badges.value = "";
+
+	$("#TelefonosDestinatarios .badge").each(function() {
+		let badge = $(this).text();
+		console.log(badge);
+
+		badges.value += `${badge};`;
+	});
+}
+
+function EliminarEsto(elemento) {
+	elemento.remove();
+
+	LlenarCorreos();
+	LlenarTelefonos();
 }
 </script>
 
@@ -1905,89 +2015,6 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 					</div>
 				</div>
 
-				<!-- SMM, 16/09/2022 -->
-				<?php if ($type_llmd == 1) {?>
-					<div class="ibox">
-						<div class="ibox-title bg-success">
-							<h5 class="collapse-link"><i class="fa fa-check-circle"></i> Cierre de llamada de servicio</h5>
-							<a class="collapse-link pull-right">
-								<i class="fa fa-chevron-up"></i>
-							</a>
-						</div> <!-- ibox-title -->
-						<div class="ibox-content">
-							<div class="form-group">
-								<div class="col-lg-5 border-bottom m-r-sm">
-									<label class="control-label text-danger">Información de cierre</label>
-								</div>
-								<div class="col-lg-6 border-bottom ">
-									<label class="control-label text-danger">Firma del cliente</label>
-								</div>
-							</div>
-							<div class="col-lg-5 m-r-md">
-								<div class="form-group">
-									<label class="control-label">Motivo cierre <span class="text-danger cierre-span">*</span></label>
-									<input readonly autocomplete="off" name="CDU_MotivoCierre" type="text" class="form-control cierre-input" id="CDU_MotivoCierre" maxlength="100" value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['CDU_MotivoCierre'] ?? "";}?>">
-								</div>
-								<div class="form-group">
-									<label class="control-label">Correo destinatario <span class="text-danger cierre-span">*</span></label>
-									<input readonly autocomplete="off" name="CDU_CorreoCierre" type="email" class="form-control cierre-input" id="CDU_CorreoCierre" maxlength="100" value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['CDU_CorreoCierre'] ?? "";}?>">
-								</div>
-								<div class="form-group">
-									<label class="control-label">Teléfono <span class="text-danger cierre-span">*</span></label>
-									<input readonly autocomplete="off" name="CDU_TelefonoCierre" type="text" class="form-control cierre-input" id="CDU_TelefonoCierre" maxlength="100" value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['CDU_TelefonoCierre'] ?? "";}?>">
-								</div>
-								<!-- Componente "select" -->
-								<div class="form-group">
-									<label class="control-label">Estado del servicio <span class="text-danger cierre-span">*</span></label>
-									<select disabled name="CDU_EstadoServicio" class="form-control cierre-input select2" id="CDU_EstadoServicio">
-											<option value="" disabled selected>Seleccione...</option>
-										<?php /*while ($row_EstadoServicio = sqlsrv_fetch_array($SQL_EstadoServicio)) {?>
-<option value="<?php echo $row_EstadoServicio['CodigoEstadoServicio']; ?>"
-<?php if ((isset($row['CDU_EstadoServicio'])) && (strcmp($row_EstadoServicio['CodigoEstadoServicio'], $row['CDU_EstadoServicio']) == 0)) {echo "selected=\"selected\"";}?>>
-<?php echo $row_EstadoServicio['EstadoServicio']; ?>
-</option>
-<?php }*/?>
-									</select>
-								</div>
-								<!-- Hasta aquí -->
-								<br><br><br>
-							</div>
-							<div class="col-lg-6">
-								<div class="form-group">
-									<label class="control-label">Nombre del cliente <span class="text-danger cierre-span">*</span></label>
-									<input readonly autocomplete="off" name="CDU_NombreCierre" type="text" class="form-control cierre-input" id="CDU_NombreCierre" maxlength="100" value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['CDU_NombreCierre'] ?? "";}?>">
-								</div>
-								<div class="form-group">
-									<label class="control-label">Cédula <span class="text-danger cierre-span">*</span></label>
-									<input readonly autocomplete="off" name="CDU_CedulaCierre" type="text" class="form-control cierre-input" id="CDU_CedulaCierre" maxlength="100" value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['CDU_CedulaCierre'] ?? "";}?>">
-								</div>
-								<!-- Componente "firma"-->
-								<br><br>
-								<div class="form-group">
-									<label class="col-lg-2">Firma del cliente <span class="text-danger cierre-span">*</span></label>
-									<?php if ($type_llmd == 1 && (isset($row['FirmaCliente']) && ($row['FirmaCliente'] != ""))) {?>
-									<div class="col-lg-10">
-										<span class="badge badge-primary">Firmado</span>
-									</div>
-									<?php } else { //LimpiarDirTempFirma();?>
-									<div class="col-lg-5">
-										<button class="btn btn-primary" type="button" id="FirmaCliente" onClick="AbrirFirma('SigCliente');"><i class="fa fa-pencil-square-o"></i> Realizar firma</button>
-										<br>
-										<input readonly type="text" id="SigCliente" name="SigCliente" style="width: 0; margin-left: -7px; visibility: hidden;" value="">
-										<div id="msgInfoSigCliente" style="display: none;" class="alert alert-info"><i class="fa fa-info-circle"></i> El documento ya ha sido firmado.</div>
-									</div>
-									<div class="col-lg-5">
-										<img id="ImgSigCliente" style="display: none; max-width: 100%; height: auto;" src="" alt="" />
-									</div>
-									<?php }?>
-								</div>
-								<!-- Hasta aquí -->
-							</div>
-						</div> <!-- ibox-content -->
-					</div> <!-- ibox -->
-				<?php }?>
-				<!-- Hasta aquí, 16/09/2022 -->
-
 				<!-- INICIO, información del vehículo y de la cita -->
 				<div class="ibox">
 					<div class="ibox-title bg-success">
@@ -2145,7 +2172,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 				</div>
 				<div class="ibox">
 					<div class="ibox-title bg-success">
-						<h5 class="collapse-link"><i class="fa fa-check-circle"></i> Cierre de llamada</h5>
+						<h5 class="collapse-link"><i class="fa fa-check-circle"></i> Cierre de llamada de servicio</h5>
 						 <a class="collapse-link pull-right">
 							<i class="fa fa-chevron-up"></i>
 						</a>
@@ -2176,6 +2203,91 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 						</div>
 					</div>
 				</div>
+
+				<!-- SMM, 16/09/2022 -->
+				<?php if ($type_llmd == 1) {?>
+					<div class="ibox">
+						<div class="ibox-title bg-success">
+							<h5 class="collapse-link"><i class="fa fa-check-circle"></i> Contacto cierre de llamada de servicio</h5>
+							<a class="collapse-link pull-right">
+								<i class="fa fa-chevron-up"></i>
+							</a>
+						</div> <!-- ibox-title -->
+						<div class="ibox-content">
+							<div class="form-group">
+								<div class="col-lg-5 border-bottom m-r-sm">
+									<label class="control-label text-danger">Información de destinatarios</label>
+								</div>
+								<div class="col-lg-6 border-bottom ">
+									<label class="control-label text-danger">Firma del cliente</label>
+								</div>
+							</div>
+							<div class="col-lg-5 m-r-md">
+
+								<div class="form-group">
+									<label class="control-label">Correos Destinatarios (Máximo 4) <span class="text-danger cierre-span">*</span></label>
+									<input onKeyUp="ValidarCorreo(event, this)" <?php if (!$testMode) {echo "readonly";}?> autocomplete="off" name="CorreoContactoFirma" type="text" class="form-control cierre-input" id="CorreoContactoFirma" maxlength="50" value="">
+									<input type="hidden" id="CorreosContactosFirma" name="CorreosContactosFirma">
+
+									<div id="CorreosDestinatarios">
+										<?php if (($type_llmd == 1) || ($sw_error == 1)) {?>
+											<?php $CorreosContactosFirma = explode(";", $row['CorreoContactoFirma']);?>
+											<?php foreach ($CorreosContactosFirma as &$Correo) {?>
+												<span onclick="EliminarEsto(this)" class="badge badge-secondary"><?php echo $Correo; ?></span>
+											<?php }?>
+										<?php }?>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="control-label">Teléfonos Destinatarios (Máximo 4) <span class="text-danger cierre-span">*</span></label>
+									<input onKeyUp="ValidarTelefono(event, this)" <?php if (!$testMode) {echo "readonly";}?> autocomplete="off" name="TelefonoContactoFirma" type="text" class="form-control cierre-input" id="TelefonoContactoFirma" maxlength="10" value="">
+									<input type="hidden" id="TelefonosContactosFirma" name="TelefonosContactosFirma">
+
+									<div id="TelefonosDestinatarios">
+										<?php if (($type_llmd == 1) || ($sw_error == 1)) {?>
+											<?php $TelefonosContactosFirma = explode(";", $row['TelefonoContactoFirma']);?>
+											<?php foreach ($TelefonosContactosFirma as &$Telefono) {?>
+												<span onclick="EliminarEsto(this)" class="badge badge-secondary"><?php echo $Telefono; ?></span>
+											<?php }?>
+										<?php }?>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-6">
+								<div class="form-group">
+									<label class="control-label">Nombre del cliente <span class="text-danger cierre-span">*</span></label>
+									<input <?php if (!$testMode) {echo "readonly";}?> autocomplete="off" name="NombreContactoFirma" type="text" class="form-control cierre-input" id="NombreContactoFirma" maxlength="100" value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['NombreContactoFirma'] ?? "";}?>">
+								</div>
+								<div class="form-group">
+									<label class="control-label">Cédula del cliente <span class="text-danger cierre-span">*</span></label>
+									<input <?php if (!$testMode) {echo "readonly";}?> autocomplete="off" name="CedulaContactoFirma" type="text" class="form-control cierre-input" id="CedulaContactoFirma" maxlength="100" value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['CedulaContactoFirma'] ?? "";}?>">
+								</div>
+								<!-- Componente "firma"-->
+								<br><br>
+								<div class="form-group">
+									<label class="col-lg-2">Firma del cliente <span class="text-danger cierre-span">*</span></label>
+									<?php if ($type_llmd == 1 && (isset($row['CedulaContactoFirma']) && ($row['CedulaContactoFirma'] != ""))) {?>
+									<div class="col-lg-10">
+										<span class="badge badge-primary">Firmado</span>
+									</div>
+									<?php } else { //LimpiarDirTempFirma();?>
+									<div class="col-lg-5">
+										<button class="btn btn-primary" type="button" id="FirmaCliente" onClick="AbrirFirma('FirmaContactoResponsable');"><i class="fa fa-pencil-square-o"></i> Realizar firma</button>
+										<br>
+										<input readonly type="text" id="FirmaContactoResponsable" name="FirmaContactoResponsable" style="width: 100px; margin-left: -7px; visibility: hidden;" value="">
+										<div id="msgInfoFirmaContactoResponsable" style="display: none;" class="alert alert-info"><i class="fa fa-info-circle"></i> El documento ya ha sido firmado.</div>
+									</div>
+									<div class="col-lg-5">
+										<img id="ImgFirmaContactoResponsable" style="display: none; max-width: 100%; height: auto;" src="" alt="" />
+									</div>
+									<?php }?>
+								</div>
+								<!-- Hasta aquí -->
+							</div>
+						</div> <!-- ibox-content -->
+					</div> <!-- ibox -->
+				<?php }?>
+				<!-- Hasta aquí, 16/09/2022 -->
 
 				<div class="ibox">
 					<div class="ibox-title bg-success">
