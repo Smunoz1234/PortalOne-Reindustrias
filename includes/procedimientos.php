@@ -586,7 +586,7 @@ if (isset($_GET['type']) && $_GET['type'] != "") {
         $SQL = EjecutarSP('sp_ConsultarStockArticuloAlmacenUpd', $Parametros, 34);
         if ($SQL) {
             $row = sqlsrv_fetch_array($SQL);
-            echo $row['OnHand'];
+            echo $row['OnHand'] ?? "0";
         } else {
             throw new Exception('Error al actualizar el stock');
             exit();
