@@ -101,6 +101,12 @@ if((isset($_GET['type'])&&($_GET['type']!=""))||(isset($_POST['type'])&&($_POST[
 			}
 					
 		}
+
+		// SMM, 09/19/2022
+		if (isset($_GET['BasadoEscaneados'])) {
+			$Parametros["basado_archivos_escaneados"] = $_GET['BasadoEscaneados'];
+		}
+
 		$Resultado=EnviarWebServiceSAP($Metodo,$Parametros,true,true);
 		$records=array(
 			'Estado' => $Resultado->Success,
