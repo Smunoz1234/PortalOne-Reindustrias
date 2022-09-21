@@ -384,6 +384,9 @@ while ($row_EstServLlamada = sqlsrv_fetch_array($SQL_EstServLlamada)) {?>
 							<th>Cliente</th>
 							<th>Sucursal</th>
 
+							<th>Marca</th> <!-- SMM, 21/09/2022 -->
+							<th>Línea</th> <!-- SMM, 21/09/2022 -->
+
 							<th>Articulo</th>
 							<th>Serial Interno</th>
 							<th>Nombre Contacto</th>
@@ -417,6 +420,9 @@ while ($row_EstServLlamada = sqlsrv_fetch_array($SQL_EstServLlamada)) {?>
 								<td><?php echo $row['DeTipoLlamada']; ?></td>
 								<td><?php echo $row['NombreCliente']; ?></td>
 								<td><?php echo $row['NombreSucursalCliente']; ?></td>
+
+								<td><?php echo $row['Marca'] ?? ""; ?></td>
+                            	<td><?php echo $row['Linea'] ?? ""; ?></td>
 
 								<td><?php echo $row['DeArticuloLlamada']; ?></td>
 								<td><?php echo $row['SerialArticuloLlamada']; ?></td>
