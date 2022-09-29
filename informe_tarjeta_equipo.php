@@ -363,7 +363,7 @@ if ($sw == 1) {
 							</div>
 						</div>
 
-						<?php if ($sw == 1) {?>
+						<?php if (($sw == 1) && sqlsrv_has_rows($SQL)) {?>
 					  	<div class="form-group">
 							<div class="col-lg-10">
 								<a href="exportar_excel.php?exp=10&Cons=<?php echo base64_encode(implode(",", $Param)); ?>&sp=<?php echo base64_encode("usp_inf_GestionTarjetaEquipos"); ?>">
