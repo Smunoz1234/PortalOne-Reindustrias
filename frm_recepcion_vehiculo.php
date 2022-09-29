@@ -1062,25 +1062,34 @@ Dropzone.options.dropzoneForm = {
 	dictDefaultMessage: "<strong>Haga clic aqui para cargar anexos</strong><br>Tambien puede arrastrarlos hasta aqui<br><h4><small>(máximo <?php echo ObtenerVariable("CantidadArchivos"); ?> archivos a la vez)<small></h4>",
 	dictFallbackMessage: "Tu navegador no soporta cargue de archivos mediante arrastrar y soltar",
 	removedfile: function(file) {
-		var indice = anexos.indexOf(file.name);
-		if (indice !== -1) {
-			anexos.splice(indice, 1);
-		}
+			var indice = anexos.indexOf(file.name);
+			if (indice !== -1) {
+				anexos.splice(indice, 1);
+			}
 
-		$.get( "includes/procedimientos.php", {
-		type: "3",
-		nombre: file.name
-		}).done(function( data ) {
-		var _ref;
-		return (_ref = file.previewElement) !== null ? _ref.parentNode.removeChild(file.previewElement) : void 0;
-		});
+			$.get( "includes/procedimientos.php", {
+				type: "3",
+				nombre: file.name
+			}).done(function( data ) {
+				var _ref;
+				return (_ref = file.previewElement) !== null ? _ref.parentNode.removeChild(file.previewElement) : void 0;
+			});
 		},
 	init: function(file) {
 		this.on("addedfile", file => {
 			anexos.push(file.name); // SMM, 16/02/2022
 			console.log("Line 1057, Dropzone(addedfile)", file.name);
-    });
-  }
+
+			// SMM, 28/09/2022
+			$("#Crear").prop("disabled", true);
+    	});
+	},
+	queuecomplete: function() {
+		console.log("Line 1087, Dropzone(queuecomplete)");
+
+		// SMM, 28/09/2022
+		$("#Crear").prop("disabled", false);
+	}
 };
 </script>
 
@@ -1270,14 +1279,18 @@ $(document).ready(function(){
 							processData: false,  // tell jQuery not to process the data
 							contentType: false,   // tell jQuery not to set contentType
 							success: function(response) {
-								console.log("Line 1805", response);
+								console.log("Line 1273", response);
 
-								let json_response = JSON.parse(response);
-								Swal.fire(json_response).then(() => {
-									if (json_response.hasOwnProperty('return')) {
-										window.location = json_response.return;
-									}
-								});
+								try {
+									let json_response = JSON.parse(response);
+									Swal.fire(json_response).then(() => {
+										if (json_response.hasOwnProperty('return')) {
+											window.location = json_response.return;
+										}
+									});
+								} catch (error) {
+									console.log("Line 1283", error);
+								}
 
 								$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
 							},

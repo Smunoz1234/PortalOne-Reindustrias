@@ -71,7 +71,7 @@ if (isset($Cabecera["Anexo0"])) {
 
         // Inicio, copiar anexos a la ruta log y main.
         $source = CrearObtenerDirRuta(ObtenerVariable("CarpetaTmp") . "/recepcion_vehiculos/" . $_SESSION['CodUser'] . "/");
-        $source .= $Cabecera["Anexo$a"];
+        $source .= NormalizarNombreArchivo(str_replace(" ", "_", $Cabecera["Anexo$a"])); // SMM, 28/09/2022
 
         $dest = $dir_log . $nombre_anexo;
         copy($source, $dest);
