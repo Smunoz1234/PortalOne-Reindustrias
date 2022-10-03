@@ -175,13 +175,13 @@ function SeleccionarTodos(){
                         </li>
                     </ol>
 				</div>
-				<?php if(PermitirFuncion(1706)) { ?>
+				<?php if (PermitirFuncion(1706)) {?>
                 <div class="col-sm-4">
 					<div class="title-action">
 						<a href="frm_recepcion_vehiculo.php" class="alkin btn btn-primary"><i class="fa fa-plus-circle"></i> Crear nueva recepción de vehículo</a>
 					</div>
 				</div>
-				<?php } ?>
+				<?php }?>
             </div>
          <div class="wrapper wrapper-content">
 			 <div class="modal inmodal fade" id="myModal" tabindex="1" role="dialog" aria-hidden="true">
@@ -324,6 +324,8 @@ while ($row_Empleados = sqlsrv_fetch_array($SQL_Empleados)) {?>
 										<?php }?>
 
 										<a href="filedownload.php?file=<?php echo base64_encode("RecepcionVehiculos/DescargarFormatos/" . $row['id_recepcion_vehiculo'] . "/" . $_SESSION['User']); ?>&api=1" target="_blank" class="btn btn-warning btn-xs" title="Descargar"><i class="fa fa-download"></i></a>
+
+										<a href="descargar_frm_recepcion_vehiculo.php?id=<?php echo $row['id_recepcion_vehiculo']; ?>" target="_blank" class="btn btn-danger btn-xs" title="Descargar"><i class="fa fa-file-image-o"></i></a>
 									</td>
 									<td class="text-center">
 										<?php if ($row['estado'] == 'O') {?>

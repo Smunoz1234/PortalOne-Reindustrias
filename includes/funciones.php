@@ -532,6 +532,21 @@ function CrearObtenerDirRuta($pRuta)
 
 }
 
+// SMM, 01/10/2022
+function LimpiarDirRuta($dir)
+{
+    if (is_dir($dir)) {
+        $files = array_diff(scandir($dir), array('.', '..'));
+
+        foreach ($files as $file) {
+            unlink("$dir/$file");
+        }
+
+        rmdir($dir);
+        mkdir($dir, 0777, true);
+    }
+}
+
 function LimpiarDirTempFirma()
 { //Limpiar la carpeta temporal antes de cargar nuevos anexos
     $temp = "tmp_sig";
