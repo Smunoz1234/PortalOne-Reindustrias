@@ -351,18 +351,20 @@ function ActDosificacion(id){//Actualizar dosificacion
 }
 
 function ActStockAlmacen(name,id,line){//Actualizar el stock al cambiar el almacen
-	$.ajax({
-		type: "GET",
-		url: "includes/procedimientos.php?type=34&edit=<?php echo $type; ?>&whscode="+document.getElementById(name+id).value+"&linenum="+line+"&cardcode=<?php echo $CardCode; ?>&id=<?php echo $Id; ?>&evento=<?php echo $Evento; ?>&tdoc=17",
-		success: function(response){
-			if(response!="Error"){
-				document.getElementById("OnHand"+id).value=number_format(response, dCantidades, sDecimal, sMillares);
+	if(false) { // Se desactivo esta función en los documentos en borrador. SMM, 03/10/2022
+		$.ajax({
+			type: "GET",
+			url: "includes/procedimientos.php?type=34&edit=<?php echo $type; ?>&whscode="+document.getElementById(name+id).value+"&linenum="+line+"&cardcode=<?php echo $CardCode; ?>&id=<?php echo $Id; ?>&evento=<?php echo $Evento; ?>&tdoc=17",
+			success: function(response){
+				if(response!="Error"){
+					document.getElementById("OnHand"+id).value=number_format(response, dCantidades, sDecimal, sMillares);
+				}
+			},
+			error: function(error){
+				console.error(error.responseText);
 			}
-		},
-		error: function(error){
-			console.error(error.responseText);
-		}
-	});
+		});
+	}
 }
 
 // Stiven Muñoz Murillo, 27/01/2022
@@ -546,7 +548,7 @@ if ($sw == 1) {
         sqlsrv_fetch($SQL_TipoPlaga, SQLSRV_SCROLL_ABSOLUTE, -1);
         sqlsrv_fetch($SQL_Almacen, SQLSRV_SCROLL_ABSOLUTE, -1);
 
-		// Se eliminaron las dimensiones, 31/08/2022
+        // Se eliminaron las dimensiones, 31/08/2022
 
         sqlsrv_fetch($SQL_Proyecto, SQLSRV_SCROLL_ABSOLUTE, -1);
         sqlsrv_fetch($SQL_EmpleadosVentas, SQLSRV_SCROLL_ABSOLUTE, -1); // SMM, 22/02/2022

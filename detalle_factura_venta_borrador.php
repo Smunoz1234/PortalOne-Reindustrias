@@ -459,7 +459,7 @@ if ($sw == 1) {
     while ($row = sqlsrv_fetch_array($SQL)) {
         sqlsrv_fetch($SQL_Almacen, SQLSRV_SCROLL_ABSOLUTE, -1);
 
-		// Se eliminaron las dimensiones, 31/08/2022
+        // Se eliminaron las dimensiones, 31/08/2022
 
         sqlsrv_fetch($SQL_Proyecto, SQLSRV_SCROLL_ABSOLUTE, -1);
         sqlsrv_fetch($SQL_EmpleadosVentas, SQLSRV_SCROLL_ABSOLUTE, -1); // SMM, 22/02/2022
@@ -577,6 +577,7 @@ if ($sw == 1) {
 
         // Cambio de Stock en Lote
         $LineNum = $row['LineNum'];
+        // Se desactivo esta función en los documentos en borrador. SMM, 03/10/2022
         // echo "<script> ActStockAlmacen('WhsCode', $i, $LineNum); </script>";
         // SMM, 30/03/2022
 
