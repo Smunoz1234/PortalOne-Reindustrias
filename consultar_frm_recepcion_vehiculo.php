@@ -325,7 +325,7 @@ while ($row_Empleados = sqlsrv_fetch_array($SQL_Empleados)) {?>
 
 										<a href="filedownload.php?file=<?php echo base64_encode("RecepcionVehiculos/DescargarFormatos/" . $row['id_recepcion_vehiculo'] . "/" . $_SESSION['User']); ?>&api=1" target="_blank" class="btn btn-warning btn-xs" title="Descargar"><i class="fa fa-download"></i></a>
 
-										<a href="descargar_frm_recepcion_vehiculo.php?id=<?php echo $row['id_recepcion_vehiculo']; ?>" target="_blank" class="btn btn-danger btn-xs" title="Descargar"><i class="fa fa-file-image-o"></i></a>
+										<a href="descargar_frm_recepcion_vehiculo.php?id=<?php echo $row['id_recepcion_vehiculo']; ?>" target="_blank" class="btn btn-danger btn-xs" title="Descargar Fotos"><i class="fa fa-file-image-o"></i></a>
 									</td>
 									<td class="text-center">
 										<?php if ($row['estado'] == 'O') {?>
