@@ -75,6 +75,7 @@ if ($zip->open($zipcreated, ZipArchive::CREATE) === true) {
 if ($cant == 0) {
     echo "No hay archivos para descargar";
 } else {
+    ob_end_clean(); // Reference, https://stackoverflow.com/questions/19963382/php-zip-file-download-error-when-opening
     header('Content-Type: application/zip');
     header('Content-disposition: attachment; filename=' . $zipname);
     header('Content-Length: ' . filesize($zipcreated));
