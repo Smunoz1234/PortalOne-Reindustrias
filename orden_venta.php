@@ -55,7 +55,6 @@ if (isset($_POST['swError']) && ($_POST['swError'] != "")) { //Para saber si ha 
     $sw_error = 0;
 }
 
-
 // echo $_REQUEST['tl'];
 if (isset($_REQUEST['tl']) && ($_REQUEST['tl'] != "")) { //0 Si se está creando. 1 Se se está editando.
     $edit = $_REQUEST['tl'];
@@ -278,7 +277,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Orden de venta
                                     sqlsrv_close($conexion);
                                     header('Location:orden_venta.php?id=' . base64_encode($row_ConsID['ID_OrdenVenta']) . '&id_portal=' . base64_encode($IdOrdenVenta) . '&tl=1&a=' . base64_encode("OK_OVenAdd"));
                                 } else {
-									header('Location:orden_venta.php?a=' . base64_encode("OK_OVenAdd"));
+                                    header('Location:orden_venta.php?a=' . base64_encode("OK_OVenAdd"));
                                 }
                             } else { //Actualizando orden
                                 $SQL_ConsID = Seleccionar('uvw_Sap_tbl_OrdenesVentas', 'ID_OrdenVenta', "IdDocPortal='" . $IdOrdenVenta . "'");
@@ -347,8 +346,17 @@ if (isset($_GET['dt_LS']) && ($_GET['dt_LS']) == 1) { //Verificar que viene de u
 if (isset($_GET['dt_OV']) && ($_GET['dt_OV']) == 1) { // Verificar que viene de una Orden de ventas (Duplicar)
     $dt_OF = 1;
 
+    // SMM, 30/09/2022
+    $ID_Documento = "'" . base64_decode($_GET['OV']) . "'";
+
+    $WhereAnexos = "ID_Documento=$ID_Documento";
+    // echo $WhereAnexos;
+
+    Eliminar("tbl_DocumentosSAP_Anexos", $WhereAnexos);
+    // Hasta aquí, 30/09/2022
+
     $ParametrosCopiarOrdenToOrden = array(
-        "'" . base64_decode($_GET['OV']) . "'",
+        $ID_Documento, // SMM, 30/09/2022
         "'" . base64_decode($_GET['Evento']) . "'",
         "'" . base64_decode($_GET['Almacen']) . "'",
         "'" . base64_decode($_GET['Cardcode']) . "'",
@@ -382,6 +390,9 @@ if (isset($_GET['dt_OV']) && ($_GET['dt_OV']) == 1) { // Verificar que viene de 
     //Orden de servicio
     $SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . base64_decode($_GET['LS']) . "'");
     $row_OrdenServicioCliente = sqlsrv_fetch_array($SQL_OrdenServicioCliente);
+
+    // Anexos, SMM 30/09/2022
+    $SQL_Anexo = Seleccionar('uvw_tbl_DocumentosSAP_Anexos', '*', $WhereAnexos);
 }
 
 if (isset($_GET['dt_OF']) && ($_GET['dt_OF']) == 1) { //Verificar que viene de una Oferta de ventas
@@ -475,8 +486,8 @@ if ($edit == 1 && $sw_error == 0) {
     $SQL = sqlsrv_query($conexion, $Cons);
     $row = sqlsrv_fetch_array($SQL);
 
-	// SMM, 06/09/2022
-	// echo $Cons;
+    // SMM, 06/09/2022
+    // echo $Cons;
 
     //Clientes
     $SQL_Cliente = Seleccionar('uvw_Sap_tbl_Clientes', '*', "CodigoCliente='" . $row['CardCode'] . "'", 'NombreCliente');
@@ -1692,17 +1703,28 @@ if ($edit == 1 || $sw_error == 1) {
 						</div>
 						<?php }?>
 						 </form>
+
+						<!-- Limpiar directorio temporal antes de copiar los anexos de SAP, 01/10/2022 -->
+						<!-- dt_OF, también hace referencia al duplicar orden de venta -->
+						<?php if (($sw_error == 0) && ($dt_OF == 0)) {LimpiarDirTemp();}?>
+
 						<div id="tab-3" class="tab-pane">
 							<div class="panel-body">
-								<?php if ($edit == 1) {
-    if ($row['IdAnexo'] != 0) {?>
+								<?php if (($edit == 1) || sqlsrv_has_rows($SQL_Anexo)) {
+    if ((($edit == 1) && ($row['IdAnexo'] != 0)) || (sqlsrv_has_rows($SQL_Anexo) && ($edit == 0))) {?>
 										<div class="form-group">
 											<div class="col-lg-4">
 											 <ul class="folder-list" style="padding: 0">
 											<?php while ($row_Anexo = sqlsrv_fetch_array($SQL_Anexo)) {
         $Icon = IconAttach($row_Anexo['FileExt']);
+
+        // SMM, 30/09/2022
+        $RutaAnexoSAP = ObtenerDirAttach()[0] . $row_Anexo['NombreArchivo'];
+        $RutaAnexoTemporal = CrearObtenerDirTemp() . $row_Anexo['NombreArchivo'];
+
+        copy($RutaAnexoSAP, $RutaAnexoTemporal);
         ?>
-												<li><a href="attachdownload.php?file=<?php echo base64_encode($row_Anexo['AbsEntry']); ?>&line=<?php echo base64_encode($row_Anexo['Line']); ?>" target="_blank" class="btn-link btn-xs"><i class="<?php echo $Icon; ?>"></i> <?php echo $row_Anexo['NombreArchivo']; ?></a></li>
+												<li><a <?php if ($edit == 0) {echo "disabled";} else {echo "href='attachdownload.php?file=" . base64_encode($row_Anexo['AbsEntry']) . "&line=" . base64_encode($row_Anexo['Line']) . "'";}?> target="_blank" class="btn-link btn-xs"><i class="<?php echo $Icon; ?>"></i> <?php echo $row_Anexo['NombreArchivo']; ?></a></li>
 											<?php }?>
 											 </ul>
 											</div>
@@ -1711,7 +1733,6 @@ if ($edit == 1 || $sw_error == 1) {
 }?>
 								<div class="row">
 									<form action="upload.php" class="dropzone" id="dropzoneForm" name="dropzoneForm">
-										<?php if ($sw_error == 0) {LimpiarDirTemp();}?>
 										<div class="fallback">
 											<input name="File" id="File" type="file" form="dropzoneForm" />
 										</div>
