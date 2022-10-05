@@ -1251,7 +1251,10 @@ if (isset($sw_error) && ($sw_error == 1)) {
 				$(".cierre-input").prop("disabled", false);
 				$(".cierre-input").prop("required", true);
 
-				$("#CDU_NombreCierre").val($("#CDU_NombreContacto").val());
+				// SMM, 21/09/2022
+				$("#NombreContactoFirma").val($("#CDU_NombreContacto").val());
+				AgregarEsto("CorreosDestinatarios", $("#CDU_CorreoContacto").val());
+				AgregarEsto("TelefonosDestinatarios", $("#CDU_TelefonoContacto").val());
 			} else {
 				console.log("cambio el estado de la llamada, diferente a cerrado.");
 
@@ -1336,16 +1339,13 @@ function CrearLead(){
 
 // SMM, 16/09/2022
 function ValidarCorreo(evento, entrada) {
-	let CorreosDestinatarios = document.getElementById("CorreosDestinatarios");
-
 	if (event.code === 'Space') {
 		let re = /\S+@\S+\.\S+/;
 		let correo = entrada.value.trim();
 
 		entrada.value = "";
 		if(re.test(correo)) {
-			CorreosDestinatarios.innerHTML += `<span onclick="EliminarEsto(this)" class="badge badge-secondary">${correo}</span>`;	
-			LlenarCorreos();
+			AgregarEsto("CorreosDestinatarios", correo);
 		} else {
 			alert("El correo no paso la validación.");
 		}
@@ -1357,26 +1357,23 @@ function LlenarCorreos() {
 	badges.value = "";
 
 	$("#CorreosDestinatarios .badge").each(function() {
-		let badge = $(this).text();
-		console.log(badge);
+		let badge = $(this).text().trim();
+		console.log(`|${badge}|`);
 
 		badges.value += `${badge};`;
 	});
 }
 
 function ValidarTelefono(evento, entrada) {
-	let TelefonosDestinatarios = document.getElementById("TelefonosDestinatarios");
-
 	if (event.code === 'Space') {
 		let re = /\d{5,}/;
 		let telefono = entrada.value.trim();
 
 		entrada.value = "";
 		if(re.test(telefono)) {
-			TelefonosDestinatarios.innerHTML += `<span onclick="EliminarEsto(this)" class="badge badge-secondary">${telefono}</span>`;
-			LlenarTelefonos();
+			AgregarEsto("TelefonosDestinatarios", telefono);
 		} else {
-			alert("El telefono no paso la validación.");
+			alert("El télefono no paso la validación.");
 		}
 	}
 }
@@ -1386,8 +1383,8 @@ function LlenarTelefonos() {
 	badges.value = "";
 
 	$("#TelefonosDestinatarios .badge").each(function() {
-		let badge = $(this).text();
-		console.log(badge);
+		let badge = $(this).text().trim();
+		console.log(`|${badge}|`);
 
 		badges.value += `${badge};`;
 	});
@@ -1395,6 +1392,14 @@ function LlenarTelefonos() {
 
 function EliminarEsto(elemento) {
 	elemento.remove();
+
+	LlenarCorreos();
+	LlenarTelefonos();
+}
+
+function AgregarEsto(contenedorID, valorElemento) {
+	let contenedorElementos = document.getElementById(contenedorID);
+	contenedorElementos.innerHTML += `<span onclick="EliminarEsto(this)" class="badge badge-secondary"><i class="fa fa-trash"></i> ${valorElemento}</span>`;
 
 	LlenarCorreos();
 	LlenarTelefonos();
@@ -2233,7 +2238,9 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 										<?php if (($type_llmd == 1) || ($sw_error == 1)) {?>
 											<?php $CorreosContactosFirma = explode(";", $row['CorreoContactoFirma']);?>
 											<?php foreach ($CorreosContactosFirma as &$Correo) {?>
-												<span onclick="EliminarEsto(this)" class="badge badge-secondary"><?php echo $Correo; ?></span>
+												<?php if ($Correo != "") {?>
+													<span onclick="EliminarEsto(this)" class="badge badge-secondary"><i class="fa fa-trash"></i> <?php echo $Correo; ?></span>
+												<?php }?>
 											<?php }?>
 										<?php }?>
 									</div>
@@ -2247,7 +2254,9 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 										<?php if (($type_llmd == 1) || ($sw_error == 1)) {?>
 											<?php $TelefonosContactosFirma = explode(";", $row['TelefonoContactoFirma']);?>
 											<?php foreach ($TelefonosContactosFirma as &$Telefono) {?>
-												<span onclick="EliminarEsto(this)" class="badge badge-secondary"><?php echo $Telefono; ?></span>
+												<?php if ($Telefono != "") {?>
+													<span onclick="EliminarEsto(this)" class="badge badge-secondary"><i class="fa fa-trash"></i> <?php echo $Telefono; ?></span>
+												<?php }?>
 											<?php }?>
 										<?php }?>
 									</div>
@@ -2255,17 +2264,17 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 							</div>
 							<div class="col-lg-6">
 								<div class="form-group">
-									<label class="control-label">Nombre del cliente <span class="text-danger cierre-span">*</span></label>
-									<input <?php if (!$testMode) {echo "readonly";}?> autocomplete="off" name="NombreContactoFirma" type="text" class="form-control cierre-input" id="NombreContactoFirma" maxlength="100" value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['NombreContactoFirma'] ?? "";}?>">
+									<label class="control-label">Nombre del cliente <!-- span class="text-danger cierre-span">*</span --></label>
+									<input <?php if (!$testMode) {echo "readonly";}?> autocomplete="off" name="NombreContactoFirma" type="text" class="form-control cierre2-input2" id="NombreContactoFirma" maxlength="100" value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['NombreContactoFirma'] ?? "";}?>">
 								</div>
 								<div class="form-group">
-									<label class="control-label">Cédula del cliente <span class="text-danger cierre-span">*</span></label>
-									<input <?php if (!$testMode) {echo "readonly";}?> autocomplete="off" name="CedulaContactoFirma" type="text" class="form-control cierre-input" id="CedulaContactoFirma" maxlength="100" value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['CedulaContactoFirma'] ?? "";}?>">
+									<label class="control-label">Cédula del cliente <!-- span class="text-danger cierre-span">*</span --></label>
+									<input <?php if (!$testMode) {echo "readonly";}?> autocomplete="off" name="CedulaContactoFirma" type="text" class="form-control cierre2-input2" id="CedulaContactoFirma" maxlength="100" value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['CedulaContactoFirma'] ?? "";}?>">
 								</div>
 								<!-- Componente "firma"-->
 								<br><br>
 								<div class="form-group">
-									<label class="col-lg-2">Firma del cliente <span class="text-danger cierre-span">*</span></label>
+									<label class="col-lg-2">Firma del cliente <!-- span class="text-danger cierre-span">*</span --></label>
 									<?php if ($type_llmd == 1 && (isset($row['CedulaContactoFirma']) && ($row['CedulaContactoFirma'] != ""))) {?>
 									<div class="col-lg-10">
 										<span class="badge badge-primary">Firmado</span>
@@ -2517,9 +2526,9 @@ $return = QuitarParametrosURL($return, array("a"));?>
 												</div>
 												<div class="col-lg-6">
 													<div class="btn-group pull-right">
-														<button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i class="fa fa-mail-forward"></i> Copiar a <i class="fa fa-caret-down"></i></button>
+														<button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i class="fa fa-mail-forward"></i> Liquidación <i class="fa fa-caret-down"></i></button>
 														<ul class="dropdown-menu">
-															<li><a class="alkin dropdown-item" href="#" onClick="CopiarToFactura(1);">Factura de venta</a></li>
+															<li><a class="alkin dropdown-item" href="#" onClick="CopiarToFactura(1);">Prefactura de venta</a></li>
 															<!-- li><a class="alkin dropdown-item" href="#" onClick="CopiarToFactura(0);">Factura de venta (<strong>NO</strong> copiar adjuntos)</a></li -->
 															<!--li class="dropdown-divider"></li>
 															<li><a class="alkin dropdown-item" href="#" onClick="CopiarToFactura(1,2);">Orden de venta (copiar adjuntos)</a></li>

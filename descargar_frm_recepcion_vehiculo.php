@@ -15,19 +15,19 @@ if (isset($_GET['id']) && ($_GET['id'] != "")) {
 
     // Fuentes y destinos
     $f1 = $dir_main . $row_Fotografias["anexo_frente"];
-    $d1 = $dir_temp . $row_Fotografias["anexo_frente"];
+    $d1 = $dir_temp . "Frente_" . $row_Fotografias["anexo_frente"];
 
     $f2 = $dir_main . $row_Fotografias["anexo_lateral_izquierdo"];
-    $d2 = $dir_temp . $row_Fotografias["anexo_lateral_izquierdo"];
+    $d2 = $dir_temp . "LateralIzquierdo_" . $row_Fotografias["anexo_lateral_izquierdo"];
 
     $f3 = $dir_main . $row_Fotografias["anexo_lateral_derecho"];
-    $d3 = $dir_temp . $row_Fotografias["anexo_lateral_derecho"];
+    $d3 = $dir_temp . "LateralDerecho_" . $row_Fotografias["anexo_lateral_derecho"];
 
     $f4 = $dir_main . $row_Fotografias["anexo_trasero"];
-    $d4 = $dir_temp . $row_Fotografias["anexo_trasero"];
+    $d4 = $dir_temp . "Trasero_" . $row_Fotografias["anexo_trasero"];
 
     $f5 = $dir_main . $row_Fotografias["anexo_capot"];
-    $d5 = $dir_temp . $row_Fotografias["anexo_capot"];
+    $d5 = $dir_temp . "Capo_" . $row_Fotografias["anexo_capot"];
 
     // Copiar archivos
     copy($f1, $d1);
@@ -49,7 +49,7 @@ if (isset($_GET['id']) && ($_GET['id'] != "")) {
 }
 
 // Enter the name to creating zipped directory
-$zipname = "download_" . date('YmdHi') . ".zip";
+$zipname = "Recepcion_" . ($_GET['id'] ?? "") . "_" . date('YmdHi') . ".zip";
 $zipcreated = $dir_temp . $zipname;
 
 // Create new zip class
