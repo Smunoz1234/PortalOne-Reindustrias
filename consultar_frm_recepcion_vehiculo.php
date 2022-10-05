@@ -305,6 +305,10 @@ while ($row_Empleados = sqlsrv_fetch_array($SQL_Empleados)) {?>
 							</thead>
 							<tbody>
 							<?php while ($row = sqlsrv_fetch_array($SQL)) {?>
+
+								<?php $SQL_Formulario = Seleccionar('uvw_tbl_LlamadasServicios_Formularios', '*', "nombre_servicio = 'RecepcionVehiculos' AND id_formulario='" . $row['id_recepcion_vehiculo'] . "'");?>
+								<?php $row_Formulario = sqlsrv_fetch_array($SQL_Formulario);?>
+
 								<tr id="tr_Resum<?php echo $row['id_recepcion_vehiculo']; ?>" class="trResum">
 									<td><?php echo $row['id_recepcion_vehiculo']; ?></td>
 									<td><?php echo $row['empleado_tecnico']; ?></td>
@@ -326,6 +330,11 @@ while ($row_Empleados = sqlsrv_fetch_array($SQL_Empleados)) {?>
 										<a href="filedownload.php?file=<?php echo base64_encode("RecepcionVehiculos/DescargarFormatos/" . $row['id_recepcion_vehiculo'] . "/" . $_SESSION['User']); ?>&api=1" target="_blank" class="btn btn-warning btn-xs" title="Descargar"><i class="fa fa-download"></i></a>
 
 										<a href="descargar_frm_recepcion_vehiculo.php?id=<?php echo $row['id_recepcion_vehiculo']; ?>" target="_blank" class="btn btn-danger btn-xs" title="Descargar Fotos"><i class="fa fa-file-image-o"></i></a>
+
+										<?php if (isset($row_Formulario['docentry_llamada_servicio']) && ($row_Formulario['docentry_llamada_servicio'] != "")) {?>
+											<br><br>
+											<a target="_blank" title="Abrir OT" href="llamada_servicio.php?id=<?php echo base64_encode($row_Formulario['docentry_llamada_servicio']); ?>&tl=1&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('consultar_frm_recepcion_vehiculo.php'); ?>" class="btn btn-info btn-xs"><i class="fa fa-folder-open-o"></i> <?php echo $row_Formulario['id_llamada_servicio']; ?></a>
+										<?php }?>
 									</td>
 									<td class="text-center">
 										<?php if ($row['estado'] == 'O') {?>
