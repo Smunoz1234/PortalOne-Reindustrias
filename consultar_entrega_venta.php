@@ -218,7 +218,7 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_EVenUpd"))) {
 								</select>
 							</div>
 							<label class="col-lg-1 control-label">Serie</label>
-							<div class="col-lg-2">
+							<div class="col-lg-3">
 								<select name="Series" class="form-control" id="Series">
 										<option value="">(Todos)</option>
 								  <?php while ($row_Series = sqlsrv_fetch_array($SQL_Series)) {?>
@@ -238,7 +238,7 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_EVenUpd"))) {
 								<input name="BuscarDato" type="text" class="form-control" id="BuscarDato" maxlength="100" value="<?php if (isset($_GET['BuscarDato']) && ($_GET['BuscarDato'] != "")) {echo $_GET['BuscarDato'];}?>">
 							</div>
 							<label class="col-lg-1 control-label">Autorización</label>
-							<div class="col-lg-2">
+							<div class="col-lg-3">
 								<select name="Autorizacion" class="form-control" id="Autorizacion">
 										<option value="">(Todos)</option>
 								   <?php while ($row_EstadoAuth = sqlsrv_fetch_array($SQL_EstadoAuth)) {?>
@@ -260,17 +260,16 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_EVenUpd"))) {
 									<option value="1" <?php if (isset($_GET['TipoVenta']) && $_GET['TipoVenta'] == '1') {echo "selected=\"selected\"";}?>>SERVICIOS</option>
 								</select>
 							</div>
-						</div>
-
-						<div class="form-group">
 							<!-- Número de documento -->
 							<label class="col-lg-1 control-label">Número documento</label>
 							<div class="col-lg-3">
 								<input name="DocNum" type="text" class="form-control" id="DocNum" maxlength="50" placeholder="Digite un número completo, o una parte del mismo..." value="<?php if (isset($_GET['DocNum']) && ($_GET['DocNum'] != "")) {echo $_GET['DocNum'];}?>">
 							</div>
 							<!-- SMM, 22/07/2022 -->
+						</div>
 
-							<div class="col-lg-4">
+						<div class="form-group">
+							<div class="col-lg-12">
 								<button type="submit" class="btn btn-outline btn-success pull-right"><i class="fa fa-search"></i> Buscar</button>
 							</div>
 						</div>

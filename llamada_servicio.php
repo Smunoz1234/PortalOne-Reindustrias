@@ -1249,10 +1249,11 @@ if (isset($sw_error) && ($sw_error == 1)) {
 				$(".cierre-span").css("display", "initial");
 				$(".cierre-input").prop("readonly", false);
 				$(".cierre-input").prop("disabled", false);
-				$(".cierre-input").prop("required", true);
 
 				// SMM, 21/09/2022
 				$("#NombreContactoFirma").val($("#CDU_NombreContacto").val());
+				$("#CorreosDestinatarios").html("");
+				$("#TelefonosDestinatarios").html("");
 				AgregarEsto("CorreosDestinatarios", $("#CDU_CorreoContacto").val());
 				AgregarEsto("TelefonosDestinatarios", $("#CDU_TelefonoContacto").val());
 			} else {
@@ -1260,7 +1261,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 
 				$(".cierre-span").css("display", "none");
 				$(".cierre-input").prop("readonly", true);
-				$(".cierre-input").prop("required", false);
+				$(".cierre-input").prop("disabled", true);
 			}
 		});
 	});
@@ -2265,11 +2266,11 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 							<div class="col-lg-6">
 								<div class="form-group">
 									<label class="control-label">Nombre del cliente <!-- span class="text-danger cierre-span">*</span --></label>
-									<input <?php if (!$testMode) {echo "readonly";}?> autocomplete="off" name="NombreContactoFirma" type="text" class="form-control cierre2-input2" id="NombreContactoFirma" maxlength="100" value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['NombreContactoFirma'] ?? "";}?>">
+									<input <?php if (!$testMode) {echo "readonly";}?> autocomplete="off" name="NombreContactoFirma" type="text" class="form-control cierre-input" id="NombreContactoFirma" maxlength="100" value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['NombreContactoFirma'] ?? "";}?>">
 								</div>
 								<div class="form-group">
 									<label class="control-label">Cédula del cliente <!-- span class="text-danger cierre-span">*</span --></label>
-									<input <?php if (!$testMode) {echo "readonly";}?> autocomplete="off" name="CedulaContactoFirma" type="text" class="form-control cierre2-input2" id="CedulaContactoFirma" maxlength="100" value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['CedulaContactoFirma'] ?? "";}?>">
+									<input <?php if (!$testMode) {echo "readonly";}?> autocomplete="off" name="CedulaContactoFirma" type="text" class="form-control cierre-input" id="CedulaContactoFirma" maxlength="100" value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['CedulaContactoFirma'] ?? "";}?>">
 								</div>
 								<!-- Componente "firma"-->
 								<br><br>

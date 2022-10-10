@@ -214,7 +214,7 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_DVenUpd"))) {
 								</select>
 							</div>
 							<label class="col-lg-1 control-label">Serie</label>
-							<div class="col-lg-2">
+							<div class="col-lg-3">
 								<select name="Series" class="form-control" id="Series">
 										<option value="">(Todos)</option>
 								  <?php while ($row_Series = sqlsrv_fetch_array($SQL_Series)) {?>
@@ -234,7 +234,7 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_DVenUpd"))) {
 								<input name="BuscarDato" type="text" class="form-control" id="BuscarDato" maxlength="100" value="<?php if (isset($_GET['BuscarDato']) && ($_GET['BuscarDato'] != "")) {echo $_GET['BuscarDato'];}?>">
 							</div>
 							<label class="col-lg-1 control-label">Autorización</label>
-							<div class="col-lg-2">
+							<div class="col-lg-3">
 								<select name="Autorizacion" class="form-control" id="Autorizacion">
 										<option value="">(Todos)</option>
 								   <?php while ($row_EstadoAuth = sqlsrv_fetch_array($SQL_EstadoAuth)) {?>
@@ -256,7 +256,7 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_DVenUpd"))) {
 							</div>
 							<!-- SMM, 22/07/2022 -->
 
-							<div class="col-lg-3">
+							<div class="col-lg-4">
 								<button type="submit" class="btn btn-outline btn-success pull-right"><i class="fa fa-search"></i> Buscar</button>
 							</div>
 						</div>

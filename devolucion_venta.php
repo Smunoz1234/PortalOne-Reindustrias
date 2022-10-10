@@ -1125,7 +1125,20 @@ function ConsultarDatosCliente(){
 					</div>
 					<div class="form-group">
 						<div class="col-lg-6">
-							<a href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row['DocEntry']); ?>&ObType=<?php echo base64_encode('16'); ?>&IdFrm=<?php echo base64_encode($row['IdSeries']); ?>" target="_blank" class="btn btn-outline btn-success"><i class="fa fa-download"></i> Descargar formato</a>
+							<!-- SMM, 06/10/2022 -->
+							<div class="btn-group">
+								<button data-toggle="dropdown" class="btn btn-outline btn-success dropdown-toggle"><i class="fa fa-download"></i> Descargar formato <i class="fa fa-caret-down"></i></button>
+								<ul class="dropdown-menu">
+									<?php $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=16 AND (IdFormato='" . $row['IdSeries'] . "' OR DeSeries IS NULL) AND VerEnDocumento='Y' AND (EsBorrador='N' OR EsBorrador IS NULL)");?>
+									<?php while ($row_Formato = sqlsrv_fetch_array($SQL_Formato)) {?>
+										<li>
+											<a class="dropdown-item" target="_blank" href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row['DocEntry']); ?>&ObType=<?php echo base64_encode($row_Formato['ID_Objeto']); ?>&IdFrm=<?php echo base64_encode($row_Formato['IdFormato']); ?>"><?php echo $row_Formato['NombreVisualizar']; ?></a>
+										</li>
+									<?php }?>
+								</ul>
+							</div>
+							<!-- Hasta aquí, 06/10/2022 -->
+
 							<a href="#" class="btn btn-outline btn-info" onClick="VerMapaRel('<?php echo base64_encode($row['DocEntry']); ?>','<?php echo base64_encode('16'); ?>');"><i class="fa fa-sitemap"></i> Mapa de relaciones</a>
 						</div>
 						<div class="col-lg-6">

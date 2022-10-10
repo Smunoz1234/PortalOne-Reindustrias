@@ -221,7 +221,7 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_FactVentUpd"))) {
 								</select>
 							</div>
 							<label class="col-lg-1 control-label">Serie</label>
-							<div class="col-lg-2">
+							<div class="col-lg-3">
 								<select name="Series" class="form-control" id="Series">
 										<option value="">(Todos)</option>
 								  <?php while ($row_Series = sqlsrv_fetch_array($SQL_Series)) {?>
@@ -241,7 +241,7 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_FactVentUpd"))) {
 								<input name="BuscarDato" type="text" class="form-control" id="BuscarDato" maxlength="100" value="<?php if (isset($_GET['BuscarDato']) && ($_GET['BuscarDato'] != "")) {echo $_GET['BuscarDato'];}?>">
 							</div>
 							<label class="col-lg-1 control-label">Autorización</label>
-							<div class="col-lg-2">
+							<div class="col-lg-3">
 								<select name="Autorizacion" class="form-control" id="Autorizacion">
 										<option value="">(Todos)</option>
 								   <?php while ($row_EstadoAuth = sqlsrv_fetch_array($SQL_EstadoAuth)) {?>
@@ -264,13 +264,13 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_FactVentUpd"))) {
 							<!-- SMM, 22/07/2022 -->
 
 							<label class="col-lg-1 control-label">Fecha venc. servicio</label>
-							<div class="col-lg-2 input-group date">
+							<div class="col-lg-3 input-group date">
 									<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaVenc" type="text" class="form-control" id="FechaVenc" value="<?php if (isset($_GET['FechaVenc']) && ($_GET['FechaVenc'] != "")) {echo $_GET['FechaVenc'];}?>" readonly="readonly" placeholder="YYYY-MM-DD">
 							</div>
 						</div>
 
 						<div class="form-group">
-							<div class="col-lg-4">
+							<div class="col-lg-12">
 								<button type="submit" class="btn btn-outline btn-success pull-right"><i class="fa fa-search"></i> Buscar</button>
 							</div>
 						</div>
