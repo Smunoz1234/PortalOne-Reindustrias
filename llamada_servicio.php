@@ -2240,7 +2240,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 											<?php $CorreosContactosFirma = explode(";", $row['CorreoContactoFirma']);?>
 											<?php foreach ($CorreosContactosFirma as &$Correo) {?>
 												<?php if ($Correo != "") {?>
-													<span onclick="EliminarEsto(this)" class="badge badge-secondary"><i class="fa fa-trash"></i> <?php echo $Correo; ?></span>
+													<span class="badge badge-secondary" style="cursor: not-allowed;"><i class="fa fa-trash"></i> <?php echo $Correo; ?></span>
 												<?php }?>
 											<?php }?>
 										<?php }?>
@@ -2256,7 +2256,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 											<?php $TelefonosContactosFirma = explode(";", $row['TelefonoContactoFirma']);?>
 											<?php foreach ($TelefonosContactosFirma as &$Telefono) {?>
 												<?php if ($Telefono != "") {?>
-													<span onclick="EliminarEsto(this)" class="badge badge-secondary"><i class="fa fa-trash"></i> <?php echo $Telefono; ?></span>
+													<span class="badge badge-secondary" style="cursor: not-allowed;"><i class="fa fa-trash"></i> <?php echo $Telefono; ?></span>
 												<?php }?>
 											<?php }?>
 										<?php }?>
