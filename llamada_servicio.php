@@ -2231,7 +2231,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 							<div class="col-lg-5 m-r-md">
 
 								<div class="form-group">
-									<label class="control-label">Correos Destinatarios (Máximo 4) <span class="text-danger cierre-span">*</span></label>
+									<label class="control-label">Correos Destinatarios (Máximo 4 - Tecla [ESP] para agregar) <span class="text-danger cierre-span">*</span></label>
 									<input onKeyUp="ValidarCorreo(event, this)" <?php if (!$testMode) {echo "readonly";}?> autocomplete="off" name="CorreoContactoFirma" type="text" class="form-control cierre-input" id="CorreoContactoFirma" maxlength="50" value="">
 									<input type="hidden" id="CorreosContactosFirma" name="CorreosContactosFirma">
 
@@ -2247,7 +2247,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 									</div>
 								</div>
 								<div class="form-group">
-									<label class="control-label">Teléfonos Destinatarios (Máximo 4) <span class="text-danger cierre-span">*</span></label>
+									<label class="control-label">Teléfonos Destinatarios (Máximo 4 - Tecla [ESP] para agregar) <span class="text-danger cierre-span">*</span></label>
 									<input onKeyUp="ValidarTelefono(event, this)" <?php if (!$testMode) {echo "readonly";}?> autocomplete="off" name="TelefonoContactoFirma" type="text" class="form-control cierre-input" id="TelefonoContactoFirma" maxlength="10" value="">
 									<input type="hidden" id="TelefonosContactosFirma" name="TelefonosContactosFirma">
 
