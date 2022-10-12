@@ -720,6 +720,9 @@ function AbrirFirma(IDCampo){
 				success: function(response){
 					$('#ContactoCliente').html(response).fadeIn();
 				}
+				, error: function(error){
+					console.log("724->", error.responseText);
+				}
 			});
 			<?php if ($dt_SS == 0) { //Para que no recargue las listas cuando vienen de una solicitud de salida.?>
 			$.ajax({
@@ -728,6 +731,9 @@ function AbrirFirma(IDCampo){
 				success: function(response){
 					$('#SucursalDestino').html(response).fadeIn();
 					$('#SucursalDestino').trigger('change');
+				}
+				, error: function(error){
+					console.log("736->", error.responseText);
 				}
 			});
 			<?php }?>
@@ -739,6 +745,9 @@ function AbrirFirma(IDCampo){
 					$('#SucursalFacturacion').html(response).fadeIn();
 					$('#SucursalFacturacion').trigger('change');
 				}
+				, error: function(error){
+					console.log("749->", error.responseText);
+				}
 			});
 
 			// Recargar condición de pago.
@@ -747,6 +756,9 @@ function AbrirFirma(IDCampo){
 				url: "ajx_cbo_select.php?type=7&id="+carcode,
 				success: function(response){
 					$('#CondicionPago').html(response).fadeIn();
+				}
+				, error: function(error){
+					console.log("760->", error.responseText);
 				}
 			});
 
@@ -782,6 +794,11 @@ function AbrirFirma(IDCampo){
 
 					$('.ibox-content').toggleClass('sk-loading',false);
 				}
+				, error: function(error){
+					console.log("798->", error.responseText);
+
+					$('.ibox-content').toggleClass('sk-loading',false);
+				}
 			});
 		});
 
@@ -797,6 +814,11 @@ function AbrirFirma(IDCampo){
 				dataType:'json',
 				success: function(data){
 					document.getElementById('DireccionFacturacion').value=data.Direccion;
+
+					$('.ibox-content').toggleClass('sk-loading',false);
+				}
+				, error: function(error){
+					console.log("820->", error.responseText);
 
 					$('.ibox-content').toggleClass('sk-loading',false);
 				}
@@ -844,64 +866,113 @@ function AbrirFirma(IDCampo){
 			});
 		});
 
-		$("#Sucursal").change(function(){
-			$('.ibox-content').toggleClass('sk-loading',true);
-			var Sucursal=document.getElementById('Sucursal').value;
-			var Serie=document.getElementById('Serie').value;
-			var frame=document.getElementById('DataGrid');
-			$.ajax({
-				type: "POST",
-				url: "ajx_cbo_select.php?type=20&id="+Sucursal+"&serie="+Serie+"&tdoc=67",
-				success: function(response){
-					$('#Almacen').html(response).fadeIn();
-					$('.ibox-content').toggleClass('sk-loading',false);
-					//$('#Almacen').trigger('change');
-				}
-			});
-			$('.ibox-content').toggleClass('sk-loading',true);
-			$.ajax({
-				type: "POST",
-				url: "ajx_cbo_select.php?type=20&id="+Sucursal+"&serie="+Serie+"&tdoc=67&twhs=2",
-				success: function(response){
-					$('#AlmacenDestino').html(response).fadeIn();
-					$('.ibox-content').toggleClass('sk-loading',false);
-					//$('#AlmacenDestino').trigger('change');
-				}
-			});
+// Actualización de las dimensiones dinámicamente, SMM 10/10/2022
+<?php foreach ($array_Dimensiones as &$dim) {?>
 
-			if(Sucursal!=""&&document.getElementById('CardCode').value!=""&&document.getElementById('TotalItems').value!="0"){
-				Swal.fire({
-					title: "¿Desea actualizar las lineas?",
-					icon: "question",
-					showCancelButton: true,
-					confirmButtonText: "Si, confirmo",
-					cancelButtonText: "No"
-				}).then((result) => {
-					if (result.isConfirmed) {
-						$('.ibox-content').toggleClass('sk-loading',true);
-							<?php if ($edit == 0) {?>
-						$.ajax({
-							type: "GET",
-							url: "registro.php?P=36&doctype=6&type=1&name=OcrCode3&value="+Base64.encode(Sucursal)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
-							success: function(response){
-								frame.src="detalle_traslado_inventario.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
-								$('.ibox-content').toggleClass('sk-loading',false);
-							}
-						});
-						<?php } else {?>
-						$.ajax({
-							type: "GET",
-							url: "registro.php?P=36&doctype=6&type=2&name=OcrCode3&value="+Base64.encode(Sucursal)+"&line=0&id=<?php echo $row['ID_TrasladoInv']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
-							success: function(response){
-								frame.src="detalle_traslado_inventario.php?id=<?php echo base64_encode($row['ID_TrasladoInv']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
-								$('.ibox-content').toggleClass('sk-loading',false);
-							}
-						});
-						<?php }?>
-					}
-				});
+<?php $Name_IdDoc = "ID_TrasladoInv";?>
+<?php $DimCode = intval($dim['DimCode']);?>
+<?php $OcrId = ($DimCode == 1) ? "" : $DimCode;?>
+
+$("#<?php echo $dim['IdPortalOne']; ?>").change(function() {
+
+	var docType = 6;
+	var detalleDoc = "detalle_traslado_inventario.php";
+
+	var frame = document.getElementById('DataGrid');
+	var DimIdPO = document.getElementById('<?php echo $dim['IdPortalOne']; ?>').value;
+
+	<?php if ($DimCode == $DimSeries) {?>
+		$('.ibox-content').toggleClass('sk-loading',true);
+
+		let tDoc = 67;
+		let Serie = document.getElementById('Serie').value;
+
+		var url20 = `ajx_cbo_select.php?type=20&id=${DimIdPO}&serie=${Serie}&tdoc=${tDoc}&WhsCode=<?php echo isset($_GET['Almacen']) ? base64_decode($_GET['Almacen']) : ($row['WhsCode'] ?? ""); ?>`;
+
+		$.ajax({
+			type: "POST",
+			url: url20,
+			success: function(response){
+				// console.log(url20);
+				// console.log("ajx_cbo_select.php?type=20");
+
+				$('#Almacen').html(response).fadeIn();
+				// $('#Almacen').trigger('change');
+
+				$('.ibox-content').toggleClass('sk-loading',false);
+			},
+			error: function(error) {
+				// Mensaje de error
+				console.log("Line 869", error.responseText);
+
+				$('.ibox-content').toggleClass('sk-loading', false);
 			}
 		});
+
+		$.ajax({
+				type: "POST",
+				url: `${url20}&twhs=2`,
+				success: function(response){
+					$('#AlmacenDestino').html(response).fadeIn();
+					//$('#AlmacenDestino').trigger('change');
+
+					$('.ibox-content').toggleClass('sk-loading',false);
+				}
+			});
+	<?php }?>
+
+	var CardCode = document.getElementById('CardCode').value;
+	var TotalItems = document.getElementById('TotalItems').value;
+
+	if(DimIdPO!="" && CardCode!="" && TotalItems!="0") {
+		Swal.fire({
+			title: "¿Desea actualizar las lineas de la <?php echo $dim['DescPortalOne']; ?>?",
+			icon: "question",
+			showCancelButton: true,
+			confirmButtonText: "Si, confirmo",
+			cancelButtonText: "No"
+		}).then((result) => {
+			if (result.isConfirmed) {
+				$('.ibox-content').toggleClass('sk-loading',true);
+
+				<?php if ($edit == 0) {?>
+					$.ajax({
+						type: "GET",
+						url: `registro.php?P=36&type=1&doctype=${docType}&name=OcrCode<?php echo $OcrId; ?>&value=${Base64.encode(DimIdPO)}&cardcode=${CardCode}&actodos=1&whscode=0&line=0`,
+						success: function(response){
+							frame.src=`${detalleDoc}?type=1&id=0&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode=${CardCode}`;
+
+							$('.ibox-content').toggleClass('sk-loading',false);
+						}
+					});
+				<?php } else {?>
+					$.ajax({
+						type: "GET",
+						url: `registro.php?P=36&type=2&doctype=${docType}&name=OcrCode<?php echo $OcrId; ?>&value=${Base64.encode(DimIdPO)}&id=<?php echo $row[strval($Name_IdDoc)]; ?>&evento=<?php echo $IdEvento; ?>&actodos=1&line=0`,
+						success: function(response){
+							frame.src=`${detalleDoc}?type=2&id=<?php echo base64_encode($row[strval($Name_IdDoc)]); ?>&evento=<?php echo base64_encode($IdEvento); ?>`;
+
+							$('.ibox-content').toggleClass('sk-loading',false);
+						}
+					});
+				<?php }?>
+			}
+		});
+	} else  {
+		if(false) {
+			console.log("No se cumple la siguiente condición en la <?php echo $dim['DimName']; ?>");
+
+			console.log(`DimIdPO == ${DimIdPO}`);
+			console.log(`CardCode == ${CardCode}`);
+			console.log(`TotalItems == ${TotalItems}`);
+
+			$('.ibox-content').toggleClass('sk-loading',false);
+		}
+	}
+});
+
+<?php }?>
+// Actualización dinámica, llega hasta aquí.
 
 		$("#Almacen").change(function(){
 			var frame=document.getElementById('DataGrid');
@@ -976,78 +1047,6 @@ function AbrirFirma(IDCampo){
 						$.ajax({
 							type: "GET",
 							url: "registro.php?P=36&doctype=6&type=2&name=ToWhsCode&value="+Base64.encode(document.getElementById('AlmacenDestino').value)+"&line=0&id=<?php echo $row['ID_TrasladoInv']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
-							success: function(response){
-								frame.src="detalle_traslado_inventario.php?id=<?php echo base64_encode($row['ID_TrasladoInv']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
-								$('.ibox-content').toggleClass('sk-loading',false);
-							}
-						});
-						<?php }?>
-					}
-				});
-			}
-		});
-
-		$("#Dim1").change(function(){
-			var frame=document.getElementById('DataGrid');
-			if(document.getElementById('Dim1').value!=""&&document.getElementById('CardCode').value!=""&&document.getElementById('TotalItems').value!="0"){
-				Swal.fire({
-					title: "¿Desea actualizar las lineas?",
-					icon: "question",
-					showCancelButton: true,
-					confirmButtonText: "Si, confirmo",
-					cancelButtonText: "No"
-				}).then((result) => {
-					if (result.isConfirmed) {
-						$('.ibox-content').toggleClass('sk-loading',true);
-							<?php if ($edit == 0) {?>
-						$.ajax({
-							type: "GET",
-							url: "registro.php?P=36&doctype=6&type=1&name=OcrCode&value="+Base64.encode(document.getElementById('Dim1').value)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
-							success: function(response){
-								frame.src="detalle_traslado_inventario.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
-								$('.ibox-content').toggleClass('sk-loading',false);
-							}
-						});
-						<?php } else {?>
-						$.ajax({
-							type: "GET",
-							url: "registro.php?P=36&doctype=6&type=2&name=OcrCode&value="+Base64.encode(document.getElementById('Dim1').value)+"&line=0&id=<?php echo $row['ID_TrasladoInv']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
-							success: function(response){
-								frame.src="detalle_traslado_inventario.php?id=<?php echo base64_encode($row['ID_TrasladoInv']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
-								$('.ibox-content').toggleClass('sk-loading',false);
-							}
-						});
-						<?php }?>
-					}
-				});
-			}
-		});
-
-		$("#Dim2").change(function(){
-			var frame=document.getElementById('DataGrid');
-			if(document.getElementById('Dim2').value!=""&&document.getElementById('CardCode').value!=""&&document.getElementById('TotalItems').value!="0"){
-				Swal.fire({
-					title: "¿Desea actualizar las lineas?",
-					icon: "question",
-					showCancelButton: true,
-					confirmButtonText: "Si, confirmo",
-					cancelButtonText: "No"
-				}).then((result) => {
-					if (result.isConfirmed) {
-						$('.ibox-content').toggleClass('sk-loading',true);
-							<?php if ($edit == 0) {?>
-						$.ajax({
-							type: "GET",
-							url: "registro.php?P=36&doctype=6&type=1&name=OcrCode2&value="+Base64.encode(document.getElementById('Dim2').value)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
-							success: function(response){
-								frame.src="detalle_traslado_inventario.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
-								$('.ibox-content').toggleClass('sk-loading',false);
-							}
-						});
-						<?php } else {?>
-						$.ajax({
-							type: "GET",
-							url: "registro.php?P=36&doctype=6&type=2&name=OcrCode2&value="+Base64.encode(document.getElementById('Dim2').value)+"&line=0&id=<?php echo $row['ID_TrasladoInv']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
 							success: function(response){
 								frame.src="detalle_traslado_inventario.php?id=<?php echo base64_encode($row['ID_TrasladoInv']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
 								$('.ibox-content').toggleClass('sk-loading',false);
@@ -1790,6 +1789,9 @@ function Validar(){
 						text: 'Algunos articulos faltan por seleccionar seriales. Por favor verifique.',
 						icon: 'warning'
 					});
+
+					console.log("Cantidad solicitada diferente a cantidad total de salida");
+					console.log(`ERROR, ${data.CantSolicitada} != ${data.CantTotalSalida}`);
 				}
 			}
 		});

@@ -284,23 +284,33 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
         $Param = array("'" . $_GET['cardcode'] . "'", "'" . $_GET['whscode'] . "'", "'" . $_GET['objtype'] . "'", "'" . $_SESSION['CodUser'] . "'");
         $SQL = EjecutarSP('sp_ConsultarSerialesVerificarSeleccion', $Param);
         $Valid = 1;
+
+        $CantSolicitada = 0;
+        $CantTotalSalida = 0;
+
         $records = array();
         while ($row = sqlsrv_fetch_array($SQL)) {
             if ($row['CantSolicitada'] != $row['CantTotalSalida']) {
                 $Valid = 2;
+
+                // SMM, 12/10/2022
+                $CantSolicitada = $row['CantSolicitada'];
+                $CantTotalSalida = $row['CantTotalSalida'];
             }
         }
         $records = array(
             'Result' => $Valid,
+            'CantSolicitada' => $CantSolicitada,
+            'CantTotalSalida' => $CantTotalSalida,
         );
         echo json_encode($records);
     } elseif ($type == 20) { //Buscar seriales para seleccionarlos
         $Parametros = array(
             "'" . $_GET['id'] . "'",
             "'" . $_GET['whscode'] . "'",
-            "'" . $_GET['tipotrans'] . "'",
-            "'" . $_GET['cardcode'] . "'",
-            "'" . strtoupper($_GET['buscar']) . "'",
+            // "'" . $_GET['tipotrans'] . "'",
+            // "'" . $_GET['cardcode'] . "'",
+            // "'" . strtoupper($_GET['buscar']) . "'",
         );
         $SQL = EjecutarSP('sp_ConsultarInventarioSeriales', $Parametros, 0, 2);
         $row = sql_fetch_array($SQL, 2);

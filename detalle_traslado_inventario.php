@@ -152,7 +152,7 @@ function BuscarLote(){
 	posicion_x=(screen.width/2)-(1200/2);
 	posicion_y=(screen.height/2)-(500/2);
 	<?php if ($type == 1) { //Creando Entrega de venta ?>
-		var Almacen='<?php echo $Almacen; ?>';
+		// var Almacen='<?php echo $Almacen; ?>';
 		var CardCode='<?php echo $CardCode; ?>';
 		var Lotes='<?php echo $Lotes; ?>'
 		if(CardCode!=""&&Lotes>0){
@@ -171,7 +171,7 @@ function BuscarSerial(){
 	posicion_x=(screen.width/2)-(1200/2);
 	posicion_y=(screen.height/2)-(500/2);
 	<?php if ($type == 1) { //Creando Entrega de venta ?>
-		var Almacen='<?php echo $Almacen; ?>';
+		// var Almacen='<?php echo $Almacen; ?>';
 		var CardCode='<?php echo $CardCode; ?>';
 		var Seriales='<?php echo $Seriales; ?>'
 		if(CardCode!=""&&Seriales>0){
@@ -336,7 +336,7 @@ function SeleccionarTodos(){
 				<th>Almacén origen</th>
 				<th>Almacén destino</th>
 				<th>Stock almacén</th>
-				
+
 				<!-- Dimensiones dinámicas, SMM 31/08/2022 -->
 				<?php foreach ($array_Dimensiones as &$dim) {?>
 					<th><?php echo $dim["DimDesc"]; ?></th>
