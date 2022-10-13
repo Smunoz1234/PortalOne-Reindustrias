@@ -442,13 +442,14 @@ function EjecutarSP($pNameSP, $pParametros = "", $pIdReg = 0, $pType = 1, $pDebu
     }
 }
 
-function ObtenerVariable($Variable)
+function ObtenerVariable($Variable, $validar = true)
 { //Obtener valor de variable global
     global $conexion;
     $SQL = Seleccionar('uvw_tbl_VariablesGlobales', 'Valor', "NombreVariable='" . $Variable . "'");
     $row = sqlsrv_fetch_array($SQL);
     //$Num=sqlsrv_num_rows($SQL);
-    return $row['Valor'];
+    if (!isset($row['Valor']) && $validar) {echo "La variable global $Variable no tiene un valor.";}
+    return $row['Valor'] ?? "";
 }
 
 function ObtenerValorDefecto($TipoObjeto, $NombreCampo, $validar = true)
