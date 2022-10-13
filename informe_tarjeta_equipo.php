@@ -399,9 +399,10 @@ if ($sw == 1) {
 						<th>Fecha Tecno.</th>
 						<th>Fecha Ult. Camb. Aceite</th>
 						<th>Fecha Prox. Camb. Aceite</th>
-                        <th>Fecha Ult. Mant.</th>
+						<th>Novedad</th>
+						<th>Fecha Agenda</th>
+						<th>Fecha Ult. Mant.</th>
 						<th>Fecha Prox. Mant.</th>
-						<!--th>Fecha Ult. Gest. CRM</th-->
 						<th>Estado</th>
 						<th>Acciones</th>
                     </tr>
@@ -421,6 +422,10 @@ if ($sw == 1) {
 							<td><?php echo ($row['CDU_Fecha_Tecno'] != "") ? $row['CDU_Fecha_Tecno']->format('Y-m-d') : ""; ?></td>
 							<td><?php echo ($row['CDU_FechaUlt_CambAceite'] != "") ? $row['CDU_FechaUlt_CambAceite']->format('Y-m-d') : ""; ?></td>
 							<td><?php echo ($row['CDU_FechaProx_CambAceite'] != "") ? $row['CDU_FechaProx_CambAceite']->format('Y-m-d') : ""; ?></td>
+							
+							<td><?php echo $row['CDU_Novedad']; ?></td>
+							<td><?php echo ($row['CDU_FechaAgenda'] != "") ? $row['CDU_FechaAgenda']->format('Y-m-d') : ""; ?></td>
+							
 							<td><?php echo ($row['CDU_FechaUlt_Mant'] != "") ? $row['CDU_FechaUlt_Mant']->format('Y-m-d') : ""; ?></td>
 							<td><?php echo ($row['CDU_FechaProx_Mant'] != "") ? $row['CDU_FechaProx_Mant']->format('Y-m-d') : ""; ?></td>
 							<td>
