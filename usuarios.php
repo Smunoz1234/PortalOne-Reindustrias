@@ -678,6 +678,9 @@ $return = QuitarParametrosURL($return, array("a"));
 						<li class="active"><a data-toggle="tab" href="#tab-1"><i class="fa fa-user-circle"></i> Información de usuario</a></li>
 						<li><a data-toggle="tab" href="#tab-2" onClick="ConsultarTab('2');"><i class="fa fa-group"></i> Clientes asociados</a></li>
 						<li><a data-toggle="tab" href="#tab-3" onClick="ConsultarTab('3');"><i class="fa fa-edit"></i> Valores por defecto</a></li>
+
+						<!-- SMM, 13/10/2022 -->
+						<li><a data-toggle="tab" href="#tab-4" onClick="ConsultarTab('4');"><i class="fa fa-object-group"></i> Grupos Artículos</a></li>
 					</ul>
 				    <div class="tab-content">
 						<div id="tab-1" class="tab-pane active">
@@ -1040,6 +1043,12 @@ while ($row_TiposDocumentos = sqlsrv_fetch_array($SQL_TiposDocumentos)) {
 
 							</div>
 						</div>
+
+						<div id="tab-4" class="tab-pane">
+							<div id="dv_grupos_articulos" class="panel-body">
+								<!-- SMM, 13/10/2022 -->
+							</div>
+						</div>
 				 	</div>
 			  	</div>
 				</div>
@@ -1255,6 +1264,7 @@ function delRow2(btn){//Eliminar div
 <script>
 var tab_2=0;
 var tab_3=0;
+var tab_4=0;
 
 function ConsultarTab(type){
 	if(type==2){//Clientes
@@ -1282,6 +1292,22 @@ function ConsultarTab(type){
 					$('#dv_valores_defecto').html(response).fadeIn();
 					$('.ibox-content').toggleClass('sk-loading',false);
 					tab_3=1;
+				}
+			});
+		}
+	} 
+	
+	// Grupos Artículos. SMM, 13/10/2022
+	else if(type == 4){ 
+		if(tab_4 == 0) {
+			$('.ibox-content').toggleClass('sk-loading',true);
+			$.ajax({
+				type: "POST",
+				url: "us_grupos_articulos.php?id=<?php if ($edit == 1) {echo base64_encode($row['ID_Usuario']);}?>",
+				success: function(response){
+					$('#dv_grupos_articulos').html(response).fadeIn();
+					$('.ibox-content').toggleClass('sk-loading',false);
+					tab_4 = 1;
 				}
 			});
 		}
