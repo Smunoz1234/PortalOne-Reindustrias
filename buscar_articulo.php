@@ -83,6 +83,14 @@ if (!isset($_GET['dato']) || ($_GET['dato'] == "")) {
         $ID_Evento = base64_decode($_GET['evento']);
     }
 
+    // Filtrar por grupo de articulos del usuario. SMM, 19/10/2022
+    $Usuario = "'" . $_SESSION['CodUser'] . "'";
+    $SQL_GruposArticulos = Seleccionar("uvw_tbl_UsuariosGruposArticulos", "ID_Usuario", "ID_Usuario=$Usuario");
+
+    if (!sqlsrv_has_rows($SQL_GruposArticulos)) {
+        $Usuario = "NULL";
+    }
+
     // SMM, 25/02/2022
     if ($IdListaPrecio != "") {
         $Param = array(
@@ -92,6 +100,7 @@ if (!isset($_GET['dato']) || ($_GET['dato'] == "")) {
             "'" . $SoloStock . "'",
             "'" . $TodosArticulos . "'",
             "'" . $IdListaPrecio . "'", // @PriceList. NEDUGA, 24/02/2022
+            $Usuario,
         );
         $SQL = EjecutarSP('sp_ConsultarArticulos_ListaPrecios', $Param); // Nuevo
         $Num = sqlsrv_has_rows($SQL);

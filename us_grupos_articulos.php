@@ -7,9 +7,45 @@ if (isset($_GET['id']) && $_GET['id'] != "") {
     $IdUsuario = "";
 }
 
+$SQL_GA = Seleccionar("uvw_Sap_tbl_GruposArticulos", "*", "Locked = 'N'", "ItmsGrpNam");
 $SQL_GruposArticulos = Seleccionar("uvw_tbl_UsuariosGruposArticulos", "*", "ID_Usuario='$IdUsuario'");
 
-$SQL_GruposArticulosSAP = Seleccionar("uvw_Sap_tbl_GruposArticulos", "*");
+// Insertar o eliminar un grupo de artículos
+if (isset($_POST['Metodo'])) {
+    $ID = ($_POST['Metodo'] == 3) ? $_POST['ID_Interno'] : "NULL"; // 3 - Eliminar
+
+    $Usuario = "'" . $_SESSION['CodUser'] . "'";
+    $FechaHora = "'" . FormatoFecha(date('Y-m-d'), date('H:i:s')) . "'";
+
+    try {
+        $Param = array(
+            $ID,
+            $_POST['Metodo'],
+        );
+
+        if ($_POST['Metodo'] != 3) {
+            $Param = array_merge($Param, array(
+                "'" . $_POST['ID_Usuario'] . "'",
+                "'" . $_POST['IdGrupoArticulo'] . "'",
+                "'" . $_POST['GrupoArticulo'] . "'",
+                "'" . $_POST['Comentarios'] . "'",
+                $Usuario, // @id_usuario_creacion
+                $FechaHora, // @fecha_creacion
+                $FechaHora, // @hora_creacion
+            ));
+        }
+
+        $SQL = EjecutarSP('sp_tbl_UsuariosGruposArticulos', $Param);
+        if ($SQL) {
+            exit("OK");
+
+        } else {
+            die(print_r(sqlsrv_errors(), true));
+        }
+    } catch (Exception $e) {
+        die(print_r($e->getMessage(), true));
+    }
+}
 ?>
 
 <style>
@@ -38,9 +74,9 @@ $SQL_GruposArticulosSAP = Seleccionar("uvw_Sap_tbl_GruposArticulos", "*");
 										<label class="control-label">Grupo de Articulo SAP <span class="text-danger">*</span></label>
 										<select name="ItmsGrpCod" id="ItmsGrpCod" class="form-control select2" required>
 											<option value="" disabled selected>Seleccione...</option>
-											<?php while ($row_GruposArticulosSAP = sqlsrv_fetch_array($SQL_GruposArticulosSAP)) {?>
-												<option value="<?php echo $row_GruposArticulosSAP['ItmsGrpCod']; ?>">
-													<?php echo $row_GruposArticulosSAP['ItmsGrpNam']; ?>
+											<?php while ($row_GA = sqlsrv_fetch_array($SQL_GA)) {?>
+												<option value="<?php echo $row_GA['ItmsGrpCod']; ?>" data-name="<?php echo $row_GA['ItmsGrpNam']; ?>">
+													<?php echo $row_GA['ItmsGrpNam']; ?>
 												</option>
 											<?php }?>
 										</select>
@@ -62,6 +98,7 @@ $SQL_GruposArticulosSAP = Seleccionar("uvw_Sap_tbl_GruposArticulos", "*");
 						<button type="submit" class="btn btn-success m-t-md"><i class="fa fa-check"></i> Aceptar</button>
 						<button type="button" class="btn btn-warning m-t-md" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
 					</div>
+
 				</form>
 			</div> <!-- modal-content -->
 		</div> <!-- modal-dialog -->
@@ -89,8 +126,8 @@ $SQL_GruposArticulosSAP = Seleccionar("uvw_Sap_tbl_GruposArticulos", "*");
 						<th>Código Grupo Artículo</th>
 						<th>Descripción Grupo Artículo</th>
 						<th>Comentarios</th>
-						<th>Fecha Actualizacion</th>
-						<th>Usuario Actualizacion</th>
+						<th>Fecha Creación</th>
+						<th>Usuario Creación</th>
 						<th>Acciones</th>
 					</tr>
 				</thead>
@@ -100,10 +137,10 @@ $SQL_GruposArticulosSAP = Seleccionar("uvw_Sap_tbl_GruposArticulos", "*");
 							<td><?php echo $row_GrupoArticulo['IdGrupoArticulo']; ?></td>
 							<td><?php echo $row_GrupoArticulo['GrupoArticulo']; ?></td>
 							<td><?php echo $row_GrupoArticulo['Comentarios']; ?></td>
-							<td><?php echo isset($row_GrupoArticulo['fecha_actualizacion']) ? date_format($row_GrupoArticulo['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
-							<td><?php echo $row_GrupoArticulo['usuario_actualizacion']; ?></td>
+							<td><?php echo isset($row_GrupoArticulo['fecha_creacion']) ? date_format($row_GrupoArticulo['fecha_creacion'], 'Y-m-d H:i:s') : ""; ?></td>
+							<td><?php echo $row_GrupoArticulo['usuario_creacion']; ?></td>
 							<td>
-								<button type="button" id="btnDelete<?php echo $row_GrupoArticulo['ID']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Motivo['ID']; ?>','GruposArticulos');"><i class="fa fa-trash"></i> Eliminar</button>
+								<button type="button" class="btn btn-danger btn-xs" onClick="EliminarFila('<?php echo $row_GrupoArticulo['ID']; ?>');"><i class="fa fa-trash"></i> Eliminar</button>
 							</td>
 						</tr>
 					<?php }?>
@@ -115,12 +152,133 @@ $SQL_GruposArticulosSAP = Seleccionar("uvw_Sap_tbl_GruposArticulos", "*");
 <!-- Fin, ibox GruposArticulos -->
 
 <script>
+	function EliminarFila(ID) {
+		Swal.fire({
+			title: "¿Esta seguro que desea eliminar el grupo de artículos?",
+			icon: "question",
+			showCancelButton: true,
+			confirmButtonText: "Si, confirmo",
+			cancelButtonText: "No"
+		}).then((result) => {
+			if (result.isConfirmed) {
+				$('.ibox-content').toggleClass('sk-loading',true);
+
+				$.ajax({
+					type: "post",
+					url: "us_grupos_articulos.php",
+					data: {
+						Metodo: 3
+						, ID_Interno: ID
+						},
+					async: false,
+					success: function(data){
+						if(data == "OK") {
+							$(document).ready(function() {
+								Swal.fire({
+									title: '¡Listo!',
+									text: 'Registro eliminado correctamente.',
+									icon: 'success'
+								});
+							});
+						} else {
+							console.log(data);
+
+							$(document).ready(function() {
+								Swal.fire({
+									title: '¡Error!',
+									text: 'Ocurrio un error al momento de eliminar el registro.',
+									icon: 'warning'
+								});
+							});
+						}
+
+						ConsultarTab('4');
+						$('.ibox-content').toggleClass('sk-loading',false);
+					},
+					error: function(error) {
+						$(document).ready(function() {
+							Swal.fire({
+								title: '¡Error!',
+								text: 'Ocurrio un error al momento de consultar al servidor.',
+								icon: 'warning'
+							});
+						});
+
+						console.log(error);
+						$('.ibox-content').toggleClass('sk-loading',false);
+					}
+				});
+			} // if
+		});
+	}
+
 	$(document).ready(function(){
 		$(".select2").select2();
-		$('.i-checks').iCheck({
-				checkboxClass: 'icheckbox_square-green',
-				radioClass: 'iradio_square-green',
-			});
+
+		$("#formGruposArticulos").on("submit", function(event) {
+			event.preventDefault(); // Evitar redirección del formulario
+
+			$('.ibox-content').toggleClass('sk-loading',true);
+
+			let IdGrupoArticulo = document.getElementById('ItmsGrpCod').value;
+			let GrupoArticulo = $("#ItmsGrpCod").find(':selected').data('name');
+			let Comentarios = document.getElementById('Comentarios').value;
+
+			$.ajax({
+				type: "post",
+				url: "us_grupos_articulos.php",
+				data: {
+					  Metodo: 1
+					, ID_Usuario: <?php echo $IdUsuario; ?>
+					, IdGrupoArticulo: IdGrupoArticulo
+					, GrupoArticulo: GrupoArticulo
+					, Comentarios: Comentarios
+					},
+				async: false,
+				success: function(data){
+					if(data == "OK") {
+						$(document).ready(function() {
+							Swal.fire({
+								title: '¡Listo!',
+								text: 'Registro creado correctamente.',
+								icon: 'success'
+							});
+						});
+					} else {
+						console.log(data);
+
+						$(document).ready(function() {
+							Swal.fire({
+								title: '¡Error!',
+								text: 'Ocurrio un error al momento de eliminar el registro.',
+								icon: 'warning'
+							});
+						});
+					}
+
+					ConsultarTab('4');
+					$('.ibox-content').toggleClass('sk-loading',false);
+				},
+				error: function(error) {
+					$(document).ready(function() {
+						Swal.fire({
+							title: '¡Error!',
+							text: 'Ocurrio un error al momento de consultar al servidor.',
+							icon: 'warning'
+						});
+					});
+
+					console.log(error);
+					$('.ibox-content').toggleClass('sk-loading',false);
+				}
+			}); // ajax
+
+			// Cerrar el modal sin fallos
+			$("#modalGruposArticulos").modal("hide");
+			$('body').removeClass('modal-open');
+			$('.modal-backdrop').remove();
+			return false;
+		});
 
 		$('.dataTables-example').DataTable({
 			pageLength: 10,

@@ -1295,19 +1295,22 @@ function ConsultarTab(type){
 				}
 			});
 		}
-	} 
-	
+	}
+
 	// Grupos Artículos. SMM, 13/10/2022
-	else if(type == 4){ 
+	else if(type == 4){
 		if(tab_4 == 0) {
 			$('.ibox-content').toggleClass('sk-loading',true);
+			
 			$.ajax({
 				type: "POST",
 				url: "us_grupos_articulos.php?id=<?php if ($edit == 1) {echo base64_encode($row['ID_Usuario']);}?>",
 				success: function(response){
 					$('#dv_grupos_articulos').html(response).fadeIn();
+					
 					$('.ibox-content').toggleClass('sk-loading',false);
-					tab_4 = 1;
+					// tab_4 = 1;
+					tab_4 = 0; // Recargar siempre
 				}
 			});
 		}
