@@ -79,7 +79,7 @@ $SQL_ModeloVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_AñoModeloVehicul
 $SQL_ColorVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_ColorVehiculo', '*');
 
 // Preguntas en la recepción de vehículo
-$SQL_Preguntas = Seleccionar('tbl_RecepcionVehiculos_Preguntas', '*');
+$SQL_Preguntas = Seleccionar('tbl_RecepcionVehiculos_Preguntas', '*', "estado = 'Y'");
 ?>
 
 <!DOCTYPE html>
@@ -605,10 +605,6 @@ function ConsultarEquipo(){
 								<label class="control-label">No. Campaña <span class="text-danger">*</span></label>
 								<input autocomplete="off" name="no_campana" required="required" type="text" class="form-control" id="no_campana" maxlength="100">
 							</div>
-							<div class="col-lg-4">
-								<label class="control-label">Profundidad Llantas</label>
-								<input autocomplete="off" name="profundidad_llantas" type="text" class="form-control" id="profundidad_llantas" maxlength="100">
-							</div>
 						</div>
 						<!-- Inicio, crono-info -->
 						<div class="form-group">
@@ -713,7 +709,6 @@ function ConsultarEquipo(){
 							<input type="hidden" name="<?php echo "id_pregunta_$count_rp"; ?>" id="<?php echo "id_pregunta_$count_rp"; ?>" value="<?php echo $row_Pregunta['id_recepcion_pregunta']; ?>">
 							<input type="hidden" name="<?php echo "pregunta_$count_rp"; ?>" id="<?php echo "pregunta_$count_rp"; ?>" value="<?php echo $row_Pregunta['recepcion_pregunta']; ?>">
 
-
 							<div class="form-group">
 								<div class="col-lg-4 border-bottom ">
 									<label class="control-label text-danger"><?php echo $row_Pregunta['recepcion_pregunta']; ?></label>
@@ -742,6 +737,13 @@ function ConsultarEquipo(){
 										</option>
 									</select>
 								</div>
+								<?php if ($row_Pregunta["profundidad_llantas"] == 'Y') {?>
+									<!-- Se excluyeron algunas validaciones innecesarias de los otros campos -->
+									<label class="col-lg-1 control-label">Profundidad Llantas (Máximo 24mm)</label>
+									<div class="col-lg-2">
+										<input autocomplete="off" name="<?php echo "profundidad_llantas_$count_rp"; ?>" id="<?php echo "profundidad_llantas_$count_rp"; ?>" type="number" class="form-control" min="0" max="24">
+									</div>
+								<?php }?>
 							</div>
 						<?php }?>
 					</div>
