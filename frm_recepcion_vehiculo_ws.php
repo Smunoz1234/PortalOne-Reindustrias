@@ -29,6 +29,13 @@ if (isset($_POST['fecha_autoriza_campana']) && $_POST['fecha_autoriza_campana'] 
     $Cabecera["fecha_hora_autoriza_campana"] = FormatoFechaToSAP($_POST['fecha_autoriza_campana'], $_POST['hora_autoriza_campana']);
 }
 
+// SMM, 22/10/2022
+if ($Cabecera["profundidad_llantas_18"] == "") {unset($Cabecera["profundidad_llantas_18"]);}
+if ($Cabecera["profundidad_llantas_19"] == "") {unset($Cabecera["profundidad_llantas_19"]);}
+if ($Cabecera["profundidad_llantas_20"] == "") {unset($Cabecera["profundidad_llantas_20"]);}
+if ($Cabecera["profundidad_llantas_21"] == "") {unset($Cabecera["profundidad_llantas_21"]);}
+// Hasta aquí, 22/10/2022
+
 for ($i = 1; $i <= 25; $i++) {
     if (isset($Cabecera["id_pregunta_$i"])) {
         $Cabecera["id_pregunta_$i"] = intval($Cabecera["id_pregunta_$i"]);
