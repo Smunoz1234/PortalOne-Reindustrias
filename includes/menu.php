@@ -427,6 +427,7 @@ $Num_Menu = sqlsrv_num_rows($SQL_Menu);
 								<?php if (PermitirFuncion(218)) {?><li><a class="alnk" href="parametros_dosificaciones.php">Parámetros dosificaciones</a></li><?php }?>
 								<?php if (PermitirFuncion(219)) {?><li><a class="alnk" href="parametros_formatos_impresion.php">Parámetros formatos de impresión</a></li><?php }?>
 								<?php if (true) {?><li><a class="alnk" href="parametros_autorizaciones_documentos.php">Parámetros autorizaciones documentos</a></li><?php }?>
+								<?php if (true) {?><li><a class="alnk" href="parametros_consultas_sap.php">Parámetros Consultas SAP B1</a></li><?php }?>
 							</ul>
 						</li>
 						<?php }?>
