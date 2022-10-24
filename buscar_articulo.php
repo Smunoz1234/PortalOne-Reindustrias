@@ -100,7 +100,7 @@ if (!isset($_GET['dato']) || ($_GET['dato'] == "")) {
             "'" . $SoloStock . "'",
             "'" . $TodosArticulos . "'",
             "'" . $IdListaPrecio . "'", // @PriceList. NEDUGA, 24/02/2022
-            $Usuario,
+            $Usuario, // SMM, 22/10/2022
         );
         $SQL = EjecutarSP('sp_ConsultarArticulos_ListaPrecios', $Param); // Nuevo
         $Num = sqlsrv_has_rows($SQL);
@@ -111,6 +111,7 @@ if (!isset($_GET['dato']) || ($_GET['dato'] == "")) {
             "'" . $TipoDoc . "'",
             "'" . $SoloStock . "'",
             "'" . $TodosArticulos . "'",
+			$Usuario, // SMM, 22/10/2022
         );
         $SQL = EjecutarSP('sp_ConsultarArticulos', $Param); // Anterior
         $Num = sqlsrv_has_rows($SQL);
