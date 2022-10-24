@@ -7,26 +7,28 @@ $sw_error = 0;
 // SMM, 21/07/2022
 if (isset($_POST['Metodo']) && ($_POST['Metodo'] == 3)) {
     try {
+        $Param = array(
+            $_POST['Metodo'], // 3 - Eliminar
+            isset($_POST['ID']) ? $_POST['ID'] : "NULL",
+        );
 
-        if ($_POST['TipoDoc'] == "Procesos") {
-            $Param = array(
-                $_POST['Metodo'], // 3 - Eliminar
-                isset($_POST['IdInterno']) ? $_POST['IdInterno'] : "NULL", // IdInterno
-            );
-            $SQL = EjecutarSP('sp_tbl_Autorizaciones_Procesos', $Param);
+        if ($_POST['TipoDoc'] == "Categoria") {
+            $SQL = EjecutarSP('sp_tbl_ConsultasSAPB1_Categorias', $Param);
             if (!$SQL) {
                 $sw_error = 1;
-                $msg_error = "No se pudo eliminar el proceso de autorización";
+                $msg_error = "No se pudo eliminar la categoría.";
             }
-        } elseif ($_POST['TipoDoc'] == "Motivos") {
-            $Param = array(
-                $_POST['Metodo'], // 3 - Eliminar
-                isset($_POST['IdInterno']) ? $_POST['IdInterno'] : "NULL", // IdInterno
-            );
-            $SQL = EjecutarSP('sp_tbl_Autorizaciones_Motivos', $Param);
+        } elseif ($_POST['TipoDoc'] == "Consulta") {
+            $SQL = EjecutarSP('sp_tbl_ConsultasSAPB1_Consultas', $Param);
             if (!$SQL) {
                 $sw_error = 1;
-                $msg_error = "No se pudo eliminar el motivo de autorización";
+                $msg_error = "No se pudo eliminar la consulta.";
+            }
+        } elseif ($_POST['TipoDoc'] == "Entrada") {
+            $SQL = EjecutarSP('sp_tbl_ConsultasSAPB1_Consultas', $Param);
+            if (!$SQL) {
+                $sw_error = 1;
+                $msg_error = "No se pudo eliminar la consulta.";
             }
         }
 
@@ -40,23 +42,23 @@ if (isset($_POST['Metodo']) && ($_POST['Metodo'] == 3)) {
 if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Metodo']) && ($_POST['Metodo'] == 2))) {
     try {
 
-        if ($_POST['TipoDoc'] == "Procesos") {
+        if ($_POST['TipoDoc'] == "Categoria") {
             $FechaHora = "'" . FormatoFecha(date('Y-m-d'), date('H:i:s')) . "'";
             $Usuario = "'" . $_SESSION['CodUser'] . "'";
 
             $Perfiles = implode(";", $_POST['Perfiles']);
             $Perfiles = count($_POST['Perfiles']) > 0 ? "'$Perfiles'" : "''";
 
-            $IdInterno = (isset($_POST['ID_Actual']) && ($_POST['ID_Actual'] != "")) ? $_POST['ID_Actual'] : "NULL";
+            $ID = (isset($_POST['ID_Actual']) && ($_POST['ID_Actual'] != "")) ? $_POST['ID_Actual'] : "NULL";
 
             $Param = array(
                 $_POST['Metodo'] ?? 1, // 1 - Crear, 2 - Actualizar
-                $IdInterno,
-                "'" . $_POST['IdTipoDocumento'] . "'",
+                $ID,
+                "'" . $_POST['ID_CategoriaPadre'] . "'",
+                "'" . $_POST['NombreCategoria'] . "'",
+                $Perfiles,
                 "'" . $_POST['Comentarios'] . "'",
                 "'" . $_POST['Estado'] . "'",
-                "'" . $_POST['Condiciones'] . "'",
-                $Perfiles,
                 $Usuario, // @id_usuario_actualizacion
                 $FechaHora, // @fecha_actualizacion
                 $FechaHora, // @hora_actualizacion
@@ -64,10 +66,11 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
                 ($_POST['Metodo'] == 1) ? $FechaHora : "NULL",
                 ($_POST['Metodo'] == 1) ? $FechaHora : "NULL",
             );
-            $SQL = EjecutarSP('sp_tbl_Autorizaciones_Procesos', $Param);
+
+            $SQL = EjecutarSP('sp_tbl_ConsultasSAPB1_Categorias', $Param);
             if (!$SQL) {
                 $sw_error = 1;
-                $msg_error = "No se pudo insertar los datos";
+                $msg_error = "No se pudo insertar la nueva categoría";
             }
         } elseif ($_POST['TipoDoc'] == "Motivos") {
             $FechaHora = "'" . FormatoFecha(date('Y-m-d'), date('H:i:s')) . "'";
@@ -105,7 +108,7 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
 
         if ($sw_error == 0) {
             $TipoDoc = $_POST['TipoDoc'];
-            header("Location:parametros_autorizaciones_documentos.php?doc=$TipoDoc&a=" . base64_encode("OK_PRUpd") . "#$TipoDoc");
+            header("Location:parametros_consultas_sap.php?doc=$TipoDoc&a=" . base64_encode("OK_PRUpd") . "#$TipoDoc");
         }
 
     } catch (Exception $e) {
@@ -115,8 +118,7 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
 
 }
 
-// SMM, 18/08/2022
-$SQL_Procesos = Seleccionar("uvw_tbl_Autorizaciones_Procesos", "*");
+$SQL_Categorias = Seleccionar("uvw_tbl_ConsultasSAPB1_Categorias", "*");
 
 // SMM, 21/07/2022
 $SQL_Motivos = Seleccionar("uvw_tbl_Autorizaciones_Motivos", "*");
@@ -131,7 +133,7 @@ $SQL_Perfiles = Seleccionar('uvw_tbl_PerfilesUsuarios', '*');
 <head>
 <?php include_once "includes/cabecera.php";?>
 <!-- InstanceBeginEditable name="doctitle" -->
-<title>Parámetros autorizaciones documentos | <?php echo NOMBRE_PORTAL; ?></title>
+<title>Parámetros Consultas SAP B1 | <?php echo NOMBRE_PORTAL; ?></title>
 <!-- InstanceEndEditable -->
 <!-- InstanceBeginEditable name="head" -->
 <style>
@@ -200,7 +202,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
         <!-- InstanceBeginEditable name="Contenido" -->
         <div class="row wrapper border-bottom white-bg page-heading">
                 <div class="col-sm-8">
-                    <h2>Parámetros autorizaciones documentos</h2>
+                    <h2>Parámetros Consultas SAP B1</h2>
                     <ol class="breadcrumb">
                         <li>
                             <a href="index1.php">Inicio</a>
@@ -212,7 +214,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
                             <a href="#">Parámetros del sistema</a>
                         </li>
                         <li class="active">
-                            <strong>Parámetros autorizaciones documentos</strong>
+                            <strong>Parámetros Consultas SAP B1</strong>
                         </li>
                     </ol>
                 </div>
@@ -232,21 +234,24 @@ if (isset($sw_error) && ($sw_error == 1)) {
 						<?php include "includes/spinner.php";?>
 						 <div class="tabs-container">
 							<ul class="nav nav-tabs">
-								<li class="<?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Procesos") || !isset($_GET['doc'])) ? "active" : ""; ?>">
-									<a data-toggle="tab" href="#tab-1"><i class="fa fa-list"></i> Lista procesos autorización</a>
+								<li class="<?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Categoria") || !isset($_GET['doc'])) ? "active" : ""; ?>">
+									<a data-toggle="tab" href="#tab-1"><i class="fa fa-list"></i> Lista de Categorías</a>
 								</li>
-								<li class="<?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Motivos")) ? "active" : ""; ?>">
-									<a data-toggle="tab" href="#tab-2"><i class="fa fa-list"></i> Lista motivos autorización</a>
+								<li class="<?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Consulta")) ? "active" : ""; ?>">
+									<a data-toggle="tab" href="#tab-2"><i class="fa fa-list"></i> Lista de Consultas SAP B1</a>
+								</li>
+								<li class="<?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Entrada")) ? "active" : ""; ?>">
+									<a data-toggle="tab" href="#tab-3"><i class="fa fa-list"></i> Lista de Parámetros</a>
 								</li>
 							</ul>
 							<div class="tab-content">
 								<!-- Inicio, lista motivo autorización -->
-								<div id="tab-1" class="tab-pane <?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Procesos") || !isset($_GET['doc'])) ? "active" : ""; ?>">
+								<div id="tab-1" class="tab-pane <?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Categoria") || !isset($_GET['doc'])) ? "active" : ""; ?>">
 									<form class="form-horizontal">
 										<!-- Inicio, ibox motivos -->
-										<div class="ibox" id="Procesos">
+										<div class="ibox" id="Categoria">
 											<div class="ibox-title bg-success">
-												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista procesos de autorizaciones</h5>
+												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista de Categorías</h5>
 												 <a class="collapse-link pull-right">
 													<i class="fa fa-chevron-up"></i>
 												</a>
@@ -254,18 +259,17 @@ if (isset($sw_error) && ($sw_error == 1)) {
 											<div class="ibox-content">
 												<div class="row m-b-md">
 													<div class="col-lg-12">
-														<button class="btn btn-primary pull-right" type="button" id="NewMotivo" onClick="CrearCampo('Procesos');"><i class="fa fa-plus-circle"></i> Agregar nuevo</button>
+														<button class="btn btn-primary pull-right" type="button" id="NewMotivo" onClick="CrearCampo('Categoria');"><i class="fa fa-plus-circle"></i> Agregar nuevo</button>
 													</div>
 												</div>
 												<div class="table-responsive">
 													<table class="table table-striped table-bordered table-hover dataTables-example">
 														<thead>
 															<tr>
-																<!-- th>ID Tipo Documento</th -->
-																<th>Tipo Documento</th>
-																<th>Comentarios</th>
+																<th>Categoría Padre</th>
+																<th>Nombre Categoría</th>
 																<th>Perfiles</th>
-																<th>Condiciones</th>
+																<th>Comentarios</th>
 																<th>Fecha Actualizacion</th>
 																<th>Usuario Actualizacion</th>
 																<th>Estado</th>
@@ -273,39 +277,37 @@ if (isset($sw_error) && ($sw_error == 1)) {
 															</tr>
 														</thead>
 														<tbody>
-															 <?php while ($row_Proceso = sqlsrv_fetch_array($SQL_Procesos)) {?>
+															 <?php while ($row_Categoria = sqlsrv_fetch_array($SQL_Categorias)) {?>
 															<tr>
-																<!-- td><?php echo $row_Proceso['IdTipoDocumento']; ?></td -->
-																<td><?php echo $row_Proceso['TipoDocumento']; ?></td>
-																<td><?php echo $row_Proceso['Comentarios']; ?></td>
+																<td><?php echo $row_Categoria['CategoriaPadre']; ?></td>
+																<td><?php echo $row_Categoria['NombreCategoria']; ?></td>
 
 																<td>
 																	<?php sqlsrv_fetch($SQL_Perfiles, SQLSRV_SCROLL_ABSOLUTE, -1);?>
-																	<?php $ids_perfiles = explode(";", $row_Proceso['Perfiles']);?>
+																	<?php $ids_perfiles = explode(";", $row_Categoria['Perfiles']);?>
 
 																	<?php $cadenaPerfiles = "";?>
 																	<?php while ($row_Perfil = sqlsrv_fetch_array($SQL_Perfiles)) {?>
 																		<?php if (in_array($row_Perfil['ID_PerfilUsuario'], $ids_perfiles)) {?>
-																			<!-- ?php echo $row_Perfil['PerfilUsuario']; ?>
-																			<br><br -->
+																			<span class="label label-secondary"></span>
 																			<?php $cadenaPerfiles .= $row_Perfil['PerfilUsuario'] . "; ";?>
 																		<?php }?>
 																	<?php }?>
 																	<?php echo ($cadenaPerfiles == "") ? "(Todos)" : $cadenaPerfiles; ?>
 																</td>
 
-																<td><?php echo $row_Proceso['Condiciones']; ?></td>
+																<td><?php echo $row_Categoria['Comentarios']; ?></td>
 
-																<td><?php echo isset($row_Proceso['fecha_actualizacion']) ? date_format($row_Proceso['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
-																<td><?php echo $row_Proceso['usuario_actualizacion']; ?></td>
+																<td><?php echo isset($row_Categoria['fecha_actualizacion']) ? date_format($row_Categoria['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
+																<td><?php echo $row_Categoria['usuario_actualizacion']; ?></td>
 																<td>
-																	<span class="label <?php echo ($row_Proceso['Estado'] == "Y") ? "label-info" : "label-danger"; ?>">
-																		<?php echo ($row_Proceso['Estado'] == "Y") ? "Activo" : "Inactivo"; ?>
+																	<span class="label <?php echo ($row_Categoria['Estado'] == "Y") ? "label-info" : "label-danger"; ?>">
+																		<?php echo ($row_Categoria['Estado'] == "Y") ? "Activo" : "Inactivo"; ?>
 																	</span>
 																</td>
 																<td>
-																	<button type="button" id="btnEdit<?php echo $row_Proceso['IdInterno']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Proceso['IdInterno']; ?>','Procesos');"><i class="fa fa-pencil"></i> Editar</button>
-																	<!-- button type="button" id="btnDelete<?php //echo $row_Proceso['IdInterno']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php //echo $row_Proceso['IdInterno']; ?>','Procesos');"><i class="fa fa-trash"></i> Eliminar</button -->
+																	<button type="button" id="btnEdit<?php echo $row_Categoria['ID']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Categoria['ID']; ?>','Categoria');"><i class="fa fa-pencil"></i> Editar</button>
+																	<button type="button" id="btnDelete<?php echo $row_Categoria['ID']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Categoria['ID']; ?>','Categoria');"><i class="fa fa-trash"></i> Eliminar</button>
 																</td>
 															</tr>
 															 <?php }?>
@@ -441,7 +443,6 @@ if (isset($sw_error) && ($sw_error == 1)) {
 					}
 				},
 				buttons: []
-
 			});
         });
     </script>
@@ -451,7 +452,7 @@ function CrearCampo(doc){
 
 	$.ajax({
 		type: "POST",
-		url: "md_autorizaciones_documentos.php",
+		url: "md_parametros_consultas_sap.php",
 		data:{
 			doc:doc
 		},
@@ -462,6 +463,7 @@ function CrearCampo(doc){
 		}
 	});
 }
+
 function EditarCampo(id, doc){
 	$('.ibox-content').toggleClass('sk-loading',true);
 
@@ -480,6 +482,7 @@ function EditarCampo(id, doc){
 		}
 	});
 }
+
 function EliminarCampo(id, doc){
 	Swal.fire({
 		title: "¿Está seguro que desea eliminar este registro?",
@@ -489,18 +492,16 @@ function EliminarCampo(id, doc){
 		cancelButtonText: "No"
 	}).then((result) => {
 		if (result.isConfirmed) {
-			//$('.ibox-content').toggleClass('sk-loading',true);
+			// $('.ibox-content').toggleClass('sk-loading',true);
+
 			$.ajax({
 				type: "post",
-				url: "parametros_autorizaciones_documentos.php",
-				data: {
-					TipoDoc: doc,
-					IdInterno: id,
-					Metodo: 3
-					 },
+				url: "parametros_consultas_sap.php",
+				data: { TipoDoc: doc, ID: id, Metodo: 3 },
 				async: false,
 				success: function(data){
-					location.href = "parametros_autorizaciones_documentos.php?a=<?php echo base64_encode("OK_PRDel"); ?>";
+					// console.log(data);
+					location.href = "parametros_consultas_sap.php?a=<?php echo base64_encode("OK_PRDel"); ?>";
 				},
 				error: function(error) {
 					console.error("consulta erronea");

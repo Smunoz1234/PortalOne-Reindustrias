@@ -8,34 +8,26 @@ $edit = isset($_POST['edit']) ? $_POST['edit'] : 0;
 $doc = isset($_POST['doc']) ? $_POST['doc'] : "";
 $id = isset($_POST['id']) ? $_POST['id'] : "";
 
-// SMM, 26/08/2022
-$palabra = ($doc == "Procesos") ? "proceso" : "motivo";
-
-// Usuarios de SAP, (NO bloqueados).
-$SQL_UsuariosSAP = Seleccionar("uvw_Sap_tbl_UsuariosSAP", "*", "Locked = 'N'", "USER_CODE");
-
-// SMM, 18/07/2022
-$SQL_TipoDoc = Seleccionar("uvw_tbl_ObjetosSAP", "*", "CategoriaObjeto = 'Documentos de ventas'", 'CategoriaObjeto, DeTipoDocumento');
-$SQL_ModeloAutorizacion = Seleccionar("uvw_Sap_tbl_ModelosAutorizaciones", "*");
-
-// Perfiles Usuarios, SMM 26/07/2022
+$SQL_CategoriasModal = Seleccionar('tbl_ConsultasSAPB1_Categorias', '*');
 $SQL_Perfiles = Seleccionar('uvw_tbl_PerfilesUsuarios', '*');
 
 $ids_perfiles = array();
 if ($edit == 1 && $id != "") {
     $Title = "Editar registro";
     $Metodo = 2;
-    if ($doc == "Motivos") {
-        $SQL = Seleccionar('tbl_Autorizaciones_Motivos', '*', "IdInterno='" . $id . "'");
-        $row = sqlsrv_fetch_array($SQL);
 
+    if ($doc == "Categoria") {
+        $SQL = Seleccionar('tbl_ConsultasSAPB1_Categorias', '*', "ID='" . $id . "'");
+        $row = sqlsrv_fetch_array($SQL);
     } elseif ($doc == "Procesos") {
         $SQL = Seleccionar('tbl_Autorizaciones_Procesos', '*', "IdInterno='" . $id . "'");
         $row = sqlsrv_fetch_array($SQL);
 
         // SMM 27/07/2022
-        $ids_perfiles = isset($row['Perfiles']) ? explode(";", $row['Perfiles']) : [];
+
     }
+
+    $ids_perfiles = isset($row['Perfiles']) ? explode(";", $row['Perfiles']) : [];
 }
 ?>
 
@@ -76,50 +68,42 @@ if ($edit == 1 && $id != "") {
 	}
 </style>
 
-<form id="frm_NewParam" method="post" action="parametros_autorizaciones_documentos.php" enctype="multipart/form-data">
+<form id="frm_NewParam" method="post" action="parametros_consultas_sap.php" enctype="multipart/form-data">
 <div class="modal-header">
 	<h4 class="modal-title">
-		<?php echo "Crear nuevo $palabra de autorización"; ?>
+		<?php echo "Crear Nueva $doc"; ?>
 	</h4>
 </div>
 <div class="modal-body">
 	<div class="form-group">
 		<div class="ibox-content">
 			<?php include "includes/spinner.php";?>
-			<?php if ($doc == "Procesos") {?>
-				<div class="form-group">
-					<div class="col-md-12">
-						<label class="control-label">Comentarios</label>
-						<textarea name="Comentarios" rows="3" maxlength="3000" class="form-control" id="Comentarios" type="text"><?php if ($edit == 1) {echo $row['Comentarios'];}?></textarea>
-					</div>
-				</div>
+			<?php if ($doc == "Categoria") {?>
 
-				<br><br><br><br><br><br>
+				<!-- Inicio Categoria -->
 				<div class="form-group">
 					<div class="col-md-6">
-						<label class="control-label">Tipo de documento <span class="text-danger">*</span></label>
-						<select name="IdTipoDocumento" class="form-control" id="IdTipoDocumento" required>
-								<option value="" selected disabled>Seleccione...</option>
-								<?php $CatActual = "";?>
-								<?php while ($row_TipoDoc = sqlsrv_fetch_array($SQL_TipoDoc)) {?>
-									<?php if ($CatActual != $row_TipoDoc['CategoriaObjeto']) {?>
-										<?php echo "<optgroup label='" . $row_TipoDoc['CategoriaObjeto'] . "'></optgroup>"; ?>
-										<?php $CatActual = $row_TipoDoc['CategoriaObjeto'];?>
-									<?php }?>
-									<option value="<?php echo $row_TipoDoc['IdTipoDocumento']; ?>"
-									<?php if ((($edit == 1) && (isset($row['IdTipoDocumento'])) && (strcmp($row_TipoDoc['IdTipoDocumento'], $row['IdTipoDocumento']) == 0))) {echo "selected=\"selected\"";}?>>
-										<?php echo $row_TipoDoc['DeTipoDocumento']; ?>
-									</option>
-							<?php }?>
-							<optgroup label='Otros'></optgroup>
-							<option value="OTRO" <?php if (($edit == 1) && ($swOtro == 1 && $row['IdTipoDocumento'] != "")) {echo "selected=\"selected\"";}?>>OTRO</option>
-						</select>
+						<label class="control-label">Nombre Categoria <span class="text-danger">*</span></label>
+						<input type="text" class="form-control" autocomplete="off" required name="NombreCategoria" id="NombreCategoria" value="<?php if ($edit == 1) {echo $row['NombreCategoria'];}?>">
 					</div>
 					<div class="col-md-6">
 						<label class="control-label">Estado <span class="text-danger">*</span></label>
 						<select class="form-control" id="Estado" name="Estado">
 							<option value="Y" <?php if (($edit == 1) && ($row['Estado'] == "Y")) {echo "selected=\"selected\"";}?>>ACTIVO</option>
 							<option value="N" <?php if (($edit == 1) && ($row['Estado'] == "N")) {echo "selected=\"selected\"";}?>>INACTIVO</option>
+						</select>
+					</div>
+				</div>
+
+				<br><br><br><br>
+				<div class="form-group">
+					<div class="col-md-12">
+						<label class="control-label">Categoria Padre</label>
+						<select name="ID_CategoriaPadre" class="form-control select2" id="ID_CategoriaPadre">
+							<option value="">Seleccione...</option>
+							<?php while ($row_CategoriaModal = sqlsrv_fetch_array($SQL_CategoriasModal)) {?>
+								<option value="<?php echo $row_CategoriaModal['ID']; ?>" <?php if ((isset($row['ID_CategoriaPadre'])) && (strcmp($row_CategoriaModal['ID'], $row['ID_CategoriaPadre']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_CategoriaModal['NombreCategoria']; ?></option>
+							<?php }?>
 						</select>
 					</div>
 				</div>
@@ -142,42 +126,13 @@ if ($edit == 1 && $id != "") {
 				<br><br><br><br>
 				<div class="form-group">
 					<div class="col-md-12">
-						<label class="control-label">Condiciones</label>
-						<textarea name="Condiciones" rows="3" maxlength="3000" class="form-control" id="Condiciones" type="text"><?php if ($edit == 1) {echo $row['Condiciones'];}?></textarea>
+						<label class="control-label">Comentarios</label>
+						<textarea name="Comentarios" rows="3" maxlength="3000" class="form-control" id="Comentarios" type="text"><?php if ($edit == 1) {echo $row['Comentarios'];}?></textarea>
 					</div>
 				</div>
+				<br><br>
+				<!-- Fin Categoria -->
 
-				<br><br><br><br><br><br>
-				<div class="panel panel-info">
-					<div class="panel-heading active" role="tab" id="headingOne">
-						<h4 class="panel-title">
-							<a role="button" data-toggle="collapse" href="#collapseOne" aria-controls="collapseOne">
-								<i class="fa fa-info-circle"></i> Parámetros de entrada y salida
-							</a>
-						</h4>
-					</div>
-					<div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
-						<div class="panel-body">
-							<p>Puede utilizar las siguientes variables en el cuerpo del mensaje para referirse a los datos de los archivos:</p>
-							<ul>
-								<li><b style="color: red;">Parámetro de entrada</b>
-									<ul>
-										<li><strong>[IdDocumento]</strong> Campo llave del registro.</li>
-										<li><strong>[IdEvento]</strong> Identificación del evento relacionado al documento.</li>
-									</ul>
-								</li>
-								<li><b style="color: red;">Parámetros de salidas</b>
-									<ul>
-										<li><strong>[success]</strong> Bandera de confirmación (<b>0</b> - NO exitoso / <b>1</b> - exitoso).</li>
-										<li><strong>[mensaje]</strong> Descripción de la validación de la autorización.</li>
-										<li><strong>[IdMotivo]</strong> Identificación del motivo (se debe seleccionar del listado de motivos).</li>
-									</ul>
-								</li>
-							</ul>
-						</div> <!-- panel-body-->
-					</div> <!-- panel-collapse -->
-				</div>
-			<!-- Fin Procesos -->
 			<?php } elseif ($doc == "Motivos") {?>
 				<div class="form-group">
 					<div class="col-md-12">
@@ -258,8 +213,88 @@ if ($edit == 1 && $id != "") {
 						<a href="#" id="aVerPass" onClick="javascript:MostrarPassword();" title="Mostrar contrase&ntilde;a" class="btn btn-default btn-xs"><span id="VerPass" class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a>
 					</div>
 				</div>
-			<?php }?>
 			<!-- Fin Motivos -->
+			<?php } elseif ($doc == "Parametros") {?>
+				<div class="form-group">
+					<div class="col-md-12">
+						<label class="control-label">Comentarios</label>
+						<textarea name="Comentarios" rows="3" maxlength="3000" class="form-control" id="Comentarios" type="text"><?php if ($edit == 1) {echo $row['Comentarios'];}?></textarea>
+					</div>
+				</div>
+
+				<br><br><br><br><br><br>
+				<div class="form-group">
+					<div class="col-md-6">
+						<label class="control-label">Tipo de documento <span class="text-danger">*</span></label>
+						<select name="IdTipoDocumento" class="form-control" id="IdTipoDocumento" required>
+								<option value="" selected disabled>Seleccione...</option>
+								<?php $CatActual = "";?>
+								<?php while ($row_TipoDoc = sqlsrv_fetch_array($SQL_TipoDoc)) {?>
+									<?php if ($CatActual != $row_TipoDoc['CategoriaObjeto']) {?>
+										<?php echo "<optgroup label='" . $row_TipoDoc['CategoriaObjeto'] . "'></optgroup>"; ?>
+										<?php $CatActual = $row_TipoDoc['CategoriaObjeto'];?>
+									<?php }?>
+									<option value="<?php echo $row_TipoDoc['IdTipoDocumento']; ?>"
+									<?php if ((($edit == 1) && (isset($row['IdTipoDocumento'])) && (strcmp($row_TipoDoc['IdTipoDocumento'], $row['IdTipoDocumento']) == 0))) {echo "selected=\"selected\"";}?>>
+										<?php echo $row_TipoDoc['DeTipoDocumento']; ?>
+									</option>
+							<?php }?>
+							<optgroup label='Otros'></optgroup>
+							<option value="OTRO" <?php if (($edit == 1) && ($swOtro == 1 && $row['IdTipoDocumento'] != "")) {echo "selected=\"selected\"";}?>>OTRO</option>
+						</select>
+					</div>
+					<div class="col-md-6">
+						<label class="control-label">Estado <span class="text-danger">*</span></label>
+						<select class="form-control" id="Estado" name="Estado">
+							<option value="Y" <?php if (($edit == 1) && ($row['Estado'] == "Y")) {echo "selected=\"selected\"";}?>>ACTIVO</option>
+							<option value="N" <?php if (($edit == 1) && ($row['Estado'] == "N")) {echo "selected=\"selected\"";}?>>INACTIVO</option>
+						</select>
+					</div>
+				</div>
+
+				<br><br><br><br>
+				<div class="form-group">
+					<div class="col-md-6">
+						<label class="control-label">Id Motivo <span class="text-danger">*</span></label>
+						<input type="text" class="form-control" name="IdMotivoAutorizacion" id="IdMotivoAutorizacion" required autocomplete="off" value="<?php if ($edit == 1) {echo $row['IdMotivoAutorizacion'];}?>">
+					</div>
+					<div class="col-md-6">
+						<label class="control-label">Motivo <span class="text-danger">*</span></label>
+						<input type="text" class="form-control" name="MotivoAutorizacion" id="MotivoAutorizacion" required autocomplete="off" value="<?php if ($edit == 1) {echo $row['MotivoAutorizacion'];}?>">
+					</div>
+				</div>
+
+				<br><br><br><br>
+				<div class="form-group">
+					<div class="col-md-12">
+						<label class="control-label">Modelo autorización SAP B1 <span class="text-danger">*</span></label>
+						<select name="IdModeloAutorizacionSAPB1" class="form-control select2" id="IdModeloAutorizacionSAPB1" required>
+							<option value="">Seleccione...</option>
+							<?php while ($row_ModeloAutorizacion = sqlsrv_fetch_array($SQL_ModeloAutorizacion)) {?>
+								<option value="<?php echo $row_ModeloAutorizacion['IdModeloAutorizacion']; ?>" <?php if ((isset($row['IdModeloAutorizacionSAPB1'])) && (strcmp($row_ModeloAutorizacion['IdModeloAutorizacion'], $row['IdModeloAutorizacionSAPB1']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_ModeloAutorizacion['ModeloAutorizacion']; ?></option>
+							<?php }?>
+						</select>
+					</div>
+				</div>
+
+				<br><br><br><br>
+				<div class="form-group">
+					<div class="col-md-6">
+						<label class="control-label">Usuario autorización SAP B1 <span class="text-danger">*</span></label>
+						<select name="IdUsuarioAutorizacion" class="form-control select2" id="IdUsuarioAutorizacion" required>
+							<option value="">Seleccione...</option>
+							<?php while ($row_UsuarioSAP = sqlsrv_fetch_array($SQL_UsuariosSAP)) {?>
+								<option value="<?php echo $row_UsuarioSAP['USERID']; ?>" <?php if ((isset($row['IdUsuarioAutorizacionSAPB1'])) && (strcmp($row_UsuarioSAP['USERID'], $row['IdUsuarioAutorizacionSAPB1']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_UsuarioSAP['USER_CODE']; ?></option>
+							<?php }?>
+						</select>
+					</div>
+					<div class="col-md-6">
+						<label class="control-label">Password usuario SAP B1 <span class="text-danger">*</span></label>
+						<input type="password" class="form-control" name="PassUsuarioAutorizacion" id="PassUsuarioAutorizacion" required autocomplete="off" value="<?php if ($edit == 1) {echo $row['PassUsuarioAutorizacionSAPB1'];}?>">
+						<a href="#" id="aVerPass" onClick="javascript:MostrarPassword();" title="Mostrar contrase&ntilde;a" class="btn btn-default btn-xs"><span id="VerPass" class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a>
+					</div>
+				</div>
+			<?php }?>
 		</div>
 	</div>
 </div>
@@ -385,64 +420,3 @@ function Eliminar(doc,id){
 
 	return result;
 }
-
-// SMM, 27/07/2022
-// doc(useless) -> nombre del formulario
-// id(useless) -> identificador del la fila
-function Validar(doc, id){
-	Swal.fire({
-		title: "¿Está seguro que desea ejecutar la consulta?",
-		icon: "question",
-		showCancelButton: true,
-		confirmButtonText: "Si, confirmo",
-		cancelButtonText: "No"
-	}).then((result) => {
-		if (result.isConfirmed) {
-			// Cargando...
-			$('.ibox-content').toggleClass('sk-loading', true);
-
-			$.ajax({
-				url:"ajx_ejecutar_query.php",
-				data: {
-					type: 1,
-					query: $("#Condiciones").val()
-				},
-				dataType:'json',
-				async: false,
-				success: function(data) {
-					console.log(data);
-
-					$("#CondicionesContainer").css("display", "block");
-					$("#Validacion").val(JSON.stringify(data, null, '\t'));
-
-					// Raw Response.
-					$("#Raw").prop("href", `ajx_ejecutar_query.php?type=1&query=${$("#Condiciones").val()}`);
-
-					// Carga terminada.
-					$('.ibox-content').toggleClass('sk-loading', false);
-				},
-				error: function(error) {
-					console.error("Error en Línea 322");
-					$('.ibox-content').toggleClass('sk-loading', false);
-				}
-			});
-		}
-	});
-}
-
-// SMM, 05/09/2022
-function MostrarPassword(){
-	let id = "PassUsuarioAutorizacion";
-	let e = document.getElementById(id).getAttribute("type");
-
-	if(e == "password"){
-		document.getElementById(id).setAttribute('type','text');
-		document.getElementById('VerPass').setAttribute('class','glyphicon glyphicon-eye-close');
-		document.getElementById('aVerPass').setAttribute('title','Ocultar contrase'+String.fromCharCode(241)+'a');
-	}else{
-		document.getElementById(id).setAttribute('type','password');
-		document.getElementById('VerPass').setAttribute('class','glyphicon glyphicon-eye-open');
-		document.getElementById('aVerPass').setAttribute('title','Mostrar contrase'+String.fromCharCode(241)+'a');
-	}
-}
-</script>
