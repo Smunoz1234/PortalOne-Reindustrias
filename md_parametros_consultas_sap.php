@@ -34,21 +34,12 @@ if ($edit == 1 && $id != "") {
 ?>
 
 <style>
-	/**
-	* Estilos para el uso del componente select2-multiple en un modal.
-	*
-	* @author Stiven Muñoz Murillo
-	* @version 26/07/2022
-	*/
-
 	.select2-container {
 		z-index: 10000;
 	}
-
 	.select2-search--inline {
     display: contents;
 	}
-
 	.select2-search__field:placeholder-shown {
 		width: 100% !important;
 	}
@@ -156,7 +147,7 @@ if ($edit == 1 && $id != "") {
 				<div class="form-group">
 					<div class="col-md-12">
 						<label class="control-label">Parámetros</label>
-						<input type="text" class="form-control" autocomplete="off" data-role="tagsinput" name="ParametrosEntrada" id="ParametroEntrada" value="<?php if ($edit == 1) {echo $row['ParametroEntrada'];}?>" placeholder= "Ingrese una entrada y utilice la tecla [ESP] para agregar">
+						<input type="text" class="form-control" autocomplete="off" data-role="tagsinput" name="ParametrosEntrada" id="ParametrosEntrada" value="<?php if ($edit == 1) {echo $row['ParametrosEntrada'];}?>" placeholder= "Ingrese una entrada y utilice la tecla [ESP] para agregar">
 					</div>
 				</div>
 
@@ -189,19 +180,46 @@ if ($edit == 1 && $id != "") {
 
 				<!-- Inicio Entrada -->
 				<div class="form-group">
-					<div class="col-md-6">
+					<div class="col-md-12">
 						<label class="control-label">Consulta <span class="text-danger">*</span></label>
 						<select name="ID_Consulta" class="form-control select2" id="ID_Consulta" required>
-							<option value="">Seleccione...</option>
+							<option value="" disabled selected>Seleccione...</option>
 							<?php while ($row_ConsultaModal = sqlsrv_fetch_array($SQL_ConsultasModal)) {?>
 								<option value="<?php echo $row_ConsultaModal['ID']; ?>" <?php if ((isset($row['ID_Consulta'])) && (strcmp($row_ConsultaModal['ID'], $row['ID_Consulta']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_ConsultaModal['ProcedimientoConsulta']; ?></option>
 							<?php }?>
 						</select>
 					</div>
+				</div>
+
+				<br><br><br><br>
+				<div class="form-group">
+					<div class="col-md-6">
+						<label class="control-label">Parámetro <span class="text-danger">*</span></label>
+						<select name="ParametroEntrada" class="form-control" id="ParametroEntrada" required>
+							<option value="">Seleccione...</option>
+							<!-- Las demás opciones dependen de la consulta -->
+						</select>
+					</div>
+
+					<div class="col-md-6">
+						<label class="control-label">Etiqueta</label>
+						<input type="text" class="form-control" autocomplete="off" name="EtiquetaEntrada" id="EtiquetaEntrada" value="<?php if ($edit == 1) {echo $row['EtiquetaEntrada'];}?>">
+					</div>
+				</div>
+
+				<br><br><br><br>
+				<div class="form-group">
+					<div class="col-md-6">
+						<label class="control-label">Obligatorio <span class="text-danger">*</span></label>
+						<select class="form-control" id="Obligatorio" name="Obligatorio" required>
+							<option value="Y" <?php if (($edit == 1) && ($row['Obligatorio'] == "Y")) {echo "selected=\"selected\"";}?>>SI</option>
+							<option value="N" <?php if (($edit == 1) && ($row['Obligatorio'] == "N")) {echo "selected=\"selected\"";}?>>NO</option>
+						</select>
+					</div>
 
 					<div class="col-md-6">
 						<label class="control-label">Estado <span class="text-danger">*</span></label>
-						<select class="form-control" id="Estado" name="Estado">
+						<select class="form-control" id="Estado" name="Estado" required>
 							<option value="Y" <?php if (($edit == 1) && ($row['Estado'] == "Y")) {echo "selected=\"selected\"";}?>>ACTIVO</option>
 							<option value="N" <?php if (($edit == 1) && ($row['Estado'] == "N")) {echo "selected=\"selected\"";}?>>INACTIVO</option>
 						</select>
@@ -211,33 +229,16 @@ if ($edit == 1 && $id != "") {
 				<br><br><br><br>
 				<div class="form-group">
 					<div class="col-md-12">
-						<label class="control-label">Parámetro</label>
-						<select name="ID_Consulta" class="form-control select2" id="ID_Consulta" required>
-							<option value="">Seleccione...</option>
-							<!-- Las demás opciones dependen de la consulta -->
-						</select>
-					</div>
-				</div>
-
-				<br><br><br><br>
-				<div class="form-group">
-					<div class="col-md-12">
-						<label class="control-label">Procedimiento <span class="text-danger">*</span></label>
-						<input type="text" class="form-control" autocomplete="off" required name="ProcedimientoConsulta" id="ProcedimientoConsulta" value="<?php if ($edit == 1) {echo $row['ProcedimientoConsulta'];}?>">
-					</div>
-				</div>
-
-				<br><br><br><br>
-				<div class="form-group">
-					<div class="col-md-12">
-						<label class="control-label">Perfiles Usuarios</label>
-						<select data-placeholder="Digite para buscar..." name="Perfiles[]" class="form-control select2" id="Perfiles" multiple>
-							<?php while ($row_Perfil = sqlsrv_fetch_array($SQL_PerfilesUsuarios)) {?>
-								<option value="<?php echo $row_Perfil['ID_PerfilUsuario']; ?>"
-								<?php if (in_array($row_Perfil['ID_PerfilUsuario'], $ids_perfiles)) {echo "selected";}?>>
-									<?php echo $row_Perfil['PerfilUsuario']; ?>
-								</option>
-							<?php }?>
+						<label class="control-label">Tipo de campo <span class="text-danger">*</span></label>
+						<select class="form-control" name="TipoCampo" id="TipoCampo" required>
+							<option value="Texto" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Texto')) {echo "selected=\"selected\"";}?>>Texto</option>
+							<option value="Comentario" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Comentario')) {echo "selected=\"selected\"";}?>>Comentario</option>
+							<option value="Fecha" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Fecha')) {echo "selected=\"selected\"";}?>>Fecha</option>
+							<option value="Cliente" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Cliente')) {echo "selected=\"selected\"";}?>>Cliente (Lista)</option>
+							<option value="Sucursal" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Sucursal')) {echo "selected=\"selected\"";}?>>Sucursal (Dependiendo del cliente)</option>
+							<option value="Seleccion" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Seleccion')) {echo "selected=\"selected\"";}?>>Selección (Checkbox)</option>
+							<option value="Lista" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Lista')) {echo "selected=\"selected\"";}?>>Lista (Personalizada)</option>
+							<option value="Usuario" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Usuario')) {echo "selected=\"selected\"";}?>>Usuario</option>
 						</select>
 					</div>
 				</div>
@@ -302,21 +303,18 @@ $(document).ready(function(){
 			}
 	}
 	 });
-	$('.chosen-select').chosen({width: "100%"});
 
-	// SMM, 26/07/2022
+	$('.chosen-select').chosen({width: "100%"});
 	$(".select2").select2();
 
-	// SMM, 17/08/2022
-	$("#IdTipoDocumento").on("change", function() {
-		var doctype = $(this).val();
-
+	// Cargar entradas dependiendo de la consulta.
+	$("#ID_Consulta").on("change", function() {
 		$.ajax({
 			type: "POST",
-			url: `ajx_cbo_select.php?type=43&doctype=${doctype}`,
+			url: `ajx_cbo_select.php?type=44&id=${$(this).val()}`,
 			success: function(response){
-				$('#IdModeloAutorizacionSAPB1').html(response).fadeIn();
-				$('#IdModeloAutorizacionSAPB1').trigger('change');
+				$('#ParametroEntrada').html(response).fadeIn();
+				$('#ParametroEntrada').trigger('change');
 			}
 		});
 	});

@@ -1,10 +1,9 @@
 <?php
 require_once "includes/conexion.php";
-PermitirAcceso(216);
 
+// PermitirAcceso(216);
 $sw_error = 0;
 
-// SMM, 21/07/2022
 if (isset($_POST['Metodo']) && ($_POST['Metodo'] == 3)) {
     try {
         $Param = array(
@@ -16,19 +15,19 @@ if (isset($_POST['Metodo']) && ($_POST['Metodo'] == 3)) {
             $SQL = EjecutarSP('sp_tbl_ConsultasSAPB1_Categorias', $Param);
             if (!$SQL) {
                 $sw_error = 1;
-                $msg_error = "No se pudo eliminar la categoría.";
+                $msg_error = "No se pudo eliminar la Categoría.";
             }
         } elseif ($_POST['TipoDoc'] == "Consulta") {
             $SQL = EjecutarSP('sp_tbl_ConsultasSAPB1_Consultas', $Param);
             if (!$SQL) {
                 $sw_error = 1;
-                $msg_error = "No se pudo eliminar la consulta.";
+                $msg_error = "No se pudo eliminar la Consulta SAP B1.";
             }
         } elseif ($_POST['TipoDoc'] == "Entrada") {
-            $SQL = EjecutarSP('sp_tbl_ConsultasSAPB1_Consultas', $Param);
+            $SQL = EjecutarSP('sp_tbl_ConsultasSAPB1_Entradas', $Param);
             if (!$SQL) {
                 $sw_error = 1;
-                $msg_error = "No se pudo eliminar la consulta.";
+                $msg_error = "No se pudo eliminar la Entrada.";
             }
         }
 
@@ -70,7 +69,7 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
             $SQL = EjecutarSP('sp_tbl_ConsultasSAPB1_Categorias', $Param);
             if (!$SQL) {
                 $sw_error = 1;
-                $msg_error = "No se pudo insertar la nueva categoría";
+                $msg_error = "No se pudo insertar la nueva Categoría";
             }
         } elseif ($_POST['TipoDoc'] == "Consulta") {
             $FechaHora = "'" . FormatoFecha(date('Y-m-d'), date('H:i:s')) . "'";
@@ -101,10 +100,45 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
             $SQL = EjecutarSP('sp_tbl_ConsultasSAPB1_Consultas', $Param);
             if (!$SQL) {
                 $sw_error = 1;
-                $msg_error = "No se pudo insertar la nueva categoría";
+                $msg_error = "No se pudo insertar la nueva Consulta SAP B1";
+            }
+        } elseif ($_POST['TipoDoc'] == "Entrada") {
+            $FechaHora = "'" . FormatoFecha(date('Y-m-d'), date('H:i:s')) . "'";
+            $Usuario = "'" . $_SESSION['CodUser'] . "'";
+
+            $ID = (isset($_POST['ID_Actual']) && ($_POST['ID_Actual'] != "")) ? $_POST['ID_Actual'] : "NULL";
+
+            $Param = array(
+                $_POST['Metodo'] ?? 1, // 1 - Crear, 2 - Actualizar
+                $ID,
+                "'" . $_POST['ID_Consulta'] . "'",
+                "'" . $_POST['ParametroEntrada'] . "'",
+                "'" . $_POST['EtiquetaEntrada'] . "'",
+                "'" . $_POST['Obligatorio'] . "'",
+                "'" . $_POST['Estado'] . "'",
+                "'" . $_POST['TipoCampo'] . "'",
+                "'" . $_POST['Comentarios'] . "'",
+                $Usuario, // @id_usuario_actualizacion
+                $FechaHora, // @fecha_actualizacion
+                $FechaHora, // @hora_actualizacion
+                ($_POST['Metodo'] == 1) ? $Usuario : "NULL",
+                ($_POST['Metodo'] == 1) ? $FechaHora : "NULL",
+                ($_POST['Metodo'] == 1) ? $FechaHora : "NULL",
+            );
+
+            $SQL = EjecutarSP('sp_tbl_ConsultasSAPB1_Entradas', $Param);
+            $row = sqlsrv_fetch_array($SQL);
+
+            if (!$SQL) {
+                $sw_error = 1;
+                $msg_error = "No se pudo insertar la nueva Entrada";
+            } elseif (isset($row['Error'])) {
+                $sw_error = 1;
+                $msg_error = $row['Error'];
             }
         }
 
+        // OK
         if ($sw_error == 0) {
             $TipoDoc = $_POST['TipoDoc'];
             header("Location:parametros_consultas_sap.php?doc=$TipoDoc&a=" . base64_encode("OK_PRUpd") . "#$TipoDoc");
@@ -119,6 +153,7 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
 
 $SQL_Categorias = Seleccionar("uvw_tbl_ConsultasSAPB1_Categorias", "*");
 $SQL_Consultas = Seleccionar("uvw_tbl_ConsultasSAPB1_Consultas", "*");
+$SQL_Entradas = Seleccionar("uvw_tbl_ConsultasSAPB1_Entradas", "*");
 $SQL_Perfiles = Seleccionar('uvw_tbl_PerfilesUsuarios', '*');
 ?>
 
@@ -131,6 +166,7 @@ $SQL_Perfiles = Seleccionar('uvw_tbl_PerfilesUsuarios', '*');
 <title>Parámetros Consultas SAP B1 | <?php echo NOMBRE_PORTAL; ?></title>
 <!-- InstanceEndEditable -->
 <!-- InstanceBeginEditable name="head" -->
+
 <style>
 	.ibox-title a{
 		color: inherit !important;
@@ -145,6 +181,7 @@ $SQL_Perfiles = Seleccionar('uvw_tbl_PerfilesUsuarios', '*');
 		 width: 100% !important
 	}
 </style>
+
 <?php
 if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_PRUpd"))) {
     echo "<script>
@@ -390,7 +427,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 														</tbody>
 													</table>
 												</div>
-											<</div> <!-- ibox-content -->
+											</div> <!-- ibox-content -->
 										</div> <!-- ibox -->
 									</form>
 								</div>
@@ -416,10 +453,11 @@ if (isset($sw_error) && ($sw_error == 1)) {
 													<table class="table table-striped table-bordered table-hover dataTables-example">
 														<thead>
 															<tr>
-																<th>Categoría</th>
-																<th>Procedimiento (Consulta)</th>
-																<th>Parámetros de Entrada</th>
-																<th>Perfiles</th>
+																<th>Consulta SAP B1</th>
+																<th>Parámetro de Entrada</th>
+																<th>Etiqueta</th>
+																<th>Obligatorio</th>
+																<th>Tipo de Campo</th>
 																<th>Comentarios</th>
 																<th>Fecha Actualizacion</th>
 																<th>Usuario Actualizacion</th>
@@ -430,25 +468,13 @@ if (isset($sw_error) && ($sw_error == 1)) {
 														<tbody>
 															 <?php while ($row_Entrada = sqlsrv_fetch_array($SQL_Entradas)) {?>
 															<tr>
-																<td><?php echo $row_Entrada['Categoria']; ?></td>
-																<td><?php echo $row_Entrada['ProcedimientoEntrada']; ?></td>
-																<td><?php echo $row_Entrada['ParametrosEntrada']; ?></td>
+																<td><?php echo $row_Entrada['Consulta']; ?></td>
+																<td><?php echo $row_Entrada['ParametroEntrada']; ?></td>
+																<td><?php echo $row_Entrada['EtiquetaEntrada']; ?></td>
 
-																<td>
-																	<?php sqlsrv_fetch($SQL_Perfiles, SQLSRV_SCROLL_ABSOLUTE, -1);?>
-																	<?php $ids_perfiles = explode(";", $row_Entrada['Perfiles']);?>
+																<td><?php echo ($row_Entrada['Obligatorio'] == "Y") ? "SI" : "NO"; ?></td>
 
-																	<?php echo ($row_Entrada['Perfiles'] == "") ? "(Todos)" : ""; ?>
-
-																	<?php while ($row_Perfil = sqlsrv_fetch_array($SQL_Perfiles)) {?>
-																		<?php if (in_array($row_Perfil['ID_PerfilUsuario'], $ids_perfiles)) {?>
-																			<div style="margin: 10px !important;">
-																				<p class="label label-secondary"><?php echo $row_Perfil['PerfilUsuario']; ?></p>
-																			</div>
-																		<?php }?>
-																	<?php }?>
-																</td>
-
+																<td><?php echo $row_Entrada['TipoCampo']; ?></td>
 																<td><?php echo $row_Entrada['Comentarios']; ?></td>
 
 																<td><?php echo isset($row_Entrada['fecha_actualizacion']) ? date_format($row_Entrada['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
@@ -467,7 +493,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 														</tbody>
 													</table>
 												</div>
-											<</div> <!-- ibox-content -->
+											</div> <!-- ibox-content -->
 										</div> <!-- ibox -->
 									</form>
 								</div>
@@ -487,45 +513,47 @@ if (isset($sw_error) && ($sw_error == 1)) {
 </div>
 <?php include_once "includes/pie.php";?>
 <!-- InstanceBeginEditable name="EditRegion4" -->
- <script>
-        $(document).ready(function(){
-			$(".select2").select2();
-			$('.i-checks').iCheck({
-				 checkboxClass: 'icheckbox_square-green',
-				 radioClass: 'iradio_square-green',
-			  });
 
-			$('.dataTables-example').DataTable({
-				pageLength: 10,
-				dom: '<"html5buttons"B>lTfgitp',
-				language: {
-					"decimal":        "",
-					"emptyTable":     "No se encontraron resultados.",
-					"info":           "Mostrando _START_ - _END_ de _TOTAL_ registros",
-					"infoEmpty":      "Mostrando 0 - 0 de 0 registros",
-					"infoFiltered":   "(filtrando de _MAX_ registros)",
-					"infoPostFix":    "",
-					"thousands":      ",",
-					"lengthMenu":     "Mostrar _MENU_ registros",
-					"loadingRecords": "Cargando...",
-					"processing":     "Procesando...",
-					"search":         "Filtrar:",
-					"zeroRecords":    "Ningún registro encontrado",
-					"paginate": {
-						"first":      "Primero",
-						"last":       "Último",
-						"next":       "Siguiente",
-						"previous":   "Anterior"
-					},
-					"aria": {
-						"sortAscending":  ": Activar para ordenar la columna ascendente",
-						"sortDescending": ": Activar para ordenar la columna descendente"
-					}
-				},
-				buttons: []
+<script>
+	$(document).ready(function(){
+		$(".select2").select2();
+		$('.i-checks').iCheck({
+				checkboxClass: 'icheckbox_square-green',
+				radioClass: 'iradio_square-green',
 			});
-        });
-    </script>
+
+		$('.dataTables-example').DataTable({
+			pageLength: 10,
+			dom: '<"html5buttons"B>lTfgitp',
+			language: {
+				"decimal":        "",
+				"emptyTable":     "No se encontraron resultados.",
+				"info":           "Mostrando _START_ - _END_ de _TOTAL_ registros",
+				"infoEmpty":      "Mostrando 0 - 0 de 0 registros",
+				"infoFiltered":   "(filtrando de _MAX_ registros)",
+				"infoPostFix":    "",
+				"thousands":      ",",
+				"lengthMenu":     "Mostrar _MENU_ registros",
+				"loadingRecords": "Cargando...",
+				"processing":     "Procesando...",
+				"search":         "Filtrar:",
+				"zeroRecords":    "Ningún registro encontrado",
+				"paginate": {
+					"first":      "Primero",
+					"last":       "Último",
+					"next":       "Siguiente",
+					"previous":   "Anterior"
+				},
+				"aria": {
+					"sortAscending":  ": Activar para ordenar la columna ascendente",
+					"sortDescending": ": Activar para ordenar la columna descendente"
+				}
+			},
+			buttons: []
+		});
+	});
+</script>
+
 <script>
 function CrearCampo(doc){
 	$('.ibox-content').toggleClass('sk-loading',true);
@@ -594,7 +622,9 @@ function EliminarCampo(id, doc){
 }
 </script>
 <!-- InstanceEndEditable -->
+
 </body>
 
-<!-- InstanceEnd --></html>
+<!-- InstanceEnd -->
+</html>
 <?php sqlsrv_close($conexion);?>
