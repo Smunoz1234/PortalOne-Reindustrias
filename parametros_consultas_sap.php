@@ -72,24 +72,22 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
                 $sw_error = 1;
                 $msg_error = "No se pudo insertar la nueva categoría";
             }
-        } elseif ($_POST['TipoDoc'] == "Motivos") {
+        } elseif ($_POST['TipoDoc'] == "Consulta") {
             $FechaHora = "'" . FormatoFecha(date('Y-m-d'), date('H:i:s')) . "'";
             $Usuario = "'" . $_SESSION['CodUser'] . "'";
 
             $Perfiles = implode(";", $_POST['Perfiles']);
             $Perfiles = count($_POST['Perfiles']) > 0 ? "'$Perfiles'" : "''";
 
-            $IdInterno = (isset($_POST['ID_Actual']) && ($_POST['ID_Actual'] != "")) ? $_POST['ID_Actual'] : "NULL";
+            $ID = (isset($_POST['ID_Actual']) && ($_POST['ID_Actual'] != "")) ? $_POST['ID_Actual'] : "NULL";
 
             $Param = array(
                 $_POST['Metodo'] ?? 1, // 1 - Crear, 2 - Actualizar
-                $IdInterno,
-                "'" . $_POST['IdMotivoAutorizacion'] . "'",
-                "'" . $_POST['MotivoAutorizacion'] . "'",
-                "'" . $_POST['IdTipoDocumento'] . "'",
-                "'" . $_POST['IdModeloAutorizacionSAPB1'] . "'",
-                "'" . $_POST['IdUsuarioAutorizacion'] . "'", // SMM, 26/08/2022
-                "'" . $_POST['PassUsuarioAutorizacion'] . "'", // Se quito la función md5(...)
+                $ID,
+                "'" . $_POST['ID_Categoria'] . "'",
+                "'" . $_POST['ProcedimientoConsulta'] . "'",
+                "'" . $_POST['ParametrosEntrada'] . "'",
+                $Perfiles,
                 "'" . $_POST['Comentarios'] . "'",
                 "'" . $_POST['Estado'] . "'",
                 $Usuario, // @id_usuario_actualizacion
@@ -99,10 +97,11 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
                 ($_POST['Metodo'] == 1) ? $FechaHora : "NULL",
                 ($_POST['Metodo'] == 1) ? $FechaHora : "NULL",
             );
-            $SQL = EjecutarSP('sp_tbl_Autorizaciones_Motivos', $Param);
+
+            $SQL = EjecutarSP('sp_tbl_ConsultasSAPB1_Consultas', $Param);
             if (!$SQL) {
                 $sw_error = 1;
-                $msg_error = "No se pudo insertar los datos";
+                $msg_error = "No se pudo insertar la nueva categoría";
             }
         }
 
@@ -119,11 +118,7 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
 }
 
 $SQL_Categorias = Seleccionar("uvw_tbl_ConsultasSAPB1_Categorias", "*");
-
-// SMM, 21/07/2022
-$SQL_Motivos = Seleccionar("uvw_tbl_Autorizaciones_Motivos", "*");
-
-// Perfiles Usuarios, SMM 26/07/2022
+$SQL_Consultas = Seleccionar("uvw_tbl_ConsultasSAPB1_Consultas", "*");
 $SQL_Perfiles = Seleccionar('uvw_tbl_PerfilesUsuarios', '*');
 ?>
 
@@ -232,23 +227,26 @@ if (isset($sw_error) && ($sw_error == 1)) {
 			 	<div class="col-lg-12">
 					<div class="ibox-content">
 						<?php include "includes/spinner.php";?>
-						 <div class="tabs-container">
-							<ul class="nav nav-tabs">
+
+						<div class="tabs-container">
+
+						 	<ul class="nav nav-tabs">
 								<li class="<?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Categoria") || !isset($_GET['doc'])) ? "active" : ""; ?>">
-									<a data-toggle="tab" href="#tab-1"><i class="fa fa-list"></i> Lista de Categorías</a>
+									<a data-toggle="tab" href="#tab-1"><i class="fa fa-list"></i> Categorías</a>
 								</li>
 								<li class="<?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Consulta")) ? "active" : ""; ?>">
-									<a data-toggle="tab" href="#tab-2"><i class="fa fa-list"></i> Lista de Consultas SAP B1</a>
+									<a data-toggle="tab" href="#tab-2"><i class="fa fa-list"></i> Consultas SAP B1</a>
 								</li>
 								<li class="<?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Entrada")) ? "active" : ""; ?>">
-									<a data-toggle="tab" href="#tab-3"><i class="fa fa-list"></i> Lista de Parámetros</a>
+									<a data-toggle="tab" href="#tab-3"><i class="fa fa-list"></i> Parámetros de Entrada</a>
 								</li>
 							</ul>
+
 							<div class="tab-content">
-								<!-- Inicio, lista motivo autorización -->
+
+								<!-- Inicio, lista Categorias -->
 								<div id="tab-1" class="tab-pane <?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Categoria") || !isset($_GET['doc'])) ? "active" : ""; ?>">
 									<form class="form-horizontal">
-										<!-- Inicio, ibox motivos -->
 										<div class="ibox" id="Categoria">
 											<div class="ibox-title bg-success">
 												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista de Categorías</h5>
@@ -259,7 +257,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 											<div class="ibox-content">
 												<div class="row m-b-md">
 													<div class="col-lg-12">
-														<button class="btn btn-primary pull-right" type="button" id="NewMotivo" onClick="CrearCampo('Categoria');"><i class="fa fa-plus-circle"></i> Agregar nuevo</button>
+														<button class="btn btn-primary pull-right" type="button" onClick="CrearCampo('Categoria');"><i class="fa fa-plus-circle"></i> Agregar nueva</button>
 													</div>
 												</div>
 												<div class="table-responsive">
@@ -286,14 +284,15 @@ if (isset($sw_error) && ($sw_error == 1)) {
 																	<?php sqlsrv_fetch($SQL_Perfiles, SQLSRV_SCROLL_ABSOLUTE, -1);?>
 																	<?php $ids_perfiles = explode(";", $row_Categoria['Perfiles']);?>
 
-																	<?php $cadenaPerfiles = "";?>
+																	<?php echo ($row_Categoria['Perfiles'] == "") ? "(Todos)" : ""; ?>
+
 																	<?php while ($row_Perfil = sqlsrv_fetch_array($SQL_Perfiles)) {?>
 																		<?php if (in_array($row_Perfil['ID_PerfilUsuario'], $ids_perfiles)) {?>
-																			<span class="label label-secondary"></span>
-																			<?php $cadenaPerfiles .= $row_Perfil['PerfilUsuario'] . "; ";?>
+																			<div style="margin: 10px !important;">
+																				<p class="label label-secondary"><?php echo $row_Perfil['PerfilUsuario']; ?></p>
+																			</div>
 																		<?php }?>
 																	<?php }?>
-																	<?php echo ($cadenaPerfiles == "") ? "(Todos)" : $cadenaPerfiles; ?>
 																</td>
 
 																<td><?php echo $row_Categoria['Comentarios']; ?></td>
@@ -314,20 +313,18 @@ if (isset($sw_error) && ($sw_error == 1)) {
 														</tbody>
 													</table>
 												</div>
-											</div>
-										</div>
-										<!-- Fin, ibox motivos -->
+											</div> <!-- ibox-content -->
+										</div> <!-- ibox -->
 									</form>
 								</div>
-								<!-- Fin, lista motivo autorización -->
+								<!-- Fin, lista Categorias -->
 
-								<!-- Inicio, lista motivo autorización -->
-								<div id="tab-2" class="tab-pane <?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Motivos")) ? "active" : ""; ?>">
+								<!-- Inicio, lista Consultas -->
+								<div id="tab-2" class="tab-pane <?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Consulta")) ? "active" : ""; ?>">
 									<form class="form-horizontal">
-										<!-- Inicio, ibox motivos -->
-										<div class="ibox" id="Motivos">
+										<div class="ibox" id="Consulta">
 											<div class="ibox-title bg-success">
-												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista motivos de autorizaciones</h5>
+												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista de Consultas SAP B1</h5>
 												 <a class="collapse-link pull-right">
 													<i class="fa fa-chevron-up"></i>
 												</a>
@@ -335,21 +332,17 @@ if (isset($sw_error) && ($sw_error == 1)) {
 											<div class="ibox-content">
 												<div class="row m-b-md">
 													<div class="col-lg-12">
-														<button class="btn btn-primary pull-right" type="button" id="NewMotivo" onClick="CrearCampo('Motivos');"><i class="fa fa-plus-circle"></i> Agregar nuevo</button>
+														<button class="btn btn-primary pull-right" type="button" onClick="CrearCampo('Consulta');"><i class="fa fa-plus-circle"></i> Agregar nueva</button>
 													</div>
 												</div>
 												<div class="table-responsive">
 													<table class="table table-striped table-bordered table-hover dataTables-example">
 														<thead>
 															<tr>
-																<!-- th>ID Tipo Documento</th -->
-																<th>Tipo Documento</th>
-																<th>Modelo autorización SAP B1</th>
-																<th>Id Motivo Autorizacion</th>
-																<th>Motivo Autorizacion</th>
-
-																<th>Usuario Autorización SAP B1</th> <!-- SMM, 26/08/2022 -->
-
+																<th>Categoría</th>
+																<th>Procedimiento (Consulta)</th>
+																<th>Parámetros de Entrada</th>
+																<th>Perfiles</th>
 																<th>Comentarios</th>
 																<th>Fecha Actualizacion</th>
 																<th>Usuario Actualizacion</th>
@@ -358,43 +351,130 @@ if (isset($sw_error) && ($sw_error == 1)) {
 															</tr>
 														</thead>
 														<tbody>
-															 <?php while ($row_Motivo = sqlsrv_fetch_array($SQL_Motivos)) {?>
+															 <?php while ($row_Consulta = sqlsrv_fetch_array($SQL_Consultas)) {?>
 															<tr>
-																<!-- td><?php echo $row_Motivo['IdTipoDocumento']; ?></td -->
-																<td><?php echo $row_Motivo['TipoDocumento']; ?></td>
-																<td><?php echo $row_Motivo['ModeloAutorizacion']; ?></td>
-																<td><?php echo $row_Motivo['IdMotivoAutorizacion']; ?></td>
-																<td><?php echo $row_Motivo['MotivoAutorizacion']; ?></td>
+																<td><?php echo $row_Consulta['Categoria']; ?></td>
+																<td><?php echo $row_Consulta['ProcedimientoConsulta']; ?></td>
+																<td><?php echo $row_Consulta['ParametrosEntrada']; ?></td>
 
 																<td>
-																	<?php echo $row_Motivo['UsuarioAutorizacionSAPB1']; ?>
+																	<?php sqlsrv_fetch($SQL_Perfiles, SQLSRV_SCROLL_ABSOLUTE, -1);?>
+																	<?php $ids_perfiles = explode(";", $row_Consulta['Perfiles']);?>
+
+																	<?php echo ($row_Consulta['Perfiles'] == "") ? "(Todos)" : ""; ?>
+
+																	<?php while ($row_Perfil = sqlsrv_fetch_array($SQL_Perfiles)) {?>
+																		<?php if (in_array($row_Perfil['ID_PerfilUsuario'], $ids_perfiles)) {?>
+																			<div style="margin: 10px !important;">
+																				<p class="label label-secondary"><?php echo $row_Perfil['PerfilUsuario']; ?></p>
+																			</div>
+																		<?php }?>
+																	<?php }?>
 																</td>
 
-																<td><?php echo $row_Motivo['Comentarios']; ?></td>
-																<td><?php echo isset($row_Motivo['fecha_actualizacion']) ? date_format($row_Motivo['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
-																<td><?php echo $row_Motivo['usuario_actualizacion']; ?></td>
+																<td><?php echo $row_Consulta['Comentarios']; ?></td>
+
+																<td><?php echo isset($row_Consulta['fecha_actualizacion']) ? date_format($row_Consulta['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
+																<td><?php echo $row_Consulta['usuario_actualizacion']; ?></td>
 																<td>
-																	<span class="label <?php echo ($row_Motivo['Estado'] == "Y") ? "label-info" : "label-danger"; ?>">
-																		<?php echo ($row_Motivo['Estado'] == "Y") ? "Activo" : "Inactivo"; ?>
+																	<span class="label <?php echo ($row_Consulta['Estado'] == "Y") ? "label-info" : "label-danger"; ?>">
+																		<?php echo ($row_Consulta['Estado'] == "Y") ? "Activo" : "Inactivo"; ?>
 																	</span>
 																</td>
 																<td>
-																	<button type="button" id="btnEdit<?php echo $row_Motivo['IdInterno']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Motivo['IdInterno']; ?>','Motivos');"><i class="fa fa-pencil"></i> Editar</button>
-																	<button type="button" id="btnDelete<?php echo $row_Motivo['IdInterno']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Motivo['IdInterno']; ?>','Motivos');"><i class="fa fa-trash"></i> Eliminar</button>
+																	<button type="button" id="btnEdit<?php echo $row_Consulta['ID']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Consulta['ID']; ?>','Consulta');"><i class="fa fa-pencil"></i> Editar</button>
+																	<button type="button" id="btnDelete<?php echo $row_Consulta['ID']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Consulta['ID']; ?>','Consulta');"><i class="fa fa-trash"></i> Eliminar</button>
 																</td>
 															</tr>
 															 <?php }?>
 														</tbody>
 													</table>
 												</div>
-											</div>
-										</div>
-										<!-- Fin, ibox motivos -->
+											<</div> <!-- ibox-content -->
+										</div> <!-- ibox -->
 									</form>
 								</div>
-								<!-- Fin, lista motivo autorización -->
-							</div>
-						 </div>
+								<!-- Fin, lista Consultas -->
+
+								<!-- Inicio, lista Entradas -->
+								<div id="tab-3" class="tab-pane <?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Entrada")) ? "active" : ""; ?>">
+									<form class="form-horizontal">
+										<div class="ibox" id="Entrada">
+											<div class="ibox-title bg-success">
+												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista de Entradas SAP B1</h5>
+												 <a class="collapse-link pull-right">
+													<i class="fa fa-chevron-up"></i>
+												</a>
+											</div>
+											<div class="ibox-content">
+												<div class="row m-b-md">
+													<div class="col-lg-12">
+														<button class="btn btn-primary pull-right" type="button" onClick="CrearCampo('Entrada');"><i class="fa fa-plus-circle"></i> Agregar nueva</button>
+													</div>
+												</div>
+												<div class="table-responsive">
+													<table class="table table-striped table-bordered table-hover dataTables-example">
+														<thead>
+															<tr>
+																<th>Categoría</th>
+																<th>Procedimiento (Consulta)</th>
+																<th>Parámetros de Entrada</th>
+																<th>Perfiles</th>
+																<th>Comentarios</th>
+																<th>Fecha Actualizacion</th>
+																<th>Usuario Actualizacion</th>
+																<th>Estado</th>
+																<th>Acciones</th>
+															</tr>
+														</thead>
+														<tbody>
+															 <?php while ($row_Entrada = sqlsrv_fetch_array($SQL_Entradas)) {?>
+															<tr>
+																<td><?php echo $row_Entrada['Categoria']; ?></td>
+																<td><?php echo $row_Entrada['ProcedimientoEntrada']; ?></td>
+																<td><?php echo $row_Entrada['ParametrosEntrada']; ?></td>
+
+																<td>
+																	<?php sqlsrv_fetch($SQL_Perfiles, SQLSRV_SCROLL_ABSOLUTE, -1);?>
+																	<?php $ids_perfiles = explode(";", $row_Entrada['Perfiles']);?>
+
+																	<?php echo ($row_Entrada['Perfiles'] == "") ? "(Todos)" : ""; ?>
+
+																	<?php while ($row_Perfil = sqlsrv_fetch_array($SQL_Perfiles)) {?>
+																		<?php if (in_array($row_Perfil['ID_PerfilUsuario'], $ids_perfiles)) {?>
+																			<div style="margin: 10px !important;">
+																				<p class="label label-secondary"><?php echo $row_Perfil['PerfilUsuario']; ?></p>
+																			</div>
+																		<?php }?>
+																	<?php }?>
+																</td>
+
+																<td><?php echo $row_Entrada['Comentarios']; ?></td>
+
+																<td><?php echo isset($row_Entrada['fecha_actualizacion']) ? date_format($row_Entrada['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
+																<td><?php echo $row_Entrada['usuario_actualizacion']; ?></td>
+																<td>
+																	<span class="label <?php echo ($row_Entrada['Estado'] == "Y") ? "label-info" : "label-danger"; ?>">
+																		<?php echo ($row_Entrada['Estado'] == "Y") ? "Activo" : "Inactivo"; ?>
+																	</span>
+																</td>
+																<td>
+																	<button type="button" id="btnEdit<?php echo $row_Entrada['ID']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Entrada['ID']; ?>','Entrada');"><i class="fa fa-pencil"></i> Editar</button>
+																	<button type="button" id="btnDelete<?php echo $row_Entrada['ID']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Entrada['ID']; ?>','Entrada');"><i class="fa fa-trash"></i> Eliminar</button>
+																</td>
+															</tr>
+															 <?php }?>
+														</tbody>
+													</table>
+												</div>
+											<</div> <!-- ibox-content -->
+										</div> <!-- ibox -->
+									</form>
+								</div>
+								<!-- Fin, lista Entradas -->
+
+							</div> <!-- tab-content -->
+						</div> <!-- tabs-container -->
 					</div>
           		</div>
 			 </div>
@@ -501,7 +581,7 @@ function EliminarCampo(id, doc){
 				async: false,
 				success: function(data){
 					// console.log(data);
-					location.href = "parametros_consultas_sap.php?a=<?php echo base64_encode("OK_PRDel"); ?>";
+					location.href = `parametros_consultas_sap.php?doc=${doc}&a=<?php echo base64_encode("OK_PRDel"); ?>`;
 				},
 				error: function(error) {
 					console.error("consulta erronea");
