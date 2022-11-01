@@ -28,6 +28,16 @@ if (isset($_GET['type'])) {
     }
 
     $SQL_TablaConsulta = EjecutarSP($ProcedimientoConsulta, $ProcedimientoEntradas);
+
+    $Consultas = array();
+    while ($row_Consulta = sqlsrv_fetch_array($SQL_TablaConsulta)) {
+        array_push($Consultas, $row_Consulta);
+    }
+
+    $TitulosConsulta = array();
+    foreach ($Consultas[0] as $key => $value) {
+        (is_numeric($key)) ? null : array_push($TitulosConsulta, $key);
+    }
 }
 ?>
 
@@ -43,6 +53,13 @@ if (isset($_GET['type'])) {
 		<?php echo $row['EtiquetaConsulta']; ?>
 	</title>
 	<!-- InstanceEndEditable -->
+
+	<style>
+		.form-group {
+			margin-left: 0 !important;
+			margin-right: 0 !important;
+		}
+	</style>
 
 	<!-- InstanceBeginEditable name="head" -->
 	<!-- InstanceEndEditable -->
@@ -108,7 +125,7 @@ if (isset($_GET['type'])) {
 											<label class="control-label"><?php echo $row_Entrada['EtiquetaEntrada']; ?> <?php if ($row_Entrada['Obligatorio'] == "Y") {?><span class="text-danger">*</span><?php }?></label>
 
 											<div class="input-group date">
-												<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input type="text" class="form-control" id="<?php echo $row_Entrada['ParametroEntrada']; ?>" name="<?php echo $row_Entrada['ParametroEntrada']; ?>" <?php if ($row_Entrada['Obligatorio'] == "Y") {?>required="required"<?php }?> value="<?php echo date('Y-m-d'); ?>">
+												<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input type="text" class="form-control" id="<?php echo $row_Entrada['ParametroEntrada']; ?>" name="<?php echo $row_Entrada['ParametroEntrada']; ?>" <?php if ($row_Entrada['Obligatorio'] == "Y") {?>required="required"<?php }?> value="<?php echo isset($_GET[$row_Entrada['ParametroEntrada']]) ? $_GET[$row_Entrada['ParametroEntrada']] : date('Y-m-d'); ?>">
 											</div>
 										</div>
 									<?php } elseif ($row_Entrada['TipoCampo'] == "Cliente") {?>
@@ -181,9 +198,53 @@ if (isset($_GET['type'])) {
 								<input type="hidden" name="id" id="id" value="<?php echo $_GET['id']; ?>">
 								<input type="hidden" name="type" id="type" value="<?php echo base64_encode('1'); ?>">
 							</form>
+
+							<?php if (isset($_GET['type'])) {?>
+								<div class="form-group">
+									<div class="col-lg-12">
+										<a href="exportar_excel.php?exp=10&Cons=<?php echo base64_encode(implode(",", $ProcedimientoEntradas)); ?>&sp=<?php echo base64_encode($ProcedimientoConsulta); ?>">
+											<img src="css/exp_excel.png" width="50" height="30" alt="Exportar a Excel" title="Exportar a Excel"/>
+										</a>
+									</div>
+								</div>
+							<?php }?>
 						</div> <!-- ibox-content -->
 					</div> <!-- col-lg-12 -->
 				</div> <!-- row -->
+
+				<?php if (isset($_GET['type'])) {?>
+
+					<div class="row">
+						<div class="col-lg-12">
+							<div class="ibox-content">
+								<?php include "includes/spinner.php";?>
+
+								<div class="table-responsive">
+									<table class="table table-striped table-bordered table-hover dataTables-example" id="example">
+										<thead>
+											<tr>
+												<?php foreach ($TitulosConsulta as &$TituloConsulta) {?>
+													<?php echo "<th>" . $TituloConsulta . "</th>"; ?>
+												<?php }?>
+											</tr>
+										</thead>
+										<tbody>
+											<?php foreach ($Consultas as &$Consulta) {?>
+												<tr class="gradeX tooltip-demo">
+													<?php foreach ($TitulosConsulta as &$TituloConsulta) {?>
+														<td>
+															<?php echo is_a($Consulta[$TituloConsulta], 'DateTime') ? $Consulta[$TituloConsulta]->format('Y-m-d H:i:s') : $Consulta[$TituloConsulta]; ?>
+														</td>
+													<?php }?>
+												</tr>
+											<?php }?>
+										</tbody>
+									</table>
+								</div> <!-- table -->
+							</div> <!-- ibox-content -->
+						</div> <!-- col-lg-12 -->
+					</div> <!-- row -->
+				<?php }?>
 			</div> <!-- wrapper-content -->
 
 			<!-- InstanceEndEditable -->
@@ -219,6 +280,37 @@ if (isset($_GET['type'])) {
 				checkboxClass: 'icheckbox_square-green',
 				radioClass: 'iradio_square-green',
 			});
+
+			$('.dataTables-example').DataTable({
+                pageLength: 25,
+                dom: '<"html5buttons"B>lTfgitp',
+				order: [[ 0, "desc" ]],
+				language: {
+					"decimal":        "",
+					"emptyTable":     "No se encontraron resultados.",
+					"info":           "Mostrando _START_ - _END_ de _TOTAL_ registros",
+					"infoEmpty":      "Mostrando 0 - 0 de 0 registros",
+					"infoFiltered":   "(filtrando de _MAX_ registros)",
+					"infoPostFix":    "",
+					"thousands":      ",",
+					"lengthMenu":     "Mostrar _MENU_ registros",
+					"loadingRecords": "Cargando...",
+					"processing":     "Procesando...",
+					"search":         "Filtrar:",
+					"zeroRecords":    "Ningún registro encontrado",
+					"paginate": {
+						"first":      "Primero",
+						"last":       "Último",
+						"next":       "Siguiente",
+						"previous":   "Anterior"
+					},
+					"aria": {
+						"sortAscending":  ": Activar para ordenar la columna ascendente",
+						"sortDescending": ": Activar para ordenar la columna descendente"
+					}
+				},
+                buttons: []
+            });
 
 			/*
 			// Inicio, parametrización de clientes y sucursales.
