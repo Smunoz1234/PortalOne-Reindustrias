@@ -85,6 +85,7 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
                 $ID,
                 "'" . $_POST['ID_Categoria'] . "'",
                 "'" . $_POST['ProcedimientoConsulta'] . "'",
+                "'" . $_POST['EtiquetaConsulta'] . "'",
                 "'" . $_POST['ParametrosEntrada'] . "'",
                 $Perfiles,
                 "'" . $_POST['Comentarios'] . "'",
@@ -314,7 +315,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 														<tbody>
 															 <?php while ($row_Categoria = sqlsrv_fetch_array($SQL_Categorias)) {?>
 															<tr>
-																<td><?php echo $row_Categoria['CategoriaPadre']; ?></td>
+																<td><?php echo ($row_Categoria['CategoriaPadre'] == "") ? "[Raíz]" : $row_Categoria['CategoriaPadre']; ?></td>
 																<td><?php echo $row_Categoria['NombreCategoria']; ?></td>
 
 																<td>
@@ -378,6 +379,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 															<tr>
 																<th>Categoría</th>
 																<th>Procedimiento (Consulta)</th>
+																<th>Etiqueta</th>
 																<th>Parámetros de Entrada</th>
 																<th>Perfiles</th>
 																<th>Comentarios</th>
@@ -392,6 +394,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 															<tr>
 																<td><?php echo $row_Consulta['Categoria']; ?></td>
 																<td><?php echo $row_Consulta['ProcedimientoConsulta']; ?></td>
+																<td><?php echo $row_Consulta['EtiquetaConsulta']; ?></td>
 																<td><?php echo $row_Consulta['ParametrosEntrada']; ?></td>
 
 																<td>
@@ -456,8 +459,10 @@ if (isset($sw_error) && ($sw_error == 1)) {
 																<th>Consulta SAP B1</th>
 																<th>Parámetro de Entrada</th>
 																<th>Etiqueta</th>
-																<th>Obligatorio</th>
 																<th>Tipo de Campo</th>
+																<th>Vista de referencia</th>
+																<th>Obligatorio</th>
+																<th>Multiple</th>
 																<th>Comentarios</th>
 																<th>Fecha Actualizacion</th>
 																<th>Usuario Actualizacion</th>
@@ -472,9 +477,12 @@ if (isset($sw_error) && ($sw_error == 1)) {
 																<td><?php echo $row_Entrada['ParametroEntrada']; ?></td>
 																<td><?php echo $row_Entrada['EtiquetaEntrada']; ?></td>
 
-																<td><?php echo ($row_Entrada['Obligatorio'] == "Y") ? "SI" : "NO"; ?></td>
-
 																<td><?php echo $row_Entrada['TipoCampo']; ?></td>
+																<td><?php echo !isset($row_Entrada['VistaLista']) ? "(Ninguna)" : $row_Entrada['VistaLista'] . "(" . $row_Entrada['ValorLista'] . ", " . $row_Entrada['EtiquetaLista'] . ")"; ?></td>
+
+																<td><?php echo ($row_Entrada['Obligatorio'] == "Y") ? "SI" : "NO"; ?></td>
+																<td><?php // echo ($row_Entrada['Multiple'] == "Y") ? "SI" : "NO"; ?></td>
+
 																<td><?php echo $row_Entrada['Comentarios']; ?></td>
 
 																<td><?php echo isset($row_Entrada['fecha_actualizacion']) ? date_format($row_Entrada['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
@@ -577,7 +585,7 @@ function EditarCampo(id, doc){
 
 	$.ajax({
 		type: "POST",
-		url: "md_autorizaciones_documentos.php",
+		url: "md_parametros_consultas_sap.php",
 		data:{
 			doc:doc,
 			id:id,

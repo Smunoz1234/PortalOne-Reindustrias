@@ -26,18 +26,6 @@ if (isset($_GET['type'])) {
 
         array_push($ProcedimientoEntradas, $ParametroEntrada);
     }
-
-    $SQL_TablaConsulta = EjecutarSP($ProcedimientoConsulta, $ProcedimientoEntradas);
-
-    $Consultas = array();
-    while ($row_Consulta = sqlsrv_fetch_array($SQL_TablaConsulta)) {
-        array_push($Consultas, $row_Consulta);
-    }
-
-    $TitulosConsulta = array();
-    foreach ($Consultas[0] as $key => $value) {
-        (is_numeric($key)) ? null : array_push($TitulosConsulta, $key);
-    }
 }
 ?>
 
@@ -214,6 +202,16 @@ if (isset($_GET['type'])) {
 
 				<?php if (isset($_GET['type'])) {?>
 
+					<!-- Inicio, obtener TitulosConsulta -->
+					<?php $SQL_TablaConsulta = EjecutarSP($ProcedimientoConsulta, $ProcedimientoEntradas);?>
+    				<?php $row_Consulta = sqlsrv_fetch_array($SQL_TablaConsulta);?>
+
+					<?php $TitulosConsulta = array();?>
+					<?php foreach ($row_Consulta as $key => $value) {?>
+						<?php (is_numeric($key)) ? null : array_push($TitulosConsulta, $key);?>
+					<?php }?>
+					<!-- Fin, obtener TitulosConsulta -->
+
 					<div class="row">
 						<div class="col-lg-12">
 							<div class="ibox-content">
@@ -229,15 +227,15 @@ if (isset($_GET['type'])) {
 											</tr>
 										</thead>
 										<tbody>
-											<?php foreach ($Consultas as &$Consulta) {?>
+											<?php do {?>
 												<tr class="gradeX tooltip-demo">
 													<?php foreach ($TitulosConsulta as &$TituloConsulta) {?>
 														<td>
-															<?php echo is_a($Consulta[$TituloConsulta], 'DateTime') ? $Consulta[$TituloConsulta]->format('Y-m-d H:i:s') : $Consulta[$TituloConsulta]; ?>
+															<?php echo is_a($row_Consulta[$TituloConsulta], 'DateTime') ? $row_Consulta[$TituloConsulta]->format('Y-m-d H:i:s') : $row_Consulta[$TituloConsulta]; ?>
 														</td>
 													<?php }?>
 												</tr>
-											<?php }?>
+											<?php } while ($row_Consulta = sqlsrv_fetch_array($SQL_TablaConsulta));?>
 										</tbody>
 									</table>
 								</div> <!-- table -->

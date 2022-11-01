@@ -80,7 +80,7 @@ if ($edit == 1 && $id != "") {
 					<div class="col-md-12">
 						<label class="control-label">Categoria Padre</label>
 						<select name="ID_CategoriaPadre" class="form-control select2" id="ID_CategoriaPadre">
-							<option value="">Seleccione...</option>
+							<option value="">[Raíz]</option>
 							<?php while ($row_CategoriaModal = sqlsrv_fetch_array($SQL_CategoriasModal)) {?>
 								<option value="<?php echo $row_CategoriaModal['ID']; ?>" <?php if ((isset($row['ID_CategoriaPadre'])) && (strcmp($row_CategoriaModal['ID'], $row['ID_CategoriaPadre']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_CategoriaModal['NombreCategoria']; ?></option>
 							<?php }?>
@@ -118,9 +118,9 @@ if ($edit == 1 && $id != "") {
 				<!-- Inicio Consulta -->
 				<div class="form-group">
 					<div class="col-md-6">
-						<label class="control-label">Categoria</label>
-						<select name="ID_Categoria" class="form-control select2" id="ID_Categoria">
-							<option value="">Seleccione...</option>
+						<label class="control-label">Categoria <span class="text-danger">*</span></label>
+						<select name="ID_Categoria" class="form-control select2" id="ID_Categoria" required>
+							<option value="" disabled selected>Seleccione...</option>
 							<?php while ($row_CategoriaModal = sqlsrv_fetch_array($SQL_CategoriasModal)) {?>
 								<option value="<?php echo $row_CategoriaModal['ID']; ?>" <?php if ((isset($row['ID_Categoria'])) && (strcmp($row_CategoriaModal['ID'], $row['ID_Categoria']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_CategoriaModal['NombreCategoria']; ?></option>
 							<?php }?>
@@ -137,9 +137,14 @@ if ($edit == 1 && $id != "") {
 
 				<br><br><br><br>
 				<div class="form-group">
-					<div class="col-md-12">
+					<div class="col-md-6">
 						<label class="control-label">Procedimiento <span class="text-danger">*</span></label>
 						<input type="text" class="form-control" autocomplete="off" required name="ProcedimientoConsulta" id="ProcedimientoConsulta" value="<?php if ($edit == 1) {echo $row['ProcedimientoConsulta'];}?>">
+					</div>
+
+					<div class="col-md-6">
+						<label class="control-label">Etiqueta <span class="text-danger">*</span></label>
+						<input type="text" class="form-control" autocomplete="off" name="EtiquetaConsulta" id="EtiquetaConsulta" value="<?php if ($edit == 1) {echo $row['EtiquetaConsulta'];}?>">
 					</div>
 				</div>
 
@@ -180,13 +185,21 @@ if ($edit == 1 && $id != "") {
 
 				<!-- Inicio Entrada -->
 				<div class="form-group">
-					<div class="col-md-12">
+					<div class="col-md-6">
 						<label class="control-label">Consulta <span class="text-danger">*</span></label>
 						<select name="ID_Consulta" class="form-control select2" id="ID_Consulta" required>
 							<option value="" disabled selected>Seleccione...</option>
 							<?php while ($row_ConsultaModal = sqlsrv_fetch_array($SQL_ConsultasModal)) {?>
 								<option value="<?php echo $row_ConsultaModal['ID']; ?>" <?php if ((isset($row['ID_Consulta'])) && (strcmp($row_ConsultaModal['ID'], $row['ID_Consulta']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_ConsultaModal['ProcedimientoConsulta']; ?></option>
 							<?php }?>
+						</select>
+					</div>
+
+					<div class="col-md-6">
+						<label class="control-label">Estado <span class="text-danger">*</span></label>
+						<select class="form-control" id="Estado" name="Estado" required>
+							<option value="Y" <?php if (($edit == 1) && ($row['Estado'] == "Y")) {echo "selected=\"selected\"";}?>>ACTIVO</option>
+							<option value="N" <?php if (($edit == 1) && ($row['Estado'] == "N")) {echo "selected=\"selected\"";}?>>INACTIVO</option>
 						</select>
 					</div>
 				</div>
@@ -202,8 +215,25 @@ if ($edit == 1 && $id != "") {
 					</div>
 
 					<div class="col-md-6">
-						<label class="control-label">Etiqueta</label>
-						<input type="text" class="form-control" autocomplete="off" name="EtiquetaEntrada" id="EtiquetaEntrada" value="<?php if ($edit == 1) {echo $row['EtiquetaEntrada'];}?>">
+						<label class="control-label">Etiqueta <span class="text-danger">*</span></label>
+						<input type="text" class="form-control" autocomplete="off" required name="EtiquetaEntrada" id="EtiquetaEntrada" value="<?php if ($edit == 1) {echo $row['EtiquetaEntrada'];}?>">
+					</div>
+				</div>
+
+				<br><br><br><br>
+				<div class="form-group">
+					<div class="col-md-12">
+						<label class="control-label">Tipo de campo <span class="text-danger">*</span></label>
+						<select class="form-control" name="TipoCampo" id="TipoCampo" required>
+							<option value="Texto" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Texto')) {echo "selected=\"selected\"";}?>>Texto</option>
+							<option value="Comentario" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Comentario')) {echo "selected=\"selected\"";}?>>Comentario</option>
+							<option value="Fecha" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Fecha')) {echo "selected=\"selected\"";}?>>Fecha</option>
+							<option value="Cliente" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Cliente')) {echo "selected=\"selected\"";}?>>Cliente (Lista)</option>
+							<option value="Sucursal" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Sucursal')) {echo "selected=\"selected\"";}?>>Sucursal (Dependiendo del cliente)</option>
+							<option value="Seleccion" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Seleccion')) {echo "selected=\"selected\"";}?>>Selección (SI/NO)</option>
+							<option value="Lista" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Lista')) {echo "selected=\"selected\"";}?>>Lista (Personalizada)</option>
+							<option value="Usuario" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Usuario')) {echo "selected=\"selected\"";}?>>Usuario</option>
+						</select>
 					</div>
 				</div>
 
@@ -218,27 +248,10 @@ if ($edit == 1 && $id != "") {
 					</div>
 
 					<div class="col-md-6">
-						<label class="control-label">Estado <span class="text-danger">*</span></label>
-						<select class="form-control" id="Estado" name="Estado" required>
-							<option value="Y" <?php if (($edit == 1) && ($row['Estado'] == "Y")) {echo "selected=\"selected\"";}?>>ACTIVO</option>
-							<option value="N" <?php if (($edit == 1) && ($row['Estado'] == "N")) {echo "selected=\"selected\"";}?>>INACTIVO</option>
-						</select>
-					</div>
-				</div>
-
-				<br><br><br><br>
-				<div class="form-group">
-					<div class="col-md-12">
-						<label class="control-label">Tipo de campo <span class="text-danger">*</span></label>
-						<select class="form-control" name="TipoCampo" id="TipoCampo" required>
-							<option value="Texto" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Texto')) {echo "selected=\"selected\"";}?>>Texto</option>
-							<option value="Comentario" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Comentario')) {echo "selected=\"selected\"";}?>>Comentario</option>
-							<option value="Fecha" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Fecha')) {echo "selected=\"selected\"";}?>>Fecha</option>
-							<option value="Cliente" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Cliente')) {echo "selected=\"selected\"";}?>>Cliente (Lista)</option>
-							<option value="Sucursal" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Sucursal')) {echo "selected=\"selected\"";}?>>Sucursal (Dependiendo del cliente)</option>
-							<option value="Seleccion" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Seleccion')) {echo "selected=\"selected\"";}?>>Selección (Checkbox)</option>
-							<option value="Lista" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Lista')) {echo "selected=\"selected\"";}?>>Lista (Personalizada)</option>
-							<option value="Usuario" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Usuario')) {echo "selected=\"selected\"";}?>>Usuario</option>
+						<label class="control-label">Multiple <span class="text-danger">*</span></label>
+						<select class="form-control" id="Multiple" name="Multiple" disabled>
+							<option value="N" <?php if (($edit == 1) && ($row['Multiple'] == "N")) {echo "selected=\"selected\"";}?>>NO</option>
+							<option value="Y" <?php if (($edit == 1) && ($row['Multiple'] == "Y")) {echo "selected=\"selected\"";}?>>SI</option>
 						</select>
 					</div>
 				</div>
@@ -271,7 +284,7 @@ if ($edit == 1 && $id != "") {
 </form>
 
 <script>
-$(document).ready(function(){
+$(document).ready(function() {
 	// Activación del componente "tagsinput"
 	$('input[data-role=tagsinput]').tagsinput({
 		confirmKeys: [32, 44] // Espacio y coma.
@@ -311,12 +324,16 @@ $(document).ready(function(){
 	$("#ID_Consulta").on("change", function() {
 		$.ajax({
 			type: "POST",
-			url: `ajx_cbo_select.php?type=44&id=${$(this).val()}`,
+			url: `ajx_cbo_select.php?type=44&id=${$(this).val()}&input=<?php echo $row['ParametroEntrada'] ?? ""; ?>`,
 			success: function(response){
 				$('#ParametroEntrada').html(response).fadeIn();
 				$('#ParametroEntrada').trigger('change');
 			}
 		});
 	});
+
+	<?php if (($edit == 1) && ($id != "")) {?>
+		$('#ID_Consulta').trigger('change');
+	<?php }?>
  });
 </script>
