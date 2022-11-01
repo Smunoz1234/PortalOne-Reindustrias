@@ -13,6 +13,22 @@ $SQL_Entradas = Seleccionar("tbl_ConsultasSAPB1_Entradas", "*", "ID_Consulta = '
 
 // DenegarAcceso();
 // $Num_Campos = sqlsrv_num_rows($SQL_Campos);
+
+if (isset($_GET['type'])) {
+    $ProcedimientoConsulta = $row['ProcedimientoConsulta'];
+
+    $SQL_ProcedimientoEntradas = Seleccionar("tbl_ConsultasSAPB1_Entradas", "*", "ID_Consulta = '$id'");
+
+    $ProcedimientoEntradas = array();
+    while ($row_ProcedimientoEntrada = sqlsrv_fetch_array($SQL_ProcedimientoEntradas)) {
+        $ParametroEntrada = $row_ProcedimientoEntrada['ParametroEntrada'];
+        $ParametroEntrada = "'" . $_GET[$ParametroEntrada] . "'";
+
+        array_push($ProcedimientoEntradas, $ParametroEntrada);
+    }
+
+    $SQL_TablaConsulta = EjecutarSP($ProcedimientoConsulta, $ProcedimientoEntradas);
+}
 ?>
 
 <!DOCTYPE html>
@@ -65,199 +81,200 @@ $SQL_Entradas = Seleccionar("tbl_ConsultasSAPB1_Entradas", "*", "ID_Consulta = '
 						<div class="ibox-content">
 							<?php include "includes/spinner.php";?>
 
-							<form action="consultas_sap.php" method="post" id="formInforme" class="form-horizontal">
-							<div class="form-group">
-								<label class="col-lg-12"><h3 class="bg-success p-xs b-r-sm"><i class="fa fa-check-square-o"></i> Críterios de selección</h3></label>
-							</div>
-							<?php while ($row_Entrada = sqlsrv_fetch_array($SQL_Entradas)) {?>
-        						<?php if ($row_Entrada['TipoCampo'] == "Texto") {?>
-									<div class="form-group">
-										<label class="col-lg-2 control-label"><?php echo $row_Entrada['EtiquetaEntrada']; ?> <?php if ($row_Entrada['Obligatorio'] == "Y") {?><span class="text-danger">*</span><?php }?></label>
+							<form action="consultas_sap.php" method="get" id="formInforme" class="form-horizontal">
+								<div class="form-group">
+									<label class="col-lg-12"><h3 class="bg-success p-xs b-r-sm"><i class="fa fa-check-square-o"></i> Críterios de selección</h3></label>
+								</div>
+
+								<?php $filas = 0;?>
+								<?php while ($row_Entrada = sqlsrv_fetch_array($SQL_Entradas)) {?>
+									<?php if ($filas == 0) {echo '<div class="form-group">';}?>
+									<?php $filas++;?>
+
+									<?php if ($row_Entrada['TipoCampo'] == "Texto") {?>
 										<div class="col-lg-4">
+											<label class="control-label"><?php echo $row_Entrada['EtiquetaEntrada']; ?> <?php if ($row_Entrada['Obligatorio'] == "Y") {?><span class="text-danger">*</span><?php }?></label>
+
 											<input name="<?php echo $row_Entrada['ParametroEntrada']; ?>" id="<?php echo $row_Entrada['ParametroEntrada']; ?>" type="text" class="form-control" <?php if ($row_Entrada['Obligatorio'] == "Y") {?>required="required"<?php }?>>
 										</div>
-									</div>
-								<?php } elseif ($row_Entrada['TipoCampo'] == "Comentario") {?>
-									<div class="form-group">
-										<label class="col-lg-2 control-label"><?php echo $row_Entrada['EtiquetaEntrada']; ?> <?php if ($row_Entrada['Obligatorio'] == "Y") {?><span class="text-danger">*</span><?php }?></label>
+									<?php } elseif ($row_Entrada['TipoCampo'] == "Comentario") {?>
 										<div class="col-lg-4">
-											<textarea name="<?php echo $row_Entrada['NombreCampo']; ?>" maxlength="1000" rows="5" <?php if ($row_Entrada['Obligatorio'] == "Y") {?>required="required"<?php }?> class="form-control" id="<?php echo $row_Entrada['NombreCampo']; ?>" type="text"></textarea>
+											<label class="control-label"><?php echo $row_Entrada['EtiquetaEntrada']; ?> <?php if ($row_Entrada['Obligatorio'] == "Y") {?><span class="text-danger">*</span><?php }?></label>
+
+											<textarea class="form-control"  type="text" rows="5" name="<?php echo $row_Entrada['ParametroEntrada']; ?>" id="<?php echo $row_Entrada['ParametroEntrada']; ?>" <?php if ($row_Entrada['Obligatorio'] == "Y") {?>required="required"<?php }?>></textarea>
 										</div>
-									</div>
-							<?php } elseif ($row_Entrada['TipoCampo'] == "Fecha") {?>
-									<div class="form-group">
-										<label class="col-lg-2 control-label"><?php echo $row_Entrada['EtiquetaEntrada']; ?> <?php if ($row_Entrada['Obligatorio'] == "Y") {?><span class="text-danger">*</span><?php }?></label>
-										<div class="col-lg-2 input-group date">
-											<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="<?php echo $row_Entrada['NombreCampo']; ?>" type="text" <?php if ($row_Entrada['Obligatorio'] == "Y") {?>required="required"<?php }?> class="form-control" id="<?php echo $row_Entrada['NombreCampo']; ?>" value="<?php echo date('Y-m-d'); ?>">
+									<?php } elseif ($row_Entrada['TipoCampo'] == "Fecha") {?>
+										<div class="col-lg-4 input-group date">
+											<label class="control-label"><?php echo $row_Entrada['EtiquetaEntrada']; ?> <?php if ($row_Entrada['Obligatorio'] == "Y") {?><span class="text-danger">*</span><?php }?></label>
+
+											<div class="input-group date">
+												<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input type="text" class="form-control" id="<?php echo $row_Entrada['ParametroEntrada']; ?>" name="<?php echo $row_Entrada['ParametroEntrada']; ?>" <?php if ($row_Entrada['Obligatorio'] == "Y") {?>required="required"<?php }?> value="<?php echo date('Y-m-d'); ?>">
+											</div>
 										</div>
-									</div>
-							<?php } elseif ($row_Entrada['TipoCampo'] == "Cliente") {?>
-									<div class="form-group">
-										<label class="col-lg-2 control-label"><?php echo $row_Entrada['EtiquetaEntrada']; ?> <?php if ($row_Entrada['Obligatorio'] == "Y") {?><span class="text-danger">*</span><?php }?></label>
-										<div class="col-lg-5">
-											<input name="<?php echo $row_Entrada['NombreCampo']; ?>" type="hidden" id="<?php echo $row_Entrada['NombreCampo']; ?>" value="">
-											<input name="srcNombreCliente" type="text" class="form-control" id="srcNombreCliente" placeholder="<?php if ($row_Entrada['Obligatorio'] == "Y") {?>Digite para buscar...<?php } else {?>Digite para buscar... (Para TODOS, dejar vacio)<?php }?>" <?php if ($row_Entrada['Obligatorio'] == "Y") {?>required="required"<?php }?>>
-										</div>
-									</div>
-							<?php } elseif ($row_Entrada['TipoCampo'] == "Sucursal") {?>
-									<div class="form-group">
-										<label class="col-lg-2 control-label"><?php echo $row_Entrada['EtiquetaEntrada']; ?> <?php if ($row_Entrada['Obligatorio'] == "Y") {?><span class="text-danger">*</span><?php }?></label>
+									<?php } elseif ($row_Entrada['TipoCampo'] == "Cliente") {?>
 										<div class="col-lg-4">
-											<select <?php if ($row_Entrada['Multiple'] == 1) {?>data-placeholder="Seleccione..."<?php }?> id="<?php echo $row_Entrada['NombreCampo']; ?>" name="<?php if ($row_Entrada['Multiple'] == 1) {echo $row_Entrada['NombreCampo'] . "[]";} else {echo $row_Entrada['NombreCampo'];}?>" class="form-control select2" <?php if ($row_Entrada['Obligatorio'] == "Y") {?>required="required"<?php }?> <?php if ($row_Entrada['Multiple'] == 1) {?>multiple="multiple"<?php }?>>
+											<label class="control-label"><?php echo $row_Entrada['EtiquetaEntrada']; ?> <?php if ($row_Entrada['Obligatorio'] == "Y") {?><span class="text-danger">*</span><?php }?></label>
+
+											<input type="hidden" name="<?php echo $row_Entrada['ParametroEntrada']; ?>" id="<?php echo $row_Entrada['ParametroEntrada']; ?>" value="">
+											<input type="text" class="form-control" name="srcNombreCliente" id="srcNombreCliente" placeholder="<?php if ($row_Entrada['Obligatorio'] == "Y") {?>Digite para buscar...<?php } else {?>Digite para buscar... (Para TODOS, dejar vacio)<?php }?>" <?php if ($row_Entrada['Obligatorio'] == "Y") {?>required="required"<?php }?>>
+										</div>
+									<?php } elseif ($row_Entrada['TipoCampo'] == "Sucursal") {?>
+										<?php $row_Entrada['Multiple'] = 0;?> <!-- Faltante -->
+
+										<div class="col-lg-4">
+											<label class="control-label"><?php echo $row_Entrada['EtiquetaEntrada']; ?> <?php if ($row_Entrada['Obligatorio'] == "Y") {?><span class="text-danger">*</span><?php }?></label>
+
+											<select class="form-control select2" id="<?php echo $row_Entrada['ParametroEntrada']; ?>" name="<?php echo $row_Entrada['ParametroEntrada'] . (($row_Entrada['Multiple'] == 1) ? "[]" : ""); ?>" <?php if ($row_Entrada['Multiple'] == 1) {?>multiple="multiple" data-placeholder="Seleccione..."<?php }?> <?php if ($row_Entrada['Obligatorio'] == "Y") {?>required="required"<?php }?>>
 												<?php if ($row_Entrada['Multiple'] == 0) {?><option value="">(Todos)</option><?php }?>
 											</select>
 										</div>
-									</div>
-							<?php } elseif ($row_Entrada['TipoCampo'] == "Seleccion") {?>
-									<div class="form-group">
-										<label class="col-lg-2 control-label"><?php echo $row_Entrada['EtiquetaEntrada']; ?> <?php if ($row_Entrada['Obligatorio'] == "Y") {?><span class="text-danger">*</span><?php }?></label>
+									<?php } elseif ($row_Entrada['TipoCampo'] == "Seleccion") {?>
 										<div class="col-lg-4">
-											<label class="checkbox-inline i-checks"><input name="<?php echo $row_Entrada['NombreCampo']; ?>" id="<?php echo $row_Entrada['NombreCampo']; ?>" type="checkbox" value="1" <?php if ($row_Entrada['Obligatorio'] == "Y") {?>required="required"<?php }?>> <?php echo $row_Entrada['NombreCheckbox']; ?></label>
-										</div>
-									</div>
-							<?php } elseif ($row_Entrada['TipoCampo'] == "Lista") {
-    $Cmp_List = $row_Entrada['EtiquetaList'] . ", " . $row_Entrada['ValorList'];
-    $SQL_List = Seleccionar($row_Entrada['VistaList'], $Cmp_List, '');?>
-									<div class="form-group">
-										<label class="col-lg-2 control-label"><?php echo $row_Entrada['EtiquetaEntrada']; ?> <?php if ($row_Entrada['Obligatorio'] == "Y") {?><span class="text-danger">*</span><?php }?></label>
-										<div class="col-lg-4">
-											<select <?php if ($row_Entrada['Multiple'] == 1) {?>data-placeholder="Seleccione..."<?php }?> id="<?php echo $row_Entrada['NombreCampo']; ?>" name="<?php if ($row_Entrada['Multiple'] == 1) {echo $row_Entrada['NombreCampo'] . "[]";} else {echo $row_Entrada['NombreCampo'];}?>" class="form-control select2" <?php if ($row_Entrada['Obligatorio'] == "Y") {?>required="required"<?php }?> <?php if ($row_Entrada['Multiple'] == 1) {?>multiple="multiple"<?php }?>>
-												<?php if ($row_Entrada['TodosList'] == 1 && $row_Entrada['Multiple'] == 0) {?><option value="Todos">(Todos)</option><?php }?>
-												<?php while ($row_List = sqlsrv_fetch_array($SQL_List)) {?>
-														<option value="<?php echo $row_List[$row_Entrada['ValorList']]; ?>"><?php echo $row_List[$row_Entrada['EtiquetaList']]; ?></option>
-												<?php }?>
+											<label class="control-label"><?php echo $row_Entrada['EtiquetaEntrada']; ?> <?php if ($row_Entrada['Obligatorio'] == "Y") {?><span class="text-danger">*</span><?php }?></label>
+
+											<select class="form-control" id="<?php echo $row_Entrada['ParametroEntrada']; ?>" name="<?php echo $row_Entrada['ParametroEntrada']; ?>" <?php if ($row_Entrada['Obligatorio'] == "Y") {?>required="required"<?php }?>>
+												<option value="" selected disabled>Seleccione...</option>
+												<option value="Y">SI</option>
+												<option value="N">NO</option>
 											</select>
 										</div>
-									</div>
-							<?php }?>
-							<?php }?>
-							<?php //if ($Num_Campos > 0) {?>
+									<?php } elseif ($row_Entrada['TipoCampo'] == "Lista") {?>
+										<?php $Cmp_Lista = ($row_Entrada['EtiquetaList'] ?? "") . ", " . ($row_Entrada['ValorList'] ?? "");?>
+										<?php $SQL_Lista = Seleccionar(($row_Entrada['VistaLista'] ?? ""), $Cmp_Lista, '');?>
+
+										<div class="form-group">
+											<div class="col-lg-4">
+												<label class="control-label"><?php echo $row_Entrada['EtiquetaEntrada']; ?> <?php if ($row_Entrada['Obligatorio'] == "Y") {?><span class="text-danger">*</span><?php }?></label>
+
+												<select class="form-control select2" <?php if ($row_Entrada['Multiple'] == 1) {?>data-placeholder="Seleccione..."<?php }?> id="<?php echo $row_Entrada['NombreCampo']; ?>" name="<?php if ($row_Entrada['Multiple'] == 1) {echo $row_Entrada['NombreCampo'] . "[]";} else {echo $row_Entrada['NombreCampo'];}?>" <?php if ($row_Entrada['Obligatorio'] == "Y") {?>required="required"<?php }?> <?php if ($row_Entrada['Multiple'] == 1) {?>multiple="multiple"<?php }?>>
+													<?php if ($row_Entrada['Multiple'] == 0) {?>
+														<option value="" selected disabled>Seleccione...</option>
+													<?php }?>
+
+													<?php while ($row_Lista = sqlsrv_fetch_array($SQL_Lista)) {?>
+														<option value="<?php echo $row_Lista[$row_Entrada['ValorLista']]; ?>"><?php echo $row_Lista[$row_Entrada['EtiquetaLista']]; ?></option>
+													<?php }?>
+												</select>
+											</div>
+										</div>
+									<?php } elseif ($row_Entrada['TipoCampo'] == "Usuario") {?>
+										<div class="col-lg-4">
+											<label class="control-label"><?php echo $row_Entrada['EtiquetaEntrada']; ?> <?php if ($row_Entrada['Obligatorio'] == "Y") {?><span class="text-danger">*</span><?php }?></label>
+
+											<input name="<?php echo $row_Entrada['ParametroEntrada']; ?>" id="<?php echo $row_Entrada['ParametroEntrada']; ?>" type="text" class="form-control" value="<?php echo strtolower($_SESSION['User']); ?>" readonly>
+										</div>
+									<?php }?>
+
+									<?php if ($filas >= 3) {?>
+										</div>
+									<?php $filas = 0;}?>
+
+								<?php }?> <!-- while -->
+
 								<div class="form-group">
-									<div class="col-lg-11">
+									<div class="col-lg-4">
+										<br>
 										<button type="submit" name="submit" id="submit" class="btn btn-success btn-outline pull-right"><i class="fa fa-search"></i> Buscar</button>
 									</div>
-									<div class="col-lg-2">
-										<div id="spinner1" style="display: none;" class="sk-spinner sk-spinner-wave pull-left">
-											<div class="sk-rect1"></div>
-											<div class="sk-rect2"></div>
-											<div class="sk-rect3"></div>
-											<div class="sk-rect4"></div>
-											<div class="sk-rect5"></div>
-										</div>
-									</div>
 								</div>
-							<?php //}?>
+
 								<input type="hidden" name="id" id="id" value="<?php echo $_GET['id']; ?>">
 								<input type="hidden" name="type" id="type" value="<?php echo base64_encode('1'); ?>">
-						</form>
-						</div>
-						</div>
-				</div>
-			</div>
+							</form>
+						</div> <!-- ibox-content -->
+					</div> <!-- col-lg-12 -->
+				</div> <!-- row -->
+			</div> <!-- wrapper-content -->
+
 			<!-- InstanceEndEditable -->
 			<?php include_once "includes/footer.php";?>
 
-		</div>
-	</div>
+		</div> <!-- page-wrapper -->
+	</div> <!-- wrapper -->
+
 	<?php include_once "includes/pie.php";?>
 	<!-- InstanceBeginEditable name="EditRegion4" -->
+
 	<script>
-			$(document).ready(function(){
-				$("#formInforme").validate({
-					submitHandler: function(form){
-						simpleLoad(true);
-						setTimeout(simpleLoad,15000,false);
-						form.submit();
-					}
-				});
-				<?php $SQL_Campos = sqlsrv_query($conexion, $Cons_Campos, array(), array("Scrollable" => 'static'));
-if ($Num_Campos > 0) {
-    while ($row_Entrada = sqlsrv_fetch_array($SQL_Campos)) {
-        if ($row_Entrada['TipoCampo'] == "Fecha") {?>
-								$('#<?php echo $row_Entrada['NombreCampo']; ?>').datepicker({
-									todayBtn: "linked",
-									keyboardNavigation: false,
-									forceParse: false,
-									calendarWeeks: true,
-									autoclose: true,
-									todayHighlight: true,
-									format: 'yyyy-mm-dd'
-								});
-				<?php } elseif ($row_Entrada['TipoCampo'] == "Cliente") {?>
-								$("#srcNombreCliente").change(function(){
-									var NomCliente=document.getElementById("srcNombreCliente");
-									var Cliente=document.getElementById("<?php echo $row_Entrada['NombreCampo']; ?>");
-									if(NomCliente.value==""){
-										Cliente.value="";
-										CargarSucursales('<?php echo $row_Entrada['NombreCampo']; ?>');
-									}
-								});
-								$("#<?php echo $row_Entrada['NombreCampo']; ?>").change(function(){
-									CargarSucursales('<?php echo $row_Entrada['NombreCampo']; ?>');
-								});
-
-								var options = {
-									url: function(phrase) {
-										return "ajx_buscar_datos_json.php?type=7&id="+phrase;
-									},
-
-									getValue: "NombreBuscarCliente",
-									requestDelay: 400,
-									list: {
-										match: {
-											enabled: true
-										},
-										onClickEvent: function() {
-											var value = $("#srcNombreCliente").getSelectedItemData().CodigoCliente;
-											$("#<?php echo $row_Entrada['NombreCampo']; ?>").val(value).trigger("change");
-										}
-									}
-								};
-
-								$("#srcNombreCliente").easyAutocomplete(options);
-
-				<?php
-}
-    }
-}?>
-				$(".select2").select2();
-				$('.i-checks').iCheck({
-					checkboxClass: 'icheckbox_square-green',
-					radioClass: 'iradio_square-green',
-				});
+		$(document).ready(function(){
+			$("#formInforme").validate({
+				submitHandler: function(form){
+					form.submit();
+				}
 			});
-		<?php $SQL_Campos = sqlsrv_query($conexion, $Cons_Campos, array(), array("Scrollable" => 'static'));
-if ($Num_Campos > 0) {
-    while ($row_Entrada = sqlsrv_fetch_array($SQL_Campos)) {
-        if ($row_Entrada['TipoCampo'] == "Sucursal") {?>
-								function CargarSucursales(cmpCliente){
-										var Clt=document.getElementById(''+cmpCliente);
-										$.ajax({
-											type: "POST",
-											url: "ajx_cbo_sucursales_clientes_simple.php?CardCode="+Clt.value+"<?php if ($row_Entrada['Multiple'] == 1) {echo "&todos=0";}?>",
-											success: function(response){
-												$('#<?php echo $row_Entrada['NombreCampo']; ?>').html(response).fadeIn();
-												$('#<?php echo $row_Entrada['NombreCampo']; ?>').val(null).trigger('change');
-											}
-										});
-									}
 
-		<?php }
-    }
-}?>
+			$('.date').datepicker({
+				todayBtn: "linked",
+				keyboardNavigation: false,
+				forceParse: false,
+				calendarWeeks: true,
+				autoclose: true,
+				todayHighlight: true,
+				format: 'yyyy-mm-dd'
+			});
 
-			function simpleLoad(state){
-				var spinner=document.getElementById('spinner1');
-				var boton=document.getElementById("submit");
-				if(state){
-					boton.disabled = true;
-					spinner.style.display='block';
-				}else{
-					boton.disabled = false;
-					spinner.style.display='none';
+			$(".select2").select2();
+
+			$('.i-checks').iCheck({
+				checkboxClass: 'icheckbox_square-green',
+				radioClass: 'iradio_square-green',
+			});
+
+			/*
+			// Inicio, parametrización de clientes y sucursales.
+			$("#srcNombreCliente").change(function(){
+				var NomCliente=document.getElementById("srcNombreCliente");
+				var Cliente=document.getElementById("row_Entrada[NombreCampo]");
+
+				if(NomCliente.value==""){
+					Cliente.value="";
+					CargarSucursales('row_Entrada[NombreCampo]');
+				}
+			});
+
+			$("#row_Entrada[NombreCampo]").change(function(){
+				CargarSucursales('row_Entrada[NombreCampo]');
+			});
+
+			var options = {
+				url: function(phrase) {
+					return "ajx_buscar_datos_json.php?type=7&id="+phrase;
+				},
+
+				getValue: "NombreBuscarCliente",
+				requestDelay: 400,
+				list: {
+					match: {
+						enabled: true
+					},
+					onClickEvent: function() {
+						var value = $("#srcNombreCliente").getSelectedItemData().CodigoCliente;
+
+						$("#row_Entrada[NombreCampo]").val(value).trigger("change");
+					}
 				}
 			}
-		</script>
+
+			$("#srcNombreCliente").easyAutocomplete(options);
+			// Fin, parametrización de clientes y sucursales.
+			*/
+		});
+
+		/*
+		function CargarSucursales(cmpCliente){
+			var Clt=document.getElementById(''+cmpCliente);
+
+			$.ajax({
+				type: "POST",
+				url: "ajx_cbo_sucursales_clientes_simple.php?CardCode="+Clt.value+"<?php //if ($row_Entrada['Multiple'] == 1) {echo "&todos=0";}?>",
+				success: function(response){
+					$('#row_Entrada[NombreCampo]').html(response).fadeIn();
+					$('#row_Entrada[NombreCampo]').val(null).trigger('change');
+				}
+			});
+		}
+		*/
+	</script>
 
 <!-- InstanceEndEditable -->
 </body>
