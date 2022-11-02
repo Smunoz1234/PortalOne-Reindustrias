@@ -21,6 +21,12 @@ if ($tipo_base_datos == 1) {
     }
 }
 
+function DenegarAcceso()
+{ //Para evitar acceder a la pagina
+    $PaginaError = "404.php";
+    header("Location:" . $PaginaError);
+}
+
 function PermitirAcceso($Permiso)
 { //Para evitar acceder a la pagina
     global $conexion;

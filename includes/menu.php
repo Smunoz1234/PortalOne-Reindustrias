@@ -5,7 +5,7 @@ $Cons_Menu = "Select * From uvw_tbl_Categorias Where ID_Padre=0 and EstadoCatego
 $SQL_Menu = sqlsrv_query($conexion, $Cons_Menu, array(), array("Scrollable" => 'Buffered'));
 $Num_Menu = sqlsrv_num_rows($SQL_Menu);
 
-$SQL_ConsultasSAPB1_Categorias = Seleccionar("tbl_ConsultasSAPB1_Categorias", "*", "ID_CategoriaPadre = 0");
+$SQL_ConsultasSAPB1_Categorias = Seleccionar("tbl_ConsultasSAPB1_Categorias", "*", "ID_CategoriaPadre = 0 AND Estado = 'Y'");
 ?>
 
 <nav class="navbar-default navbar-static-side" role="navigation">
@@ -112,35 +112,54 @@ $SQL_ConsultasSAPB1_Categorias = Seleccionar("tbl_ConsultasSAPB1_Categorias", "*
 
 			<!-- Inicio, Consultas SAP B1 -->
 			<?php while ($row_Categoria = sqlsrv_fetch_array($SQL_ConsultasSAPB1_Categorias)) {?>
-				<li>
-					<!-- Categorías principales del menú -->
-					<a href="#"><i class="fa fa-table"></i> <span class="nav-label"><?php echo $row_Categoria["NombreCategoria"]; ?></span><span class="fa arrow"></span></a>
-					<ul class="nav nav-second-level">
+				<?php $ids_perfiles_categoria = ($row_Categoria['Perfiles'] != "") ? explode(";", $row_Categoria['Perfiles']) : [];?>
+				<?php if (in_array($_SESSION['Perfil'], $ids_perfiles_categoria) || (count($ids_perfiles_categoria) == 0)) {?>
 
-						<!-- Consultas en la ráiz de la categoría principal -->
-						<?php $SQL_ConsultasSAPB1_Consultas = Seleccionar("tbl_ConsultasSAPB1_Consultas", "*", "ID_Categoria = '" . $row_Categoria["ID"] . "'");?>
-						<?php while ($row_Consulta = sqlsrv_fetch_array($SQL_ConsultasSAPB1_Consultas)) {?>
-							<li><a class="alnk" href="consultas_sap.php?id=<?php echo base64_encode($row_Consulta['ID']); ?>"><?php echo $row_Consulta['EtiquetaConsulta']; ?></a></li>
-						<?php }?>
+					<li>
+						<!-- Categorías principales del menú -->
+						<a href="#"><i class="fa fa-table"></i> <span class="nav-label"><?php echo $row_Categoria["NombreCategoria"]; ?></span><span class="fa arrow"></span></a>
+						<ul class="nav nav-second-level">
 
-						<?php $SQL_ConsultasSAPB1_Categorias_Hijas = Seleccionar("tbl_ConsultasSAPB1_Categorias", "*", "ID_CategoriaPadre = '" . $row_Categoria["ID"] . "'");?>
-						<?php while ($row_Categoria_Hija = sqlsrv_fetch_array($SQL_ConsultasSAPB1_Categorias_Hijas)) {?>
-							<li>
-								<!-- Submenús en cada categoría principal -->
-								<a href="#"><?php echo $row_Categoria_Hija["NombreCategoria"]; ?> <span class="fa arrow"></span></a>
+							<!-- Consultas en la ráiz de la categoría principal -->
+							<?php $SQL_ConsultasSAPB1_Consultas = Seleccionar("tbl_ConsultasSAPB1_Consultas", "*", "Estado = 'Y' AND ID_Categoria = '" . $row_Categoria["ID"] . "'");?>
+							<?php while ($row_Consulta = sqlsrv_fetch_array($SQL_ConsultasSAPB1_Consultas)) {?>
 
-								<!-- Consultas en cada submenú -->
-								<ul class='nav nav-third-level'>
-									<?php $SQL_ConsultasSAPB1_Consultas_Hijas = Seleccionar("tbl_ConsultasSAPB1_Consultas", "*", "ID_Categoria = '" . $row_Categoria_Hija["ID"] . "'");?>
-									<?php while ($row_Consulta_Hija = sqlsrv_fetch_array($SQL_ConsultasSAPB1_Consultas_Hijas)) {?>
-										<li><a class="alnk" href="consultas_sap.php?id=<?php echo base64_encode($row_Consulta_Hija['ID']); ?>"><?php echo $row_Consulta_Hija['EtiquetaConsulta']; ?></a></li>
-									<?php }?>
-								</ul>
-							</li>
-						<?php }?>
-					</ul>
-				</li>
-			<?php }?>
+								<?php $ids_perfiles_consulta = ($row_Consulta['Perfiles'] != "") ? explode(";", $row_Consulta['Perfiles']) : [];?>
+								<?php if (in_array($_SESSION['Perfil'], $ids_perfiles_consulta) || (count($ids_perfiles_consulta) == 0)) {?>
+									<li><a class="alnk" href="consultas_sap.php?id=<?php echo base64_encode($row_Consulta['ID']); ?>"><?php echo $row_Consulta['EtiquetaConsulta']; ?></a></li>
+								<?php }?>
+
+							<?php }?>
+
+							<?php $SQL_ConsultasSAPB1_Categorias_Hijas = Seleccionar("tbl_ConsultasSAPB1_Categorias", "*", "Estado = 'Y' AND ID_CategoriaPadre = '" . $row_Categoria["ID"] . "'");?>
+							<?php while ($row_Categoria_Hija = sqlsrv_fetch_array($SQL_ConsultasSAPB1_Categorias_Hijas)) {?>
+
+								<?php $ids_perfiles_categoria_hija = ($row_Categoria_Hija['Perfiles'] != "") ? explode(";", $row_Categoria_Hija['Perfiles']) : [];?>
+								<?php if (in_array($_SESSION['Perfil'], $ids_perfiles_categoria_hija) || (count($ids_perfiles_categoria_hija) == 0)) {?>
+									<li>
+										<!-- Submenús en cada categoría principal -->
+										<a href="#"><?php echo $row_Categoria_Hija["NombreCategoria"]; ?> <span class="fa arrow"></span></a>
+
+										<!-- Consultas en cada submenú -->
+										<ul class='nav nav-third-level'>
+											<?php $SQL_ConsultasSAPB1_Consultas_Hijas = Seleccionar("tbl_ConsultasSAPB1_Consultas", "*", "Estado = 'Y' AND ID_Categoria = '" . $row_Categoria_Hija["ID"] . "'");?>
+											<?php while ($row_Consulta_Hija = sqlsrv_fetch_array($SQL_ConsultasSAPB1_Consultas_Hijas)) {?>
+
+												<?php $ids_perfiles_consulta_hija = ($row_Consulta_Hija['Perfiles'] != "") ? explode(";", $row_Consulta_Hija['Perfiles']) : [];?>
+												<?php if (in_array($_SESSION['Perfil'], $ids_perfiles_consulta_hija) || (count($ids_perfiles_consulta_hija) == 0)) {?>
+													<li><a class="alnk" href="consultas_sap.php?id=<?php echo base64_encode($row_Consulta_Hija['ID']); ?>"><?php echo $row_Consulta_Hija['EtiquetaConsulta']; ?></a></li>
+												<?php }?>
+											<?php }?>
+										</ul>
+									</li>
+								<?php }?>
+
+							<?php }?>
+						</ul>
+					</li>
+
+				<?php }?> <!-- if -->
+			<?php }?> <!-- while -->
 			<!-- Fin, Consultas SAP B1 -->
 
 			<?php if (PermitirFuncion([1701, 1702, 1703, 1704, 1706, 1707])) {?>
@@ -462,8 +481,8 @@ $SQL_ConsultasSAPB1_Categorias = Seleccionar("tbl_ConsultasSAPB1_Categorias", "*
 							<?php if (PermitirFuncion(217)) {?><li><a class="alnk" href="parametros_campos_adicionales.php">Campos adicionales en documentos</a></li><?php }?>
 							<?php if (PermitirFuncion(218)) {?><li><a class="alnk" href="parametros_dosificaciones.php">Parámetros dosificaciones</a></li><?php }?>
 							<?php if (PermitirFuncion(219)) {?><li><a class="alnk" href="parametros_formatos_impresion.php">Parámetros formatos de impresión</a></li><?php }?>
-							<?php if (true) {?><li><a class="alnk" href="parametros_autorizaciones_documentos.php">Parámetros autorizaciones documentos</a></li><?php }?>
-							<?php if (true) {?><li><a class="alnk" href="parametros_consultas_sap.php">Parámetros Consultas SAP B1</a></li><?php }?>
+							<?php if (PermitirFuncion(223)) {?><li><a class="alnk" href="parametros_autorizaciones_documentos.php">Parámetros autorizaciones documentos</a></li><?php }?>
+							<?php if (PermitirFuncion(224)) {?><li><a class="alnk" href="parametros_consultas_sap.php">Parámetros Consultas SAP B1</a></li><?php }?>
 						</ul>
 					</li>
 					<?php }?>

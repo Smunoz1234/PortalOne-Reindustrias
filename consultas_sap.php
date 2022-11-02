@@ -8,21 +8,27 @@ $id = base64_decode($_GET['id']);
 $SQL = Seleccionar("uvw_tbl_ConsultasSAPB1_Consultas", "*", "ID = '$id'");
 $row = sqlsrv_fetch_array($SQL);
 
-// Entradas
-$SQL_Entradas = Seleccionar("tbl_ConsultasSAPB1_Entradas", "*", "ID_Consulta = '$id'");
+if ($row["Estado"] == "N") {
+    DenegarAcceso();
+} else {
+    $ids_perfiles_consulta = ($row['Perfiles'] != "") ? explode(";", $row['Perfiles']) : [];
+    if ((count($ids_perfiles_consulta) != 0) && !in_array($_SESSION['Perfil'], $ids_perfiles_consulta)) {
+        DenegarAcceso();
+    }
+}
 
-// DenegarAcceso();
-// $Num_Campos = sqlsrv_num_rows($SQL_Campos);
+// Entradas
+$SQL_Entradas = Seleccionar("tbl_ConsultasSAPB1_Entradas", "*", "Estado = 'Y' AND ID_Consulta = '$id'");
 
 if (isset($_GET['type'])) {
     $ProcedimientoConsulta = $row['ProcedimientoConsulta'];
 
-    $SQL_ProcedimientoEntradas = Seleccionar("tbl_ConsultasSAPB1_Entradas", "*", "ID_Consulta = '$id'");
+    $SQL_ProcedimientoEntradas = Seleccionar("tbl_ConsultasSAPB1_Entradas", "*", "Estado = 'Y' AND ID_Consulta = '$id'");
 
     $ProcedimientoEntradas = array();
     while ($row_ProcedimientoEntrada = sqlsrv_fetch_array($SQL_ProcedimientoEntradas)) {
         $ParametroEntrada = $row_ProcedimientoEntrada['ParametroEntrada'];
-        $ParametroEntrada = "'" . $_GET[$ParametroEntrada] . "'";
+        $ParametroEntrada = "'" . ($_GET[$ParametroEntrada] ?? "") . "'";
 
         array_push($ProcedimientoEntradas, $ParametroEntrada);
     }
@@ -100,13 +106,13 @@ if (isset($_GET['type'])) {
 										<div class="col-lg-4">
 											<label class="control-label"><?php echo $row_Entrada['EtiquetaEntrada']; ?> <?php if ($row_Entrada['Obligatorio'] == "Y") {?><span class="text-danger">*</span><?php }?></label>
 
-											<input name="<?php echo $row_Entrada['ParametroEntrada']; ?>" id="<?php echo $row_Entrada['ParametroEntrada']; ?>" type="text" class="form-control" <?php if ($row_Entrada['Obligatorio'] == "Y") {?>required="required"<?php }?>>
+											<input name="<?php echo $row_Entrada['ParametroEntrada']; ?>" id="<?php echo $row_Entrada['ParametroEntrada']; ?>" type="text" class="form-control" <?php if ($row_Entrada['Obligatorio'] == "Y") {?>required="required"<?php }?> value="<?php echo $_GET[$row_Entrada['ParametroEntrada']] ?? ""; ?>">
 										</div>
 									<?php } elseif ($row_Entrada['TipoCampo'] == "Comentario") {?>
 										<div class="col-lg-4">
 											<label class="control-label"><?php echo $row_Entrada['EtiquetaEntrada']; ?> <?php if ($row_Entrada['Obligatorio'] == "Y") {?><span class="text-danger">*</span><?php }?></label>
 
-											<textarea class="form-control"  type="text" rows="5" name="<?php echo $row_Entrada['ParametroEntrada']; ?>" id="<?php echo $row_Entrada['ParametroEntrada']; ?>" <?php if ($row_Entrada['Obligatorio'] == "Y") {?>required="required"<?php }?>></textarea>
+											<textarea class="form-control"  type="text" rows="5" name="<?php echo $row_Entrada['ParametroEntrada']; ?>" id="<?php echo $row_Entrada['ParametroEntrada']; ?>" <?php if ($row_Entrada['Obligatorio'] == "Y") {?>required="required"<?php }?>><?php echo $_GET[$row_Entrada['ParametroEntrada']] ?? ""; ?></textarea>
 										</div>
 									<?php } elseif ($row_Entrada['TipoCampo'] == "Fecha") {?>
 										<div class="col-lg-4 input-group date">
@@ -139,8 +145,8 @@ if (isset($_GET['type'])) {
 
 											<select class="form-control" id="<?php echo $row_Entrada['ParametroEntrada']; ?>" name="<?php echo $row_Entrada['ParametroEntrada']; ?>" <?php if ($row_Entrada['Obligatorio'] == "Y") {?>required="required"<?php }?>>
 												<option value="" selected disabled>Seleccione...</option>
-												<option value="Y">SI</option>
-												<option value="N">NO</option>
+												<option value="Y" <?php if (isset($_GET[$row_Entrada['ParametroEntrada']]) && ($_GET[$row_Entrada['ParametroEntrada']] == "Y")) {echo "selected";}?>>SI</option>
+												<option value="N" <?php if (isset($_GET[$row_Entrada['ParametroEntrada']]) && ($_GET[$row_Entrada['ParametroEntrada']] == "N")) {echo "selected";}?>>NO</option>
 											</select>
 										</div>
 									<?php } elseif ($row_Entrada['TipoCampo'] == "Lista") {?>
@@ -194,6 +200,7 @@ if (isset($_GET['type'])) {
 											<img src="css/exp_excel.png" width="50" height="30" alt="Exportar a Excel" title="Exportar a Excel"/>
 										</a>
 									</div>
+									<br>
 								</div>
 							<?php }?>
 						</div> <!-- ibox-content -->

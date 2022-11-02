@@ -1003,6 +1003,27 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
                 echo "<option value=''>Seleccione...</option>";
             }
         }
+    } elseif ($_GET['type'] == 44) { // Parámetros de entrada dependiendo de la Consulta SAP B1
+        if (!isset($_GET['id']) || ($_GET['id'] == "")) {
+            echo "<option value=''>Seleccione...</option>";
+        } else {
+            $ID_Consulta = "'" . $_GET['id'] . "'";
+            $SQL = Seleccionar('tbl_ConsultasSAPB1_Consultas', '*', "ID=$ID_Consulta");
+
+            $Condicion = sqlsrv_has_rows($SQL);
+            if ($Condicion) {
+                $row = sqlsrv_fetch_array($SQL);
+                $entradas = explode(",", $row['ParametrosEntrada']);
+
+                $param = $_GET['input'] ?? "";
+                foreach ($entradas as &$entrada) {
+                    $selected = ($param == $entrada) ? "selected" : "";
+                    echo "<option value='$entrada' $selected>$entrada</option>";
+                }
+            } else {
+                echo "<option value=''>Seleccione...</option>";
+            }
+        }
     }
 
     sqlsrv_close($conexion);
