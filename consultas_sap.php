@@ -284,7 +284,7 @@ if (isset($_GET['type'])) {
 
 				$('.ibox-content').toggleClass('sk-loading');
 			}).fail(function(error) {
-				console.error("Error en la descarga.");
+				alert("Ocurrio un error inesperado en la descarga.");
 				console.log(error.responseText);
 
 				$('.ibox-content').toggleClass('sk-loading');
