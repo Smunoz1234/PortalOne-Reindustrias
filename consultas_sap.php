@@ -22,6 +22,7 @@ $SQL_Entradas = Seleccionar("tbl_ConsultasSAPB1_Entradas", "*", "Estado = 'Y' AN
 
 if (isset($_GET['type'])) {
     $ProcedimientoConsulta = $row['ProcedimientoConsulta'];
+    $EtiquetaConsulta = str_replace(" ", "", ucwords(strtolower($row['EtiquetaConsulta'])));
 
     $SQL_ProcedimientoEntradas = Seleccionar("tbl_ConsultasSAPB1_Entradas", "*", "Estado = 'Y' AND ID_Consulta = '$id'");
 
@@ -185,29 +186,27 @@ if (isset($_GET['type'])) {
 								<div class="form-group">
 									<div class="col-lg-4">
 										<br>
-										<button type="submit" name="submit" id="submit" class="btn btn-success btn-outline pull-right"><i class="fa fa-search"></i> Buscar</button>
+										<button type="submit" name="submit" id="submit" class="btn btn-success btn-outline pull-right"><i class="fa fa-search"></i> Consultar</button>
 									</div>
 								</div>
 
 								<input type="hidden" name="id" id="id" value="<?php echo $_GET['id']; ?>">
-								<input type="hidden" name="type" id="type" value="<?php echo base64_encode('1'); ?>">
+								<input type="hidden" name="type" id="type" value="1">
 							</form>
 
-							<?php if (isset($_GET['type'])) {?>
-								<div class="form-group">
-									<div class="col-lg-12">
-										<a href="exportar_excel.php?exp=10&Cons=<?php echo base64_encode(implode(",", $ProcedimientoEntradas)); ?>&sp=<?php echo base64_encode($ProcedimientoConsulta); ?>">
-											<img src="css/exp_excel.png" width="50" height="30" alt="Exportar a Excel" title="Exportar a Excel"/>
-										</a>
-									</div>
-									<br>
+							<div class="form-group">
+								<div class="col-lg-12">
+									<a href="#" id="btn_excel">
+										<img src="css/exp_excel.png" width="50" height="30" alt="Exportar a Excel" title="Exportar a Excel"/>
+									</a>
 								</div>
-							<?php }?>
+								<br>
+							</div>
 						</div> <!-- ibox-content -->
 					</div> <!-- col-lg-12 -->
 				</div> <!-- row -->
 
-				<?php if (isset($_GET['type'])) {?>
+				<?php if (isset($_GET['type']) && ($_GET['type'] == "1")) {?>
 
 					<!-- Inicio, obtener TitulosConsulta -->
 					<?php $SQL_TablaConsulta = EjecutarSP($ProcedimientoConsulta, $ProcedimientoEntradas);?>
@@ -262,9 +261,53 @@ if (isset($_GET['type'])) {
 	<!-- InstanceBeginEditable name="EditRegion4" -->
 
 	<script>
+		function descargarExcel() {
+			$('.ibox-content').toggleClass('sk-loading');
+
+			$.ajax({
+				type:'POST',
+				url: "exportar_excel.php?exp=21&filename=<?php echo $EtiquetaConsulta ?? ""; ?>&Cons=<?php echo base64_encode(implode(",", ($ProcedimientoEntradas ?? []))); ?>&sp=<?php echo base64_encode($ProcedimientoConsulta ?? ""); ?>",
+				data: {},
+				dataType:'json'
+			}).done(function(data){
+				if(data.op === "ok") {
+					let $a = $("<a>");
+
+					$a.attr("href", data.file);
+					$("body").append($a);
+					$a.attr("download", data.filename);
+					$a[0].click();
+					$a.remove();
+				} else {
+					alert("Consulta sin resultados.");
+				}
+
+				$('.ibox-content').toggleClass('sk-loading');
+			}).fail(function(error) {
+				console.error("Error en la descarga.");
+				console.log(error.responseText);
+
+				$('.ibox-content').toggleClass('sk-loading');
+			});
+		}
+
 		$(document).ready(function(){
+			<?php if (isset($_GET['type']) && ($_GET['type'] == "2")) {?>
+				descargarExcel();
+			<?php }?>
+
+			$("#btn_excel").on("click", function() {
+				<?php if (isset($_GET['type'])) {?>
+					descargarExcel();
+				<?php } else {?>
+					$("#type").val("2");
+					$("#submit").click();
+				<?php }?>
+			});
+
 			$("#formInforme").validate({
 				submitHandler: function(form){
+					$('.ibox-content').toggleClass('sk-loading');
 					form.submit();
 				}
 			});
