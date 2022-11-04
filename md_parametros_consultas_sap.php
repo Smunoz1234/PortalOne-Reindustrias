@@ -31,6 +31,9 @@ if ($edit == 1 && $id != "") {
 
     $ids_perfiles = isset($row['Perfiles']) ? explode(";", $row['Perfiles']) : [];
 }
+
+$Cons_Lista = "EXEC sp_tables @table_owner = 'dbo', @table_type = \"'VIEW'\"";
+$SQL_Lista = sqlsrv_query($conexion, $Cons_Lista);
 ?>
 
 <style>
@@ -228,10 +231,10 @@ if ($edit == 1 && $id != "") {
 							<option value="Texto" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Texto')) {echo "selected=\"selected\"";}?>>Texto</option>
 							<option value="Comentario" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Comentario')) {echo "selected=\"selected\"";}?>>Comentario</option>
 							<option value="Fecha" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Fecha')) {echo "selected=\"selected\"";}?>>Fecha</option>
-							<!-- option value="Cliente" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Cliente')) {echo "selected=\"selected\"";}?>>Cliente (Lista)</option -->
-							<!-- option value="Sucursal" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Sucursal')) {echo "selected=\"selected\"";}?>>Sucursal (Dependiendo del cliente)</option -->
+							<option value="Cliente" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Cliente')) {echo "selected=\"selected\"";}?>>Cliente (Lista)</option>
+							<option value="Sucursal" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Sucursal')) {echo "selected=\"selected\"";}?>>Sucursal (Dependiendo del cliente)</option>
 							<option value="Seleccion" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Seleccion')) {echo "selected=\"selected\"";}?>>Selección (SI/NO)</option>
-							<!-- option value="Lista" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Lista')) {echo "selected=\"selected\"";}?>>Lista (Personalizada)</option -->
+							<option value="Lista" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Lista')) {echo "selected=\"selected\"";}?>>Lista (Personalizada)</option>
 							<option value="Usuario" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Usuario')) {echo "selected=\"selected\"";}?>>Usuario</option>
 						</select>
 					</div>
@@ -253,6 +256,48 @@ if ($edit == 1 && $id != "") {
 							<option value="N" <?php if (($edit == 1) && ($row['Multiple'] == "N")) {echo "selected=\"selected\"";}?>>NO</option>
 							<option value="Y" <?php if (($edit == 1) && ($row['Multiple'] == "Y")) {echo "selected=\"selected\"";}?>>SI</option>
 						</select>
+					</div>
+				</div>
+
+				<div id="CamposVista" style="display: none;">
+					<br><br><br><br>
+					<div class="form-group">
+						<div class="col-md-12">
+							<label class="control-label">Vista <span class="text-danger">*</span></label>
+							<select name="VistaLista" class="form-control select2" id="VistaLista" required>
+								<option value="" disabled selected>Seleccione...</option>
+								<?php while ($row_Lista = sqlsrv_fetch_array($SQL_Lista)) {?>
+									<option value="<?php echo $row_Lista['TABLE_NAME']; ?>" <?php if ((isset($row['VistaLista'])) && (strcmp($row_Lista['TABLE_NAME'], $row['VistaLista']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Lista['TABLE_NAME']; ?></option>
+								<?php }?>
+							</select>
+						</div>
+					</div>
+
+					<br><br><br><br>
+					<div class="form-group">
+						<div class="col-md-4">
+							<label class="control-label">Valor</label>
+							<select name="ValorLista" class="form-control" id="ValorLista" required>
+								<option value="">Seleccione...</option>
+								<!-- Generado por JS -->
+							</select>
+						</div>
+
+						<div class="col-md-4">
+							<label class="control-label">Etiqueta</label>
+							<select name="EtiquetaLista" class="form-control" id="EtiquetaLista" required>
+								<option value="">Seleccione...</option>
+								<!-- Generado por JS -->
+							</select>
+						</div>
+
+						<div class="col-md-4">
+							<label class="control-label">Permitir "Todos"</label>
+							<select name="PermitirTodos" id="PermitirTodos" class="form-control">
+								<option value="N" <?php if (($edit == 1) && ($row['PermitirTodos'] == "N")) {echo "selected";}?>>NO</option>
+								<option value="Y" <?php if (($edit == 1) && ($row['PermitirTodos'] == "Y")) {echo "selected";}?>>SI</option>
+							</select>
+						</div>
 					</div>
 				</div>
 
@@ -320,6 +365,37 @@ $(document).ready(function() {
 	$('.chosen-select').chosen({width: "100%"});
 	$(".select2").select2();
 
+	$("#TipoCampo").on("change", function() {
+		if($(this).val() == "Sucursal" || $(this).val() == "Lista") {
+			$("#Multiple").prop("disabled", false);
+		} else {
+			$("#Multiple").prop("disabled", true);
+		}
+
+		if($(this).val() == "Lista") {
+			$("#CamposVista").css("display", "block");
+		} else {
+			$("#CamposVista").css("display", "none");
+		}
+	});
+
+	// Cargar lista de campos dependiendo de la vista.
+	$("#VistaLista").on("change", function() {
+		$.ajax({
+			type: "POST",
+			url: `ajx_cbo_select.php?type=12&id=${$(this).val()}&obligatorio=1`,
+			success: function(response){
+				$('#EtiquetaLista').html(response).fadeIn();
+				$('#EtiquetaLista').val("<?php echo $row['EtiquetaLista'] ?? ""; ?>");
+				$('#EtiquetaLista').trigger('change');
+
+				$('#ValorLista').html(response).fadeIn();
+				$('#ValorLista').val("<?php echo $row['ValorLista'] ?? ""; ?>");
+				$('#ValorLista').trigger('change');
+			}
+		});
+	});
+
 	// Cargar entradas dependiendo de la consulta.
 	$("#ID_Consulta").on("change", function() {
 		$.ajax({
@@ -332,8 +408,12 @@ $(document).ready(function() {
 		});
 	});
 
+
 	<?php if (($edit == 1) && ($id != "")) {?>
+		$('#VistaLista').trigger('change');
+
 		$('#ID_Consulta').trigger('change');
+		$('#TipoCampo').trigger('change');
 	<?php }?>
  });
 </script>

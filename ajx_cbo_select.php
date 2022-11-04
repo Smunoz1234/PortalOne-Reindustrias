@@ -256,7 +256,10 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
             $Cons = "EXEC sp_columns '" . $_GET['id'] . "'";
             $SQL = sqlsrv_query($conexion, $Cons);
             if ($SQL) {
-                echo "<option value=''>Seleccione...</option>";
+                if (!isset($_GET["obligatorio"])) {
+                    echo "<option value=''>Seleccione...</option>";
+                }
+
                 while ($row = sqlsrv_fetch_array($SQL)) {
                     echo "<option value=\"" . $row['COLUMN_NAME'] . "\">" . $row['COLUMN_NAME'] . "</option>";
                 }

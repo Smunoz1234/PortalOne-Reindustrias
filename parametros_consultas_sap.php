@@ -118,6 +118,11 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
                 "'" . $_POST['Obligatorio'] . "'",
                 "'" . $_POST['Estado'] . "'",
                 "'" . $_POST['TipoCampo'] . "'",
+                "'" . $_POST['Multiple'] . "'",
+                "'" . $_POST['PermitirTodos'] . "'",
+                "'" . $_POST['VistaLista'] . "'",
+                "'" . $_POST['EtiquetaLista'] . "'",
+                "'" . $_POST['ValorLista'] . "'",
                 "'" . $_POST['Comentarios'] . "'",
                 $Usuario, // @id_usuario_actualizacion
                 $FechaHora, // @fecha_actualizacion
@@ -463,7 +468,6 @@ if (isset($sw_error) && ($sw_error == 1)) {
 																<th>Vista de referencia</th>
 																<th>Obligatorio</th>
 																<th>Multiple</th>
-																<th>Comentarios</th>
 																<th>Fecha Actualizacion</th>
 																<th>Usuario Actualizacion</th>
 																<th>Estado</th>
@@ -478,12 +482,10 @@ if (isset($sw_error) && ($sw_error == 1)) {
 																<td><?php echo $row_Entrada['EtiquetaEntrada']; ?></td>
 
 																<td><?php echo $row_Entrada['TipoCampo']; ?></td>
-																<td><?php echo !isset($row_Entrada['VistaLista']) ? "(Ninguna)" : $row_Entrada['VistaLista'] . "(" . $row_Entrada['ValorLista'] . ", " . $row_Entrada['EtiquetaLista'] . ")"; ?></td>
+																<td><?php echo (isset($row_Entrada['VistaLista']) && ($row_Entrada['VistaLista'] != "")) ? ($row_Entrada['VistaLista'] . " (" . $row_Entrada['ValorLista'] . ", " . $row_Entrada['EtiquetaLista'] . ")") : "(Ninguna)"; ?></td>
 
 																<td><?php echo ($row_Entrada['Obligatorio'] == "Y") ? "SI" : "NO"; ?></td>
-																<td><?php // echo ($row_Entrada['Multiple'] == "Y") ? "SI" : "NO"; ?></td>
-
-																<td><?php echo $row_Entrada['Comentarios']; ?></td>
+																<td><?php echo ($row_Entrada['Multiple'] == "Y") ? "SI" : "NO"; ?></td>
 
 																<td><?php echo isset($row_Entrada['fecha_actualizacion']) ? date_format($row_Entrada['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
 																<td><?php echo $row_Entrada['usuario_actualizacion']; ?></td>
