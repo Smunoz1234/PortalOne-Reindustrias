@@ -297,7 +297,7 @@ if (isset($_GET['type'])) {
 			<?php }?>
 
 			$("#btn_excel").on("click", function() {
-				<?php if (isset($_GET['type'])) {?>
+				<?php if (isset($_GET['type']) && ($_GET['type'] == "1")) {?>
 					descargarExcel();
 				<?php } else {?>
 					$("#type").val("2");
