@@ -4,6 +4,9 @@ require_once "includes/conexion.php";
 $id = base64_decode($_GET['id']);
 // echo $id;
 
+// SMM, 09/11/2022
+$testMode = false;
+
 // Consulta
 $SQL = Seleccionar("uvw_tbl_ConsultasSAPB1_Consultas", "*", "ID = '$id'");
 $row = sqlsrv_fetch_array($SQL);
@@ -29,9 +32,16 @@ if (isset($_GET['type'])) {
     $ProcedimientoEntradas = array();
     while ($row_ProcedimientoEntrada = sqlsrv_fetch_array($SQL_ProcedimientoEntradas)) {
         $ParametroEntrada = $row_ProcedimientoEntrada['ParametroEntrada'];
-        $ParametroEntrada = "'" . ($_GET[$ParametroEntrada] ?? "") . "'";
+        $ParametroEntrada = $_GET[$ParametroEntrada] ?? "";
+        $ParametroEntrada = is_array($ParametroEntrada) ? implode(",", $ParametroEntrada) : $ParametroEntrada;
+        $ParametroEntrada = "'" . $ParametroEntrada . "'";
 
         array_push($ProcedimientoEntradas, $ParametroEntrada);
+    }
+
+    if ($testMode) {
+        print("<pre>" . print_r($ProcedimientoEntradas, true) . "</pre>");
+        exit();
     }
 }
 ?>
@@ -125,19 +135,17 @@ if (isset($_GET['type'])) {
 										</div>
 									<?php } elseif ($row_Entrada['TipoCampo'] == "Cliente") {?>
 										<div class="col-lg-4">
-											<label class="control-label"><?php echo $row_Entrada['EtiquetaEntrada']; ?> <?php if ($row_Entrada['Obligatorio'] == "Y") {?><span class="text-danger">*</span><?php }?></label>
+											<label class="control-label"><i onClick="ConsultarCliente('<?php echo $row_Entrada['ParametroEntrada']; ?>');" title="Consultar cliente" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> <?php echo $row_Entrada['EtiquetaEntrada']; ?> <?php if ($row_Entrada['Obligatorio'] == "Y") {?><span class="text-danger">*</span><?php }?></label>
 
 											<input type="hidden" name="<?php echo $row_Entrada['ParametroEntrada']; ?>" id="<?php echo $row_Entrada['ParametroEntrada']; ?>" value="">
-											<input type="text" class="form-control" name="srcNombreCliente" id="srcNombreCliente" placeholder="<?php if ($row_Entrada['Obligatorio'] == "Y") {?>Digite para buscar...<?php } else {?>Digite para buscar... (Para TODOS, dejar vacio)<?php }?>" <?php if ($row_Entrada['Obligatorio'] == "Y") {?>required="required"<?php }?>>
+											<input type="text" class="form-control" data-id="<?php echo $row_Entrada['ParametroEntrada']; ?>" name="srcNombreCliente" id="srcNombreCliente" placeholder="<?php if ($row_Entrada['Obligatorio'] == "Y") {?>Digite para buscar...<?php } else {?>Digite para buscar... (Para TODOS, dejar vacio)<?php }?>" <?php if ($row_Entrada['Obligatorio'] == "Y") {?>required="required"<?php }?>>
 										</div>
 									<?php } elseif ($row_Entrada['TipoCampo'] == "Sucursal") {?>
-										<?php $row_Entrada['Multiple'] = 0;?> <!-- Faltante -->
-
 										<div class="col-lg-4">
 											<label class="control-label"><?php echo $row_Entrada['EtiquetaEntrada']; ?> <?php if ($row_Entrada['Obligatorio'] == "Y") {?><span class="text-danger">*</span><?php }?></label>
 
-											<select class="form-control select2" id="<?php echo $row_Entrada['ParametroEntrada']; ?>" name="<?php echo $row_Entrada['ParametroEntrada'] . (($row_Entrada['Multiple'] == 1) ? "[]" : ""); ?>" <?php if ($row_Entrada['Multiple'] == 1) {?>multiple="multiple" data-placeholder="Seleccione..."<?php }?> <?php if ($row_Entrada['Obligatorio'] == "Y") {?>required="required"<?php }?>>
-												<?php if ($row_Entrada['Multiple'] == 0) {?><option value="">(Todos)</option><?php }?>
+											<select class="form-control select2 <?php echo ($row_Entrada['Multiple'] == "Y") ? "sucursal-multiple" : "sucursal"; ?>" id="<?php echo $row_Entrada['ParametroEntrada']; ?>" name="<?php echo $row_Entrada['ParametroEntrada'] . (($row_Entrada['Multiple'] == "Y") ? "[]" : ""); ?>" <?php if ($row_Entrada['Multiple'] == "Y") {?>multiple="multiple" data-placeholder="Seleccione..."<?php }?> <?php if ($row_Entrada['Obligatorio'] == "Y") {?>required="required"<?php }?>>
+												<?php if ($row_Entrada['Multiple'] == "N") {?><option value="">(Todos)</option><?php }?>
 											</select>
 										</div>
 									<?php } elseif ($row_Entrada['TipoCampo'] == "Seleccion") {?>
@@ -151,23 +159,25 @@ if (isset($_GET['type'])) {
 											</select>
 										</div>
 									<?php } elseif ($row_Entrada['TipoCampo'] == "Lista") {?>
-										<?php $Cmp_Lista = ($row_Entrada['EtiquetaList'] ?? "") . ", " . ($row_Entrada['ValorList'] ?? "");?>
-										<?php $SQL_Lista = Seleccionar(($row_Entrada['VistaLista'] ?? ""), $Cmp_Lista, '');?>
+										<?php $Cmp_Lista = ($row_Entrada['EtiquetaLista']) . ", " . ($row_Entrada['ValorLista']);?>
+										<?php $SQL_Lista = Seleccionar(($row_Entrada['VistaLista']), $Cmp_Lista);?>
 
-										<div class="form-group">
-											<div class="col-lg-4">
-												<label class="control-label"><?php echo $row_Entrada['EtiquetaEntrada']; ?> <?php if ($row_Entrada['Obligatorio'] == "Y") {?><span class="text-danger">*</span><?php }?></label>
+										<div class="col-lg-4">
+											<label class="control-label"><?php echo $row_Entrada['EtiquetaEntrada']; ?> <?php if ($row_Entrada['Obligatorio'] == "Y") {?><span class="text-danger">*</span><?php }?></label>
 
-												<select class="form-control select2" <?php if ($row_Entrada['Multiple'] == 1) {?>data-placeholder="Seleccione..."<?php }?> id="<?php echo $row_Entrada['NombreCampo']; ?>" name="<?php if ($row_Entrada['Multiple'] == 1) {echo $row_Entrada['NombreCampo'] . "[]";} else {echo $row_Entrada['NombreCampo'];}?>" <?php if ($row_Entrada['Obligatorio'] == "Y") {?>required="required"<?php }?> <?php if ($row_Entrada['Multiple'] == 1) {?>multiple="multiple"<?php }?>>
-													<?php if ($row_Entrada['Multiple'] == 0) {?>
+											<select class="form-control select2" <?php if ($row_Entrada['Multiple'] == "Y") {?>data-placeholder="Seleccione..."<?php }?> id="<?php echo $row_Entrada['ParametroEntrada']; ?>" name="<?php if ($row_Entrada['Multiple'] == "Y") {echo $row_Entrada['ParametroEntrada'] . "[]";} else {echo $row_Entrada['ParametroEntrada'];}?>" <?php if ($row_Entrada['Obligatorio'] == "Y") {?>required="required"<?php }?> <?php if ($row_Entrada['Multiple'] == "Y") {?>multiple="multiple"<?php }?>>
+												<?php if ($row_Entrada['Multiple'] == "N") {?>
+													<?php if ($row_Entrada['PermitirTodos'] == "Y") {?>
+														<option value="Todos">(Todos)</option>
+													<?php } else {?>
 														<option value="" selected disabled>Seleccione...</option>
 													<?php }?>
+												<?php }?>
 
-													<?php while ($row_Lista = sqlsrv_fetch_array($SQL_Lista)) {?>
-														<option value="<?php echo $row_Lista[$row_Entrada['ValorLista']]; ?>"><?php echo $row_Lista[$row_Entrada['EtiquetaLista']]; ?></option>
-													<?php }?>
-												</select>
-											</div>
+												<?php while ($row_Lista = sqlsrv_fetch_array($SQL_Lista)) {?>
+													<option value="<?php echo $row_Lista[$row_Entrada['ValorLista']]; ?>"><?php echo $row_Lista[$row_Entrada['EtiquetaLista']]; ?></option>
+												<?php }?>
+											</select>
 										</div>
 									<?php } elseif ($row_Entrada['TipoCampo'] == "Usuario") {?>
 										<div class="col-lg-4">
@@ -196,7 +206,7 @@ if (isset($_GET['type'])) {
 
 							<div class="form-group">
 								<div class="col-lg-12">
-									<a href="#" id="btn_excel">
+									<a href="#" id="btn_excel" <?php if ($testMode) {?> style="display: none;" <?php }?>>
 										<img src="css/exp_excel.png" width="50" height="30" alt="Exportar a Excel" title="Exportar a Excel"/>
 									</a>
 								</div>
@@ -206,7 +216,7 @@ if (isset($_GET['type'])) {
 					</div> <!-- col-lg-12 -->
 				</div> <!-- row -->
 
-				<?php if (isset($_GET['type']) && ($_GET['type'] == "1")) {?>
+				<?php if (isset($_GET['type']) && ($_GET['type'] == "1") && ($testMode == false)) {?>
 
 					<!-- Inicio, obtener TitulosConsulta -->
 					<?php $SQL_TablaConsulta = EjecutarSP($ProcedimientoConsulta, $ProcedimientoEntradas);?>
@@ -360,25 +370,24 @@ if (isset($_GET['type'])) {
                 buttons: []
             });
 
-			/*
 			// Inicio, parametrización de clientes y sucursales.
-			$("#srcNombreCliente").change(function(){
-				var NomCliente=document.getElementById("srcNombreCliente");
-				var Cliente=document.getElementById("row_Entrada[NombreCampo]");
 
-				if(NomCliente.value==""){
-					Cliente.value="";
-					CargarSucursales('row_Entrada[NombreCampo]');
+			var idCliente = $("#srcNombreCliente").data("id");
+
+			$("#srcNombreCliente").change(function(){
+				if($("#srcNombreCliente").val() == ""){
+					$(`#${idCliente}`).val("");
+					CargarSucursales(idCliente);
 				}
 			});
 
-			$("#row_Entrada[NombreCampo]").change(function(){
-				CargarSucursales('row_Entrada[NombreCampo]');
+			$(`#${idCliente}`).change(function(){
+				CargarSucursales(idCliente);
 			});
 
 			var options = {
 				url: function(phrase) {
-					return "ajx_buscar_datos_json.php?type=7&id="+phrase;
+					return `ajx_buscar_datos_json.php?type=7&id=${phrase}`;
 				},
 
 				getValue: "NombreBuscarCliente",
@@ -388,32 +397,47 @@ if (isset($_GET['type'])) {
 						enabled: true
 					},
 					onClickEvent: function() {
-						var value = $("#srcNombreCliente").getSelectedItemData().CodigoCliente;
-
-						$("#row_Entrada[NombreCampo]").val(value).trigger("change");
+						let value = $("#srcNombreCliente").getSelectedItemData().CodigoCliente;
+						$(`#${idCliente}`).val(value).trigger("change");
 					}
 				}
 			}
 
 			$("#srcNombreCliente").easyAutocomplete(options);
+
 			// Fin, parametrización de clientes y sucursales.
-			*/
 		});
 
-		/*
+		// Cargar sucursales dependiendo del cliente.
 		function CargarSucursales(cmpCliente){
-			var Clt=document.getElementById(''+cmpCliente);
+			var Clt = document.getElementById(cmpCliente);
 
 			$.ajax({
 				type: "POST",
-				url: "ajx_cbo_sucursales_clientes_simple.php?CardCode="+Clt.value+"<?php //if ($row_Entrada['Multiple'] == 1) {echo "&todos=0";}?>",
+				url: "ajx_cbo_sucursales_clientes_simple.php?CardCode=" + Clt.value + "&todos=0",
 				success: function(response){
-					$('#row_Entrada[NombreCampo]').html(response).fadeIn();
-					$('#row_Entrada[NombreCampo]').val(null).trigger('change');
+					// console.log(response);
+					let todos = "<option value=''>(Todos)</option>";
+
+					$(".sucursal").html(todos + response).fadeIn();
+					$(".sucursal").val(null).trigger('change');
+
+					$(".sucursal-multiple").html(response).fadeIn();
+					$(".sucursal-multiple").val(null).trigger('change');
 				}
 			});
 		}
-		*/
+
+		// Abrir pestaña con la información del cliente.
+		function ConsultarCliente(Ctl) {
+			var Cliente = document.getElementById(Ctl);
+
+			if(Cliente.value != "") {
+				self.name='opener';
+				remote=open('socios_negocios.php?id='+Base64.encode(Cliente.value)+'&ext=1&tl=1','remote','location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
+				remote.focus();
+			}
+		}
 	</script>
 
 <!-- InstanceEndEditable -->

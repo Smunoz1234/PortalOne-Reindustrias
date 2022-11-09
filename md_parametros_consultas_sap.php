@@ -386,11 +386,14 @@ $(document).ready(function() {
 			url: `ajx_cbo_select.php?type=12&id=${$(this).val()}&obligatorio=1`,
 			success: function(response){
 				$('#EtiquetaLista').html(response).fadeIn();
-				$('#EtiquetaLista').val("<?php echo $row['EtiquetaLista'] ?? ""; ?>");
-				$('#EtiquetaLista').trigger('change');
-
 				$('#ValorLista').html(response).fadeIn();
-				$('#ValorLista').val("<?php echo $row['ValorLista'] ?? ""; ?>");
+
+				<?php if (($edit == 1) && ($id != "")) {?>
+					$('#EtiquetaLista').val("<?php echo $row['EtiquetaLista']; ?>");
+					$('#ValorLista').val("<?php echo $row['ValorLista']; ?>");
+				<?php }?>
+
+				$('#EtiquetaLista').trigger('change');
 				$('#ValorLista').trigger('change');
 			}
 		});
