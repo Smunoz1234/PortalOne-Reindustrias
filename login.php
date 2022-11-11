@@ -93,7 +93,7 @@ if (isset($_POST['User']) || isset($_POST['Password'])) {
                 sqlsrv_close($conexion);
 
                 // SMM, 23/08/2022
-                echo "<script> console.log('sp_ValidarUsuario, no encontro ningún usuario que coincida con la entrada dada.'); </script>";
+                // echo "<script> console.log('sp_ValidarUsuario, no encontro ningún usuario que coincida con la entrada dada.'); </script>";
             }
         } else {
             $log = 0;
@@ -105,9 +105,9 @@ if (isset($_POST['User']) || isset($_POST['Password'])) {
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
-<html lang="en" class="light-style">
 
 <head>
   	<title>Iniciar sesi&oacute;n | <?php echo NOMBRE_PORTAL; ?></title>
@@ -178,7 +178,7 @@ if (isset($_POST['User']) || isset($_POST['Password'])) {
 			</div>
 			<div class="d-flex justify-content-between align-items-center m-0">
 				<label class="custom-control custom-checkbox m-0">
-				  <input type="checkbox" class="custom-control-input">
+				  <input name="recuerdame" id="recuerdame" type="checkbox" class="custom-control-input">
 				  <span class="custom-control-label">Recuerdame en este equipo</span>
 				</label>
 		    </div>
@@ -213,13 +213,38 @@ if (isset($_POST['User']) || isset($_POST['Password'])) {
 	});
 </script>
 <?php }?>
+
 <script>
 	 $(document).ready(function(){
-		  $("#frmLogin").validate();
+      if(localStorage.hasOwnProperty("loginForm")) {
+          let json = JSON.parse(localStorage.loginForm);
+
+          $("#User").val(json.User);
+          $("#Password").val(atob(json.Password));
+
+          $("#recuerdame").prop('checked', true);
+      }
+
+		  $("#frmLogin").validate({
+        submitHandler: function(form){
+          let formData = new FormData(form);
+          let json = Object.fromEntries(formData);
+
+          if(json.recuerdame === "on") {
+            json.Password = btoa(json.Password);
+            localStorage.loginForm = JSON.stringify(json);
+          } else {
+            localStorage.removeItem("loginForm");
+          }
+
+          // SMM, 11/11/2022
+          form.submit();
+        }
+      });
 	});
 </script>
-<?php include "includes/pie.php";?>
 
+<?php include "includes/pie.php";?>
 </body>
 
 </html>
