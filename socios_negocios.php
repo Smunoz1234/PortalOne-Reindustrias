@@ -1046,7 +1046,10 @@ if ($sw_ext == 0) {?>
 						<?php include "includes/spinner.php";?>
 						<?php if ($edit == 1) {?>
 						 <div class="form-group">
-							<h3 class="col-xs-12 bg-primary p-xs b-r-sm"><?php echo ($row['NombreCliente']) . " [" . $row['LicTradNum'] . "]"; ?></h3>
+							<h3 class="col-xs-12 bg-primary p-xs b-r-sm">
+								<?php echo ($row['NombreCliente']) . " [" . $row['LicTradNum'] . "]"; ?>
+								<?php if (isset($row["Estado"])) {echo ($row["Estado"] == "Y") ? "(Activo)" : "(Inactivo)";}?>
+							</h3>
 						 </div>
 						 <?php }?>
 						 <div class="tabs-container">
