@@ -76,6 +76,10 @@ if (isset($row['ID_EmpleadoActividad']) && (count($ids_grupos) > 0)) {
         $disabled = "disabled";
     }
 }
+
+if (isset($row['IdTipoEstadoActividad']) && (strcmp("05", $row['IdTipoEstadoActividad']) == 0)) {
+    $disabled = "disabled";
+}
 ?>
 
 <form id="frmActividad" method="post">
