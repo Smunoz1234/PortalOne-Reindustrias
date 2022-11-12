@@ -69,7 +69,9 @@ if (isset($_POST['User']) || isset($_POST['Password'])) {
                 } else {
                     $_SESSION['JWT'] = "";
                 }
-                setcookie("JWT", $jwt['Token'], array('secure' => true, 'httponly' => true));
+
+                // SMM 11/11/2022
+                setcookie("JWT", $jwt['Token'], array('secure' => true, 'httponly' => true, 'expires' => strtotime('+1 day')));
 
                 if ($row['CambioClave'] == 1) {
                     //echo "Ingreso al cambio";
