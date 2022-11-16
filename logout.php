@@ -27,6 +27,10 @@ if (isset($_GET['data']) && $_GET['data'] != "") {?>
 		</body>
 	</html>
 
+<?php } elseif (isset($_GET['msg']) && $_GET['msg'] != "") {?>
+	<?php // SMM, 16/11/2022 ?>
+	<?php echo base64_decode($_GET['msg']); ?>
+	<?php isset($_GET['return_url']) ? header('Location:login.php?return_url=' . $_GET['return_url']) : header('Location:login.php');?>
 <?php } else {?>
 	<!DOCTYPE html>
 	<html lang="es">

@@ -265,7 +265,7 @@ $SQL_ConsultasSAPB1_Categorias = Seleccionar("tbl_ConsultasSAPB1_Categorias", "*
 							<a href="#">Asistentes <span class="fa arrow"></span></a>
 							<ul class='nav nav-third-level'>
 								<?php if (PermitirFuncion(310)) {?><li><a class="alnk" href="creacion_ot_lote.php">Creación de OT en lote</a></li><?php }?>
-								<?php if (PermitirFuncion(311)) {?><li><a class="alnk" href="cierre_ot_lote.php">Cierre de OT en lote</a></li><?php }?>
+								<?php if (PermitirFuncion(311)) {?><li><a class="alnk" href="cierre_ot_lote.php">Cierre de Llamadas de Servicio en Lote</a></li><?php }?>
 								<?php if (PermitirFuncion(317)) {?><li><a class="alnk" href="cambio_producto_ot.php">Cambio de productos en lote</a></li><?php }?>
 								<?php if (PermitirFuncion(319)) {?><li><a class="alnk" href="consultar_despacho_lote.php">Despachos en lote</a></li><?php }?>
 								<?php if (PermitirFuncion(318)) {?><li><a class="alnk" href="cronograma_servicios.php">Cronograma de servicios</a></li><?php }?>
