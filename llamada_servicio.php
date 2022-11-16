@@ -197,11 +197,12 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
             "'" . FormatoFecha($_POST['FechaAgenda'], $_POST['HoraAgenda']) . "'", // SMM 01/06/2022
             (PermitirFuncion(323) && PermitirFuncion(304)) ? "1" : "0", // CreacionActividad, SMM 28/07/2022
             "0", // EnvioCorreo, SMM 28/07/2022
-            "'" . $_POST['NombreContactoFirma'] . "'", // SMM, 16/09/2022
-            "'" . $_POST['CedulaContactoFirma'] . "'", // SMM, 16/09/2022
-            "'" . $_POST['TelefonosContactosFirma'] . "'", // SMM, 16/09/2022
-            "'" . $_POST['CorreosContactosFirma'] . "'", // SMM, 16/09/2022
+            "'" . ($_POST['NombreContactoFirma'] ?? "") . "'", // SMM, 18/10/2022
+            "'" . ($_POST['CedulaContactoFirma'] ?? "") . "'", // SMM, 18/10/2022
+            "'" . ($_POST['TelefonosContactosFirma'] ?? "") . "'", // SMM, 18/10/2022
+            "'" . ($_POST['CorreosContactosFirma'] ?? "") . "'", // SMM, 18/10/2022
             "'" . $FirmaContactoResponsable . "'", // SMM, 16/09/2022
+            "0", // FormatoCierreLlamada, SMM 14/10/2022
         );
         $SQL_InsLlamada = EjecutarSP('sp_tbl_LlamadaServicios', $ParamInsLlamada, 32);
         if ($SQL_InsLlamada) {
@@ -386,11 +387,12 @@ if (isset($_POST['P']) && ($_POST['P'] == 33)) { //Actualizar llamada de servici
             "'" . FormatoFecha($_POST['FechaAgenda'], $_POST['HoraAgenda']) . "'", // SMM 01/06/2022
             "0", // CreacionActividad, SMM 28/07/2022
             (PermitirFuncion(324) && ($_POST['EstadoLlamada'] == -1)) ? "1" : "0", // EnvioCorreo, SMM 28/07/2022
-            "'" . $_POST['NombreContactoFirma'] . "'", // SMM, 16/09/2022
-            "'" . $_POST['CedulaContactoFirma'] . "'", // SMM, 16/09/2022
-            "'" . $_POST['TelefonosContactosFirma'] . "'", // SMM, 16/09/2022
-            "'" . $_POST['CorreosContactosFirma'] . "'", // SMM, 16/09/2022
+            "'" . ($_POST['NombreContactoFirma'] ?? "") . "'", // SMM, 18/10/2022
+            "'" . ($_POST['CedulaContactoFirma'] ?? "") . "'", // SMM, 18/10/2022
+            "'" . ($_POST['TelefonosContactosFirma'] ?? "") . "'", // SMM, 18/10/2022
+            "'" . ($_POST['CorreosContactosFirma'] ?? "") . "'", // SMM, 18/10/2022
             "'" . $FirmaContactoResponsable . "'", // SMM, 16/09/2022
+            (PermitirFuncion(325) && ($_POST['EstadoLlamada'] == -1)) ? "1" : "0", // FormatoCierreLlamada, SMM 14/10/2022
         );
 
         // Actualizar la llamada de servicio.
@@ -467,8 +469,9 @@ if (isset($_POST['P']) && ($_POST['P'] == 33)) { //Actualizar llamada de servici
                 if ($Resultado->Success == 0 || $testMode) {
                     $sw_error = 1;
                     $msg_error = $Resultado->Mensaje;
+
                     if ($_POST['EstadoLlamada'] == '-1') {
-                        $UpdEstado = "Update tbl_LlamadasServicios Set Cod_Estado='-3' Where ID_LlamadaServicio='" . $IdLlamada . "'";
+                        $UpdEstado = "UPDATE tbl_LlamadasServicios SET Cod_Estado='-3' WHERE ID_LlamadaServicio='" . $IdLlamada . "'";
                         $SQL_UpdEstado = sqlsrv_query($conexion, $UpdEstado);
                     }
                 } else {
@@ -1250,12 +1253,14 @@ if (isset($sw_error) && ($sw_error == 1)) {
 				$(".cierre-input").prop("readonly", false);
 				$(".cierre-input").prop("disabled", false);
 
-				// SMM, 21/09/2022
-				$("#NombreContactoFirma").val($("#CDU_NombreContacto").val());
-				$("#CorreosDestinatarios").html("");
-				$("#TelefonosDestinatarios").html("");
-				AgregarEsto("CorreosDestinatarios", $("#CDU_CorreoContacto").val());
-				AgregarEsto("TelefonosDestinatarios", $("#CDU_TelefonoContacto").val());
+				// SMM, 14/10/2022
+				<?php if ($sw_error == 0) {?>
+					$("#NombreContactoFirma").val($("#CDU_NombreContacto").val());
+					$("#CorreosDestinatarios").html("");
+					$("#TelefonosDestinatarios").html("");
+					AgregarEsto("CorreosDestinatarios", $("#CDU_CorreoContacto").val());
+					AgregarEsto("TelefonosDestinatarios", $("#CDU_TelefonoContacto").val());
+				<?php }?>
 			} else {
 				console.log("cambio el estado de la llamada, diferente a cerrado.");
 
@@ -1339,14 +1344,14 @@ function CrearLead(){
 }
 
 // SMM, 16/09/2022
-function ValidarCorreo(evento, entrada) {
+function ValidarCorreo(evento, entrada, contenedorID = "CorreosDestinatarios") {
 	if (event.code === 'Space') {
 		let re = /\S+@\S+\.\S+/;
 		let correo = entrada.value.trim();
 
 		entrada.value = "";
 		if(re.test(correo)) {
-			AgregarEsto("CorreosDestinatarios", correo);
+			AgregarEsto(contenedorID, correo);
 		} else {
 			alert("El correo no paso la validación.");
 		}
@@ -1564,6 +1569,56 @@ function AgregarEsto(contenedorID, valorElemento) {
 			</div>
 			<!-- Fin, modalFactSN -->
 
+			<!-- Inicio, modalCorreo. SMM, 13/10/2022 -->
+			<?php if (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] == '-1')) {?>
+				<div class="modal inmodal fade" id="modalCorreo" tabindex="-1" role="dialog" aria-hidden="true">
+					<div class="modal-dialog modal-lg" style="width: 70% !important;">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h4 class="modal-title">Envío de llamada de servicio No.<?php echo $row['DocNum']; ?></h4>
+							</div>
+
+							<!-- form id="formCambiarSN" -->
+								<div class="modal-body">
+									<div class="row">
+										<div class="col-lg-1"></div>
+										<div class="col-lg-10">
+											<div class="form-group">
+												<label class="control-label">Para</label>
+												<input placeholder="Ingrese un nuevo correo y utilice la tecla [ESP] para agregar" onKeyUp="ValidarCorreo(event, this, 'CorreosPara')" autocomplete="off" name="EmailPara" type="text" class="form-control" id="EmailPara" maxlength="50" value="">
+												<input type="hidden" id="CorreosContactosFirma" name="CorreosContactosFirma">
+
+												<div id="CorreosPara"></div>
+											</div>
+										</div>
+										<div class="col-lg-1"></div>
+									</div>
+									<div class="row">
+										<div class="col-lg-1"></div>
+										<div class="col-lg-10">
+											<div class="form-group">
+												<label class="control-label">Con copia a</label>
+												<input placeholder="Ingrese un nuevo correo y utilice la tecla [ESP] para agregar" onKeyUp="ValidarCorreo(event, this, 'CorreosCC')" autocomplete="off" name="EmailCC" type="text" class="form-control" id="CorreoContactoFirma" maxlength="50" value="">
+												<input type="hidden" id="CorreosContactosFirma" name="CorreosContactosFirma">
+
+												<div id="CorreosCC"></div>
+											</div>
+										</div>
+										<div class="col-lg-1"></div>
+									</div>
+								</div>
+
+								<div class="modal-footer">
+									<button type="submit" class="btn btn-success m-t-md"><i class="fa fa-check"></i> Aceptar</button>
+									<button type="button" class="btn btn-secondary m-t-md CancelarSN" data-dismiss="modal"><i class="fa fa-times"></i> Cancelar</button>
+								</div>
+							<!-- /form -->
+						</div>
+					</div>
+				</div>
+			<?php }?>
+			<!-- Fin, modalCorreo -->
+
 			<?php if ($type_llmd == 1) {?>
 			<div class="row">
 				<div class="col-lg-3">
@@ -1635,7 +1690,10 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 													<?php }?>
 												</ul>
 											</div>
-											<!-- a href="#" class="btn btn-outline btn-primary"><i class="fa fa-envelope"></i> Enviar correo</a -->
+
+											<?php if (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] == '-1') && false) {?>
+												<a href="#" class="btn btn-outline btn-primary" onClick="$('#modalCorreo').modal('show');"><i class="fa fa-envelope"></i> Enviar correo</a>
+											<?php }?>
 											<a href="#" class="btn btn-outline btn-info" onClick="VerMapaRel('<?php echo base64_encode($row['ID_LlamadaServicio']); ?>','<?php echo base64_encode('191'); ?>');"><i class="fa fa-sitemap"></i> Mapa de relaciones</a>
 										</div>
 										<?php } else if (PermitirFuncion(508)) {?>
@@ -2231,8 +2289,8 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 							<div class="col-lg-5 m-r-md">
 
 								<div class="form-group">
-									<label class="control-label">Correos Destinatarios (Máximo 4 - Tecla [ESP] para agregar) <span class="text-danger cierre-span">*</span></label>
-									<input onKeyUp="ValidarCorreo(event, this)" <?php if (!$testMode) {echo "readonly";}?> autocomplete="off" name="CorreoContactoFirma" type="text" class="form-control cierre-input" id="CorreoContactoFirma" maxlength="50" value="">
+									<label class="control-label">Correos Destinatarios (Máximo 4) <span class="text-danger cierre-span">*</span></label>
+									<input placeholder="Ingrese un nuevo correo y utilice la tecla [ESP] para agregar" onKeyUp="ValidarCorreo(event, this)" <?php if (!$testMode) {echo "readonly";}?> autocomplete="off" name="CorreoContactoFirma" type="text" class="form-control cierre-input" id="CorreoContactoFirma" maxlength="50" value="">
 									<input type="hidden" id="CorreosContactosFirma" name="CorreosContactosFirma">
 
 									<div id="CorreosDestinatarios">
@@ -2247,8 +2305,8 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 									</div>
 								</div>
 								<div class="form-group">
-									<label class="control-label">Teléfonos Destinatarios (Máximo 4 - Tecla [ESP] para agregar) <span class="text-danger cierre-span">*</span></label>
-									<input onKeyUp="ValidarTelefono(event, this)" <?php if (!$testMode) {echo "readonly";}?> autocomplete="off" name="TelefonoContactoFirma" type="text" class="form-control cierre-input" id="TelefonoContactoFirma" maxlength="10" value="">
+									<label class="control-label">Teléfonos Destinatarios (Máximo 4) <span class="text-danger cierre-span">*</span></label>
+									<input placeholder="Ingrese un nuevo teléfono y utilice la tecla [ESP] para agregar" onKeyUp="ValidarTelefono(event, this)" <?php if (!$testMode) {echo "readonly";}?> autocomplete="off" name="TelefonoContactoFirma" type="text" class="form-control cierre-input" id="TelefonoContactoFirma" maxlength="10" value="">
 									<input type="hidden" id="TelefonosContactosFirma" name="TelefonosContactosFirma">
 
 									<div id="TelefonosDestinatarios">
@@ -2270,19 +2328,25 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 								</div>
 								<div class="form-group">
 									<label class="control-label">Cédula del cliente <!-- span class="text-danger cierre-span">*</span --></label>
-									<input <?php if (!$testMode) {echo "readonly";}?> autocomplete="off" name="CedulaContactoFirma" type="text" class="form-control cierre-input" id="CedulaContactoFirma" maxlength="100" value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['CedulaContactoFirma'] ?? "";}?>">
+									<input <?php if (!$testMode) {echo "readonly";}?> autocomplete="off" name="CedulaContactoFirma" type="number" class="form-control cierre-input" id="CedulaContactoFirma" maxlength="15" value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {echo $row['CedulaContactoFirma'] ?? "";}?>">
 								</div>
 								<!-- Componente "firma"-->
 								<br><br>
 								<div class="form-group">
 									<label class="col-lg-2">Firma del cliente <!-- span class="text-danger cierre-span">*</span --></label>
-									<?php if ($type_llmd == 1 && (isset($row['CedulaContactoFirma']) && ($row['CedulaContactoFirma'] != ""))) {?>
-									<div class="col-lg-10">
-										<span class="badge badge-primary">Firmado</span>
-									</div>
+									<?php if (($sw_error == 1) || (($type_llmd == 1) && ($row['IdEstadoLlamada'] == '-1'))) {?>
+										<?php if (isset($row['FirmaContactoResponsable']) && ($row['FirmaContactoResponsable'] != "")) {?>
+											<div class="col-lg-10">
+												<span class="badge badge-primary">Firmado</span>
+											</div>
+										<?php } else {?>
+											<div class="col-lg-10">
+												<span class="badge badge-danger">NO Firmado</span>
+											</div>
+										<?php }?>
 									<?php } else { //LimpiarDirTempFirma();?>
 									<div class="col-lg-5">
-										<button class="btn btn-primary" type="button" id="FirmaCliente" onClick="AbrirFirma('FirmaContactoResponsable');"><i class="fa fa-pencil-square-o"></i> Realizar firma</button>
+										<button <?php if (!$testMode) {echo "disabled";}?> class="btn btn-primary cierre-input" type="button" id="FirmaCliente" onClick="AbrirFirma('FirmaContactoResponsable');"><i class="fa fa-pencil-square-o"></i> Realizar firma</button>
 										<br>
 										<input readonly type="text" id="FirmaContactoResponsable" name="FirmaContactoResponsable" style="width: 100px; margin-left: -7px; visibility: hidden;" value="">
 										<div id="msgInfoFirmaContactoResponsable" style="display: none;" class="alert alert-info"><i class="fa fa-info-circle"></i> El documento ya ha sido firmado.</div>
