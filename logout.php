@@ -6,6 +6,7 @@ if (isset($_SESSION)) {
 $parametros_cookies = session_get_cookie_params();
 setcookie(session_name(), 0, 1, $parametros_cookies["path"]);
 setcookie("JWT", "", time() - 3600);
+setcookie("banderaMenu", "", time() - 3600); // SMM, 18/11/2022
 
 if (isset($_GET['data']) && $_GET['data'] != "") {?>
 

@@ -389,8 +389,8 @@ $(document).ready(function() {
 				$('#ValorLista').html(response).fadeIn();
 
 				<?php if (($edit == 1) && ($id != "")) {?>
-					$('#EtiquetaLista').val("<?php echo $row['EtiquetaLista']; ?>");
-					$('#ValorLista').val("<?php echo $row['ValorLista']; ?>");
+					$('#EtiquetaLista').val("<?php echo $row['EtiquetaLista'] ?? ""; ?>");
+					$('#ValorLista').val("<?php echo $row['ValorLista'] ?? ""; ?>");
 				<?php }?>
 
 				$('#EtiquetaLista').trigger('change');

@@ -1,14 +1,19 @@
 <?php
 require_once "includes/conexion.php";
 
-$Cons_Menu = "Select * From uvw_tbl_Categorias Where ID_Padre=0 and EstadoCategoria=1 and ID_Permiso IN (Select ID_Permiso From uvw_tbl_PermisosPerfiles Where ID_PerfilUsuario='" . $_SESSION['Perfil'] . "')";
-$SQL_Menu = sqlsrv_query($conexion, $Cons_Menu, array(), array("Scrollable" => 'Buffered'));
-$Num_Menu = sqlsrv_num_rows($SQL_Menu);
+if (!isset($_COOKIE["banderaMenu"])) {
+    $Cons_Menu = "Select * From uvw_tbl_Categorias Where ID_Padre=0 and EstadoCategoria=1 and ID_Permiso IN (Select ID_Permiso From uvw_tbl_PermisosPerfiles Where ID_PerfilUsuario='" . $_SESSION['Perfil'] . "')";
+    $SQL_Menu = sqlsrv_query($conexion, $Cons_Menu, array(), array("Scrollable" => 'Buffered'));
+    $Num_Menu = sqlsrv_num_rows($SQL_Menu);
 
-$SQL_ConsultasSAPB1_Categorias = Seleccionar("tbl_ConsultasSAPB1_Categorias", "*", "ID_CategoriaPadre = 0 AND Estado = 'Y'");
+    $SQL_ConsultasSAPB1_Categorias = Seleccionar("tbl_ConsultasSAPB1_Categorias", "*", "ID_CategoriaPadre = 0 AND Estado = 'Y'");
+}
 ?>
 
-<nav class="navbar-default navbar-static-side" role="navigation">
+<nav class="navbar-default navbar-static-side" role="navigation" id="menu">
+	<!-- SMM, 18/11/2022 -->
+	<?php if (!isset($_COOKIE["banderaMenu"])) {?>
+
 	<div class="sidebar-collapse">
 		<ul class="nav metismenu" id="side-menu">
 			<li class="nav-header">
@@ -29,7 +34,9 @@ $SQL_ConsultasSAPB1_Categorias = Seleccionar("tbl_ConsultasSAPB1_Categorias", "*
 			<li class="active">
 				<a class="alnk" href="<?php echo isset($_SESSION['Index']) ? $_SESSION['Index'] : "index1.php"; ?>"><i class="fa fa-home"></i> <span class="nav-label">Inicio</span></a>
 			</li>
-		<?php while ($row_Menu = sqlsrv_fetch_array($SQL_Menu)) {
+
+<!-- Inicio, Informes SAP B1 -->
+<?php while ($row_Menu = sqlsrv_fetch_array($SQL_Menu)) {
     $arrow = "";
     $lnk = "class='alnk'";
 
@@ -109,6 +116,7 @@ $SQL_ConsultasSAPB1_Categorias = Seleccionar("tbl_ConsultasSAPB1_Categorias", "*
 				</li>
 				"; //li2
 }?>
+<!-- Fin, Informes SAP B1 -->
 
 			<!-- Inicio, Consultas SAP B1 -->
 			<?php while ($row_Categoria = sqlsrv_fetch_array($SQL_ConsultasSAPB1_Categorias)) {?>
@@ -503,5 +511,19 @@ $SQL_ConsultasSAPB1_Categorias = Seleccionar("tbl_ConsultasSAPB1_Categorias", "*
 				</ul>
 			</li>
 		</ul>
-	</div>
+	</div> <!-- Aquí termina -->
+
+	<?php }?>
+	<!-- Hasta aquí, 18/11/2022 -->
 </nav>
+
+<script> // Menú en localStorage. SMM, 18/11/2022
+	let menu = document.getElementById("menu");
+
+	if((getCookie("banderaMenu") !== "") && localStorage.hasOwnProperty("menu")) {
+		menu.innerHTML = localStorage.menu;
+	} else {
+		document.cookie = `banderaMenu=true`;
+		localStorage.menu = menu.innerHTML;
+	} // Hasta aquí, 18/11/2022
+</script>
