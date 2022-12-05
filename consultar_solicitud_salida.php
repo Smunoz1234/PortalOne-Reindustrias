@@ -216,7 +216,7 @@ if(isset($_GET['a'])&&($_GET['a']==base64_encode("OK_SolSalUpd"))){
 					 <?php include("includes/spinner.php"); ?>
 				  <form action="consultar_solicitud_salida.php" method="get" id="formBuscar" class="form-horizontal">
 						<div class="form-group">
-							<label class="col-xs-12"><h3 class="bg-muted p-xs b-r-sm"><i class="fa fa-filter"></i> Datos para filtrar</h3></label>
+							<label class="col-xs-12"><h3 class="bg-success p-xs b-r-sm"><i class="fa fa-filter"></i> Datos para filtrar</h3></label>
 						</div>
 						<div class="form-group">
 							<label class="col-lg-1 control-label">Fechas</label>

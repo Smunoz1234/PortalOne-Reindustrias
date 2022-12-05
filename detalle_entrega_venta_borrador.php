@@ -584,7 +584,8 @@ if ($sw == 1) {
 				<input type="hidden" name="LineNum[]" id="LineNum<?php echo $i; ?>" value="<?php echo $row['LineNum']; ?>">
 			</td>
 
-			<td><input size="50" type="text" autocomplete="off" id="ItemName<?php echo $i; ?>" name="ItemName[]" class="form-control" value="<?php echo $row['ItemName']; ?>" maxlength="100" onChange="ActualizarDatos('ItemName',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if (($row['LineStatus'] == 'C') || ($type == 2)) {echo "readonly";}?>></td>
+			<td><input size="50" type="text" autocomplete="off" id="ItemName<?php echo $i; ?>" name="ItemName[]" class="form-control" value="<?php echo str_replace('"', '', $row['ItemName']); ?>" maxlength="100" onChange="ActualizarDatos('ItemName',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if (($row['LineStatus'] == 'C') || ($type == 2)) {echo "readonly";}?>></td>
+
 			<td><input size="15" type="text" id="UnitMsr<?php echo $i; ?>" name="UnitMsr[]" class="form-control" readonly value="<?php echo $row['UnitMsr']; ?>"></td>
 
 			<td>
