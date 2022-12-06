@@ -2360,6 +2360,13 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     "'" . $WhsCode . "'",
                     "'" . $CardCode . "'",
                     "'" . $_SESSION['CodUser'] . "'",
+                    "'" . $_REQUEST['dim1'] . "'",
+                    "'" . $_REQUEST['dim2'] . "'",
+                    "'" . $_REQUEST['dim3'] . "'",
+                    "''", //dim4
+                    "''", //dim5
+                    "'" . $_REQUEST['prjcode'] . "'", // SMM, 01/12/2022
+                    "'" . $_REQUEST['towhscode'] . "'", // SMM, 01/12/2022
                 );
                 $SQL_Insert = EjecutarSP('sp_tbl_SolicitudSalidaDetalleCarritoInsert', $ParametrosInsert, 35);
                 if ($SQL_Insert) {
@@ -2392,6 +2399,13 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     "'" . $id . "'",
                     "'" . $evento . "'",
                     "'" . $_SESSION['CodUser'] . "'",
+                    "'" . $_REQUEST['dim1'] . "'", // SMM, 01/12/2022
+                    "'" . $_REQUEST['dim2'] . "'", // SMM, 01/12/2022
+                    "'" . $_REQUEST['dim3'] . "'", // SMM, 01/12/2022
+                    "''", //dim4
+                    "''", //dim5
+                    "'" . $_REQUEST['prjcode'] . "'", // SMM, 01/12/2022
+                    "'" . $_REQUEST['towhscode'] . "'", // SMM, 01/12/2022
                 );
                 $SQL_Insert = EjecutarSP('sp_tbl_SolicitudSalidaDetalleInsert', $ParametrosInsert, 35);
                 if ($SQL_Insert) {
@@ -2415,6 +2429,12 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     "'" . $WhsCode . "'",
                     "'" . $CardCode . "'",
                     "'" . $_SESSION['CodUser'] . "'",
+                    "'" . $_REQUEST['dim1'] . "'", // SMM, 01/12/2022
+                    "'" . $_REQUEST['dim2'] . "'", // SMM, 01/12/2022
+                    "'" . $_REQUEST['dim3'] . "'", // SMM, 01/12/2022
+                    "''", //dim4
+                    "''", //dim5
+                    "'" . $_REQUEST['prjcode'] . "'", // SMM, 01/12/2022
                 );
                 $SQL_Insert = EjecutarSP('sp_tbl_SalidaInventarioDetalleCarritoInsert', $ParametrosInsert, 35);
                 if ($SQL_Insert) {
@@ -2447,6 +2467,12 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     "'" . $id . "'",
                     "'" . $evento . "'",
                     "'" . $_SESSION['CodUser'] . "'",
+                    "'" . $_REQUEST['dim1'] . "'", // SMM, 01/12/2022
+                    "'" . $_REQUEST['dim2'] . "'", // SMM, 01/12/2022
+                    "'" . $_REQUEST['dim3'] . "'", // SMM, 01/12/2022
+                    "''", //dim4
+                    "''", //dim5
+                    "'" . $_REQUEST['prjcode'] . "'", // SMM, 01/12/2022
                 );
                 $SQL_Insert = EjecutarSP('sp_tbl_SalidaInventarioDetalleInsert', $ParametrosInsert, 35);
                 if ($SQL_Insert) {
@@ -2476,7 +2502,7 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     "'" . $_REQUEST['dim3'] . "'",
                     "''", //dim4
                     "''", //dim5
-                    "''", //prjcode
+                    "'" . $_REQUEST['prjcode'] . "'", // SMM, 01/12/2022
                 );
                 $SQL_Insert = EjecutarSP('sp_tbl_TrasladoInventarioDetalleCarritoInsert', $ParametrosInsert, 35);
                 if ($SQL_Insert) {
@@ -2515,7 +2541,7 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     "'" . $_REQUEST['dim3'] . "'",
                     "''", //dim4
                     "''", //dim5
-                    "''", //prjcode
+                    "'" . $_REQUEST['prjcode'] . "'", // SMM, 01/12/2022
                 );
                 $SQL_Insert = EjecutarSP('sp_tbl_TrasladoInventarioDetalleInsert', $ParametrosInsert, 35);
                 if ($SQL_Insert) {
@@ -3216,6 +3242,7 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                         "'" . $_GET['cardcode'] . "'",
                         "'" . $_GET['whscode'] . "'",
                         "'" . $_SESSION['CodUser'] . "'",
+                        "'" . ($_GET['actodos'] ?? 0) . "'", // SMM, 02/12/2022
                     );
                     $SQL = EjecutarSP('sp_tbl_SolicitudSalidaDetalleCarritoUpdCampos', $Parametros, 36);
                     if ($SQL) {
@@ -3235,6 +3262,7 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                         "'" . $_GET['id'] . "'",
                         "'" . $_GET['evento'] . "'",
                         "'" . $_SESSION['CodUser'] . "'",
+                        "'" . ($_GET['actodos'] ?? 0) . "'", // SMM, 02/12/2022
                     );
                     $SQL = EjecutarSP('sp_tbl_SolicitudSalidaDetalleUpdCampos', $Parametros, 36);
                     if ($SQL) {
@@ -3255,6 +3283,7 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                         "'" . $_GET['cardcode'] . "'",
                         "'" . $_GET['whscode'] . "'",
                         "'" . $_SESSION['CodUser'] . "'",
+                        "'" . ($_GET['actodos'] ?? 0) . "'", // SMM, 05/12/2022
                     );
                     $SQL = EjecutarSP('sp_tbl_SalidaInventarioDetalleCarritoUpdCampos', $Parametros, 36);
                     if ($SQL) {
@@ -3274,6 +3303,7 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                         "'" . $_GET['id'] . "'",
                         "'" . $_GET['evento'] . "'",
                         "'" . $_SESSION['CodUser'] . "'",
+                        "'" . ($_GET['actodos'] ?? 0) . "'", // SMM, 05/12/2022
                     );
                     $SQL = EjecutarSP('sp_tbl_SalidaInventarioDetalleUpdCampos', $Parametros, 36);
                     if ($SQL) {

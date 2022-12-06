@@ -204,6 +204,27 @@ if (isset($_GET['type']) && $_GET['type'] != "") {
             }
         }
 
+        // Solicitud de salida
+        elseif ($_GET['objtype'] == "1250000001") {
+            //Limpiar carrito
+            $Cons = "DELETE FROM tbl_SolicitudSalidaDetalleCarrito WHERE CardCode='" . $_GET['cardcode'] . "' And Usuario='" . $_SESSION['CodUser'] . "'";
+            $SQL_Cons = sqlsrv_query($conexion, $Cons);
+
+            if ($SQL_Cons) {
+                echo "*Ok*";
+            }
+        } // SMM, 23/11/2022
+
+        // Salida inventario
+        elseif ($_GET['objtype'] == "60") {
+            //Limpiar carrito
+            $Cons = "DELETE FROM tbl_SalidaInventarioDetalleCarrito WHERE CardCode='" . $_GET['cardcode'] . "' And Usuario='" . $_SESSION['CodUser'] . "'";
+            $SQL_Cons = sqlsrv_query($conexion, $Cons);
+
+            if ($SQL_Cons) {
+                echo "*Ok*";
+            }
+        } // SMM, 06/12/2022
     } elseif ($_GET['type'] == 8) { //Eliminar una linea del carrito en la Entrega de venta
         if ($_GET['edit'] == 1) {
             $linenum = $_GET['linenum'];
@@ -234,20 +255,31 @@ if (isset($_GET['type']) && $_GET['type'] != "") {
         }
     } elseif ($_GET['type'] == 9) { //Eliminar una linea del carrito en la Solicitud de salida
         if ($_GET['edit'] == 1) {
-            $Cons = "Delete From tbl_SolicitudSalidaDetalleCarrito Where LineNum='" . $_GET['linenum'] . "' And CardCode='" . $_GET['cardcode'] . "' And Usuario='" . $_SESSION['CodUser'] . "'";
+            $linenum = $_GET['linenum'];
+            $cardcode = $_GET['cardcode'];
+            $coduser = $_SESSION['CodUser'];
+
+            // Stiven Muñoz Murillo, 02/12/2022
+            $Cons = "DELETE FROM tbl_SolicitudSalidaDetalleCarrito WHERE LineNum IN (SELECT VALUE FROM STRING_SPLIT('$linenum', ',')) AND CardCode='$cardcode' AND Usuario='$coduser'";
+
             $SQL_Cons = sqlsrv_query($conexion, $Cons);
             if ($SQL_Cons) {
                 echo "*Ok*";
             }
         } else {
-            $Parametros = array(
-                "'" . $_GET['linenum'] . "'",
-                "'" . $_GET['id'] . "'",
-                "'" . $_GET['evento'] . "'",
-            );
-            $LimpiarOrden = EjecutarSP('sp_tbl_SolicitudSalidaDetalle_DelLine', $Parametros);
-            if ($LimpiarOrden) {
-                echo "*Ok*";
+            // Stiven Muñoz Murillo, 02/12/2022
+            $linenum = explode(',', $_GET['linenum']);
+
+            foreach ($linenum as $l) {
+                $Parametros = array(
+                    "'" . $l . "'",
+                    "'" . $_GET['id'] . "'",
+                    "'" . $_GET['evento'] . "'",
+                );
+                $LimpiarTabla = EjecutarSP('sp_tbl_SolicitudSalidaDetalle_DelLine', $Parametros);
+                if ($LimpiarTabla) {
+                    echo "*Ok*";
+                }
             }
         }
     } elseif ($_GET['type'] == 10) { //Eliminar una linea del carrito en la Salida de inventario
@@ -301,20 +333,31 @@ if (isset($_GET['type']) && $_GET['type'] != "") {
         echo $Total;
     } elseif ($_GET['type'] == 13) { //Eliminar una linea del carrito en la Traslado de inventario
         if ($_GET['edit'] == 1) {
-            $Cons = "Delete From tbl_TrasladoInventarioDetalleCarrito Where LineNum IN (" . $_GET['linenum'] . ") And CardCode='" . $_GET['cardcode'] . "' And Usuario='" . $_SESSION['CodUser'] . "'";
+            $linenum = $_GET['linenum'];
+            $cardcode = $_GET['cardcode'];
+            $coduser = $_SESSION['CodUser'];
+
+            // Stiven Muñoz Murillo, 02/12/2022
+            $Cons = "DELETE FROM tbl_TrasladoInventarioDetalleCarrito WHERE LineNum IN (SELECT VALUE FROM STRING_SPLIT('$linenum', ',')) AND CardCode='$cardcode' AND Usuario='$coduser'";
+
             $SQL_Cons = sqlsrv_query($conexion, $Cons);
             if ($SQL_Cons) {
                 echo "*Ok*";
             }
         } else {
-            $Parametros = array(
-                "'" . $_GET['linenum'] . "'",
-                "'" . $_GET['id'] . "'",
-                "'" . $_GET['evento'] . "'",
-            );
-            $LimpiarOrden = EjecutarSP('sp_tbl_TrasladoInventarioDetalle_DelLine', $Parametros);
-            if ($LimpiarOrden) {
-                echo "*Ok*";
+            // Stiven Muñoz Murillo, 02/12/2022
+            $linenum = explode(',', $_GET['linenum']);
+
+            foreach ($linenum as $l) {
+                $Parametros = array(
+                    "'" . $l . "'",
+                    "'" . $_GET['id'] . "'",
+                    "'" . $_GET['evento'] . "'",
+                );
+                $LimpiarTabla = EjecutarSP('sp_tbl_TrasladoInventarioDetalle_DelLine', $Parametros);
+                if ($LimpiarTabla) {
+                    echo "*Ok*";
+                }
             }
         }
     } elseif ($_GET['type'] == 14) { //Agregar al carrito de Facturacion de Orden de servicio
@@ -952,6 +995,56 @@ if (isset($_GET['type']) && $_GET['type'] != "") {
         $SQL = EjecutarSP('sp_tbl_Actividades_Rutas_Mover_Lote_DuplicarLine', $Parametros);
         if ($SQL) {
             echo "*Ok*";
+        }
+    }
+
+    // SMM, 25/11/2022
+    elseif ($_GET['type'] == 59) { // Duplicar una linea en el Traslado de Invenetario
+        if ($_GET['edit'] == 1) {
+            $Parametros = array(
+                "'" . $_GET['linenum'] . "'",
+                "'" . $_GET['cardcode'] . "'",
+                "'" . $_SESSION['CodUser'] . "'",
+            );
+            $SQL = EjecutarSP('sp_tbl_TrasladoInventarioDetalleCarrito_DuplicarLine', $Parametros);
+            if ($SQL) {
+                echo "*Ok*";
+            }
+        } else {
+            $Parametros = array(
+                "'" . $_GET['linenum'] . "'",
+                "'" . $_GET['id'] . "'",
+                "'" . $_GET['evento'] . "'",
+            );
+            $SQL = EjecutarSP('sp_tbl_TrasladoInventarioDetalle_DuplicarLine', $Parametros);
+            if ($SQL) {
+                echo "*Ok*";
+            }
+        }
+    }
+
+    // SMM, 25/11/2022
+    elseif ($_GET['type'] == 60) { // Duplicar una linea en la Solicitud de Salida
+        if ($_GET['edit'] == 1) {
+            $Parametros = array(
+                "'" . $_GET['linenum'] . "'",
+                "'" . $_GET['cardcode'] . "'",
+                "'" . $_SESSION['CodUser'] . "'",
+            );
+            $SQL = EjecutarSP('sp_tbl_SolicitudSalidaDetalleCarrito_DuplicarLine', $Parametros);
+            if ($SQL) {
+                echo "*Ok*";
+            }
+        } else {
+            $Parametros = array(
+                "'" . $_GET['linenum'] . "'",
+                "'" . $_GET['id'] . "'",
+                "'" . $_GET['evento'] . "'",
+            );
+            $SQL = EjecutarSP('sp_tbl_SolicitudSalidaDetalle_DuplicarLine', $Parametros);
+            if ($SQL) {
+                echo "*Ok*";
+            }
         }
     }
 

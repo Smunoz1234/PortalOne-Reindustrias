@@ -138,9 +138,9 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Salida de inventario
             "'" . $_POST['SucursalDestino'] . "'",
             "'" . $_POST['DireccionDestino'] . "'",
             "'" . $_POST['CondicionPago'] . "'",
-            "'" . $_POST['CentroCosto'] . "'",
-            "'" . $_POST['UnidadNegocio'] . "'",
-            "'" . $_POST['Sucursal'] . "'",
+
+            // Se eliminaron las dimensiones, SMM 23/11/2022
+
             "NULL",
             "'N'",
             "'" . $_POST['TipoEntrega'] . "'",
@@ -153,6 +153,15 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Salida de inventario
             "'" . $_SESSION['CodUser'] . "'",
             "$Type",
         );
+
+        // Enviar el valor de la dimensiones dinámicamente al SP.
+        foreach ($array_Dimensiones as &$dim) {
+            $Dim_PostValue = $_POST[strval($dim['IdPortalOne'])];
+
+            // El nombre de los parámetros es diferente en cada documento.
+            array_push($ParametrosCabSalidaInv, "'$Dim_PostValue'");
+        } // SMM, 23/11/2022
+
         $SQL_CabeceraSalidaInv = EjecutarSP('sp_tbl_SalidaInventario', $ParametrosCabSalidaInv, $_POST['P']);
         if ($SQL_CabeceraSalidaInv) {
             if ($Type == 1) {
@@ -202,27 +211,16 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Salida de inventario
 
             //Enviar datos al WebServices
             try {
-                require_once "includes/conect_ws.php";
                 $Parametros = array(
-                    'pIdSalidaTras' => $IdSalidaInv,
-                    'pIdEvento' => $IdEvento,
-                    'pLogin' => $_SESSION['User'],
+                    'id_documento' => intval($IdSalidaInv),
+                    'id_evento' => intval($IdEvento),
                 );
-                $Client->AppPortal_InsertarSalidaTraslado($Parametros);
-                //$Client->AppPortal_InsertarSolSalida($Parametros);
-                $Respuesta = $Client->__getLastResponse();
-                $Contenido = new SimpleXMLElement($Respuesta, 0, false, "s", true);
-                $espaciosDeNombres = $Contenido->getNamespaces(true);
-                $Nodos = $Contenido->children($espaciosDeNombres['s']);
-                $Nodo = $Nodos->children($espaciosDeNombres['']);
-                $Nodo2 = $Nodo->children($espaciosDeNombres['']);
+                $Metodo = "SalidasInventarios";
+                $Resultado = EnviarWebServiceSAP($Metodo, $Parametros, true, true);
 
-                $Archivo = json_decode($Nodo2, true);
-                if ($Archivo['ID_Respuesta'] == "0") {
-                    //InsertarLog(1, 0, 'Error al generar el informe');
-                    //throw new Exception('Error al generar el informe. Error de WebServices');
+                if ($Resultado->Success == 0) {
                     $sw_error = 1;
-                    $msg_error = $Archivo['DE_Respuesta'];
+                    $msg_error = $Resultado->Mensaje;
                 } else {
                     sqlsrv_close($conexion);
                     if ($_POST['tl'] == 0) { //Creando salida
@@ -255,6 +253,10 @@ if (isset($_GET['dt_TI']) && ($_GET['dt_TI']) == 1) { //Verificar que viene de u
     //Sucursal destino
     $SQL_SucursalDestino = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "' AND NombreSucursal='" . base64_decode($_GET['Sucursal']) . "'");
 
+    // Sucursales. SMM, 01/12/2022
+    $SQL_SucursalDestino = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "' AND NombreSucursal='" . base64_decode($_GET['Sucursal']) . "'");
+    $SQL_SucursalFacturacion = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "' AND NombreSucursal='" . base64_decode($_GET['SucursalFact']) . "' AND TipoDireccion='B'", 'NombreSucursal');
+
     //Contacto cliente
     $SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreContacto');
 
@@ -269,10 +271,10 @@ if (isset($_GET['dt_TI']) && ($_GET['dt_TI']) == 1) { //Verificar que viene de u
     if (!$SQL_CopiarTrasladoInvToSalidaInv) {
         echo "<script>
 		$(document).ready(function() {
-			swal({
+			Swal.fire({
 				title: '¡Ha ocurrido un error!',
 				text: 'No se pudo copiar el Traslado en la Salida de inventario.',
-				type: 'error'
+				icon: 'error'
 			});
 		});
 		</script>";
@@ -297,8 +299,8 @@ if ($edit == 1 && $sw_error == 0) {
     $SQL = sqlsrv_query($conexion, $Cons);
     $row = sqlsrv_fetch_array($SQL);
 
-	// SMM, 05/09/2022
-	// echo $Cons;
+    // SMM, 05/09/2022
+    // echo $Cons;
 
     //Clientes
     $SQL_Cliente = Seleccionar('uvw_Sap_tbl_Clientes', '*', "CodigoCliente='" . $row['CardCode'] . "'", 'NombreCliente');
@@ -389,6 +391,9 @@ $ParamSerie = array(
 );
 $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 
+// Proyectos, SMM 05/12/2022
+$SQL_Proyecto = Seleccionar('uvw_Sap_tbl_Proyectos', '*', '', 'DeProyecto');
+
 // Stiven Muñoz Murillo, 31/08/2022
 $row_encode = isset($row) ? json_encode($row) : "";
 $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'Not Found'";
@@ -407,10 +412,10 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 if (isset($_GET['a']) && $_GET['a'] == base64_encode("OK_SalInvAdd")) {
     echo "<script>
 		$(document).ready(function() {
-			swal({
+			Swal.fire({
 				title: '¡Listo!',
 				text: 'La Salida de inventario ha sido creada exitosamente.',
-				type: 'success'
+				icon: 'success'
 			});
 		});
 		</script>";
@@ -418,10 +423,10 @@ if (isset($_GET['a']) && $_GET['a'] == base64_encode("OK_SalInvAdd")) {
 if (isset($sw_error) && ($sw_error == 1)) {
     echo "<script>
 		$(document).ready(function() {
-			swal({
+			Swal.fire({
                 title: '¡Ha ocurrido un error!',
-                text: '" . str_replace("'", "", $msg_error) . "',
-                type: 'error'
+                text: '" . preg_replace('/\s+/', ' ', LSiqmlObs($msg_error)) . "',
+                icon: 'error'
             });
 		});
 		</script>";
@@ -458,15 +463,18 @@ function BuscarArticulo(dato){
 	posicion_x=(screen.width/2)-(1200/2);
 	posicion_y=(screen.height/2)-(500/2);
 
+	// SMM, 05/12/2022
+	let proyecto = document.getElementById("PrjCode").value;
+
 	if(dato!=""){
 		if((cardcode!="")&&(almacen!="")){
-			remote=open('buscar_articulo.php?dato='+dato+'&cardcode='+cardcode+'&whscode='+almacen+'&doctype=<?php if ($edit == 0) {echo "9";} else {echo "10";}?>&idsalidainv=<?php if ($edit == 1) {echo base64_encode($row['ID_SalidaInv']);} else {echo "0";}?>&evento=<?php if ($edit == 1) {echo base64_encode($row['IdEvento']);} else {echo "0";}?>&tipodoc=3','remote',"width=1200,height=500,location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=no,fullscreen=no,directories=no,status=yes,left="+posicion_x+",top="+posicion_y+"");
+			remote=open(`buscar_articulo.php?dim1=${dim1}&dim2=${dim2}&dim3=${dim3}&prjcode=${proyecto}&dato=`+dato+'&cardcode='+cardcode+'&whscode='+almacen+'&doctype=<?php if ($edit == 0) {echo "9";} else {echo "10";}?>&idsalidainv=<?php if ($edit == 1) {echo base64_encode($row['ID_SalidaInv']);} else {echo "0";}?>&evento=<?php if ($edit == 1) {echo base64_encode($row['IdEvento']);} else {echo "0";}?>&tipodoc=3','remote',"width=1200,height=500,location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=no,fullscreen=no,directories=no,status=yes,left="+posicion_x+",top="+posicion_y+"");
 			remote.focus();
 		}else{
-			swal({
+			Swal.fire({
 				title: "¡Error!",
 				text: "Debe seleccionar un cliente y un almacén",
-				type: "error",
+				icon: "error",
 				confirmButtonText: "OK"
 			});
 		}
@@ -496,8 +504,21 @@ function ConsultarDatosCliente(){
 				url: "ajx_cbo_select.php?type=2&id="+carcode,
 				success: function(response){
 					$('#ContactoCliente').html(response).fadeIn();
+				},
+				error: function(error) {
+					console.log(`ajx_cbo_select.php?type=2&id=${carcode}`);
+					console.log("Line 500", error.responseText);
+
+					$('.ibox-content').toggleClass('sk-loading', false);
 				}
 			});
+
+			<?php if ($edit == 0 && $sw_error == 0) { // Limpiar carrito detalle. ?>
+			$.ajax({
+				type: "POST",
+				url: "includes/procedimientos.php?type=7&objtype=60&cardcode="+carcode
+			});
+			<?php }?>
 
 			<?php if ($dt_TI == 0) { //Para que no recargue las listas cuando vienen de una solicitud de salida.?>
 			$.ajax({
@@ -506,6 +527,11 @@ function ConsultarDatosCliente(){
 				success: function(response){
 					$('#SucursalDestino').html(response).fadeIn();
 					$('#SucursalDestino').trigger('change');
+				},
+				error: function(error) {
+					console.log("Line 515", error.responseText);
+
+					$('.ibox-content').toggleClass('sk-loading', false);
 				}
 			});
 			<?php }?>
@@ -516,6 +542,11 @@ function ConsultarDatosCliente(){
 				success: function(response){
 					$('#SucursalFacturacion').html(response).fadeIn();
 					$('#SucursalFacturacion').trigger('change');
+				},
+				error: function(error) {
+					console.log("Line 525", error.responseText);
+
+					$('.ibox-content').toggleClass('sk-loading', false);
 				}
 			});
 
@@ -524,6 +555,11 @@ function ConsultarDatosCliente(){
 				url: "ajx_cbo_select.php?type=7&id="+carcode,
 				success: function(response){
 					$('#CondicionPago').html(response).fadeIn();
+				},
+				error: function(error) {
+					console.log("Line 543", error.responseText);
+
+					$('.ibox-content').toggleClass('sk-loading', false);
 				}
 			});
 
@@ -558,6 +594,12 @@ function ConsultarDatosCliente(){
 					document.getElementById('DireccionDestino').value=data.Direccion;
 
 					$('.ibox-content').toggleClass('sk-loading',false);
+				},
+				error: function(error) {
+					// console.log("Line 637", error.responseText);
+					console.log("El cliente no tiene una dirección destino");
+
+					$('.ibox-content').toggleClass('sk-loading',false);
 				}
 			});
 		});
@@ -574,6 +616,12 @@ function ConsultarDatosCliente(){
 				dataType:'json',
 				success: function(data){
 					document.getElementById('DireccionFacturacion').value=data.Direccion;
+
+					$('.ibox-content').toggleClass('sk-loading',false);
+				},
+				error: function(error) {
+					// console.log("Line 658", error.responseText);
+					console.log("El cliente no tiene una dirección de facturación");
 
 					$('.ibox-content').toggleClass('sk-loading',false);
 				}
@@ -621,32 +669,103 @@ function ConsultarDatosCliente(){
 			});
 		});
 
-		$("#Sucursal").change(function(){
-			$('.ibox-content').toggleClass('sk-loading',true);
-			var Sucursal=document.getElementById('Sucursal').value;
-			var Serie=document.getElementById('Serie').value;
-			$.ajax({
-				type: "POST",
-				url: "ajx_cbo_select.php?type=20&id="+Sucursal+"&serie="+Serie+"&tdoc=60",
-				success: function(response){
-					$('#Almacen').html(response).fadeIn();
-					$('.ibox-content').toggleClass('sk-loading',false);
-					$('#Almacen').trigger('change');
-				}
-			});
-		});
-		$("#Almacen").change(function(){
-			$('.ibox-content').toggleClass('sk-loading',true);
-			var carcode=document.getElementById('CardCode').value;
-			var almacen=document.getElementById('Almacen').value;
-			var frame=document.getElementById('DataGrid');
-			if(carcode!="" && almacen!=""){
-				frame.src="detalle_salida_inventario.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+carcode+"&whscode="+almacen+'&dt_TI=<?php echo $dt_TI; ?>';
-			}else{
-				frame.src="detalle_salida_inventario.php";
+// Actualización de las dimensiones dinámicamente, SMM 05/12/2022
+<?php foreach ($array_Dimensiones as &$dim) {?>
+
+<?php $Name_IdDoc = "ID_SalidaInv";?>
+<?php $DimCode = intval($dim['DimCode']);?>
+<?php $OcrId = ($DimCode == 1) ? "" : $DimCode;?>
+
+$("#<?php echo $dim['IdPortalOne']; ?>").change(function() {
+
+	var docType = 5;
+	var detalleDoc = "detalle_salida_inventario.php";
+
+	var frame = document.getElementById('DataGrid');
+	var DimIdPO = document.getElementById('<?php echo $dim['IdPortalOne']; ?>').value;
+
+	<?php if ($DimCode == $DimSeries) {?>
+		$('.ibox-content').toggleClass('sk-loading',true);
+
+		let tDoc = 60;
+		let Serie = document.getElementById('Serie').value;
+
+		var url20 = `ajx_cbo_select.php?type=20&id=${DimIdPO}&serie=${Serie}&tdoc=${tDoc}&WhsCode=<?php echo isset($_GET['Almacen']) ? base64_decode($_GET['Almacen']) : ($row['WhsCode'] ?? ""); ?>`;
+
+		$.ajax({
+			type: "POST",
+			url: url20,
+			success: function(response){
+				// console.log(url20);
+				// console.log("ajx_cbo_select.php?type=20");
+
+				$('#Almacen').html(response).fadeIn();
+				// $('#Almacen').trigger('change');
+
+				$('.ibox-content').toggleClass('sk-loading',false);
+			},
+			error: function(error) {
+				// Mensaje de error
+				console.log("Line 869", error.responseText);
+
+				$('.ibox-content').toggleClass('sk-loading', false);
 			}
-			$('.ibox-content').toggleClass('sk-loading',false);
 		});
+	<?php }?>
+
+	var CardCode = document.getElementById('CardCode').value;
+	var TotalItems = document.getElementById('TotalItems').value;
+
+	if(DimIdPO!="" && CardCode!="" && TotalItems!="0") {
+		Swal.fire({
+			title: "¿Desea actualizar las lineas de la <?php echo $dim['DescPortalOne']; ?>?",
+			icon: "question",
+			showCancelButton: true,
+			confirmButtonText: "Si, confirmo",
+			cancelButtonText: "No"
+		}).then((result) => {
+			if (result.isConfirmed) {
+				$('.ibox-content').toggleClass('sk-loading',true);
+
+				<?php if ($edit == 0) {?>
+					$.ajax({
+						type: "GET",
+						url: `registro.php?P=36&type=1&doctype=${docType}&name=OcrCode<?php echo $OcrId; ?>&value=${Base64.encode(DimIdPO)}&cardcode=${CardCode}&actodos=1&whscode=0&line=0`,
+						success: function(response){
+							frame.src=`${detalleDoc}?type=1&id=0&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode=${CardCode}`;
+
+							$('.ibox-content').toggleClass('sk-loading',false);
+						}
+					});
+				<?php } else {?>
+					$.ajax({
+						type: "GET",
+						url: `registro.php?P=36&type=2&doctype=${docType}&name=OcrCode<?php echo $OcrId; ?>&value=${Base64.encode(DimIdPO)}&id=<?php echo $row[strval($Name_IdDoc)]; ?>&evento=<?php echo $IdEvento; ?>&actodos=1&line=0`,
+						success: function(response){
+							frame.src=`${detalleDoc}?type=2&id=<?php echo base64_encode($row[strval($Name_IdDoc)]); ?>&evento=<?php echo base64_encode($IdEvento); ?>`;
+
+							$('.ibox-content').toggleClass('sk-loading',false);
+						}
+					});
+				<?php }?>
+			}
+		});
+	} else  {
+		if(false) {
+			console.log("No se cumple la siguiente condición en la <?php echo $dim['DimName']; ?>");
+
+			console.log(`DimIdPO == ${DimIdPO}`);
+			console.log(`CardCode == ${CardCode}`);
+			console.log(`TotalItems == ${TotalItems}`);
+
+			$('.ibox-content').toggleClass('sk-loading',false);
+		}
+	}
+});
+
+<?php }?>
+// Actualización dinámica, llega hasta aquí.
+
 		$("#TipoEntrega").change(function(){
 			$('.ibox-content').toggleClass('sk-loading',true);
 			var TipoEnt=document.getElementById('TipoEntrega').value;
@@ -686,6 +805,45 @@ function ConsultarDatosCliente(){
 			}
 			$('.ibox-content').toggleClass('sk-loading',false);
 		});
+
+		// Actualización del proyecto en las líneas, SMM 05/12/2022
+		$("#PrjCode").change(function() {
+			var frame=document.getElementById('DataGrid');
+
+			if(document.getElementById('PrjCode').value!=""&&document.getElementById('CardCode').value!=""&&document.getElementById('TotalItems').value!="0"){
+				Swal.fire({
+					title: "¿Desea actualizar las lineas?",
+					icon: "question",
+					showCancelButton: true,
+					confirmButtonText: "Si, confirmo",
+					cancelButtonText: "No"
+				}).then((result) => {
+					if (result.isConfirmed) {
+						$('.ibox-content').toggleClass('sk-loading',true);
+							<?php if ($edit == 0) {?>
+						$.ajax({
+							type: "GET",
+							url: "registro.php?P=36&doctype=4&type=1&name=PrjCode&value="+Base64.encode(document.getElementById('PrjCode').value)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
+							success: function(response){
+								frame.src="detalle_solicitud_salida.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
+								$('.ibox-content').toggleClass('sk-loading',false);
+							}
+						});
+						<?php } else {?>
+						$.ajax({
+							type: "GET",
+							url: "registro.php?P=36&doctype=4&type=2&name=PrjCode&value="+Base64.encode(document.getElementById('PrjCode').value)+"&line=0&id=<?php echo $row['ID_SolSalida']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
+							success: function(response){
+								frame.src="detalle_solicitud_salida.php?id=<?php echo base64_encode($row['ID_SolSalida']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
+								$('.ibox-content').toggleClass('sk-loading',false);
+							}
+						});
+						<?php }?>
+					}
+				});
+			}
+		});
+		// Actualizar proyecto, llega hasta aquí.
 	});
 </script>
 <!-- InstanceEndEditable -->
@@ -758,7 +916,7 @@ function ConsultarDatosCliente(){
 						<div class="col-lg-9">
 							<input name="CardCode" type="hidden" id="CardCode" value="<?php if (($edit == 1) || ($sw_error == 1)) {echo $row['CardCode'];} elseif ($dt_TI == 1) {echo $row_Cliente['CodigoCliente'];}?>">
 
-							<input name="CardName" type="text" required="required" class="form-control" id="CardName" placeholder="Digite para buscar..." value="<?php if (($edit == 1) || ($sw_error == 1)) {echo $row['NombreCliente'];} elseif ($dt_TI == 1) {echo $row_Cliente['NombreCliente'];}?>" <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || ($dt_TI == 1) || ($edit == 1)) {echo "readonly";}?>>
+							<input autocomplete="off" name="CardName" type="text" required="required" class="form-control" id="CardName" placeholder="Digite para buscar..." value="<?php if (($edit == 1) || ($sw_error == 1)) {echo $row['NombreCliente'];} elseif ($dt_TI == 1) {echo $row_Cliente['NombreCliente'];}?>" <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || ($dt_TI == 1) || ($edit == 1)) {echo "readonly";}?>>
 						</div>
 					</div>
 					<div class="form-group">
@@ -928,6 +1086,20 @@ if ($edit == 1 || $sw_error == 1) {
                	  	</div>
 				</div>
 				<div class="form-group">
+					<!-- Inicio, Proyecto -->
+					<label class="col-lg-1 control-label">Proyecto <span class="text-danger">*</span></label>
+					<div class="col-lg-3">
+						<select id="PrjCode" name="PrjCode" class="form-control select2" required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "disabled='disabled'";}?>>
+								<option value="">(NINGUNO)</option>
+							<?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) {?>
+								<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if ((isset($row['PrjCode'])) && (strcmp($row_Proyecto['IdProyecto'], $row['PrjCode']) == 0)) {echo "selected=\"selected\"";} elseif ((isset($_GET['Proyecto'])) && (strcmp($row_Proyecto['IdProyecto'], base64_decode($_GET['Proyecto'])) == 0)) {echo "selected=\"selected\"";}?>>
+									<?php echo $row_Proyecto['DeProyecto']; ?>
+								</option>
+							<?php }?>
+						</select>
+					</div>
+					<!-- Fin, Proyecto -->
+
 					<label class="col-lg-1 control-label">Tipo entrega</label>
 					<div class="col-lg-3">
                     	<select name="TipoEntrega" class="form-control" id="TipoEntrega" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "disabled='disabled'";}?>>
@@ -1124,17 +1296,15 @@ if (isset($_GET['return'])) {
 	 $(document).ready(function(){
 		 $("#CrearSalidaInventario").validate({
 			 submitHandler: function(form){
-				 if(Validar()){
-					swal({
+				if(Validar()){
+					Swal.fire({
 						title: "¿Está seguro que desea guardar los datos?",
-						type: "info",
+						icon: "info",
 						showCancelButton: true,
-						closeOnConfirm: true,
 						confirmButtonText: "Si, confirmo",
 						cancelButtonText: "No"
-					},
-					function(isConfirm){
-						if(isConfirm){
+					}).then((result) => {
+						if (result.isConfirmed) {
 							$('.ibox-content').toggleClass('sk-loading',true);
 							form.submit();
 						}
@@ -1270,10 +1440,10 @@ function Validar(){
 			success: function(data){
 				if(data.Estado=='0'){
 					result=false;
-					swal({
+					Swal.fire({
 						title: data.Title,
 						text: data.Mensaje,
-						type: data.Icon,
+						icon: data.Icon,
 					});
 				}
 			}
@@ -1284,10 +1454,10 @@ function Validar(){
 
 	if(TotalItems.value=="0"){
 		result=false;
-		swal({
+		Swal.fire({
 			title: '¡Lo sentimos!',
 			text: 'No puede guardar el documento sin contenido. Por favor verifique.',
-			type: 'error'
+			icon: 'error'
 		});
 	}
 

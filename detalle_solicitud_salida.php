@@ -18,6 +18,7 @@ while ($row_Dimension = sqlsrv_fetch_array($SQL_Dimensiones)) {
 $sw = 0;
 //$Proyecto="";
 $Almacen = "";
+$AlmacenDestino = "";
 $CardCode = "";
 $type = 1;
 $Estado = 1; //Abierto
@@ -28,16 +29,18 @@ if (isset($_GET['id']) && ($_GET['id'] != "")) {
         $type = $_GET['type'];
     }
     if ($type == 1) { //Creando Solicitud de salida
-        $SQL = Seleccionar("uvw_tbl_SolicitudSalidaDetalleCarrito", "*", "Usuario='" . $_GET['usr'] . "' and CardCode='" . $_GET['cardcode'] . "' and WhsCode='" . $_GET['whscode'] . "'");
+        $SQL = Seleccionar("uvw_tbl_SolicitudSalidaDetalleCarrito", "*", "Usuario='" . $_GET['usr'] . "' and CardCode='" . $_GET['cardcode'] . "'");
         if ($SQL) {
             $sw = 1;
             $CardCode = $_GET['cardcode'];
             //$Proyecto=$_GET['prjcode'];
-            $Almacen = $_GET['whscode'];
+            // SMM, 28/11/2022
+            // $Almacen = $_GET['whscode'];
         } else {
             $CardCode = "";
             //$Proyecto="";
             $Almacen = "";
+            $AlmacenDestino = "";
         }
 
     } else { //Editando Solicitud de salida
@@ -52,6 +55,45 @@ if (isset($_GET['id']) && ($_GET['id'] != "")) {
         }
     }
 }
+
+// Almacenes origen, SMM, 28/11/2022
+$ParamAlmacen = array(
+    "'" . $_SESSION['CodUser'] . "'",
+    "'1250000001'", // Tipo de Documento
+);
+$SQL_Almacen = EjecutarSP('sp_ConsultarAlmacenesUsuario', $ParamAlmacen);
+
+// Almacenes destino, SMM, 28/11/2022
+$ParamAlmacenDest = array(
+    "'" . $_SESSION['CodUser'] . "'",
+    "'1250000001'", // Tipo de Documento
+    "2", // Tipo de Almacen
+);
+$SQL_ToAlmacen = EjecutarSP('sp_ConsultarAlmacenesUsuario', $ParamAlmacenDest);
+
+// Proyectos, SMM, 28/11/2022
+$SQL_Proyecto = Seleccionar('uvw_Sap_tbl_Proyectos', '*', '', 'DeProyecto');
+
+// Base del Redondeo. SMM, 02/12/2022
+$SQL_DatosBase = Seleccionar('uvw_Sap_ConfiguracionSAPB1_DatosBase', '*');
+
+if ($SQL_DatosBase) {
+    $row_DatosBase = sqlsrv_fetch_array($SQL_DatosBase);
+}
+
+$row_encode = isset($row_DatosBase) ? json_encode($row_DatosBase) : "";
+$json_DatosBase = isset($row_DatosBase) ? "JSON.parse(JSON.stringify($row_encode))" : "";
+
+$dImportes = $row_DatosBase["DecimalImportes"] ?? 0; // Useless
+$dTasas = $row_DatosBase["DecimalTasas"] ?? 4; // Useless
+$dUnidades = $row_DatosBase["DecimalUnidades"] ?? 2; // Useless
+$dConsultas = $row_DatosBase["DecimalConsultas"] ?? 4; // Useless
+$dPrecios = $row_DatosBase["DecimalPrecios"] ?? 2;
+$dCantidades = $row_DatosBase["DecimalCantidades"] ?? 2;
+$dPorcentajes = $row_DatosBase["DecimalPorcentajes"] ?? 4;
+
+$sDecimal = $row_DatosBase["CaracterSeparadorDecimal"] ?? ".";
+$sMillares = $row_DatosBase["CaracterSeparadorMillares"] ?? ",";
 ?>
 
 <!doctype html>
@@ -75,6 +117,29 @@ if (isset($_GET['id']) && ($_GET['id'] != "")) {
 		vertical-align: middle;
 	}
 </style>
+
+<script>
+	// SMM, 02/12/2022
+	<?php if ($json_DatosBase != "") {?>
+		var json_DatosBase = <?php echo $json_DatosBase; ?>;
+
+		var dPrecios = json_DatosBase.DecimalPrecios;
+		var dCantidades = json_DatosBase.DecimalCantidades;
+		var dPorcentajes = json_DatosBase.DecimalPorcentajes;
+
+		var sDecimal = json_DatosBase.CaracterSeparadorDecimal;
+		var sMillares = json_DatosBase.CaracterSeparadorMillares;
+	<?php } else {?>
+		console.log("DatosBase, not found.");
+
+		var dPrecios = 2;
+		var dCantidades = 2;
+		var dPorcentajes = 4;
+
+		var sDecimal = ".";
+		var sMillares = ",";
+	<?php }?>
+</script>
 
 <script>
 var json=[];
@@ -105,9 +170,9 @@ function DuplicarLinea(){
 		$.ajax({
 			type: "GET",
 			<?php if ($type == 1) {?>
-			url: "includes/procedimientos.php?type=55&edit=<?php echo $type; ?>&linenum="+json+"&cardcode=<?php echo $CardCode; ?>",
+			url: "includes/procedimientos.php?type=60&edit=<?php echo $type; ?>&linenum="+json+"&cardcode=<?php echo $CardCode; ?>",
 			<?php } else {?>
-			url: "includes/procedimientos.php?type=55&edit=<?php echo $type; ?>&linenum="+json+"&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
+			url: "includes/procedimientos.php?type=60&edit=<?php echo $type; ?>&linenum="+json+"&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
 			<?php }?>
 			success: function(response){
 				window.location.href="detalle_solicitud_salida.php?<?php echo $_SERVER['QUERY_STRING']; ?>";
@@ -177,50 +242,125 @@ function ConsultarArticulo(articulo){
 </script>
 
 <script>
-function Totalizar(num){
-	//alert(num);
-	var SubTotal=0;
-	var Descuentos=0;
-	var Iva=0;
-	var Total=0;
-	var i=1;
-	for(i=1;i<=num;i++){
-		var TotalLinea=document.getElementById('LineTotal'+i);
-		var PrecioLinea=document.getElementById('Price'+i);
-		var PrecioIVALinea=document.getElementById('PriceTax'+i);
-		var TarifaIVALinea=document.getElementById('TarifaIVA'+i);
-		var ValorIVALinea=document.getElementById('VatSum'+i);
-		var PrcDescuentoLinea=document.getElementById('DiscPrcnt'+i);
-		var CantLinea=document.getElementById('Quantity'+i);
+// Creada. SMM, 02/12/2022
+function CalcularLinea(line, totalizar=true) {
+	console.log(`CalcularLinea(${line}, ${totalizar})`);
 
-		var Precio=parseFloat(PrecioLinea.value.replace(/,/g, ''));
-		var PrecioIVA=parseFloat(PrecioIVALinea.value.replace(/,/g, ''));
-		var TarifaIVA=TarifaIVALinea.value.replace(/,/g, '');
-		var ValorIVA=ValorIVALinea.value.replace(/,/g, '');
-		var Cant=parseFloat(CantLinea.value.replace(/,/g, ''));
-		//var TotIVA=((parseFloat(Precio)*parseFloat(TarifaIVA)/100)+parseFloat(Precio));
-		//ValorIVALinea.value=number_format((parseFloat(Precio)*parseFloat(TarifaIVA)/100),2);
-		//PrecioIVALinea.value=number_format(parseFloat(TotIVA),2);
-		var SubTotalLinea=Precio*Cant;
-		var PrcDesc=parseFloat(PrcDescuentoLinea.value.replace(/,/g, ''));
-		var TotalDesc=(PrcDesc*SubTotalLinea)/100;
-		//TotalLinea.value=number_format(SubTotalLinea-TotalDesc,2);
+	let Linea = document.getElementById(`LineNum${line}`);
+	let CantLinea = document.getElementById(`Quantity${line}`);
+	let PrecioLinea = document.getElementById(`Price${line}`);
+	let PrecioIVALinea = document.getElementById(`PriceTax${line}`);
+	let TarifaIVALinea = document.getElementById(`TarifaIVA${line}`);
+	let ValorIVALinea = document.getElementById(`VatSum${line}`);
+	let PrecioDescLinea = document.getElementById(`PriceDisc${line}`);
+	let PrcDescLinea = document.getElementById(`DiscPrcnt${line}`);
+	let TotalLinea = document.getElementById(`LineTotal${line}`);
 
-		SubTotal=parseFloat(SubTotal)+parseFloat(SubTotalLinea);
-		Descuentos=parseFloat(Descuentos)+parseFloat(TotalDesc);
-		Iva=parseFloat(Iva)+parseFloat(ValorIVA);
-		//var Linea=document.getElementById('LineTotal'+i).value.replace(/,/g, '');
+	let CantDecimal = parseFloat(CantLinea.value.replace(/,/g, ''));
+	let PrecioDecimal = parseFloat(PrecioLinea.value.replace(/,/g, ''));
+	let PrecioIVADecimal = parseFloat(PrecioIVALinea.value.replace(/,/g, '')); // Useless
+	let TarifaIVADecimal = parseFloat(TarifaIVALinea.value.replace(/,/g, ''));
+	let ValorIVADecimal = parseFloat(ValorIVALinea.value.replace(/,/g, '')); // Useless
+	// let PrecioDescDecimal = parseFloat(PrecioDescLinea.value.replace(/,/g, ''));
+	let PrecioDescDecimal = 0;
+	let PrcDescDecimal = parseFloat(PrcDescLinea.value.replace(/,/g, ''));
+	let TotalDecimal = parseFloat(TotalLinea.value.replace(/,/g, ''));
+
+	let SubTotalLinea = PrecioDecimal * CantDecimal;
+	let TotalDescLinea = (PrcDescDecimal * SubTotalLinea) / 100;
+
+	let SubTotalDesc = SubTotalLinea - TotalDescLinea; // Para, Totalizar()
+
+
+	// let ControlDesc = document.getElementById(`ControlDesc${line}`).checked;
+	let ControlDesc = false;
+	if(totalizar && ControlDesc == false) {
+		TotalLinea.value = number_format(SubTotalDesc, dPrecios, sDecimal, sMillares);
+		ActualizarDatos('LineTotal', line, Linea.value, dPrecios);
 	}
-	Total=parseFloat(Total)+parseFloat((SubTotal-Descuentos)+Iva);
-	//return Total;
-	//alert(Total);
-	window.parent.document.getElementById('SubTotal').value=number_format(parseFloat(SubTotal),2);
-	window.parent.document.getElementById('Descuentos').value=number_format(parseFloat(Descuentos),2);
-	window.parent.document.getElementById('Impuestos').value=number_format(parseFloat(Iva),2);
-	window.parent.document.getElementById('TotalSolicitud').value=number_format(parseFloat(Total),2);
-	window.parent.document.getElementById('TotalItems').value=num;
+
+	let SubTotalDescLinea = (PrcDescDecimal * PrecioDecimal) / 100;
+	let NuevoPrecioDesc = PrecioDecimal - SubTotalDescLinea;
+
+	// PrecioDescLinea.value = number_format(NuevoPrecioDesc, dPrecios, sDecimal, sMillares);
+
+	let NuevoValorIVA = NuevoPrecioDesc * (TarifaIVADecimal / 100);
+	ValorIVALinea.value = number_format(NuevoValorIVA, dPrecios, sDecimal, sMillares);
+
+	let NuevoPrecioIVA = NuevoPrecioDesc + NuevoValorIVA;
+	PrecioIVALinea.value = number_format(NuevoPrecioIVA, dPrecios, sDecimal, sMillares);
+
+	let IvaLinea = NuevoValorIVA * CantDecimal; // Para, Totalizar()
+
+	/*
+	<?php if ($type != 1) {?>
+		if(!totalizar) {
+			if(number_format(SubTotalDesc, dPrecios, sDecimal, sMillares) != number_format(TotalDecimal, dPrecios, sDecimal, sMillares)) {
+				console.log(`${number_format(SubTotalDesc, dPrecios, sDecimal, sMillares)} != ${number_format(TotalDecimal, dPrecios, sDecimal, sMillares)}`);
+				$(`#ControlDesc${line}`).prop("checked", true);
+
+			} else {
+				console.log(`${number_format(SubTotalDesc, dPrecios, sDecimal, sMillares)} == ${number_format(TotalDecimal, dPrecios, sDecimal, sMillares)}`);
+				// $(`#ControlDesc${line}`).prop("checked", false);
+			}
+		}
+	<?php }?>
+
+	ActualizarDatos('ControlDesc', line, Linea.value);
+	*/
+
+	let NuevoSubTotal = SubTotalDesc;
+	let NuevoIVA = IvaLinea;
+
+	/*
+	ControlDesc = document.getElementById(`ControlDesc${line}`).checked;
+	if(ControlDesc == true) { // 14/04/2022
+		NuevoSubTotal = TotalDecimal;
+		NuevoIVA = TotalDecimal * (TarifaIVADecimal / 100);
+	}
+	*/
+
+	return [NuevoSubTotal, NuevoIVA, Linea, SubTotalLinea, CantLinea, PrcDescLinea, TotalLinea, TotalDecimal, PrecioDescDecimal];
+}
+
+// Actualizada. SMM, 02/12/2022
+function Totalizar(num, totalizar=true) {
+	var SubTotal = 0;
+	var Descuentos = 0;
+	var Iva = 0;
+	var Total = 0;
+
+	console.log(`Totalizar(${num}, ${totalizar})`);
+	for(let i=1; i <= num; i++) {
+		let ValoresLinea = CalcularLinea(i, totalizar);
+
+		let NuevoSubTotal = ValoresLinea[0];
+		let IvaLinea = ValoresLinea[1];
+
+		SubTotal = parseFloat(SubTotal) + parseFloat(NuevoSubTotal);
+
+		/*
+		let Exento = document.getElementById(`SujetoImpuesto${i}`);
+		if(!Exento.checked) {
+			Iva = parseFloat(Iva) + parseFloat(IvaLinea);
+		}
+		*/
+	}
+
+	// Total = parseFloat(Total) + parseFloat((SubTotal - Descuentos) + Iva);
+	Total = parseFloat(parseFloat(SubTotal).toFixed(dPrecios)) + parseFloat(parseFloat(Iva).toFixed(dPrecios)); // SMM 18/04/2022
+
+	window.parent.document.getElementById('SubTotal').value = number_format(parseFloat(SubTotal), dPrecios);
+	window.parent.document.getElementById('Impuestos').value = number_format(parseFloat(Iva), dPrecios);
+
+	// window.parent.document.getElementById('Redondeo').value = number_format(Math.floor(Math.round(Total)) - parseFloat(parseFloat(Total).toFixed(dPrecios)), dPrecios);
+	window.parent.document.getElementById('TotalItems').value = num;
+
+	// Se debe ajustar el ID al que hace referencia.
+	window.parent.document.getElementById('TotalSolicitud').value = number_format(Math.floor(Math.round(Total)), dPrecios);
 }
 </script>
+
 <script>
 function ActualizarDatos(name,id,line){//Actualizar datos asincronicamente
 	$.ajax({
@@ -259,6 +399,11 @@ function ActualizarDatos(name,id,line){//Actualizar datos asincronicamente
 				<th>Unidad</th>
 				<th>Cantidad</th>
 				<th>Cant. Inicial</th>
+
+				<!-- SMM, 28/11/2022 -->
+				<th>Almacén origen</th>
+				<th>Almacén destino</th>
+
 				<th>Cant. Pendiente</th>
 				<th>Stock almacén</th>
 
@@ -268,15 +413,18 @@ function ActualizarDatos(name,id,line){//Actualizar datos asincronicamente
 				<?php }?>
 				<!-- Dimensiones dinámicas, hasta aquí -->
 
+				<!-- SMM, 28/11/2022 -->
+				<th>Proyecto</th>
+
 				<th>Texto libre</th>
 				<th>Precio</th>
 				<th>Precio con IVA</th>
 				<th>% Desc.</th>
 				<th>Total</th>
-				<th>Almacén</th>
 				<th><i class="fa fa-refresh"></i></th>
 			</tr>
 		</thead>
+
 		<tbody>
 		<?php
 if ($sw == 1) {
@@ -284,8 +432,13 @@ if ($sw == 1) {
     while ($row = sqlsrv_fetch_array($SQL)) {
         /**** Campos definidos por el usuario ****/
 
-        $Almacen = $row['WhsCode'];
+        // SMM, 28/11/2022
+        // $Almacen = $row['WhsCode'];
+        sqlsrv_fetch($SQL_Almacen, SQLSRV_SCROLL_ABSOLUTE, -1);
+        sqlsrv_fetch($SQL_ToAlmacen, SQLSRV_SCROLL_ABSOLUTE, -1);
+        sqlsrv_fetch($SQL_Proyecto, SQLSRV_SCROLL_ABSOLUTE, -1);
         ?>
+
 		<tr>
 			<!-- SMM, 31/08/2022 -->
 			<td class="text-center form-inline w-150">
@@ -297,8 +450,29 @@ if ($sw == 1) {
 			<td><input size="20" type="text" id="ItemCode<?php echo $i; ?>" name="ItemCode[]" class="form-control" readonly value="<?php echo $row['ItemCode']; ?>"><input type="hidden" name="LineNum[]" id="LineNum<?php echo $i; ?>" value="<?php echo $row['LineNum']; ?>"></td>
 			<td><input size="50" type="text" id="ItemName<?php echo $i; ?>" name="ItemName[]" class="form-control" value="<?php echo $row['ItemName']; ?>" maxlength="100" onChange="ActualizarDatos('ItemName',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if ($row['LineStatus'] == 'C' || $Estado == 2 || (!PermitirFuncion(1201))) {echo "readonly";}?>></td>
 			<td><input size="15" type="text" id="UnitMsr<?php echo $i; ?>" name="UnitMsr[]" class="form-control" readonly value="<?php echo $row['UnitMsr']; ?>"></td>
+
 			<td><input size="15" type="text" id="Quantity<?php echo $i; ?>" name="Quantity[]" class="form-control" value="<?php echo number_format($row['Quantity'], 2); ?>" onChange="ActualizarDatos('Quantity',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if ($row['LineStatus'] == 'C' || $Estado == 2 || (!PermitirFuncion(1201))) {echo "readonly";}?>></td>
+
 			<td><input size="15" type="text" id="CantInicial<?php echo $i; ?>" name="CantInicial[]" class="form-control" value="<?php echo number_format($row['CantInicial'], 2); ?>" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" readonly></td>
+
+			<td> <!-- SMM, 28/11/2022 -->
+				<select id="WhsCode<?php echo $i; ?>" name="WhsCode[]" class="form-control select2" onChange="ActualizarDatos('WhsCode',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);ActStockAlmacen('WhsCode',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if ($row['LineStatus'] == 'C') {echo "disabled='disabled'";}?>>
+				  <option value="">Seleccione...</option>
+				  <?php while ($row_Almacen = sqlsrv_fetch_array($SQL_Almacen)) {?>
+						<option value="<?php echo $row_Almacen['WhsCode']; ?>" <?php if ((isset($row['WhsCode'])) && (strcmp($row_Almacen['WhsCode'], $row['WhsCode']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Almacen['WhsName']; ?></option>
+				  <?php }?>
+				</select>
+			</td>
+
+			<td> <!-- SMM, 28/11/2022 -->
+				<select id="ToWhsCode<?php echo $i; ?>" name="ToWhsCode[]" class="form-control select2" onChange="ActualizarDatos('ToWhsCode',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if ($row['LineStatus'] == 'C') {echo "disabled='disabled'";}?>>
+				  <option value="">Seleccione...</option>
+				  <?php while ($row_ToAlmacen = sqlsrv_fetch_array($SQL_ToAlmacen)) {?>
+						<option value="<?php echo $row_ToAlmacen['ToWhsCode']; ?>" <?php if ((isset($row['ToWhsCode'])) && (strcmp($row_ToAlmacen['ToWhsCode'], $row['ToWhsCode']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_ToAlmacen['ToWhsName']; ?></option>
+				  <?php }?>
+				</select>
+			</td>
+
 			<td><input size="15" type="text" id="OpenQty<?php echo $i; ?>" name="OpenQty[]" class="form-control" value="<?php echo number_format($row['OpenQty'], 2); ?>" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" readonly></td>
 			<td><input size="15" type="text" id="OnHand<?php echo $i; ?>" name="OnHand[]" class="form-control" value="<?php echo number_format($row['OnHand'], 2); ?>" readonly></td>
 
@@ -308,7 +482,7 @@ if ($sw == 1) {
 				<?php $OcrId = ($DimCode == 1) ? "" : $DimCode;?>
 
 				<td>
-					<select id="OcrCode<?php echo $OcrId . $i; ?>" name="OcrCode<?php echo $OcrId; ?>[]" class="form-control select2" onChange="ActualizarDatos('OcrCode<?php echo $OcrId; ?>',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402))) {echo "disabled='disabled'";}?>>
+					<select id="OcrCode<?php echo $OcrId . $i; ?>" name="OcrCode<?php echo $OcrId; ?>[]" class="form-control select2" onChange="ActualizarDatos('OcrCode<?php echo $OcrId; ?>',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if ($row['LineStatus'] == 'C') {echo "disabled='disabled'";}?>>
 						<option value="">(NINGUNO)</option>
 
 						<?php $SQL_Dim = Seleccionar('uvw_Sap_tbl_DimensionesReparto', '*', "DimCode=$DimCode");?>
@@ -320,19 +494,37 @@ if ($sw == 1) {
 			<?php }?>
 			<!-- Dimensiones dinámicas, hasta aquí -->
 
+			<td> <!-- SMM, 28/11/2022 -->
+				<select id="PrjCode<?php echo $i; ?>" name="PrjCode[]" class="form-control select2" onChange="ActualizarDatos('PrjCode',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if ($row['LineStatus'] == 'C') {echo "disabled='disabled'";}?>>
+					<option value="">(NINGUNO)</option>
+				  <?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) {?>
+						<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if ((isset($row['PrjCode'])) && (strcmp($row_Proyecto['IdProyecto'], $row['PrjCode']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Proyecto['DeProyecto']; ?></option>
+				  <?php }?>
+				</select>
+			</td>
+
 			<td><input size="50" type="text" id="FreeTxt<?php echo $i; ?>" name="FreeTxt[]" class="form-control" value="<?php echo $row['FreeTxt']; ?>" onChange="ActualizarDatos('FreeTxt',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" maxlength="100" <?php if ($row['LineStatus'] == 'C' || $Estado == 2 || (!PermitirFuncion(1201))) {echo "readonly";}?>></td>
 			<td><input size="15" type="text" id="Price<?php echo $i; ?>" name="Price[]" class="form-control" value="<?php echo number_format($row['Price'], 2); ?>" onChange="ActualizarDatos('Price',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" readonly></td>
-			<td><input size="15" type="text" id="PriceTax<?php echo $i; ?>" name="PriceTax[]" class="form-control" value="<?php echo number_format($row['PriceTax'], 2); ?>" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" readonly><input type="hidden" id="TarifaIVA<?php echo $i; ?>" name="TarifaIVA[]" value="<?php echo number_format($row['TarifaIVA'], 0); ?>"><input type="hidden" id="VatSum<?php echo $i; ?>" name="VatSum[]" value="<?php echo number_format($row['VatSum'], 2); ?>"></td>
+
+			<td>
+				<input size="15" type="text" id="PriceTax<?php echo $i; ?>" name="PriceTax[]" class="form-control" value="<?php echo number_format($row['PriceTax'], $dPrecios, $sDecimal, $sMillares); ?>" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" readonly>
+				<input type="hidden" id="TarifaIVA<?php echo $i; ?>" name="TarifaIVA[]" value="<?php echo number_format($row['TarifaIVA'], 0); ?>">
+				<input type="hidden" id="VatSum<?php echo $i; ?>" name="VatSum[]" value="<?php echo number_format($row['VatSum'], 2); ?>">
+			</td>
+
 			<td><input size="15" type="text" id="DiscPrcnt<?php echo $i; ?>" name="DiscPrcnt[]" class="form-control" value="<?php echo number_format($row['DiscPrcnt'], 2); ?>" onChange="ActualizarDatos('DiscPrcnt',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" readonly></td>
-			<td><input size="15" type="text" id="LineTotal<?php echo $i; ?>" name="LineTotal[]" class="form-control" readonly value="<?php echo number_format($row['LineTotal'], 2); ?>"></td>
-			<td><input size="15" type="text" id="WhsCode<?php echo $i; ?>" name="WhsCode[]" class="form-control" readonly value="<?php echo $row['WhsName']; ?>"></td>
+
+			<td><input size="15" type="text" id="LineTotal<?php echo $i; ?>" name="LineTotal[]" class="form-control" readonly value="<?php echo number_format($row['LineTotal'], 2); ?>" onBlur="CalcularTotal(<?php echo $i; ?>, false);"></td>
+
 			<td><?php if ($row['Metodo'] == 0) {?><i class="fa fa-check-circle text-info" title="Sincronizado con SAP"></i><?php } else {?><i class="fa fa-times-circle text-danger" title="Aún no enviado a SAP"></i><?php }?></td>
 		</tr>
 		<?php
-$i++;}
-    echo "<script>
-			Totalizar(" . ($i - 1) . ");
-			</script>";
+
+        $i++;}
+
+    // Actualizado. SMM, 02/12/2022
+    // echo "<script>SujetoImpuesto();</script>";
+    echo "<script> Totalizar(" . ($i - 1) . ", false); </script>";
 }
 ?>
 		<?php if ($Estado == 1) {?>
@@ -343,6 +535,11 @@ $i++;}
 			<td><input size="15" type="text" id="UnitMsrNew" name="UnitMsrNew" class="form-control"></td>
 			<td><input size="15" type="text" id="QuantityNew" name="QuantityNew" class="form-control"></td>
 			<td><input size="15" type="text" id="CantInicialNew" name="CantInicialNew" class="form-control"></td>
+
+			<!-- SMM, 28/11/2022 -->
+			<td><input size="20" type="text" id="WhsCodeNew" name="WhsCodeNew" class="form-control"></td>
+			<td><input size="20" type="text" id="ToWhsCodeNew" name="ToWhsCodeNew" class="form-control"></td>
+
 			<td><input size="15" type="text" id="OpenQtyNew" name="OpenQtyNew" class="form-control"></td>
 			<td><input size="15" type="text" id="OnHandNew" name="OnHandNew" class="form-control"></td>
 			<td><input size="50" type="text" id="FreeTxtNew" name="FreeTxtNew" class="form-control"></td>
@@ -350,7 +547,6 @@ $i++;}
 			<td><input size="15" type="text" id="PriceTaxNew" name="PriceTaxNew" class="form-control"></td>
 			<td><input size="15" type="text" id="DiscPrcntNew" name="DiscPrcntNew" class="form-control"></td>
 			<td><input size="15" type="text" id="LineTotalNew" name="LineTotalNew" class="form-control"></td>
-			<td><input size="15" type="text" id="WhsCodeNew" name="WhsCodeNew" class="form-control"></td>
 			<td>&nbsp;</td>
 		</tr>
 		<?php }?>
@@ -358,49 +554,64 @@ $i++;}
 	</table>
 	</div>
 </form>
+
 <script>
-function CalcularTotal(line){
-	var TotalLinea=document.getElementById('LineTotal'+line);
-	var PrecioLinea=document.getElementById('Price'+line);
-	var PrecioIVALinea=document.getElementById('PriceTax'+line);
-	var TarifaIVALinea=document.getElementById('TarifaIVA'+line);
-	var ValorIVALinea=document.getElementById('VatSum'+line);
-	var PrcDescuentoLinea=document.getElementById('DiscPrcnt'+line);
-	var CantLinea=document.getElementById('Quantity'+line);
-	var Linea=document.getElementById('LineNum'+line);
+// Actualizada. SMM, 02/12/2022
+function CalcularTotal(line, totalizar=true) {
+	console.log(`CalcularTotal(${line}, ${totalizar})`);
 
-	if(CantLinea.value>0){
-		//if(parseFloat(PrecioLinea.value)>0){
-			//alert('Info');
-			var Precio=PrecioLinea.value.replace(/,/g, '');
-			var TarifaIVA=TarifaIVALinea.value.replace(/,/g, '');
-			var ValorIVA=ValorIVALinea.value.replace(/,/g, '');
-			var Cant=CantLinea.value.replace(/,/g, '');
-			var TotIVA=((parseFloat(Precio)*parseFloat(TarifaIVA)/100)+parseFloat(Precio));
-			ValorIVALinea.value=number_format((parseFloat(Precio)*parseFloat(TarifaIVA)/100),2);
-			PrecioIVALinea.value=number_format(parseFloat(TotIVA),2);
-			var PrecioIVA=PrecioIVALinea.value.replace(/,/g, '');
-			var SubTotalLinea=PrecioIVA*Cant;
-			var PrcDesc=parseFloat(PrcDescuentoLinea.value.replace(/,/g, ''));
-			var TotalDesc=(PrcDesc*SubTotalLinea)/100;
+	let ValoresLinea = CalcularLinea(line, totalizar);
 
-			TotalLinea.value=number_format(SubTotalLinea-TotalDesc,2);
-		//}else{
-			//alert('Ult');
-			//var Ult=UltPrecioLinea.value.replace(/,/g, '');
-			//var Cant=CantLinea.value.replace(/,/g, '');
-			//TotalLinea.value=parseFloat(number_format(Ult*Cant,2));
-		//}
-		Totalizar(<?php if (isset($i)) {echo $i - 1;} else {echo 0;}?>);
-		//window.parent.document.getElementById('TotalSolicitud').value='500';
-	}else{
+	let Linea = ValoresLinea[2];
+	let SubTotalLinea = ValoresLinea[3];
+	let CantLinea = ValoresLinea[4];
+	let PrcDescLinea = ValoresLinea[5];
+	let TotalLinea = ValoresLinea[6];
+	let TotalDecimal = ValoresLinea[7];
+	let PrecioDescDecimal = ValoresLinea[8];
+
+	// console.log("TotalDecimal", TotalDecimal);
+	// console.log("PrecioDescDecimal", PrecioDescDecimal);
+
+	if(CantLinea.value > 0) {
+		if(totalizar) {
+			$(`#ControlDesc${line}`).prop("checked", false);
+
+			console.log("TOTALIZAR");
+			Totalizar(<?php if (isset($i)) {echo $i - 1;} else {echo 0;}?>);
+		} else {
+			// console.log("SubTotalLinea", SubTotalLinea);
+
+			if(TotalDecimal < SubTotalLinea) {
+				TotalDescLinea = SubTotalLinea - TotalDecimal;
+				console.log("TotalDescLinea", TotalDescLinea);
+
+				PrcDesc = 100 / (SubTotalLinea / TotalDescLinea);
+				console.log("PrcDesc", PrcDesc);
+
+				PrcDescLinea.value = number_format(PrcDesc, dPorcentajes, sDecimal, sMillares);
+				TotalLinea.value = number_format(TotalDecimal, dPrecios, sDecimal, sMillares);
+
+				if(TotalDecimal != PrecioDescDecimal) {
+					$(`#ControlDesc${line}`).prop("checked", true);
+				} // Para que no se afecte con la tecla [TAB]
+
+				ActualizarDatos('DiscPrcnt', line, Linea.value, dPorcentajes);
+				Totalizar(<?php if (isset($i)) {echo $i - 1;} else {echo 0;}?>, false);
+			} else {
+				console.log(`${TotalDecimal} >= ${SubTotalLinea}`);
+				alert("El nuevo total de línea debe ser menor al total de línea sin descuento (SubTotalLinea).");
+			}
+		}
+	} else {
 		alert("No puede solicitar cantidad en 0. Si ya no va a solicitar este articulo, borre la linea.");
-		CantLinea.value="1.00";
-		//ActualizarDatos(1,line,Linea.value);
-	}
 
+		CantLinea.value = "1.00";
+		ActualizarDatos('Quantity', line, Linea.value, dCantidades);
+	}
 }
 </script>
+
 <script>
 	 $(document).ready(function(){
 		 $(".alkin").on('click', function(){
@@ -447,9 +658,9 @@ function CalcularTotal(line){
 					$.ajax({
 						type: "GET",
 						<?php if ($type == 1) {?>
-						url: "registro.php?P=35&doctype=7&item="+IdArticulo+"&whscode="+CodAlmacen+"&cardcode=<?php echo $CardCode; ?>",
+						url: "registro.php?P=35&doctype=7&item="+IdArticulo+"&whscode="+CodAlmacen+"&towhscode=<?php echo $AlmacenDestino; ?>&cardcode=<?php echo $CardCode; ?>",
 						<?php } else {?>
-						url: "registro.php?P=35&doctype=8&item="+IdArticulo+"&whscode="+CodAlmacen+"&cardcode=0&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
+						url: "registro.php?P=35&doctype=8&item="+IdArticulo+"&whscode="+CodAlmacen+"&towhscode=<?php echo $AlmacenDestino; ?>&cardcode=0&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
 						<?php }?>
 						success: function(response){
 							window.location.href="detalle_solicitud_salida.php?<?php echo $_SERVER['QUERY_STRING']; ?>";

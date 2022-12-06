@@ -111,7 +111,7 @@ if (!isset($_GET['dato']) || ($_GET['dato'] == "")) {
             "'" . $TipoDoc . "'",
             "'" . $SoloStock . "'",
             "'" . $TodosArticulos . "'",
-			$Usuario, // SMM, 22/10/2022
+            $Usuario, // SMM, 22/10/2022
         );
         $SQL = EjecutarSP('sp_ConsultarArticulos', $Param); // Anterior
         $Num = sqlsrv_has_rows($SQL);
@@ -328,7 +328,7 @@ else if(doctype==7){//Solicitud de traslado crear
 	  xhttp = new XMLHttpRequest();
 	  xhttp.onreadystatechange = function() {
 		  if (this.readyState == 4 && this.status == 200) {
-			  window.opener.document.getElementById('DataGrid').src='detalle_solicitud_traslado.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode=<?php echo $CardCode; ?>&whscode=<?php echo $Almacen; ?>';
+			  window.opener.document.getElementById('DataGrid').src='detalle_solicitud_salida.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode=<?php echo $CardCode; ?>&whscode=<?php echo $Almacen; ?>';
 			  window.opener.document.getElementById('TotalItems').value=this.responseText;
 			  window.opener.document.getElementById('BuscarItem').value="";
 			  window.close();
@@ -336,7 +336,8 @@ else if(doctype==7){//Solicitud de traslado crear
   	};
 	  xhttp.open("POST", "registro.php", true);
 	  xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	  xhttp.send("P=35&doctype=7&item="+str+"&whscode="+whscode+"&cardcode=<?php echo $CardCode; ?>");
+	  // alert(whscode);
+	  xhttp.send("P=35&doctype=7&item="+str+"&whscode="+whscode+"&towhscode=<?php echo $AlmacenDestino; ?>&prjcode=<?php echo $prjcode; ?>&cardcode=<?php echo $CardCode; ?>&dim1=<?php echo $dim1; ?>&dim2=<?php echo $dim2; ?>&dim3=<?php echo $dim3; ?>");
   }
 else if(doctype==8){//Solicitud de traslado editar
 	  var xhttp;
@@ -348,7 +349,7 @@ else if(doctype==8){//Solicitud de traslado editar
 	  xhttp = new XMLHttpRequest();
 	  xhttp.onreadystatechange = function() {
 		  if (this.readyState == 4 && this.status == 200) {
-			  window.opener.document.getElementById('DataGrid').src='detalle_solicitud_traslado.php?id=<?php echo base64_encode($ID_SolTras); ?>&evento=<?php echo base64_encode($ID_Evento); ?>&type=2';
+			  window.opener.document.getElementById('DataGrid').src='detalle_solicitud_salida.php?id=<?php echo base64_encode($ID_SolTras); ?>&evento=<?php echo base64_encode($ID_Evento); ?>&type=2';
 			  window.opener.document.getElementById('TotalItems').value=this.responseText;
 			  window.opener.document.getElementById('BuscarItem').value="";
 			  window.close();
@@ -356,7 +357,7 @@ else if(doctype==8){//Solicitud de traslado editar
   	};
 	  xhttp.open("POST", "registro.php", true);
 	  xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	  xhttp.send("P=35&doctype=8&item="+str+"&whscode="+whscode+"&cardcode=<?php echo $CardCode; ?>&id=<?php echo $ID_SolTras; ?>&evento=<?php echo $ID_Evento; ?>");
+	  xhttp.send("P=35&doctype=8&item="+str+"&whscode="+whscode+"&towhscode=<?php echo $AlmacenDestino; ?>&prjcode=<?php echo $prjcode; ?>&cardcode=<?php echo $CardCode; ?>&id=<?php echo $ID_SolTras; ?>&evento=<?php echo $ID_Evento; ?>&dim1=<?php echo $dim1; ?>&dim2=<?php echo $dim2; ?>&dim3=<?php echo $dim3; ?>");
   }
 else if(doctype==9){//Salida de inventario crear
 	  var xhttp;
@@ -376,7 +377,7 @@ else if(doctype==9){//Salida de inventario crear
   	};
 	  xhttp.open("POST", "registro.php", true);
 	  xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	  xhttp.send("P=35&doctype=9&item="+str+"&whscode="+whscode+"&cardcode=<?php echo $CardCode; ?>");
+	  xhttp.send("P=35&doctype=9&item="+str+"&whscode="+whscode+"&cardcode=<?php echo $CardCode; ?>&dim1=<?php echo $dim1; ?>&dim2=<?php echo $dim2; ?>&dim3=<?php echo $dim3; ?>&prjcode=<?php echo $prjcode; ?>");
   }
 else if(doctype==10){//Salida de inventario editar
 	  var xhttp;
@@ -396,7 +397,7 @@ else if(doctype==10){//Salida de inventario editar
   	};
 	  xhttp.open("POST", "registro.php", true);
 	  xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	  xhttp.send("P=35&doctype=10&item="+str+"&whscode="+whscode+"&cardcode=<?php echo $CardCode; ?>&id=<?php echo $ID_SalidaInv; ?>&evento=<?php echo $ID_Evento; ?>");
+	  xhttp.send("P=35&doctype=10&item="+str+"&whscode="+whscode+"&cardcode=<?php echo $CardCode; ?>&id=<?php echo $ID_SalidaInv; ?>&evento=<?php echo $ID_Evento; ?>&dim1=<?php echo $dim1; ?>&dim2=<?php echo $dim2; ?>&dim3=<?php echo $dim3; ?>&prjcode=<?php echo $prjcode; ?>");
   }
 else if(doctype==11){//Traslado de inventario crear
 	  var xhttp;
@@ -416,7 +417,7 @@ else if(doctype==11){//Traslado de inventario crear
   	};
 	  xhttp.open("POST", "registro.php", true);
 	  xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	  xhttp.send("P=35&doctype=11&item="+str+"&whscode="+whscode+"&towhscode=<?php echo $AlmacenDestino; ?>&cardcode=<?php echo $CardCode; ?>&dim1=<?php echo $dim1; ?>&dim2=<?php echo $dim2; ?>&dim3=<?php echo $dim3; ?>");
+	  xhttp.send("P=35&doctype=11&item="+str+"&whscode="+whscode+"&towhscode=<?php echo $AlmacenDestino; ?>&prjcode=<?php echo $prjcode; ?>&cardcode=<?php echo $CardCode; ?>&dim1=<?php echo $dim1; ?>&dim2=<?php echo $dim2; ?>&dim3=<?php echo $dim3; ?>");
   }
 else if(doctype==12){//Traslado de inventario editar
 	  var xhttp;
@@ -436,7 +437,7 @@ else if(doctype==12){//Traslado de inventario editar
   	};
 	  xhttp.open("POST", "registro.php", true);
 	  xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	  xhttp.send("P=35&doctype=12&item="+str+"&whscode="+whscode+"&towhscode=<?php echo $AlmacenDestino; ?>&cardcode=<?php echo $CardCode; ?>&id=<?php echo $ID_TrasladoInv; ?>&evento=<?php echo $ID_Evento; ?>&dim1=<?php echo $dim1; ?>&dim2=<?php echo $dim2; ?>&dim3=<?php echo $dim3; ?>");
+	  xhttp.send("P=35&doctype=12&item="+str+"&whscode="+whscode+"&towhscode=<?php echo $AlmacenDestino; ?>&prjcode=<?php echo $prjcode; ?>&cardcode=<?php echo $CardCode; ?>&id=<?php echo $ID_TrasladoInv; ?>&evento=<?php echo $ID_Evento; ?>&dim1=<?php echo $dim1; ?>&dim2=<?php echo $dim2; ?>&dim3=<?php echo $dim3; ?>");
   }
 else if(doctype==13){//Devolucion de venta crear
 	  var xhttp;
@@ -833,6 +834,8 @@ $rawdata = array();
                         echo "<td><a href=\"#\" onClick=\"showHint('" . $rawdata[$i][$j] . "','" . $rawdata[$i][8] . "','" . $rawdata[$i][2] . "');\">" . utf8_encode($rawdata[$i][$j]) . "</a></td>";
                     } else {
                         // La posición $j=7 debe hacer referencia al almacen, si esto cambia se debe cambiar aquí.
+                        // print_r($rawdata);
+                        // Reemplazar el 7 por 8 en Ditar. Debido a que en Ditar se incluyo el campo ItemGroupName.
                         echo "<td><a href=\"#\" onClick=\"showHint('" . $rawdata[$i][$j] . "','" . $rawdata[$i][7] . "');\">" . utf8_encode($rawdata[$i][$j]) . "</a></td>";
                     }
                 } else {
@@ -875,6 +878,7 @@ $rawdata = array();
 </script>
 </body>
 </html>
+
 <?php
 sqlsrv_close($conexion);
 }?>
