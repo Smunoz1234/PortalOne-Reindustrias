@@ -322,7 +322,21 @@ if ($sw == 1) {
 							<td><span <?php if ($row['Cod_Estado'] == 'O') {echo "class='label label-info'";} else {echo "class='label label-danger'";}?>><?php echo $row['NombreEstado']; ?></span></td>
 							<td>
 								<a href="factura_venta_borrador.php?id=<?php echo base64_encode($row['ID_FacturaVenta']); ?>&id_portal=<?php echo base64_encode($row['IdDocPortal']); ?>&tl=1&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('consultar_factura_venta_borrador.php'); ?>" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i> Abrir</a>
-								<a href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row['ID_FacturaVenta']); ?>&ObType=<?php echo base64_encode('13'); ?>&IdFrm=<?php echo base64_encode($row['IdSeries']); ?>" target="_blank" class="btn btn-warning btn-xs"><i class="fa fa-download"></i> Descargar</a>
+
+								<!-- SMM, 06/03/2023 -->
+								<div class="btn-group">
+									<button data-toggle="dropdown" class="btn btn-warning dropdown-toggle btn-xs"><i class="fa fa-download"></i> Descargar formato <i class="fa fa-caret-down"></i></button>
+									<ul class="dropdown-menu">
+										<?php $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=13 AND (IdFormato='" . $row['IdSeries'] . "' OR DeSeries IS NULL) AND VerEnDocumento='Y' AND EsBorrador='Y'");?>
+										<?php while ($row_Formato = sqlsrv_fetch_array($SQL_Formato)) {?>
+											<li>
+												<a class="dropdown-item" target="_blank" href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row['ID_FacturaVenta']); ?>&ObType=<?php echo base64_encode($row_Formato['ID_Objeto']); ?>&IdFrm=<?php echo base64_encode($row_Formato['IdFormato']); ?>&IdReg=<?php echo base64_encode($row_Formato['ID']); ?>"><?php echo $row_Formato['NombreVisualizar']; ?></a>
+											</li>
+										<?php }?>
+									</ul>
+								</div>
+								<!-- Hasta aquí, 06/03/2023 -->
+
 								<?php if ($row['URLVisorPublico'] != "") {?><a href="<?php echo $row['URLVisorPublico']; ?>" target="_blank" class="btn btn-primary btn-xs" title="Ver factura eléctronica"><i class="fa fa-external-link"></i> Fact. Elect</a><?php }?>
 							</td>
 						</tr>
