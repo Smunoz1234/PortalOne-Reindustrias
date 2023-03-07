@@ -15,7 +15,7 @@ $palabra = ($doc == "Procesos") ? "proceso" : "motivo";
 $SQL_UsuariosSAP = Seleccionar("uvw_Sap_tbl_UsuariosSAP", "*", "Locked = 'N'", "USER_CODE");
 
 // SMM, 18/07/2022
-$SQL_TipoDoc = Seleccionar("uvw_tbl_ObjetosSAP", "*", "CategoriaObjeto = 'Documentos de ventas'", 'CategoriaObjeto, DeTipoDocumento');
+$SQL_TipoDoc = Seleccionar("uvw_tbl_ObjetosSAP", "*", "CategoriaObjeto = 'Documentos de ventas' OR IdTipoDocumento = '1250000001'", 'CategoriaObjeto, DeTipoDocumento');
 $SQL_ModeloAutorizacion = Seleccionar("uvw_Sap_tbl_ModelosAutorizaciones", "*");
 
 // Perfiles Usuarios, SMM 26/07/2022
@@ -96,7 +96,7 @@ if ($edit == 1 && $id != "") {
 
 				<br><br><br><br><br><br>
 				<div class="form-group">
-					<div class="col-md-6">
+					<div class="col-md-12">
 						<label class="control-label">Tipo de documento <span class="text-danger">*</span></label>
 						<select name="IdTipoDocumento" class="form-control" id="IdTipoDocumento" required>
 								<option value="" selected disabled>Seleccione...</option>
@@ -115,11 +115,23 @@ if ($edit == 1 && $id != "") {
 							<option value="OTRO" <?php if (($edit == 1) && ($swOtro == 1 && $row['IdTipoDocumento'] != "")) {echo "selected=\"selected\"";}?>>OTRO</option>
 						</select>
 					</div>
+				</div>
+
+				<br><br><br><br>
+				<div class="form-group">
 					<div class="col-md-6">
 						<label class="control-label">Estado <span class="text-danger">*</span></label>
 						<select class="form-control" id="Estado" name="Estado">
 							<option value="Y" <?php if (($edit == 1) && ($row['Estado'] == "Y")) {echo "selected=\"selected\"";}?>>ACTIVO</option>
 							<option value="N" <?php if (($edit == 1) && ($row['Estado'] == "N")) {echo "selected=\"selected\"";}?>>INACTIVO</option>
+						</select>
+					</div>
+
+					<div class="col-md-6">
+						<label class="control-label">Es Autorizado en SAP <span class="text-danger">*</span></label>
+						<select class="form-control" id="AutorizacionSAP" name="AutorizacionSAP">
+							<option value="Y" <?php if (($edit == 1) && ($row['AutorizacionSAP'] == "Y")) {echo "selected=\"selected\"";}?>>SI</option>
+							<option value="N" <?php if (($edit == 1) && ($row['AutorizacionSAP'] == "N")) {echo "selected=\"selected\"";}?>>NO</option>
 						</select>
 					</div>
 				</div>
@@ -188,7 +200,7 @@ if ($edit == 1 && $id != "") {
 
 				<br><br><br><br><br><br>
 				<div class="form-group">
-					<div class="col-md-6">
+					<div class="col-md-12">
 						<label class="control-label">Tipo de documento <span class="text-danger">*</span></label>
 						<select name="IdTipoDocumento" class="form-control" id="IdTipoDocumento" required>
 								<option value="" selected disabled>Seleccione...</option>
@@ -207,11 +219,23 @@ if ($edit == 1 && $id != "") {
 							<option value="OTRO" <?php if (($edit == 1) && ($swOtro == 1 && $row['IdTipoDocumento'] != "")) {echo "selected=\"selected\"";}?>>OTRO</option>
 						</select>
 					</div>
+				</div>
+
+				<br><br><br><br>
+				<div class="form-group">
 					<div class="col-md-6">
 						<label class="control-label">Estado <span class="text-danger">*</span></label>
 						<select class="form-control" id="Estado" name="Estado">
 							<option value="Y" <?php if (($edit == 1) && ($row['Estado'] == "Y")) {echo "selected=\"selected\"";}?>>ACTIVO</option>
 							<option value="N" <?php if (($edit == 1) && ($row['Estado'] == "N")) {echo "selected=\"selected\"";}?>>INACTIVO</option>
+						</select>
+					</div>
+
+					<div class="col-md-6">
+						<label class="control-label">Es Autorizado en SAP <span class="text-danger">*</span></label>
+						<select class="form-control" id="AutorizacionSAP" name="AutorizacionSAP">
+							<option value="Y" <?php if (($edit == 1) && ($row['AutorizacionSAP'] == "Y")) {echo "selected=\"selected\"";}?>>SI</option>
+							<option value="N" <?php if (($edit == 1) && ($row['AutorizacionSAP'] == "N")) {echo "selected=\"selected\"";}?>>NO</option>
 						</select>
 					</div>
 				</div>
@@ -228,36 +252,39 @@ if ($edit == 1 && $id != "") {
 					</div>
 				</div>
 
-				<br><br><br><br>
-				<div class="form-group">
-					<div class="col-md-12">
-						<label class="control-label">Modelo autorización SAP B1 <span class="text-danger">*</span></label>
-						<select name="IdModeloAutorizacionSAPB1" class="form-control select2" id="IdModeloAutorizacionSAPB1" required>
-							<option value="">Seleccione...</option>
-							<?php while ($row_ModeloAutorizacion = sqlsrv_fetch_array($SQL_ModeloAutorizacion)) {?>
-								<option value="<?php echo $row_ModeloAutorizacion['IdModeloAutorizacion']; ?>" <?php if ((isset($row['IdModeloAutorizacionSAPB1'])) && (strcmp($row_ModeloAutorizacion['IdModeloAutorizacion'], $row['IdModeloAutorizacionSAPB1']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_ModeloAutorizacion['ModeloAutorizacion']; ?></option>
-							<?php }?>
-						</select>
+				<div id="CamposAutorizacionSAP" <?php if (($edit == 1) && ($row['AutorizacionSAP'] == "N")) {?> style="display: none;" <?php }?>>
+					<br><br><br><br>
+					<div class="form-group">
+						<div class="col-md-12">
+							<label class="control-label">Modelo autorización SAP B1 <span class="text-danger">*</span></label>
+							<select name="IdModeloAutorizacionSAPB1" class="form-control select2" id="IdModeloAutorizacionSAPB1" required>
+								<option value="">Seleccione...</option>
+								<?php while ($row_ModeloAutorizacion = sqlsrv_fetch_array($SQL_ModeloAutorizacion)) {?>
+									<option value="<?php echo $row_ModeloAutorizacion['IdModeloAutorizacion']; ?>" <?php if ((isset($row['IdModeloAutorizacionSAPB1'])) && (strcmp($row_ModeloAutorizacion['IdModeloAutorizacion'], $row['IdModeloAutorizacionSAPB1']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_ModeloAutorizacion['ModeloAutorizacion']; ?></option>
+								<?php }?>
+							</select>
+						</div>
 					</div>
-				</div>
 
-				<br><br><br><br>
-				<div class="form-group">
-					<div class="col-md-6">
-						<label class="control-label">Usuario autorización SAP B1 <span class="text-danger">*</span></label>
-						<select name="IdUsuarioAutorizacion" class="form-control select2" id="IdUsuarioAutorizacion" required>
-							<option value="">Seleccione...</option>
-							<?php while ($row_UsuarioSAP = sqlsrv_fetch_array($SQL_UsuariosSAP)) {?>
-								<option value="<?php echo $row_UsuarioSAP['USERID']; ?>" <?php if ((isset($row['IdUsuarioAutorizacionSAPB1'])) && (strcmp($row_UsuarioSAP['USERID'], $row['IdUsuarioAutorizacionSAPB1']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_UsuarioSAP['USER_CODE']; ?></option>
-							<?php }?>
-						</select>
+					<br><br><br><br>
+					<div class="form-group">
+						<div class="col-md-6">
+							<label class="control-label">Usuario autorización SAP B1 <span class="text-danger">*</span></label>
+							<select name="IdUsuarioAutorizacion" class="form-control select2" id="IdUsuarioAutorizacion" required>
+								<option value="">Seleccione...</option>
+								<?php while ($row_UsuarioSAP = sqlsrv_fetch_array($SQL_UsuariosSAP)) {?>
+									<option value="<?php echo $row_UsuarioSAP['USERID']; ?>" <?php if ((isset($row['IdUsuarioAutorizacionSAPB1'])) && (strcmp($row_UsuarioSAP['USERID'], $row['IdUsuarioAutorizacionSAPB1']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_UsuarioSAP['USER_CODE']; ?></option>
+								<?php }?>
+							</select>
+						</div>
+						<div class="col-md-6">
+							<label class="control-label">Password usuario SAP B1 <span class="text-danger">*</span></label>
+							<input type="password" class="form-control" name="PassUsuarioAutorizacion" id="PassUsuarioAutorizacion" required autocomplete="off" value="<?php if ($edit == 1) {echo $row['PassUsuarioAutorizacionSAPB1'];}?>">
+							<a href="#" id="aVerPass" onClick="javascript:MostrarPassword();" title="Mostrar contrase&ntilde;a" class="btn btn-default btn-xs"><span id="VerPass" class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a>
+						</div>
 					</div>
-					<div class="col-md-6">
-						<label class="control-label">Password usuario SAP B1 <span class="text-danger">*</span></label>
-						<input type="password" class="form-control" name="PassUsuarioAutorizacion" id="PassUsuarioAutorizacion" required autocomplete="off" value="<?php if ($edit == 1) {echo $row['PassUsuarioAutorizacionSAPB1'];}?>">
-						<a href="#" id="aVerPass" onClick="javascript:MostrarPassword();" title="Mostrar contrase&ntilde;a" class="btn btn-default btn-xs"><span id="VerPass" class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a>
-					</div>
-				</div>
+				</div> <!-- #CamposAutorizacionSAP -->
+
 			<?php }?>
 			<!-- Fin Motivos -->
 		</div>
@@ -290,17 +317,23 @@ if ($edit == 1 && $id != "") {
 	<input type="hidden" id="Metodo" name="Metodo" value="<?php echo $Metodo; ?>" />
 	<input type="hidden" id="frmType" name="frmType" value="1" />
 </form>
+
 <script>
 $(document).ready(function(){
+	// SMM, 16/12/2022
+	$("#AutorizacionSAP").on("change", function() {
+		$("#CamposAutorizacionSAP").toggle();
+	});
+
 	// SMM, 19/08/2022
 	$('.panel-collapse').on('show.bs.collapse', function () {
-    $(this).siblings('.panel-heading').addClass('active');
-  });
+    	$(this).siblings('.panel-heading').addClass('active');
+  	});
 
-  $('.panel-collapse').on('hide.bs.collapse', function () {
-    $(this).siblings('.panel-heading').removeClass('active');
-  });
-  // Hasta aquí, 19/08/2022
+	$('.panel-collapse').on('hide.bs.collapse', function () {
+		$(this).siblings('.panel-heading').removeClass('active');
+	});
+	// Hasta aquí, 19/08/2022
 
 	$("#frm_NewParam").validate({
 		submitHandler: function(form){

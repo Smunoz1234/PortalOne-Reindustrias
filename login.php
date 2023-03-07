@@ -3,11 +3,13 @@ include "includes/definicion.php";
 if (!isset($_SESSION)) {
     session_start();
 }
+
 if (isset($_SESSION['User']) && $_SESSION['User'] != "") {
     header('Location:index1.php');
     exit();
 }
 session_destroy();
+
 $log = 1;
 if (isset($_POST['User']) || isset($_POST['Password'])) {
     if (($_POST['User'] == "") || ($_POST['Password']) == "") {
@@ -15,13 +17,18 @@ if (isset($_POST['User']) || isset($_POST['Password'])) {
         $log = 0;
 
         // SMM, 23/08/2022
-        echo "<script> console.log('Usuario y contraseña vacíos'); </script>";
+        echo htmlspecialchars("<script> console.log('Usuario y contraseña vacíos'); </script>");
     } else {
-        //require("includes/conect_srv.php");
-        require "includes/LSiqml.php";
+        // require("includes/conect_srv.php");
+
+        // Se reemplazo la función "LSiqmlLogin" por "htmlspecialchars". SMM, 12/12/2022
+        // require "includes/LSiqml.php";
+
         require "includes/funciones.php";
-        $User = LSiqmlLogin($_POST['User']);
-        $Pass = LSiqmlLogin($_POST['Password']);
+
+        // Modificado para protección contra XSS. SMM, 12/12/2022
+        $User = htmlspecialchars($_POST['User']);
+        $Pass = htmlspecialchars($_POST['Password']);
 
         $Param = array(
             "'" . $User . "'",
@@ -95,14 +102,14 @@ if (isset($_POST['User']) || isset($_POST['Password'])) {
                 sqlsrv_close($conexion);
 
                 // SMM, 23/08/2022
-                // echo "<script> console.log('sp_ValidarUsuario, no encontro ningún usuario que coincida con la entrada dada.'); </script>";
+                // echo htmlspecialchars("<script> console.log('sp_ValidarUsuario, no encontro ningún usuario que coincida con la entrada dada.'); </script>");
             }
         } else {
             $log = 0;
             sqlsrv_close($conexion);
 
             // SMM, 23/08/2022
-            echo "<script> console.log('Hubo un error en la consulta al sp_ValidarUsuario, no se pudo consultar.'); </script>";
+            echo htmlspecialchars("<script> console.log('Hubo un error en la consulta al sp_ValidarUsuario, no se pudo consultar.'); </script>");
         }
     }
 }
@@ -132,6 +139,20 @@ if (isset($_POST['User']) || isset($_POST['Password'])) {
 	<script src="js/toastr.js"></script>
 	<script src="js/plugins/validate/jquery.validate.min.js"></script>
 	<script src="js/funciones.js"></script>
+
+  <script>
+        function mostrarContrasena() {
+          var x = document.getElementById("Password");
+          var link = document.getElementById("linkContrasena");
+          if (x.type === "password") {
+            x.type = "text";
+            link.innerHTML = "Ocultar contraseña";
+          } else {
+            x.type = "password";
+            link.innerHTML = "Ver contraseña";
+          }
+        }
+      </script>
 </head>
 
 <body>
@@ -167,17 +188,20 @@ if (isset($_POST['User']) || isset($_POST['Password'])) {
 					<?php }?>
 				</select>
 			</div>
-			<div class="form-group">
-              <label class="form-label">Usuario</label>
-              <input name="User" type="text" autofocus required class="form-control" id="User" maxlength="50">
-            </div>
-			<div class="form-group">
-				<label class="form-label d-flex justify-content-between align-items-end">
-				  <div>Contrase&ntilde;a</div>
-				  <a href="recordar_clave.php" class="d-block small">&iquest;Olvidaste tu contrase&ntilde;a?</a>
-				</label>
-				<input name="Password" type="password" required="" class="form-control" id="Password" maxlength="50" autocomplete="off">
-			</div>
+
+      <div class="form-group">
+        <label class="form-label">Usuario</label>
+        <input name="User" type="text" autofocus required class="form-control" id="User" maxlength="50">
+      </div>
+      <div class="form-group">
+        <label class="form-label d-flex justify-content-between align-items-end">
+          <div>Contraseña</div>
+          <a href="#" onclick="mostrarContrasena()" class="d-block small" id="linkContrasena">Ver contraseña</a>
+          <!-- a href="recordar_clave.php" class="d-block small">¿Olvidaste tu contraseña?</a -->
+        </label>
+        <input name="Password" type="password" required="" class="form-control" id="Password" maxlength="50" autocomplete="off">
+      </div>
+
 			<div class="d-flex justify-content-between align-items-center m-0">
 				<label class="custom-control custom-checkbox m-0">
 				  <input name="recuerdame" id="recuerdame" type="checkbox" class="custom-control-input">
@@ -201,49 +225,62 @@ if (isset($_POST['User']) || isset($_POST['Password'])) {
 
     </div>
   </div>
+
+<?php // Si se reciben datos por POST y el valor de "data" es "OK" ?>
 <?php if (isset($_POST['data']) && $_POST['data'] == "OK") {?>
-<script>
-	$(document).ready(function(){
-		toastr.success('¡Su contraseña ha sido modificada!','Felicidades');
-	});
-</script>
+  <!-- Muestra un mensaje de éxito usando la librería toastr -->
+  <script>
+    $(document).ready(function(){
+      toastr.success('¡Su contraseña ha sido modificada!','Felicidades');
+    });
+  </script>
+<?php // Si no se cumplen las condiciones anteriores, verifica si la variable $log tiene el valor 0 ?>
+<?php } else if ($log == 0) {?>
+  <!-- Muestra un mensaje de error usando la librería toastr -->
+  <script>
+    $(document).ready(function(){
+      toastr.error('Por favor compruebe su Usuario y Contraseña.','Error de ingreso');
+    });
+  </script>
 <?php }?>
-<?php if ($log == 0) {?>
-<script>
-	$(document).ready(function(){
-		toastr.error('Por favor compruebe su Usuario y Contraseña.','Error de ingreso');
-	});
-</script>
-<?php }?>
 
 <script>
-	 $(document).ready(function(){
-      if(localStorage.hasOwnProperty("loginForm")) {
-          let json = JSON.parse(localStorage.loginForm);
+$(document).ready(function(){
+  // Verifica si el navegador soporta localStorage y si existe un objeto con clave "loginForm"
+  if(typeof(Storage) !== "undefined" && localStorage.hasOwnProperty("loginForm")) {
+      // Obtiene y parsea el objeto JSON almacenado en localStorage
+      let json = JSON.parse(localStorage.loginForm);
 
-          $("#User").val(json.User);
-          $("#Password").val(atob(json.Password));
+      // Establece los valores del formulario con los datos del objeto JSON
+      $("#User").val(json.User);
+      $("#Password").val(atob(json.Password));
 
-          $("#recuerdame").prop('checked', true);
+      // Marca el checkbox "recuerdame" como seleccionado
+      $("#recuerdame").prop('checked', true);
+  }
+
+  // Valida el formulario al enviarse
+  $("#frmLogin").validate({
+    // Función que se ejecuta cuando el formulario es válido
+    submitHandler: function(form){
+      // Obtiene los datos del formulario y los convierte en un objeto JSON
+      let formData = new FormData(form);
+      let json = Object.fromEntries(formData);
+
+      // Si el checkbox "recuerdame" está seleccionado, almacena el objeto JSON en localStorage
+      if(json.recuerdame === "on") {
+        json.Password = btoa(json.Password); // Encripta la contraseña
+        localStorage.loginForm = JSON.stringify(json);
+      } else {
+        // Si no está seleccionado, elimina el objeto almacenado en localStorage
+        localStorage.removeItem("loginForm");
       }
 
-		  $("#frmLogin").validate({
-        submitHandler: function(form){
-          let formData = new FormData(form);
-          let json = Object.fromEntries(formData);
-
-          if(json.recuerdame === "on") {
-            json.Password = btoa(json.Password);
-            localStorage.loginForm = JSON.stringify(json);
-          } else {
-            localStorage.removeItem("loginForm");
-          }
-
-          // SMM, 11/11/2022
-          form.submit();
-        }
-      });
-	});
+      // Envía el formulario
+      form.submit();
+    }
+  });
+});
 </script>
 
 <?php include "includes/pie.php";?>
