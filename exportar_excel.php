@@ -2726,7 +2726,7 @@ if (isset($_GET['exp']) && $_GET['exp'] != "" && $_GET['Cons'] != "") {
         exit;
     }
 
-    // Exportar datos desde un SP asincronamente y pasando el nombre del archivo como parámetro
+    // SMM, 07/03/2023. Exportar datos desde un SP asincronamente y pasando el nombre del archivo como parámetro.
     if ($_GET['exp'] == 21) {
         $Cons = base64_decode($_GET['Cons']);
         $ParamCons = explode(",", $Cons);

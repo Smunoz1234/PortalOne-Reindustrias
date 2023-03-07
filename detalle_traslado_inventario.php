@@ -125,6 +125,25 @@ $SQL_ToAlmacen = EjecutarSP('sp_ConsultarAlmacenesUsuario', $ParamAlmacenDest);
 //Proyectos
 $SQL_Proyecto = Seleccionar('uvw_Sap_tbl_Proyectos', '*', '', 'DeProyecto');
 
+// Filtrar conceptos de salida. SMM, 21/01/2023
+$Where_Conceptos = "ID_Usuario='" . $_SESSION['CodUser'] . "'";
+$SQL_Conceptos = Seleccionar('uvw_tbl_UsuariosConceptos', '*', $Where_Conceptos);
+
+$Filtro_Conceptos = "Estado = 'Y'";
+$Conceptos = array();
+while ($Concepto = sqlsrv_fetch_array($SQL_Conceptos)) {
+    $Conceptos[] = ("'" . $Concepto['IdConcepto'] . "'");
+}
+
+if (count($Conceptos) > 0) {
+    $Filtro_Conceptos .= " AND id_concepto_salida IN (";
+    $Filtro_Conceptos .= implode(",", $Conceptos);
+    $Filtro_Conceptos .= ")";
+}
+
+// Conceptos de salida de inventario, SMM 21/01/2023
+$SQL_ConceptoSalida = Seleccionar('tbl_SalidaInventario_Conceptos', '*', $Filtro_Conceptos, 'id_concepto_salida');
+
 // Base del Redondeo. SMM, 02/12/2022
 $SQL_DatosBase = Seleccionar('uvw_Sap_ConfiguracionSAPB1_DatosBase', '*');
 
@@ -511,6 +530,10 @@ function ConsultarArticulo(articulo){
 				<!-- Dimensiones dinámicas, hasta aquí -->
 
 				<th>Proyecto</th>
+
+				<!-- SMM, 21/01/2023 -->
+				<th>Concepto Salida</th>
+
 				<th>Texto libre</th>
 				<th>Precio</th>
 				<th>Precio con IVA</th>
@@ -532,6 +555,7 @@ if ($sw == 1) {
         // Se eliminaron las dimensiones, 31/08/2022
 
         sqlsrv_fetch($SQL_Proyecto, SQLSRV_SCROLL_ABSOLUTE, -1);
+        sqlsrv_fetch($SQL_ConceptoSalida, SQLSRV_SCROLL_ABSOLUTE, -1);
         ?>
 		<tr>
 			<!-- SMM, 25/11/2022 -->
@@ -580,7 +604,7 @@ if ($sw == 1) {
 
 						<?php $SQL_Dim = Seleccionar('uvw_Sap_tbl_DimensionesReparto', '*', "DimCode=$DimCode");?>
 						<?php while ($row_Dim = sqlsrv_fetch_array($SQL_Dim)) {?>
-							<option value="<?php echo $row_Dim['OcrCode']; ?>" <?php if ((isset($row["OcrCode$OcrId"])) && (strcmp($row_Dim['OcrCode'], $row["OcrCode$OcrId"]) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Dim['OcrName']; ?></option>
+							<option value="<?php echo $row_Dim['OcrCode']; ?>" <?php if ((isset($row["OcrCode$OcrId"])) && (strcmp($row_Dim['OcrCode'], $row["OcrCode$OcrId"]) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Dim['OcrCode'] . "-" . $row_Dim['OcrName']; ?></option>
 						<?php }?>
 					</select>
 				</td>
@@ -588,19 +612,29 @@ if ($sw == 1) {
 			<!-- Dimensiones dinámicas, hasta aquí -->
 
 			<td>
-				<select id="PrjCode<?php echo $i; ?>" name="PrjCode[]" class="form-control select2" onChange="ActualizarDatos('PrjCode',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if ($row['LineStatus'] == 'C' || ($type == 2)) {echo "disabled='disabled'";}?>>
+				<select id="PrjCode<?php echo $i; ?>" name="PrjCode[]" class="form-control select2" onChange="ActualizarDatos('PrjCode',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if ($row['LineStatus'] == 'C' || ($type == 2) || ($Estado == 2)) {echo "disabled='disabled'";}?>>
 					<option value="">(NINGUNO)</option>
 				  <?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) {?>
-						<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if ((isset($row['PrjCode'])) && (strcmp($row_Proyecto['IdProyecto'], $row['PrjCode']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Proyecto['DeProyecto']; ?></option>
+						<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if ((isset($row['PrjCode'])) && (strcmp($row_Proyecto['IdProyecto'], $row['PrjCode']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Proyecto['IdProyecto'] . "-" . $row_Proyecto['DeProyecto']; ?></option>
 				  <?php }?>
 				</select>
 			</td>
+
+			<td>
+				<!-- SMM, 21/01/2023 -->
+				<select id="ConceptoSalida<?php echo $i; ?>" name="ConceptoSalida[]" class="form-control select2" onChange="ActualizarDatos('ConceptoSalida',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if ($row['LineStatus'] == 'C' || ($type == 2) || ($Estado == 2)) {echo "disabled='disabled'";}?>>
+					<option value="">(NINGUNO)</option>
+					<?php while ($row_ConceptoSalida = sqlsrv_fetch_array($SQL_ConceptoSalida)) {?>
+						<option value="<?php echo $row_ConceptoSalida['id_concepto_salida']; ?>" <?php if ((isset($row['ConceptoSalida'])) && (strcmp($row_ConceptoSalida['id_concepto_salida'], $row['ConceptoSalida']) == 0)) {echo "selected";}?>><?php echo $row_ConceptoSalida['id_concepto_salida'] . "-" . $row_ConceptoSalida['concepto_salida']; ?></option>
+					<?php }?>
+				</select>
+			</td> <!-- form-group -->
 
 			<td><input size="50" type="text" id="FreeTxt<?php echo $i; ?>" name="FreeTxt[]" class="form-control" value="<?php echo $row['FreeTxt']; ?>" onChange="ActualizarDatos('FreeTxt',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" maxlength="100" <?php if ($row['LineStatus'] == 'C' || $Estado == 2) {echo "readonly";}?>></td>
 			<td><input size="15" type="text" id="Price<?php echo $i; ?>" name="Price[]" class="form-control" value="<?php echo number_format($row['Price'], 2); ?>" onChange="ActualizarDatos('Price',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if ($row['LineStatus'] == 'C' || $Estado == 2) {echo "readonly";}?>></td>
 
 			<td>
-				<input size="15" type="text" id="PriceTax<?php echo $i; ?>" name="PriceTax[]" class="form-control" value="<?php number_format($row['PriceTax'], $dPrecios, $sDecimal, $sMillares);?>" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" readonly>
+				<input size="15" type="text" id="PriceTax<?php echo $i; ?>" name="PriceTax[]" class="form-control" value="<?php echo number_format($row['PriceTax'], $dPrecios, $sDecimal, $sMillares); ?>" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" readonly>
 				<input type="hidden" id="TarifaIVA<?php echo $i; ?>" name="TarifaIVA[]" value="<?php echo number_format($row['TarifaIVA'], 0); ?>">
 				<input type="hidden" id="VatSum<?php echo $i; ?>" name="VatSum[]" value="<?php echo number_format($row['VatSum'], 2); ?>">
 			</td>

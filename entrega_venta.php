@@ -1760,7 +1760,7 @@ if ($edit == 1 || $sw_error == 1) {
 					<div class="form-group">
 						<label class="col-lg-2">Comentarios</label>
 						<div class="col-lg-10">
-							<textarea name="Comentarios" form="CrearEntregaVenta" rows="4" class="form-control" id="Comentarios" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "readonly";}?>><?php if ($edit == 1 || $sw_error == 1) {echo $row['Comentarios'];} elseif (isset($_GET['Comentarios'])) {echo base64_decode($_GET['Comentarios']);}?></textarea>
+							<textarea name="Comentarios" form="CrearEntregaVenta" maxlength="2000" rows="4" class="form-control" id="Comentarios" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "readonly";}?>><?php if ($edit == 1 || $sw_error == 1) {echo $row['Comentarios'];} elseif (isset($_GET['Comentarios'])) {echo base64_decode($_GET['Comentarios']);}?></textarea>
 						</div>
 					</div>
 					<?php if (PermitirFuncion(417)) {?>

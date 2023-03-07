@@ -1,6 +1,15 @@
 <?php require_once "includes/conexion.php";
 PermitirAcceso(1206);
 $sw = 0;
+
+// SMM, 16/02/2023
+$DimSeries = intval(ObtenerVariable("DimensionSeries"));
+$SQL_Dimensiones = Seleccionar('uvw_Sap_tbl_Dimensiones', '*', "DimCode=$DimSeries");
+$row_Dimension = sqlsrv_fetch_array($SQL_Dimensiones);
+$Nombre_DimSeries = $row_Dimension["DimName"];
+$OcrId = ($DimSeries == 1) ? "" : $DimSeries;
+$Sucursal = $_GET['Sucursal'] ?? "";
+
 //Estado actividad
 $SQL_Estado = Seleccionar('uvw_tbl_EstadoDocSAP', '*');
 
@@ -44,8 +53,9 @@ if (isset($_GET['Cliente']) && $_GET['Cliente'] != "") {
     $Filtro .= " and CardCode='" . $_GET['Cliente'] . "'";
 }
 
-if (isset($_GET['Empleado']) && $_GET['Empleado'] != "") {
-    $Filtro .= " and CodEmpleado='" . $_GET['Empleado'] . "'";
+// SMM, 16/02/2023
+if ($Sucursal != "") {
+    $Filtro .= " AND OcrCode$OcrId='$Sucursal'";
 }
 
 if (isset($_GET['Sucursal']) && $_GET['Sucursal'] != "") {
@@ -130,6 +140,12 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_SalInvUpd"))) {
 				url: "ajx_cbo_select.php?type=19&id="+Serie+"&todos=1",
 				success: function(response){
 					$('#Sucursal').html(response).fadeIn();
+
+					// SMM, 16/02/2023
+					<?php if (isset($_GET['Sucursal'])) {?>
+						$('#Sucursal').val("<?php echo $_GET['Sucursal']; ?>");
+					<?php }?>
+
 					$('.ibox-content').toggleClass('sk-loading',false);
 				}
 			});
@@ -180,9 +196,9 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_SalInvUpd"))) {
 							<label class="col-lg-1 control-label">Fechas</label>
 							<div class="col-lg-3">
 								<div class="input-daterange input-group" id="datepicker">
-									<input name="FechaInicial" type="text" class="input-sm form-control" id="FechaInicial" placeholder="Fecha inicial" value="<?php echo $FechaInicial; ?>"/>
+									<input name="FechaInicial" type="text" autocomplete="off" class="input-sm form-control" id="FechaInicial" placeholder="Fecha inicial" value="<?php echo $FechaInicial; ?>"/>
 									<span class="input-group-addon">hasta</span>
-									<input name="FechaFinal" type="text" class="input-sm form-control" id="FechaFinal" placeholder="Fecha final" value="<?php echo $FechaFinal; ?>" />
+									<input name="FechaFinal" type="text" autocomplete="off" class="input-sm form-control" id="FechaFinal" placeholder="Fecha final" value="<?php echo $FechaFinal; ?>" />
 								</div>
 							</div>
 							<label class="col-lg-1 control-label">Estado</label>
@@ -210,7 +226,7 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_SalInvUpd"))) {
 								<input name="Cliente" type="hidden" id="Cliente" value="<?php if (isset($_GET['Cliente']) && ($_GET['Cliente'] != "")) {echo $_GET['Cliente'];}?>">
 								<input name="NombreCliente" type="text" class="form-control" id="NombreCliente" placeholder="Para TODOS, dejar vacio..." value="<?php if (isset($_GET['NombreCliente']) && ($_GET['NombreCliente'] != "")) {echo $_GET['NombreCliente'];}?>">
 							</div>
-							<label class="col-lg-1 control-label">Sucursal</label>
+							<label class="col-lg-1 control-label"><?php echo $Nombre_DimSeries; ?></label>
 							<div class="col-lg-3">
 								<select name="Sucursal" class="form-control" id="Sucursal">
 									<option value="">(Todos)</option>
@@ -307,6 +323,11 @@ if ($sw == 1) {
 <!-- InstanceBeginEditable name="EditRegion4" -->
  <script>
         $(document).ready(function(){
+			// SMM, 16/02/2023
+			<?php if (isset($_GET['Series'])) {?>
+				$('#Series').trigger('change');
+			<?php }?>
+
 			$("#formBuscar").validate({
 			 submitHandler: function(form){
 				 $('.ibox-content').toggleClass('sk-loading');

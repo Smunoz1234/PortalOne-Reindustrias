@@ -22,6 +22,7 @@ $CardCode = "";
 $type = 1;
 $Estado = 1; //Abierto
 $dt_TI = 0;
+
 if (isset($_GET['id']) && ($_GET['id'] != "")) {
     if ($_GET['type'] == 1) {
         $type = 1;
@@ -40,7 +41,8 @@ if (isset($_GET['id']) && ($_GET['id'] != "")) {
     }
 
     if ($type == 1) { //Creando Salida de inventario
-        $SQL = Seleccionar("uvw_tbl_SalidaInventarioDetalleCarrito", "*", "Usuario='" . $_GET['usr'] . "' and CardCode='" . $_GET['cardcode'] . "'");
+        $Where_SQL = ("Usuario='" . $_GET['usr'] . "' and CardCode='" . $_GET['cardcode'] . "'");
+        $SQL = Seleccionar("uvw_tbl_SalidaInventarioDetalleCarrito", "*", $Where_SQL);
         // $SQL = Seleccionar("uvw_tbl_SalidaInventarioDetalleCarrito", "*", "Usuario='" . $_GET['usr'] . "' and CardCode='" . $_GET['cardcode'] . "' and WhsCode='" . $_GET['whscode'] . "'");
         if ($SQL) {
             $sw = 1;
@@ -71,12 +73,34 @@ if (isset($_GET['id']) && ($_GET['id'] != "")) {
 // Almacenes origen, SMM, 05/12/2022
 $ParamAlmacen = array(
     "'" . $_SESSION['CodUser'] . "'",
-    "'60'", // Tipo de Documento
+    "'60'", // Tipo de Documento, debe estar parámetrizado en la gestión de series.
 );
+if (isset($_GET['dt_TI']) && ($_GET['dt_TI'] != "")) {
+    array_push($ParamAlmacen, "2");
+}
 $SQL_Almacen = EjecutarSP('sp_ConsultarAlmacenesUsuario', $ParamAlmacen);
 
 // Proyectos, SMM, 05/12/2022
 $SQL_Proyecto = Seleccionar('uvw_Sap_tbl_Proyectos', '*', '', 'DeProyecto');
+
+// Filtrar conceptos de salida. SMM, 21/01/2023
+$Where_Conceptos = "ID_Usuario='" . $_SESSION['CodUser'] . "'";
+$SQL_Conceptos = Seleccionar('uvw_tbl_UsuariosConceptos', '*', $Where_Conceptos);
+
+$Filtro_Conceptos = "Estado = 'Y'";
+$Conceptos = array();
+while ($Concepto = sqlsrv_fetch_array($SQL_Conceptos)) {
+    $Conceptos[] = ("'" . $Concepto['IdConcepto'] . "'");
+}
+
+if (count($Conceptos) > 0) {
+    $Filtro_Conceptos .= " AND id_concepto_salida IN (";
+    $Filtro_Conceptos .= implode(",", $Conceptos);
+    $Filtro_Conceptos .= ")";
+}
+
+// Conceptos de salida de inventario, SMM 21/01/2023
+$SQL_ConceptoSalida = Seleccionar('tbl_SalidaInventario_Conceptos', '*', $Filtro_Conceptos, 'id_concepto_salida');
 
 // Base del Redondeo. SMM, 05/12/2022
 $SQL_DatosBase = Seleccionar('uvw_Sap_ConfiguracionSAPB1_DatosBase', '*');
@@ -145,23 +169,108 @@ $sMillares = $row_DatosBase["CaracterSeparadorMillares"] ?? ",";
 	<?php }?>
 </script>
 
+<!-- SMM, 20/12/2022 -->
 <script>
-function BorrarLinea(LineNum){
+var json=[];
+var cant=0;
+
+function BorrarLinea(){
 	if(confirm(String.fromCharCode(191)+'Est'+String.fromCharCode(225)+' seguro que desea eliminar este item? Este proceso no se puede revertir.')){
 		$.ajax({
 			type: "GET",
 			<?php if ($type == 1) {?>
-			url: "includes/procedimientos.php?type=10&edit=<?php echo $type; ?>&linenum="+LineNum+"&cardcode=<?php echo $CardCode; ?>",
+			url: "includes/procedimientos.php?type=10&edit=<?php echo $type; ?>&linenum="+json+"&cardcode=<?php echo $CardCode; ?>",
 			<?php } else {?>
-			url: "includes/procedimientos.php?type=10&edit=<?php echo $type; ?>&linenum="+LineNum+"&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
+			url: "includes/procedimientos.php?type=10&edit=<?php echo $type; ?>&linenum="+json+"&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
 			<?php }?>
 			success: function(response){
 				window.location.href="detalle_salida_inventario.php?<?php echo $_SERVER['QUERY_STRING']; ?>";
+				console.log(response);
+			},
+			error: function(error){
+				console.error(error.responseText);
 			}
 		});
 	}
 }
+
+function DuplicarLinea(){
+	if(confirm(String.fromCharCode(191)+'Est'+String.fromCharCode(225)+' seguro que desea duplicar estos registros?')){
+		$.ajax({
+			type: "GET",
+			<?php if ($type == 1) {?>
+			url: "includes/procedimientos.php?type=61&edit=<?php echo $type; ?>&linenum="+json+"&cardcode=<?php echo $CardCode; ?>",
+			<?php } else {?>
+			url: "includes/procedimientos.php?type=61&edit=<?php echo $type; ?>&linenum="+json+"&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
+			<?php }?>
+			success: function(response){
+				window.location.href="detalle_salida_inventario.php?<?php echo $_SERVER['QUERY_STRING']; ?>";
+			},
+			error: function(error) {
+				console.log(error.responseText);
+			}
+		});
+	}
+}
+
+function Seleccionar(ID){
+	var btnBorrarLineas=document.getElementById('btnBorrarLineas');
+	var btnDuplicarLineas=document.getElementById('btnDuplicarLineas');
+	var Check = document.getElementById('chkSel'+ID).checked;
+	var sw=-1;
+	json.forEach(function(element,index){
+		// console.log(element,index);
+		// console.log(json[index]);
+
+		if(json[index]==ID){
+			sw=index;
+		}
+
+	});
+
+	if(sw>=0){
+		json.splice(sw, 1);
+		cant--;
+	}else if(Check){
+		json.push(ID);
+		cant++;
+	}
+	if(cant>0){
+		$("#btnBorrarLineas").prop('disabled', false);
+		$("#btnDuplicarLineas").prop('disabled', false);
+	}else{
+		$("#btnBorrarLineas").prop('disabled', true);
+		$("#btnDuplicarLineas").prop('disabled', true);
+	}
+
+	// console.log(json);
+}
+
+function SeleccionarTodos(){
+	var Check = document.getElementById('chkAll').checked;
+	if(Check==false){
+		json=[];
+		cant=0;
+		$("#btnBorrarLineas").prop('disabled', true);
+		$("#btnDuplicarLineas").prop('disabled', true);
+	}
+	$(".chkSel:not(:disabled)").prop("checked", Check);
+
+	if(Check){
+		$(".chkSel:not(:disabled)").trigger('change');
+	}
+}
+
+function ConsultarArticulo(articulo){
+	if(articulo!=""){
+		self.name='opener';
+		remote=open('articulos.php?id='+articulo+'&ext=1&tl=1','remote','location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
+		remote.focus();
+	}
+}
 </script>
+<!-- Hasta aquí, 20/12/2022 -->
+
 <script>
 function Totalizar(num){
 	//alert(num);
@@ -232,7 +341,14 @@ function ActualizarDatos(name,id,line){//Actualizar datos asincronicamente
 	<table width="100%" class="table table-bordered">
 		<thead>
 			<tr>
-				<th>&nbsp;</th>
+				<!-- SMM, 20/12/2022 -->
+				<th class="text-center form-inline w-150">
+					<div class="checkbox checkbox-success"><input type="checkbox" id="chkAll" value="" onChange="SeleccionarTodos();" title="Seleccionar todos" <?php if (($type == 2) || ($Estado == 2)) {echo "disabled";}?>><label></label></div>
+					<button type="button" id="btnBorrarLineas" title="Borrar lineas" class="btn btn-danger btn-xs" disabled onClick="BorrarLinea();"><i class="fa fa-trash"></i></button>
+					<button type="button" id="btnDuplicarLineas" title="Duplicar lineas" class="btn btn-success btn-xs" disabled onClick="DuplicarLinea();"><i class="fa fa-copy"></i></button>
+				</th>
+				<!-- Hasta aquí, 20/12/2022 -->
+
 				<th>Código artículo</th>
 				<th>Nombre artículo</th>
 				<th>Unidad</th>
@@ -240,7 +356,7 @@ function ActualizarDatos(name,id,line){//Actualizar datos asincronicamente
 				<th>Cant. Inicial</th>
 
 				<!-- SMM, 05/12/2022 -->
-				<th>Almacén origen</th>
+				<th>Almacén</th>
 
 				<th>Stock almacén</th>
 
@@ -253,12 +369,15 @@ function ActualizarDatos(name,id,line){//Actualizar datos asincronicamente
 				<!-- SMM, 05/12/2022 -->
 				<th>Proyecto</th>
 
+				<!-- SMM, 21/01/2023 -->
+				<th>Concepto Salida</th>
+
 				<th>Texto libre</th>
 				<th>Precio</th>
 				<th>Precio con IVA</th>
 				<th>% Desc.</th>
 				<th>Total</th>
-				<th>Almacén</th>
+
 				<th><i class="fa fa-refresh"></i></th>
 			</tr>
 		</thead>
@@ -273,23 +392,33 @@ if ($sw == 1) {
         // $Almacen = $row['WhsCode'];
         sqlsrv_fetch($SQL_Almacen, SQLSRV_SCROLL_ABSOLUTE, -1);
         sqlsrv_fetch($SQL_Proyecto, SQLSRV_SCROLL_ABSOLUTE, -1);
+        sqlsrv_fetch($SQL_ConceptoSalida, SQLSRV_SCROLL_ABSOLUTE, -1);
         ?>
 
 		<tr>
-			<td><?php if (($row['TreeType'] != "T") && ($row['LineStatus'] == "O") && ($dt_TI == 0) && ($type == 1) && ($Estado == 1)) {?><button type="button" title="Borrar linea" class="btn btn-default btn-xs" onClick="BorrarLinea(<?php echo $row['LineNum']; ?>);"><i class="fa fa-trash"></i></button><?php }?></td>
+			<!-- SMM, 20/12/2022 -->
+			<td class="text-center form-inline w-150">
+				<div class="checkbox checkbox-success"><input type="checkbox" class="chkSel" id="chkSel<?php echo $row['LineNum']; ?>" value="" onChange="Seleccionar('<?php echo $row['LineNum']; ?>');" aria-label="Single checkbox One" <?php if (($row['LineStatus'] == 'C') || ($type == 2) || ($Estado == 2)) {echo "disabled='disabled'";}?>><label></label></div>
+				<button type="button" class="btn btn-success btn-xs" onClick="ConsultarArticulo('<?php echo base64_encode($row['ItemCode']); ?>');" title="Consultar Articulo"><i class="fa fa-search"></i></button>
+			</td>
+			<!-- Hasta aquí, 20/12/2022 -->
+
 			<td><input size="20" type="text" id="ItemCode<?php echo $i; ?>" name="ItemCode[]" class="form-control" readonly value="<?php echo $row['ItemCode']; ?>"><input type="hidden" name="LineNum[]" id="LineNum<?php echo $i; ?>" value="<?php echo $row['LineNum']; ?>"></td>
 			<td><input size="50" type="text" id="ItemName<?php echo $i; ?>" name="ItemName[]" class="form-control" value="<?php echo $row['ItemName']; ?>" maxlength="100" onChange="ActualizarDatos('ItemName',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if (($row['LineStatus'] == 'C') || ($type == 2) || ($Estado == 2)) {echo "readonly";}?>></td>
 			<td><input size="15" type="text" id="UnitMsr<?php echo $i; ?>" name="UnitMsr[]" class="form-control" readonly value="<?php echo $row['UnitMsr']; ?>"></td>
-			
+
 			<td><input size="15" type="text" id="Quantity<?php echo $i; ?>" name="Quantity[]" class="form-control" value="<?php echo number_format($row['Quantity'], 2); ?>" onChange="ActualizarDatos('Quantity',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if (($row['LineStatus'] == 'C') || ($type == 2) || ($Estado == 2)) {echo "readonly";}?>></td>
-			
+
 			<td><input size="15" type="text" id="CantInicial<?php echo $i; ?>" name="CantInicial[]" class="form-control" value="<?php echo number_format($row['CantInicial'], 2); ?>" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" readonly></td>
-			
+
 			<td> <!-- SMM, 05/12/2022 -->
-				<select id="WhsCode<?php echo $i; ?>" name="WhsCode[]" class="form-control select2" onChange="ActualizarDatos('WhsCode',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);ActStockAlmacen('WhsCode',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if ($row['LineStatus'] == 'C') {echo "disabled='disabled'";}?>>
+				<select id="WhsCode<?php echo $i; ?>" name="WhsCode[]" class="form-control" onChange="ActualizarDatos('WhsCode',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);ActStockAlmacen('WhsCode',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if (($row['LineStatus'] == 'C') || ($type == 2) || ($Estado == 2)) {echo "readonly";}?>>
 				  <option value="">Seleccione...</option>
 				  <?php while ($row_Almacen = sqlsrv_fetch_array($SQL_Almacen)) {?>
-						<option value="<?php echo $row_Almacen['WhsCode']; ?>" <?php if ((isset($row['WhsCode'])) && (strcmp($row_Almacen['WhsCode'], $row['WhsCode']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Almacen['WhsName']; ?></option>
+						<?php $CodigoAlmacen = (($dt_TI == 0) && ($type == 1)) ? $row_Almacen['WhsCode'] : $row_Almacen['ToWhsCode'];?>
+						<?php $NombreAlmacen = (($dt_TI == 0) && ($type == 1)) ? $row_Almacen['WhsName'] : $row_Almacen['ToWhsName'];?>
+						<!-- option><?php //print_r($row_Almacen);?></option-->
+						<option value="<?php echo $CodigoAlmacen; ?>" <?php if ((isset($row['WhsCode'])) && (strcmp($CodigoAlmacen, $row['WhsCode']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $NombreAlmacen; ?></option>
 				  <?php }?>
 				</select>
 			</td>
@@ -302,12 +431,12 @@ if ($sw == 1) {
 				<?php $OcrId = ($DimCode == 1) ? "" : $DimCode;?>
 
 				<td>
-					<select id="OcrCode<?php echo $OcrId . $i; ?>" name="OcrCode<?php echo $OcrId; ?>[]" class="form-control select2" onChange="ActualizarDatos('OcrCode<?php echo $OcrId; ?>',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402))) {echo "disabled='disabled'";}?>>
+					<select id="OcrCode<?php echo $OcrId . $i; ?>" name="OcrCode<?php echo $OcrId; ?>[]" class="form-control" onChange="ActualizarDatos('OcrCode<?php echo $OcrId; ?>',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if (($row['LineStatus'] == 'C') || ($type == 2) || ($Estado == 2)) {echo "readonly";}?>>
 						<option value="">(NINGUNO)</option>
 
 						<?php $SQL_Dim = Seleccionar('uvw_Sap_tbl_DimensionesReparto', '*', "DimCode=$DimCode");?>
 						<?php while ($row_Dim = sqlsrv_fetch_array($SQL_Dim)) {?>
-							<option value="<?php echo $row_Dim['OcrCode']; ?>" <?php if ((isset($row["OcrCode$OcrId"])) && (strcmp($row_Dim['OcrCode'], $row["OcrCode$OcrId"]) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Dim['OcrName']; ?></option>
+							<option value="<?php echo $row_Dim['OcrCode']; ?>" <?php if ((isset($row["OcrCode$OcrId"])) && (strcmp($row_Dim['OcrCode'], $row["OcrCode$OcrId"]) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Dim['OcrCode'] . "-" . $row_Dim['OcrName']; ?></option>
 						<?php }?>
 					</select>
 				</td>
@@ -315,20 +444,37 @@ if ($sw == 1) {
 			<!-- Dimensiones dinámicas, hasta aquí -->
 
 			<td> <!-- SMM, 05/12/2022 -->
-				<select id="PrjCode<?php echo $i; ?>" name="PrjCode[]" class="form-control select2" onChange="ActualizarDatos('PrjCode',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if ($row['LineStatus'] == 'C') {echo "disabled='disabled'";}?>>
+				<select id="PrjCode<?php echo $i; ?>" name="PrjCode[]" class="form-control" onChange="ActualizarDatos('PrjCode',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if (($row['LineStatus'] == 'C') || ($type == 2) || ($Estado == 2)) {echo "readonly";}?>>
 					<option value="">(NINGUNO)</option>
 				  <?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) {?>
-						<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if ((isset($row['PrjCode'])) && (strcmp($row_Proyecto['IdProyecto'], $row['PrjCode']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Proyecto['DeProyecto']; ?></option>
+						<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if ((isset($row['PrjCode'])) && (strcmp($row_Proyecto['IdProyecto'], $row['PrjCode']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Proyecto['IdProyecto'] . "-" . $row_Proyecto['DeProyecto']; ?></option>
 				  <?php }?>
 				</select>
 			</td>
 
+			<td>
+				<!-- SMM, 21/01/2023 -->
+				<select id="ConceptoSalida<?php echo $i; ?>" name="ConceptoSalida[]" class="form-control" onChange="ActualizarDatos('ConceptoSalida',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if ($row['LineStatus'] == 'C' || ($type == 2) || ($Estado == 2)) {echo "readonly";}?>>
+					<option value="">(NINGUNO)</option>
+					<?php while ($row_ConceptoSalida = sqlsrv_fetch_array($SQL_ConceptoSalida)) {?>
+						<option value="<?php echo $row_ConceptoSalida['id_concepto_salida']; ?>" <?php if ((isset($row['ConceptoSalida'])) && (strcmp($row_ConceptoSalida['id_concepto_salida'], $row['ConceptoSalida']) == 0)) {echo "selected";}?>><?php echo $row_ConceptoSalida['id_concepto_salida'] . "-" . $row_ConceptoSalida['concepto_salida']; ?></option>
+					<?php }?>
+				</select>
+			</td> <!-- form-group -->
+
 			<td><input size="50" type="text" id="FreeTxt<?php echo $i; ?>" name="FreeTxt[]" class="form-control" value="<?php echo $row['FreeTxt']; ?>" onChange="ActualizarDatos('FreeTxt',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" maxlength="100" <?php if (($row['LineStatus'] == 'C') || ($type == 2) || ($Estado == 2)) {echo "readonly";}?>></td>
+
 			<td><input size="15" type="text" id="Price<?php echo $i; ?>" name="Price[]" class="form-control" value="<?php echo number_format($row['Price'], 2); ?>" onChange="ActualizarDatos('Price',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if (($row['LineStatus'] == 'C') || ($type == 2) || ($Estado == 2)) {echo "readonly";}?>></td>
-			<td><input size="15" type="text" id="PriceTax<?php echo $i; ?>" name="PriceTax[]" class="form-control" value="<?php echo number_format($row['PriceTax'], 2); ?>" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" readonly><input type="hidden" id="TarifaIVA<?php echo $i; ?>" name="TarifaIVA[]" value="<?php echo number_format($row['TarifaIVA'], 0); ?>"><input type="hidden" id="VatSum<?php echo $i; ?>" name="VatSum[]" value="<?php echo number_format($row['VatSum'], 2); ?>"></td>
-			<td><input size="15" type="text" id="DiscPrcnt<?php echo $i; ?>" name="DiscPrcnt[]" class="form-control" value="<?php echo number_format($row['DiscPrcnt'], 2); ?>" onChange="ActualizarDatos('DiscPrcnt',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if (($row['LineStatus'] == 'C') || ($type == 2) || ($Estado == 2)) {echo "readonly";}?>></td>
+
+			<td>
+				<input size="15" type="text" id="PriceTax<?php echo $i; ?>" name="PriceTax[]" class="form-control" value="<?php echo number_format($row['PriceTax'], $dPrecios, $sDecimal, $sMillares); ?>" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" readonly>
+				<input type="hidden" id="TarifaIVA<?php echo $i; ?>" name="TarifaIVA[]" value="<?php echo number_format($row['TarifaIVA'], 0); ?>">
+				<input type="hidden" id="VatSum<?php echo $i; ?>" name="VatSum[]" value="<?php echo number_format($row['VatSum'], 2); ?>">
+			</td>
+
+				<td><input size="15" type="text" id="DiscPrcnt<?php echo $i; ?>" name="DiscPrcnt[]" class="form-control" value="<?php echo number_format($row['DiscPrcnt'], 2); ?>" onChange="ActualizarDatos('DiscPrcnt',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if (($row['LineStatus'] == 'C') || ($type == 2) || ($Estado == 2)) {echo "readonly";}?>></td>
 			<td><input size="15" type="text" id="LineTotal<?php echo $i; ?>" name="LineTotal[]" class="form-control" readonly value="<?php echo number_format($row['LineTotal'], 2); ?>"></td>
-			
+
 			<td><?php if ($row['Metodo'] == 0) {?><i class="fa fa-check-circle text-info" title="Sincronizado con SAP"></i><?php } else {?><i class="fa fa-times-circle text-danger" title="Aún no enviado a SAP"></i><?php }?></td>
 		</tr>
 		<?php

@@ -78,7 +78,7 @@ function ActualizarDatos(name,id,line){//Actualizar datos asincronicamente
 				<th>#</th>
 				<th>Nombre documento</th>
 				<th>Nombre Serie</th>
-				<th>Sucursal</th>
+				<th>Dimensión 1</th>
 				<th>Almacén origen</th>
 				<th>Almacén destino</th>
 				<th>Almacén defecto</th>
@@ -95,7 +95,7 @@ if ($sw == 1) {
 
         //Sucursal
         $DimSeries = intval(ObtenerVariable("DimensionSeries"));
-		$SQL_Sucursal=Seleccionar("uvw_Sap_tbl_DimensionesReparto","OcrCode, OcrName","DimCode='$DimSeries'");
+        $SQL_Sucursal = Seleccionar("uvw_Sap_tbl_DimensionesReparto", "OcrCode, OcrName", "DimCode='$DimSeries'");
 
         //Almacen origen
         $SQL_AlmOrigen = Seleccionar("uvw_Sap_tbl_Almacenes", "WhsCode, WhsName");
@@ -116,7 +116,7 @@ if ($sw == 1) {
 				<select id="IdSeries<?php echo $i; ?>" name="IdSeries[]" class="form-control" onChange="ActualizarDatos('IdSeries',<?php echo $i; ?>,<?php echo $row['ID']; ?>);">
 					<option value="">Seleccione...</option>
 				  <?php while ($row_Series = sqlsrv_fetch_array($SQL_Series)) {?>
-						<option value="<?php echo $row_Series['IdSeries']; ?>" <?php if ((isset($row['IdSeries'])) && (strcmp($row_Series['IdSeries'], $row['IdSeries']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Series['DeSeries']; ?></option>
+						<option value="<?php echo $row_Series['IdSeries']; ?>" <?php if ((isset($row['IdSeries'])) && (strcmp($row_Series['IdSeries'], $row['IdSeries']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Series['IdSeries'] . "-" . $row_Series['DeSeries']; ?></option>
 				  <?php }?>
 				</select>
 			</td>
@@ -124,7 +124,7 @@ if ($sw == 1) {
 				<select id="IdSucursal<?php echo $i; ?>" name="IdSucursal[]" class="form-control" onChange="ActualizarDatos('IdSucursal',<?php echo $i; ?>,<?php echo $row['ID']; ?>);">
 					<option value="">Seleccione...</option>
 				  <?php while ($row_Sucursal = sqlsrv_fetch_array($SQL_Sucursal)) {?>
-						<option value="<?php echo $row_Sucursal['OcrCode']; ?>" <?php if ((isset($row['IdSucursal'])) && (strcmp($row_Sucursal['OcrCode'], $row['IdSucursal']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Sucursal['OcrName']; ?></option>
+						<option value="<?php echo $row_Sucursal['OcrCode']; ?>" <?php if ((isset($row['IdSucursal'])) && (strcmp($row_Sucursal['OcrCode'], $row['IdSucursal']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Sucursal['OcrCode'] . "-" . $row_Sucursal['OcrName']; ?></option>
 				  <?php }?>
 				</select>
 			</td>
@@ -132,7 +132,7 @@ if ($sw == 1) {
 				<select id="WhsCode<?php echo $i; ?>" name="WhsCode[]" class="form-control" onChange="ActualizarDatos('WhsCode',<?php echo $i; ?>,<?php echo $row['ID']; ?>);">
 					<option value="">Seleccione...</option>
 				  <?php while ($row_AlmOrigen = sqlsrv_fetch_array($SQL_AlmOrigen)) {?>
-						<option value="<?php echo $row_AlmOrigen['WhsCode']; ?>" <?php if ((isset($row['WhsCode'])) && (strcmp($row_AlmOrigen['WhsCode'], $row['WhsCode']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_AlmOrigen['WhsName']; ?></option>
+						<option value="<?php echo $row_AlmOrigen['WhsCode']; ?>" <?php if ((isset($row['WhsCode'])) && (strcmp($row_AlmOrigen['WhsCode'], $row['WhsCode']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_AlmOrigen['WhsCode'] . "-" . $row_AlmOrigen['WhsName']; ?></option>
 				  <?php }?>
 				</select>
 			</td>
@@ -140,7 +140,7 @@ if ($sw == 1) {
 				<select id="ToWhsCode<?php echo $i; ?>" name="ToWhsCode[]" class="form-control" onChange="ActualizarDatos('ToWhsCode',<?php echo $i; ?>,<?php echo $row['ID']; ?>);">
 				 		<option value="">(Ninguno)</option>
 					<?php while ($row_AlmDestino = sqlsrv_fetch_array($SQL_AlmDestino)) {?>
-						<option value="<?php echo $row_AlmDestino['WhsCode']; ?>" <?php if ((isset($row['ToWhsCode'])) && (strcmp($row_AlmDestino['WhsCode'], $row['ToWhsCode']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_AlmDestino['WhsName']; ?></option>
+						<option value="<?php echo $row_AlmDestino['WhsCode']; ?>" <?php if ((isset($row['ToWhsCode'])) && (strcmp($row_AlmDestino['WhsCode'], $row['ToWhsCode']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_AlmDestino['WhsCode'] . "-" . $row_AlmDestino['WhsName']; ?></option>
 				  <?php }?>
 				</select>
 			</td>
