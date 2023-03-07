@@ -100,13 +100,13 @@ if (!isset($_COOKIE["banderaMenu"])) {
                     }
                     echo "<li>
 											<a " . $lnk . " href='" . $URL3 . "'>" . $row_MenuLvl3['NombreCategoria'] . "</a>
-											</li>";
+										  </li>";
                 }
                 echo "
-										</ul>"; //ul1
+									  </ul>"; //ul1
             }
             echo "
-								</li>
+							   </li>
 							"; //li1
         }
         echo "
@@ -368,6 +368,16 @@ if (!isset($_COOKIE["banderaMenu"])) {
 							<?php if (PermitirFuncion(1206)) {?><li><a class="alnk" href="consultar_salida_inventario.php">Consultar salida de traslado</a></li><?php }?>
 						</ul>
 					</li>
+
+					<?php if (PermitirFuncion([1210])) {?>
+					<li>
+						<a href="#">Consultas borradores <span class="fa arrow"></span></a>
+						<ul class='nav nav-third-level'>
+							<?php if (PermitirFuncion(1210)) {?><li><a class="alnk" href="consultar_solicitud_salida_borrador.php">Consultar solicitud de traslado borrador</a></li><?php }?>
+						</ul>
+					</li>
+					<?php }?>
+
 					<?php if (PermitirFuncion(1207)) {?>
 					<li>
 						<a href="#">Informes <span class="fa arrow"></span></a>
@@ -397,6 +407,16 @@ if (!isset($_COOKIE["banderaMenu"])) {
 							<?php if (PermitirFuncion(707)) {?><li><a href="consultar_entrada_compra.php">Consultar entrada de compras</a></li><?php }?>
 							<?php if (PermitirFuncion(715)) {?><li><a href="consultar_devolucion_compra.php">Consultar devolución de compras</a></li><?php }?>
 							<?php if (PermitirFuncion(708)) {?><li><a href="consultar_factura_compra.php">Consultar factura de compras</a></li><?php }?>
+						</ul>
+					</li>
+					<?php }?>
+					<?php if (PermitirFuncion([722, 723, 724])) {?>
+					<li>
+						<a href="#">Consultas borradores <span class="fa arrow"></span></a>
+						<ul class='nav nav-third-level'>
+							<?php if (PermitirFuncion(722)) {?><li><a class="alnk" href="consultar_orden_compra_borrador.php">Consultar orden de compra borrador</a></li><?php }?>
+							<?php if (PermitirFuncion(723)) {?><li><a class="alnk" href="consultar_entrada_compra_borrador.php">Consultar entrada de compra borrador</a></li><?php }?>
+							<?php if (PermitirFuncion(724)) {?><li><a class="alnk" href="consultar_factura_compra_borrador.php">Consultar factura de compra borrador</a></li><?php }?>
 						</ul>
 					</li>
 					<?php }?>
@@ -491,6 +511,7 @@ if (!isset($_COOKIE["banderaMenu"])) {
 							<?php if (PermitirFuncion(219)) {?><li><a class="alnk" href="parametros_formatos_impresion.php">Parámetros formatos de impresión</a></li><?php }?>
 							<?php if (PermitirFuncion(223)) {?><li><a class="alnk" href="parametros_autorizaciones_documentos.php">Parámetros autorizaciones documentos</a></li><?php }?>
 							<?php if (PermitirFuncion(224)) {?><li><a class="alnk" href="parametros_consultas_sap.php">Parámetros Consultas SAP B1</a></li><?php }?>
+							<?php if (true) {?><li><a class="alnk" href="parametros_conceptos_salida.php">Parámetros de Conceptos de salida de inventario</a></li><?php }?>
 						</ul>
 					</li>
 					<?php }?>
@@ -513,8 +534,8 @@ if (!isset($_COOKIE["banderaMenu"])) {
 		</ul>
 	</div> <!-- Aquí termina -->
 
-	<?php }?>
-	<!-- Hasta aquí, 18/11/2022 -->
+<?php }?>
+<!-- Hasta aquí, 18/11/2022 -->
 </nav>
 
 <script> // Menú en localStorage. SMM, 18/11/2022
