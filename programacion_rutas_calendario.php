@@ -314,7 +314,7 @@ if ($sw == 1) {
 						classNames: [<?php echo $classAdd; ?>],
 						tl:'<?php echo ($row_Actividad['IdActividadPortal'] == 0) ? 1 : 0; ?>',
 						estado:'<?php echo $row_Actividad['IdEstadoActividad']; ?>',
-						tipoEstado:'<?php echo $row_Actividad['DeTipoEstadoActividad'] ?? ""; ?>',
+						tipoEstado:'<?php echo $row_Actividad['DeTipoEstadoActividad'] ?? ""; ?>', // SMM, 07/03/2023
 						llamadaServicio: '<?php echo $row_Actividad['ID_LlamadaServicio']; ?>',
 						estadoLlamadaServ: '<?php echo $row_Actividad['IdEstadoLlamada']; ?>',
 						comentario: '<?php echo preg_replace('([^A-Za-z0-9 ])', '', $row_Actividad['ComentarioLlamada']); ?>', // SMM, 03/05/2022
@@ -355,7 +355,7 @@ if ($sw == 1) {
 							end: info.event.end,
 							resourceId: info.event.getResources()[0].id,
 							textColor: '#fff',
-							backgroundColor: "#3788D8", // [uvw_tbl_TipoEstadoServicio].[ColorEstadoServicio] "PROGRAMADA"
+							backgroundColor: info.event.backgroundColor,
 							borderColor: info.event.borderColor,
 							extendedProps: {}
 						}
@@ -418,14 +418,14 @@ if ($sw == 1) {
 						// console.log(estado)
 						console.log("tipoEstado", tipoEstado);
 
-						if (tipoEstado === 'INICIADA' && copiado === false) { // SMM, 10/11/2022
+						if (tipoEstado === 'INICIADA' && copiado === false) { // SMM, 07/03/2023
 							info.revert()
 							Swal.fire({
 								title: '¡Advertencia!',
 								text: 'La actividad se encuentra INICIADA. No puede ejecutar esta acción.',
 								icon: 'warning',
 							});
-						} else if(estado==='Y'&&copiado===false){
+						} else if(estado==='Y'&&copiado===false) {
 							info.revert()
 							Swal.fire({
 								title: '¡Advertencia!',

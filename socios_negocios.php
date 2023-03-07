@@ -1083,7 +1083,7 @@ if ($sw_ext == 0) {?>
 										<div class="col-lg-3">
 											<input name="CardCode" autofocus="autofocus" type="text" readonly class="form-control" id="CardCode" value="<?php if ($edit == 1) {echo $row['CodigoCliente'];}?>">
 										</div>
-										<label class="col-lg-1 control-label">Tipo socio de negocio <span class="text-danger">*</span></label>
+										<label class="col-lg-1 control-label">Tipo socio de negocio</label>
 										<div class="col-lg-3">
 											<select name="CardType" class="form-control" id="CardType" required>
 											<?php while ($row_TipoSN = sqlsrv_fetch_array($SQL_TipoSN)) {?>
@@ -1185,18 +1185,18 @@ if ($sw_ext == 0) {?>
 										<div class="col-lg-3">
 											<select name="GroupCode" class="form-control select2" id="GroupCode" required>
 												<option value="">Seleccione...</option>
-											<?php while ($row_GruposClientes = sqlsrv_fetch_array($SQL_GruposClientes)) {?>
+												<?php while ($row_GruposClientes = sqlsrv_fetch_array($SQL_GruposClientes)) {?>
 													<option value="<?php echo $row_GruposClientes['GroupCode']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['GrupoCliente'])) && (strcmp($row_GruposClientes['GroupCode'], $row['GrupoCliente']) == 0)) {echo "selected=\"selected\"";} elseif ((isset($row_ValorDefault['IdGrupoSN'])) && (strcmp($row_GruposClientes['GroupCode'], $row_ValorDefault['IdGrupoSN']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_GruposClientes['GroupName']; ?></option>
-											<?php }?>
+												<?php }?>
 											</select>
 										</div>
 										<label class="col-lg-1 control-label">Proyecto</label>
 										<div class="col-lg-3">
 											<select name="Proyecto" class="form-control select2" id="Proyecto">
 												<option value="">(Ninguno)</option>
-											<?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) {?>
+												<?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) {?>
 													<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['IdProyecto'])) && (strcmp($row_Proyecto['IdProyecto'], $row['IdProyecto']) == 0)) {echo "selected=\"selected\"";} elseif ((isset($row_ValorDefault['IdProyecto'])) && (strcmp($row_Proyecto['IdProyecto'], $row_ValorDefault['IdProyecto']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Proyecto['DeProyecto']; ?></option>
-											<?php }?>
+												<?php }?>
 											</select>
 										</div>
 									</div>
@@ -1205,9 +1205,9 @@ if ($sw_ext == 0) {?>
 										<div class="col-lg-3">
 											<select name="GroupNum" class="form-control" id="GroupNum" required>
 												<option value="">Seleccione...</option>
-											<?php while ($row_CondicionPago = sqlsrv_fetch_array($SQL_CondicionPago)) {?>
+												<?php while ($row_CondicionPago = sqlsrv_fetch_array($SQL_CondicionPago)) {?>
 													<option value="<?php echo $row_CondicionPago['IdCondicionPago']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['GroupNum'])) && (strcmp($row_CondicionPago['IdCondicionPago'], $row['GroupNum']) == 0)) {echo "selected=\"selected\"";} elseif ((isset($row_ValorDefault['IdCondiPago'])) && (strcmp($row_CondicionPago['IdCondicionPago'], $row_ValorDefault['IdCondiPago']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_CondicionPago['NombreCondicion']; ?></option>
-											<?php }?>
+												<?php }?>
 											</select>
 										</div>
 										<label class="col-lg-1 control-label">Medio de pago <span class="text-danger">*</span></label>
@@ -1276,27 +1276,27 @@ if ($sw_ext == 0) {?>
 										<div class="col-lg-3">
 											<select name="RegimenTributario" class="form-control" id="RegimenTributario" required>
 												<option value="">Seleccione...</option>
-											<?php while ($row_RegimenT = sqlsrv_fetch_array($SQL_RegimenT)) {?>
+												<?php while ($row_RegimenT = sqlsrv_fetch_array($SQL_RegimenT)) {?>
 													<option value="<?php echo $row_RegimenT['ID_RegimenTributario']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['U_HBT_RegTrib'])) && (strcmp($row_RegimenT['ID_RegimenTributario'], $row['U_HBT_RegTrib']) == 0)) {echo "selected=\"selected\"";} elseif ((isset($row_ValorDefault['IdRegTributario'])) && (strcmp($row_RegimenT['ID_RegimenTributario'], $row_ValorDefault['IdRegTributario']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_RegimenT['RegimenTributario']; ?></option>
-											<?php }?>
+												<?php }?>
 											</select>
 										</div>
 										<label class="col-lg-1 control-label">Régimen fiscal <span class="text-danger">*</span></label>
 										<div class="col-lg-3">
 											<select name="RegimenFiscal" class="form-control" id="RegimenFiscal" required>
 												<option value="">Seleccione...</option>
-											<?php while ($row_RegimenFiscal = sqlsrv_fetch_array($SQL_RegimenFiscal)) {?>
+												<?php while ($row_RegimenFiscal = sqlsrv_fetch_array($SQL_RegimenFiscal)) {?>
 													<option value="<?php echo $row_RegimenFiscal['IdRegimenFiscal']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['IdRegimenFiscal'])) && (strcmp($row_RegimenFiscal['IdRegimenFiscal'], $row['IdRegimenFiscal']) == 0)) {echo "selected=\"selected\"";} elseif ((isset($row_ValorDefault['IdRegimenFiscal'])) && (strcmp($row_RegimenFiscal['IdRegimenFiscal'], $row_ValorDefault['IdRegimenFiscal']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_RegimenFiscal['DeRegimenFiscal']; ?></option>
-											<?php }?>
+												<?php }?>
 											</select>
 										</div>
 										<label class="col-lg-1 control-label">Responsabilidad fiscal <span class="text-danger">*</span></label>
 										<div class="col-lg-3">
 											<select name="ResponsabilidadFiscal" class="form-control select2" id="ResponsabilidadFiscal" required>
 												<option value="">Seleccione...</option>
-											<?php while ($row_ResponsabilidadFiscal = sqlsrv_fetch_array($SQL_ResponsabilidadFiscal)) {?>
+												<?php while ($row_ResponsabilidadFiscal = sqlsrv_fetch_array($SQL_ResponsabilidadFiscal)) {?>
 													<option value="<?php echo $row_ResponsabilidadFiscal['IdResponsabilidadFiscal']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['IdResponsabilidadFiscal'])) && (strcmp($row_ResponsabilidadFiscal['IdResponsabilidadFiscal'], $row['IdResponsabilidadFiscal']) == 0)) {echo "selected=\"selected\"";} elseif ((isset($row_ValorDefault['IdResponsabilidadFiscal'])) && (strcmp($row_ResponsabilidadFiscal['IdResponsabilidadFiscal'], $row_ValorDefault['IdResponsabilidadFiscal']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_ResponsabilidadFiscal['DeResponsabilidadFiscal']; ?></option>
-											<?php }?>
+												<?php }?>
 											</select>
 										</div>
 									</div>
@@ -1536,12 +1536,12 @@ if ($sw_ext == 0) {?>
 							   <div id="tabSN-6" class="tab-pane">
 									<br>
 								   	<div id="dv_anexos" class="panel-body">
-									<?php if ($edit == 1) {?>
+									   <?php if ($edit == 1) {?>
 										<?php if ($row['IdAnexos'] != 0) {?>
 											<div class="form-group">
 												<div class="col-xs-12">
 													<?php while ($row_Anexo = sqlsrv_fetch_array($SQL_Anexo)) {?>
-        												<?php $Icon = IconAttach($row_Anexo['FileExt']);?>
+														<?php $Icon = IconAttach($row_Anexo['FileExt']);?>
 														<div class="file-box">
 															<div class="file">
 																<a href="attachdownload.php?file=<?php echo base64_encode($row_Anexo['AbsEntry']); ?>&line=<?php echo base64_encode($row_Anexo['Line']); ?>" target="_blank">

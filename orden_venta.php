@@ -99,9 +99,12 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Orden de venta
             $IdOrdenVenta = base64_decode($_POST['IdOrdenVenta']);
             $IdEvento = base64_decode($_POST['IdEvento']);
             $Type = 2;
+
+			/*
             if (!PermitirFuncion(403)) { //Permiso para autorizar orden de venta
                 $_POST['Autorizacion'] = 'P'; //Si no tengo el permiso, la orden queda pendiente
             }
+			*/
         } else { //Crear
             $IdOrdenVenta = "NULL";
             $IdEvento = "0";
@@ -1404,7 +1407,7 @@ function verAutorizacion() {
 									<?php $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=17 AND (IdFormato='" . $row['IdSeries'] . "' OR DeSeries IS NULL) AND VerEnDocumento='Y' AND (EsBorrador='N' OR EsBorrador IS NULL)");?>
 									<?php while ($row_Formato = sqlsrv_fetch_array($SQL_Formato)) {?>
 										<li>
-											<a class="dropdown-item" target="_blank" href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row['DocEntry']); ?>&ObType=<?php echo base64_encode($row_Formato['ID_Objeto']); ?>&IdFrm=<?php echo base64_encode($row_Formato['IdFormato']); ?>"><?php echo $row_Formato['NombreVisualizar']; ?></a>
+											<a class="dropdown-item" target="_blank" href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row['DocEntry']); ?>&ObType=<?php echo base64_encode($row_Formato['ID_Objeto']); ?>&IdFrm=<?php echo base64_encode($row_Formato['IdFormato']); ?>&IdReg=<?php echo base64_encode($row_Formato['ID']); ?>"><?php echo $row_Formato['NombreVisualizar']; ?></a>
 										</li>
 									<?php }?>
 								</ul>
@@ -2129,7 +2132,7 @@ if ($edit == 1) {?>
 //		 $('#Almacen option:not(:selected)').attr('disabled',true);
 	 	 <?php }?>
 
-		<?php if (!PermitirFuncion(403)) {?>
+		<?php if (!PermitirFuncion(403) || true) {?>
 			$('#Autorizacion').attr('readonly', true); // SMM, 01/08/2022
 			$('#Autorizacion option:not(:selected)').attr('disabled', true);
 	 	<?php }?>

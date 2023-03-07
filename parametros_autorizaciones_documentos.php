@@ -57,6 +57,7 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
                 "'" . $_POST['Estado'] . "'",
                 "'" . $_POST['Condiciones'] . "'",
                 $Perfiles,
+                "'" . $_POST['AutorizacionSAP'] . "'", // SMM, 07/03/2023
                 $Usuario, // @id_usuario_actualizacion
                 $FechaHora, // @fecha_actualizacion
                 $FechaHora, // @hora_actualizacion
@@ -268,7 +269,10 @@ if (isset($sw_error) && ($sw_error == 1)) {
 																<th>Condiciones</th>
 																<th>Fecha Actualizacion</th>
 																<th>Usuario Actualizacion</th>
+
 																<th>Estado</th>
+																<th>Se autoriza en SAP</th>
+
 																<th>Acciones</th>
 															</tr>
 														</thead>
@@ -298,11 +302,18 @@ if (isset($sw_error) && ($sw_error == 1)) {
 
 																<td><?php echo isset($row_Proceso['fecha_actualizacion']) ? date_format($row_Proceso['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
 																<td><?php echo $row_Proceso['usuario_actualizacion']; ?></td>
+
 																<td>
 																	<span class="label <?php echo ($row_Proceso['Estado'] == "Y") ? "label-info" : "label-danger"; ?>">
 																		<?php echo ($row_Proceso['Estado'] == "Y") ? "Activo" : "Inactivo"; ?>
 																	</span>
 																</td>
+																<td>
+																	<span class="label <?php echo ($row_Proceso['AutorizacionSAP'] == "Y") ? "label-info" : "label-danger"; ?>">
+																		<?php echo ($row_Proceso['AutorizacionSAP'] == "Y") ? "SI" : "NO"; ?>
+																	</span>
+																</td>
+
 																<td>
 																	<button type="button" id="btnEdit<?php echo $row_Proceso['IdInterno']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Proceso['IdInterno']; ?>','Procesos');"><i class="fa fa-pencil"></i> Editar</button>
 																	<!-- button type="button" id="btnDelete<?php //echo $row_Proceso['IdInterno']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php //echo $row_Proceso['IdInterno']; ?>','Procesos');"><i class="fa fa-trash"></i> Eliminar</button -->
@@ -342,16 +353,20 @@ if (isset($sw_error) && ($sw_error == 1)) {
 															<tr>
 																<!-- th>ID Tipo Documento</th -->
 																<th>Tipo Documento</th>
-																<th>Modelo autorización SAP B1</th>
+
 																<th>Id Motivo Autorizacion</th>
 																<th>Motivo Autorizacion</th>
 
+																<th>Modelo autorización SAP B1</th>
 																<th>Usuario Autorización SAP B1</th> <!-- SMM, 26/08/2022 -->
 
 																<th>Comentarios</th>
 																<th>Fecha Actualizacion</th>
 																<th>Usuario Actualizacion</th>
+
 																<th>Estado</th>
+																<th>Se autoriza en SAP</th> <!-- SMM, 07/03/2023 -->
+
 																<th>Acciones</th>
 															</tr>
 														</thead>
@@ -360,22 +375,28 @@ if (isset($sw_error) && ($sw_error == 1)) {
 															<tr>
 																<!-- td><?php echo $row_Motivo['IdTipoDocumento']; ?></td -->
 																<td><?php echo $row_Motivo['TipoDocumento']; ?></td>
-																<td><?php echo $row_Motivo['ModeloAutorizacion']; ?></td>
+
 																<td><?php echo $row_Motivo['IdMotivoAutorizacion']; ?></td>
 																<td><?php echo $row_Motivo['MotivoAutorizacion']; ?></td>
 
-																<td>
-																	<?php echo $row_Motivo['UsuarioAutorizacionSAPB1']; ?>
-																</td>
+																<td><?php echo $row_Motivo['ModeloAutorizacion']; ?></td>
+																<td><?php echo $row_Motivo['UsuarioAutorizacionSAPB1']; ?></td>
 
 																<td><?php echo $row_Motivo['Comentarios']; ?></td>
 																<td><?php echo isset($row_Motivo['fecha_actualizacion']) ? date_format($row_Motivo['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
 																<td><?php echo $row_Motivo['usuario_actualizacion']; ?></td>
+
 																<td>
 																	<span class="label <?php echo ($row_Motivo['Estado'] == "Y") ? "label-info" : "label-danger"; ?>">
 																		<?php echo ($row_Motivo['Estado'] == "Y") ? "Activo" : "Inactivo"; ?>
 																	</span>
 																</td>
+																<td>
+																	<span class="label <?php echo ($row_Motivo['AutorizacionSAP'] == "Y") ? "label-info" : "label-danger"; ?>">
+																		<?php echo ($row_Proceso['AutorizacionSAP'] == "Y") ? "SI" : "NO"; ?>
+																	</span>
+																</td>
+
 																<td>
 																	<button type="button" id="btnEdit<?php echo $row_Motivo['IdInterno']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Motivo['IdInterno']; ?>','Motivos');"><i class="fa fa-pencil"></i> Editar</button>
 																	<button type="button" id="btnDelete<?php echo $row_Motivo['IdInterno']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Motivo['IdInterno']; ?>','Motivos');"><i class="fa fa-trash"></i> Eliminar</button>

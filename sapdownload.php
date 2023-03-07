@@ -464,6 +464,9 @@ if((isset($_POST['id'])&&$_POST['id']!="")||(isset($_GET['id'])&&$_GET['id']!=""
 						'pUsuario' => $_SESSION['User']
 					);
 
+					// print_r($Parametros);
+					// exit();
+
 					$result = $Client->CrearFormatoSAP($Parametros);
 					if(is_soap_fault($result)){
 						trigger_error("Fallo IntSAPB1: (Codigo: {$result->faultcode}, Mensaje: {$result->faultstring})", E_USER_ERROR);
