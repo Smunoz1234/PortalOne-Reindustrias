@@ -24,10 +24,10 @@ if (!isset($_GET['CardCode']) || ($_GET['CardCode'] == "")) {?>
     //Sucursales
     if (PermitirFuncion(205)) {
         $Where = "CodigoCliente='" . $_GET['CardCode'] . "' $TipoDir";
-        $SQL_Sucursal = Seleccionar("uvw_Sap_tbl_Clientes_Sucursales", "TipoDireccion,NombreSucursal, NumeroLinea", $Where);
+        $SQL_Sucursal = Seleccionar("uvw_Sap_tbl_Clientes_Sucursales", "TipoDireccion, NombreSucursal, NumeroLinea", $Where);
     } else {
         $Where = "CodigoCliente='" . $_GET['CardCode'] . "' $TipoDir and ID_Usuario = " . $_SESSION['CodUser'];
-        $SQL_Sucursal = Seleccionar("uvw_tbl_SucursalesClienteUsuario", "TipoDireccion,NombreSucursal, NumeroLinea", $Where);
+        $SQL_Sucursal = Seleccionar("uvw_tbl_SucursalesClienteUsuario", "TipoDireccion, NombreSucursal, NumeroLinea", $Where);
     }?>
 	<?php if ($Todos == 1 && $Selec == 0) {?><option value="">(Todos)</option><?php }?>
 	<?php if ($Selec == 1) {?><option value="">Seleccione...</option><?php }?>

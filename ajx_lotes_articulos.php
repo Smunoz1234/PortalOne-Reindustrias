@@ -204,7 +204,7 @@ while ($row = sqlsrv_fetch_array($SQL)) {
 							<td><?php echo number_format($row['Cantidad'], 0); ?></td>
 							<td><?php echo $row['FechaVenciLote']; ?></td>
 							<td><?php echo $row['IdSysNumber']; ?></td>
-							<td><input type="text" id="ItemCode<?php echo $row['IdLote']; ?>" name="ItemCode[]" class="form-control txtYellow" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" onChange="VerificarCant('<?php echo $row['IdLote']; ?>','<?php echo $row['IdSysNumber']; ?>','<?php echo number_format($row['Cantidad'], 0); ?>','<?php echo $row['FechaVenciLote']; ?>');" value="<?php echo number_format($row_DtAct['Cantidad'], 0); ?>"></td>
+							<td><input type="text" id="ItemCode<?php echo $row['IdLote']; ?>" name="ItemCode[]" class="form-control txtYellow" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" onChange="VerificarCant('<?php echo $row['IdLote']; ?>','<?php echo $row['IdSysNumber']; ?>','<?php echo number_format($row['Cantidad'], 0); ?>','<?php echo $row['FechaVenciLote']; ?>');" value="<?php echo number_format(($row_DtAct['Cantidad'] ?? 0), 0); ?>"></td>
 						</tr>
 						<?php }?>
 						</tbody>

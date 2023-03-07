@@ -35,7 +35,11 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
             } else {
                 $Cons = "Select * From $Vista Where CodigoCliente='" . $_GET['id'] . "' And Estado='Y' And ID_Contacto NOT LIKE '%ELECTRONICA%' Order by ID_Contacto";
             }
+
+            //echo $Cons;
             $SQL = sqlsrv_query($conexion, $Cons);
+
+            // SMM, 07/03/2023
             if ($SQL) {
                 while ($row = sqlsrv_fetch_array($SQL)) {
                     if ($row['IdContactoPorDefecto'] == "Y") {
@@ -256,6 +260,7 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
             $Cons = "EXEC sp_columns '" . $_GET['id'] . "'";
             $SQL = sqlsrv_query($conexion, $Cons);
             if ($SQL) {
+                // SMM, 07/03/2023
                 if (!isset($_GET["obligatorio"])) {
                     echo "<option value=''>Seleccione...</option>";
                 }
@@ -399,17 +404,20 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
             if ($Num) {
                 if ($Todos == 1) {
                     echo "<option value=''>(Todos)</option>";
+                } else {
+                    echo "<option value=''>Seleccione...</option>"; // SMM, 16/02/2023
                 }
 
                 $SDim = $_GET['SDim'] ?? ""; // SMM, 04/02/2022
-                echo "<option value=''>Seleccione...</option>"; // SMM, 27/01/22
 
                 while ($row = sqlsrv_fetch_array($SQL)) {
+                    $description = $row['IdSucursal'] . "-" . $row['DeSucursal'];
+
                     if ($SDim == $row['IdSucursal']) {
                         // Stiven Muñoz Murillo, 04/02/2022
-                        echo "<option selected=\"selected\" value=\"" . $row['IdSucursal'] . "\" >" . $row['DeSucursal'] . "</option>";
+                        echo "<option selected=\"selected\" value=\"" . $row['IdSucursal'] . "\" >$description</option>";
                     } else {
-                        echo "<option value=\"" . $row['IdSucursal'] . "\" >" . $row['DeSucursal'] . "</option>";
+                        echo "<option value=\"" . $row['IdSucursal'] . "\" >$description</option>";
                     }
                 }
             } else {
@@ -433,7 +441,11 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
                 $Num = sqlsrv_num_rows($SQL);
                 if ($Num) {
                     $WhsCode = $_GET['WhsCode'] ?? ""; // SMM, 04/02/2022
-                    echo "<option value=''>Seleccione...</option>"; // SMM, 27/01/22
+
+                    // SMM, 07/03/2023
+                    if ($Num > 1) {
+                        echo "<option value=''>Seleccione...</option>";
+                    }
 
                     while ($row = sqlsrv_fetch_array($SQL)) {
                         if ($WhsCode == $row['WhsCode']) {
@@ -450,8 +462,20 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
                 $SQL = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'ToWhsCode, ToWhsName', "IdSeries='" . $_GET['serie'] . "' and IdSucursal='" . $_GET['id'] . "' and IdTipoDocumento='" . $_GET['tdoc'] . "' and ToWhsCode <> ''", "ToWhsCode, ToWhsName", 'ToWhsName');
                 $Num = sqlsrv_num_rows($SQL);
                 if ($Num) {
+                    $ToWhsCode = $_GET['ToWhsCode'] ?? ""; // SMM, 07/03/2023
+
+                    // SMM, 07/03/2023
+                    if ($Num > 1) {
+                        echo "<option value=''>Seleccione...</option>";
+                    }
+
                     while ($row = sqlsrv_fetch_array($SQL)) {
-                        echo "<option value=\"" . $row['ToWhsCode'] . "\">" . $row['ToWhsName'] . "</option>";
+                        if ($ToWhsCode == $row['ToWhsCode']) {
+                            // SMM, 07/03/2023
+                            echo "<option selected=\"selected\" value=\"" . $row['ToWhsCode'] . "\">" . $row['ToWhsName'] . "</option>";
+                        } else {
+                            echo "<option value=\"" . $row['ToWhsCode'] . "\">" . $row['ToWhsName'] . "</option>";
+                        }
                     }
                 } else {
                     echo "<option value=''>Seleccione...</option>";
@@ -1006,7 +1030,10 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
                 echo "<option value=''>Seleccione...</option>";
             }
         }
-    } elseif ($_GET['type'] == 44) { // Parámetros de entrada dependiendo de la Consulta SAP B1
+    }
+
+    // SMM, 07/03/2023
+    elseif ($_GET['type'] == 44) { // Parámetros de entrada dependiendo de la Consulta SAP B1
         if (!isset($_GET['id']) || ($_GET['id'] == "")) {
             echo "<option value=''>Seleccione...</option>";
         } else {

@@ -50,8 +50,8 @@ if ($sw == 1) {
         "'" . strtolower($_SESSION['User']) . "'",
         "'" . $estados . "'", // SMM, 09/08/2022
         "'" . $_GET['BasadoEscaneados'] . "'", // SMM, 09/08/2022
-		"'" . $_GET['TipoFecha'] . "'", // SMM, 09/08/2022
-		"'" . $_GET['BasadoEn'] . "'", // SMM, 09/08/2022
+        "'" . $_GET['TipoFecha'] . "'", // SMM, 09/08/2022
+        "'" . $_GET['BasadoEn'] . "'", // SMM, 09/08/2022
         $_GET['reload'] ?? 0,
     );
 
@@ -480,7 +480,7 @@ function ConsultarCant(){
 						</div>
 
 						<!-- SMM, 09/08/2022 -->
-					 	<div class="form-group">
+						<div class="form-group">
 						 	<label class="col-lg-1 control-label">Sede <span class="text-danger">*</span></label>
 							<div class="col-lg-3">
 								<select name="Sucursal" class="form-control select2" id="Sucursal" required>
@@ -494,8 +494,9 @@ function ConsultarCant(){
 							<label class="col-lg-1 control-label">Serie <span class="text-danger">*</span></label>
 							<div class="col-lg-3">
 								<select name="Series" class="form-control" id="Series" required>
-										<option value="">Seleccione...</option>
-								 	<?php if ($sw == 1) {?>
+									<option value="">Seleccione...</option>
+
+									<?php if ($sw == 1) {?>
     									<?php while ($row_Series = sqlsrv_fetch_array($SQL_Series)) {?>
 											<option value="<?php echo $row_Series['IdSeries']; ?>" <?php if ((isset($_GET['Series'])) && (strcmp($row_Series['IdSeries'], $_GET['Series']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Series['DeSeries']; ?></option>
 								  		<?php }?>

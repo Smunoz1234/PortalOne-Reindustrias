@@ -377,6 +377,9 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
             'Cedula' => $row['Cedula'],
             'Telefono' => $row['Celular'],
             'Email' => $row['CorreoElectronico'],
+            // SMM, 07/03/2023
+            'Sucursal' => ($row['NombreSucursal'] ?? "N/A"),
+            'Departamento' => ($row['NombreDepartamento'] ?? "N/A"),
         );
         echo json_encode($records);
     } elseif ($type == 26) { //Obtener nuevo ID de la secuencia de la actividad para el calendario ruta
