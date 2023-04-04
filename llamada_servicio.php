@@ -499,12 +499,10 @@ if (isset($_POST['P']) && ($_POST['P'] == 33)) { //Actualizar llamada de servici
 
 if (isset($_POST['P']) && ($_POST['P'] == 40)) { //Reabrir llamada de servicio
     try {
-        //$Parametros=array(
-        //            'id_documento' => intval(base64_decode($_POST['DocEntry'])),
-        //            'id_evento' => 0
-        //        );
-
-        $Parametros = "";
+        $Parametros = array(
+            'docentry_llamada' => intval(base64_decode($_POST['DocEntry'])),
+            'usuario_actualizacion' => strtolower($_SESSION['User']),
+        );
 
         $Metodo = "LlamadasServicios/Reabrir/" . base64_decode($_POST['DocEntry']);
         $Resultado = EnviarWebServiceSAP($Metodo, $Parametros, true, true);
@@ -1634,30 +1632,30 @@ function AgregarEsto(contenedorID, valorElemento) {
 				<div class="col-lg-3">
 					<div class="ibox ">
 						<div class="ibox-title">
-							<h5><span class="font-normal">Creada por</span></h5>
+							<h5><span class="font-normal">Creada por: <b><?php if ($row['UsuarioCreacion'] != "") {echo $row['UsuarioCreacion'];} else {echo "&nbsp;";}?></b></span></h5>
 						</div>
 						<div class="ibox-content">
-							<h3 class="no-margins"><?php if ($row['UsuarioCreacion'] != "") {echo $row['UsuarioCreacion'];} else {echo "&nbsp;";}?></h3>
+						<h3 class="no-margins"><?php if ($row['FechaCreacion'] != "") {echo $row['FechaCreacion'] . " " . $row['HoraCreacion'];} else {echo "&nbsp;";}?></h3>
 						</div>
 					</div>
 				</div>
 				<div class="col-lg-3">
 					<div class="ibox ">
 						<div class="ibox-title">
-							<h5><span class="font-normal">Actualizado por</span></h5>
-						</div>
-						<div class="ibox-content">
-							<h3 class="no-margins"><?php if ($row['UsuarioActualizacion'] != "") {echo $row['UsuarioActualizacion'];} else {echo "&nbsp;";}?></h3>
-						</div>
-					</div>
-				</div>
-				<div class="col-lg-3">
-					<div class="ibox ">
-						<div class="ibox-title">
-							<h5><span class="font-normal">Fecha actualización</span></h5>
+							<h5><span class="font-normal">Actualizado por: <b><?php if ($row['UsuarioActualizacion'] != "") {echo $row['UsuarioActualizacion'];} else {echo "&nbsp;";}?></b></span></h5>
 						</div>
 						<div class="ibox-content">
 							<h3 class="no-margins"><?php if ($row['FechaActualizacion'] != "") {echo $row['FechaActualizacion'] . " " . $row['HoraActualizacion'];} else {echo "&nbsp;";}?></h3>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-3">
+					<div class="ibox ">
+						<div class="ibox-title">
+							<h5><span class="font-normal">Reabierta por: <b><?php if (isset($row['UsuarioReabrio']) && ($row['UsuarioReabrio'] != "")) {echo $row['UsuarioReabrio'];} else {echo "&nbsp;";}?></b></span></h5>
+						</div>
+						<div class="ibox-content">
+						<h3 class="no-margins"><?php if (isset($row['FechaReabrio']) && ($row['FechaReabrio'] != "")) {echo $row['FechaReabrio'] . " " . $row['HoraReabrio'];} else {echo "&nbsp;";}?></h3>
 						</div>
 					</div>
 				</div>
