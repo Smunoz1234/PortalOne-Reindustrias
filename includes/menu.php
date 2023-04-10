@@ -486,6 +486,7 @@ if (!isset($_COOKIE["banderaMenu"])) {
 				</ul>
 			</li>
 			<?php }?>
+
 			<li>
 				<a href="#"><i class="fa fa-gears"></i> <span class="nav-label">Administraci&oacute;n</span><span class="fa arrow"></span></a>
 				<ul class="nav nav-second-level">
@@ -531,6 +532,16 @@ if (!isset($_COOKIE["banderaMenu"])) {
 					<li><a class="alnk" href="contrato_confidencialidad.php">Acuerdo de confidencialidad</a></li>
 				</ul>
 			</li>
+
+			<!-- SMM, 10/04/2023 -->
+			<?php if (PermitirFuncion(1801)) {?>
+			<li>
+				<a href="#"><i class="fa fa-suitcase"></i> <span class="nav-label">Utilidades PortalOne</span><span class="fa arrow"></span></a>
+				<ul class="nav nav-second-level">
+					<?php if (PermitirFuncion(1801)) {?><li><a class="alnk" href="utilidad_redimensionar_imagenes.php">Redimensionar imágenes</a></li><?php }?>
+				</ul>
+			</li>
+			<?php }?>
 		</ul>
 	</div> <!-- Aquí termina -->
 
