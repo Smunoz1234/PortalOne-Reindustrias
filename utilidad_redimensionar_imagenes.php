@@ -1,45 +1,25 @@
 <?php require_once "includes/conexion.php";
 PermitirAcceso(1801);
+
 $Title = "Redimensionar imágenes";
+$persistir = true;
 
-$IdFrm = "";
-$msg_error = ""; //Mensaje del error
-$dt_LS = 0; //sw para saber si vienen datos del SN. 0 no vienen. 1 si vienen.
+$msg_error = ""; // Mensaje de error
+$sw_error = 0; // Bandera de error
 
-//Nombre del formulario
-if (isset($_REQUEST['frm']) && ($_REQUEST['frm'] != "")) {
-    $frm = $_REQUEST['frm'];
+$ancho = $_POST["ancho"] ?? "";
+$alto = $_POST["alto"] ?? "";
 
-    // Stiven Muñoz Murillo, 10/01/2022
-    $SQL_Cat = Seleccionar("uvw_tbl_Categorias", "ID_Categoria, NombreCategoria, NombreCategoriaPadre, URL", "ID_Categoria = '" . base64_decode($frm) . "'");
-} else {
-    // Stiven Muñoz Murillo, 09/02/2022
-    $frm = "";
-}
-
-// Stiven Muñoz Murillo, 10/01/2022
-$row_Cat = isset($SQL_Cat) ? sqlsrv_fetch_array($SQL_Cat) : [];
-
-if (isset($_GET['id']) && ($_GET['id'] != "")) {
-    $IdFrm = base64_decode($_GET['id']);
-}
-
-if (isset($_GET['tl']) && ($_GET['tl'] != "")) { //0 Creando el formulario. 1 Editando el formulario.
-    $type_frm = $_GET['tl'];
-} elseif (isset($_POST['tl']) && ($_POST['tl'] != "")) {
-    $type_frm = $_POST['tl'];
-} else {
-    $type_frm = 0;
-}
-
-if (isset($_POST['swError']) && ($_POST['swError'] != "")) { //Para saber si ha ocurrido un error.
-    $sw_error = $_POST['swError'];
-} else {
-    $sw_error = 0;
-}
+echo $ancho;
+echo "<br>" . $alto;
 
 $dir = CrearObtenerDirTemp();
-$dir_firma = CrearObtenerDirTempFirma();
+if (($ancho != "") && ($alto != "")) {
+    $test = "capo-vehiculo.jpg";
+    RedimensionarImagen($test, ($dir . $test), $ancho, $alto);
+}
+
+print_r($_POST);
 ?>
 
 <!DOCTYPE html>
@@ -88,7 +68,7 @@ $dir_firma = CrearObtenerDirTempFirma();
 				  <?php include "includes/spinner.php";?>
           <div class="row">
            <div class="col-lg-12">
-              <form action="frm_recepcion_vehiculo.php" method="post" class="form-horizontal" enctype="multipart/form-data" id="recepcionForm">
+              <form action="utilidad_redimensionar_imagenes.php" method="post" class="form-horizontal" enctype="multipart/form-data" id="utilidadForm">
 				<!-- IBOX, Inicio -->
 				<div class="ibox">
 					<div class="ibox-title bg-success">
@@ -128,8 +108,9 @@ $dir_firma = CrearObtenerDirTempFirma();
 					<?php } else {echo "<!--p>Sin anexos.</p-->";}?>
 
 					<div class="row">
-						<form action="upload.php?persistent=recepcion_vehiculos" class="dropzone" id="dropzoneForm" name="dropzoneForm">
-							<?php //if ($sw_error == 0) {LimpiarDirTemp();}?>
+						<form action="upload.php?<?php if ($persistir && false) {echo "persistent=redimensionar_imagenes";}?>" class="dropzone" id="dropzoneForm" name="dropzoneForm">
+							<?php //if (($sw_error == 0) && !$persistir) {LimpiarDirTemp();}?>
+
 							<div class="fallback">
 								<input name="File" id="File" type="file" form="dropzoneForm" />
 							</div>
@@ -142,9 +123,7 @@ $dir_firma = CrearObtenerDirTempFirma();
 			<!-- Botones de acción al final del formulario, SMM -->
 			   <div class="form-group">
 					<div class="col-lg-9">
-						<?php if ($type_frm == 0) {?>
-							<button class="btn btn-primary" form="recepcionForm" type="submit" id="Crear"><i class="fa fa-check"></i> Redimensionar imágenes</button>
-						<?php }?>
+						<button class="btn btn-primary" form="utilidadForm" type="submit" id="Ejecutar"><i class="fa fa-check"></i> Redimensionar imágenes</button>
 						<a href="<?php echo $return; ?>" class="alkin btn btn-outline btn-default"><i class="fa fa-arrow-circle-o-left"></i> Regresar</a>
 					</div>
 				</div>
@@ -162,192 +141,14 @@ $dir_firma = CrearObtenerDirTempFirma();
 <!-- InstanceBeginEditable name="EditRegion4" -->
 
 <script>
-var anexos = []; // SMM, 16/02/2022
-
-// Stiven Muñoz Murillo, 11/01/2022
-Dropzone.options.dropzoneForm = {
-	paramName: "File", // The name that will be used to transfer the file
-	maxFilesize: "<?php echo ObtenerVariable("MaxSizeFile"); ?>", // MB
-	maxFiles: "<?php echo ObtenerVariable("CantidadArchivos"); ?>",
-	uploadMultiple: true,
-	addRemoveLinks: true,
-	dictRemoveFile: "Quitar",
-	acceptedFiles: "<?php echo ObtenerVariable("TiposArchivos"); ?>",
-	dictDefaultMessage: "<strong>Haga clic aqui para cargar anexos</strong><br>Tambien puede arrastrarlos hasta aqui<br><h4><small>(máximo <?php echo ObtenerVariable("CantidadArchivos"); ?> archivos a la vez)<small></h4>",
-	dictFallbackMessage: "Tu navegador no soporta cargue de archivos mediante arrastrar y soltar",
-	removedfile: function(file) {
-			var indice = anexos.indexOf(file.name);
-			if (indice !== -1) {
-				anexos.splice(indice, 1);
-			}
-
-			$.get( "includes/procedimientos.php", {
-				type: "3",
-				nombre: file.name
-			}).done(function( data ) {
-				var _ref;
-				return (_ref = file.previewElement) !== null ? _ref.parentNode.removeChild(file.previewElement) : void 0;
-			});
-		},
-	init: function(file) {
-		this.on("addedfile", file => {
-			anexos.push(file.name); // SMM, 16/02/2022
-			console.log("Line 1057, Dropzone(addedfile)", file.name);
-
-			// SMM, 28/09/2022
-			$("#Crear").prop("disabled", true);
-    	});
-	},
-	queuecomplete: function() {
-		console.log("Line 1087, Dropzone(queuecomplete)");
-
-		// SMM, 28/09/2022
-		$("#Crear").prop("disabled", false);
-	}
-};
-</script>
-
-<script>
-var photos = []; // SMM, 11/02/2022
-
-// Stiven Muñoz Murillo, 11/01/2022
-function uploadImage(refImage) {
-	$('.ibox-content').toggleClass('sk-loading', true); // Carga iniciada.
-
-	var formData = new FormData();
-	var file = $(`#${refImage}`)[0].files[0];
-
-	console.log("Line 1073, uploadImage", file);
-	formData.append('image', file);
-
-	if(typeof file !== 'undefined'){
-		fileSize = returnFileSize(file.size)
-
-		if(fileSize.heavy) {
-			console.error("Heavy");
-
-			mostrarAlerta(`msg${refImage}`, 'danger', `La imagen no puede superar los 2MB, actualmente pesa ${fileSize.size}`);
-			$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
-		} else {
-			// Inicio, AJAX
-			$.ajax({
-				url: 'upload_image.php?persistent=recepcion_vehiculos',
-				type: 'post',
-				data: formData,
-				contentType: false,
-				processData: false,
-				success: function(response) {
-					json_response = JSON.parse(response);
-
-					photo_name = json_response.nombre;
-					photo_route = json_response.directorio + photo_name;
-
-					testImage(photo_route).then(success => {
-						console.log(success);
-						console.log("Line 1100, testImage", photo_route);
-
-						photos[refImage] = photo_name; // SMM, 11/02/2022
-
-						$(`#view${refImage}`).attr("src", photo_route);
-						mostrarAlerta(`msg${refImage}`, 'info', `Imagen cargada éxitosamente con un peso de ${fileSize.size}`);
-					})
-					.catch(error => {
-						console.error(error);
-						console.error(response);
-
-						mostrarAlerta(`msg${refImage}`, 'danger', 'Error al cargar la imagen.');
-					});
-
-					$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
-				},
-				error: function(response) {
-					console.error("server error")
-					console.error(response);
-
-					mostrarAlerta(`msg${refImage}`, 'danger', 'Error al cargar la imagen en el servidor.');
-					$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
-				}
-			});
-			// Fin, AJAX
-		}
-	} else {
-		console.log("Ninguna imagen seleccionada");
-
-		$(`#msg${refImage}`).css("display", "none");
-		$(`#view${refImage}`).attr("src", "");
-
-		$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
-	}
-	return false;
-}
-
-// Stiven Muñoz Murillo, 13/01/2022
-function mostrarAlerta(id, tipo, mensaje) {
-	$(`#${id}`).attr("class", `alert alert-${tipo}`);
-	$(`#${id} span`).text(mensaje);
-	$(`#${id}`).css("display", "inherit");
-}
-
-function returnFileSize(number) {
-	if (number < 1024) {
-        return { heavy: false, size: (number + 'bytes') };
-    } else if (number >= 1024 && number < 1048576) {
-		number = (number / 1024).toFixed(1);
-        return { heavy: false, size: (number + 'KB') };
-    } else if (number >= 1048576) {
-		number = (number / 1048576).toFixed(1);
-		if(number > 2) {
-			return { heavy: true, size: (number + 'MB') };
-		} else {
-			return { heavy: false, size: (number + 'MB') };
-		}
-    } else {
-		return { heavy: true, size: Infinity }
-	}
-}
-
-// Reference, https://stackoverflow.com/questions/9714525/javascript-image-url-verify
-function testImage(url, timeoutT) {
-    return new Promise(function (resolve, reject) {
-        var timeout = timeoutT || 5000;
-        var timer, img = new Image();
-        img.onerror = img.onabort = function () {
-            clearTimeout(timer);
-            reject("error loading image");
-        };
-        img.onload = function () {
-            clearTimeout(timer);
-            resolve("image loaded successfully");
-        };
-        timer = setTimeout(function () {
-            // reset .src to invalid URL so it stops previous
-            // loading, but doesn't trigger new load
-            img.src = "//!!!!/test.jpg";
-            reject("timeout");
-        }, timeout);
-        img.src = url;
-    });
-}
-</script>
-
-<script>
 $(document).ready(function(){
-	maxLength('observaciones'); // SMM, 02/03/2022
+	var anexos = []; // SMM, 11/04/2023
 
-	var bandera_fechas = false; // SMM, 25/02/2022
-	$('#recepcionForm').on('submit', function (event) {
-		// Stiven Muñoz Murillo, 08/02/2022
+	// SMM, 11/04/2023
+	$('#utilidadForm').on('submit', function (event) {
 		event.preventDefault();
 
-		// Stiven Muñoz Murillo, 25/02/2022
-		let d1 = new Date(`${$('#fecha_ingreso').val()} ${$('#hora_ingreso').val()}`);
-		let d2 = new Date(`${$('#fecha_aprox_entrega').val()} ${$('#hora_aprox_entrega').val()}`);
-
-		console.log(d1);
-		console.log(d2);
-
-		// Stiven Muñoz Murillo, 25/02/2022
-		bandera_fechas = (d1 > d2) ? true:false;
+		console.log(event.target);
 	});
 
 	$("#recepcionForm").validate({
@@ -430,6 +231,52 @@ $(document).ready(function(){
 
 	$(".select2").select2();
 });
+</script>
+
+<script>
+Dropzone.options.dropzoneForm = {
+	paramName: "File", // The name that will be used to transfer the file
+	maxFilesize: "<?php echo ObtenerVariable("MaxSizeFile"); ?>", // MB
+	maxFiles: "<?php echo ObtenerVariable("CantidadArchivos"); ?>",
+	uploadMultiple: true,
+	addRemoveLinks: true,
+	dictRemoveFile: "Quitar",
+	acceptedFiles: "image/*", // solo se permiten archivos de tipo imagen
+	dictDefaultMessage: "<strong>Haga clic aquí para cargar las imágenes</strong><br>Tambien puede arrastrarlas hasta aquí<br><h4><small>(Máximo <?php echo ObtenerVariable("CantidadArchivos"); ?> imágenes a la vez)<small></h4>",
+	dictFallbackMessage: "Tu navegador no soporta cargue de archivos mediante arrastrar y soltar",
+	removedfile: function(file) {
+			let indice = anexos.indexOf(file.name);
+			if (indice !== -1) {
+				anexos.splice(indice, 1);
+			}
+
+			// Eliminar el archivo cargado por dropzone.
+			<?php if (!$persistir) {?>
+				$.get( "includes/procedimientos.php", {
+					type: "3",
+					nombre: file.name
+				}).done(function( data ) {
+					var _ref;
+					return (_ref = file.previewElement) !== null ? _ref.parentNode.removeChild(file.previewElement) : void 0;
+				});
+			<?php }?>
+		},
+	init: function(file) {
+		this.on("addedfile", file => {
+			anexos.push(file.name); // SMM, 16/02/2022
+			console.log("Line 1057, Dropzone(addedfile)", file.name);
+
+			// Desactivar formulario mientras se cargan las imágenes.
+			$("#Ejecutar").prop("disabled", true);
+    	});
+	},
+	queuecomplete: function() {
+		console.log("Line 1087, Dropzone(queuecomplete)");
+
+		// Activar formulario cuando se cargan las imágenes.
+		$("#Ejecutar").prop("disabled", false);
+	}
+};
 </script>
 
 <!-- InstanceEndEditable -->

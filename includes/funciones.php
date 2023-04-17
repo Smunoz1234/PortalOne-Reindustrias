@@ -1203,7 +1203,7 @@ function QuitarParametrosURL($url, $keys = array())
     return $url;
 }
 
-function RedimensionarImagen(&$pNombreimg, $rutaimg, $xmax, $ymax)
+function RedimensionarImagen(&$pNombreimg, $rutaimg, $xmax, $ymax, $nuevaRuta = "")
 {
     $nombreimg = $pNombreimg;
     $expl = explode('.', $nombreimg);
@@ -1252,7 +1252,12 @@ function RedimensionarImagen(&$pNombreimg, $rutaimg, $xmax, $ymax)
     imagecopymerge($img2, $estampa, imagesx($img2) - $sx - $margen_dcho, imagesy($img2) - $sy - $margen_inf, 0, 0, imagesx($estampa), imagesy($estampa), 50);
     }*/
 
-    imagejpeg($img2, $rutaimg);
+    if ($nuevaRuta == "") {
+        imagejpeg($img2, $rutaimg);
+    } else {
+        imagejpeg($img2, $nuevaRuta); // SMM, 11/04/2023
+    }
+
     //unlink($archivos_carpeta);
     //echo "<center>La imagen se ha optimizado correctamente.</center>";
     //return $img2;
