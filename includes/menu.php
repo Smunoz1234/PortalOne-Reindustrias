@@ -538,7 +538,7 @@ if (!isset($_COOKIE["banderaMenu"])) {
 			<li>
 				<a href="#"><i class="fa fa-suitcase"></i> <span class="nav-label">Utilidades PortalOne</span><span class="fa arrow"></span></a>
 				<ul class="nav nav-second-level">
-					<?php if (PermitirFuncion(1801)) {?><li><a class="alnk" href="utilidad_redimensionar_imagenes.php">Redimensionar imágenes</a></li><?php }?>
+					<?php if (false) {?><li><a class="alnk" href="utilidad_redimensionar_imagenes.php">Redimensionar imágenes</a></li><?php }?>
 					<?php if (PermitirFuncion(1801)) {?><li><a class="alnk" href="utilidad_redimensionar_directorio.php">Redimensionar imágenes desde directorio</a></li><?php }?>
 				</ul>
 			</li>
