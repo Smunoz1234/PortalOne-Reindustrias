@@ -1216,6 +1216,8 @@ function RedimensionarImagen(&$pNombreimg, $rutaimg, $xmax, $ymax, $nuevaRuta = 
         $imagen = imagecreatefrompng($rutaimg);
     } elseif ($ext == "gif") {
         $imagen = imagecreatefromgif($rutaimg);
+    } else {
+        return "Algunos archivos tienen extensiones no válidas.";
     }
 
     $x = imagesx($imagen);
@@ -1261,6 +1263,8 @@ function RedimensionarImagen(&$pNombreimg, $rutaimg, $xmax, $ymax, $nuevaRuta = 
     //unlink($archivos_carpeta);
     //echo "<center>La imagen se ha optimizado correctamente.</center>";
     //return $img2;
+
+    return "OK";
 }
 
 function AgregarDatosImagen($pNombreimg, $Lat = "", $Long = "")

@@ -7,20 +7,65 @@ $Title = "Redimensionar imágenes desde directorio";
 $msg_error = ""; // Mensaje de error
 $sw_error = 0; // Bandera de error
 
+$rutaPrincipal = ObtenerVariable("RutaDirectorioImagenesResize");
+
 $entrada = $_POST["dirOrigen"] ?? "";
-$salida = $_POST["dirDestino"] ?? "";
+$entrada = ($rutaPrincipal . $entrada);
+if (!is_dir($entrada) && ($entrada != "")) {
+    $msg_error = "El directorio de origen no existe.";
 
-$ancho = $_POST["ancho"] ?? "";
-$alto = $_POST["alto"] ?? "";
+    $sw_error = 1;
+} else {
+    $salida = $_POST["dirDestino"] ?? "";
+    $salida = CrearObtenerDirRuta($rutaPrincipal . $salida);
 
-if (($entrada != "") && ($salida != "") && ($ancho != "") && ($alto != "")) {
-    $archivos = array_diff(scandir($entrada), array('.', '..'));
+    $ancho = $_POST["ancho"] ?? "";
+    $alto = $_POST["alto"] ?? "";
 
-    foreach ($archivos as &$archivo) {
-        RedimensionarImagen($archivo, "$entrada/$archivo", $ancho, $alto, "$salida/$archivo");
+    if (($entrada != "") && ($salida != "") && ($ancho != "") && ($alto != "")) {
+        $archivos = array_diff(scandir($entrada), array('.', '..'));
+
+        if (empty($archivos)) {
+            $msg_error = "El directorio de origen esta vacío.";
+
+            $sw_error = 1;
+        }
+
+        if (true) {
+            $SQL_Nombres = Seleccionar("[CambioNombreImagenes]", "*");
+            while ($row_Nombre = sqlsrv_fetch_array($SQL_Nombres)) {
+                $archivo = $row_Nombre["NombreArchivo"];
+                $entrada_archivo = "$entrada/$archivo";
+
+                if (file_exists($entrada_archivo)) {
+                    $nuevo_archivo = $row_Nombre["NombreArchivoNuevo"];
+                    $resultado = RedimensionarImagen($archivo, $entrada_archivo, $ancho, $alto, "$salida/$nuevo_archivo");
+
+                    if ($resultado != "OK") {
+                        $msg_error = $resultado;
+
+                        $sw_error = 1;
+                    }
+                } else {
+                    $msg_error = "Algunos archivos especificados no existen.";
+
+                    $sw_error = 1;
+                }
+            }
+        } else {
+            foreach ($archivos as &$archivo) {
+                $resultado = RedimensionarImagen($archivo, "$entrada/$archivo", $ancho, $alto, "$salida/$archivo");
+
+                if ($resultado != "OK") {
+                    $msg_error = $resultado;
+
+                    $sw_error = 1;
+                }
+            }
+        }
+
+        $sw = 1;
     }
-
-    $sw = 1;
 }
 ?>
 
@@ -36,11 +81,43 @@ if (($entrada != "") && ($salida != "") && ($ancho != "") && ($alto != "")) {
 
 <script type="text/javascript">
 	$(document).ready(function() {
-		<?php if ($sw == 1) {?>
+		const form = document.getElementById('utilidadForm');
+
+		form.addEventListener('submit', function(event) {
+			event.preventDefault(); // Detener el envío automático del formulario
+
+			Swal.fire({
+				title: "¿Desea continuar con el proceso?",
+				icon: "question",
+				showCancelButton: true,
+				confirmButtonText: "Si, confirmo",
+				cancelButtonText: "No"
+			}).then((result) => {
+				if (result.isConfirmed) {
+					$('.ibox-content').toggleClass('sk-loading', true); // Carga iniciada.
+
+					form.submit(); // Enviar el formulario manualmente
+
+					$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
+				} else {
+					console.log("Proceso NO confirmado.")
+				}
+			}); // SMM, 19/04/2023
+		});
+
+		<?php if (($sw == 1) && ($sw_error == 0)) {?>
 			Swal.fire({
 				"title": "¡Listo!",
 				"text": "Las imágenes se redimensionaron correctamente.",
 				"icon": "success"
+			});
+		<?php }?>
+
+		<?php if ($sw_error == 1) {?>
+			Swal.fire({
+				"title": "¡Advertencia!",
+				"text": "<?php echo $msg_error; ?>",
+				"icon": "warning"
 			});
 		<?php }?>
 	});
@@ -80,29 +157,74 @@ if (($entrada != "") && ($salida != "") && ($ancho != "") && ($alto != "")) {
 				<!-- IBOX, Inicio -->
 				<div class="ibox">
 					<div class="ibox-title bg-success">
+						<h5 class="collapse-link"><i class="fa fa-folder"></i> Opciones de Directorios</h5>
+						 <a class="collapse-link pull-right" style="color: white;">
+							<i class="fa fa-chevron-up"></i>
+						</a>
+					</div>
+
+					<div class="ibox-content">
+						<div class="form-group">
+							<label class="col-lg-3 control-label">
+								Ruta Directorio para imagenes resize<br>
+								<span class="text-muted">RutaDirectorioImagenesResize</span>
+							</label>
+							<div class="col-lg-7">
+								<input type="text" class="form-control" value="<?php echo $rutaPrincipal; ?>" readonly>
+							</div>
+							<div class="col-lg-2">
+								<button type="button" class="btn btn-sm btn-info btn-circle" data-toggle="tooltip" data-html="true"
+								title="Este es el valor del parámetro general para esta funcionalidad, <b>Si esta vacío se tomaran las carpetas de la raíz.</b>"><i class="fa fa-info"></i></button>
+							</div>
+						</div>
+
+						<br>
+						<div class="form-group">
+							<label class="col-lg-1 control-label" for="dirOrigen">Directorio origen</label>
+							<div class="col-lg-3">
+								<input type="text" name="dirOrigen" id="dirOrigen" class="form-control" value="dir_entrada" required readonly>
+							</div>
+							<div class="col-lg-2">
+								<button type="button" class="btn btn-sm btn-info btn-circle" data-toggle="tooltip" data-html="true"
+								title="Este directorio debe existir dentro de la ruta especificada y debe contener las imágenes que se quieren redimensionar."><i class="fa fa-info"></i></button>
+							</div>
+
+							<label class="col-lg-1 control-label" for="dirDestino">Directorio destino</label>
+							<div class="col-lg-3">
+								<input type="text" name="dirDestino" id="dirDestino" class="form-control" value="dir_salida" required readonly>
+							</div>
+							<div class="col-lg-2">
+								<button type="button" class="btn btn-sm btn-info btn-circle" data-toggle="tooltip" data-html="true"
+								title="Este es el directorio de salida de las imágenes que se redimensionan. <b>Si no existe se crea automaticamente.</b>"><i class="fa fa-info"></i></button>
+							</div>
+						</div>
+					</div>
+
+					<div class="ibox-title bg-success">
 						<h5 class="collapse-link"><i class="fa fa-arrows-alt"></i> Opciones de Redimensión</h5>
 						 <a class="collapse-link pull-right" style="color: white;">
 							<i class="fa fa-chevron-up"></i>
 						</a>
 					</div>
+
 					<div class="ibox-content">
 						<div class="form-group">
-							<div class="col-lg-6">
-								<label for="dirOrigen">Directorio origen:</label>
-								<input type="text" name="dirOrigen" id="dirOrigen" class="form-control" value="dir_entrada" required>
-							</div>
-							<div class="col-lg-6">
-								<label for="dirDestino">Directorio destino:</label>
-								<input type="text" name="dirDestino" id="dirDestino" class="form-control" value="dir_salida" required>
+							<label class="col-lg-2 control-label">Cambiar nombre</label>
+							<div class="col-lg-2">
+								<label class="checkbox-inline i-checks" style="margin-right: 20px;"><input name="ArtVenta" id="ArtVenta" type="checkbox" value="Y" checked></label>
+								<button type="button" class="btn btn-sm btn-info btn-circle" data-toggle="tooltip" data-html="true"
+								title="Cambiar el nombre de las imágenes según la información de la tabla [CambioNombreImagenes], que se encuentra en la base de datos."><i class="fa fa-info"></i></button>
 							</div>
 						</div>
+
 						<div class="form-group">
-							<div class="col-lg-6">
-								<label for="ancho">Ancho en píxeles:</label>
+							<label class="col-lg-2 control-label" for="ancho">Ancho en píxeles</label>
+							<div class="col-lg-4">
 								<input type="number" name="ancho" id="ancho" class="form-control" required>
 							</div>
-							<div class="col-lg-6">
-								<label for="alto">Alto en píxeles:</label>
+
+							<label class="col-lg-2 control-label" for="alto">Alto en píxeles</label>
+							<div class="col-lg-4">
 								<input type="number" name="alto" id="alto" class="form-control" required>
 							</div>
 						</div>
@@ -133,6 +255,13 @@ if (($entrada != "") && ($salida != "") && ($ancho != "") && ($alto != "")) {
 
 <script>
 $(document).ready(function() {
+	// SMM, 19/04/2022
+	$('[data-toggle="tooltip"]').tooltip();
+	$('.i-checks').iCheck({
+		checkboxClass: 'icheckbox_square-green',
+		radioClass: 'iradio_square-green',
+	  });
+
 	$('#utilidadForm').on('submit', function (event) {
 		// event.preventDefault();
 		console.log(event.target.ancho);
