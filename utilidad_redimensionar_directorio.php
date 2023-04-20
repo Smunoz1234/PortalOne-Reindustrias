@@ -31,8 +31,11 @@ if (!is_dir($entrada) && ($entrada != "")) {
             $sw_error = 1;
         }
 
-        if (true) {
-            $SQL_Nombres = Seleccionar("[CambioNombreImagenes]", "*");
+        // SMM, 20/04/2023
+        $CambiarNombre = $_POST["CambiarNombre"] ?? "";
+
+        if ($CambiarNombre == "Y") {
+            $SQL_Nombres = Seleccionar("tbl_CambioNombreImagenes", "*");
             while ($row_Nombre = sqlsrv_fetch_array($SQL_Nombres)) {
                 $archivo = $row_Nombre["NombreArchivo"];
                 $entrada_archivo = "$entrada/$archivo";
@@ -98,7 +101,7 @@ if (!is_dir($entrada) && ($entrada != "")) {
 
 					form.submit(); // Enviar el formulario manualmente
 
-					$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
+					// $('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
 				} else {
 					console.log("Proceso NO confirmado.")
 				}
@@ -211,7 +214,7 @@ if (!is_dir($entrada) && ($entrada != "")) {
 						<div class="form-group">
 							<label class="col-lg-2 control-label">Cambiar nombre</label>
 							<div class="col-lg-2">
-								<label class="checkbox-inline i-checks" style="margin-right: 20px;"><input name="ArtVenta" id="ArtVenta" type="checkbox" value="Y" checked></label>
+								<label class="checkbox-inline i-checks" style="margin-right: 20px;"><input name="CambiarNombre" id="CambiarNombre" type="checkbox" value="Y" checked></label>
 								<button type="button" class="btn btn-sm btn-info btn-circle" data-toggle="tooltip" data-html="true"
 								title="Cambiar el nombre de las imágenes según la información de la tabla [CambioNombreImagenes], que se encuentra en la base de datos."><i class="fa fa-info"></i></button>
 							</div>
