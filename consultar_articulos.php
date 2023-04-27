@@ -15,7 +15,8 @@ if (isset($_GET['BuscarDatoArt']) && $_GET['BuscarDatoArt'] != "") {
         $sw = 1;
     }
 
-    $Cons = "Select * From uvw_Sap_tbl_ArticulosTodos_ListaPrecios $Filtro";
+	$Campos = "ItemCode, SuppCatNum, ListName, ItemName, ItmsGrpNam, CDU_Marca, Stock, PriceTax, Estado, NombreEstado";
+    $Cons = "Select $Campos From uvw_Sap_tbl_ArticulosTodos_ListaPrecios $Filtro";
     // echo $Cons;
     $SQL = sqlsrv_query($conexion, $Cons);
     $sw = 1;
@@ -98,7 +99,7 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_ArtUpd"))) {
 
 					  	<div class="form-group">
 							<?php if (true) {?>
-								<label class="col-lg-1 control-label">Estado servicio</label>
+								<label class="col-lg-1 control-label">Lista Precio</label>
 								<div class="col-lg-3">
 									<select name="ListaPrecio" class="form-control" id="ListaPrecio">
 										<?php if (false) {?><option value="">(Todos)</option><?php }?>
