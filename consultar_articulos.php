@@ -6,15 +6,25 @@ $sw = 0; //Para saber si ya se selecciono un cliente y mostrar la información
 $Filtro = ""; //Filtro
 if (isset($_GET['BuscarDatoArt']) && $_GET['BuscarDatoArt'] != "") {
     $BuscarDatosArt = trim($_GET['BuscarDatoArt']);
+    $BuscarDatosArt = str_replace(" ", "%", $BuscarDatosArt);
     $Filtro = "Where (ItemCode LIKE '%" . $BuscarDatosArt . "%' OR ItemName LIKE '%" . $BuscarDatosArt . "%' OR FrgnName LIKE '%" . $BuscarDatosArt . "%' OR SuppCatNum LIKE '%" . $BuscarDatosArt . "%')";
 
-    $Cons = "Select * From uvw_Sap_tbl_ArticulosTodos $Filtro";
-    //echo $Cons;
+    // Combo ListaPrecios. SMM, 27/04/2023
+    if (isset($_GET['ListaPrecio']) && $_GET['ListaPrecio'] != "") {
+        $Filtro .= " AND [PriceList]='" . $_GET['ListaPrecio'] . "'";
+        $sw = 1;
+    }
+
+    $Cons = "Select * From uvw_Sap_tbl_ArticulosTodos_ListaPrecios $Filtro";
+    // echo $Cons;
     $SQL = sqlsrv_query($conexion, $Cons);
     $sw = 1;
 }
 
+// Combo ListaPrecios. SMM, 27/04/2023
+$SQL_ListaPrecios = Seleccionar('uvw_Sap_tbl_ListaPrecios', '*', '', 'IdListaPrecio');
 ?>
+
 <!DOCTYPE html>
 <html><!-- InstanceBegin template="/Templates/PlantillaPrincipal.dwt.php" codeOutsideHTMLIsLocked="false" -->
 
@@ -85,7 +95,21 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_ArtUpd"))) {
 						<div class="form-group">
 							<label class="col-xs-12"><h3 class="bg-success p-xs b-r-sm"><i class="fa fa-filter"></i> Datos para filtrar</h3></label>
 						</div>
+
 					  	<div class="form-group">
+							<?php if (true) {?>
+								<label class="col-lg-1 control-label">Estado servicio</label>
+								<div class="col-lg-3">
+									<select name="ListaPrecio" class="form-control" id="ListaPrecio">
+										<?php if (false) {?><option value="">(Todos)</option><?php }?>
+
+										<?php while ($row_ListaPrecios = sqlsrv_fetch_array($SQL_ListaPrecios)) {?>
+											<option value="<?php echo $row_ListaPrecios['IdListaPrecio']; ?>" <?php if ((isset($_GET['ListaPrecio'])) && (strcmp($row_ListaPrecios['IdListaPrecio'], $_GET['ListaPrecio']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_ListaPrecios['DeListaPrecio']; ?></option>
+										<?php }?>
+									</select>
+								</div>
+							<?php }?>
+
 							<label class="col-lg-1 control-label">Buscar</label>
 							<div class="col-lg-4">
 								<input name="BuscarDatoArt" type="text" class="form-control" id="BuscarDatoArt" maxlength="100" placeholder="Consulte el ID o cualquier dato del artículo" value="<?php if (isset($_GET['BuscarDatoArt']) && ($_GET['BuscarDatoArt'] != "")) {echo $_GET['BuscarDatoArt'];}?>">
@@ -111,7 +135,11 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_ArtUpd"))) {
                     <tr>
 						<th>Código artículo</th>
 						<th>Código art proveedor</th> <!-- // NEDUGA, 24/02/2022 -->
-						<th>Lista de precios</th> <!-- SMM, 17/04/2023 -->
+
+						<?php if (true) {?>
+							<th>Lista de precios</th>
+						<?php }?>
+
 						<th>Nombre articulo</th>
 						<th>Grupo de articulo</th>
 						<th>Marca</th> <!-- SMM, 17/04/2023 -->
@@ -126,7 +154,11 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_ArtUpd"))) {
 						 <tr class="gradeX">
 								<td><?php echo $row['ItemCode']; ?></td>
 								<td><?php echo $row['SuppCatNum']; ?></td> <!-- // NEDUGA, 24/02/2022 -->
-								<td><?php echo $row['ListName'] ?? ""; ?></td> <!-- SMM, 17/04/2023 -->
+
+								<?php if (true) {?>
+									<td><?php echo $row['ListName'] ?? ""; ?></td>
+								<?php }?>
+
 								<td><?php echo $row['ItemName']; ?></td>
 								<td><?php echo $row['ItmsGrpNam']; ?></td>
 								<td><?php echo $row['CDU_Marca'] ?? ""; ?></td> <!-- SMM, 17/04/2023 -->

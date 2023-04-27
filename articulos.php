@@ -133,8 +133,8 @@ if ($edit == 1) { //Editar articulo
     //Datos de inventario
     $SQL_DtInvent = Seleccionar('uvw_Sap_tbl_Articulos', '*', "ItemCode='" . $IdItemCode . "'");
 
-    //Lista de precios
-    $SQL_ListaPrecio = Seleccionar('uvw_Sap_tbl_ListaPrecioArticulos', '*', "ItemCode='" . $IdItemCode . "'");
+    //Lista de precios. SMM, 27/04/2023
+    $SQL_ListaPrecio = Seleccionar('uvw_Sap_tbl_ListaPrecioArticulos', '*', "ItemCode='$IdItemCode'  AND Price > 0");
 
     //Anexos
     $SQL_AnexoArticulos = Seleccionar('uvw_Sap_tbl_DocumentosSAP_Anexos', '*', "AbsEntry='" . $row['IdAnexoArticulo'] . "'");
@@ -152,8 +152,8 @@ if ($sw_error == 1) { //Si ocurre un error
     //Datos de inventario
     $SQL_DtInvent = Seleccionar('uvw_Sap_tbl_Articulos', '*', "ItemCode='" . $IdItemCode . "'");
 
-    //Lista de precios
-    $SQL_ListaPrecio = Seleccionar('uvw_Sap_tbl_ListaPrecioArticulos', '*', "ItemCode='" . $IdItemCode . "'");
+    //Lista de precios. SMM, 27/04/2023
+    $SQL_ListaPrecio = Seleccionar('uvw_Sap_tbl_ListaPrecioArticulos', '*', "ItemCode='$IdItemCode' AND Price > 0");
 
 }
 
@@ -380,7 +380,7 @@ while ($row_GruposArticulos = sqlsrv_fetch_array($SQL_GruposArticulos)) {?>
 														</select>
 													</div>
 												</div>
-												
+
 												<div class="form-group">
 													<!-- SMM -->
 													<label class="col-lg-1 control-label">Ubicación Física</label>
@@ -397,44 +397,8 @@ while ($row_GruposArticulos = sqlsrv_fetch_array($SQL_GruposArticulos)) {?>
 												</div>
 											</div>
 									   </div>
-									   <div class="ibox">
-										<div class="ibox-title bg-success">
-											<h5 class="collapse-link"><i class="fa fa-money"></i> Lista de precios</h5>
-											 <a class="collapse-link pull-right">
-												<i class="fa fa-chevron-up"></i>
-											</a>
-										</div>
-										<div class="ibox-content">
-											<div class="form-group">
-												<div class="table-responsive">
-													<table class="table table-bordered table-hover" >
-													<thead>
-													<tr>
-														<th>Lista de precio</th>
-														<th>Precio por unidad</th>
-														<th>Tarifa de impuesto</th>
-														<th>Valor del impuesto</th>
-														<th>Precio con impuesto</th>
-													</tr>
-													</thead>
-													<tbody>
-													<?php
-while ($row_ListaPrecio = sqlsrv_fetch_array($SQL_ListaPrecio)) {?>
-															<tr>
-																<td><?php echo $row_ListaPrecio['ListName']; ?></td>
-																<td><?php echo number_format($row_ListaPrecio['Price'], 2); ?></td>
-																<td><?php echo number_format($row_ListaPrecio['TarifaIVA'], 2); ?></td>
-																<td><?php echo number_format($row_ListaPrecio['VatSum'], 2); ?></td>
-																<td><?php echo number_format($row_ListaPrecio['PriceTax'], 2); ?></td>
-															</tr>
-													<?php }?>
-													</tbody>
-													</table>
-												</div>
-											</div>
-										</div>
-								   </div>
-								   <!-- INICIO, información del vehículo -->
+
+<!-- INICIO, información del vehículo -->
 <div class="ibox">
 	<div class="ibox-title bg-success">
 		<h5 class="collapse-link"><i class="fa fa-info-circle"></i> Información base del vehículo</h5>
@@ -461,9 +425,9 @@ while ($row_ListaPrecio = sqlsrv_fetch_array($SQL_ListaPrecio)) {?>
 				<select name="CDU_Linea" class="form-control select2" required="required" id="CDU_Linea">
 						<option value="" disabled selected>Seleccione...</option>
 					<?php while ($row_LineaVehiculo = sqlsrv_fetch_array($SQL_LineaVehiculo)) {?>
-						<option value="<?php echo $row_LineaVehiculo['LineaModeloVehiculo']; //['Codigo'];    ?>"
+						<option value="<?php echo $row_LineaVehiculo['LineaModeloVehiculo']; //['Codigo'];     ?>"
 						<?php if ((isset($row['CDU_Linea'])) && (strcmp($row_LineaVehiculo['LineaModeloVehiculo'], $row['CDU_Linea']) == 0)) {echo "selected=\"selected\"";}?>>
-							<?php echo $row_LineaVehiculo['LineaModeloVehiculo']; //. " - " . $row_LineaVehiculo['MarcaVehiculo'];    ?>
+							<?php echo $row_LineaVehiculo['LineaModeloVehiculo']; //. " - " . $row_LineaVehiculo['MarcaVehiculo'];     ?>
 						</option>
 					<?php }?>
 				</select>
@@ -533,9 +497,48 @@ while ($row_ListaPrecio = sqlsrv_fetch_array($SQL_ListaPrecio)) {?>
 				</select>
 			</div>
 		</div>
-	</div>
+	</div> <!-- ibox-content -->
 </div>
 <!-- FIN, información del vehículo -->
+
+									   <div class="ibox">
+										<div class="ibox-title bg-success">
+											<h5 class="collapse-link"><i class="fa fa-money"></i> Lista de precios</h5>
+											 <a class="collapse-link pull-right">
+												<i class="fa fa-chevron-up"></i>
+											</a>
+										</div>
+										<div class="ibox-content">
+											<div class="form-group">
+												<div class="table-responsive">
+													<table class="table table-bordered table-hover" >
+													<thead>
+													<tr>
+														<th>Lista de precio</th>
+														<th>Precio por unidad</th>
+														<th>Tarifa de impuesto</th>
+														<th>Valor del impuesto</th>
+														<th>Precio con impuesto</th>
+													</tr>
+													</thead>
+													<tbody>
+													<?php
+while ($row_ListaPrecio = sqlsrv_fetch_array($SQL_ListaPrecio)) {?>
+															<tr>
+																<td><?php echo $row_ListaPrecio['ListName']; ?></td>
+																<td><?php echo number_format($row_ListaPrecio['Price'], 2); ?></td>
+																<td><?php echo number_format($row_ListaPrecio['TarifaIVA'], 2); ?></td>
+																<td><?php echo number_format($row_ListaPrecio['VatSum'], 2); ?></td>
+																<td><?php echo number_format($row_ListaPrecio['PriceTax'], 2); ?></td>
+															</tr>
+													<?php }?>
+													</tbody>
+													</table>
+												</div>
+											</div>
+										</div>
+								   </div>
+
 
 </div>
 <?php if ($edit == 1) {?>
@@ -559,9 +562,9 @@ while ($row_ListaPrecio = sqlsrv_fetch_array($SQL_ListaPrecio)) {?>
 		<tbody>
 		<?php while ($row_DtInvent = sqlsrv_fetch_array($SQL_DtInvent)) {?>
 				<tr style="<?php if ($row_DtInvent['OnHand'] > 0) {
-echo "background-color: #1ab394; color:white;";
+    echo "background-color: #1ab394; color:white;";
 }
-?>">
+    ?>">
 				<td><?php echo $row_DtInvent['WhsCode']; ?></td>
 				<td><?php echo $row_DtInvent['WhsName']; ?></td>
 				<td>
@@ -573,11 +576,11 @@ echo "background-color: #1ab394; color:white;";
 				<td>
 <?php
 if (PermitirFuncion(1004)) {
-echo "$" . number_format($row_DtInvent['CostoArticulo'], 2);
-} else {
-echo "*****";
-}
-?>
+        echo "$" . number_format($row_DtInvent['CostoArticulo'], 2);
+    } else {
+        echo "*****";
+    }
+    ?>
 				</td>
 			</tr>
 		<?php }?>
@@ -600,11 +603,11 @@ echo "*****";
 <div id="tabSN-5" class="tab-pane">
 <div class="panel-body">
 <?php if ($edit == 1) {
-if ($row['IdAnexoArticulo'] != 0) {?>
+    if ($row['IdAnexoArticulo'] != 0) {?>
 	<div class="form-group">
 		<div class="col-xs-12">
 			<?php while ($row_AnexoArticulos = sqlsrv_fetch_array($SQL_AnexoArticulos)) {
-$Icon = IconAttach($row_AnexoArticulos['FileExt']);?>
+        $Icon = IconAttach($row_AnexoArticulos['FileExt']);?>
 				<div class="file-box">
 					<div class="file">
 						<a href="attachdownload.php?file=<?php echo base64_encode($row_AnexoArticulos['AbsEntry']); ?>&line=<?php echo base64_encode($row_AnexoArticulos['Line']); ?>" target="_blank">
