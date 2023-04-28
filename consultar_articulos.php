@@ -1,6 +1,7 @@
 <?php require_once "includes/conexion.php";
 PermitirAcceso(1002);
 $sw = 0; //Para saber si ya se selecciono un cliente y mostrar la información
+$PermitirListas = false;
 
 //Filtros
 $Filtro = ""; //Filtro
@@ -15,7 +16,7 @@ if (isset($_GET['BuscarDatoArt']) && $_GET['BuscarDatoArt'] != "") {
         $sw = 1;
     }
 
-	$Campos = "ItemCode, SuppCatNum, ListName, ItemName, ItmsGrpNam, CDU_Marca, Stock, PriceTax, Estado, NombreEstado";
+    $Campos = "ItemCode, SuppCatNum, ListName, ItemName, ItmsGrpNam, CDU_Marca, Stock, PriceTax, Estado, NombreEstado";
     $Cons = "Select $Campos From uvw_Sap_tbl_ArticulosTodos_ListaPrecios $Filtro";
     // echo $Cons;
     $SQL = sqlsrv_query($conexion, $Cons);
@@ -98,7 +99,7 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_ArtUpd"))) {
 						</div>
 
 					  	<div class="form-group">
-							<?php if (true) {?>
+							<?php if ($PermitirListas) {?>
 								<label class="col-lg-1 control-label">Lista Precio</label>
 								<div class="col-lg-3">
 									<select name="ListaPrecio" class="form-control" id="ListaPrecio">
@@ -137,7 +138,7 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_ArtUpd"))) {
 						<th>Código artículo</th>
 						<th>Código art proveedor</th> <!-- // NEDUGA, 24/02/2022 -->
 
-						<?php if (true) {?>
+						<?php if ($PermitirListas) {?>
 							<th>Lista de precios</th>
 						<?php }?>
 
@@ -156,7 +157,7 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_ArtUpd"))) {
 								<td><?php echo $row['ItemCode']; ?></td>
 								<td><?php echo $row['SuppCatNum']; ?></td> <!-- // NEDUGA, 24/02/2022 -->
 
-								<?php if (true) {?>
+								<?php if ($PermitirListas) {?>
 									<td><?php echo $row['ListName'] ?? ""; ?></td>
 								<?php }?>
 
