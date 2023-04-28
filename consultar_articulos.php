@@ -1,7 +1,7 @@
 <?php require_once "includes/conexion.php";
 PermitirAcceso(1002);
 $sw = 0; //Para saber si ya se selecciono un cliente y mostrar la información
-$PermitirListas = false;
+$PermitirListas = true;
 
 //Filtros
 $Filtro = ""; //Filtro
@@ -16,9 +16,14 @@ if (isset($_GET['BuscarDatoArt']) && $_GET['BuscarDatoArt'] != "") {
         $sw = 1;
     }
 
-    $Campos = "ItemCode, SuppCatNum, ListName, ItemName, ItmsGrpNam, CDU_Marca, Stock, PriceTax, Estado, NombreEstado";
-    $Cons = "Select $Campos From uvw_Sap_tbl_ArticulosTodos_ListaPrecios $Filtro";
-    // echo $Cons;
+    $Campos = "ItemCode, SuppCatNum, ItemName, ItmsGrpNam, CDU_Marca, Stock, PriceTax, Estado, NombreEstado";
+    $Campos .= ($PermitirListas) ? ", ListName" : "";
+
+    // SMM, 28/04/2023
+    $VistaArticulos = ($PermitirListas) ? "uvw_Sap_tbl_ArticulosTodos_ListaPrecios" : "uvw_Sap_tbl_ArticulosTodos";
+
+    $Cons = "Select $Campos From $VistaArticulos $Filtro"; // echo $Cons;
+
     $SQL = sqlsrv_query($conexion, $Cons);
     $sw = 1;
 }
