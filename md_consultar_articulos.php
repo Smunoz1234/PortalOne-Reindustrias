@@ -1,4 +1,17 @@
 <?php
+// Dimensiones, SMM 24/05/2023
+$DimSeries = intval(ObtenerVariable("DimensionSeries"));
+$SQL_Dimensiones = Seleccionar('uvw_Sap_tbl_Dimensiones', '*', "DimActive='Y'");
+
+$array_Dimensiones = [];
+while ($row_Dimension = sqlsrv_fetch_array($SQL_Dimensiones)) {
+	array_push($array_Dimensiones, $row_Dimension);
+}
+
+$encode_Dimensiones = json_encode($array_Dimensiones);
+$cadena_Dimensiones = "JSON.parse('$encode_Dimensiones'.replace(/\\n|\\r/g, ''))";
+// Hasta aquí, SMM 24/05/2023
+
 // Filtrar estados
 $Filtro = "";
 $Filtro .= " AND [IdEstadoLlamada] <> -1";
@@ -68,78 +81,92 @@ $SQL_Llamadas = Seleccionar('uvw_Sap_tbl_LlamadasServicios', 'TOP 100 *', $Where
 				</h4>
 			</div>
 			<div class="modal-body">
-
 				<!-- Inicio, filtros -->
-				<div class="row">
-					<div class="col-lg-12">
+				<form id="formBuscar" class="form-horizontal">
+					<div class="row">
 						<div class="ibox-content">
-							<form id="formBuscar" class="form-horizontal">
+							<div class="form-group">
+								<label class="col-xs-12">
+									<h3 class="bg-success p-xs b-r-sm"><i class="fa fa-filter"></i> Datos para filtrar
+									</h3>
+								</label>
+							</div> <!-- form-group -->
+
+							<div class="col-lg-6">
 								<div class="form-group">
-									<label class="col-xs-12">
-										<h3 class="bg-success p-xs b-r-sm"><i class="fa fa-filter"></i> Datos para
-											filtrar</h3>
-									</label>
-								</div>
+									<?php foreach ($array_Dimensiones as &$dim) { ?>
+										<div class="col-xs-12" style="margin-bottom: 20px;">
+											<label class="control-label">
+												<?php echo $dim['DescPortalOne']; ?> <span class="text-danger">*</span>
+											</label>
+
+											<select name="<?php echo $dim['IdPortalOne'] ?>"
+												id="<?php echo $dim['IdPortalOne'] ?>" class="form-control select2"
+												required>
+												<option value="">Seleccione...</option>
+
+												<?php $SQL_Dim = Seleccionar('uvw_Sap_tbl_DimensionesReparto', '*', 'DimCode=' . $dim['DimCode']); ?>
+												<?php while ($row_Dim = sqlsrv_fetch_array($SQL_Dim)) { ?>
+													<?php $DimCode = intval($dim['DimCode']); ?>
+													<?php $OcrId = ($DimCode == 1) ? "" : $DimCode; ?>
+
+													<option value="<?php echo $row_Dim['OcrCode']; ?>"><?php echo $row_Dim['OcrName']; ?>
+													</option>
+												<?php } ?>
+											</select>
+										</div> <!-- col-xs-12 -->
+									<?php } ?>
+								</div> <!-- form-group -->
+							</div> <!-- col-lg-6 -->
+
+							<div class="col-lg-6">
 								<div class="form-group">
-									<label class="col-lg-1 control-label">Fechas</label>
-									<div class="col-lg-5">
-										<div class="input-daterange input-group" id="datepicker">
-											<input name="FechaInicial" autocomplete="off" type="text"
-												class="input-sm form-control" id="FechaInicial"
-												placeholder="Fecha inicial" value="<?php echo $FechaInicial; ?>" />
-											<span class="input-group-addon">hasta</span>
-											<input name="FechaFinal" autocomplete="off" type="text"
-												class="input-sm form-control" id="FechaFinal" placeholder="Fecha final"
-												value="<?php echo $FechaFinal; ?>" />
-										</div>
-									</div>
-									<label class="col-lg-1 control-label">Cliente</label>
-									<div class="col-lg-5">
-										<input name="Cliente" type="hidden" id="Cliente"
-											value="<?php echo $ID_CodigoCliente ?? ''; ?>">
-										<input name="NombreCliente" type="text" class="form-control" id="NombreCliente"
-											placeholder="Para TODOS, dejar vacio..."
-											value="<?php echo $row_ClienteLlamada['NombreCliente'] ?? ''; ?>">
-									</div>
-								</div>
-								<div class="form-group">
-									<label class="col-lg-1 control-label">Serie</label>
-									<div class="col-lg-5">
-										<select name="Series" class="form-control" id="Series">
-											<option value="">(Todos)</option>
-											<?php while ($row_Series = sqlsrv_fetch_array($SQL_SeriesLlamada)) { ?>
-												<option value="<?php echo $row_Series['IdSeries']; ?>"><?php echo $row_Series['DeSeries']; ?></option>
-											<?php } ?>
-										</select>
-									</div>
-									<label class="col-lg-1 control-label">Sucursal</label>
-									<div class="col-lg-5">
-										<select id="Sucursal" name="Sucursal" class="form-control">
-											<option value="">(Todos)</option>
-											<?php while ($row_Sucursal = sqlsrv_fetch_array($SQL_Sucursal)) { ?>
-												<option value="<?php echo $row_Sucursal['NombreSucursal']; ?>"><?php echo $row_Sucursal['NombreSucursal']; ?></option>
-											<?php } ?>
-										</select>
-									</div>
-								</div>
-								<div class="form-group">
-									<label class="col-lg-1 control-label">Ticket</label>
-									<div class="col-lg-6">
+									<div class="col-xs-12">
+										<label class="control-label">Ticket</label>
+
 										<input name="IDTicket" type="text" class="form-control" id="IDTicket"
 											maxlength="50"
 											placeholder="Digite un número completo, o una parte del mismo..." value="<?php if (isset($_GET['IDTicket']) && ($_GET['IDTicket'] != "")) {
 												echo $_GET['IDTicket'];
 											} ?>">
-									</div>
-									<div class="col-lg-4"> <!-- pull-right -->
-										<button type="submit" class="btn btn-outline btn-success"><i
+
+										<br>
+									</div> <!-- col-xs-12 -->
+
+									<div class="col-xs-12">
+										<label class="control-label">Ticket</label>
+
+										<input name="IDTicket" type="text" class="form-control" id="IDTicket"
+											maxlength="50"
+											placeholder="Digite un número completo, o una parte del mismo..." value="<?php if (isset($_GET['IDTicket']) && ($_GET['IDTicket'] != "")) {
+												echo $_GET['IDTicket'];
+											} ?>">
+
+										<br>
+									</div> <!-- col-xs-12 -->
+
+									<div class="col-xs-12">
+										<label class="control-label">Ticket</label>
+
+										<input name="IDTicket" type="text" class="form-control" id="IDTicket"
+											maxlength="50"
+											placeholder="Digite un número completo, o una parte del mismo..." value="<?php if (isset($_GET['IDTicket']) && ($_GET['IDTicket'] != "")) {
+												echo $_GET['IDTicket'];
+											} ?>">
+
+										<br>
+									</div> <!-- col-xs-12 -->
+
+									<div class="col-xs-12">
+										<button type="submit" class="btn btn-outline btn-success pull-right"><i
 												class="fa fa-search"></i> Buscar</button>
-									</div>
-								</div>
-							</form>
+									</div> <!-- col-xs-12 -->
+								</div> <!-- form-group -->
+							</div> <!-- col-lg-6 -->
+
 						</div> <!-- ibox-content -->
-					</div> <!-- col-lg-12 -->
-				</div>
+					</div> <!-- row -->
+				</form>
 				<!-- Fin, filtros -->
 
 				<!-- Inicio, tabla -->
