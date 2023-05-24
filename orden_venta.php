@@ -1197,6 +1197,9 @@ function verAutorizacion() {
 			</div>
 
 		<div class="wrapper wrapper-content">
+			<!-- SMM, 24/05/2023 -->
+			<?php include_once 'md_consultar_articulos.php'; ?>
+
 			<!-- SMM, 02/08/2022 -->
 			<?php include_once 'md_consultar_llamadas_servicios.php'; ?>
 
@@ -1825,12 +1828,14 @@ function verAutorizacion() {
 					</div>
 					<!-- Fin, Proyecto -->
 				</div>
+				
 				<div class="form-group">
 					<label class="col-xs-12"><h3 class="bg-success p-xs b-r-sm"><i class="fa fa-list"></i> Contenido de la orden</h3></label>
 				</div>
+
 				<div class="form-group">
 					<div class="col-lg-4">
-						<button class="btn btn-success" type="button" onClick="$('#mdOT').modal('show');"><i class="fa fa-refresh"></i> Agregar artículo</button>
+						<button class="btn btn-success" type="button" onClick="$('#mdArticulo').modal('show');"><i class="fa fa-plus"></i> Agregar artículo</button>
 					</div>
 
 					<!-- SMM, 04/05/2022 -->
