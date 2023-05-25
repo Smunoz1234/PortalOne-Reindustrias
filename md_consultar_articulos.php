@@ -176,22 +176,21 @@ $SQL_AlmacenDestino = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'T
 			submitHandler: function (form) {
 				$('.ibox-content').toggleClass('sk-loading');
 
-				alert("Hola");
-
 				let formData = new FormData(form);
+
+				formData.append("solostock", 2);
 
 				let json = Object.fromEntries(formData);
 				console.log("Line 250", json);
 
 				// Inicio, AJAX
 				$.ajax({
-					url: 'md_consultar_Articulos_servicios_ws.php',
+					url: 'md_consultar_articulos_ws.php',
 					type: 'POST',
 					data: formData,
 					processData: false,  // tell jQuery not to process the data
 					contentType: false,   // tell jQuery not to set contentType
 					success: function (response) {
-
 						// console.log("Line 260", response);
 
 						$("#tableContainer").html(response);
