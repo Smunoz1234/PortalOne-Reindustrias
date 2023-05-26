@@ -180,7 +180,7 @@ $SQL_Sucursales = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'IdSuc
 		if ($(".footable-detail-row").length) {
 			Swal.fire({
 				"title": "¡Advertencia!",
-				"text": "Debe contraer todas las filas para poder realizar alguna acción.",
+				"text": "Debe contraer todas las filas para poder realizar alguna acción en las tablas.",
 				"icon": "warning"
 			});
 
@@ -213,6 +213,9 @@ $SQL_Sucursales = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'IdSuc
 
 			// Obtener la fila correspondiente al artículo seleccionado
 			let fila = $(`#${ID}`).clone();
+
+			// Eliminar el botón "fooicon" de la fila clonada
+			fila.find('.fooicon').remove();
 
 			// Reemplazar el botón "Agregar" por "Eliminar"
 			fila.find(".btn-success")
