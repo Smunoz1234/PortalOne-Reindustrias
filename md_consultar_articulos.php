@@ -16,11 +16,12 @@ $cadena_Dimensiones = "JSON.parse('$encode_Dimensiones'.replace(/\\n|\\r/g, ''))
 $IdSeries = $_POST['IdSeries'];
 $SQL_Proyecto = Seleccionar('uvw_Sap_tbl_Proyectos', '*', '', 'DeProyecto');
 
-//Almacenes origen. SMM, 24/05/2023
+// Almacenes. SMM, 24/05/2023
 $SQL_Almacen = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'WhsCode, WhsName', "IdSeries='$IdSeries'", "WhsCode, WhsName", 'WhsName');
-
-//Almacenes destino. SMM, 24/05/2023
 $SQL_AlmacenDestino = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'ToWhsCode, ToWhsName', "IdSeries='$IdSeries'", "ToWhsCode, ToWhsName", 'ToWhsName');
+
+// Sucursales. SMM, 26/05/2023
+$SQL_Sucursales = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'IdSucursal "OcrCode", DeSucursal "OcrName"', "IdSeries='$IdSeries'", "IdSucursal, DeSucursal", 'DeSucursal');
 ?>
 
 <style>
@@ -56,11 +57,17 @@ $SQL_AlmacenDestino = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'T
 											<option value="">Seleccione...</option>
 
 											<?php $SQL_Dim = Seleccionar('uvw_Sap_tbl_DimensionesReparto', '*', 'DimCode=' . $dim['DimCode']); ?>
+
+											<?php if ($dim['DimCode'] == $DimSeries) { ?>
+												<?php $SQL_Dim = $SQL_Sucursales; ?>
+											<?php } ?>
+
 											<?php while ($row_Dim = sqlsrv_fetch_array($SQL_Dim)) { ?>
 												<?php $DimCode = intval($dim['DimCode']); ?>
 												<?php $OcrId = ($DimCode == 1) ? "" : $DimCode; ?>
 
-												<option value="<?php echo $row_Dim['OcrCode']; ?>"><?php echo $row_Dim['OcrCode'] . " - " . $row_Dim['OcrName']; ?>
+												<option value="<?php echo $row_Dim['OcrCode']; ?>">
+													<?php echo $row_Dim['OcrCode'] . " - " . $row_Dim['OcrName']; ?>
 												</option>
 											<?php } ?>
 										</select>
@@ -121,8 +128,13 @@ $SQL_AlmacenDestino = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'T
 									placeholder="Escriba para buscar..." required>
 							</div> <!-- col-lg-6 -->
 
-							<div class="col-lg-6">
-								<br>
+							<div class="col-lg-4" style="margin-top: 20px;">
+								<label class="checkbox-inline i-checks"><input name="chkStock" type="checkbox"
+										id="chkStock" value="1" checked="checked"> Mostrar solo los artículos con
+									stock</label>
+							</div>
+
+							<div class="col-lg-2" style="margin-top: 20px;">
 								<button type="submit" class="btn btn-outline btn-success pull-right"><i
 										class="fa fa-search"></i> Buscar</button>
 							</div> <!-- col-lg-6 -->
@@ -137,12 +149,21 @@ $SQL_AlmacenDestino = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'T
 			<div class="row">
 				<div class="col-lg-6">
 					<div class="ibox-content">
-						<div class="table-responsive" id="tableContainer">
+						<div class="table-responsive" id="tableContainerOne">
 							<i class="fa fa-search" style="font-size: 20px; color: gray;"></i>
 							<span style="font-size: 15px; color: gray;">Debe buscar un artículo.</span>
 						</div> <!-- table-responsive -->
 					</div> <!-- ibox-content -->
-				</div> <!-- col-lg-12 -->
+				</div> <!-- col-lg-6 -->
+				<div class="col-lg-6">
+					<div class="ibox-content">
+						<div class="table-responsive" id="tableContainerTwo">
+							<i class="fa fa-exclamation-circle" style="font-size: 20px; color: gray;"></i>
+							<span style="font-size: 15px; color: gray;">Todavía no se han agregado artículos al
+								carrito.</span>
+						</div> <!-- table-responsive -->
+					</div> <!-- ibox-content -->
+				</div> <!-- col-lg-6 -->
 			</div>
 			<!-- Fin, tabla -->
 
@@ -155,17 +176,14 @@ $SQL_AlmacenDestino = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'T
 </div> <!-- modal-dialog -->
 
 <script>
-	function cambiarOT(orden_trabajo, descripcion_ot) {
-		$("#OrdenServicioCliente").val(orden_trabajo);
-		$("#Desc_OrdenServicioCliente").val(descripcion_ot);
-		$('#mdOT').modal('hide');
+	function AgregarArticulo(ID) {
+		alert(ID);
 	}
-
-
 
 	$(document).ready(function () {
 		$(".select2").select2();
-		$('#footable').footable();
+		$('#footableOne').footable();
+		$('#footableTwo').footable();
 
 		$('#formBuscar').on('submit', function (event) {
 			// Stiven Muñoz Murillo, 04/08/2022
@@ -177,8 +195,6 @@ $SQL_AlmacenDestino = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'T
 				$('.ibox-content').toggleClass('sk-loading');
 
 				let formData = new FormData(form);
-
-				formData.append("solostock", 2);
 
 				let json = Object.fromEntries(formData);
 				console.log("Line 250", json);
@@ -193,8 +209,8 @@ $SQL_AlmacenDestino = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'T
 					success: function (response) {
 						// console.log("Line 260", response);
 
-						$("#tableContainer").html(response);
-						$('#footable').footable();
+						$("#tableContainerOne").html(response);
+						$('#footableOne').footable();
 
 						$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
 					},
@@ -207,42 +223,12 @@ $SQL_AlmacenDestino = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'T
 				// Fin, AJAX
 			}
 		});
-		$('#FechaInicial').datepicker({
-			todayBtn: "linked",
-			keyboardNavigation: false,
-			forceParse: false,
-			calendarWeeks: true,
-			autoclose: true,
-			todayHighlight: true,
-			format: 'yyyy-mm-dd'
-		});
-		$('#FechaFinal').datepicker({
-			todayBtn: "linked",
-			keyboardNavigation: false,
-			forceParse: false,
-			calendarWeeks: true,
-			autoclose: true,
-			todayHighlight: true,
-			format: 'yyyy-mm-dd'
-		});
+
 		$('.chosen-select').chosen({ width: "100%" });
-		var options = {
-			adjustWidth: false,
-			url: function (phrase) {
-				return "ajx_buscar_datos_json.php?type=7&id=" + phrase;
-			},
-			getValue: "NombreBuscarCliente",
-			requestDelay: 400,
-			list: {
-				match: {
-					enabled: true
-				},
-				onClickEvent: function () {
-					var value = $("#NombreCliente").getSelectedItemData().CodigoCliente;
-					$("#Cliente").val(value).trigger("change");
-				}
-			}
-		};
-		$("#NombreCliente").easyAutocomplete(options);
+
+		$('.i-checks').iCheck({
+			checkboxClass: 'icheckbox_square-green',
+			radioClass: 'iradio_square-green',
+		});
 	});
 </script>

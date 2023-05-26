@@ -5,7 +5,8 @@ $WhsCode = $_POST['Almacen'] ?? 0;
 
 $TipoDoc = $_POST['tipodoc'] ?? 1;
 $TodosArticulos = $_POST['todosart'] ?? 0;
-$SoloStock = $_POST['solostock'] ?? 1;
+
+$SoloStock = $_POST['chkStock'] ?? 2;
 
 $Usuario = "'" . $_SESSION['CodUser'] . "'";
 $SQL_GruposArticulos = Seleccionar("uvw_tbl_UsuariosGruposArticulos", "ID_Usuario", "ID_Usuario=$Usuario");
@@ -26,10 +27,11 @@ $Param = array(
 $SQL = EjecutarSP('sp_ConsultarArticulos', $Param);
 ?>
 
-<table id="footable" class="table" data-paging="true" data-sorting="true">
+<table id="footableOne" class="table" data-paging="true" data-sorting="true">
     <thead>
         <tr>
             <th>Nombre</th>
+            <th>Acciones</th>
             <th data-breakpoints="all">Cod. Proveedor</th>
             <th data-breakpoints="all">Unidad Medida</th>
             <th data-breakpoints="all">Precio Sin IVA</th>
@@ -46,6 +48,11 @@ $SQL = EjecutarSP('sp_ConsultarArticulos', $Param);
             <tr>
                 <td>
                     <?php echo $row['NombreBuscarArticulo']; ?>
+                </td>
+                <td>
+                    <button class="btn btn-success btn-xs"
+                        onclick="AgregarArticulo('<?php echo $row['IdArticulo']; ?>');"><i class="fa fa-plus"></i>
+                        Agregar</a>
                 </td>
                 <td>
                     <?php echo $row['CodArticuloProveedor'] ?? "--"; ?>
