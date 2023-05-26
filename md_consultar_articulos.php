@@ -176,14 +176,72 @@ $SQL_Sucursales = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'IdSuc
 </div> <!-- modal-dialog -->
 
 <script>
+	function VerificarFilas() {
+		if ($(".footable-detail-row").length) {
+			Swal.fire({
+				"title": "¡Advertencia!",
+				"text": "Debe contraer todas las filas para poder realizar alguna acción.",
+				"icon": "warning"
+			});
+
+			return false;
+		}
+
+		return true;
+	}
+
 	function AgregarArticulo(ID) {
-		alert(ID);
+		if (VerificarFilas()) {
+
+			if ($("#footableTwo").length) {
+				console.log("footableTwo existe.");
+			} else {
+				console.log("footableTwo no existe.");
+
+				// Clonar la tabla con el ID "footableOne"
+				let tableTwo = $('#footableOne').clone();
+
+				// Vaciar el tbody de la tabla clonada
+				tableTwo.find('tbody').empty();
+
+				// Asignar el ID "footableTwo" a la tabla clonada
+				tableTwo.attr('id', 'footableTwo');
+
+				// Agregar la tabla clonada al DOM
+				$('#tableContainerTwo').replaceWith(tableTwo);
+			}
+
+			// Obtener la fila correspondiente al artículo seleccionado
+			let fila = $(`#${ID}`).clone();
+
+			// Reemplazar el botón "Agregar" por "Eliminar"
+			fila.find(".btn-success")
+				.removeClass("btn-success")
+				.addClass("btn-danger")
+				.html('<i class="fa fa-trash"></i> Eliminar')
+				.attr("onclick", `EliminarArticulo('${ID}');`);
+
+
+			// Agregar la fila al carrito de compras
+			$("#footableTwo tbody").append(fila);
+
+			// Re-renderizar.
+			$('#footableTwo').footable();
+
+		} // VerificarFilas()
+	}
+
+	function EliminarArticulo(ID) {
+		if (VerificarFilas()) {
+
+			$(`#footableTwo #${ID}`).remove();
+
+		} // VerificarFilas()
 	}
 
 	$(document).ready(function () {
 		$(".select2").select2();
 		$('#footableOne').footable();
-		$('#footableTwo').footable();
 
 		$('#formBuscar').on('submit', function (event) {
 			// Stiven Muñoz Murillo, 04/08/2022

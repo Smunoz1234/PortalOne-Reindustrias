@@ -45,7 +45,7 @@ $SQL = EjecutarSP('sp_ConsultarArticulos', $Param);
     </thead>
     <tbody>
         <?php while ($row = sql_fetch_array($SQL)) { ?>
-            <tr>
+            <tr id="<?php echo $row['IdArticulo']; ?>">
                 <td>
                     <?php echo $row['NombreBuscarArticulo']; ?>
                 </td>
