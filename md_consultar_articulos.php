@@ -222,7 +222,7 @@ $SQL_Sucursales = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'IdSuc
 				.removeClass("btn-success")
 				.addClass("btn-danger")
 				.html('<i class="fa fa-trash"></i> Eliminar')
-				.attr("onclick", `EliminarArticulo('${ID}');`);
+				.attr("onclick", `EliminarArticulo(this);`);
 
 
 			// Agregar la fila al carrito de compras
@@ -234,10 +234,10 @@ $SQL_Sucursales = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'IdSuc
 		} // VerificarFilas()
 	}
 
-	function EliminarArticulo(ID) {
+	function EliminarArticulo(btn) {
 		if (VerificarFilas()) {
 
-			$(`#footableTwo #${ID}`).remove();
+			$(btn).closest("tr").remove(); // Eliminar la fila padre del botón
 
 		} // VerificarFilas()
 	}
