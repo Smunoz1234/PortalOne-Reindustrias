@@ -1,4 +1,13 @@
 <?php require_once "includes/conexion.php";
+// Dimensiones. SMM, 29/05/2023
+$SQL_Dimensiones = Seleccionar('uvw_Sap_tbl_Dimensiones', '*', "DimActive='Y'");
+
+$array_Dimensiones = [];
+while ($row_Dimension = sqlsrv_fetch_array($SQL_Dimensiones)) {
+    array_push($array_Dimensiones, $row_Dimension);
+}
+// Hasta aquí, SMM 29/05/2023
+
 // Realizar consulta con filtros. SMM, 24/05/2023
 $DatoBuscar = $_POST['BuscarItem'] ?? 0;
 $WhsCode = $_POST['Almacen'] ?? 0;
@@ -31,16 +40,22 @@ $SQL = EjecutarSP('sp_ConsultarArticulos', $Param);
     <thead>
         <tr>
             <th>Nombre</th>
+            <th>Stock</th>
             <th>Acciones</th>
             <th data-breakpoints="all">Cod. Proveedor</th>
             <th data-breakpoints="all">Unidad Medida</th>
             <th data-breakpoints="all">Precio Sin IVA</th>
             <th data-breakpoints="all">Precio Con IVA</th>
             <th data-breakpoints="all">Almacen</th>
-            <th data-breakpoints="all">Stock</th>
             <th data-breakpoints="all">Maneja Serial</th>
             <th data-breakpoints="all">Maneja Lote</th>
             <th data-breakpoints="all">Grupo Artículos</th>
+            <?php foreach ($array_Dimensiones as &$dim) { ?>
+                <th data-breakpoints="all">
+                    <?php echo $dim['IdPortalOne']; ?>
+                </th>
+            <?php } ?>
+            <th data-breakpoints="all">PrjCode</th>
         </tr>
     </thead>
     <tbody>
@@ -48,6 +63,9 @@ $SQL = EjecutarSP('sp_ConsultarArticulos', $Param);
             <tr id="<?php echo $row['IdArticulo']; ?>">
                 <td>
                     <?php echo $row['NombreBuscarArticulo']; ?>
+                </td>
+                <td>
+                    <?php echo $row['StockAlmacen']; ?>
                 </td>
                 <td>
                     <button class="btn btn-success btn-xs"
@@ -70,9 +88,6 @@ $SQL = EjecutarSP('sp_ConsultarArticulos', $Param);
                     <?php echo $row['CodAlmacen'] . " - " . $row['Almacen']; ?>
                 </td>
                 <td>
-                    <?php echo $row['StockAlmacen']; ?>
-                </td>
-                <td>
                     <?php echo $row['ManejaSerial']; ?>
                 </td>
                 <td>
@@ -80,6 +95,14 @@ $SQL = EjecutarSP('sp_ConsultarArticulos', $Param);
                 </td>
                 <td>
                     <?php echo $row['ItmsGrpCod']; ?>
+                </td>
+                <?php foreach ($array_Dimensiones as &$dim) { ?>
+                    <td>
+                        <?php echo $_POST[$dim['IdPortalOne']] ?? ""; ?>
+                    </td>
+                <?php } ?>
+                <td>
+                    <?php echo $_POST['PrjCode'] ?? ""; ?>
                 </td>
             </tr>
         <?php } ?>

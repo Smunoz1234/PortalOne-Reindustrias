@@ -3,6 +3,9 @@
 $DimSeries = intval(ObtenerVariable("DimensionSeries"));
 $SQL_Dimensiones = Seleccionar('uvw_Sap_tbl_Dimensiones', '*', "DimActive='Y'");
 
+// Pruebas, SMM 29/05/2023
+// $SQL_Dimensiones = Seleccionar('uvw_Sap_tbl_Dimensiones', '*', 'DimCode IN (1,2,3,4)');
+
 $array_Dimensiones = [];
 while ($row_Dimension = sqlsrv_fetch_array($SQL_Dimensiones)) {
 	array_push($array_Dimensiones, $row_Dimension);
@@ -30,7 +33,7 @@ $SQL_Sucursales = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'IdSuc
 	}
 </style>
 
-<div class="modal-dialog modal-lg" style="width: 70% !important;">
+<div class="modal-dialog modal-lg" style="width: 80% !important;">
 	<div class="modal-content">
 		<div class="modal-body">
 			<!-- Inicio, filtros -->
@@ -52,7 +55,7 @@ $SQL_Sucursales = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'IdSuc
 											<?php echo $dim['DescPortalOne']; ?> <span class="text-danger">*</span>
 										</label>
 
-										<select name="<?php echo $dim['IdPortalOne'] ?>"
+										<select name="<?php echo $dim['IdPortalOne'] ?>" required
 											id="<?php echo $dim['IdPortalOne'] ?>" class="form-control select2">
 											<option value="">Seleccione...</option>
 
@@ -92,8 +95,7 @@ $SQL_Sucursales = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'IdSuc
 								</div> <!-- col-xs-12 -->
 
 								<div class="col-xs-12" style="margin-bottom: 10px;">
-									<label class="control-label">Almacén destino <span
-											class="text-danger">*</span></label>
+									<label class="control-label">Almacén destino</label>
 
 									<select name="AlmacenDestino" id="AlmacenDestino" class="form-control select2">
 										<option value="">Seleccione...</option>
@@ -105,7 +107,7 @@ $SQL_Sucursales = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'IdSuc
 								</div> <!-- col-xs-12 -->
 
 								<div class="col-xs-12" style="margin-bottom: 10px;">
-									<label class="control-label">Proyecto <span class="text-danger">*</span></label>
+									<label class="control-label">Proyecto</label>
 
 									<select id="PrjCode" name="PrjCode" class="form-control select2">
 										<option value="">(NINGUNO)</option>
@@ -169,6 +171,8 @@ $SQL_Sucursales = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'IdSuc
 
 		</div> <!-- modal-body -->
 		<div class="modal-footer">
+			<button type="button" class="btn btn-success m-t-md" id="btnAceptar"><i class="fa fa-check"></i>
+				Aceptar</button>
 			<button type="button" class="btn btn-danger m-t-md" data-dismiss="modal"><i class="fa fa-times"></i>
 				Cerrar</button>
 		</div>
@@ -257,6 +261,13 @@ $SQL_Sucursales = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'IdSuc
 
 				let formData = new FormData(form);
 
+				formData.append("PrjCode", $("#PrjCode").val());
+				formData.append("Dim1", $("#Dim1").val() || "");
+				formData.append("Dim2", $("#Dim2").val() || "");
+				formData.append("Dim3", $("#Dim3").val() || "");
+				formData.append("Dim4", $("#Dim4").val() || "");
+				formData.append("Dim5", $("#Dim5").val() || "");
+
 				let json = Object.fromEntries(formData);
 				console.log("Line 250", json);
 
@@ -291,5 +302,43 @@ $SQL_Sucursales = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'IdSuc
 			checkboxClass: 'icheckbox_square-green',
 			radioClass: 'iradio_square-green',
 		});
+
+		// Enviar IDs de artículos por AJAX
+		$("#btnAceptar").on("click", function () {
+			var dataArticulos = [];
+			$("#footableTwo tbody tr").each(function () {
+				var idArticulo = $(this).attr("id");
+				var dim1 = $(this).find('.Dim1').text();
+				var dim2 = $(this).find('.Dim2').text();
+				var dim3 = $(this).find('.Dim3').text();
+				var prjCode = $(this).find('.PrjCode').text();
+
+				var articulo = {
+					id: idArticulo,
+					dim1: dim1,
+					dim2: dim2,
+					dim3: dim3,
+					prjCode: prjCode
+				};
+
+				dataArticulos.push(articulo);
+			});
+
+			// Realizar la petición AJAX con los datos de los artículos
+			$.ajax({
+				url: "tu_url_de_destino",
+				type: "POST",
+				data: { articulos: dataArticulos },
+				success: function (response) {
+					// Manejar la respuesta del servidor
+					console.log(response);
+				},
+				error: function (error) {
+					// Manejar el error de la petición AJAX
+					console.log(error);
+				}
+			});
+		});
+		// SMM, 29/05/2023
 	});
 </script>
