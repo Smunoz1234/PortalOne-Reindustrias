@@ -25,6 +25,12 @@ $SQL_AlmacenDestino = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'T
 
 // Sucursales. SMM, 26/05/2023
 $SQL_Sucursales = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'IdSucursal "OcrCode", DeSucursal "OcrName"', "IdSeries='$IdSeries'", "IdSucursal, DeSucursal", 'DeSucursal');
+
+// Lista de precios, 29/05/2023
+$SQL_ListaPrecios = Seleccionar('uvw_Sap_tbl_ListaPrecios', '*');
+
+// Empleado de ventas, 29/05/2023
+$SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', "Estado = 'Y'", 'DE_EmpVentas');
 ?>
 
 <style>
@@ -46,38 +52,6 @@ $SQL_Sucursales = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'IdSuc
 								</h3>
 							</label>
 						</div> <!-- form-group -->
-
-						<div class="col-lg-6">
-							<div class="form-group">
-								<?php foreach ($array_Dimensiones as &$dim) { ?>
-									<div class="col-xs-12" style="margin-bottom: 10px;">
-										<label class="control-label">
-											<?php echo $dim['DescPortalOne']; ?> <span class="text-danger">*</span>
-										</label>
-
-										<select name="<?php echo $dim['IdPortalOne'] ?>" required
-											id="<?php echo $dim['IdPortalOne'] ?>" class="form-control select2">
-											<option value="">Seleccione...</option>
-
-											<?php $SQL_Dim = Seleccionar('uvw_Sap_tbl_DimensionesReparto', '*', 'DimCode=' . $dim['DimCode']); ?>
-
-											<?php if ($dim['DimCode'] == $DimSeries) { ?>
-												<?php $SQL_Dim = $SQL_Sucursales; ?>
-											<?php } ?>
-
-											<?php while ($row_Dim = sqlsrv_fetch_array($SQL_Dim)) { ?>
-												<?php $DimCode = intval($dim['DimCode']); ?>
-												<?php $OcrId = ($DimCode == 1) ? "" : $DimCode; ?>
-
-												<option value="<?php echo $row_Dim['OcrCode']; ?>">
-													<?php echo $row_Dim['OcrCode'] . " - " . $row_Dim['OcrName']; ?>
-												</option>
-											<?php } ?>
-										</select>
-									</div> <!-- col-xs-12 -->
-								<?php } ?>
-							</div> <!-- form-group -->
-						</div> <!-- col-lg-6 -->
 
 						<div class="col-lg-6">
 							<div class="form-group">
@@ -119,29 +93,88 @@ $SQL_Sucursales = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'IdSuc
 										<?php } ?>
 									</select>
 								</div> <!-- col-xs-12 -->
+
+								<div class="col-xs-12" style="margin-bottom: 10px;">
+									<label class="control-label">Lista Precios <span
+											class="text-danger">*</span></label>
+
+									<select name="ListaPrecio" id="ListaPrecio" class="form-control select2" required>
+										<option value="">Seleccione...</option>
+
+										<?php while ($row_ListaPrecio = sqlsrv_fetch_array($SQL_ListaPrecios)) { ?>
+											<option value="<?php echo $row_ListaPrecio['IdListaPrecio']; ?>"><?php echo $row_ListaPrecio['IdListaPrecio'] . " - " . $row_ListaPrecio['DeListaPrecio']; ?></option>
+										<?php } ?>
+									</select>
+								</div> <!-- col-xs-12 -->
+
+								<div class="col-xs-12" style="margin-bottom: 10px;">
+									<label class="control-label">Empleado de ventas <span
+											class="text-danger">*</span></label>
+
+									<select name="EmpVentas" id="EmpVentas" class="form-control select2" required>
+										<option value="">Seleccione...</option>
+
+										<?php while ($row_EmpleadosVentas = sqlsrv_fetch_array($SQL_EmpleadosVentas)) { ?>
+											<option value="<?php echo $row_EmpleadosVentas['ID_EmpVentas']; ?>"><?php echo $row_EmpleadosVentas['ID_EmpVentas'] . " - " . $row_EmpleadosVentas['DE_EmpVentas']; ?></option>
+										<?php } ?>
+									</select>
+								</div> <!-- col-xs-12 -->
 							</div> <!-- form-group -->
 						</div> <!-- col-lg-6 -->
 
-						<div class="row">
-							<div class="col-lg-6">
-								<label class="control-label">Buscar artículo <span class="text-danger">*</span></label>
 
-								<input name="BuscarItem" id="BuscarItem" type="text" class="form-control"
-									placeholder="Escriba para buscar..." required>
-							</div> <!-- col-lg-6 -->
+						<div class="col-lg-6">
+							<div class="form-group">
+								<?php foreach ($array_Dimensiones as &$dim) { ?>
+									<div class="col-xs-12" style="margin-bottom: 10px;">
+										<label class="control-label">
+											<?php echo $dim['DescPortalOne']; ?> <span class="text-danger">*</span>
+										</label>
 
-							<div class="col-lg-4" style="margin-top: 20px;">
-								<label class="checkbox-inline i-checks"><input name="chkStock" type="checkbox"
-										id="chkStock" value="1" checked="checked"> Mostrar solo los artículos con
-									stock</label>
-							</div>
+										<select name="<?php echo $dim['IdPortalOne'] ?>" required
+											id="<?php echo $dim['IdPortalOne'] ?>" class="form-control select2">
+											<option value="">Seleccione...</option>
 
-							<div class="col-lg-2" style="margin-top: 20px;">
-								<button type="submit" class="btn btn-outline btn-success pull-right"><i
-										class="fa fa-search"></i> Buscar</button>
-							</div> <!-- col-lg-6 -->
-						</div>
+											<?php $SQL_Dim = Seleccionar('uvw_Sap_tbl_DimensionesReparto', '*', 'DimCode=' . $dim['DimCode']); ?>
+
+											<?php if ($dim['DimCode'] == $DimSeries) { ?>
+												<?php $SQL_Dim = $SQL_Sucursales; ?>
+											<?php } ?>
+
+											<?php while ($row_Dim = sqlsrv_fetch_array($SQL_Dim)) { ?>
+												<?php $DimCode = intval($dim['DimCode']); ?>
+												<?php $OcrId = ($DimCode == 1) ? "" : $DimCode; ?>
+
+												<option value="<?php echo $row_Dim['OcrCode']; ?>">
+													<?php echo $row_Dim['OcrCode'] . " - " . $row_Dim['OcrName']; ?>
+												</option>
+											<?php } ?>
+										</select>
+									</div> <!-- col-xs-12 -->
+								<?php } ?>
+							</div> <!-- form-group -->
+						</div> <!-- col-lg-6 -->
 					</div> <!-- ibox-content -->
+				</div> <!-- row -->
+
+				<div class="row">
+					<div class="col-lg-6">
+						<label class="control-label">Buscar artículo <span class="text-danger">*</span></label>
+
+						<input name="BuscarItem" id="BuscarItem" type="text" class="form-control"
+							placeholder="Escriba para buscar..." required>
+					</div>
+
+					<div class="col-lg-4" style="margin-top: 20px;">
+						<label class="checkbox-inline i-checks"><input name="chkStock" type="checkbox" id="chkStock"
+								value="1" checked="checked"> Mostrar solo los artículos con
+							stock</label>
+					</div>
+
+					<div class="col-lg-2" style="margin-top: 20px;">
+						<button type="submit" class="btn btn-outline btn-success pull-right"><i
+								class="fa fa-search"></i> Buscar</button>
+					</div>
 				</div> <!-- row -->
 			</form>
 			<br><br><br>
