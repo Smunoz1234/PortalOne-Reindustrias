@@ -4,7 +4,7 @@ $DimSeries = intval(ObtenerVariable("DimensionSeries"));
 $SQL_Dimensiones = Seleccionar('uvw_Sap_tbl_Dimensiones', '*', "DimActive='Y'");
 
 // Pruebas, SMM 29/05/2023
-// $SQL_Dimensiones = Seleccionar('uvw_Sap_tbl_Dimensiones', '*', 'DimCode IN (1,2,3,4)');
+// $SQL_Dimensiones = Seleccionar('uvw_Sap_tbl_Dimensiones', '*', 'DimCode IN (1,2,3,4,5)');
 
 $array_Dimensiones = [];
 while ($row_Dimension = sqlsrv_fetch_array($SQL_Dimensiones)) {
@@ -15,8 +15,10 @@ $encode_Dimensiones = json_encode($array_Dimensiones);
 $cadena_Dimensiones = "JSON.parse('$encode_Dimensiones'.replace(/\\n|\\r/g, ''))";
 // Hasta aquí, SMM 24/05/2023
 
-// Proyectos. SMM, 24/05/2023
 $IdSeries = $_POST['IdSeries'];
+$ListaPrecio = $_POST['ListaPrecio'];
+
+// Proyectos. SMM, 24/05/2023
 $SQL_Proyecto = Seleccionar('uvw_Sap_tbl_Proyectos', '*', '', 'DeProyecto');
 
 // Almacenes. SMM, 24/05/2023
@@ -37,22 +39,35 @@ $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', "Estado =
 	.select2-container {
 		z-index: 9000;
 	}
+
+	.ibox-title {
+		border-radius: 5px;
+		margin-bottom: 10px;
+	}
+
+	.ibox-title a {
+		color: inherit !important;
+	}
+
+	.collapse-link:hover {
+		cursor: pointer;
+	}
 </style>
 
-<div class="modal-dialog modal-lg" style="width: 80% !important;">
+<div class="modal-dialog modal-lg" style="width: 75% !important;">
 	<div class="modal-content">
 		<div class="modal-body">
 			<!-- Inicio, filtros -->
 			<form id="formBuscar" class="form-horizontal">
 				<div class="row">
-					<div class="ibox-content">
-						<div class="form-group">
-							<label class="col-xs-12">
-								<h3 class="bg-success p-xs b-r-sm"><i class="fa fa-filter"></i> Datos para filtrar
-								</h3>
-							</label>
-						</div> <!-- form-group -->
+					<div class="ibox-title bg-success" data-toggle="collapse" data-target="#filtros">
+						<h5 class="collapse-link"><i class="fa fa-filter"></i> Datos para filtrar</h5>
+						<a class="collapse-link pull-right">
+							<i class="fa fa-chevron-up"></i>
+						</a>
+					</div>
 
+					<div class="collapse in" id="filtros">
 						<div class="col-lg-6">
 							<div class="form-group">
 								<div class="col-xs-12" style="margin-bottom: 10px;">
@@ -102,7 +117,13 @@ $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', "Estado =
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_ListaPrecio = sqlsrv_fetch_array($SQL_ListaPrecios)) { ?>
-											<option value="<?php echo $row_ListaPrecio['IdListaPrecio']; ?>"><?php echo $row_ListaPrecio['IdListaPrecio'] . " - " . $row_ListaPrecio['DeListaPrecio']; ?></option>
+											<option <?php if ($ListaPrecio == $row_ListaPrecio['IdListaPrecio']) {
+												echo "selected";
+											} ?> value="<?php echo $row_ListaPrecio['IdListaPrecio']; ?>">
+
+												<?php echo $row_ListaPrecio['IdListaPrecio'] . " - " . $row_ListaPrecio['DeListaPrecio']; ?>
+
+											</option>
 										<?php } ?>
 									</select>
 								</div> <!-- col-xs-12 -->
@@ -121,7 +142,6 @@ $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', "Estado =
 								</div> <!-- col-xs-12 -->
 							</div> <!-- form-group -->
 						</div> <!-- col-lg-6 -->
-
 
 						<div class="col-lg-6">
 							<div class="form-group">
@@ -284,8 +304,16 @@ $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', "Estado =
 		$('#footableOne').footable();
 
 		$('#formBuscar').on('submit', function (event) {
-			// Stiven Muñoz Murillo, 04/08/2022
 			event.preventDefault();
+		});
+
+		// SMM, 29/05/2023
+		$('#filtros').on('show.bs.collapse', function () {
+			$('.collapse-link i').removeClass('fa-chevron-down').addClass('fa-chevron-up');
+		});
+
+		$('#filtros').on('hide.bs.collapse', function () {
+			$('.collapse-link i').removeClass('fa-chevron-up').addClass('fa-chevron-down');
 		});
 
 		$("#formBuscar").validate({
@@ -294,12 +322,8 @@ $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', "Estado =
 
 				let formData = new FormData(form);
 
-				formData.append("PrjCode", $("#PrjCode").val());
-				formData.append("Dim1", $("#Dim1").val() || "");
-				formData.append("Dim2", $("#Dim2").val() || "");
-				formData.append("Dim3", $("#Dim3").val() || "");
-				formData.append("Dim4", $("#Dim4").val() || "");
-				formData.append("Dim5", $("#Dim5").val() || "");
+				// Ejemplo de como agregar nuevos campos.
+				// formData.append("Dim1", $("#Dim1").val() || "");
 
 				let json = Object.fromEntries(formData);
 				console.log("Line 250", json);
@@ -362,6 +386,59 @@ $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', "Estado =
 				url: "tu_url_de_destino",
 				type: "POST",
 				data: { articulos: dataArticulos },
+				success: function (response) {
+					// Manejar la respuesta del servidor
+					console.log(response);
+				},
+				error: function (error) {
+					// Manejar el error de la petición AJAX
+					console.log(error);
+				}
+			});
+		});
+
+		// Enviar datos de artículos por AJAX
+		$("#btnAceptar").on("click", function () {
+			var dataArticulos = [];
+			$("#footableTwo tbody tr").each(function () {
+				var idArticulo = $(this).attr("id");
+				var dim1 = $(this).find('.Dim1').length ? $(this).find('.Dim1').text() : "";
+				var dim2 = $(this).find('.Dim2').length ? $(this).find('.Dim2').text() : "";
+				var dim3 = $(this).find('.Dim3').length ? $(this).find('.Dim3').text() : "";
+				var dim4 = $(this).find('.Dim4').length ? $(this).find('.Dim4').text() : "";
+				var prjCode = $(this).find('.PrjCode').text();
+				var empVentas = $(this).find('.EmpVentas').text();
+				var whsCode = $(this).find('.WhsCode').text();
+
+				var articulo = {
+					id: idArticulo,
+					dim1: dim1,
+					dim2: dim2,
+					dim3: dim3,
+					dim4: dim4,
+					prjCode: prjCode,
+					empVentas: empVentas,
+					whsCode: whsCode
+				};
+
+				dataArticulos.push(articulo);
+			});
+
+			var p = "ValorP";
+			var docType = "ValorDocType";
+
+			// Crear objeto con los datos a enviar
+			var dataEnviar = {
+				articulos: dataArticulos,
+				p: p,
+				docType: docType
+			};
+
+			// Realizar la petición AJAX con los datos de los artículos y los parámetros adicionales
+			$.ajax({
+				url: "tu_url_de_destino",
+				type: "POST",
+				data: dataEnviar,
 				success: function (response) {
 					// Manejar la respuesta del servidor
 					console.log(response);

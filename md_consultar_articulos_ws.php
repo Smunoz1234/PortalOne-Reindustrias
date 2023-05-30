@@ -17,6 +17,8 @@ $TodosArticulos = $_POST['todosart'] ?? 0;
 
 $SoloStock = $_POST['chkStock'] ?? 2;
 
+$IdListaPrecio = $_POST['ListaPrecio'] ?? "";
+
 $Usuario = "'" . $_SESSION['CodUser'] . "'";
 $SQL_GruposArticulos = Seleccionar("uvw_tbl_UsuariosGruposArticulos", "ID_Usuario", "ID_Usuario=$Usuario");
 
@@ -30,10 +32,11 @@ $Param = array(
     "'$TipoDoc'",
     "'$SoloStock'",
     "'$TodosArticulos'",
+    "'$IdListaPrecio'",
     $Usuario,
 );
 
-$SQL = EjecutarSP('sp_ConsultarArticulos', $Param);
+$SQL = EjecutarSP('sp_ConsultarArticulos_ListaPrecios', $Param);
 ?>
 
 <table id="footableOne" class="table" data-paging="true" data-sorting="true">
@@ -42,6 +45,7 @@ $SQL = EjecutarSP('sp_ConsultarArticulos', $Param);
             <th>Nombre</th>
             <th>Stock</th>
             <th>Acciones</th>
+            <th data-breakpoints="all">Lista Precios</th>
             <th data-breakpoints="all">Cod. Proveedor</th>
             <th data-breakpoints="all">Unidad Medida</th>
             <th data-breakpoints="all">Precio Sin IVA</th>
@@ -49,12 +53,14 @@ $SQL = EjecutarSP('sp_ConsultarArticulos', $Param);
             <th data-breakpoints="all">Almacen</th>
             <th data-breakpoints="all">Maneja Serial</th>
             <th data-breakpoints="all">Maneja Lote</th>
+            <th data-breakpoints="all">Stock General</th>
             <th data-breakpoints="all">Grupo Artículos</th>
             <?php foreach ($array_Dimensiones as &$dim) { ?>
                 <th data-breakpoints="all">
                     <?php echo $dim['IdPortalOne']; ?>
                 </th>
             <?php } ?>
+            <th data-breakpoints="all">EmpVentas</th>
             <th data-breakpoints="all">PrjCode</th>
         </tr>
     </thead>
@@ -71,6 +77,9 @@ $SQL = EjecutarSP('sp_ConsultarArticulos', $Param);
                     <button class="btn btn-success btn-xs"
                         onclick="AgregarArticulo('<?php echo $row['IdArticulo']; ?>');"><i class="fa fa-plus"></i>
                         Agregar</a>
+                </td>
+                <td>
+                    <?php echo $row['ListaPrecio']; ?>
                 </td>
                 <td>
                     <?php echo $row['CodArticuloProveedor'] ?? "--"; ?>
@@ -94,6 +103,9 @@ $SQL = EjecutarSP('sp_ConsultarArticulos', $Param);
                     <?php echo $row['ManejaLote']; ?>
                 </td>
                 <td>
+                    <?php echo $row['StockGeneral']; ?>
+                </td>
+                <td>
                     <?php echo $row['ItmsGrpCod']; ?>
                 </td>
                 <?php foreach ($array_Dimensiones as &$dim) { ?>
@@ -101,6 +113,9 @@ $SQL = EjecutarSP('sp_ConsultarArticulos', $Param);
                         <?php echo $_POST[$dim['IdPortalOne']] ?? ""; ?>
                     </td>
                 <?php } ?>
+                <td>
+                    <?php echo $_POST['EmpVentas'] ?? ""; ?>
+                </td>
                 <td>
                     <?php echo $_POST['PrjCode'] ?? ""; ?>
                 </td>
