@@ -368,6 +368,9 @@ $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', "Estado =
 			let dt = 1;
 			let cc = "<?php echo $CardCode; ?>";
 
+			var totalArticulos = $("#footableTwo tbody tr").length; // Obtener el total de artículos
+			var contadorArticulos = 0; // Inicializar el contador de artículos
+
 			$("#footableTwo tbody tr").each(function () {
 				let idArticulo = $(this).attr("id");
 				let whsCode = $(this).find('.WhsCode').text();
@@ -408,25 +411,44 @@ $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', "Estado =
 					data: articulo,
 					success: function (response) {
 						// Manejar la respuesta del servidor
-						console.log("Respuesta:", response);
+						// console.log("Respuesta:", response);
+						contadorArticulos++; // Incrementar el contador de artículos
+
+						// Verificar si todas las solicitudes AJAX han finalizado
+						if (contadorArticulos === totalArticulos) {
+							// Obtén el elemento con el ID 'DataGrid'
+							let dataGrid = document.getElementById('DataGrid');
+
+							// Crea un objeto URL a partir del atributo 'src'
+							let url = new URL(dataGrid.src);
+
+							// Elimina todos los parámetros existentes
+							console.log(url.search);
+							// url.search = '';
+
+							//?id=0&type=1&usr=101&cardcode=CL-1054994729
+
+							// Agrega varios parámetros nuevos
+							// url.searchParams.set('parametro1', 'valor1');
+							// url.searchParams.set('parametro2', 'valor2');
+							// url.searchParams.set('parametro3', 'valor3');
+
+							// Asigna la nueva URL al atributo 'src' del elemento
+							dataGrid.src = url.href;
+
+							// Cerrar el modal al finalizar la lógica
+							$("#mdArticulos").modal("hide");
+						}
 					},
 					error: function (error) {
 						// Manejar el error de la petición AJAX
 						console.log("Error:", error);
+						alert("Ocurrio un error al insertar los articulos, se recomienda repetir el procedimiento o consultar al administrador");
 					}
 				});
 				// Fin AJAX
 			}); // Fin Loop Articulos
 
-			// Obtén el elemento con el ID 'DataGrid'
-			let dataGrid = document.getElementById('DataGrid');
-
-			// Crea un objeto URL a partir del atributo 'src'
-			let url = new URL(dataGrid.src);
-
-			// Elimina todos los parámetros existentes
-			// url.search = '';
-			console.log(url.search);
 		}); // Fin Evento CLICK
 	});
 </script>
