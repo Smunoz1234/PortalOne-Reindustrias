@@ -2145,7 +2145,10 @@ function AgregarArticulos() {
 			url: "md_consultar_articulos.php",
 			data: {
 				Procedure: 35,
-				Edit: "<?php echo $edit; ?>",
+				Edit: <?php echo $edit; ?>,
+				DocType: "<?php echo ($edit == 0) ? 1 : 2; ?>",
+				DocId: "<?php echo $row['ID_OrdenVenta'] ?? 0; ?>",
+				DocEvent: "<?php echo $row['IdEvento'] ?? 0; ?>",
 				CardCode: cardCode,
 				IdSeries: serie,
 				IdProyecto: proyecto,

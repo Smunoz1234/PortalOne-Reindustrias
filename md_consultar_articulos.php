@@ -17,6 +17,9 @@ $cadena_Dimensiones = "JSON.parse('$encode_Dimensiones'.replace(/\\n|\\r/g, ''))
 
 $Procedure = $_POST['Procedure'];
 $Edit = $_POST['Edit'];
+$DocType = $_POST['DocType'];
+$DocId = $_POST['DocId'];
+$DocEvent = $_POST['DocEvent'];
 $CardCode = $_POST['CardCode'];
 $IdSeries = $_POST['IdSeries'];
 $Proyecto = $_POST['IdProyecto'];
@@ -337,8 +340,10 @@ $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', "Estado =
 				// Ejemplo de como agregar nuevos campos.
 				// formData.append("Dim1", $("#Dim1").val() || "");
 
+				formData.append("tipodoc", "<?php echo $_POST["TipoDoc"] ?? 2; ?>");
+
 				let json = Object.fromEntries(formData);
-				console.log("Line 250", json);
+				console.log("Line 340", json);
 
 				// Inicio, AJAX
 				$.ajax({
@@ -374,7 +379,9 @@ $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', "Estado =
 
 		$("#btnAceptar").on("click", function () {
 			let p = <?php echo $Procedure; ?>;
-			let dt = 1;
+			let dt = <?php echo $DocType; ?>;
+			let did = <?php echo $DocId; ?>;
+			let dev = <?php echo $DocEvent; ?>;
 			let cc = "<?php echo $CardCode; ?>";
 
 			var totalArticulos = $("#footableTwo tbody tr").length; // Obtener el total de artículos
@@ -397,6 +404,8 @@ $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', "Estado =
 				let articulo = {
 					P: p,
 					doctype: dt,
+					id: did,
+					evento: dev,
 					cardcode: cc,
 					item: idArticulo,
 					whscode: whsCode.trim(),
@@ -416,7 +425,7 @@ $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', "Estado =
 				// Envio AJAX del Articulo.
 				$.ajax({
 					url: "registro.php",
-					type: "GET",
+					type: "POST",
 					data: articulo,
 					success: function (response) {
 						// Manejar la respuesta del servidor
@@ -431,16 +440,18 @@ $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', "Estado =
 							// Crea un objeto URL a partir del atributo 'src'
 							let url = new URL(dataGrid.src);
 
-							// Elimina todos los parámetros existentes
-							console.log(url.search);
-							// url.search = '';
+							// ?id=0&type=1&usr&cardcode
+							// console.log(url.search); 
 
-							//?id=0&type=1&usr=101&cardcode=CL-1054994729
+							<?php if($edit == 1) { ?>
+								// Elimina todos los parámetros existentes
+								url.search = '';
 
-							// Agrega varios parámetros nuevos
-							// url.searchParams.set('parametro1', 'valor1');
-							// url.searchParams.set('parametro2', 'valor2');
-							// url.searchParams.set('parametro3', 'valor3');
+								// ?id&evento&type=2
+								url.searchParams.set('id', <?php echo $DocId; ?>);
+								url.searchParams.set('evento', '<?php echo $DocEvent; ?>');
+								url.searchParams.set('type', '2');
+							<?php } ?>
 
 							// Asigna la nueva URL al atributo 'src' del elemento
 							dataGrid.src = url.href;

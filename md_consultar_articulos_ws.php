@@ -13,10 +13,11 @@ $DatoBuscar = $_POST['BuscarItem'] ?? 0;
 $WhsCode = $_POST['Almacen'] ?? 0;
 
 $TipoDoc = $_POST['tipodoc'] ?? 1;
+// @TipoDoc: 1 COMPRA, 2 VENTA, 3 INVENTARIO
+
 $TodosArticulos = $_POST['todosart'] ?? 0;
 
 $SoloStock = $_POST['chkStock'] ?? 2;
-
 $IdListaPrecio = $_POST['ListaPrecio'] ?? "";
 
 $Usuario = "'" . $_SESSION['CodUser'] . "'";
