@@ -45,12 +45,14 @@ $SQL = EjecutarSP('sp_ConsultarArticulos_ListaPrecios', $Param);
             <th>Nombre</th>
             <th>Stock</th>
             <th>Acciones</th>
+            <th data-breakpoints="all">Cod. Lista Precios</th>
             <th data-breakpoints="all">Lista Precios</th>
             <th data-breakpoints="all">Cod. Proveedor</th>
             <th data-breakpoints="all">Unidad Medida</th>
             <th data-breakpoints="all">Precio Sin IVA</th>
             <th data-breakpoints="all">Precio Con IVA</th>
-            <th data-breakpoints="all">Almacen</th>
+            <th data-breakpoints="all">Cod. Almacen</th>
+            <th data-breakpoints="all">Nombre Almacen</th>
             <th data-breakpoints="all">Maneja Serial</th>
             <th data-breakpoints="all">Maneja Lote</th>
             <th data-breakpoints="all">Stock General</th>
@@ -78,6 +80,9 @@ $SQL = EjecutarSP('sp_ConsultarArticulos_ListaPrecios', $Param);
                         onclick="AgregarArticulo('<?php echo $row['IdArticulo']; ?>');"><i class="fa fa-plus"></i>
                         Agregar</a>
                 </td>
+                <td class="PriceList">
+                    <?php echo $row['PriceList']; ?>
+                </td>
                 <td>
                     <?php echo $row['ListaPrecio']; ?>
                 </td>
@@ -93,8 +98,11 @@ $SQL = EjecutarSP('sp_ConsultarArticulos_ListaPrecios', $Param);
                 <td>
                     <?php echo $row['PrecioConIVA']; ?>
                 </td>
+                <td class="WhsCode">
+                    <?php echo $row['CodAlmacen']; ?>
+                </td>
                 <td>
-                    <?php echo $row['CodAlmacen'] . " - " . $row['Almacen']; ?>
+                    <?php echo $row['Almacen']; ?>
                 </td>
                 <td>
                     <?php echo $row['ManejaSerial']; ?>
@@ -109,14 +117,14 @@ $SQL = EjecutarSP('sp_ConsultarArticulos_ListaPrecios', $Param);
                     <?php echo $row['ItmsGrpCod']; ?>
                 </td>
                 <?php foreach ($array_Dimensiones as &$dim) { ?>
-                    <td>
+                    <td class="<?php echo $dim['IdPortalOne']; ?>">
                         <?php echo $_POST[$dim['IdPortalOne']] ?? ""; ?>
                     </td>
                 <?php } ?>
-                <td>
+                <td class="EmpVentas">
                     <?php echo $_POST['EmpVentas'] ?? ""; ?>
                 </td>
-                <td>
+                <td class="PrjCode">
                     <?php echo $_POST['PrjCode'] ?? ""; ?>
                 </td>
             </tr>

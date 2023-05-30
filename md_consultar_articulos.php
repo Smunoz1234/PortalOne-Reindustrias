@@ -360,8 +360,41 @@ $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', "Estado =
 			radioClass: 'iradio_square-green',
 		});
 
-		// Enviar IDs de artículos por AJAX
 		$("#btnAceptar").on("click", function () {
+			$("#footableTwo tbody tr").each(function () {
+				let idArticulo = $(this).attr("id");
+				let whsCode = $(this).find('.WhsCode').text();
+				let dim1 = $(this).find('.Dim1').length ? $(this).find('.Dim1').text() : "";
+				let dim2 = $(this).find('.Dim2').length ? $(this).find('.Dim2').text() : "";
+				let dim3 = $(this).find('.Dim3').length ? $(this).find('.Dim3').text() : "";
+				let dim4 = $(this).find('.Dim4').length ? $(this).find('.Dim4').text() : "";
+				let dim5 = $(this).find('.Dim5').length ? $(this).find('.Dim5').text() : "";
+				let prjCode = $(this).find('.PrjCode').text();
+				let priceList = $(this).find('.PriceList').text();
+				let empVentas = $(this).find('.EmpVentas').text();
+
+				let articulo = {
+					// P
+					// doctype
+					item: idArticulo,
+					whscode: whsCode.trim(),
+					// cardcode
+					dim1: dim1.trim(),
+					dim2: dim2.trim(),
+					dim3: dim3.trim(),
+					dim4: dim4.trim(),
+					dim5: dim5.trim(),
+					prjcode: prjCode.trim(),
+					pricelist: priceList.trim(),
+					empventas: empVentas.trim()
+				};
+
+				console.log(articulo);
+			});
+		});
+
+		// Enviar IDs de artículos por AJAX
+		$("#btnAceptar2").on("click", function () {
 			var dataArticulos = [];
 			$("#footableTwo tbody tr").each(function () {
 				var idArticulo = $(this).attr("id");
@@ -398,7 +431,7 @@ $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', "Estado =
 		});
 
 		// Enviar datos de artículos por AJAX
-		$("#btnAceptar").on("click", function () {
+		$("#btnAceptar3").on("click", function () {
 			var dataArticulos = [];
 			$("#footableTwo tbody tr").each(function () {
 				var idArticulo = $(this).attr("id");
