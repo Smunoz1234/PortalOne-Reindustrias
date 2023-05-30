@@ -1,24 +1,6 @@
 <?php require_once "includes/conexion.php";
 PermitirAcceso(406);
 
-// Dimensiones, SMM 22/08/2022
-$DimSeries = intval(ObtenerVariable("DimensionSeries"));
-$SQL_Dimensiones = Seleccionar('uvw_Sap_tbl_Dimensiones', '*', "DimActive='Y'");
-
-// Pruebas, SMM 22/08/2022
-// $SQL_Dimensiones = Seleccionar('uvw_Sap_tbl_Dimensiones', '*', 'DimCode IN (1,2)');
-
-$array_Dimensiones = [];
-while ($row_Dimension = sqlsrv_fetch_array($SQL_Dimensiones)) {
-	array_push($array_Dimensiones, $row_Dimension);
-}
-
-$encode_Dimensiones = json_encode($array_Dimensiones);
-$cadena_Dimensiones = "JSON.parse('$encode_Dimensiones'.replace(/\\n|\\r/g, ''))";
-// echo "<script> console.log('cadena_Dimensiones'); </script>";
-// echo "<script> console.log($cadena_Dimensiones); </script>";
-// Hasta aquí, SMM 22/08/2022
-
 $dt_LS = 0; //sw para saber si vienen datos de la llamada de servicio. 0 no vienen. 1 si vienen.
 $dt_OF = 0; //sw para saber si vienen datos de una Oferta de venta.
 
@@ -131,9 +113,6 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Orden de venta
 			"'" . LSiqmlObs($_POST['SucursalDestino']) . "'",
 			"'" . LSiqmlObs($_POST['DireccionDestino']) . "'",
 			"'" . $_POST['CondicionPago'] . "'",
-
-			// Se eliminaron las dimensiones, SMM 22/08/2022
-
 			"'" . $_POST['PrjCode'] . "'",
 			"'" . $_POST['Autorizacion'] . "'",
 			"'" . $_POST['Almacen'] . "'",
@@ -144,14 +123,6 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Orden de venta
 			"'" . ($_POST['ComentariosAutor'] ?? "") . "'",
 			"'" . ($_POST['MensajeProceso'] ?? "") . "'",
 		);
-
-		// Enviar el valor de la dimensiones dinámicamente al SP.
-		foreach ($array_Dimensiones as &$dim) {
-			$Dim_PostValue = $_POST[strval($dim['IdPortalOne'])];
-
-			// El nombre de los parámetros es diferente en cada documento.
-			array_push($ParametrosCabOrdenVenta, "'$Dim_PostValue'");
-		} // SMM, 22/08/2022
 
 		$SQL_CabeceraOrdenVenta = EjecutarSP('sp_tbl_OrdenVenta', $ParametrosCabOrdenVenta, $_POST['P']);
 		if ($SQL_CabeceraOrdenVenta) {
@@ -509,12 +480,8 @@ if ($edit == 1 && $sw_error == 0) {
 	//Sucursal
 	$SQL_Sucursal = Seleccionar('uvw_tbl_SeriesSucursalesAlmacenes', 'IdSucursal, DeSucursal', "IdSeries='" . $row['IdSeries'] . "'");
 
-	//Almacenes
-	$SQL_Almacen = Seleccionar('uvw_tbl_SeriesSucursalesAlmacenes', 'WhsCode, WhsName', "IdSeries='" . $row['IdSeries'] . "'", 'WhsName');
-
 	//Anexos
 	$SQL_Anexo = Seleccionar('uvw_Sap_tbl_DocumentosSAP_Anexos', '*', "AbsEntry='" . $row['IdAnexo'] . "'");
-
 }
 
 if ($sw_error == 1) {
@@ -541,20 +508,12 @@ if ($sw_error == 1) {
 	//Sucursal
 	$SQL_Sucursal = Seleccionar('uvw_tbl_SeriesSucursalesAlmacenes', 'IdSucursal, DeSucursal', "IdSeries='" . $row['IdSeries'] . "'");
 
-	//Almacenes
-	$SQL_Almacen = Seleccionar('uvw_tbl_SeriesSucursalesAlmacenes', 'WhsCode, WhsName', "IdSeries='" . $row['IdSeries'] . "'", 'WhsName');
-
 	//Anexos
 	$SQL_Anexo = Seleccionar('uvw_Sap_tbl_DocumentosSAP_Anexos', '*', "AbsEntry='" . $row['IdAnexo'] . "'");
-
 }
 
 //Condiciones de pago
 $SQL_CondicionPago = Seleccionar('uvw_Sap_tbl_CondicionPago', '*', '', 'IdCondicionPago');
-
-//Datos de dimensiones del usuario actual
-$SQL_DatosEmpleados = Seleccionar('uvw_tbl_Usuarios', 'CentroCosto1,CentroCosto2,CentroCosto3', "ID_Usuario='" . $_SESSION['CodUser'] . "'");
-$row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 
 //Estado documento
 $SQL_EstadoDoc = Seleccionar('uvw_tbl_EstadoDocSAP', '*');
@@ -685,54 +644,6 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_BorradorAdd"))) {
 	}
 </style>
 <script>
-function BuscarArticulo(dato){
-	var almacen= document.getElementById("Almacen").value;
-	var cardcode= document.getElementById("CardCode").value;
-
-	// SMM, 22/08/2022
-	var dim1= ((document.getElementById("Dim1") || {}).value) || "";
-	var dim2= ((document.getElementById("Dim2") || {}).value) || "";
-	var dim3= ((document.getElementById("Dim3") || {}).value) || "";
-	var dim4= ((document.getElementById("Dim4") || {}).value) || "";
-	var dim5= ((document.getElementById("Dim5") || {}).value) || "";
-	// Hasta aquí, 22/08/2022
-
-	var posicion_x;
-	var posicion_y;
-	posicion_x=(screen.width/2)-(1200/2);
-	posicion_y=(screen.height/2)-(500/2);
-
-	let idlistaprecio = document.getElementById("IdListaPrecio").value; // SMM, 25/02/2022
-
-	let proyecto = document.getElementById("PrjCode").value; // SMM, 04/05/2022
-	let empleado = document.getElementById("EmpleadoVentas").value; // SMM, 04/05/2022
-
-	if(dato!=""){
-		if((cardcode!="")&&(almacen!="")&&(idlistaprecio!="")){
-			remote=open('buscar_articulo.php?dato='+dato+'&prjcode='+proyecto+'&empventas='+empleado+'&cardcode='+cardcode+'&whscode='+almacen+'&idlistaprecio='+idlistaprecio+'&doctype=<?php if ($edit == 0) {
-				echo "1";
-			} else {
-				echo "2";
-			} ?>&idordenventa=<?php if ($edit == 1) {
-				echo base64_encode($row['ID_OrdenVenta']);
-			} else {
-				echo "0";
-			} ?>&evento=<?php if ($edit == 1) {
-				echo base64_encode($row['IdEvento']);
-			} else {
-				echo "0";
-			} ?>&tipodoc=2&dim1='+dim1+'&dim2='+dim2+'&dim3='+dim3,'remote',"width=1200,height=500,location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=no,fullscreen=no,directories=no,status=yes,left="+posicion_x+",top="+posicion_y+"");
-			remote.focus();
-		}else{
-			Swal.fire({
-				title: "¡Advertencia!",
-				text: "Debe seleccionar un cliente, almacén y una lista de precios",
-				icon: "warning",
-				confirmButtonText: "OK"
-			});
-		}
-	}
-}
 function ConsultarDatosCliente(){
 	var Cliente=document.getElementById('CardCode');
 	if(Cliente.value!=""){
@@ -745,38 +656,6 @@ function ConsultarDatosCliente(){
 // SMM, 15/07/2022
 function verAutorizacion() {
 	$('#modalAUT').modal('show');
-}
-
-// SMM, 24/05/2023
-function AgregarArticulos(){
-	let serie = $("#Serie").val();
-	let cardCode = $("#CardCode").val();
-	let listaPrecio = $("#IdListaPrecio").val();
-
-	if((cardCode != "") && (serie != "")) {
-		$.ajax({
-			type: "POST",
-			url: "md_consultar_articulos.php",
-			data: {
-				Procedure: 35,
-				Edit: "<?php echo $edit; ?>",
-				CardCode: cardCode,
-				IdSeries: serie,
-				ListaPrecio: listaPrecio
-			},
-			success: function(response){
-				$('#mdArticulos').html(response);
-				$("#mdArticulos").modal("show");
-			}
-		});		
-	} else {
-		Swal.fire({
-			title: "¡Advertencia!",
-			text: "Debe seleccionar un Cliente y una Serie.",
-			icon: "warning",
-			confirmButtonText: "OK"
-		});
-	}
 }
 </script>
 
@@ -939,61 +818,6 @@ function AgregarArticulos(){
 				}
 			});
 		});
-
-// Dimensión de serie dinámica.
-<?php foreach ($array_Dimensiones as &$dim) {
-	$DimCode = intval($dim['DimCode']);
-	$OcrId = ($DimCode == 1) ? "" : $DimCode;
-
-	if ($DimCode == $DimSeries) {
-		$decode_SDim = base64_decode($_GET[strval($dim['IdPortalOne'])] ?? "");
-		$rowValue_SDim = ($row["OcrCode$OcrId"] ?? "");
-
-		$console_Msg = $dim['DimDesc'] . " (GET): $decode_SDim";
-		$console_Msg .= "& " . $dim['DimDesc'] . " (ROW): $rowValue_SDim";
-
-		$SDimPO = $dim['IdPortalOne'];
-	}
-} ?> // SMM, 22/08/2022
-
-		// Actualización del almacen en las líneas.
-		$("#Almacen").change(function() {
-			var frame=document.getElementById('DataGrid');
-
-			if(document.getElementById('Almacen').value!=""&&document.getElementById('CardCode').value!=""&&document.getElementById('TotalItems').value!="0"){
-				Swal.fire({
-					title: "¿Desea actualizar las lineas?",
-					icon: "question",
-					showCancelButton: true,
-					confirmButtonText: "Si, confirmo",
-					cancelButtonText: "No"
-				}).then((result) => {
-					if (result.isConfirmed) {
-						$('.ibox-content').toggleClass('sk-loading',true);
-							<?php if ($edit == 0) { ?>
-							$.ajax({
-								type: "GET",
-								url: "registro.php?P=36&doctype=1&type=1&name=WhsCode&value="+Base64.encode(document.getElementById('Almacen').value)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
-								success: function(response){
-									frame.src="detalle_orden_venta.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
-									$('.ibox-content').toggleClass('sk-loading',false);
-								}
-							});
-						<?php } else { ?>
-							$.ajax({
-								type: "GET",
-								url: "registro.php?P=36&doctype=1&type=2&name=WhsCode&value="+Base64.encode(document.getElementById('Almacen').value)+"&line=0&id=<?php echo $row['ID_OrdenVenta']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
-								success: function(response){
-									frame.src="detalle_orden_venta.php?id=<?php echo base64_encode($row['ID_OrdenVenta']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
-									$('.ibox-content').toggleClass('sk-loading',false);
-								}
-							});
-						<?php } ?>
-					}
-				});
-			}
-		});
-		// Actualizar almacen, llega hasta aquí.
 
 		// Actualización del vendedor en las líneas, SMM 23/02/2022
 		$("#EmpleadoVentas").change(function() {
@@ -1637,25 +1461,13 @@ function AgregarArticulos(){
 				</div>
 
 				<div class="form-group">
-					<label class="col-lg-1 control-label">Almacén <span class="text-danger">*</span></label>
+					<label class="col-lg-1 control-label">Almacén</label>
 					<div class="col-lg-3">
-						<select name="Almacen" class="form-control" id="Almacen" required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
-							echo "disabled='disabled'";
-						} ?>>
+						<select name="Almacen" class="form-control" id="Almacen" readonly>
 							<option value="">Seleccione...</option>
-						  <?php if ($edit == 1) {
-							  while ($row_Almacen = sqlsrv_fetch_array($SQL_Almacen)) { ?>
-											<option value="<?php echo $row_Almacen['WhsCode']; ?>" <?php if ($dt_LS == 1) {
-												   if (strcmp($row_Almacen['WhsCode'], $row_LMT['WhsCode']) == 0) {
-													   echo "selected=\"selected\"";
-												   }
-											   } elseif (($edit == 1) && (isset($row['WhsCode'])) && (strcmp($row_Almacen['WhsCode'], $row['WhsCode']) == 0)) {
-												   echo "selected=\"selected\"";
-											   } ?>><?php echo $row_Almacen['WhsName']; ?></option>
-						  	<?php }
-						  } ?>
 						</select>
 					</div>
+
 					<label class="col-lg-1 control-label">
 						Autorización
 						<?php if ((isset($row_Autorizaciones['IdEstadoAutorizacion']) && ($edit == 1)) || ($success == 0) || ($sw_error == 1) || $debug_Condiciones) { ?>
@@ -1686,7 +1498,7 @@ function AgregarArticulos(){
 					<!-- Inicio, Proyecto -->
 					<label class="col-lg-1 control-label">Proyecto <span class="text-danger">*</span></label>
 					<div class="col-lg-3">
-						<select id="PrjCode" name="PrjCode" class="form-control select2" required="required" form="CrearOrdenVenta" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
+						<select id="PrjCode" name="PrjCode" class="form-control" required="required" form="CrearOrdenVenta" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
 							echo "disabled='disabled'";
 						} ?>>
 								<option value="">(NINGUNO)</option>
@@ -1926,30 +1738,16 @@ function AgregarArticulos(){
 						<a href="<?php echo $return; ?>" class="btn btn-outline btn-default"><i class="fa fa-arrow-circle-o-left"></i> Regresar</a>
 					</div>
 
-<!-- Dimensiones dinámicas, SMM 22/08/2022 -->
-<?php if ($edit == 1) {
-	$CopyDim = "";
-	foreach ($array_Dimensiones as &$dim) {
-		$DimCode = intval($dim['DimCode']);
-		$OcrId = ($DimCode == 1) ? "" : $DimCode;
-
-		$DimIdPO = $dim['IdPortalOne'];
-		$encode_OcrCode = base64_encode($row["OcrCode$OcrId"]);
-		$CopyDim .= "$DimIdPO=$encode_OcrCode&";
-	}
-} ?>
-<!-- Hasta aquí, 22/08/2022 -->
-
 					<?php if (($edit == 1) && ($row['Cod_Estado'] != 'C')) { ?>
 						<div class="col-lg-3">
 							<div class="btn-group dropup pull-right">
 								<button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i class="fa fa-mail-forward"></i> Copiar a <i class="fa fa-caret-up"></i></button>
 								<ul class="dropdown-menu">
-											<li><a class="alkin dropdown-item" href="entrega_venta.php?dt_OV=1&OV=<?php echo base64_encode($row['ID_OrdenVenta']); ?>&Referencia=<?php echo base64_encode($row['NumAtCard']); ?>&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Dim1=<?php echo base64_encode($row['OcrCode']); ?>&Dim2=<?php echo base64_encode($row['OcrCode2']); ?>&Dim3=<?php echo base64_encode($row['OcrCode3']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&SucursalFact=<?php echo base64_encode($row['SucursalFacturacion']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&LS=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>&CondicionPago=<?php echo base64_encode($row['IdCondicionPago']); ?>">Entrega de venta</a></li>
-									<li><a class="alkin dropdown-item d-venta" href="orden_venta.php?dt_OV=1&OV=<?php echo base64_encode($row['ID_OrdenVenta']); ?>&pag=<?php echo $_GET['pag']; ?>&return=<?php echo $_GET['return']; ?>&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Dim1=<?php echo base64_encode($row['OcrCode']); ?>&Dim2=<?php echo base64_encode($row['OcrCode2']); ?>&Dim3=<?php echo base64_encode($row['OcrCode3']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&SucursalFact=<?php echo base64_encode($row['SucursalFacturacion']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&LS=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>&CondicionPago=<?php echo base64_encode($row['IdCondicionPago']); ?>&Serie=<?php echo base64_encode($row['IdSeries']); ?>">Orden de venta (Duplicar)</a></li>
+									<li><a class="alkin dropdown-item" href="entrega_venta.php?dt_OV=1&OV=<?php echo base64_encode($row['ID_OrdenVenta']); ?>&Referencia=<?php echo base64_encode($row['NumAtCard']); ?>&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&SucursalFact=<?php echo base64_encode($row['SucursalFacturacion']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&LS=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>&CondicionPago=<?php echo base64_encode($row['IdCondicionPago']); ?>">Entrega de venta</a></li>
+									<li><a class="alkin dropdown-item d-venta" href="orden_venta.php?dt_OV=1&OV=<?php echo base64_encode($row['ID_OrdenVenta']); ?>&pag=<?php echo $_GET['pag']; ?>&return=<?php echo $_GET['return']; ?>&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&SucursalFact=<?php echo base64_encode($row['SucursalFacturacion']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&LS=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>&CondicionPago=<?php echo base64_encode($row['IdCondicionPago']); ?>&Serie=<?php echo base64_encode($row['IdSeries']); ?>">Orden de venta (Duplicar)</a></li>
 									<li class="dropdown-divider"></li>
-									<li><a class="alkin dropdown-item" href="factura_venta.php?dt_OV=1&adt=1&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Dim1=<?php echo base64_encode($row['OcrCode']); ?>&Dim2=<?php echo base64_encode($row['OcrCode2']); ?>&Dim3=<?php echo base64_encode($row['OcrCode3']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&SucursalFact=<?php echo base64_encode($row['SucursalFacturacion']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&OV=<?php echo base64_encode($row['ID_OrdenVenta']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&IdLlamada=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>">Factura de venta (copiar adjuntos)</a></li>
-									<li><a class="alkin dropdown-item" href="factura_venta.php?dt_OV=1&adt=0&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Dim1=<?php echo base64_encode($row['OcrCode']); ?>&Dim2=<?php echo base64_encode($row['OcrCode2']); ?>&Dim3=<?php echo base64_encode($row['OcrCode3']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&SucursalFact=<?php echo base64_encode($row['SucursalFacturacion']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&OV=<?php echo base64_encode($row['ID_OrdenVenta']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&IdLlamada=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>">Factura de venta (<strong>NO</strong> copiar adjuntos)</a></li>
+									<li><a class="alkin dropdown-item" href="factura_venta.php?dt_OV=1&adt=1&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&SucursalFact=<?php echo base64_encode($row['SucursalFacturacion']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&OV=<?php echo base64_encode($row['ID_OrdenVenta']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&IdLlamada=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>">Factura de venta (copiar adjuntos)</a></li>
+									<li><a class="alkin dropdown-item" href="factura_venta.php?dt_OV=1&adt=0&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&SucursalFact=<?php echo base64_encode($row['SucursalFacturacion']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&OV=<?php echo base64_encode($row['ID_OrdenVenta']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&IdLlamada=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>">Factura de venta (<strong>NO</strong> copiar adjuntos)</a></li>
 								</ul>
 							</div>
 						</div>
@@ -1958,7 +1756,7 @@ function AgregarArticulos(){
 							<div class="btn-group dropup pull-right">
 								<button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i class="fa fa-mail-forward"></i> Copiar a <i class="fa fa-caret-up"></i></button>
 								<ul class="dropdown-menu">
-									<li><a class="alkin dropdown-item d-venta" href="orden_venta.php?dt_OV=1&OV=<?php echo base64_encode($row['ID_OrdenVenta']); ?>&pag=<?php echo $_GET['pag']; ?>&return=<?php echo $_GET['return']; ?>&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Dim1=<?php echo base64_encode($row['OcrCode']); ?>&Dim2=<?php echo base64_encode($row['OcrCode2']); ?>&Dim3=<?php echo base64_encode($row['OcrCode3']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&SucursalFact=<?php echo base64_encode($row['SucursalFacturacion']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&LS=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>&CondicionPago=<?php echo base64_encode($row['IdCondicionPago']); ?>&Serie=<?php echo base64_encode($row['IdSeries']); ?>">Orden de venta (Duplicar)</a></li>
+									<li><a class="alkin dropdown-item d-venta" href="orden_venta.php?dt_OV=1&OV=<?php echo base64_encode($row['ID_OrdenVenta']); ?>&pag=<?php echo $_GET['pag']; ?>&return=<?php echo $_GET['return']; ?>&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&SucursalFact=<?php echo base64_encode($row['SucursalFacturacion']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&LS=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>&CondicionPago=<?php echo base64_encode($row['IdCondicionPago']); ?>&Serie=<?php echo base64_encode($row['IdSeries']); ?>">Orden de venta (Duplicar)</a></li>
 								</ul>
 							</div>
 						</div>
@@ -2331,7 +2129,45 @@ function Validar(){
 
 	return result;
 }
+
+
+// SMM, 24/05/2023
+function AgregarArticulos() {
+	let serie = $("#Serie").val();
+	let proyecto = $("#PrjCode").val();
+	let cardCode = $("#CardCode").val();
+	let listaPrecio = $("#IdListaPrecio").val();
+	let empleado = $("#EmpleadoVentas").val();
+
+	if((cardCode != "") && (serie != "")) {
+		$.ajax({
+			type: "POST",
+			url: "md_consultar_articulos.php",
+			data: {
+				Procedure: 35,
+				Edit: "<?php echo $edit; ?>",
+				CardCode: cardCode,
+				IdSeries: serie,
+				IdProyecto: proyecto,
+				ListaPrecio: listaPrecio,
+				IdEmpleado: empleado
+			},
+			success: function(response){
+				$('#mdArticulos').html(response);
+				$("#mdArticulos").modal("show");
+			}
+		});		
+	} else {
+		Swal.fire({
+			title: "¡Advertencia!",
+			text: "Debe seleccionar un Cliente y una Serie.",
+			icon: "warning",
+			confirmButtonText: "OK"
+		});
+	}
+}
 </script>
+
 <script>
  Dropzone.options.dropzoneForm = {
 		paramName: "File", // The name that will be used to transfer the file

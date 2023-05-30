@@ -19,6 +19,8 @@ $Procedure = $_POST['Procedure'];
 $Edit = $_POST['Edit'];
 $CardCode = $_POST['CardCode'];
 $IdSeries = $_POST['IdSeries'];
+$Proyecto = $_POST['IdProyecto'];
+$IdEmpleado = $_POST['IdEmpleado'];
 $ListaPrecio = $_POST['ListaPrecio'];
 
 // Proyectos. SMM, 24/05/2023
@@ -89,7 +91,8 @@ $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', "Estado =
 								<div class="col-xs-12" style="margin-bottom: 10px;">
 									<label class="control-label">Almacén destino</label>
 
-									<select name="AlmacenDestino" id="AlmacenDestino" class="form-control select2">
+									<select name="AlmacenDestino" id="AlmacenDestino" class="form-control select2"
+										disabled>
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_AlmacenDestino = sqlsrv_fetch_array($SQL_AlmacenDestino)) { ?>
@@ -102,10 +105,14 @@ $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', "Estado =
 									<label class="control-label">Proyecto</label>
 
 									<select id="PrjCode" name="PrjCode" class="form-control select2">
-										<option value="">(NINGUNO)</option>
+										<option value="">(NINGUNO)
+											<?php echo $Proyecto; ?>
+										</option>
 
 										<?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) { ?>
-											<option value="<?php echo $row_Proyecto['IdProyecto']; ?>">
+											<option <?php if ($Proyecto == $row_Proyecto['IdProyecto']) {
+												echo "selected";
+											} ?> value="<?php echo $row_Proyecto['IdProyecto']; ?>">
 												<?php echo $row_Proyecto['IdProyecto'] . " - " . $row_Proyecto['DeProyecto']; ?>
 											</option>
 										<?php } ?>
@@ -139,7 +146,9 @@ $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', "Estado =
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_EmpleadosVentas = sqlsrv_fetch_array($SQL_EmpleadosVentas)) { ?>
-											<option value="<?php echo $row_EmpleadosVentas['ID_EmpVentas']; ?>"><?php echo $row_EmpleadosVentas['ID_EmpVentas'] . " - " . $row_EmpleadosVentas['DE_EmpVentas']; ?></option>
+											<option <?php if ($IdEmpleado == $row_EmpleadosVentas['ID_EmpVentas']) {
+												echo "selected";
+											} ?> value="<?php echo $row_EmpleadosVentas['ID_EmpVentas']; ?>"><?php echo $row_EmpleadosVentas['ID_EmpVentas'] . " - " . $row_EmpleadosVentas['DE_EmpVentas']; ?></option>
 										<?php } ?>
 									</select>
 								</div> <!-- col-xs-12 -->
