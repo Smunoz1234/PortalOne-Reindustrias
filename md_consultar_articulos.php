@@ -15,6 +15,9 @@ $encode_Dimensiones = json_encode($array_Dimensiones);
 $cadena_Dimensiones = "JSON.parse('$encode_Dimensiones'.replace(/\\n|\\r/g, ''))";
 // Hasta aquí, SMM 24/05/2023
 
+$Procedure = $_POST['Procedure'];
+$Edit = $_POST['Edit'];
+$CardCode = $_POST['CardCode'];
 $IdSeries = $_POST['IdSeries'];
 $ListaPrecio = $_POST['ListaPrecio'];
 
@@ -374,11 +377,9 @@ $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', "Estado =
 				let empVentas = $(this).find('.EmpVentas').text();
 
 				let articulo = {
-					// P
-					// doctype
+					doctype: 1,
 					item: idArticulo,
 					whscode: whsCode.trim(),
-					// cardcode
 					dim1: dim1.trim(),
 					dim2: dim2.trim(),
 					dim3: dim3.trim(),
@@ -386,102 +387,30 @@ $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', "Estado =
 					dim5: dim5.trim(),
 					prjcode: prjCode.trim(),
 					pricelist: priceList.trim(),
-					empventas: empVentas.trim()
-				};
-
-				console.log(articulo);
-			});
-		});
-
-		// Enviar IDs de artículos por AJAX
-		$("#btnAceptar2").on("click", function () {
-			var dataArticulos = [];
-			$("#footableTwo tbody tr").each(function () {
-				var idArticulo = $(this).attr("id");
-				var dim1 = $(this).find('.Dim1').text();
-				var dim2 = $(this).find('.Dim2').text();
-				var dim3 = $(this).find('.Dim3').text();
-				var prjCode = $(this).find('.PrjCode').text();
-
-				var articulo = {
-					id: idArticulo,
-					dim1: dim1,
-					dim2: dim2,
-					dim3: dim3,
-					prjCode: prjCode
-				};
-
-				dataArticulos.push(articulo);
-			});
-
-			// Realizar la petición AJAX con los datos de los artículos
-			$.ajax({
-				url: "tu_url_de_destino",
-				type: "POST",
-				data: { articulos: dataArticulos },
-				success: function (response) {
-					// Manejar la respuesta del servidor
-					console.log(response);
-				},
-				error: function (error) {
-					// Manejar el error de la petición AJAX
-					console.log(error);
-				}
-			});
-		});
-
-		// Enviar datos de artículos por AJAX
-		$("#btnAceptar3").on("click", function () {
-			var dataArticulos = [];
-			$("#footableTwo tbody tr").each(function () {
-				var idArticulo = $(this).attr("id");
-				var dim1 = $(this).find('.Dim1').length ? $(this).find('.Dim1').text() : "";
-				var dim2 = $(this).find('.Dim2').length ? $(this).find('.Dim2').text() : "";
-				var dim3 = $(this).find('.Dim3').length ? $(this).find('.Dim3').text() : "";
-				var dim4 = $(this).find('.Dim4').length ? $(this).find('.Dim4').text() : "";
-				var prjCode = $(this).find('.PrjCode').text();
-				var empVentas = $(this).find('.EmpVentas').text();
-				var whsCode = $(this).find('.WhsCode').text();
-
-				var articulo = {
-					id: idArticulo,
-					dim1: dim1,
-					dim2: dim2,
-					dim3: dim3,
-					dim4: dim4,
-					prjCode: prjCode,
-					empVentas: empVentas,
-					whsCode: whsCode
-				};
-
-				dataArticulos.push(articulo);
-			});
-
-			var p = "ValorP";
-			var docType = "ValorDocType";
-
-			// Crear objeto con los datos a enviar
-			var dataEnviar = {
-				articulos: dataArticulos,
-				p: p,
-				docType: docType
+					empventas: empVentas.trim(),
+					P: <?php echo $Procedure; ?>,
+					cardcode: "<?php echo $CardCode; ?>"
 			};
 
-			// Realizar la petición AJAX con los datos de los artículos y los parámetros adicionales
+			// Articulo que se esta enviando a registro.
+			console.log(articulo);
+
+			// Envio AJAX del Articulo.
 			$.ajax({
-				url: "tu_url_de_destino",
-				type: "POST",
-				data: dataEnviar,
+				url: "registro.php",
+				type: "GET",
+				data: articulo,
 				success: function (response) {
 					// Manejar la respuesta del servidor
-					console.log(response);
+					console.log("Respuesta:", response);
 				},
 				error: function (error) {
 					// Manejar el error de la petición AJAX
-					console.log(error);
+					console.log("Error:", error);
 				}
 			});
-		});
-		// SMM, 29/05/2023
-	});
+			// Fin AJAX
+		}); // Fin Loop Articulos
+	}); // Fin Evento CLICK
+});
 </script>
