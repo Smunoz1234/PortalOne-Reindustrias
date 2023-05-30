@@ -364,20 +364,28 @@ $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', "Estado =
 		});
 
 		$("#btnAceptar").on("click", function () {
+			let p = <?php echo $Procedure; ?>;
+			let dt = 1;
+			let cc = "<?php echo $CardCode; ?>";
+
 			$("#footableTwo tbody tr").each(function () {
 				let idArticulo = $(this).attr("id");
 				let whsCode = $(this).find('.WhsCode').text();
+
 				let dim1 = $(this).find('.Dim1').length ? $(this).find('.Dim1').text() : "";
 				let dim2 = $(this).find('.Dim2').length ? $(this).find('.Dim2').text() : "";
 				let dim3 = $(this).find('.Dim3').length ? $(this).find('.Dim3').text() : "";
 				let dim4 = $(this).find('.Dim4').length ? $(this).find('.Dim4').text() : "";
 				let dim5 = $(this).find('.Dim5').length ? $(this).find('.Dim5').text() : "";
+
 				let prjCode = $(this).find('.PrjCode').text();
 				let priceList = $(this).find('.PriceList').text();
 				let empVentas = $(this).find('.EmpVentas').text();
 
 				let articulo = {
-					doctype: 1,
+					P: p,
+					doctype: dt,
+					cardcode: cc,
 					item: idArticulo,
 					whscode: whsCode.trim(),
 					dim1: dim1.trim(),
@@ -387,30 +395,38 @@ $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', "Estado =
 					dim5: dim5.trim(),
 					prjcode: prjCode.trim(),
 					pricelist: priceList.trim(),
-					empventas: empVentas.trim(),
-					P: <?php echo $Procedure; ?>,
-					cardcode: "<?php echo $CardCode; ?>"
-			};
+					empventas: empVentas.trim()
+				};
 
-			// Articulo que se esta enviando a registro.
-			console.log(articulo);
+				// Articulo que se esta enviando a registro.
+				console.log(articulo);
 
-			// Envio AJAX del Articulo.
-			$.ajax({
-				url: "registro.php",
-				type: "GET",
-				data: articulo,
-				success: function (response) {
-					// Manejar la respuesta del servidor
-					console.log("Respuesta:", response);
-				},
-				error: function (error) {
-					// Manejar el error de la petición AJAX
-					console.log("Error:", error);
-				}
-			});
-			// Fin AJAX
-		}); // Fin Loop Articulos
-	}); // Fin Evento CLICK
-});
+				// Envio AJAX del Articulo.
+				$.ajax({
+					url: "registro.php",
+					type: "GET",
+					data: articulo,
+					success: function (response) {
+						// Manejar la respuesta del servidor
+						console.log("Respuesta:", response);
+					},
+					error: function (error) {
+						// Manejar el error de la petición AJAX
+						console.log("Error:", error);
+					}
+				});
+				// Fin AJAX
+			}); // Fin Loop Articulos
+
+			// Obtén el elemento con el ID 'DataGrid'
+			let dataGrid = document.getElementById('DataGrid');
+
+			// Crea un objeto URL a partir del atributo 'src'
+			let url = new URL(dataGrid.src);
+
+			// Elimina todos los parámetros existentes
+			// url.search = '';
+			console.log(url.search);
+		}); // Fin Evento CLICK
+	});
 </script>
