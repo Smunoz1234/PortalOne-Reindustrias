@@ -443,13 +443,13 @@ $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', "Estado =
 							// ?id=0&type=1&usr&cardcode
 							// console.log(url.search); 
 
-							<?php if($edit == 1) { ?>
+							<?php if($Edit == 1) { ?>
 								// Elimina todos los parámetros existentes
 								url.search = '';
 
 								// ?id&evento&type=2
-								url.searchParams.set('id', <?php echo $DocId; ?>);
-								url.searchParams.set('evento', '<?php echo $DocEvent; ?>');
+								url.searchParams.set('id', '<?php echo base64_encode($DocId); ?>');
+								url.searchParams.set('evento', '<?php echo base64_encode($DocEvent); ?>');
 								url.searchParams.set('type', '2');
 							<?php } ?>
 

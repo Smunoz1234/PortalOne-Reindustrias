@@ -45,13 +45,13 @@ $SQL = EjecutarSP('sp_ConsultarArticulos_ListaPrecios', $Param);
         <tr>
             <th>Nombre</th>
             <th>Stock</th>
+            <th>Precio Con IVA</th>
             <th>Acciones</th>
             <th data-breakpoints="all">Cod. Lista Precios</th>
             <th data-breakpoints="all">Lista Precios</th>
             <th data-breakpoints="all">Cod. Proveedor</th>
             <th data-breakpoints="all">Unidad Medida</th>
-            <th data-breakpoints="all">Precio Sin IVA</th>
-            <th data-breakpoints="all">Precio Con IVA</th>
+            <th data-breakpoints="all">Precio Sin IVA</th> 
             <th data-breakpoints="all">Cod. Almacen</th>
             <th data-breakpoints="all">Nombre Almacen</th>
             <th data-breakpoints="all">Maneja Serial</th>
@@ -77,6 +77,9 @@ $SQL = EjecutarSP('sp_ConsultarArticulos_ListaPrecios', $Param);
                     <?php echo $row['StockAlmacen']; ?>
                 </td>
                 <td>
+                    <?php echo $row['PrecioConIVA']; ?>
+                </td>
+                <td>
                     <button class="btn btn-success btn-xs"
                         onclick="AgregarArticulo('<?php echo $row['IdArticulo']; ?>');"><i class="fa fa-plus"></i>
                         Agregar</a>
@@ -95,9 +98,6 @@ $SQL = EjecutarSP('sp_ConsultarArticulos_ListaPrecios', $Param);
                 </td>
                 <td>
                     <?php echo $row['PrecioSinIVA']; ?>
-                </td>
-                <td>
-                    <?php echo $row['PrecioConIVA']; ?>
                 </td>
                 <td class="WhsCode">
                     <?php echo $row['CodAlmacen']; ?>
