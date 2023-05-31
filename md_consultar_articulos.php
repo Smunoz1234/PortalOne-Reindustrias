@@ -38,9 +38,11 @@ $SQL_Sucursales = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'IdSuc
 
 // Lista de precios, 29/05/2023
 $SQL_ListaPrecios = Seleccionar('uvw_Sap_tbl_ListaPrecios', '*');
-
-// Empleado de ventas, 29/05/2023
 $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', "Estado = 'Y'", 'DE_EmpVentas');
+
+//Datos de dimensiones del usuario actual, 31/05/2023
+$SQL_DatosEmpleados = Seleccionar("uvw_tbl_Usuarios", "*", "ID_Usuario='" . $_SESSION['CodUser'] . "'");
+$row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 ?>
 
 <style>
@@ -68,7 +70,8 @@ $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', "Estado =
 			<!-- Inicio, filtros -->
 			<form id="formBuscar" class="form-horizontal">
 				<div class="row">
-					<div class="ibox-title bg-success" data-toggle="collapse" data-target="#filtros">
+					<!-- data-toggle="collapse" data-target="#filtros" -->
+					<div class="ibox-title bg-success">
 						<h5 class="collapse-link"><i class="fa fa-filter"></i> Datos para filtrar</h5>
 						<a class="collapse-link pull-right">
 							<i class="fa fa-chevron-up"></i>
@@ -86,7 +89,9 @@ $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', "Estado =
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_Almacen = sqlsrv_fetch_array($SQL_Almacen)) { ?>
-											<option value="<?php echo $row_Almacen['WhsCode']; ?>"><?php echo $row_Almacen['WhsCode'] . " - " . $row_Almacen['WhsName']; ?></option>
+											<option <?php if ($row_DatosEmpleados["AlmacenOrigen"] == $row_Almacen['WhsCode']) {
+												echo "selected";
+											} ?> value="<?php echo $row_Almacen['WhsCode']; ?>"><?php echo $row_Almacen['WhsCode'] . " - " . $row_Almacen['WhsName']; ?></option>
 										<?php } ?>
 									</select>
 								</div> <!-- col-xs-12 -->
@@ -180,7 +185,9 @@ $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', "Estado =
 												<?php $DimCode = intval($dim['DimCode']); ?>
 												<?php $OcrId = ($DimCode == 1) ? "" : $DimCode; ?>
 
-												<option value="<?php echo $row_Dim['OcrCode']; ?>">
+												<option <?php if ($row_DatosEmpleados["CentroCosto$DimCode"] == $row_Dim['OcrCode']) {
+													echo "selected";
+												} ?> value="<?php echo $row_Dim['OcrCode']; ?>">
 													<?php echo $row_Dim['OcrCode'] . " - " . $row_Dim['OcrName']; ?>
 												</option>
 											<?php } ?>
@@ -331,9 +338,17 @@ $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', "Estado =
 			$('.collapse-link i').removeClass('fa-chevron-up').addClass('fa-chevron-down');
 		});
 
+		// SMM, 31/05/2023
+		$(".collapse-link").on("click", function () {
+			$("#filtros").collapse("toggle");
+		});
+
 		$("#formBuscar").validate({
 			submitHandler: function (form) {
-				$('.ibox-content').toggleClass('sk-loading');
+				$('.ibox-content').toggleClass('sk-loading', true);
+
+				// Comprimir el acordeón
+				$("#filtros").collapse("hide");
 
 				let formData = new FormData(form);
 
@@ -443,7 +458,7 @@ $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', "Estado =
 							// ?id=0&type=1&usr&cardcode
 							// console.log(url.search); 
 
-							<?php if($Edit == 1) { ?>
+							<?php if ($Edit == 1) { ?>
 								// Elimina todos los parámetros existentes
 								url.search = '';
 

@@ -1275,7 +1275,7 @@ function verAutorizacion() {
 					<div class="form-group">
 						<label class="col-lg-1 control-label">Sucursal destino <span class="text-danger">*</span></label>
 						<div class="col-lg-5">
-							<select name="SucursalDestino" class="form-control select2" id="SucursalDestino" required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
+							<select name="SucursalDestino" class="form-control" id="SucursalDestino" required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
 								echo "disabled='disabled'";
 							} ?>>
 								  <option value="">Seleccione...</option>
@@ -1295,7 +1295,7 @@ function verAutorizacion() {
 						</div>
 						<label class="col-lg-1 control-label">Sucursal facturación <span class="text-danger">*</span></label>
 						<div class="col-lg-5">
-							<select name="SucursalFacturacion" class="form-control select2" id="SucursalFacturacion" required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
+							<select name="SucursalFacturacion" class="form-control" id="SucursalFacturacion" required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
 								echo "disabled='disabled'";
 							} ?>>
 								  <option value="">Seleccione...</option>
@@ -2014,8 +2014,9 @@ function verAutorizacion() {
 					 startDate: '<?php echo date('Y-m-d'); ?>'
 				});
 		  <?php } ?>
-		 //$('.chosen-select').chosen({width: "100%"});
-		 $(".select2").select2();
+		  
+		 // $('.chosen-select').chosen({width: "100%"});
+		 // $(".select2").select2();
 
 		 <?php
 		 if ($edit == 1) { ?>
