@@ -126,7 +126,7 @@ $SQL = EjecutarSP('sp_ConsultarArticulos_ListaPrecios', $Param);
                     <?php echo $_POST['EmpVentas'] ?? ""; ?>
                 </td>
                 <td class="PrjCode">
-                    <?php echo $_POST['PrjCode'] ?? ""; ?>
+                    <?php echo $_POST['Proyecto'] ?? ""; ?>
                 </td>
             </tr>
         <?php } ?>

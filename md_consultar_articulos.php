@@ -112,7 +112,7 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 								<div class="col-xs-12" style="margin-bottom: 10px;">
 									<label class="control-label">Proyecto</label>
 
-									<select id="PrjCode" name="PrjCode" class="form-control select2">
+									<select id="Proyecto" name="Proyecto" class="form-control select2">
 										<option value="">(NINGUNO)
 											<?php echo $Proyecto; ?>
 										</option>

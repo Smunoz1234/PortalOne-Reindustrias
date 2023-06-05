@@ -856,46 +856,7 @@ function verAutorizacion() {
 				});
 			}
 		});
-		// Actualizar vendedor, llega hasta aquí.
-
-		// Actualización del proyecto en las líneas, SMM 23/02/2022
-		$("#PrjCode").change(function() {
-			var frame=document.getElementById('DataGrid');
-
-			if(document.getElementById('PrjCode').value!=""&&document.getElementById('CardCode').value!=""&&document.getElementById('TotalItems').value!="0"){
-				Swal.fire({
-					title: "¿Desea actualizar las lineas?",
-					icon: "question",
-					showCancelButton: true,
-					confirmButtonText: "Si, confirmo",
-					cancelButtonText: "No"
-				}).then((result) => {
-					if (result.isConfirmed) {
-						$('.ibox-content').toggleClass('sk-loading',true);
-							<?php if ($edit == 0) { ?>
-							$.ajax({
-								type: "GET",
-								url: "registro.php?P=36&doctype=1&type=1&name=PrjCode&value="+Base64.encode(document.getElementById('PrjCode').value)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
-								success: function(response){
-									frame.src="detalle_orden_venta.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
-									$('.ibox-content').toggleClass('sk-loading',false);
-								}
-							});
-						<?php } else { ?>
-							$.ajax({
-								type: "GET",
-								url: "registro.php?P=36&doctype=1&type=2&name=PrjCode&value="+Base64.encode(document.getElementById('PrjCode').value)+"&line=0&id=<?php echo $row['ID_OrdenVenta']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
-								success: function(response){
-									frame.src="detalle_orden_venta.php?id=<?php echo base64_encode($row['ID_OrdenVenta']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
-									$('.ibox-content').toggleClass('sk-loading',false);
-								}
-							});
-						<?php } ?>
-					}
-				});
-			}
-		});
-		// Actualizar proyecto, llega hasta aquí.
+		// Actualizar vendedor, llega hasta aquí.y
 	});
 </script>
 <!-- InstanceEndEditable -->
@@ -1777,7 +1738,6 @@ function verAutorizacion() {
 				<input type="hidden" form="CrearOrdenVenta" id="tl" name="tl" value="<?php echo $edit; ?>" />
 				<input type="hidden" form="CrearOrdenVenta" id="swError" name="swError" value="<?php echo $sw_error; ?>" />
 				<input type="hidden" form="CrearOrdenVenta" id="return" name="return" value="<?php echo base64_encode($return); ?>" />
-				<!--input type="hidden" form="CrearOrdenVenta" id="PrjCode" name="PrjCode" value="<?php // if ($edit == 1) {echo $row['PrjCode'];}?>" /-->
 			 </form>
 		   </div>
 			</div>
