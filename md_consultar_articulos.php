@@ -40,7 +40,14 @@ $SQL_Sucursales = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'IdSuc
 $SQL_ListaPrecios = Seleccionar('uvw_Sap_tbl_ListaPrecios', '*');
 $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', "Estado = 'Y'", 'DE_EmpVentas');
 
-//Datos de dimensiones del usuario actual, 31/05/2023
+// SMM, 05/06/2023
+$SQL_OT_ORIGEN = Seleccionar('uvw_Sap_tbl_OT_Origen', 'IdOT_Origen "IdTipoOT", OT_Origen "TipoOT"', '', 'IdOT_Origen');
+$SQL_OT_SEDE_EMPRESA = Seleccionar('uvw_Sap_tbl_OT_SedeEmpresa', 'IdOT_SedeEmpresa "IdSedeEmpresa", OT_SedeEmpresa "SedeEmpresa"', '', 'IdOT_SedeEmpresa');
+$SQL_OT_CLASES = Seleccionar('uvw_Sap_tbl_OT_Clases', 'IdOT_Clases "IdTipoCargo", OT_Clases "TipoCargo"', '', 'IdOT_Clases');
+$SQL_OT_TIPOPROBLEMA = Seleccionar('uvw_Sap_tbl_OT_TipoProblema', 'IdOT_TipoProblema "IdTipoProblema", OT_TipoProblema "TipoProblema"', '', 'IdOT_TipoProblema');
+$SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPreventivo "IdTipoPreventivo", OT_TipoPreventivo "TipoPreventivo"', '', 'IdOT_TipoPreventivo');
+
+// Datos de dimensiones del usuario actual, 31/05/2023
 $SQL_DatosEmpleados = Seleccionar("uvw_tbl_Usuarios", "*", "ID_Usuario='" . $_SESSION['CodUser'] . "'");
 $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 ?>
@@ -79,7 +86,7 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 					</div>
 
 					<div class="collapse in" id="filtros">
-						<div class="col-lg-6">
+						<div class="col-lg-4">
 							<div class="form-group">
 								<div class="col-xs-12" style="margin-bottom: 10px;">
 									<label class="control-label">Almacén origen <span
@@ -161,9 +168,79 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 									</select>
 								</div> <!-- col-xs-12 -->
 							</div> <!-- form-group -->
-						</div> <!-- col-lg-6 -->
+						</div> <!-- col-lg-4 -->
 
-						<div class="col-lg-6">
+						<div class="col-lg-4">
+							<div class="form-group">
+								<div class="col-xs-12" style="margin-bottom: 10px;">
+									<label class="control-label">Tipo OT <span class="text-danger">*</span></label>
+
+									<select name="IdTipoOT" id="IdTipoOT" class="form-control select2" required>
+										<option value="">Seleccione...</option>
+
+										<?php while ($row_ORIGEN = sqlsrv_fetch_array($SQL_OT_ORIGEN)) { ?>
+											<option value="<?php echo $row_ORIGEN['IdTipoOT']; ?>"><?php echo $row_ORIGEN['IdTipoOT'] . " - " . $row_ORIGEN['TipoOT']; ?></option>
+										<?php } ?>
+									</select>
+								</div> <!-- col-xs-12 -->
+
+								<div class="col-xs-12" style="margin-bottom: 10px;">
+									<label class="control-label">Sede Empresa <span class="text-danger">*</span></label>
+
+									<select name="IdSedeEmpresa" id="IdSedeEmpresa" class="form-control select2"
+										required>
+										<option value="">Seleccione...</option>
+
+										<?php while ($row_SEDE_EMPRESA = sqlsrv_fetch_array($SQL_OT_SEDE_EMPRESA)) { ?>
+											<option value="<?php echo $row_SEDE_EMPRESA['IdSedeEmpresa']; ?>"><?php echo $row_SEDE_EMPRESA['IdSedeEmpresa'] . " - " . $row_SEDE_EMPRESA['SedeEmpresa']; ?></option>
+										<?php } ?>
+									</select>
+								</div> <!-- col-xs-12 -->
+
+								<div class="col-xs-12" style="margin-bottom: 10px;">
+									<label class="control-label">Tipo Cargo <span class="text-danger">*</span></label>
+
+									<select name="IdTipoCargo" id="IdTipoCargo" class="form-control select2" required>
+										<option value="">Seleccione...</option>
+
+										<?php while ($row_CLASES = sqlsrv_fetch_array($SQL_OT_CLASES)) { ?>
+											<option value="<?php echo $row_CLASES['IdTipoCargo']; ?>"><?php echo $row_CLASES['IdTipoCargo'] . " - " . $row_CLASES['TipoCargo']; ?></option>
+										<?php } ?>
+									</select>
+								</div> <!-- col-xs-12 -->
+
+								<div class="col-xs-12" style="margin-bottom: 10px;">
+									<label class="control-label">Tipo Problema <span
+											class="text-danger">*</span></label>
+
+									<select name="IdTipoProblema" id="IdTipoProblema" class="form-control select2"
+										required>
+										<option value="">Seleccione...</option>
+
+										<?php while ($row_TIPOPROBLEMA = sqlsrv_fetch_array($SQL_OT_TIPOPROBLEMA)) { ?>
+											<option value="<?php echo $row_TIPOPROBLEMA['IdTipoProblema']; ?>"><?php echo $row_TIPOPROBLEMA['IdTipoProblema'] . " - " . $row_TIPOPROBLEMA['TipoProblema']; ?></option>
+										<?php } ?>
+									</select>
+								</div> <!-- col-xs-12 -->
+
+								<div class="col-xs-12" style="margin-bottom: 10px;">
+									<label class="control-label">Tipo Preventivo <span
+											class="text-danger">*</span></label>
+
+									<select name="IdTipoPreventivo" id="IdTipoPreventivo" class="form-control select2"
+										required>
+										<option value="">Seleccione...</option>
+
+										<?php while ($row_TIPOPREVENTI = sqlsrv_fetch_array($SQL_OT_TIPOPREVENTI)) { ?>
+											<option value="<?php echo $row_TIPOPREVENTI['IdTipoPreventivo']; ?>"><?php echo $row_TIPOPREVENTI['IdTipoPreventivo'] . " - " . $row_TIPOPREVENTI['TipoPreventivo']; ?>
+											</option>
+										<?php } ?>
+									</select>
+								</div> <!-- col-xs-12 -->
+							</div> <!-- form-group -->
+						</div> <!-- col-lg-4 -->
+
+						<div class="col-lg-4">
 							<div class="form-group">
 								<?php foreach ($array_Dimensiones as &$dim) { ?>
 									<div class="col-xs-12" style="margin-bottom: 10px;">
@@ -195,7 +272,7 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 									</div> <!-- col-xs-12 -->
 								<?php } ?>
 							</div> <!-- form-group -->
-						</div> <!-- col-lg-6 -->
+						</div> <!-- col-lg-4 -->
 					</div> <!-- ibox-content -->
 				</div> <!-- row -->
 
@@ -459,17 +536,17 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 							// console.log(url.search); 
 
 							<?php if ($Edit == 1) { ?>
-								// Elimina todos los parámetros existentes
-								url.search = '';
+									// Elimina todos los parámetros existentes
+									url.search = '';
 
-								// ?id&evento&type=2
-								url.searchParams.set('id', '<?php echo base64_encode($DocId); ?>');
-								url.searchParams.set('evento', '<?php echo base64_encode($DocEvent); ?>');
-								url.searchParams.set('type', '2');
+									// ?id&evento&type=2
+									url.searchParams.set('id', '<?php echo base64_encode($DocId); ?>');
+									url.searchParams.set('evento', '<?php echo base64_encode($DocEvent); ?>');
+									url.searchParams.set('type', '2');
 							<?php } ?>
 
-							// Asigna la nueva URL al atributo 'src' del elemento
-							dataGrid.src = url.href;
+								// Asigna la nueva URL al atributo 'src' del elemento
+								dataGrid.src = url.href;
 
 							// Cerrar el modal al finalizar la lógica
 							$("#mdArticulos").modal("hide");

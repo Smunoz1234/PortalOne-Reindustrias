@@ -2094,13 +2094,15 @@ function Validar(){
 
 // SMM, 24/05/2023
 function AgregarArticulos() {
+	let probarModal = false;
+
 	let serie = $("#Serie").val();
 	let proyecto = $("#PrjCode").val();
 	let cardCode = $("#CardCode").val();
 	let listaPrecio = $("#IdListaPrecio").val();
 	let empleado = $("#EmpleadoVentas").val();
 
-	if((cardCode != "") && (serie != "")) {
+	if(((cardCode != "") && (serie != "")) || probarModal) {
 		$.ajax({
 			type: "POST",
 			url: "md_consultar_articulos.php",
