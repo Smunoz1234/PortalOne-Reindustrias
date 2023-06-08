@@ -1553,32 +1553,7 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
             echo 'Excepcion capturada: ', $e->getMessage(), "\n";
         }
 
-    }
-
-/*elseif($P==30){//Insertar notas en la actividad (deprecated)
-try{
-
-//Insertar el registro en la BD
-$Cons_InsNotaActividad="EXEC sp_tbl_Actividades '".base64_decode($_POST['ID'])."',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'".LSiqmlObs($_POST['NotasActividad'])."',NULL,NULL,NULL,NULL,3";
-$SQL_InsNotaActividad=sqlsrv_query($conexion,$Cons_InsNotaActividad);
-if($SQL_InsNotaActividad){
-InsertarLog(2, 30, $Cons_InsNotaActividad);
-sqlsrv_close($conexion);
-header('Location:actividad_edit.php?a='.base64_encode("OK_InsNotAct")."&".base64_decode($_POST['return']));
-}else{
-InsertarLog(1, 30, $Cons_InsNotaActividad);
-throw new Exception('Error al insertar las notas de la actividad');
-sqlsrv_close($conexion);
-exit();
-}
-}catch (Exception $e) {
-InsertarLog(1, 30, $Cons_InsNotaActividad);
-echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
-}
-
-}*/
-
-    elseif ($P == 31) { //Actualizar el archivo de acuerdo de confidencialidad
+    } elseif ($P == 31) { //Actualizar el archivo de acuerdo de confidencialidad
         try {
             $Nombre_archivo = "contrato_confidencialidad.txt";
             $Archivo = fopen($Nombre_archivo, "w+");
@@ -2089,40 +2064,67 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
 
     } elseif ($P == 35) { //Insertar articulos en el carrito
         try {
-            if (isset($_POST['doctype'])) {
-                $type = $_POST['doctype'];
-                $Item = $_POST['item'];
-                $WhsCode = $_POST['whscode'];
-                $CardCode = $_POST['cardcode'];
-            } else {
-                $type = $_GET['doctype'];
-                $Item = $_GET['item'];
-                $WhsCode = $_GET['whscode'];
-                $CardCode = $_GET['cardcode'];
+            // REQUEST = (GET || POST)
+            $type = $_REQUEST['doctype'] ?? "";
+            $Item = $_REQUEST['item'] ?? "";
+            $WhsCode = $_REQUEST['whscode'] ?? "";
+            $CardCode = $_REQUEST['cardcode'] ?? "";
+            $CodUser = $_SESSION['CodUser'] ?? "";
+
+            // Parametros para la edición
+            $id = $_REQUEST['id'] ?? "";
+            $evento = $_REQUEST['evento'] ?? "";
+
+            // Bandera de documento en Borrador
+            $borrador = '';
+            if (isset($_GET['borrador']) && $_GET['borrador'] == 1) {
+                $borrador = '_Borrador';
             }
-            if ($type == 1) { //Orden de venta
-                //Insertar el registro en la BD
-                $ParametrosInsert = array(
-                    "'" . $Item . "'",
-                    "'" . $WhsCode . "'",
-                    "'" . $CardCode . "'",
-                    "'" . $_SESSION['CodUser'] . "'",
-                    "'" . $_REQUEST['dim1'] . "'",
-                    "'" . $_REQUEST['dim2'] . "'",
-                    "'" . $_REQUEST['dim3'] . "'",
-                    "''", //dim4
-                    "''", //dim5
-                    "'" . $_REQUEST['prjcode'] . "'", // SMM, 04/05/2022
-                    "'" . $_REQUEST['pricelist'] . "'", // SMM, 25/02/2022
-                    "'" . $_REQUEST['empventas'] . "'", // SMM, 04/05/2022
-                );
 
-                $borrador = '';
+            // Dimensiones y otros campos
+            $dim1 = $_REQUEST['dim1'] ?? "";
+            $dim2 = $_REQUEST['dim2'] ?? "";
+            $dim3 = $_REQUEST['dim3'] ?? "";
+            $dim4 = $_REQUEST['dim4'] ?? "";
+            $dim5 = $_REQUEST['dim5'] ?? "";
+            $prjcode = $_REQUEST['dim1'] ?? "";
+            $pricelist = $_REQUEST['pricelist'] ?? "";
+            $empventas = $_REQUEST['empventas'] ?? "";
 
-                if (isset($_GET['borrador']) && $_GET['borrador'] == 1) {
-                    $borrador = '_Borrador';
-                }
+            // SMM, 08/06/2023
+            $ParametrosInsert = array(
+                "'$Item'",
+                "'$WhsCode'",
+                "'$CardCode'",
+                "'$CodUser'",
+                "'$dim1'",
+                "'$dim2'",
+                "'$dim3'",
+                "'$dim4'",
+                "'$dim5'",
+                "'$prjcode'",
+                "'$pricelist'",
+                "'$empventas'",
+            );
 
+            // SMM, 08/06/2023
+            $ParametrosEdit = array(
+                "'$Item'",
+                "'$WhsCode'",
+                "'$id'",
+                "'$evento'",
+                "'$CodUser'",
+                "'$dim1'",
+                "'$dim2'",
+                "'$dim3'",
+                "'$dim4'",
+                "'$dim5'",
+                "'$prjcode'",
+                "'$pricelist'",
+                "'$empventas'",
+            );
+
+            if ($type == 1) { // Orden de venta - Insertar
                 $SQL_Insert = EjecutarSP('sp_tbl_OrdenVentaDetalleCarritoInsert' . $borrador, $ParametrosInsert, 35);
 
                 if ($SQL_Insert) {
@@ -2142,38 +2144,8 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     sqlsrv_close($conexion);
                     exit();
                 }
-            } elseif ($type == 2) { //Orden de venta editar
-                if (isset($_POST['id'])) {
-                    $id = $_POST['id'];
-                    $evento = $_POST['evento'];
-                } else {
-                    $id = $_GET['id'];
-                    $evento = $_GET['evento'];
-                }
-                //Insertar el registro en la BD
-                $ParametrosInsert = array(
-                    "'" . $Item . "'",
-                    "'" . $WhsCode . "'",
-                    "'" . $id . "'",
-                    "'" . $evento . "'",
-                    "'" . $_SESSION['CodUser'] . "'",
-                    "'" . $_REQUEST['dim1'] . "'",
-                    "'" . $_REQUEST['dim2'] . "'",
-                    "'" . $_REQUEST['dim3'] . "'",
-                    "''", //dim4
-                    "''", //dim5
-                    "'" . $_REQUEST['prjcode'] . "'", // SMM, 04/05/2022
-                    "'" . $_REQUEST['pricelist'] . "'", // SMM, 25/02/2022
-                    "'" . $_REQUEST['empventas'] . "'", // SMM, 04/05/2022
-                );
-
-                $borrador = '';
-
-                if (isset($_REQUEST['borrador']) && $_REQUEST['borrador'] == 1) {
-                    $borrador = '_Borrador';
-                }
-
-                $SQL_Insert = EjecutarSP("sp_tbl_OrdenVentaDetalleInsert$borrador", $ParametrosInsert, 35);
+            } elseif ($type == 2) { // Orden de venta - Editar
+                $SQL_Insert = EjecutarSP("sp_tbl_OrdenVentaDetalleInsert$borrador", $ParametrosEdit, 35);
 
                 if ($SQL_Insert) {
                     $ParametrosCount = array(
@@ -2191,22 +2163,7 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     sqlsrv_close($conexion);
                     exit();
                 }
-            } elseif ($type == 3) { //Oferta de venta
-                //Insertar el registro en la BD
-                $ParametrosInsert = array(
-                    "'" . $Item . "'",
-                    "'" . $WhsCode . "'",
-                    "'" . $CardCode . "'",
-                    "'" . $_SESSION['CodUser'] . "'",
-                    "'" . $_REQUEST['dim1'] . "'",
-                    "'" . $_REQUEST['dim2'] . "'",
-                    "'" . $_REQUEST['dim3'] . "'",
-                    "''", //dim4
-                    "''", //dim5
-                    "'" . $_REQUEST['prjcode'] . "'", // SMM, 04/05/2022
-                    "'" . $_REQUEST['pricelist'] . "'", // SMM, 04/05/2022
-                    "'" . $_REQUEST['empventas'] . "'", // SMM, 04/05/2022
-                );
+            } elseif ($type == 3) { // Oferta de venta - Insertar
                 $SQL_Insert = EjecutarSP('sp_tbl_OfertaVentaDetalleCarritoInsert', $ParametrosInsert, 35);
                 if ($SQL_Insert) {
                     $ParametrosCount = array(
@@ -2223,31 +2180,8 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     sqlsrv_close($conexion);
                     exit();
                 }
-            } elseif ($type == 4) { //Oferta de venta editar
-                if (isset($_POST['id'])) {
-                    $id = $_POST['id'];
-                    $evento = $_POST['evento'];
-                } else {
-                    $id = $_GET['id'];
-                    $evento = $_GET['evento'];
-                }
-                //Insertar el registro en la BD
-                $ParametrosInsert = array(
-                    "'" . $Item . "'",
-                    "'" . $WhsCode . "'",
-                    "'" . $id . "'",
-                    "'" . $evento . "'",
-                    "'" . $_SESSION['CodUser'] . "'",
-                    "'" . $_REQUEST['dim1'] . "'",
-                    "'" . $_REQUEST['dim2'] . "'",
-                    "'" . $_REQUEST['dim3'] . "'",
-                    "''", //dim4
-                    "''", //dim5
-                    "'" . $_REQUEST['prjcode'] . "'", // SMM, 04/05/2022
-                    "'" . $_REQUEST['pricelist'] . "'", // SMM, 04/05/2022
-                    "'" . $_REQUEST['empventas'] . "'", // SMM, 04/05/2022
-                );
-                $SQL_Insert = EjecutarSP('sp_tbl_OfertaVentaDetalleInsert', $ParametrosInsert, 35);
+            } elseif ($type == 4) { // Oferta de venta - Editar
+                $SQL_Insert = EjecutarSP('sp_tbl_OfertaVentaDetalleInsert', $ParametrosEdit, 35);
                 if ($SQL_Insert) {
                     $ParametrosCount = array(
                         "'" . $id . "'",
@@ -2262,29 +2196,7 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     sqlsrv_close($conexion);
                     exit();
                 }
-            } elseif ($type == 5) { //Entrega de venta
-                //Insertar el registro en la BD
-                $ParametrosInsert = array(
-                    "'" . $Item . "'",
-                    "'" . $WhsCode . "'",
-                    "'" . $CardCode . "'",
-                    "'" . $_SESSION['CodUser'] . "'",
-                    "'" . $_REQUEST['dim1'] . "'",
-                    "'" . $_REQUEST['dim2'] . "'",
-                    "'" . $_REQUEST['dim3'] . "'",
-                    "''", //dim4
-                    "''", //dim5
-                    "'" . $_REQUEST['prjcode'] . "'", // SMM, 04/05/2022
-                    "'" . $_REQUEST['pricelist'] . "'", // SMM, 25/02/2022
-                    "'" . $_REQUEST['empventas'] . "'", // SMM, 04/05/2022
-                );
-
-                $borrador = '';
-
-                if (isset($_GET['borrador']) && $_GET['borrador'] == 1) {
-                    $borrador = '_Borrador';
-                }
-
+            } elseif ($type == 5) { // Entrega de venta - Insertar
                 $SQL_Insert = EjecutarSP('sp_tbl_EntregaVentaDetalleCarritoInsert' . $borrador, $ParametrosInsert, 35);
 
                 if ($SQL_Insert) {
@@ -2304,38 +2216,8 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     sqlsrv_close($conexion);
                     exit();
                 }
-            } elseif ($type == 6) { //Entrega de venta editar
-                if (isset($_POST['id'])) {
-                    $id = $_POST['id'];
-                    $evento = $_POST['evento'];
-                } else {
-                    $id = $_GET['id'];
-                    $evento = $_GET['evento'];
-                }
-                //Insertar el registro en la BD
-                $ParametrosInsert = array(
-                    "'" . $Item . "'",
-                    "'" . $WhsCode . "'",
-                    "'" . $id . "'",
-                    "'" . $evento . "'",
-                    "'" . $_SESSION['CodUser'] . "'",
-                    "'" . $_REQUEST['dim1'] . "'",
-                    "'" . $_REQUEST['dim2'] . "'",
-                    "'" . $_REQUEST['dim3'] . "'",
-                    "''", //dim4
-                    "''", //dim5
-                    "'" . $_REQUEST['prjcode'] . "'", // SMM, 04/05/2022
-                    "'" . $_REQUEST['pricelist'] . "'", // SMM, 25/02/2022
-                    "'" . $_REQUEST['empventas'] . "'", // SMM, 04/05/2022
-                );
-
-                $borrador = '';
-
-                if (isset($_GET['borrador']) && $_GET['borrador'] == 1) {
-                    $borrador = '_Borrador';
-                }
-
-                $SQL_Insert = EjecutarSP('sp_tbl_EntregaVentaDetalleInsert' . $borrador, $ParametrosInsert, 35);
+            } elseif ($type == 6) { //Entrega de venta - Editar
+                $SQL_Insert = EjecutarSP('sp_tbl_EntregaVentaDetalleInsert' . $borrador, $ParametrosEdit, 35);
 
                 if ($SQL_Insert) {
                     $ParametrosCount = array(
@@ -2360,11 +2242,11 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     "'" . $WhsCode . "'",
                     "'" . $CardCode . "'",
                     "'" . $_SESSION['CodUser'] . "'",
-                    "'" . $_REQUEST['dim1'] . "'",
-                    "'" . $_REQUEST['dim2'] . "'",
-                    "'" . $_REQUEST['dim3'] . "'",
-                    "''", //dim4
-                    "''", //dim5
+                    "'$dim1'",
+                    "'$dim2'",
+                    "'$dim3'",
+                    "'$dim4'",
+                    "'$dim5'",
                     "'" . $_REQUEST['prjcode'] . "'", // SMM, 01/12/2022
                     "'" . $_REQUEST['towhscode'] . "'", // SMM, 01/12/2022
                     "'" . $_REQUEST['concepto'] . "'", // SMM, 23/01/2023
@@ -2386,13 +2268,6 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     exit();
                 }
             } elseif ($type == 8) { //Solicitud de salida editar
-                if (isset($_POST['id'])) {
-                    $id = $_POST['id'];
-                    $evento = $_POST['evento'];
-                } else {
-                    $id = $_GET['id'];
-                    $evento = $_GET['evento'];
-                }
                 //Insertar el registro en la BD
                 $ParametrosInsert = array(
                     "'" . $Item . "'",
@@ -2400,11 +2275,11 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     "'" . $id . "'",
                     "'" . $evento . "'",
                     "'" . $_SESSION['CodUser'] . "'",
-                    "'" . $_REQUEST['dim1'] . "'", // SMM, 01/12/2022
-                    "'" . $_REQUEST['dim2'] . "'", // SMM, 01/12/2022
-                    "'" . $_REQUEST['dim3'] . "'", // SMM, 01/12/2022
-                    "''", //dim4
-                    "''", //dim5
+                    "'$dim1'",
+                    "'$dim2'",
+                    "'$dim3'",
+                    "'$dim4'",
+                    "'$dim5'",
                     "'" . $_REQUEST['prjcode'] . "'", // SMM, 01/12/2022
                     "'" . $_REQUEST['towhscode'] . "'", // SMM, 01/12/2022
                     "'" . $_REQUEST['concepto'] . "'", // SMM, 23/01/2023
@@ -2440,9 +2315,9 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     "'" . $_SESSION['CodUser'] . "'",
                     "'" . $_REQUEST['dim1'] . "'", // SMM, 01/12/2022
                     "'" . $_REQUEST['dim2'] . "'", // SMM, 01/12/2022
-                    "'" . $_REQUEST['dim3'] . "'", // SMM, 01/12/2022
-                    "''", //dim4
-                    "''", //dim5
+                    "'" . $_REQUEST['dim3'] . "'",
+                    "'" . $_REQUEST['dim4'] . "'",
+                    "'" . $_REQUEST['dim5'] . "'",
                     "'" . $_REQUEST['prjcode'] . "'", // SMM, 01/12/2022
                     "'" . $_REQUEST['concepto'] . "'", // SMM, 23/01/2023
                 );
@@ -2463,13 +2338,6 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     exit();
                 }
             } elseif ($type == 10) { //Salida de inventario editar
-                if (isset($_POST['id'])) {
-                    $id = $_POST['id'];
-                    $evento = $_POST['evento'];
-                } else {
-                    $id = $_GET['id'];
-                    $evento = $_GET['evento'];
-                }
                 //Insertar el registro en la BD
                 $ParametrosInsert = array(
                     "'" . $Item . "'",
@@ -2477,12 +2345,11 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     "'" . $id . "'",
                     "'" . $evento . "'",
                     "'" . $_SESSION['CodUser'] . "'",
-                    // SMM, 23/01/2023
-                    "'" . $_REQUEST['dim1'] . "'",
-                    "'" . $_REQUEST['dim2'] . "'",
-                    "'" . $_REQUEST['dim3'] . "'",
-                    "''", //dim4
-                    "''", //dim5
+                    "'$dim1'",
+                    "'$dim2'",
+                    "'$dim3'",
+                    "'$dim4'",
+                    "'$dim5'",
                     "'" . $_REQUEST['prjcode'] . "'",
                     "'" . $_REQUEST['towhscode'] . "'",
                     "'" . $_REQUEST['concepto'] . "'",
@@ -2510,11 +2377,11 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     "'" . $_POST['towhscode'] . "'",
                     "'" . $CardCode . "'",
                     "'" . $_SESSION['CodUser'] . "'",
-                    "'" . $_REQUEST['dim1'] . "'",
-                    "'" . $_REQUEST['dim2'] . "'",
-                    "'" . $_REQUEST['dim3'] . "'",
-                    "''", //dim4
-                    "''", //dim5
+                    "'$dim1'",
+                    "'$dim2'",
+                    "'$dim3'",
+                    "'$dim4'",
+                    "'$dim5'",
                     "'" . $_REQUEST['prjcode'] . "'", // SMM, 01/12/2022
                     "'" . $_REQUEST['concepto'] . "'", // SMM, 23/01/2023
                 );
@@ -2535,13 +2402,6 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     exit();
                 }
             } elseif ($type == 12) { //Traslado de inventario editar
-                if (isset($_POST['id'])) {
-                    $id = $_POST['id'];
-                    $evento = $_POST['evento'];
-                } else {
-                    $id = $_GET['id'];
-                    $evento = $_GET['evento'];
-                }
                 //Insertar el registro en la BD
                 $ParametrosInsert = array(
                     "'" . $Item . "'",
@@ -2550,11 +2410,11 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     "'" . $id . "'",
                     "'" . $evento . "'",
                     "'" . $_SESSION['CodUser'] . "'",
-                    "'" . $_REQUEST['dim1'] . "'",
-                    "'" . $_REQUEST['dim2'] . "'",
-                    "'" . $_REQUEST['dim3'] . "'",
-                    "''", //dim4
-                    "''", //dim5
+                    "'$dim1'",
+                    "'$dim2'",
+                    "'$dim3'",
+                    "'$dim4'",
+                    "'$dim5'",
                     "'" . $_REQUEST['prjcode'] . "'", // SMM, 01/12/2022
                     "'" . $_REQUEST['concepto'] . "'", // SMM, 23/01/2023
                 );
@@ -2573,22 +2433,7 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     sqlsrv_close($conexion);
                     exit();
                 }
-            } elseif ($type == 13) { //Devolucion de venta
-                //Insertar el registro en la BD
-                $ParametrosInsert = array(
-                    "'" . $Item . "'",
-                    "'" . $WhsCode . "'",
-                    "'" . $CardCode . "'",
-                    "'" . $_SESSION['CodUser'] . "'",
-                    "'" . ($_REQUEST['dim1'] ?? "") . "'", // SMM, 21/05/2022
-                    "'" . ($_REQUEST['dim2'] ?? "") . "'", // SMM, 21/05/2022
-                    "'" . ($_REQUEST['dim3'] ?? "") . "'", // SMM, 21/05/2022
-                    "'" . ($_REQUEST['dim4'] ?? "") . "'", // SMM, 21/05/2022
-                    "'" . ($_REQUEST['dim5'] ?? "") . "'", // SMM, 21/05/2022
-                    "'" . $_REQUEST['prjcode'] . "'", // SMM, 04/05/2022
-                    "'" . $_REQUEST['pricelist'] . "'", // SMM, 25/02/2022
-                    "'" . $_REQUEST['empventas'] . "'", // SMM, 04/05/2022
-                );
+            } elseif ($type == 13) { // Devolucion de venta - Insertar
                 $SQL_Insert = EjecutarSP('sp_tbl_DevolucionVentaDetalleCarritoInsert', $ParametrosInsert, 35);
                 if ($SQL_Insert) {
                     $ParametrosCount = array(
@@ -2605,31 +2450,8 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     sqlsrv_close($conexion);
                     exit();
                 }
-            } elseif ($type == 14) { //Devolucion de venta editar
-                if (isset($_POST['id'])) {
-                    $id = $_POST['id'];
-                    $evento = $_POST['evento'];
-                } else {
-                    $id = $_GET['id'];
-                    $evento = $_GET['evento'];
-                }
-                //Insertar el registro en la BD
-                $ParametrosInsert = array(
-                    "'" . $Item . "'",
-                    "'" . $WhsCode . "'",
-                    "'" . $id . "'",
-                    "'" . $evento . "'",
-                    "'" . $_SESSION['CodUser'] . "'",
-                    "'" . ($_REQUEST['dim1'] ?? "") . "'", // SMM, 21/05/2022
-                    "'" . ($_REQUEST['dim2'] ?? "") . "'", // SMM, 21/05/2022
-                    "'" . ($_REQUEST['dim3'] ?? "") . "'", // SMM, 21/05/2022
-                    "'" . ($_REQUEST['dim4'] ?? "") . "'", // SMM, 21/05/2022
-                    "'" . ($_REQUEST['dim5'] ?? "") . "'", // SMM, 21/05/2022
-                    "'" . $_REQUEST['prjcode'] . "'", // SMM, 04/05/2022
-                    "'" . $_REQUEST['pricelist'] . "'", // SMM, 25/02/2022
-                    "'" . $_REQUEST['empventas'] . "'", // SMM, 04/05/2022
-                );
-                $SQL_Insert = EjecutarSP('sp_tbl_DevolucionVentaDetalleInsert', $ParametrosInsert, 35);
+            } elseif ($type == 14) { // Devolucion de venta - Editar
+                $SQL_Insert = EjecutarSP('sp_tbl_DevolucionVentaDetalleInsert', $ParametrosEdit, 35);
                 if ($SQL_Insert) {
                     $ParametrosCount = array(
                         "'" . $id . "'",
@@ -2644,22 +2466,7 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     sqlsrv_close($conexion);
                     exit();
                 }
-            } elseif ($type == 15) { //Factura de venta
-                //Insertar el registro en la BD
-                $ParametrosInsert = array(
-                    "'" . $Item . "'",
-                    "'" . $WhsCode . "'",
-                    "'" . $CardCode . "'",
-                    "'" . $_SESSION['CodUser'] . "'",
-                    "'" . $_REQUEST['dim1'] . "'",
-                    "'" . $_REQUEST['dim2'] . "'",
-                    "'" . $_REQUEST['dim3'] . "'",
-                    "''", //dim4
-                    "''", //dim5
-                    "'" . $_REQUEST['prjcode'] . "'", // SMM, 04/05/2022
-                    "'" . $_REQUEST['pricelist'] . "'", // SMM, 25/02/2022
-                    "'" . $_REQUEST['empventas'] . "'", // SMM, 04/05/2022
-                );
+            } elseif ($type == 15) { // Factura de venta - Insertar
                 $SQL_Insert = EjecutarSP('sp_tbl_FacturaVentaDetalleCarritoInsert', $ParametrosInsert, 35);
                 if ($SQL_Insert) {
                     $ParametrosCount = array(
@@ -2676,31 +2483,8 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     sqlsrv_close($conexion);
                     exit();
                 }
-            } elseif ($type == 16) { //Factura de venta editar
-                if (isset($_POST['id'])) {
-                    $id = $_POST['id'];
-                    $evento = $_POST['evento'];
-                } else {
-                    $id = $_GET['id'];
-                    $evento = $_GET['evento'];
-                }
-                //Insertar el registro en la BD
-                $ParametrosInsert = array(
-                    "'" . $Item . "'",
-                    "'" . $WhsCode . "'",
-                    "'" . $id . "'",
-                    "'" . $evento . "'",
-                    "'" . $_SESSION['CodUser'] . "'",
-                    "'" . $_REQUEST['dim1'] . "'",
-                    "'" . $_REQUEST['dim2'] . "'",
-                    "'" . $_REQUEST['dim3'] . "'",
-                    "''", //dim4
-                    "''", //dim5
-                    "'" . $_REQUEST['prjcode'] . "'", // SMM, 04/05/2022
-                    "'" . $_REQUEST['pricelist'] . "'", // SMM, 25/02/2022
-                    "'" . $_REQUEST['empventas'] . "'", // SMM, 04/05/2022
-                );
-                $SQL_Insert = EjecutarSP('sp_tbl_FacturaVentaDetalleInsert', $ParametrosInsert, 35);
+            } elseif ($type == 16) { // Factura de venta - Editar
+                $SQL_Insert = EjecutarSP('sp_tbl_FacturaVentaDetalleInsert', $ParametrosEdit, 35);
                 if ($SQL_Insert) {
                     $ParametrosCount = array(
                         "'" . $id . "'",
@@ -2716,13 +2500,6 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     exit();
                 }
             } elseif ($type == 17) { //Lista de materiales agregar y editar
-                if (isset($_POST['id'])) {
-                    $id = $_POST['id'];
-                    $evento = $_POST['evento'];
-                } else {
-                    $id = $_GET['id'];
-                    $evento = $_GET['evento'];
-                }
                 //Insertar el registro en la BD
                 $ParametrosInsert = array(
                     "'" . $Item . "'",
@@ -2758,11 +2535,11 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     "'" . $WhsCode . "'",
                     "'" . $CardCode . "'",
                     "'" . $_SESSION['CodUser'] . "'",
-                    "'" . $_REQUEST['dim1'] . "'",
-                    "'" . $_REQUEST['dim2'] . "'",
-                    "'" . $_REQUEST['dim3'] . "'",
-                    "''", //dim4
-                    "''", //dim5
+                    "'$dim1'",
+                    "'$dim2'",
+                    "'$dim3'",
+                    "'$dim4'",
+                    "'$dim5'",
                     "'" . $_REQUEST['prjcode'] . "'",
                     // "'" . $_REQUEST['pricelist'] . "'",
                     // "'" . $_REQUEST['empventas'] . "'",
@@ -2784,13 +2561,6 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     exit();
                 }
             } elseif ($type == 19) { //Orden de compra editar
-                if (isset($_POST['id'])) {
-                    $id = $_POST['id'];
-                    $evento = $_POST['evento'];
-                } else {
-                    $id = $_GET['id'];
-                    $evento = $_GET['evento'];
-                }
                 //Insertar el registro en la BD
                 $ParametrosInsert = array(
                     "'" . $Item . "'",
@@ -2798,11 +2568,11 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     "'" . $id . "'",
                     "'" . $evento . "'",
                     "'" . $_SESSION['CodUser'] . "'",
-                    "'" . $_REQUEST['dim1'] . "'",
-                    "'" . $_REQUEST['dim2'] . "'",
-                    "'" . $_REQUEST['dim3'] . "'",
-                    "''", //dim4
-                    "''", //dim5
+                    "'$dim1'",
+                    "'$dim2'",
+                    "'$dim3'",
+                    "'$dim4'",
+                    "'$dim5'",
                     "'" . $_REQUEST['prjcode'] . "'",
                     // "'" . $_REQUEST['pricelist'] . "'",
                     // "'" . $_REQUEST['empventas'] . "'",
@@ -2829,11 +2599,11 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     "'" . $WhsCode . "'",
                     "'" . $CardCode . "'",
                     "'" . $_SESSION['CodUser'] . "'",
-                    "'" . $_REQUEST['dim1'] . "'",
-                    "'" . $_REQUEST['dim2'] . "'",
-                    "'" . $_REQUEST['dim3'] . "'",
-                    "''", //dim4
-                    "''", //dim5
+                    "'$dim1'",
+                    "'$dim2'",
+                    "'$dim3'",
+                    "'$dim4'",
+                    "'$dim5'",
                     "'" . $_REQUEST['prjcode'] . "'",
                     // "'" . $_REQUEST['pricelist'] . "'",
                     // "'" . $_REQUEST['empventas'] . "'",
@@ -2855,13 +2625,6 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     exit();
                 }
             } elseif ($type == 21) { //Entrada de compra editar
-                if (isset($_POST['id'])) {
-                    $id = $_POST['id'];
-                    $evento = $_POST['evento'];
-                } else {
-                    $id = $_GET['id'];
-                    $evento = $_GET['evento'];
-                }
                 //Insertar el registro en la BD
                 $ParametrosInsert = array(
                     "'" . $Item . "'",
@@ -2869,11 +2632,11 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     "'" . $id . "'",
                     "'" . $evento . "'",
                     "'" . $_SESSION['CodUser'] . "'",
-                    "'" . $_REQUEST['dim1'] . "'",
-                    "'" . $_REQUEST['dim2'] . "'",
-                    "'" . $_REQUEST['dim3'] . "'",
-                    "''", //dim4
-                    "''", //dim5
+                    "'$dim1'",
+                    "'$dim2'",
+                    "'$dim3'",
+                    "'$dim4'",
+                    "'$dim5'",
                     "'" . $_REQUEST['prjcode'] . "'",
                     // "'" . $_REQUEST['pricelist'] . "'",
                     // "'" . $_REQUEST['empventas'] . "'",
@@ -2900,11 +2663,11 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     "'" . $WhsCode . "'",
                     "'" . $CardCode . "'",
                     "'" . $_SESSION['CodUser'] . "'",
-                    "'" . $_REQUEST['dim1'] . "'",
-                    "'" . $_REQUEST['dim2'] . "'",
-                    "'" . $_REQUEST['dim3'] . "'",
-                    "''", //dim4
-                    "''", //dim5
+                    "'$dim1'",
+                    "'$dim2'",
+                    "'$dim3'",
+                    "'$dim4'",
+                    "'$dim5'",
                     "'" . $_REQUEST['prjcode'] . "'",
                     "'" . $_REQUEST['reqdate'] . "'", // SMM, 13/02/2023
                     // "'" . $_REQUEST['pricelist'] . "'",
@@ -2927,13 +2690,6 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     exit();
                 }
             } elseif ($type == 23) { //Solicitud de compra editar
-                if (isset($_POST['id'])) {
-                    $id = $_POST['id'];
-                    $evento = $_POST['evento'];
-                } else {
-                    $id = $_GET['id'];
-                    $evento = $_GET['evento'];
-                }
                 //Insertar el registro en la BD
                 $ParametrosInsert = array(
                     "'" . $Item . "'",
@@ -2941,11 +2697,11 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     "'" . $id . "'",
                     "'" . $evento . "'",
                     "'" . $_SESSION['CodUser'] . "'",
-                    "'" . $_REQUEST['dim1'] . "'",
-                    "'" . $_REQUEST['dim2'] . "'",
-                    "'" . $_REQUEST['dim3'] . "'",
-                    "''", //dim4
-                    "''", //dim5
+                    "'$dim1'",
+                    "'$dim2'",
+                    "'$dim3'",
+                    "'$dim4'",
+                    "'$dim5'",
                     "'" . $_REQUEST['reqdate'] . "'", // SMM, 13/02/2023
                     "'" . $_REQUEST['prjcode'] . "'",
                     // "'" . $_REQUEST['pricelist'] . "'",
@@ -2973,12 +2729,12 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     "'" . $WhsCode . "'",
                     "'" . $CardCode . "'",
                     "'" . $_SESSION['CodUser'] . "'",
-                    "'" . $_REQUEST['dim1'] . "'",
-                    "'" . $_REQUEST['dim2'] . "'",
-                    "'" . $_REQUEST['dim3'] . "'",
-                    "''", //dim4
-                    "''", //dim5
-                    "''", //prjcode
+                    "'$dim1'",
+                    "'$dim2'",
+                    "'$dim3'",
+                    "'$dim4'",
+                    "'$dim5'",
+                    "'$prjcode'",
                 );
                 $SQL_Insert = EjecutarSP('sp_tbl_FacturaCompraDetalleCarritoInsert', $ParametrosInsert, 35);
                 if ($SQL_Insert) {
@@ -2997,13 +2753,6 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     exit();
                 }
             } elseif ($type == 25) { //factura de compra editar
-                if (isset($_POST['id'])) {
-                    $id = $_POST['id'];
-                    $evento = $_POST['evento'];
-                } else {
-                    $id = $_GET['id'];
-                    $evento = $_GET['evento'];
-                }
                 //Insertar el registro en la BD
                 $ParametrosInsert = array(
                     "'" . $Item . "'",
@@ -3011,12 +2760,12 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     "'" . $id . "'",
                     "'" . $evento . "'",
                     "'" . $_SESSION['CodUser'] . "'",
-                    "'" . $_REQUEST['dim1'] . "'",
-                    "'" . $_REQUEST['dim2'] . "'",
-                    "'" . $_REQUEST['dim3'] . "'",
-                    "''", //dim4
-                    "''", //dim5
-                    "''", //prjcode
+                    "'$dim1'",
+                    "'$dim2'",
+                    "'$dim3'",
+                    "'$dim4'",
+                    "'$dim5'",
+                    "'$prjcode'",
                 );
                 $SQL_Insert = EjecutarSP('sp_tbl_FacturaCompraDetalleInsert', $ParametrosInsert, 35);
                 if ($SQL_Insert) {
@@ -3040,11 +2789,11 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     "'" . $WhsCode . "'",
                     "'" . $CardCode . "'",
                     "'" . $_SESSION['CodUser'] . "'",
-                    "'" . $_REQUEST['dim1'] . "'",
-                    "'" . $_REQUEST['dim2'] . "'",
-                    "'" . $_REQUEST['dim3'] . "'",
-                    "''", //dim4
-                    "''", //dim5
+                    "'$dim1'",
+                    "'$dim2'",
+                    "'$dim3'",
+                    "'$dim4'",
+                    "'$dim5'",
                     "'" . $_REQUEST['prjcode'] . "'",
                     // "'" . $_REQUEST['pricelist'] . "'",
                     // "'" . $_REQUEST['empventas'] . "'",
@@ -3066,13 +2815,6 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     exit();
                 }
             } elseif ($type == 27) { //Devolucion de compra editar
-                if (isset($_POST['id'])) {
-                    $id = $_POST['id'];
-                    $evento = $_POST['evento'];
-                } else {
-                    $id = $_GET['id'];
-                    $evento = $_GET['evento'];
-                }
                 //Insertar el registro en la BD
                 $ParametrosInsert = array(
                     "'" . $Item . "'",
@@ -3080,11 +2822,11 @@ echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
                     "'" . $id . "'",
                     "'" . $evento . "'",
                     "'" . $_SESSION['CodUser'] . "'",
-                    "'" . $_REQUEST['dim1'] . "'",
-                    "'" . $_REQUEST['dim2'] . "'",
-                    "'" . $_REQUEST['dim3'] . "'",
-                    "''", //dim4
-                    "''", //dim5
+                    "'$dim1'",
+                    "'$dim2'",
+                    "'$dim3'",
+                    "'$dim4'",
+                    "'$dim5'",
                     "'" . $_REQUEST['prjcode'] . "'",
                     // "'" . $_REQUEST['pricelist'] . "'",
                     // "'" . $_REQUEST['empventas'] . "'",

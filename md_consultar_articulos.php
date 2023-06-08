@@ -493,6 +493,12 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 				let priceList = $(this).find('.PriceList').text();
 				let empVentas = $(this).find('.EmpVentas').text();
 
+				let IdTipoOT = $(this).find('.IdTipoOT').text();
+				let IdSedeEmpresa = $(this).find('.IdSedeEmpresa').text();
+				let IdTipoCargo = $(this).find('.IdTipoCargo').text();
+				let IdTipoProblema = $(this).find('.IdTipoProblema').text();
+				let IdTipoPreventivo = $(this).find('.IdTipoPreventivo').text();
+
 				let articulo = {
 					P: p,
 					doctype: dt,
@@ -508,7 +514,12 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 					dim5: dim5.trim(),
 					prjcode: prjCode.trim(),
 					pricelist: priceList.trim(),
-					empventas: empVentas.trim()
+					empventas: empVentas.trim(),
+					IdTipoOT: IdTipoOT.trim(),
+					IdSedeEmpresa: IdSedeEmpresa.trim(),
+					IdTipoCargo: IdTipoCargo.trim(),
+					IdTipoProblema: IdTipoProblema.trim(),
+					IdTipoPreventivo: IdTipoPreventivo.trim()
 				};
 
 				// Articulo que se esta enviando a registro.

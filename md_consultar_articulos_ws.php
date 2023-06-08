@@ -65,6 +65,12 @@ $SQL = EjecutarSP('sp_ConsultarArticulos_ListaPrecios', $Param);
             <?php } ?>
             <th data-breakpoints="all">EmpVentas</th>
             <th data-breakpoints="all">PrjCode</th>
+
+            <th data-breakpoints="all">Tipo OT</th>
+            <th data-breakpoints="all">Sede Empresa</th>
+            <th data-breakpoints="all">Tipo Cargo</th>
+            <th data-breakpoints="all">Tipo Problema</th>
+            <th data-breakpoints="all">Tipo Preventivo</th>
         </tr>
     </thead>
     <tbody>
@@ -127,6 +133,22 @@ $SQL = EjecutarSP('sp_ConsultarArticulos_ListaPrecios', $Param);
                 </td>
                 <td class="PrjCode">
                     <?php echo $_POST['Proyecto'] ?? ""; ?>
+                </td>
+
+                <td class="IdTipoOT">
+                    <?php echo $_POST['IdTipoOT'] ?? ""; ?>
+                </td>
+                <td class="IdSedeEmpresa">
+                    <?php echo $_POST['IdSedeEmpresa'] ?? ""; ?>
+                </td>
+                <td class="IdTipoCargo">
+                    <?php echo $_POST['IdTipoCargo'] ?? ""; ?>
+                </td>
+                <td class="IdTipoProblema">
+                    <?php echo $_POST['IdTipoProblema'] ?? ""; ?>
+                </td>
+                <td class="IdTipoPreventivo">
+                    <?php echo $_POST['IdTipoPreventivo'] ?? ""; ?>
                 </td>
             </tr>
         <?php } ?>
