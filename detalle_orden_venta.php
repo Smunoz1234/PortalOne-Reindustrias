@@ -529,6 +529,15 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 
 						<th>Proyecto</th>
 						<th>Empleado de ventas</th>
+
+						<!-- Nuevos campos basados en la OT -->
+						<th>Tipo OT</th>
+						<th>Sede Empresa</th>
+						<th>Tipo Cargo</th>
+						<th>Tipo Problema</th>
+						<th>Tipo Preventivo</th>
+						<!-- SMM, 08/06/2023 -->
+
 						<th>Servicio</th>
 						<th>Método aplicación</th>
 						<th>Tipo plaga</th>
@@ -705,7 +714,7 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 										</select>
 									</td>
 
-									<td> <!-- SMM, 22/02/2022 -->
+									<td>
 										<select id="EmpVentas<?php echo $i; ?>" name="EmpVentas[]" class="form-control select2"
 											onChange="ActualizarDatos('EmpVentas',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);"
 											<?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402))) {
@@ -721,6 +730,62 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 											<?php } ?>
 										</select>
 									</td>
+
+									<!-- Nuevos campos basados en la OT -->
+									<td>
+										<select name="IdTipoOT" id="IdTipoOT" class="form-control select2" required>
+											<option value="">Seleccione...</option>
+
+											<?php while ($row_ORIGEN = sqlsrv_fetch_array($SQL_OT_ORIGEN)) { ?>
+												<option value="<?php echo $row_ORIGEN['IdTipoOT']; ?>"><?php echo $row_ORIGEN['IdTipoOT'] . " - " . $row_ORIGEN['TipoOT']; ?></option>
+											<?php } ?>
+										</select>
+									</td>
+
+									<td>
+										<select name="IdSedeEmpresa" id="IdSedeEmpresa" class="form-control select2"
+											required>
+											<option value="">Seleccione...</option>
+
+											<?php while ($row_SEDE_EMPRESA = sqlsrv_fetch_array($SQL_OT_SEDE_EMPRESA)) { ?>
+												<option value="<?php echo $row_SEDE_EMPRESA['IdSedeEmpresa']; ?>"><?php echo $row_SEDE_EMPRESA['IdSedeEmpresa'] . " - " . $row_SEDE_EMPRESA['SedeEmpresa']; ?></option>
+											<?php } ?>
+										</select>
+									</td>
+
+									<td>
+										<select name="IdTipoCargo" id="IdTipoCargo" class="form-control select2" required>
+											<option value="">Seleccione...</option>
+
+											<?php while ($row_CLASES = sqlsrv_fetch_array($SQL_OT_CLASES)) { ?>
+												<option value="<?php echo $row_CLASES['IdTipoCargo']; ?>"><?php echo $row_CLASES['IdTipoCargo'] . " - " . $row_CLASES['TipoCargo']; ?></option>
+											<?php } ?>
+										</select>
+									</td>
+
+									<td>
+										<select name="IdTipoProblema" id="IdTipoProblema" class="form-control select2"
+											required>
+											<option value="">Seleccione...</option>
+
+											<?php while ($row_TIPOPROBLEMA = sqlsrv_fetch_array($SQL_OT_TIPOPROBLEMA)) { ?>
+												<option value="<?php echo $row_TIPOPROBLEMA['IdTipoProblema']; ?>"><?php echo $row_TIPOPROBLEMA['IdTipoProblema'] . " - " . $row_TIPOPROBLEMA['TipoProblema']; ?></option>
+											<?php } ?>
+										</select>
+									</td>
+
+									<td>
+										<select name="IdTipoPreventivo" id="IdTipoPreventivo" class="form-control select2"
+											required>
+											<option value="">Seleccione...</option>
+
+											<?php while ($row_TIPOPREVENTI = sqlsrv_fetch_array($SQL_OT_TIPOPREVENTI)) { ?>
+												<option value="<?php echo $row_TIPOPREVENTI['IdTipoPreventivo']; ?>"><?php echo $row_TIPOPREVENTI['IdTipoPreventivo'] . " - " . $row_TIPOPREVENTI['TipoPreventivo']; ?>
+												</option>
+											<?php } ?>
+										</select>
+									</td>
+									<!-- SMM, 08/06/2023 -->
 
 									<td>
 										<?php if (($row['TreeType'] != "T") || (($row['TreeType'] == "T") && ($row['LineNum'] != 0))) { ?>
@@ -904,37 +969,53 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 							<td>&nbsp;</td>
 							<td><input size="20" type="text" id="ItemCodeNew" name="ItemCodeNew" class="form-control"></td>
 							<td><input size="50" type="text" id="ItemNameNew" name="ItemNameNew" class="form-control"></td>
+							
 							<td><input size="15" type="text" id="UnitMsrNew" name="UnitMsrNew" class="form-control"></td>
 							<td><input size="15" type="text" id="QuantityNew" name="QuantityNew" class="form-control"></td>
 							<td><input size="15" type="text" id="CantInicialNew" name="CantInicialNew" class="form-control">
 							</td>
-							<td><input size="15" type="text" id="CDU_CantLitrosNew" name="CDU_CantLitrosNew"
+
+							<td><input size="20" type="text" id="CDU_CantLitrosNew" name="CDU_CantLitrosNew"
 									class="form-control"></td>
 							<td><input size="20" type="text" id="WhsCodeNew" name="WhsCodeNew" class="form-control"></td>
-							<td><input size="15" type="text" id="CDU_DosificacionNew" name="CDU_DosificacionNew"
+							<td><input size="20" type="text" id="CDU_DosificacionNew" name="CDU_DosificacionNew"
 									class="form-control"></td>
-							<td><input size="15" type="text" id="OnHandNew" name="OnHandNew" class="form-control"></td>
+							<td><input size="20" type="text" id="OnHandNew" name="OnHandNew" class="form-control"></td>
 
-							<td><input size="20" type="text" id="OcrCodeNew" name="OcrCodeNew" class="form-control"></td>
-							<td><input size="20" type="text" id="OcrCode2New" name="OcrCode2New" class="form-control"></td>
-							<td><input size="20" type="text" id="OcrCode3New" name="OcrCode3New" class="form-control"></td>
-							<td><input size="70" type="text" id="ProyectoNew" name="ProyectoNew" class="form-control"></td>
+							<td><input size="30" type="text" id="OcrCodeNew" name="OcrCodeNew" class="form-control"></td>
+							<td><input size="30" type="text" id="OcrCode2New" name="OcrCode2New" class="form-control"></td>
+							<td><input size="30" type="text" id="OcrCode3New" name="OcrCode3New" class="form-control"></td>
+							
+							<td><input size="50" type="text" id="ProyectoNew" name="ProyectoNew" class="form-control"></td>
+							<td><input size="50" type="text" id="EmpleadoNew" name="EmpleadoNew" class="form-control"></td>
 
-							<td><input size="43" type="text" id="CDU_IdServicioNew" name="CDU_IdServicioNew"
+							<td><input size="30" type="text" id="TipoOTNew" name="TipoOTNew" class="form-control"></td>
+							<td><input size="30" type="text" id="SedeEmpresaNew" name="SedeEmpresaNew" class="form-control"></td>
+							<td><input size="30" type="text" id="TipoCargoNew" name="TipoCargoNew" class="form-control"></td>
+							<td><input size="30" type="text" id="TipoProblemaNew" name="TipoProblemaNew" class="form-control"></td>
+							<td><input size="30" type="text" id="TipoPreventivoNew" name="TipoPreventivoNew" class="form-control"></td>
+
+							<td><input size="30" type="text" id="CDU_IdServicioNew" name="CDU_IdServicioNew"
 									class="form-control"></td>
 							<td><input size="30" type="text" id="CDU_IdMetodoAplicacionNew" name="CDU_IdMetodoAplicacionNew"
 									class="form-control"></td>
 							<td><input size="30" type="text" id="CDU_IdTipoPlagasNew" name="CDU_IdTipoPlagasNew"
 									class="form-control"></td>
+							
 							<td><input size="50" type="text" id="CDU_AreasControladasNew" name="CDU_AreasControladasNew"
 									class="form-control"></td>
 							<td><input size="50" type="text" id="FreeTxtNew" name="FreeTxtNew" class="form-control"></td>
+							
 							<td><input size="15" type="text" id="PriceNew" name="PriceNew" class="form-control"></td>
 							<td><input size="15" type="text" id="PriceTaxNew" name="PriceTaxNew" class="form-control"></td>
+							<td><input size="15" type="text" id="PriceDescNew" name="PriceDescNew" class="form-control"></td>
 							<td><input size="15" type="text" id="DiscPrcntNew" name="DiscPrcntNew" class="form-control">
 							</td>
 							<td><input size="15" type="text" id="LineTotalNew" name="LineTotalNew" class="form-control">
 							</td>
+							
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
 							<td>&nbsp;</td>
 						</tr>
 					<?php } ?>
