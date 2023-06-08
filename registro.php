@@ -2092,6 +2092,12 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
             $empventas = $_REQUEST['empventas'] ?? "";
 
             // SMM, 08/06/2023
+            $ParametrosCount = array(
+                "'" . $WhsCode . "'",
+                "'" . $CardCode . "'",
+                "'" . $_SESSION['CodUser'] . "'",
+            );
+
             $ParametrosInsert = array(
                 "'$Item'",
                 "'$WhsCode'",
@@ -2108,6 +2114,11 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
             );
 
             // SMM, 08/06/2023
+            $ParametrosCountEdit = array(
+                "'" . $id . "'",
+                "'" . $evento . "'",
+            );
+
             $ParametrosEdit = array(
                 "'$Item'",
                 "'$WhsCode'",
@@ -2124,16 +2135,10 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                 "'$empventas'",
             );
 
-            if ($type == 1) { // Orden de venta - Insertar
+            if ($type == 1) { //Orden de venta
                 $SQL_Insert = EjecutarSP('sp_tbl_OrdenVentaDetalleCarritoInsert' . $borrador, $ParametrosInsert, 35);
 
                 if ($SQL_Insert) {
-                    $ParametrosCount = array(
-                        "'" . $WhsCode . "'",
-                        "'" . $CardCode . "'",
-                        "'" . $_SESSION['CodUser'] . "'",
-                    );
-
                     $SQL_ConCount = EjecutarSP('sp_tbl_OrdenVentaDetalleCarritoInsert_Count' . $borrador, $ParametrosCount, 35);
                     $row_ConCount = sqlsrv_fetch_array($SQL_ConCount);
 
@@ -2144,16 +2149,11 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     sqlsrv_close($conexion);
                     exit();
                 }
-            } elseif ($type == 2) { // Orden de venta - Editar
+            } elseif ($type == 2) { //Orden de venta editar
                 $SQL_Insert = EjecutarSP("sp_tbl_OrdenVentaDetalleInsert$borrador", $ParametrosEdit, 35);
 
                 if ($SQL_Insert) {
-                    $ParametrosCount = array(
-                        "'" . $id . "'",
-                        "'" . $evento . "'",
-                    );
-
-                    $SQL_ConCount = EjecutarSP("sp_tbl_OrdenVentaDetalleInsert_Count$borrador", $ParametrosCount, 35);
+                    $SQL_ConCount = EjecutarSP("sp_tbl_OrdenVentaDetalleInsert_Count$borrador", $ParametrosCountEdit, 35);
                     $row_ConCount = sqlsrv_fetch_array($SQL_ConCount);
 
                     sqlsrv_close($conexion);
@@ -2163,14 +2163,9 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     sqlsrv_close($conexion);
                     exit();
                 }
-            } elseif ($type == 3) { // Oferta de venta - Insertar
+            } elseif ($type == 3) { //Oferta de venta
                 $SQL_Insert = EjecutarSP('sp_tbl_OfertaVentaDetalleCarritoInsert', $ParametrosInsert, 35);
                 if ($SQL_Insert) {
-                    $ParametrosCount = array(
-                        "'" . $WhsCode . "'",
-                        "'" . $CardCode . "'",
-                        "'" . $_SESSION['CodUser'] . "'",
-                    );
                     $SQL_ConCount = EjecutarSP('sp_tbl_OfertaVentaDetalleCarritoInsert_Count', $ParametrosCount, 35);
                     $row_ConCount = sqlsrv_fetch_array($SQL_ConCount);
                     sqlsrv_close($conexion);
@@ -2180,14 +2175,10 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     sqlsrv_close($conexion);
                     exit();
                 }
-            } elseif ($type == 4) { // Oferta de venta - Editar
+            } elseif ($type == 4) { //Oferta de venta editar
                 $SQL_Insert = EjecutarSP('sp_tbl_OfertaVentaDetalleInsert', $ParametrosEdit, 35);
                 if ($SQL_Insert) {
-                    $ParametrosCount = array(
-                        "'" . $id . "'",
-                        "'" . $evento . "'",
-                    );
-                    $SQL_ConCount = EjecutarSP('sp_tbl_OfertaVentaDetalleInsert_Count', $ParametrosCount, 35);
+                    $SQL_ConCount = EjecutarSP('sp_tbl_OfertaVentaDetalleInsert_Count', $ParametrosCountEdit, 35);
                     $row_ConCount = sqlsrv_fetch_array($SQL_ConCount);
                     sqlsrv_close($conexion);
                     echo $row_ConCount['Cuenta'];
@@ -2196,16 +2187,10 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     sqlsrv_close($conexion);
                     exit();
                 }
-            } elseif ($type == 5) { // Entrega de venta - Insertar
+            } elseif ($type == 5) { //Entrega de venta
                 $SQL_Insert = EjecutarSP('sp_tbl_EntregaVentaDetalleCarritoInsert' . $borrador, $ParametrosInsert, 35);
 
                 if ($SQL_Insert) {
-                    $ParametrosCount = array(
-                        "'" . $WhsCode . "'",
-                        "'" . $CardCode . "'",
-                        "'" . $_SESSION['CodUser'] . "'",
-                    );
-
                     $SQL_ConCount = EjecutarSP('sp_tbl_EntregaVentaDetalleCarritoInsert_Count' . $borrador, $ParametrosCount, 35);
                     $row_ConCount = sqlsrv_fetch_array($SQL_ConCount);
 
@@ -2216,16 +2201,11 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     sqlsrv_close($conexion);
                     exit();
                 }
-            } elseif ($type == 6) { //Entrega de venta - Editar
+            } elseif ($type == 6) { //Entrega de venta editar
                 $SQL_Insert = EjecutarSP('sp_tbl_EntregaVentaDetalleInsert' . $borrador, $ParametrosEdit, 35);
 
                 if ($SQL_Insert) {
-                    $ParametrosCount = array(
-                        "'" . $id . "'",
-                        "'" . $evento . "'",
-                    );
-
-                    $SQL_ConCount = EjecutarSP('sp_tbl_EntregaVentaDetalleInsert_Count' . $borrador, $ParametrosCount, 35);
+                    $SQL_ConCount = EjecutarSP('sp_tbl_EntregaVentaDetalleInsert_Count' . $borrador, $ParametrosCountEdit, 35);
                     $row_ConCount = sqlsrv_fetch_array($SQL_ConCount);
 
                     sqlsrv_close($conexion);
@@ -2433,14 +2413,9 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     sqlsrv_close($conexion);
                     exit();
                 }
-            } elseif ($type == 13) { // Devolucion de venta - Insertar
+            } elseif ($type == 13) { //Devolucion de venta
                 $SQL_Insert = EjecutarSP('sp_tbl_DevolucionVentaDetalleCarritoInsert', $ParametrosInsert, 35);
                 if ($SQL_Insert) {
-                    $ParametrosCount = array(
-                        "'" . $WhsCode . "'",
-                        "'" . $CardCode . "'",
-                        "'" . $_SESSION['CodUser'] . "'",
-                    );
                     $SQL_ConCount = EjecutarSP('sp_tbl_DevolucionVentaDetalleCarritoInsert_Count', $ParametrosCount, 35);
                     $row_ConCount = sqlsrv_fetch_array($SQL_ConCount);
                     sqlsrv_close($conexion);
@@ -2450,14 +2425,10 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     sqlsrv_close($conexion);
                     exit();
                 }
-            } elseif ($type == 14) { // Devolucion de venta - Editar
+            } elseif ($type == 14) { // Devolucion de venta editar
                 $SQL_Insert = EjecutarSP('sp_tbl_DevolucionVentaDetalleInsert', $ParametrosEdit, 35);
                 if ($SQL_Insert) {
-                    $ParametrosCount = array(
-                        "'" . $id . "'",
-                        "'" . $evento . "'",
-                    );
-                    $SQL_ConCount = EjecutarSP('sp_tbl_DevolucionVentaDetalleInsert_Count', $ParametrosCount, 35);
+                    $SQL_ConCount = EjecutarSP('sp_tbl_DevolucionVentaDetalleInsert_Count', $ParametrosCountEdit, 35);
                     $row_ConCount = sqlsrv_fetch_array($SQL_ConCount);
                     sqlsrv_close($conexion);
                     echo $row_ConCount['Cuenta'];
@@ -2466,14 +2437,9 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     sqlsrv_close($conexion);
                     exit();
                 }
-            } elseif ($type == 15) { // Factura de venta - Insertar
+            } elseif ($type == 15) { //Factura de venta
                 $SQL_Insert = EjecutarSP('sp_tbl_FacturaVentaDetalleCarritoInsert', $ParametrosInsert, 35);
                 if ($SQL_Insert) {
-                    $ParametrosCount = array(
-                        "'" . $WhsCode . "'",
-                        "'" . $CardCode . "'",
-                        "'" . $_SESSION['CodUser'] . "'",
-                    );
                     $SQL_ConCount = EjecutarSP('sp_tbl_FacturaVentaDetalleCarritoInsert_Count', $ParametrosCount, 35);
                     $row_ConCount = sqlsrv_fetch_array($SQL_ConCount);
                     sqlsrv_close($conexion);
@@ -2483,14 +2449,10 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     sqlsrv_close($conexion);
                     exit();
                 }
-            } elseif ($type == 16) { // Factura de venta - Editar
+            } elseif ($type == 16) { // Factura de venta editar
                 $SQL_Insert = EjecutarSP('sp_tbl_FacturaVentaDetalleInsert', $ParametrosEdit, 35);
                 if ($SQL_Insert) {
-                    $ParametrosCount = array(
-                        "'" . $id . "'",
-                        "'" . $evento . "'",
-                    );
-                    $SQL_ConCount = EjecutarSP('sp_tbl_FacturaVentaDetalleInsert_Count', $ParametrosCount, 35);
+                    $SQL_ConCount = EjecutarSP('sp_tbl_FacturaVentaDetalleInsert_Count', $ParametrosCountEdit, 35);
                     $row_ConCount = sqlsrv_fetch_array($SQL_ConCount);
                     sqlsrv_close($conexion);
                     echo $row_ConCount['Cuenta'];
