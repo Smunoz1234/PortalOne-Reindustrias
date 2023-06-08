@@ -2087,15 +2087,43 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
             $dim3 = $_REQUEST['dim3'] ?? "";
             $dim4 = $_REQUEST['dim4'] ?? "";
             $dim5 = $_REQUEST['dim5'] ?? "";
-            $prjcode = $_REQUEST['dim1'] ?? "";
+            $prjcode = $_REQUEST['prjcode'] ?? "";
             $pricelist = $_REQUEST['pricelist'] ?? "";
             $empventas = $_REQUEST['empventas'] ?? "";
 
-            // SMM, 08/06/2023
+            $ParametrosDims = array(
+                "'$dim1'",
+                "'$dim2'",
+                "'$dim3'",
+                "'$dim4'",
+                "'$dim5'",
+            );
+
+            // Nuevos campos
+            $IdTipoOT = $_REQUEST['IdTipoOT'] ?? "";
+            $IdSedeEmpresa = $_REQUEST['IdSedeEmpresa'] ?? "";
+            $IdTipoCargo = $_REQUEST['IdTipoCargo'] ?? "";
+            $IdTipoProblema = $_REQUEST['IdTipoProblema'] ?? "";
+            $IdTipoPreventivo = $_REQUEST['IdTipoPreventivo'] ?? "";
+
+            $ParametrosOthers = array(
+                "'$prjcode'",
+                "'$pricelist'",
+                "'$empventas'",
+
+                // SMM, 08/06/2023
+                "'$IdTipoOT'",
+                "'$IdSedeEmpresa'",
+                "'$IdTipoCargo'",
+                "'$IdTipoProblema'",
+                "'$IdTipoPreventivo'",
+            );
+
+            // Parametros para insertar. SMM, 08/06/2023
             $ParametrosCount = array(
-                "'" . $WhsCode . "'",
-                "'" . $CardCode . "'",
-                "'" . $_SESSION['CodUser'] . "'",
+                "'$WhsCode'",
+                "'$CardCode'",
+                "'$CodUser'",
             );
 
             $ParametrosInsert = array(
@@ -2103,20 +2131,17 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                 "'$WhsCode'",
                 "'$CardCode'",
                 "'$CodUser'",
-                "'$dim1'",
-                "'$dim2'",
-                "'$dim3'",
-                "'$dim4'",
-                "'$dim5'",
-                "'$prjcode'",
-                "'$pricelist'",
-                "'$empventas'",
+                // ParametrosDims
+                // ParametrosOthers
             );
 
-            // SMM, 08/06/2023
+            // Fusionar los arreglos
+            $ParametrosInsert = array_merge($ParametrosInsert, $ParametrosDims, $ParametrosOthers);
+
+            // Parametros para editar. SMM, 08/06/2023
             $ParametrosCountEdit = array(
-                "'" . $id . "'",
-                "'" . $evento . "'",
+                "'$id'",
+                "'$evento'",
             );
 
             $ParametrosEdit = array(
@@ -2125,15 +2150,12 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                 "'$id'",
                 "'$evento'",
                 "'$CodUser'",
-                "'$dim1'",
-                "'$dim2'",
-                "'$dim3'",
-                "'$dim4'",
-                "'$dim5'",
-                "'$prjcode'",
-                "'$pricelist'",
-                "'$empventas'",
+                // ParametrosDims
+                // ParametrosOthers
             );
+
+            // Fusionar los arreglos
+            $ParametrosEdit = array_merge($ParametrosEdit, $ParametrosDims, $ParametrosOthers);
 
             if ($type == 1) { //Orden de venta
                 $SQL_Insert = EjecutarSP('sp_tbl_OrdenVentaDetalleCarritoInsert' . $borrador, $ParametrosInsert, 35);
