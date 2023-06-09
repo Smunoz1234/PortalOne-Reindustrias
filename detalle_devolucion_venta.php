@@ -132,6 +132,13 @@ $dPorcentajes = $row_DatosBase["DecimalPorcentajes"] ?? 4;
 
 $sDecimal = $row_DatosBase["CaracterSeparadorDecimal"] ?? ".";
 $sMillares = $row_DatosBase["CaracterSeparadorMillares"] ?? ",";
+
+// SMM, 08/06/2023
+$SQL_OT_ORIGEN = Seleccionar('uvw_Sap_tbl_OT_Origen', 'IdOT_Origen "IdTipoOT", OT_Origen "TipoOT"', '', 'IdOT_Origen');
+$SQL_OT_SEDE_EMPRESA = Seleccionar('uvw_Sap_tbl_OT_SedeEmpresa', 'IdOT_SedeEmpresa "IdSedeEmpresa", OT_SedeEmpresa "SedeEmpresa"', '', 'IdOT_SedeEmpresa');
+$SQL_OT_CLASES = Seleccionar('uvw_Sap_tbl_OT_Clases', 'IdOT_Clases "IdTipoCargo", OT_Clases "TipoCargo"', '', 'IdOT_Clases');
+$SQL_OT_TIPOPROBLEMA = Seleccionar('uvw_Sap_tbl_OT_TipoProblema', 'IdOT_TipoProblema "IdTipoProblema", OT_TipoProblema "TipoProblema"', '', 'IdOT_TipoProblema');
+$SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPreventivo "IdTipoPreventivo", OT_TipoPreventivo "TipoPreventivo"', '', 'IdOT_TipoPreventivo');
 ?>
 
 <!doctype html>
@@ -203,14 +210,14 @@ $sMillares = $row_DatosBase["CaracterSeparadorMillares"] ?? ",";
 				} else {
 					echo "0";
 				} ?>&evento=<?php if ($type == 2) {
-					echo $_GET['evento'];
-				} else {
-					echo "0";
-				} ?>&docentry=<?php if ($type == 2) {
-					echo $_GET['docentry'];
-				} else {
-					echo "0";
-				} ?>&edit=<?php echo $type; ?>&objtype=16&sentido=in', 'remote', "width=1200,height=500,location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=no,fullscreen=no,directories=no,status=yes,left=" + posicion_x + ",top=" + posicion_y + "");
+					 echo $_GET['evento'];
+				 } else {
+					 echo "0";
+				 } ?>&docentry=<?php if ($type == 2) {
+					  echo $_GET['docentry'];
+				  } else {
+					  echo "0";
+				  } ?>&edit=<?php echo $type; ?>&objtype=16&sentido=in', 'remote', "width=1200,height=500,location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=no,fullscreen=no,directories=no,status=yes,left=" + posicion_x + ",top=" + posicion_y + "");
 				remote.focus();
 			<?php } ?>
 		}
@@ -234,14 +241,14 @@ $sMillares = $row_DatosBase["CaracterSeparadorMillares"] ?? ",";
 				} else {
 					echo "0";
 				} ?>&evento=<?php if ($type == 2) {
-					echo $_GET['evento'];
-				} else {
-					echo "0";
-				} ?>&docentry=<?php if ($type == 2) {
-					echo $_GET['docentry'];
-				} else {
-					echo "0";
-				} ?>&edit=<?php echo $type; ?>&objtype=16&tipotrans=2', 'remote', "width=1200,height=500,location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=no,fullscreen=no,directories=no,status=yes,left=" + posicion_x + ",top=" + posicion_y + "");
+					 echo $_GET['evento'];
+				 } else {
+					 echo "0";
+				 } ?>&docentry=<?php if ($type == 2) {
+					  echo $_GET['docentry'];
+				  } else {
+					  echo "0";
+				  } ?>&edit=<?php echo $type; ?>&objtype=16&tipotrans=2', 'remote', "width=1200,height=500,location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=no,fullscreen=no,directories=no,status=yes,left=" + posicion_x + ",top=" + posicion_y + "");
 				remote.focus();
 			<?php } ?>
 		}
@@ -256,9 +263,9 @@ $sMillares = $row_DatosBase["CaracterSeparadorMillares"] ?? ",";
 				$.ajax({
 					type: "GET",
 					<?php if ($type == 1) { ?>
-				url: "includes/procedimientos.php?type=17&edit=<?php echo $type; ?>&linenum=" + json + "&cardcode=<?php echo $CardCode; ?>",
+							url: "includes/procedimientos.php?type=17&edit=<?php echo $type; ?>&linenum=" + json + "&cardcode=<?php echo $CardCode; ?>",
 					<?php } else { ?>
-				url: "includes/procedimientos.php?type=17&edit=<?php echo $type; ?>&linenum=" + json + "&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
+							url: "includes/procedimientos.php?type=17&edit=<?php echo $type; ?>&linenum=" + json + "&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
 					<?php } ?>
 			success: function (response) {
 						window.location.href = "detalle_devolucion_venta.php?<?php echo $_SERVER['QUERY_STRING']; ?>";
@@ -277,9 +284,9 @@ $sMillares = $row_DatosBase["CaracterSeparadorMillares"] ?? ",";
 				$.ajax({
 					type: "GET",
 					<?php if ($type == 1) { ?>
-				url: "includes/procedimientos.php?type=57&edit=<?php echo $type; ?>&linenum=" + json + "&cardcode=<?php echo $CardCode; ?>",
+							url: "includes/procedimientos.php?type=57&edit=<?php echo $type; ?>&linenum=" + json + "&cardcode=<?php echo $CardCode; ?>",
 					<?php } else { ?>
-				url: "includes/procedimientos.php?type=57&edit=<?php echo $type; ?>&linenum=" + json + "&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
+							url: "includes/procedimientos.php?type=57&edit=<?php echo $type; ?>&linenum=" + json + "&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
 					<?php } ?>
 			success: function (response) {
 						window.location.href = "detalle_devolucion_venta.php?<?php echo $_SERVER['QUERY_STRING']; ?>";
@@ -556,8 +563,9 @@ $sMillares = $row_DatosBase["CaracterSeparadorMillares"] ?? ",";
 						<th>Nombre artículo</th>
 						<th>Unidad</th>
 						<th>Cantidad
-							<?php if ($Lotes > 0) { ?><span class="badge badge-info pull-right" title="Ver lotes (Alt+Q)"
-									style="cursor: pointer;" onClick="BuscarLote();"><i class="fa fa-tasks"></i></span>
+							<?php if ($Lotes > 0) { ?><span class="badge badge-info pull-right"
+									title="Ver lotes (Alt+Q)" style="cursor: pointer;" onClick="BuscarLote();"><i
+										class="fa fa-tasks"></i></span>
 							<?php } ?>
 							<?php if ($Seriales > 0) { ?><span class="badge badge-success pull-right"
 									title="Ver seriales (Alt+Y)" style="cursor: pointer;" onClick="BuscarSerial();"><i
@@ -578,6 +586,15 @@ $sMillares = $row_DatosBase["CaracterSeparadorMillares"] ?? ",";
 
 						<th>Proyecto</th>
 						<th>Empleado de ventas</th>
+
+						<!-- Nuevos campos basados en la OT -->
+						<th>Tipo OT</th>
+						<th>Sede Empresa</th>
+						<th>Tipo Cargo</th>
+						<th>Tipo Problema</th>
+						<th>Tipo Preventivo</th>
+						<!-- SMM, 08/06/2023 -->
+
 						<th>Servicio</th>
 						<th>Método aplicación</th>
 						<th>Tipo plaga</th>
@@ -730,6 +747,78 @@ $sMillares = $row_DatosBase["CaracterSeparadorMillares"] ?? ",";
 									</select>
 								</td>
 
+								<!-- Nuevos campos basados en la OT -->
+								<td>
+									<select name="IdTipoOT" id="IdTipoOT" class="form-control select2" required>
+										<option value="">Seleccione...</option>
+
+										<?php while ($row_ORIGEN = sqlsrv_fetch_array($SQL_OT_ORIGEN)) { ?>
+											<option value="<?php echo $row_ORIGEN['IdTipoOT']; ?>" <?php if ((isset($row["CDU_IdTipoOT"])) && (strcmp($row_ORIGEN['IdTipoOT'], $row["CDU_IdTipoOT"]) == 0)) {
+												   echo "selected";
+											   } ?>>
+												<?php echo $row_ORIGEN['IdTipoOT'] . " - " . $row_ORIGEN['TipoOT']; ?>
+											</option>
+										<?php } ?>
+									</select>
+								</td>
+
+								<td>
+									<select name="IdSedeEmpresa" id="IdSedeEmpresa" class="form-control select2" required>
+										<option value="">Seleccione...</option>
+
+										<?php while ($row_SEDE_EMPRESA = sqlsrv_fetch_array($SQL_OT_SEDE_EMPRESA)) { ?>
+											<option value="<?php echo $row_SEDE_EMPRESA['IdSedeEmpresa']; ?>" <?php if ((isset($row["CDU_IdSedeEmpresa"])) && (strcmp($row_SEDE_EMPRESA['IdSedeEmpresa'], $row["CDU_IdSedeEmpresa"]) == 0)) {
+												   echo "selected";
+											   } ?>>
+												<?php echo $row_SEDE_EMPRESA['IdSedeEmpresa'] . " - " . $row_SEDE_EMPRESA['SedeEmpresa']; ?>
+											</option>
+										<?php } ?>
+									</select>
+								</td>
+
+								<td>
+									<select name="IdTipoCargo" id="IdTipoCargo" class="form-control select2" required>
+										<option value="">Seleccione...</option>
+
+										<?php while ($row_CLASES = sqlsrv_fetch_array($SQL_OT_CLASES)) { ?>
+											<option value="<?php echo $row_CLASES['IdTipoCargo']; ?>" <?php if ((isset($row["CDU_IdTipoCargo"])) && (strcmp($row_CLASES['IdTipoCargo'], $row["CDU_IdTipoCargo"]) == 0)) {
+												   echo "selected";
+											   } ?>>
+												<?php echo $row_CLASES['IdTipoCargo'] . " - " . $row_CLASES['TipoCargo']; ?>
+											</option>
+										<?php } ?>
+									</select>
+								</td>
+
+								<td>
+									<select name="IdTipoProblema" id="IdTipoProblema" class="form-control select2" required>
+										<option value="">Seleccione...</option>
+
+										<?php while ($row_TIPOPROBLEMA = sqlsrv_fetch_array($SQL_OT_TIPOPROBLEMA)) { ?>
+											<option value="<?php echo $row_TIPOPROBLEMA['IdTipoProblema']; ?>" <?php if ((isset($row["CDU_IdTipoProblema"])) && (strcmp($row_TIPOPROBLEMA['IdTipoProblema'], $row["CDU_IdTipoProblema"]) == 0)) {
+												   echo "selected";
+											   } ?>>
+												<?php echo $row_TIPOPROBLEMA['IdTipoProblema'] . " - " . $row_TIPOPROBLEMA['TipoProblema']; ?>
+											</option>
+										<?php } ?>
+									</select>
+								</td>
+
+								<td>
+									<select name="IdTipoPreventivo" id="IdTipoPreventivo" class="form-control select2" required>
+										<option value="">Seleccione...</option>
+
+										<?php while ($row_TIPOPREVENTI = sqlsrv_fetch_array($SQL_OT_TIPOPREVENTI)) { ?>
+											<option value="<?php echo $row_TIPOPREVENTI['IdTipoPreventivo']; ?>" <?php if ((isset($row["CDU_IdTipoPreventivo"])) && (strcmp($row_TIPOPREVENTI['IdTipoPreventivo'], $row["CDU_IdTipoPreventivo"]) == 0)) {
+												   echo "selected";
+											   } ?>>
+												<?php echo $row_TIPOPREVENTI['IdTipoPreventivo'] . " - " . $row_TIPOPREVENTI['TipoPreventivo']; ?>
+											</option>
+										<?php } ?>
+									</select>
+								</td>
+								<!-- SMM, 08/06/2023 -->
+
 								<td>
 									<?php if (($row['TreeType'] != "T") || (($row['TreeType'] == "T") && ($row['LineNum'] != 0))) { ?>
 										<select id="CDU_IdServicio<?php echo $i; ?>" name="CDU_IdServicio[]"
@@ -860,8 +949,7 @@ $sMillares = $row_DatosBase["CaracterSeparadorMillares"] ?? ",";
 										onChange="ActualizarDatos('ControlDesc',<?php echo $i; ?>, <?php echo $row['LineNum']; ?>);"
 										<?php if (isset($row['ControlDesc']) && ($row['ControlDesc'] == "T")) {
 											echo "checked";
-										} ?>
-										disabled>
+										} ?> disabled>
 								</td>
 
 								<td>
@@ -905,12 +993,22 @@ $sMillares = $row_DatosBase["CaracterSeparadorMillares"] ?? ",";
 							<td><input size="15" type="text" id="CantInicialNew" name="CantInicialNew" class="form-control">
 							</td>
 
-							<td><input size="20" type="text" id="CDU_CantLitrosNew" name="CDU_CantLitrosNew"
-									class="form-control"></td>
+							<!-- td>
+								<input size="20" type="text" id="CDU_CantLitrosNew" name="CDU_CantLitrosNew"
+									class="form-control">
+							</td -->
+
 							<td><input size="20" type="text" id="WhsCodeNew" name="WhsCodeNew" class="form-control"></td>
-							<td><input size="20" type="text" id="CDU_DosificacionNew" name="CDU_DosificacionNew"
-									class="form-control"></td>
+
+							<!-- td>
+								<input size="20" type="text" id="CDU_DosificacionNew" name="CDU_DosificacionNew"
+									class="form-control">
+							</td -->
+
 							<td><input size="20" type="text" id="OnHandNew" name="OnHandNew" class="form-control"></td>
+
+							<td><input size="30" type="text" id="CDU_SucursalClienteNew" name="CDU_SucursalClienteNew"
+									class="form-control"></td>
 
 							<td><input size="30" type="text" id="OcrCodeNew" name="OcrCodeNew" class="form-control"></td>
 							<td><input size="30" type="text" id="OcrCode2New" name="OcrCode2New" class="form-control"></td>
@@ -929,14 +1027,24 @@ $sMillares = $row_DatosBase["CaracterSeparadorMillares"] ?? ",";
 							<td><input size="30" type="text" id="TipoPreventivoNew" name="TipoPreventivoNew"
 									class="form-control"></td>
 
-							<td><input size="30" type="text" id="CDU_IdServicioNew" name="CDU_IdServicioNew"
-									class="form-control"></td>
-							<td><input size="30" type="text" id="CDU_IdMetodoAplicacionNew" name="CDU_IdMetodoAplicacionNew"
-									class="form-control"></td>
-							<td><input size="30" type="text" id="CDU_IdTipoPlagasNew" name="CDU_IdTipoPlagasNew"
-									class="form-control"></td>
+							<!-- td>
+								<input size="30" type="text" id="CDU_IdServicioNew" name="CDU_IdServicioNew"
+									class="form-control">
+							</td -->
+
+							<td>
+								<input size="30" type="text" id="CDU_IdMetodoAplicacionNew" name="CDU_IdMetodoAplicacionNew"
+									class="form-control">
+							</td>
+
+							<!-- td>
+								<input size="30" type="text" id="CDU_IdTipoPlagasNew" name="CDU_IdTipoPlagasNew"
+									class="form-control">
+							</td -->
 
 							<td><input size="50" type="text" id="CDU_AreasControladasNew" name="CDU_AreasControladasNew"
+									class="form-control"></td>
+							<td><input size="50" type="text" id="CDU_OrdenServicioNew" name="CDU_OrdenServicioNew"
 									class="form-control"></td>
 							<td><input size="50" type="text" id="FreeTxtNew" name="FreeTxtNew" class="form-control"></td>
 
@@ -1087,9 +1195,9 @@ $sMillares = $row_DatosBase["CaracterSeparadorMillares"] ?? ",";
 						$.ajax({
 							type: "GET",
 							<?php if ($type == 1) { ?>
-							url: "registro.php?P=35&doctype=13&item=" + IdArticulo + "&whscode=" + CodAlmacen + "&cardcode=<?php echo $CardCode; ?>",
+										url: "registro.php?P=35&doctype=13&item=" + IdArticulo + "&whscode=" + CodAlmacen + "&cardcode=<?php echo $CardCode; ?>",
 							<?php } else { ?>
-							url: "registro.php?P=35&doctype=14&item=" + IdArticulo + "&whscode=" + CodAlmacen + "&cardcode=0&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
+										url: "registro.php?P=35&doctype=14&item=" + IdArticulo + "&whscode=" + CodAlmacen + "&cardcode=0&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
 							<?php } ?>
 						success: function (response) {
 								window.location.href = "detalle_devolucion_venta.php?<?php echo $_SERVER['QUERY_STRING']; ?>";

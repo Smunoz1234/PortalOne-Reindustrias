@@ -111,6 +111,13 @@ $dPorcentajes = $row_DatosBase["DecimalPorcentajes"] ?? 4;
 
 $sDecimal = $row_DatosBase["CaracterSeparadorDecimal"] ?? ".";
 $sMillares = $row_DatosBase["CaracterSeparadorMillares"] ?? ",";
+
+// SMM, 08/06/2023
+$SQL_OT_ORIGEN = Seleccionar('uvw_Sap_tbl_OT_Origen', 'IdOT_Origen "IdTipoOT", OT_Origen "TipoOT"', '', 'IdOT_Origen');
+$SQL_OT_SEDE_EMPRESA = Seleccionar('uvw_Sap_tbl_OT_SedeEmpresa', 'IdOT_SedeEmpresa "IdSedeEmpresa", OT_SedeEmpresa "SedeEmpresa"', '', 'IdOT_SedeEmpresa');
+$SQL_OT_CLASES = Seleccionar('uvw_Sap_tbl_OT_Clases', 'IdOT_Clases "IdTipoCargo", OT_Clases "TipoCargo"', '', 'IdOT_Clases');
+$SQL_OT_TIPOPROBLEMA = Seleccionar('uvw_Sap_tbl_OT_TipoProblema', 'IdOT_TipoProblema "IdTipoProblema", OT_TipoProblema "TipoProblema"', '', 'IdOT_TipoProblema');
+$SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPreventivo "IdTipoPreventivo", OT_TipoPreventivo "TipoPreventivo"', '', 'IdOT_TipoPreventivo');
 ?>
 
 <!doctype html>
@@ -488,6 +495,15 @@ $sMillares = $row_DatosBase["CaracterSeparadorMillares"] ?? ",";
 
 						<th>Proyecto</th>
 						<th>Empleado de ventas</th> <!-- SMM, 08/03/2022 -->
+
+						<!-- Nuevos campos basados en la OT -->
+						<th>Tipo OT</th>
+						<th>Sede Empresa</th>
+						<th>Tipo Cargo</th>
+						<th>Tipo Problema</th>
+						<th>Tipo Preventivo</th>
+						<!-- SMM, 08/06/2023 -->
+
 						<th>Servicio</th>
 						<th>Método aplicación</th>
 						<th>Tipo plaga</th>
@@ -657,6 +673,78 @@ $sMillares = $row_DatosBase["CaracterSeparadorMillares"] ?? ",";
 									</select>
 								</td>
 
+								<!-- Nuevos campos basados en la OT -->
+								<td>
+									<select name="IdTipoOT" id="IdTipoOT" class="form-control select2" required>
+										<option value="">Seleccione...</option>
+
+										<?php while ($row_ORIGEN = sqlsrv_fetch_array($SQL_OT_ORIGEN)) { ?>
+											<option value="<?php echo $row_ORIGEN['IdTipoOT']; ?>" <?php if ((isset($row["CDU_IdTipoOT"])) && (strcmp($row_ORIGEN['IdTipoOT'], $row["CDU_IdTipoOT"]) == 0)) {
+												   echo "selected";
+											   } ?>>
+												<?php echo $row_ORIGEN['IdTipoOT'] . " - " . $row_ORIGEN['TipoOT']; ?>
+											</option>
+										<?php } ?>
+									</select>
+								</td>
+
+								<td>
+									<select name="IdSedeEmpresa" id="IdSedeEmpresa" class="form-control select2" required>
+										<option value="">Seleccione...</option>
+
+										<?php while ($row_SEDE_EMPRESA = sqlsrv_fetch_array($SQL_OT_SEDE_EMPRESA)) { ?>
+											<option value="<?php echo $row_SEDE_EMPRESA['IdSedeEmpresa']; ?>" <?php if ((isset($row["CDU_IdSedeEmpresa"])) && (strcmp($row_SEDE_EMPRESA['IdSedeEmpresa'], $row["CDU_IdSedeEmpresa"]) == 0)) {
+												   echo "selected";
+											   } ?>>
+												<?php echo $row_SEDE_EMPRESA['IdSedeEmpresa'] . " - " . $row_SEDE_EMPRESA['SedeEmpresa']; ?>
+											</option>
+										<?php } ?>
+									</select>
+								</td>
+
+								<td>
+									<select name="IdTipoCargo" id="IdTipoCargo" class="form-control select2" required>
+										<option value="">Seleccione...</option>
+
+										<?php while ($row_CLASES = sqlsrv_fetch_array($SQL_OT_CLASES)) { ?>
+											<option value="<?php echo $row_CLASES['IdTipoCargo']; ?>" <?php if ((isset($row["CDU_IdTipoCargo"])) && (strcmp($row_CLASES['IdTipoCargo'], $row["CDU_IdTipoCargo"]) == 0)) {
+												   echo "selected";
+											   } ?>>
+												<?php echo $row_CLASES['IdTipoCargo'] . " - " . $row_CLASES['TipoCargo']; ?>
+											</option>
+										<?php } ?>
+									</select>
+								</td>
+
+								<td>
+									<select name="IdTipoProblema" id="IdTipoProblema" class="form-control select2" required>
+										<option value="">Seleccione...</option>
+
+										<?php while ($row_TIPOPROBLEMA = sqlsrv_fetch_array($SQL_OT_TIPOPROBLEMA)) { ?>
+											<option value="<?php echo $row_TIPOPROBLEMA['IdTipoProblema']; ?>" <?php if ((isset($row["CDU_IdTipoProblema"])) && (strcmp($row_TIPOPROBLEMA['IdTipoProblema'], $row["CDU_IdTipoProblema"]) == 0)) {
+												   echo "selected";
+											   } ?>>
+												<?php echo $row_TIPOPROBLEMA['IdTipoProblema'] . " - " . $row_TIPOPROBLEMA['TipoProblema']; ?>
+											</option>
+										<?php } ?>
+									</select>
+								</td>
+
+								<td>
+									<select name="IdTipoPreventivo" id="IdTipoPreventivo" class="form-control select2" required>
+										<option value="">Seleccione...</option>
+
+										<?php while ($row_TIPOPREVENTI = sqlsrv_fetch_array($SQL_OT_TIPOPREVENTI)) { ?>
+											<option value="<?php echo $row_TIPOPREVENTI['IdTipoPreventivo']; ?>" <?php if ((isset($row["CDU_IdTipoPreventivo"])) && (strcmp($row_TIPOPREVENTI['IdTipoPreventivo'], $row["CDU_IdTipoPreventivo"]) == 0)) {
+												   echo "selected";
+											   } ?>>
+												<?php echo $row_TIPOPREVENTI['IdTipoPreventivo'] . " - " . $row_TIPOPREVENTI['TipoPreventivo']; ?>
+											</option>
+										<?php } ?>
+									</select>
+								</td>
+								<!-- SMM, 08/06/2023 -->
+
 								<td>
 									<?php if (($row['TreeType'] != "T") || (($row['TreeType'] == "T") && ($row['LineNum'] != 0))) { ?>
 										<select id="CDU_IdServicio<?php echo $i; ?>" name="CDU_IdServicio[]"
@@ -787,8 +875,7 @@ $sMillares = $row_DatosBase["CaracterSeparadorMillares"] ?? ",";
 										onChange="ActualizarDatos('ControlDesc',<?php echo $i; ?>, <?php echo $row['LineNum']; ?>);"
 										<?php if (isset($row['ControlDesc']) && ($row['ControlDesc'] == "T")) {
 											echo "checked";
-										} ?>
-										disabled>
+										} ?> disabled>
 								</td>
 
 								<td>
@@ -1003,9 +1090,9 @@ $sMillares = $row_DatosBase["CaracterSeparadorMillares"] ?? ",";
 						$.ajax({
 							type: "GET",
 							<?php if ($type == 1) { ?>
-							url: "registro.php?P=35&doctype=3&item=" + IdArticulo + "&whscode=" + CodAlmacen + "&cardcode=<?php echo $CardCode; ?>",
+									url: "registro.php?P=35&doctype=3&item=" + IdArticulo + "&whscode=" + CodAlmacen + "&cardcode=<?php echo $CardCode; ?>",
 							<?php } else { ?>
-							url: "registro.php?P=35&doctype=4&item=" + IdArticulo + "&whscode=" + CodAlmacen + "&cardcode=0&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
+									url: "registro.php?P=35&doctype=4&item=" + IdArticulo + "&whscode=" + CodAlmacen + "&cardcode=0&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
 							<?php } ?>
 						success: function (response) {
 								window.location.href = "detalle_oferta_venta.php?<?php echo $_SERVER['QUERY_STRING']; ?>";
