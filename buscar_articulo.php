@@ -837,7 +837,7 @@ $rawdata = array();
                 if ($j == 0) {
                     if ($IdListaPrecio != "") {
                         // La posición $j=8 debe hacer referencia al almacen, si esto cambia se debe cambiar aquí.
-                        echo "<td><a href=\"#\" onClick=\"showHint('" . $rawdata[$i][$j] . "','" . $rawdata[$i][8] . "','" . $rawdata[$i][2] . "');\">" . utf8_encode($rawdata[$i][$j]) . "</a></td>";
+                        echo "<td><a href=\"#\" onClick=\"showHint('" . $rawdata[$i][$j] . "','" . $rawdata[$i][9] . "','" . $rawdata[$i][2] . "');\">" . utf8_encode($rawdata[$i][$j]) . "</a></td>";
                     } else {
                         // La posición $j=7 debe hacer referencia al almacen, si esto cambia se debe cambiar aquí.
                         // print_r($rawdata);
