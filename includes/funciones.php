@@ -176,10 +176,14 @@ function ReturnCons($pVista, $pCampos, $pWhere = '', $pOrderBy = '', $pOrderType
     if ($pType == 1) { //Consulta a SQL SERVER
         $Consulta = "EXEC sp_ConsultarTablasSAP '" . $pVista . "', '" . $pCampos . "', '" . str_replace("'", "''", $pWhere) . "', '" . $pOrderBy . "', '" . $pOrderType . "'";
         return $Consulta;
-    } elseif ($pType == 2) { // Consulta a SAP HANA
+    }
+
+    /*
+    elseif ($pType == 2) { // Consulta a SAP HANA
         $Consulta = "CALL " . $databaseHN . ".USP_NDG_CONSULTAR_TABLAS_SAP('NDG_ONE_" . $pVista . "','" . str_replace(']', '"', str_replace('[', '"', $pCampos)) . "','" . str_replace(']', '"', str_replace('[', '"', str_replace("'", "''", $pWhere))) . "','" . str_replace(']', '"', str_replace('[', '"', $pOrderBy)) . "','" . $pOrderType . "')";
         return $Consulta;
     }
+    */
 }
 
 function Seleccionar($pVista, $pCampos, $pWhere = '', $pOrderBy = '', $pOrderType = '', $pType = 1, $pDebugMode = 0)
@@ -310,7 +314,10 @@ function Eliminar($pVista, $pWhere = '', $pIdReg = 0, $pType = 1, $pDebugMode = 
             InsertarLog(1, $pIdReg, $Consulta);
         }
         return $SQL;
-    } elseif ($pType == 3) { //Consulta a MySQL (MariaDB)
+    }
+
+    /*
+    elseif ($pType == 3) { //Consulta a MySQL (MariaDB)
         global $conexion_mysql;
         $Consulta = "CALL sp_ConsultarTablas ('" . $pVista . "', '" . $pCampos . "', '" . str_replace("'", "''", $pWhere) . "', '" . $pOrderBy . "', '" . $pOrderType . "');";
         if ($pDebugMode == 1) {
@@ -321,6 +328,7 @@ function Eliminar($pVista, $pWhere = '', $pIdReg = 0, $pType = 1, $pDebugMode = 
         mysqli_next_result($conexion_mysql);
         return $SQL;
     }
+    */
 }
 
 function sql_fetch_array($pSQL, $pType = 1)
@@ -1215,23 +1223,42 @@ function QuitarParametrosURL($url, $keys = array())
 
 function RedimensionarImagen(&$pNombreimg, $rutaimg, $xmax, $ymax, $nuevaRuta = "")
 {
+
     $nombreimg = $pNombreimg;
     $expl = explode('.', $nombreimg);
     $ext = end($expl);
     $ext = strtolower($ext);
 
-    if ($ext == "jpg" || $ext == "jpeg") {
+    // Verificar si es un archivo de imagen válido
+    $imageInfo = getimagesize($rutaimg);
+    if ($imageInfo === false) {
+        return "El archivo no es una imagen válida.";
+    }
+
+    // Obtener el tipo de imagen del archivo
+    $mime = $imageInfo['mime'];
+    if ($mime != 'image/jpeg' && $mime != 'image/png' && $mime != 'image/gif') {
+        return "El archivo no es un formato de imagen válido.";
+    }
+
+    if ($mime == "image/jpeg") {
         $imagen = imagecreatefromjpeg($rutaimg);
-    } elseif ($ext == "png") {
+    } elseif ($mime == "image/png") {
         $imagen = imagecreatefrompng($rutaimg);
-    } elseif ($ext == "gif") {
+    } elseif ($mime == "image/gif") {
         $imagen = imagecreatefromgif($rutaimg);
-    } else {
-        return "Algunos archivos tienen extensiones no válidas.";
+    }
+
+    if (!$imagen) {
+        return "Error al crear la imagen.";
     }
 
     $x = imagesx($imagen);
     $y = imagesy($imagen);
+
+    if ($x == 0 || $y == 0) {
+        return "La imagen original tiene dimensiones inválidas.";
+    }
 
     if ($x >= $y) {
         $nuevax = $xmax;
@@ -1241,7 +1268,7 @@ function RedimensionarImagen(&$pNombreimg, $rutaimg, $xmax, $ymax, $nuevaRuta = 
         $nuevax = $x / $y * $nuevay;
     }
 
-    $img2 = imagecreatetruecolor($nuevax, $nuevay);
+    $img2 = imagecreatetruecolor(floor($nuevax), floor($nuevay));
     imagecopyresized($img2, $imagen, 0, 0, 0, 0, floor($nuevax), floor($nuevay), $x, $y);
 
     if ($nuevaRuta == "") {
@@ -1250,6 +1277,7 @@ function RedimensionarImagen(&$pNombreimg, $rutaimg, $xmax, $ymax, $nuevaRuta = 
         imagejpeg($img2, $nuevaRuta);
     }
 
+    // Si llega a este punto, la imagen se ha redimensionado correctamente
     return "OK";
 }
 
