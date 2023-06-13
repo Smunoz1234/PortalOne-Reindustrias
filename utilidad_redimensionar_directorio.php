@@ -31,11 +31,13 @@ if (!is_dir($entrada) && ($entrada != "")) {
 			$sw_error = 1;
 		}
 
-		// SMM, 20/04/2023
+		// SMM, 13/06/2023
+		$msg_log = ""; // Log de archivos con errores
 		$CambiarNombre = $_POST["CambiarNombre"] ?? "";
 
 		if ($CambiarNombre == "Y") {
 			$SQL_Nombres = Seleccionar("tbl_CambioNombreImagenes", "*");
+
 			while ($row_Nombre = sqlsrv_fetch_array($SQL_Nombres)) {
 				$archivo = $row_Nombre["NombreArchivo"];
 				$entrada_archivo = "$entrada/$archivo";
@@ -45,13 +47,18 @@ if (!is_dir($entrada) && ($entrada != "")) {
 					$resultado = RedimensionarImagen($archivo, $entrada_archivo, $ancho, $alto, "$salida/$nuevo_archivo");
 
 					if ($resultado != "OK") {
-						$msg_error = $resultado;
+						$msg_error = "Algunos archivos presentan errores, ver log para más detalles.";
+
+						$msg_log .= "\\n" . $resultado;
+						$msg_log .= "\\n" . str_replace("\\", "//", $entrada_archivo);
 
 						$sw_error = 1;
 					}
 				} else {
-					$msg_error = "Algunos archivos especificados no existen.";
-					$msg_error .= str_replace("\\", "/", $entrada_archivo);
+					$msg_error = "Algunos archivos especificados no existen en la BD, ver log para más detalles.";
+
+					$msg_log .= "\\n" . "El archivo especificado no existe.";
+					$msg_log .= "\\n" . str_replace("\\", "//", $entrada_archivo);
 
 					$sw_error = 1;
 				}
@@ -61,7 +68,10 @@ if (!is_dir($entrada) && ($entrada != "")) {
 				$resultado = RedimensionarImagen($archivo, "$entrada/$archivo", $ancho, $alto, "$salida/$archivo");
 
 				if ($resultado != "OK") {
-					$msg_error = $resultado;
+					$msg_error = "Algunos archivos presentan errores, ver log para más detalles.";
+
+					$msg_log .= "\\n" . $resultado;
+					$msg_log .= "\\n" . str_replace("\\", "/", "$entrada/$archivo");
 
 					$sw_error = 1;
 				}
@@ -126,6 +136,9 @@ if (!is_dir($entrada) && ($entrada != "")) {
 					"text": "<?php echo $msg_error; ?>",
 					"icon": "warning"
 				});
+
+				// SMM, 13/06/2023
+				console.log("<?php echo $msg_log; ?>");
 			<?php } ?>
 		});
 	</script>
