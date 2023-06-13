@@ -51,6 +51,7 @@ if (!is_dir($entrada) && ($entrada != "")) {
 					}
 				} else {
 					$msg_error = "Algunos archivos especificados no existen.";
+					$msg_error .= str_replace("\\", "/", $entrada_archivo);
 
 					$sw_error = 1;
 				}
