@@ -129,9 +129,6 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
 			"'" . $_POST['SucursalDestino'] . "'",
 			"'" . LSiqmlObs($_POST['DireccionDestino']) . "'",
 			"'" . $_POST['CondicionPago'] . "'",
-
-			// Se eliminaron las dimensiones, SMM 23/08/2022
-
 			"'" . $_POST['PrjCode'] . "'",
 			"'" . $_POST['Autorizacion'] . "'",
 			"'" . $_POST['Almacen'] . "'",
@@ -143,14 +140,6 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
 			"'" . ($_POST['ComentariosAutor'] ?? "") . "'",
 			"'" . ($_POST['MensajeProceso'] ?? "") . "'",
 		);
-
-		// Enviar el valor de la dimensiones dinámicamente al SP.
-		foreach ($array_Dimensiones as &$dim) {
-			$Dim_PostValue = $_POST[strval($dim['IdPortalOne'])];
-
-			// El nombre de los parámetros es diferente en cada documento.
-			array_push($ParametrosCabEntregaVenta, "'$Dim_PostValue'");
-		} // SMM, 23/08/2022
 
 		$SQL_CabeceraEntregaVenta = EjecutarSP('sp_tbl_EntregaVenta', $ParametrosCabEntregaVenta, $_POST['P']);
 		if ($SQL_CabeceraEntregaVenta) {
@@ -1272,8 +1261,8 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 										<label class="col-lg-1 control-label">Sucursal destino <span
 												class="text-danger">*</span></label>
 										<div class="col-lg-5">
-											<select name="SucursalDestino" class="form-control"
-												id="SucursalDestino" required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
+											<select name="SucursalDestino" class="form-control" id="SucursalDestino"
+												required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
 													echo "disabled='disabled'";
 												} ?>>
 												<option value="">Seleccione...</option>
@@ -1536,8 +1525,8 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 									<label class="col-lg-1 control-label">Proyecto <span
 											class="text-danger">*</span></label>
 									<div class="col-lg-3">
-										<select id="PrjCode" name="PrjCode" class="form-control"
-											required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
+										<select id="PrjCode" name="PrjCode" class="form-control" required="required"
+											<?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
 												echo "disabled='disabled'";
 											} ?>>
 											<option value="">(NINGUNO)</option>
