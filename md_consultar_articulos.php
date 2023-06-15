@@ -173,13 +173,28 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 						<div class="col-lg-4">
 							<div class="form-group">
 								<div class="col-xs-12" style="margin-bottom: 10px;">
-									<label class="control-label">Tipo OT <span class="text-danger">*</span></label>
+									<label class="control-label">Tipo OT (Origen Llamada) <span
+											class="text-danger">*</span></label>
 
 									<select name="IdTipoOT" id="IdTipoOT" class="form-control select2" required>
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_ORIGEN = sqlsrv_fetch_array($SQL_OT_ORIGEN)) { ?>
 											<option value="<?php echo $row_ORIGEN['IdTipoOT']; ?>"><?php echo $row_ORIGEN['IdTipoOT'] . " - " . $row_ORIGEN['TipoOT']; ?></option>
+										<?php } ?>
+									</select>
+								</div> <!-- col-xs-12 -->
+
+								<div class="col-xs-12" style="margin-bottom: 10px;">
+									<label class="control-label">Tipo Problema <span
+											class="text-danger">*</span></label>
+
+									<select name="IdTipoProblema" id="IdTipoProblema" class="form-control select2"
+										required>
+										<option value="">Seleccione...</option>
+
+										<?php while ($row_TIPOPROBLEMA = sqlsrv_fetch_array($SQL_OT_TIPOPROBLEMA)) { ?>
+											<option value="<?php echo $row_TIPOPROBLEMA['IdTipoProblema']; ?>"><?php echo $row_TIPOPROBLEMA['IdTipoProblema'] . " - " . $row_TIPOPROBLEMA['TipoProblema']; ?></option>
 										<?php } ?>
 									</select>
 								</div> <!-- col-xs-12 -->
@@ -198,27 +213,14 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 								</div> <!-- col-xs-12 -->
 
 								<div class="col-xs-12" style="margin-bottom: 10px;">
-									<label class="control-label">Tipo Cargo <span class="text-danger">*</span></label>
+									<label class="control-label">Tipo Cargo (Tipo Llamada) <span
+											class="text-danger">*</span></label>
 
 									<select name="IdTipoCargo" id="IdTipoCargo" class="form-control select2" required>
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_CLASES = sqlsrv_fetch_array($SQL_OT_CLASES)) { ?>
 											<option value="<?php echo $row_CLASES['IdTipoCargo']; ?>"><?php echo $row_CLASES['IdTipoCargo'] . " - " . $row_CLASES['TipoCargo']; ?></option>
-										<?php } ?>
-									</select>
-								</div> <!-- col-xs-12 -->
-
-								<div class="col-xs-12" style="margin-bottom: 10px;">
-									<label class="control-label">Tipo Problema <span
-											class="text-danger">*</span></label>
-
-									<select name="IdTipoProblema" id="IdTipoProblema" class="form-control select2"
-										required>
-										<option value="">Seleccione...</option>
-
-										<?php while ($row_TIPOPROBLEMA = sqlsrv_fetch_array($SQL_OT_TIPOPROBLEMA)) { ?>
-											<option value="<?php echo $row_TIPOPROBLEMA['IdTipoProblema']; ?>"><?php echo $row_TIPOPROBLEMA['IdTipoProblema'] . " - " . $row_TIPOPROBLEMA['TipoProblema']; ?></option>
 										<?php } ?>
 									</select>
 								</div> <!-- col-xs-12 -->
@@ -571,7 +573,17 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 				});
 				// Fin AJAX
 			}); // Fin Loop Articulos
-
 		}); // Fin Evento CLICK
+
+		// SMM, 15/06/2023
+		$("#IdTipoOT").change(function () {
+			$.ajax({
+				type: "POST",
+				url: `ajx_cbo_select.php?type=45&id=${$(this).val()}`,
+				success: function (response) {
+					$('#IdTipoProblema').html(response).fadeIn();
+				}
+			});
+		});
 	});
 </script>

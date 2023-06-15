@@ -1056,5 +1056,28 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
         }
     }
 
+    // SMM, 15/06/2023
+    elseif ($_GET['type'] == 45) { // Tipo de problema, dependiendo del tipo origen. Similar a el 15.
+        if (!isset($_GET['id']) || ($_GET['id'] == "")) {
+            echo "<option value=''>Seleccione...</option>";
+        } else {
+            $IdTipoOT = "'" . $_GET['id'] . "'";
+            $SQL = Seleccionar('uvw_Sap_tbl_OT_TipoProblema', '*', "IdTipoOrigen = $IdTipoOT");
+            $Num = sqlsrv_num_rows($SQL);
+            if ($Num) {
+                echo "<option value=''>Seleccione...</option>";
+                
+                while ($row = sqlsrv_fetch_array($SQL)) {
+                    $rowId = $row['IdOT_TipoProblema'];
+                    $rowVal = $row['OT_TipoProblema'];
+
+                    echo "<option value='$rowId'>$rowId - $rowVal</option>";
+                }
+            } else {
+                echo "<option value=''>Seleccione...</option>";
+            }
+        }
+    } 
+
     sqlsrv_close($conexion);
 }
