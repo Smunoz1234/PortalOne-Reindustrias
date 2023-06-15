@@ -496,53 +496,6 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 		}
 	</style>
 	<script>
-		function BuscarArticulo(dato) {
-			var almacen = document.getElementById("Almacen").value;
-			var cardcode = document.getElementById("CardCode").value;
-
-			var posicion_x;
-			var posicion_y;
-			posicion_x = (screen.width / 2) - (1200 / 2);
-			posicion_y = (screen.height / 2) - (500 / 2);
-
-			let idlistaprecio = document.getElementById("IdListaPrecio").value; // SMM, 25/02/2022
-
-			let proyecto = document.getElementById("PrjCode").value; // SMM, 04/05/2022
-			let empleado = document.getElementById("EmpleadoVentas").value; // SMM, 04/05/2022
-
-			// SMM, 16/06/2022
-			var dim1 = ((document.getElementById("Dim1") || {}).value) || "";
-			var dim2 = ((document.getElementById("Dim2") || {}).value) || "";
-			var dim3 = ((document.getElementById("Dim3") || {}).value) || "";
-			var dim4 = ((document.getElementById("Dim4") || {}).value) || "";
-			var dim5 = ((document.getElementById("Dim5") || {}).value) || "";
-
-			if (dato != "") {
-				if ((cardcode != "") && (almacen != "") && (idlistaprecio != "")) {
-					remote = open('buscar_articulo.php?dato=' + dato + '&prjcode=' + proyecto + '&empventas=' + empleado + '&cardcode=' + cardcode + '&whscode=' + almacen + '&idlistaprecio=' + idlistaprecio + '&doctype=<?php if ($edit == 0) {
-						echo "13";
-					} else {
-						echo "14";
-					} ?>&iddevolucionventa=<?php if ($edit == 1) {
-						echo base64_encode($row['ID_DevolucionVenta']);
-					} else {
-						echo "0";
-					} ?>&evento=<?php if ($edit == 1) {
-						echo base64_encode($row['IdEvento']);
-					} else {
-						echo "0";
-					} ?>&tipodoc=2&dim1=' + dim1 + '&dim2=' + dim2 + '&dim3=' + dim3 + '&dim4=' + dim4 + '&dim5=' + dim5, 'remote', "width=1200,height=500,location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=no,fullscreen=no,directories=no,status=yes,left=" + posicion_x + ",top=" + posicion_y + "");
-					remote.focus();
-				} else {
-					Swal.fire({
-						title: "¡Advertencia!",
-						text: "Debe seleccionar un cliente, un almacén y una lista de precios",
-						icon: "warning",
-						confirmButtonText: "OK"
-					});
-				}
-			}
-		}
 		function ConsultarDatosCliente() {
 			var Cliente = document.getElementById('CardCode');
 			if (Cliente.value != "") {
@@ -1323,12 +1276,13 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 									</label>
 								</div>
 								<div class="form-group">
-									<label class="col-lg-1 control-label">Buscar articulo</label>
+									<!-- SMM, 15/06/2023 -->
 									<div class="col-lg-4">
-										<input name="BuscarItem" id="BuscarItem" type="text" class="form-control"
-											placeholder="Escriba para buscar..." <?php if ($edit == 0) { ?>onBlur="javascript:BuscarArticulo(this.value);" <?php } ?> <?php if ($edit == 1) {
-													  echo "readonly";
-												  } ?>>
+										<button <?php if ($edit == 1) {
+											echo "disabled";
+										} ?> class="btn btn-success"
+											type="button" onclick="AgregarArticulos();"><i class="fa fa-plus"></i>
+											Agregar artículo</button>
 									</div>
 
 									<!-- SMM, 04/05/2022 -->
