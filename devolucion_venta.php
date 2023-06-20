@@ -1180,6 +1180,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 											<?php } ?>
 										</select>
 									</div>
+									
 									<label class="col-lg-1 control-label">Referencia</label>
 									<div class="col-lg-3">
 										<input type="text" name="Referencia" id="Referencia" class="form-control"

@@ -1115,17 +1115,25 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 									<label class="col-lg-1 control-label">Serie <span
 											class="text-danger">*</span></label>
 									<div class="col-lg-3">
-										<select name="Serie" class="form-control" id="Serie" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
+										<select name="Serie" class="form-control" required="required" id="Serie" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
 											echo "disabled='disabled'";
 										} ?>>
+											<!-- SMM, 20/06/2023 -->
+											<?php if (sqlsrv_num_rows($SQL_Series) > 1) { ?>
+												<option value=''>Seleccione...</option>
+											<?php } ?>
+
 											<?php while ($row_Series = sqlsrv_fetch_array($SQL_Series)) { ?>
 												<option value="<?php echo $row_Series['IdSeries']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['IdSeries'])) && (strcmp($row_Series['IdSeries'], $row['IdSeries']) == 0)) {
+													   echo "selected=\"selected\"";
+												   } elseif (isset($_GET['Serie']) && (strcmp($row_Series['IdSeries'], base64_decode($_GET['Serie'])) == 0)) {
 													   echo "selected=\"selected\"";
 												   } ?>><?php echo $row_Series['DeSeries']; ?>
 												</option>
 											<?php } ?>
 										</select>
 									</div>
+									
 									<label class="col-lg-1 control-label">Referencia</label>
 									<div class="col-lg-3">
 										<input type="text" name="Referencia" id="Referencia" class="form-control"

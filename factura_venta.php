@@ -862,7 +862,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 										<label class="col-lg-1 control-label">Sucursal destino <span
 												class="text-danger">*</span></label>
 										<div class="col-lg-5">
-											<select name="SucursalDestino" class="form-control select2"
+											<select name="SucursalDestino" class="form-control"
 												id="SucursalDestino" required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
 													echo "disabled='disabled'";
 												} ?>>
@@ -885,7 +885,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 										<label class="col-lg-1 control-label">Sucursal facturación <span
 												class="text-danger">*</span></label>
 										<div class="col-lg-5">
-											<select name="SucursalFacturacion" class="form-control select2"
+											<select name="SucursalFacturacion" class="form-control"
 												id="SucursalFacturacion" required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
 													echo "disabled='disabled'";
 												} ?>>
@@ -1048,17 +1048,25 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 									<label class="col-lg-1 control-label">Serie <span
 											class="text-danger">*</span></label>
 									<div class="col-lg-3">
-										<select name="Serie" class="form-control" id="Serie" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
+										<select name="Serie" class="form-control" required="required" id="Serie" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
 											echo "disabled='disabled'";
 										} ?>>
+											<!-- SMM, 20/06/2023 -->
+											<?php if (sqlsrv_num_rows($SQL_Series) > 1) { ?>
+												<option value=''>Seleccione...</option>
+											<?php } ?>
+
 											<?php while ($row_Series = sqlsrv_fetch_array($SQL_Series)) { ?>
 												<option value="<?php echo $row_Series['IdSeries']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['IdSeries'])) && (strcmp($row_Series['IdSeries'], $row['IdSeries']) == 0)) {
+													   echo "selected=\"selected\"";
+												   } elseif (isset($_GET['Serie']) && (strcmp($row_Series['IdSeries'], base64_decode($_GET['Serie'])) == 0)) {
 													   echo "selected=\"selected\"";
 												   } ?>><?php echo $row_Series['DeSeries']; ?>
 												</option>
 											<?php } ?>
 										</select>
 									</div>
+									
 									<label class="col-lg-1 control-label">Referencia</label>
 									<div class="col-lg-3">
 										<input type="text" name="Referencia" id="Referencia" class="form-control"
@@ -1127,7 +1135,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 									<label class="col-lg-1 control-label">Proyecto <span
 											class="text-danger">*</span></label>
 									<div class="col-lg-3">
-										<select id="PrjCode" name="PrjCode" class="form-control select2"
+										<select id="PrjCode" name="PrjCode" class="form-control"
 											required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
 												echo "disabled='disabled'";
 											} ?>>
@@ -1578,8 +1586,9 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 					startDate: '<?php echo date('Y-m-d'); ?>'
 				});
 			<?php } ?>
-			//$('.chosen-select').chosen({width: "100%"});
-			$(".select2").select2();
+			
+			// $('.chosen-select').chosen({width: "100%"});
+			// $(".select2").select2();
 
 			<?php
 			if ($edit == 1) { ?>
@@ -1732,7 +1741,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 
 			if (((cardCode != "") && (serie != "")) || probarModal) {
 				$.ajax({
-					type: "GET",
+					type: "POST",
 					url: "md_consultar_articulos.php",
 					data: {
 						Procedure: 35,
