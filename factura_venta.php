@@ -698,6 +698,9 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 			</div>
 
 			<div class="wrapper wrapper-content">
+				<!-- SMM, 17/06/2023 -->
+				<div class="modal inmodal fade" id="mdArticulos" tabindex="1" role="dialog" aria-hidden="true"></div>
+
 				<!-- SMM, 02/08/2022 -->
 				<?php include_once 'md_consultar_llamadas_servicios.php'; ?>
 
@@ -1464,7 +1467,6 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 							value="<?php echo $sw_error; ?>" />
 						<input type="hidden" form="CrearFacturaVenta" id="return" name="return"
 							value="<?php echo base64_encode($return); ?>" />
-						<!-- input type="hidden" form="CrearFacturaVenta" id="PrjCode" name="PrjCode" value="<?php // if ($edit == 1) {echo $row['PrjCode'];}?>" / -->
 					</form>
 				</div>
 			</div>
@@ -1656,7 +1658,8 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 			var TotalItems = document.getElementById("TotalItems");
 
 	//Validar si fue actualizado por otro usuario
-	/*$.ajax({
+	/*
+	$.ajax({
 		url:"ajx_buscar_datos_json.php",
 		data:{type:15,
 			  docentry:'<?php if ($edit == 1) {
@@ -1678,7 +1681,8 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 					});
 				}
 			}
-	 });* /
+	 });
+	*/
 
 		if (TotalItems.value == "0") {
 			result = false;
@@ -1728,7 +1732,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 
 			if (((cardCode != "") && (serie != "")) || probarModal) {
 				$.ajax({
-					type: "POST",
+					type: "GET",
 					url: "md_consultar_articulos.php",
 					data: {
 						Procedure: 35,

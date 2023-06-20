@@ -651,6 +651,9 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 				</div>
 			</div>
 			<div class="wrapper wrapper-content">
+				<!-- SMM, 17/06/2023 -->
+				<div class="modal inmodal fade" id="mdArticulos" tabindex="1" role="dialog" aria-hidden="true"></div>
+
 				<!-- SMM, 02/08/2022 -->
 				<?php include_once 'md_consultar_llamadas_servicios.php'; ?>
 
@@ -925,7 +928,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 										<label class="col-lg-1 control-label">Sucursal destino <span
 												class="text-danger">*</span></label>
 										<div class="col-lg-5">
-											<select name="SucursalDestino" class="form-control select2"
+											<select name="SucursalDestino" class="form-control"
 												id="SucursalDestino" required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
 													echo "disabled='disabled'";
 												} ?>>
@@ -948,7 +951,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 										<label class="col-lg-1 control-label">Sucursal facturación <span
 												class="text-danger">*</span></label>
 										<div class="col-lg-5">
-											<select name="SucursalFacturacion" class="form-control select2"
+											<select name="SucursalFacturacion" class="form-control"
 												id="SucursalFacturacion" required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
 													echo "disabled='disabled'";
 												} ?>>
@@ -1155,18 +1158,15 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 								</div>
 
 								<div class="form-group">
-									<label class="col-lg-1 control-label">Almacén <span
-											class="text-danger">*</span></label>
+									<label class="col-lg-1 control-label">Almacén</label>
 									<div class="col-lg-3">
-										<select name="Almacen" class="form-control" id="Almacen" required="required"
-											<?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
-												echo "disabled='disabled'";
-											} ?>>
+										<select name="Almacen" class="form-control" id="Almacen" readonly>
 											<option value="">Seleccione...</option>
 
 											<!-- SMM, 15/06/2023 -->
 										</select>
 									</div>
+									
 									<label class="col-lg-1 control-label">Autorización</label>
 									<div class="col-lg-3">
 										<select name="Autorizacion" class="form-control" id="Autorizacion" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
@@ -1187,7 +1187,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 									<label class="col-lg-1 control-label">Proyecto <span
 											class="text-danger">*</span></label>
 									<div class="col-lg-3">
-										<select id="PrjCode" name="PrjCode" class="form-control select2"
+										<select id="PrjCode" name="PrjCode" class="form-control"
 											required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
 												echo "disabled='disabled'";
 											} ?>>
@@ -1706,8 +1706,9 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 					startDate: '<?php echo date('Y-m-d'); ?>'
 				});
 			<?php } ?>
-			//$('.chosen-select').chosen({width: "100%"});
-			$(".select2").select2();
+			
+			// $('.chosen-select').chosen({width: "100%"});
+			// $(".select2").select2();
 
 			<?php
 			if ($edit == 1) { ?>

@@ -701,6 +701,9 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 			</div>
 
 			<div class="wrapper wrapper-content">
+				<!-- SMM, 17/06/2023 -->
+				<div class="modal inmodal fade" id="mdArticulos" tabindex="1" role="dialog" aria-hidden="true"></div>
+
 				<!-- SMM, 05/08/2022 -->
 				<?php include_once 'md_consultar_llamadas_servicios.php'; ?>
 

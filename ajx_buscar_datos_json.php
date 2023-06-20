@@ -45,14 +45,15 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
 
         $Consulta = "Select * From $Vista Where CodigoCliente='" . $_GET['CardCode'] . "' And NombreSucursal='" . $_GET['Sucursal'] . "'";
         //echo $Consulta;
+        
         $SQL = sqlsrv_query($conexion, $Consulta);
         $records = array();
         $row = sqlsrv_fetch_array($SQL);
         $records = array(
-            'NombreSucursal' => $row['NombreSucursal'],
-            'Direccion' => $row['Direccion'],
-            'Barrio' => $row['Barrio'],
-            'TipoDireccion' => $row['TipoDireccion'],
+            'NombreSucursal' => $row['NombreSucursal'] ?? "",
+            'Direccion' => $row['Direccion'] ?? "",
+            'Barrio' => $row['Barrio'] ?? "",
+            'TipoDireccion' => $row['TipoDireccion'] ?? "",
         );
         echo json_encode($records);
     } elseif ($type == 4) { //Buscar direccion de destino dependiendo del cliente (no usado)
@@ -714,13 +715,13 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
         $SQL = Seleccionar("uvw_Sap_tbl_SociosNegocios", "*", "CodigoCliente=" . $CardCode);
         $row = sqlsrv_fetch_array($SQL);
         $records = array(
-            'Direccion' => $row['Address'],
-            'Ciudad' => $row['City'],
-            'Celular' => $row['Celular'],
-            'Telefono' => $row['Telefono'],
-            'Correo' => $row['Email'],
-            'IdListaPrecio' => $row['IdListaPrecio'], // SMM, 24/02/2022
-            'SujetoImpuesto' => $row['SujetoImpuesto'], // SMM, 23/04/2022
+            'Direccion' => $row['Address'] ?? "",
+            'Ciudad' => $row['City'] ?? "",
+            'Celular' => $row['Celular'] ?? "",
+            'Telefono' => $row['Telefono'] ?? "",
+            'Correo' => $row['Email'] ?? "",
+            'IdListaPrecio' => $row['IdListaPrecio'] ?? "", // SMM, 24/02/2022
+            'SujetoImpuesto' => $row['SujetoImpuesto'] ?? "", // SMM, 23/04/2022
         );
         echo json_encode($records);
     }
