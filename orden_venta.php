@@ -855,6 +855,9 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 			</div>
 
 			<div class="wrapper wrapper-content">
+				<!-- SMM, 21/06/2023 -->
+				<div class="modal inmodal fade" id="mdLoteArticulos" tabindex="1" role="dialog" aria-hidden="true"></div>
+
 				<!-- SMM, 24/05/2023 -->
 				<div class="modal inmodal fade" id="mdArticulos" tabindex="1" role="dialog" aria-hidden="true"></div>
 
@@ -1553,13 +1556,22 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 								</div>
 
 								<div class="form-group">
-									<!-- SMM, 30/05/2023 -->
+
 									<div class="col-lg-4">
+										<!-- SMM, 30/05/2023 -->
 										<button <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || (!PermitirFuncion(402))) {
 											echo "disabled";
 										} ?> class="btn btn-success"
 											type="button" onclick="AgregarArticulos();"><i class="fa fa-plus"></i>
 											Agregar artículo</button>
+
+										<!-- SMM, 21/06/2023 -->
+										<button <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || (!PermitirFuncion(402))) {
+											echo "disabled";
+										} ?> class="btn btn-warning"
+											style="margin-left: 20px;" type="button" onclick="ActualizarArticulos();"><i
+												class="fa fa-refresh"></i>
+											Actualización en lote</button>
 									</div>
 
 									<!-- SMM, 04/05/2022 -->
@@ -1632,7 +1644,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 
 							<div id="tab-3" class="tab-pane">
 								<div class="panel-body">
-									<?php if (($edit == 1) || sqlsrv_has_rows($SQL_Anexo)) {
+									<?php if (($edit == 1) || (isset($SQL_Anexo) && sqlsrv_has_rows($SQL_Anexo))) {
 										if ((($edit == 1) && ($row['IdAnexo'] != 0)) || (sqlsrv_has_rows($SQL_Anexo) && ($edit == 0))) { ?>
 											<div class="form-group">
 												<div class="col-lg-4">
@@ -2248,6 +2260,37 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 				Swal.fire({
 					title: "¡Advertencia!",
 					text: "Debe seleccionar un Cliente y una Serie.",
+					icon: "warning",
+					confirmButtonText: "OK"
+				});
+			}
+		}
+
+		// SMM, 21/06/2023
+		function ActualizarArticulos() {
+			let probarModal = false;
+			let totalItems = parseInt(document.getElementById('TotalItems').value);
+
+			if ((totalItems > 0) || probarModal) {
+				$.ajax({
+					type: "POST",
+					url: "md_actualizar_articulos.php",
+					data: {
+						Procedure: 35,
+						Edit: <?php echo $edit; ?>,
+						DocType: "<?php echo ($edit == 0) ? 1 : 2; ?>",
+						DocId: "<?php echo $row['ID_OrdenVenta'] ?? 0; ?>",
+						DocEvent: "<?php echo $row['IdEvento'] ?? 0; ?>",
+					},
+					success: function (response) {
+						$('#mdLoteArticulos').html(response);
+						$("#mdLoteArticulos").modal("show");
+					}
+				});
+			} else {
+				Swal.fire({
+					title: "¡Advertencia!",
+					text: "Debe haber al menos un artículo en el detalle del documento.",
 					icon: "warning",
 					confirmButtonText: "OK"
 				});
