@@ -1097,22 +1097,10 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 								<div class="form-group">
 									<label class="col-lg-1 control-label">Almacén</label>
 									<div class="col-lg-3">
-										<select name="Almacen" class="form-control" id="Almacen" required="required"
-											<?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
-												echo "disabled='disabled'";
-											} ?>>
+										<select name="Almacen" class="form-control" id="Almacen" readonly>
 											<option value="">Seleccione...</option>
-											<?php if ($edit == 1) {
-												while ($row_Almacen = sqlsrv_fetch_array($SQL_Almacen)) { ?>
-													<option value="<?php echo $row_Almacen['WhsCode']; ?>" <?php if ($dt_LS == 1) {
-														   if (strcmp($row_Almacen['WhsCode'], $row_LMT['WhsCode']) == 0) {
-															   echo "selected=\"selected\"";
-														   }
-													   } elseif (($edit == 1) && (isset($row['WhsCode'])) && (strcmp($row_Almacen['WhsCode'], $row['WhsCode']) == 0)) {
-														   echo "selected=\"selected\"";
-													   } ?>><?php echo $row_Almacen['WhsName']; ?></option>
-												<?php }
-											} ?>
+
+											<!-- SMM, 20/06/2023 -->
 										</select>
 									</div>
 									<label class="col-lg-1 control-label">Autorización</label>
