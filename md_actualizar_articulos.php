@@ -26,6 +26,9 @@ $Proyecto = $_POST['IdProyecto'];
 $IdEmpleado = $_POST['IdEmpleado'];
 $ListaPrecio = $_POST['ListaPrecio'];
 
+// SMM, 21/06/2023
+$DefaultSelection = false;
+
 // Proyectos. SMM, 24/05/2023
 $SQL_Proyecto = Seleccionar('uvw_Sap_tbl_Proyectos', '*', '', 'DeProyecto');
 
@@ -89,14 +92,13 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 						<div class="col-lg-4">
 							<div class="form-group">
 								<div class="col-xs-12" style="margin-bottom: 10px;">
-									<label class="control-label">Almacén origen <span
-											class="text-danger">*</span></label>
+									<label class="control-label">Almacén origen</label>
 
-									<select name="Almacen" id="Almacen" class="form-control select2" required>
+									<select name="Almacen" id="Almacen" class="form-control select2">
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_Almacen = sqlsrv_fetch_array($SQL_Almacen)) { ?>
-											<option <?php if ($row_DatosEmpleados["AlmacenOrigen"] == $row_Almacen['WhsCode']) {
+											<option <?php if ($DefaultSelection && ($row_DatosEmpleados["AlmacenOrigen"] == $row_Almacen['WhsCode'])) {
 												echo "selected";
 											} ?> value="<?php echo $row_Almacen['WhsCode']; ?>"><?php echo $row_Almacen['WhsCode'] . " - " . $row_Almacen['WhsName']; ?></option>
 										<?php } ?>
@@ -120,12 +122,10 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 									<label class="control-label">Proyecto</label>
 
 									<select id="Proyecto" name="Proyecto" class="form-control select2">
-										<option value="">(NINGUNO)
-											<?php echo $Proyecto; ?>
-										</option>
+										<option value="">Seleccione...</option>
 
 										<?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) { ?>
-											<option <?php if ($Proyecto == $row_Proyecto['IdProyecto']) {
+											<option <?php if ($DefaultSelection && ($Proyecto == $row_Proyecto['IdProyecto'])) {
 												echo "selected";
 											} ?> value="<?php echo $row_Proyecto['IdProyecto']; ?>">
 												<?php echo $row_Proyecto['IdProyecto'] . " - " . $row_Proyecto['DeProyecto']; ?>
@@ -135,14 +135,13 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 								</div> <!-- col-xs-12 -->
 
 								<div class="col-xs-12" style="margin-bottom: 10px;">
-									<label class="control-label">Lista Precios <span
-											class="text-danger">*</span></label>
+									<label class="control-label">Lista Precios</label>
 
-									<select name="ListaPrecio" id="ListaPrecio" class="form-control select2" required>
+									<select name="ListaPrecio" id="ListaPrecio" class="form-control select2">
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_ListaPrecio = sqlsrv_fetch_array($SQL_ListaPrecios)) { ?>
-											<option <?php if ($ListaPrecio == $row_ListaPrecio['IdListaPrecio']) {
+											<option <?php if ($DefaultSelection && ($ListaPrecio == $row_ListaPrecio['IdListaPrecio'])) {
 												echo "selected";
 											} ?> value="<?php echo $row_ListaPrecio['IdListaPrecio']; ?>">
 
@@ -154,14 +153,13 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 								</div> <!-- col-xs-12 -->
 
 								<div class="col-xs-12" style="margin-bottom: 10px;">
-									<label class="control-label">Empleado de ventas <span
-											class="text-danger">*</span></label>
+									<label class="control-label">Empleado de ventas</label>
 
-									<select name="EmpVentas" id="EmpVentas" class="form-control select2" required>
+									<select name="EmpVentas" id="EmpVentas" class="form-control select2">
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_EmpleadosVentas = sqlsrv_fetch_array($SQL_EmpleadosVentas)) { ?>
-											<option <?php if ($IdEmpleado == $row_EmpleadosVentas['ID_EmpVentas']) {
+											<option <?php if ($DefaultSelection && ($IdEmpleado == $row_EmpleadosVentas['ID_EmpVentas'])) {
 												echo "selected";
 											} ?> value="<?php echo $row_EmpleadosVentas['ID_EmpVentas']; ?>"><?php echo $row_EmpleadosVentas['ID_EmpVentas'] . " - " . $row_EmpleadosVentas['DE_EmpVentas']; ?></option>
 										<?php } ?>
@@ -173,10 +171,9 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 						<div class="col-lg-4">
 							<div class="form-group">
 								<div class="col-xs-12" style="margin-bottom: 10px;">
-									<label class="control-label">Tipo OT (Origen Llamada) <span
-											class="text-danger">*</span></label>
+									<label class="control-label">Tipo OT (Origen Llamada)</label>
 
-									<select name="IdTipoOT" id="IdTipoOT" class="form-control select2" required>
+									<select name="IdTipoOT" id="IdTipoOT" class="form-control select2">
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_ORIGEN = sqlsrv_fetch_array($SQL_OT_ORIGEN)) { ?>
@@ -186,8 +183,7 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 								</div> <!-- col-xs-12 -->
 
 								<div class="col-xs-12" style="margin-bottom: 10px;">
-									<label class="control-label">Tipo Problema <span
-											class="text-danger">*</span></label>
+									<label class="control-label">Tipo Problema</label>
 
 									<select name="IdTipoProblema" id="IdTipoProblema" class="form-control select2"
 										required>
@@ -200,10 +196,9 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 								</div> <!-- col-xs-12 -->
 
 								<div class="col-xs-12" style="margin-bottom: 10px;">
-									<label class="control-label">Sede Empresa <span class="text-danger">*</span></label>
+									<label class="control-label">Sede Empresa</label>
 
-									<select name="IdSedeEmpresa" id="IdSedeEmpresa" class="form-control select2"
-										required>
+									<select name="IdSedeEmpresa" id="IdSedeEmpresa" class="form-control select2">
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_SEDE_EMPRESA = sqlsrv_fetch_array($SQL_OT_SEDE_EMPRESA)) { ?>
@@ -213,10 +208,9 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 								</div> <!-- col-xs-12 -->
 
 								<div class="col-xs-12" style="margin-bottom: 10px;">
-									<label class="control-label">Tipo Cargo (Tipo Llamada) <span
-											class="text-danger">*</span></label>
+									<label class="control-label">Tipo Cargo (Tipo Llamada)</label>
 
-									<select name="IdTipoCargo" id="IdTipoCargo" class="form-control select2" required>
+									<select name="IdTipoCargo" id="IdTipoCargo" class="form-control select2">
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_CLASES = sqlsrv_fetch_array($SQL_OT_CLASES)) { ?>
@@ -226,8 +220,7 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 								</div> <!-- col-xs-12 -->
 
 								<div class="col-xs-12" style="margin-bottom: 10px;">
-									<label class="control-label">Tipo Preventivo <span
-											class="text-danger">*</span></label>
+									<label class="control-label">Tipo Preventivo</label>
 
 									<select name="IdTipoPreventivo" id="IdTipoPreventivo" class="form-control select2"
 										required>
@@ -247,10 +240,10 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 								<?php foreach ($array_Dimensiones as &$dim) { ?>
 									<div class="col-xs-12" style="margin-bottom: 10px;">
 										<label class="control-label">
-											<?php echo $dim['DescPortalOne']; ?> <span class="text-danger">*</span>
+											<?php echo $dim['DescPortalOne']; ?>
 										</label>
 
-										<select name="<?php echo $dim['IdPortalOne'] ?>" required
+										<select name="<?php echo $dim['IdPortalOne'] ?>"
 											id="<?php echo $dim['IdPortalOne'] ?>" class="form-control select2">
 											<option value="">Seleccione...</option>
 
@@ -264,7 +257,7 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 												<?php $DimCode = intval($dim['DimCode']); ?>
 												<?php $OcrId = ($DimCode == 1) ? "" : $DimCode; ?>
 
-												<option <?php if ($row_DatosEmpleados["CentroCosto$DimCode"] == $row_Dim['OcrCode']) {
+												<option <?php if ($DefaultSelection && ($row_DatosEmpleados["CentroCosto$DimCode"] == $row_Dim['OcrCode'])) {
 													echo "selected";
 												} ?> value="<?php echo $row_Dim['OcrCode']; ?>">
 													<?php echo $row_Dim['OcrCode'] . " - " . $row_Dim['OcrName']; ?>
@@ -277,52 +270,9 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 						</div> <!-- col-lg-4 -->
 					</div> <!-- ibox-content -->
 				</div> <!-- row -->
-
-				<div class="row">
-					<div class="col-lg-6">
-						<label class="control-label">Buscar artículo <span class="text-danger">*</span></label>
-
-						<input name="BuscarItem" id="BuscarItem" type="text" class="form-control"
-							placeholder="Escriba para buscar..." required>
-					</div>
-
-					<div class="col-lg-4" style="margin-top: 20px;">
-						<label class="checkbox-inline i-checks"><input name="chkStock" type="checkbox" id="chkStock"
-								value="1" checked="checked"> Mostrar solo los artículos con
-							stock</label>
-					</div>
-
-					<div class="col-lg-2" style="margin-top: 20px;">
-						<button type="submit" class="btn btn-outline btn-success pull-right"><i
-								class="fa fa-search"></i> Buscar</button>
-					</div>
-				</div> <!-- row -->
 			</form>
 			<br><br><br>
 			<!-- Fin, filtros -->
-
-			<!-- Inicio, tabla -->
-			<div class="row">
-				<div class="col-lg-6">
-					<div class="ibox-content">
-						<div class="table-responsive" id="tableContainerOne">
-							<i class="fa fa-search" style="font-size: 20px; color: gray;"></i>
-							<span style="font-size: 15px; color: gray;">Debe buscar un artículo.</span>
-						</div> <!-- table-responsive -->
-					</div> <!-- ibox-content -->
-				</div> <!-- col-lg-6 -->
-				<div class="col-lg-6">
-					<div class="ibox-content">
-						<div class="table-responsive" id="tableContainerTwo">
-							<i class="fa fa-exclamation-circle" style="font-size: 20px; color: gray;"></i>
-							<span style="font-size: 15px; color: gray;">Todavía no se han agregado artículos al
-								carrito.</span>
-						</div> <!-- table-responsive -->
-					</div> <!-- ibox-content -->
-				</div> <!-- col-lg-6 -->
-			</div>
-			<!-- Fin, tabla -->
-
 		</div> <!-- modal-body -->
 		<div class="modal-footer">
 			<button type="button" class="btn btn-success m-t-md" id="btnAceptar"><i class="fa fa-check"></i>

@@ -856,7 +856,8 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 
 			<div class="wrapper wrapper-content">
 				<!-- SMM, 21/06/2023 -->
-				<div class="modal inmodal fade" id="mdLoteArticulos" tabindex="1" role="dialog" aria-hidden="true"></div>
+				<div class="modal inmodal fade" id="mdLoteArticulos" tabindex="1" role="dialog" aria-hidden="true">
+				</div>
 
 				<!-- SMM, 24/05/2023 -->
 				<div class="modal inmodal fade" id="mdArticulos" tabindex="1" role="dialog" aria-hidden="true"></div>
@@ -2268,10 +2269,16 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 
 		// SMM, 21/06/2023
 		function ActualizarArticulos() {
-			let probarModal = false;
+			let probarModal = true;
 			let totalItems = parseInt(document.getElementById('TotalItems').value);
 
-			if ((totalItems > 0) || probarModal) {
+			let serie = $("#Serie").val();
+			let proyecto = $("#PrjCode").val();
+			let cardCode = $("#CardCode").val();
+			let listaPrecio = $("#IdListaPrecio").val();
+			let empleado = $("#EmpleadoVentas").val();
+
+			if (((cardCode != "") && (serie != "") && (totalItems > 0)) || probarModal) {
 				$.ajax({
 					type: "POST",
 					url: "md_actualizar_articulos.php",
@@ -2281,6 +2288,11 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 						DocType: "<?php echo ($edit == 0) ? 1 : 2; ?>",
 						DocId: "<?php echo $row['ID_OrdenVenta'] ?? 0; ?>",
 						DocEvent: "<?php echo $row['IdEvento'] ?? 0; ?>",
+						CardCode: cardCode,
+						IdSeries: serie,
+						IdProyecto: proyecto,
+						ListaPrecio: listaPrecio,
+						IdEmpleado: empleado
 					},
 					success: function (response) {
 						$('#mdLoteArticulos').html(response);
@@ -2290,7 +2302,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 			} else {
 				Swal.fire({
 					title: "¡Advertencia!",
-					text: "Debe haber al menos un artículo en el detalle del documento.",
+					text: "Debe seleccionar un Cliente y una Serie. También debe haber al menos un artículo en el detalle del documento.",
 					icon: "warning",
 					confirmButtonText: "OK"
 				});

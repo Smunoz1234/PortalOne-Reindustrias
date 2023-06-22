@@ -120,9 +120,7 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 									<label class="control-label">Proyecto</label>
 
 									<select id="Proyecto" name="Proyecto" class="form-control select2">
-										<option value="">(NINGUNO)
-											<?php echo $Proyecto; ?>
-										</option>
+										<option value="">(NINGUNO)</option>
 
 										<?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) { ?>
 											<option <?php if ($Proyecto == $row_Proyecto['IdProyecto']) {
