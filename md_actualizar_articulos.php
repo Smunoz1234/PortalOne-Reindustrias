@@ -68,24 +68,17 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 	.ibox-title a {
 		color: inherit !important;
 	}
-
-	.collapse-link:hover {
-		cursor: pointer;
-	}
 </style>
 
 <div class="modal-dialog modal-lg" style="width: 75% !important;">
 	<div class="modal-content">
 		<div class="modal-body">
 			<!-- Inicio, filtros -->
-			<form id="formBuscar" class="form-horizontal">
+			<form id="formActualizar" class="form-horizontal">
 				<div class="row">
 					<!-- data-toggle="collapse" data-target="#filtros" -->
 					<div class="ibox-title bg-success">
 						<h5 class="collapse-link"><i class="fa fa-filter"></i> Datos para filtrar</h5>
-						<a class="collapse-link pull-right">
-							<i class="fa fa-chevron-up"></i>
-						</a>
 					</div>
 
 					<div class="collapse in" id="filtros">
@@ -185,8 +178,7 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 								<div class="col-xs-12" style="margin-bottom: 10px;">
 									<label class="control-label">Tipo Problema</label>
 
-									<select name="IdTipoProblema" id="IdTipoProblema" class="form-control select2"
-										required>
+									<select name="IdTipoProblema" id="IdTipoProblema" class="form-control select2">
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_TIPOPROBLEMA = sqlsrv_fetch_array($SQL_OT_TIPOPROBLEMA)) { ?>
@@ -222,8 +214,7 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 								<div class="col-xs-12" style="margin-bottom: 10px;">
 									<label class="control-label">Tipo Preventivo</label>
 
-									<select name="IdTipoPreventivo" id="IdTipoPreventivo" class="form-control select2"
-										required>
+									<select name="IdTipoPreventivo" id="IdTipoPreventivo" class="form-control select2">
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_TIPOPREVENTI = sqlsrv_fetch_array($SQL_OT_TIPOPREVENTI)) { ?>
@@ -284,95 +275,14 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 </div> <!-- modal-dialog -->
 
 <script>
-	function VerificarFilas() {
-		if ($(".footable-detail-row").length) {
-			Swal.fire({
-				"title": "¡Advertencia!",
-				"text": "Debe contraer todas las filas para poder realizar alguna acción en las tablas.",
-				"icon": "warning"
-			});
-
-			return false;
-		}
-
-		return true;
-	}
-
-	function AgregarArticulo(ID) {
-		if (VerificarFilas()) {
-
-			if ($("#footableTwo").length) {
-				console.log("footableTwo existe.");
-			} else {
-				console.log("footableTwo no existe.");
-
-				// Clonar la tabla con el ID "footableOne"
-				let tableTwo = $('#footableOne').clone();
-
-				// Vaciar el tbody de la tabla clonada
-				tableTwo.find('tbody').empty();
-
-				// Asignar el ID "footableTwo" a la tabla clonada
-				tableTwo.attr('id', 'footableTwo');
-
-				// Agregar la tabla clonada al DOM
-				$('#tableContainerTwo').replaceWith(tableTwo);
-			}
-
-			// Obtener la fila correspondiente al artículo seleccionado
-			let fila = $(`#${ID}`).clone();
-
-			// Eliminar el botón "fooicon" de la fila clonada
-			fila.find('.fooicon').remove();
-
-			// Reemplazar el botón "Agregar" por "Eliminar"
-			fila.find(".btn-success")
-				.removeClass("btn-success")
-				.addClass("btn-danger")
-				.html('<i class="fa fa-trash"></i> Eliminar')
-				.attr("onclick", `EliminarArticulo(this);`);
-
-
-			// Agregar la fila al carrito de compras
-			$("#footableTwo tbody").append(fila);
-
-			// Re-renderizar.
-			$('#footableTwo').footable();
-
-		} // VerificarFilas()
-	}
-
-	function EliminarArticulo(btn) {
-		if (VerificarFilas()) {
-
-			$(btn).closest("tr").remove(); // Eliminar la fila padre del botón
-
-		} // VerificarFilas()
-	}
-
 	$(document).ready(function () {
 		$(".select2").select2();
-		$('#footableOne').footable();
 
-		$('#formBuscar').on('submit', function (event) {
+		$('#formActualizar').on('submit', function (event) {
 			event.preventDefault();
 		});
 
-		// SMM, 29/05/2023
-		$('#filtros').on('show.bs.collapse', function () {
-			$('.collapse-link i').removeClass('fa-chevron-down').addClass('fa-chevron-up');
-		});
-
-		$('#filtros').on('hide.bs.collapse', function () {
-			$('.collapse-link i').removeClass('fa-chevron-up').addClass('fa-chevron-down');
-		});
-
-		// SMM, 31/05/2023
-		$(".collapse-link").on("click", function () {
-			$("#filtros").collapse("toggle");
-		});
-
-		$("#formBuscar").validate({
+		$("#formActualizar").validate({
 			submitHandler: function (form) {
 				$('.ibox-content').toggleClass('sk-loading', true);
 
@@ -422,107 +332,13 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 		});
 
 		$("#btnAceptar").on("click", function () {
+			$("#formActualizar").submit();
+
 			let p = <?php echo $Procedure; ?>;
 			let dt = <?php echo $DocType; ?>;
 			let did = <?php echo $DocId; ?>;
 			let dev = <?php echo $DocEvent; ?>;
 			let cc = "<?php echo $CardCode; ?>";
-
-			var totalArticulos = $("#footableTwo tbody tr").length; // Obtener el total de artículos
-			var contadorArticulos = 0; // Inicializar el contador de artículos
-
-			$("#footableTwo tbody tr").each(function () {
-				let idArticulo = $(this).attr("id");
-				let whsCode = $(this).find('.WhsCode').text();
-
-				let dim1 = $(this).find('.Dim1').length ? $(this).find('.Dim1').text() : "";
-				let dim2 = $(this).find('.Dim2').length ? $(this).find('.Dim2').text() : "";
-				let dim3 = $(this).find('.Dim3').length ? $(this).find('.Dim3').text() : "";
-				let dim4 = $(this).find('.Dim4').length ? $(this).find('.Dim4').text() : "";
-				let dim5 = $(this).find('.Dim5').length ? $(this).find('.Dim5').text() : "";
-
-				let prjCode = $(this).find('.PrjCode').text();
-				let priceList = $(this).find('.PriceList').text();
-				let empVentas = $(this).find('.EmpVentas').text();
-
-				let IdTipoOT = $(this).find('.IdTipoOT').text();
-				let IdSedeEmpresa = $(this).find('.IdSedeEmpresa').text();
-				let IdTipoCargo = $(this).find('.IdTipoCargo').text();
-				let IdTipoProblema = $(this).find('.IdTipoProblema').text();
-				let IdTipoPreventivo = $(this).find('.IdTipoPreventivo').text();
-
-				let articulo = {
-					P: p,
-					doctype: dt,
-					id: did,
-					evento: dev,
-					cardcode: cc,
-					item: idArticulo,
-					whscode: whsCode.trim(),
-					dim1: dim1.trim(),
-					dim2: dim2.trim(),
-					dim3: dim3.trim(),
-					dim4: dim4.trim(),
-					dim5: dim5.trim(),
-					prjcode: prjCode.trim(),
-					pricelist: priceList.trim(),
-					empventas: empVentas.trim(),
-					IdTipoOT: IdTipoOT.trim(),
-					IdSedeEmpresa: IdSedeEmpresa.trim(),
-					IdTipoCargo: IdTipoCargo.trim(),
-					IdTipoProblema: IdTipoProblema.trim(),
-					IdTipoPreventivo: IdTipoPreventivo.trim()
-				};
-
-				// Articulo que se esta enviando a registro.
-				console.log(articulo);
-
-				// Envio AJAX del Articulo.
-				$.ajax({
-					url: "registro.php",
-					type: "POST",
-					data: articulo,
-					success: function (response) {
-						// Manejar la respuesta del servidor
-						// console.log("Respuesta:", response);
-						contadorArticulos++; // Incrementar el contador de artículos
-
-						// Verificar si todas las solicitudes AJAX han finalizado
-						if (contadorArticulos === totalArticulos) {
-							// Obtén el elemento con el ID 'DataGrid'
-							let dataGrid = document.getElementById('DataGrid');
-
-							// Crea un objeto URL a partir del atributo 'src'
-							let url = new URL(dataGrid.src);
-
-							// ?id=0&type=1&usr&cardcode
-							// console.log(url.search); 
-
-							<?php if ($Edit == 1) { ?>
-									// Elimina todos los parámetros existentes
-									url.search = '';
-
-									// ?id&evento&type=2
-									url.searchParams.set('id', '<?php echo base64_encode($DocId); ?>');
-									url.searchParams.set('evento', '<?php echo base64_encode($DocEvent); ?>');
-									url.searchParams.set('type', '2');
-							<?php } ?>
-
-								// Asigna la nueva URL al atributo 'src' del elemento
-								dataGrid.src = url.href;
-
-							// Cerrar el modal al finalizar la lógica
-							$("#mdArticulos").modal("hide");
-						}
-					},
-					error: function (error) {
-						// Manejar el error de la petición AJAX
-						console.log("Error:", error);
-						alert("Ocurrio un error al insertar los articulos, se recomienda repetir el procedimiento o consultar al administrador");
-					}
-				});
-				// Fin AJAX
-			}); // Fin Loop Articulos
 		}); // Fin Evento CLICK
 
 		// SMM, 15/06/2023
