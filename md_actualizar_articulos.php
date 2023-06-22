@@ -286,9 +286,6 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 			submitHandler: function (form) {
 				$('.ibox-content').toggleClass('sk-loading', true);
 
-				// Comprimir el acordeón
-				$("#filtros").collapse("hide");
-
 				let formData = new FormData(form);
 
 				// Ejemplo de como agregar nuevos campos.
@@ -309,9 +306,6 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 					success: function (response) {
 						// console.log("Line 260", response);
 
-						$("#tableContainerOne").html(response);
-						$('#footableOne').footable();
-
 						$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
 					},
 					error: function (error) {
@@ -321,6 +315,43 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 					}
 				});
 				// Fin, AJAX
+
+				// Actualización del proyecto en las líneas, SMM 23/02/2022
+				let frame = document.getElementById('DataGrid');
+
+				if (document.getElementById('PrjCode').value != "" && document.getElementById('CardCode').value != "" && document.getElementById('TotalItems').value != "0") {
+					Swal.fire({
+						title: "¿Desea actualizar las lineas?",
+						icon: "question",
+						showCancelButton: true,
+						confirmButtonText: "Si, confirmo",
+						cancelButtonText: "No"
+					}).then((result) => {
+						if (result.isConfirmed) {
+							$('.ibox-content').toggleClass('sk-loading', true);
+							<?php if ($edit == 0) { ?>
+								$.ajax({
+									type: "GET",
+									url: "registro.php?P=36&borrador=1&doctype=1&type=1&name=PrjCode&value=" + Base64.encode(document.getElementById('PrjCode').value) + "&line=0&cardcode=" + document.getElementById('CardCode').value + "&whscode=0&actodos=1",
+									success: function (response) {
+										frame.src = "detalle_orden_venta_borrador.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode=" + document.getElementById('CardCode').value;
+										$('.ibox-content').toggleClass('sk-loading', false);
+									}
+								});
+							<?php } else { ?>
+								$.ajax({
+									type: "GET",
+									url: "registro.php?P=36&borrador=1&doctype=1&type=2&name=PrjCode&value=" + Base64.encode(document.getElementById('PrjCode').value) + "&line=0&id=<?php echo $row['ID_OrdenVenta']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
+									success: function (response) {
+										frame.src = "detalle_orden_venta_borrador.php?id=<?php echo base64_encode($row['ID_OrdenVenta']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
+										$('.ibox-content').toggleClass('sk-loading', false);
+									}
+								});
+							<?php } ?>
+						}
+					});
+				}
+				// Actualizar proyecto, llega hasta aquí.
 			}
 		});
 

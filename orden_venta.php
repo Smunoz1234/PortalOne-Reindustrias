@@ -2269,7 +2269,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 
 		// SMM, 21/06/2023
 		function ActualizarArticulos() {
-			let probarModal = true;
+			let probarModal = false;
 			let totalItems = parseInt(document.getElementById('TotalItems').value);
 
 			let serie = $("#Serie").val();
