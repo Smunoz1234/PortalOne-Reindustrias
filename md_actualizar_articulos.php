@@ -85,9 +85,76 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 						<div class="col-lg-4">
 							<div class="form-group">
 								<div class="col-xs-12" style="margin-bottom: 10px;">
+									<label class="control-label">Tipo OT (Origen Llamada)</label>
+
+									<select name="CDU_IdTipoOTUpd" id="CDU_IdTipoOTUpd" class="form-control select2">
+										<option value="">Seleccione...</option>
+
+										<?php while ($row_ORIGEN = sqlsrv_fetch_array($SQL_OT_ORIGEN)) { ?>
+											<option value="<?php echo $row_ORIGEN['IdTipoOT']; ?>"><?php echo $row_ORIGEN['IdTipoOT'] . " - " . $row_ORIGEN['TipoOT']; ?></option>
+										<?php } ?>
+									</select>
+								</div> <!-- col-xs-12 -->
+
+								<div class="col-xs-12" style="margin-bottom: 10px;">
+									<label class="control-label">Tipo Problema</label>
+
+									<select name="CDU_IdTipoProblemaUpd" id="CDU_IdTipoProblemaUpd"
+										class="form-control select2">
+										<option value="">Seleccione...</option>
+
+										<?php while ($row_TIPOPROBLEMA = sqlsrv_fetch_array($SQL_OT_TIPOPROBLEMA)) { ?>
+											<option value="<?php echo $row_TIPOPROBLEMA['IdTipoProblema']; ?>"><?php echo $row_TIPOPROBLEMA['IdTipoProblema'] . " - " . $row_TIPOPROBLEMA['TipoProblema']; ?></option>
+										<?php } ?>
+									</select>
+								</div> <!-- col-xs-12 -->
+
+								<div class="col-xs-12" style="margin-bottom: 10px;">
+									<label class="control-label">Sede Empresa</label>
+
+									<select name="CDU_IdSedeEmpresaUpd" id="CDU_IdSedeEmpresaUpd" class="form-control select2">
+										<option value="">Seleccione...</option>
+
+										<?php while ($row_SEDE_EMPRESA = sqlsrv_fetch_array($SQL_OT_SEDE_EMPRESA)) { ?>
+											<option value="<?php echo $row_SEDE_EMPRESA['IdSedeEmpresa']; ?>"><?php echo $row_SEDE_EMPRESA['IdSedeEmpresa'] . " - " . $row_SEDE_EMPRESA['SedeEmpresa']; ?></option>
+										<?php } ?>
+									</select>
+								</div> <!-- col-xs-12 -->
+
+								<div class="col-xs-12" style="margin-bottom: 10px;">
+									<label class="control-label">Tipo Cargo (Tipo Llamada)</label>
+
+									<select name="CDU_IdTipoCargoUpd" id="CDU_IdTipoCargoUpd" class="form-control select2">
+										<option value="">Seleccione...</option>
+
+										<?php while ($row_CLASES = sqlsrv_fetch_array($SQL_OT_CLASES)) { ?>
+											<option value="<?php echo $row_CLASES['IdTipoCargo']; ?>"><?php echo $row_CLASES['IdTipoCargo'] . " - " . $row_CLASES['TipoCargo']; ?></option>
+										<?php } ?>
+									</select>
+								</div> <!-- col-xs-12 -->
+
+								<div class="col-xs-12" style="margin-bottom: 10px;">
+									<label class="control-label">Tipo Preventivo</label>
+
+									<select name="CDU_IdTipoPreventivoUpd" id="CDU_IdTipoPreventivoUpd"
+										class="form-control select2">
+										<option value="">Seleccione...</option>
+
+										<?php while ($row_TIPOPREVENTI = sqlsrv_fetch_array($SQL_OT_TIPOPREVENTI)) { ?>
+											<option value="<?php echo $row_TIPOPREVENTI['IdTipoPreventivo']; ?>"><?php echo $row_TIPOPREVENTI['IdTipoPreventivo'] . " - " . $row_TIPOPREVENTI['TipoPreventivo']; ?>
+											</option>
+										<?php } ?>
+									</select>
+								</div> <!-- col-xs-12 -->
+							</div> <!-- form-group -->
+						</div> <!-- col-lg-4 -->
+
+						<div class="col-lg-4">
+							<div class="form-group">
+								<div class="col-xs-12" style="margin-bottom: 10px;">
 									<label class="control-label">Almacén origen</label>
 
-									<select name="AlmacenUpd" id="AlmacenUpd" class="form-control select2">
+									<select name="WhsCodeUpd" id="WhsCodeUpd" class="form-control select2">
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_Almacen = sqlsrv_fetch_array($SQL_Almacen)) { ?>
@@ -101,7 +168,7 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 								<div class="col-xs-12" style="margin-bottom: 10px;">
 									<label class="control-label">Almacén destino</label>
 
-									<select name="AlmacenDestinoUpd" id="AlmacenDestinoUpd" class="form-control select2"
+									<select name="ToWhsCodeUpd" id="ToWhsCodeUpd" class="form-control select2"
 										disabled>
 										<option value="">Seleccione...</option>
 
@@ -128,24 +195,6 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 								</div> <!-- col-xs-12 -->
 
 								<div class="col-xs-12" style="margin-bottom: 10px;">
-									<label class="control-label">Lista Precios</label>
-
-									<select name="ListaPrecioUpd" id="ListaPrecioUpd" class="form-control select2">
-										<option value="">Seleccione...</option>
-
-										<?php while ($row_ListaPrecio = sqlsrv_fetch_array($SQL_ListaPrecios)) { ?>
-											<option <?php if ($DefaultSelection && ($ListaPrecio == $row_ListaPrecio['IdListaPrecio'])) {
-												echo "selected";
-											} ?> value="<?php echo $row_ListaPrecio['IdListaPrecio']; ?>">
-
-												<?php echo $row_ListaPrecio['IdListaPrecio'] . " - " . $row_ListaPrecio['DeListaPrecio']; ?>
-
-											</option>
-										<?php } ?>
-									</select>
-								</div> <!-- col-xs-12 -->
-
-								<div class="col-xs-12" style="margin-bottom: 10px;">
 									<label class="control-label">Empleado de ventas</label>
 
 									<select name="EmpVentasUpd" id="EmpVentasUpd" class="form-control select2">
@@ -163,81 +212,15 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 
 						<div class="col-lg-4">
 							<div class="form-group">
-								<div class="col-xs-12" style="margin-bottom: 10px;">
-									<label class="control-label">Tipo OT (Origen Llamada)</label>
-
-									<select name="IdTipoOTUpd" id="IdTipoOTUpd" class="form-control select2">
-										<option value="">Seleccione...</option>
-
-										<?php while ($row_ORIGEN = sqlsrv_fetch_array($SQL_OT_ORIGEN)) { ?>
-											<option value="<?php echo $row_ORIGEN['IdTipoOT']; ?>"><?php echo $row_ORIGEN['IdTipoOT'] . " - " . $row_ORIGEN['TipoOT']; ?></option>
-										<?php } ?>
-									</select>
-								</div> <!-- col-xs-12 -->
-
-								<div class="col-xs-12" style="margin-bottom: 10px;">
-									<label class="control-label">Tipo Problema</label>
-
-									<select name="IdTipoProblemaUpd" id="IdTipoProblemaUpd"
-										class="form-control select2">
-										<option value="">Seleccione...</option>
-
-										<?php while ($row_TIPOPROBLEMA = sqlsrv_fetch_array($SQL_OT_TIPOPROBLEMA)) { ?>
-											<option value="<?php echo $row_TIPOPROBLEMA['IdTipoProblema']; ?>"><?php echo $row_TIPOPROBLEMA['IdTipoProblema'] . " - " . $row_TIPOPROBLEMA['TipoProblema']; ?></option>
-										<?php } ?>
-									</select>
-								</div> <!-- col-xs-12 -->
-
-								<div class="col-xs-12" style="margin-bottom: 10px;">
-									<label class="control-label">Sede Empresa</label>
-
-									<select name="IdSedeEmpresaUpd" id="IdSedeEmpresaUpd" class="form-control select2">
-										<option value="">Seleccione...</option>
-
-										<?php while ($row_SEDE_EMPRESA = sqlsrv_fetch_array($SQL_OT_SEDE_EMPRESA)) { ?>
-											<option value="<?php echo $row_SEDE_EMPRESA['IdSedeEmpresa']; ?>"><?php echo $row_SEDE_EMPRESA['IdSedeEmpresa'] . " - " . $row_SEDE_EMPRESA['SedeEmpresa']; ?></option>
-										<?php } ?>
-									</select>
-								</div> <!-- col-xs-12 -->
-
-								<div class="col-xs-12" style="margin-bottom: 10px;">
-									<label class="control-label">Tipo Cargo (Tipo Llamada)</label>
-
-									<select name="IdTipoCargoUpd" id="IdTipoCargoUpd" class="form-control select2">
-										<option value="">Seleccione...</option>
-
-										<?php while ($row_CLASES = sqlsrv_fetch_array($SQL_OT_CLASES)) { ?>
-											<option value="<?php echo $row_CLASES['IdTipoCargo']; ?>"><?php echo $row_CLASES['IdTipoCargo'] . " - " . $row_CLASES['TipoCargo']; ?></option>
-										<?php } ?>
-									</select>
-								</div> <!-- col-xs-12 -->
-
-								<div class="col-xs-12" style="margin-bottom: 10px;">
-									<label class="control-label">Tipo Preventivo</label>
-
-									<select name="IdTipoPreventivoUpd" id="IdTipoPreventivoUpd"
-										class="form-control select2">
-										<option value="">Seleccione...</option>
-
-										<?php while ($row_TIPOPREVENTI = sqlsrv_fetch_array($SQL_OT_TIPOPREVENTI)) { ?>
-											<option value="<?php echo $row_TIPOPREVENTI['IdTipoPreventivo']; ?>"><?php echo $row_TIPOPREVENTI['IdTipoPreventivo'] . " - " . $row_TIPOPREVENTI['TipoPreventivo']; ?>
-											</option>
-										<?php } ?>
-									</select>
-								</div> <!-- col-xs-12 -->
-							</div> <!-- form-group -->
-						</div> <!-- col-lg-4 -->
-
-						<div class="col-lg-4">
-							<div class="form-group">
 								<?php foreach ($array_Dimensiones as &$dim) { ?>
 									<div class="col-xs-12" style="margin-bottom: 10px;">
 										<label class="control-label">
 											<?php echo $dim['DescPortalOne']; ?>
 										</label>
 
-										<select name="<?php echo $dim['IdPortalOne'] . "Upd"; ?>"
-											id="<?php echo $dim['IdPortalOne'] . "Upd"; ?>" class="form-control select2">
+										<select name="<?php echo "OcrCode" . $dim['DimCode'] . "Upd"; ?>"
+											id="<?php echo "OcrCode" . $dim['DimCode'] . "Upd"; ?>"
+											class="form-control select2">
 											<option value="">Seleccione...</option>
 
 											<?php $SQL_Dim = Seleccionar('uvw_Sap_tbl_DimensionesReparto', '*', 'DimCode=' . $dim['DimCode']); ?>
@@ -277,30 +260,63 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 </div> <!-- modal-dialog -->
 
 <script>
-	function actualizarLineas() {
+	function actualizarLineas(json) {
 		$('.ibox-content').toggleClass('sk-loading', true);
 
-		<?php if ($Edit == 0) { ?>
-			$.ajax({
-				type: "GET",
-				url: `registro.php?P=36&type=1&doctype=${docType}&name=${nombreCorto}&value=${Base64.encode(valorPrj)}&cardcode=<?php echo $CardCode; ?>&actodos=1&whscode=0&line=0`,
-				success: function (response) {
-					dataGrid.src = `detalle_orden_venta.php?type=1&id=0&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode=<?php echo $CardCode; ?>`;
+		// Obtén el elemento con el ID 'DataGrid'
+		let dataGrid = document.getElementById('DataGrid');
+		let docType = 1;
 
-					$('.ibox-content').toggleClass('sk-loading', false);
-				}
-			});
-		<?php } else { ?>
-			$.ajax({
-				type: "GET",
-				url: `registro.php?P=36&type=2&doctype=${docType}&name=${nombreCorto}&value=${Base64.encode(valorPrj)}&id=<?php echo $DocId; ?>&evento=<?php echo $DocEvent; ?>&actodos=1&line=0`,
-				success: function (response) {
-					dataGrid.src = `detalle_orden_venta.php?type=2&id=<?php echo base64_encode($DocId); ?>&evento=<?php echo base64_encode($DocEvent); ?>`;
+		// Crea un objeto URL a partir del atributo 'src'
+		//let url = new URL(dataGrid.src);
 
-					$('.ibox-content').toggleClass('sk-loading', false);
-				}
-			});
-		<?php } ?>
+		// ?id=0&type=1&usr&cardcode
+		// console.log(url.search); 
+
+		// if ($Edit == 1) {
+		// Elimina todos los parámetros existentes
+		//url.search = '';
+
+		// ?id&evento&type=2
+		//url.searchParams.set('id', '<?php echo base64_encode($DocId); ?>');
+		//url.searchParams.set('evento', '<?php echo base64_encode($DocEvent); ?>');
+		//url.searchParams.set('type', '2');
+		// } 
+
+		// Asigna la nueva URL al atributo 'src' del elemento
+		//dataGrid.src = url.href;
+
+		jQuery.each(json, function (key, value) {
+			if (value != "") {
+				console.log(key, value);
+				let name = key.replace(/Upd$/, "");
+
+				// Renombro los campos que sean necesarios.
+				if (name == "OcrCode1") name = "OcrCode";
+
+				<?php if ($Edit == 0) { ?>
+					$.ajax({
+						type: "GET",
+						url: `registro.php?P=36&type=1&doctype=${docType}&name=${name}&value=${Base64.encode(value)}&cardcode=<?php echo $CardCode; ?>&actodos=1&whscode=0&line=0`,
+						success: function (response) {
+							dataGrid.src = `detalle_orden_venta.php?type=1&id=0&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode=<?php echo $CardCode; ?>`;
+
+							$('.ibox-content').toggleClass('sk-loading', false);
+						}
+					});
+				<?php } else { ?>
+					$.ajax({
+						type: "GET",
+						url: `registro.php?P=36&type=2&doctype=${docType}&name=${name}&value=${Base64.encode(value)}&id=<?php echo $DocId; ?>&evento=<?php echo $DocEvent; ?>&actodos=1&line=0`,
+						success: function (response) {
+							dataGrid.src = `detalle_orden_venta.php?type=2&id=<?php echo base64_encode($DocId); ?>&evento=<?php echo base64_encode($DocEvent); ?>`;
+
+							$('.ibox-content').toggleClass('sk-loading', false);
+						}
+					});
+				<?php } ?>
+			}
+		});
 	}
 
 	$(document).ready(function () {
@@ -321,51 +337,14 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 				}).then((result) => {
 					if (result.isConfirmed) {
 						let formData = new FormData(form);
-						let json = Object.fromEntries(formData);
+						let jsonData = Object.fromEntries(formData);
 
-						actualizarLineas(json);
+						actualizarLineas(jsonData);
 					} else {
 						console.log("Se cancelo la actualización");
 					}
 				});
-
-
-
-
-
-				// Obtén el elemento con el ID 'DataGrid'
-				let dataGrid = document.getElementById('DataGrid');
-				let docType = 1;
-
-				/*
-				// Crea un objeto URL a partir del atributo 'src'
-				let url = new URL(dataGrid.src);
-
-				// ?id=0&type=1&usr&cardcode
-				// console.log(url.search); 
-
-				// if ($Edit == 1) {
-				// Elimina todos los parámetros existentes
-				url.search = '';
-
-				// ?id&evento&type=2
-				url.searchParams.set('id', '<?php echo base64_encode($DocId); ?>');
-				url.searchParams.set('evento', '<?php echo base64_encode($DocEvent); ?>');
-				url.searchParams.set('type', '2');
-				// } 
-
-				// Asigna la nueva URL al atributo 'src' del elemento
-				dataGrid.src = url.href;
-				*/
-
-				jQuery.each(json, function (key, value) {
-					if (value != "") {
-						console.log(key, value);
-						let name = key.replace(/Upd$/, "");
-
-					}
-				});
-			}
+			} // submitHandler
 		});
 
 		$('.chosen-select').chosen({ width: "100%" });
