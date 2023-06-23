@@ -279,7 +279,7 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 <script>
 	function actualizarLineas() {
 		$('.ibox-content').toggleClass('sk-loading', true);
-		
+
 		<?php if ($Edit == 0) { ?>
 			$.ajax({
 				type: "GET",
@@ -322,7 +322,7 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 					if (result.isConfirmed) {
 						let formData = new FormData(form);
 						let json = Object.fromEntries(formData);
-				
+
 						actualizarLineas(json);
 					} else {
 						console.log("Se cancelo la actualización");
