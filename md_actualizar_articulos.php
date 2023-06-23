@@ -178,7 +178,8 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 								<div class="col-xs-12" style="margin-bottom: 10px;">
 									<label class="control-label">Tipo Problema</label>
 
-									<select name="IdTipoProblemaUpd" id="IdTipoProblemaUpd" class="form-control select2">
+									<select name="IdTipoProblemaUpd" id="IdTipoProblemaUpd"
+										class="form-control select2">
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_TIPOPROBLEMA = sqlsrv_fetch_array($SQL_OT_TIPOPROBLEMA)) { ?>
@@ -214,7 +215,8 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 								<div class="col-xs-12" style="margin-bottom: 10px;">
 									<label class="control-label">Tipo Preventivo</label>
 
-									<select name="IdTipoPreventivoUpd" id="IdTipoPreventivoUpd" class="form-control select2">
+									<select name="IdTipoPreventivoUpd" id="IdTipoPreventivoUpd"
+										class="form-control select2">
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_TIPOPREVENTI = sqlsrv_fetch_array($SQL_OT_TIPOPREVENTI)) { ?>
@@ -275,6 +277,32 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 </div> <!-- modal-dialog -->
 
 <script>
+	function actualizarLineas() {
+		$('.ibox-content').toggleClass('sk-loading', true);
+		
+		<?php if ($Edit == 0) { ?>
+			$.ajax({
+				type: "GET",
+				url: `registro.php?P=36&type=1&doctype=${docType}&name=${nombreCorto}&value=${Base64.encode(valorPrj)}&cardcode=<?php echo $CardCode; ?>&actodos=1&whscode=0&line=0`,
+				success: function (response) {
+					dataGrid.src = `detalle_orden_venta.php?type=1&id=0&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode=<?php echo $CardCode; ?>`;
+
+					$('.ibox-content').toggleClass('sk-loading', false);
+				}
+			});
+		<?php } else { ?>
+			$.ajax({
+				type: "GET",
+				url: `registro.php?P=36&type=2&doctype=${docType}&name=${nombreCorto}&value=${Base64.encode(valorPrj)}&id=<?php echo $DocId; ?>&evento=<?php echo $DocEvent; ?>&actodos=1&line=0`,
+				success: function (response) {
+					dataGrid.src = `detalle_orden_venta.php?type=2&id=<?php echo base64_encode($DocId); ?>&evento=<?php echo base64_encode($DocEvent); ?>`;
+
+					$('.ibox-content').toggleClass('sk-loading', false);
+				}
+			});
+		<?php } ?>
+	}
+
 	$(document).ready(function () {
 		$(".select2").select2();
 
@@ -284,42 +312,30 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 
 		$("#formActualizar").validate({
 			submitHandler: function (form) {
-				$('.ibox-content').toggleClass('sk-loading', true);
-
-				let formData = new FormData(form);
-
-				// Ejemplo de como agregar nuevos campos.
-				// formData.append("Dim1", $("#Dim1").val() || "");
-
-				formData.append("tipodoc", "<?php echo $_POST["TipoDoc"] ?? 2; ?>");
-
-				let json = Object.fromEntries(formData);
-				console.log("Line 340", json);
-
-				// Inicio, AJAX
-				$.ajax({
-					url: 'md_consultar_articulos_ws.php',
-					type: 'POST',
-					data: formData,
-					processData: false,  // tell jQuery not to process the data
-					contentType: false,   // tell jQuery not to set contentType
-					success: function (response) {
-						// console.log("Line 260", response);
-
-						$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
-					},
-					error: function (error) {
-						console.error(error.responseText);
-
-						$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
+				Swal.fire({
+					title: "¿Desea actualizar las lineas?",
+					icon: "question",
+					showCancelButton: true,
+					confirmButtonText: "Si, confirmo",
+					cancelButtonText: "No"
+				}).then((result) => {
+					if (result.isConfirmed) {
+						let formData = new FormData(form);
+						let json = Object.fromEntries(formData);
+				
+						actualizarLineas(json);
+					} else {
+						console.log("Se cancelo la actualización");
 					}
 				});
-				// Fin, AJAX
 
-				// Actualización del proyecto en las líneas, SMM 23/02/2022
+
+
+
 
 				// Obtén el elemento con el ID 'DataGrid'
 				let dataGrid = document.getElementById('DataGrid');
+				let docType = 1;
 
 				/*
 				// Crea un objeto URL a partir del atributo 'src'
@@ -342,46 +358,13 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 				dataGrid.src = url.href;
 				*/
 
-				let docType = 1;
-				let nombrePrj = "PrjCodeUpd";
-				let nombreCorto = nombrePrj.replace(/Upd$/, ""); 
-				let valorPrj = document.getElementById(nombrePrj).value;
+				jQuery.each(json, function (key, value) {
+					if (value != "") {
+						console.log(key, value);
+						let name = key.replace(/Upd$/, "");
 
-				if (valorPrj != "") {
-					Swal.fire({
-						title: "¿Desea actualizar las lineas?",
-						icon: "question",
-						showCancelButton: true,
-						confirmButtonText: "Si, confirmo",
-						cancelButtonText: "No"
-					}).then((result) => {
-						if (result.isConfirmed) {
-							$('.ibox-content').toggleClass('sk-loading', true);
-							<?php if ($Edit == 0) { ?>
-								$.ajax({
-									type: "GET",
-									url: `registro.php?P=36&type=1&doctype=${docType}&name=${nombreCorto}&value=${Base64.encode(valorPrj)}&cardcode=<?php echo $CardCode; ?>&actodos=1&whscode=0&line=0`,
-									success: function (response) {
-										dataGrid.src = `detalle_orden_venta.php?type=1&id=0&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode=<?php echo $CardCode; ?>`;
-
-										$('.ibox-content').toggleClass('sk-loading', false);
-									}
-								});
-							<?php } else { ?>
-								$.ajax({
-									type: "GET",
-									url: `registro.php?P=36&type=2&doctype=${docType}&name=${nombreCorto}&value=${Base64.encode(valorPrj)}&id=<?php echo $DocId; ?>&evento=<?php echo $DocEvent; ?>&actodos=1&line=0`,
-									success: function (response) {
-										dataGrid.src = `detalle_orden_venta.php?type=2&id=<?php echo base64_encode($DocId); ?>&evento=<?php echo base64_encode($DocEvent); ?>`;
-
-										$('.ibox-content').toggleClass('sk-loading', false);
-									}
-								});
-							<?php } ?>
-						}
-					});
-				}
-				// Actualizar proyecto, llega hasta aquí.
+					}
+				});
 			}
 		});
 
