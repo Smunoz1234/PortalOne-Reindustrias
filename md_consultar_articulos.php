@@ -543,18 +543,21 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 							// Crea un objeto URL a partir del atributo 'src'
 							let url = new URL(dataGrid.src);
 
-							// ?id=0&type=1&usr&cardcode
-							// console.log(url.search); 
+							// SMM, 23/06/2023
+							let edit = <?php echo $Edit; ?>;
 
-							<?php if ($Edit == 1) { ?>
-									// Elimina todos los parámetros existentes
-									url.search = '';
+							if (edit == 1) {
+								// Elimina todos los parámetros existentes
+								url.search = '';
 
-									// ?id&evento&type=2
-									url.searchParams.set('id', '<?php echo base64_encode($DocId); ?>');
-									url.searchParams.set('evento', '<?php echo base64_encode($DocEvent); ?>');
-									url.searchParams.set('type', '2');
-							<?php } ?>
+								// ?id&evento&type=2
+								url.searchParams.set('id', '<?php echo base64_encode($DocId); ?>');
+								url.searchParams.set('evento', '<?php echo base64_encode($DocEvent); ?>');
+								url.searchParams.set('type', '2');
+							} else {
+								// ?id=0&type=1&usr&cardcode
+								console.log(url.search);
+							}
 
 							// Asigna la nueva URL al atributo 'src' del elemento
 							dataGrid.src = url.href;

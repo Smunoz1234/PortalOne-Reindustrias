@@ -112,7 +112,8 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 								<div class="col-xs-12" style="margin-bottom: 10px;">
 									<label class="control-label">Sede Empresa</label>
 
-									<select name="CDU_IdSedeEmpresaUpd" id="CDU_IdSedeEmpresaUpd" class="form-control select2">
+									<select name="CDU_IdSedeEmpresaUpd" id="CDU_IdSedeEmpresaUpd"
+										class="form-control select2">
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_SEDE_EMPRESA = sqlsrv_fetch_array($SQL_OT_SEDE_EMPRESA)) { ?>
@@ -124,7 +125,8 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 								<div class="col-xs-12" style="margin-bottom: 10px;">
 									<label class="control-label">Tipo Cargo (Tipo Llamada)</label>
 
-									<select name="CDU_IdTipoCargoUpd" id="CDU_IdTipoCargoUpd" class="form-control select2">
+									<select name="CDU_IdTipoCargoUpd" id="CDU_IdTipoCargoUpd"
+										class="form-control select2">
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_CLASES = sqlsrv_fetch_array($SQL_OT_CLASES)) { ?>
@@ -168,8 +170,7 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 								<div class="col-xs-12" style="margin-bottom: 10px;">
 									<label class="control-label">Almacén destino</label>
 
-									<select name="ToWhsCodeUpd" id="ToWhsCodeUpd" class="form-control select2"
-										disabled>
+									<select name="ToWhsCodeUpd" id="ToWhsCodeUpd" class="form-control select2" disabled>
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_AlmacenDestino = sqlsrv_fetch_array($SQL_AlmacenDestino)) { ?>
@@ -261,30 +262,32 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 
 <script>
 	function actualizarLineas(json) {
-		$('.ibox-content').toggleClass('sk-loading', true);
+		let p = <?php echo $Procedure; ?>;
+		let dt = <?php echo $DocType; ?>;
+		let did = <?php echo $DocId; ?>;
+		let dev = <?php echo $DocEvent; ?>;
+		let cc = "<?php echo $CardCode; ?>";
+		let edit = <?php echo $Edit; ?>;
 
 		// Obtén el elemento con el ID 'DataGrid'
 		let dataGrid = document.getElementById('DataGrid');
 		let docType = 1;
 
 		// Crea un objeto URL a partir del atributo 'src'
-		//let url = new URL(dataGrid.src);
+		let url = new URL(dataGrid.src);
 
-		// ?id=0&type=1&usr&cardcode
-		// console.log(url.search); 
+		if (edit == 1) {
+			// Elimina todos los parámetros existentes
+			url.search = '';
 
-		// if ($Edit == 1) {
-		// Elimina todos los parámetros existentes
-		//url.search = '';
-
-		// ?id&evento&type=2
-		//url.searchParams.set('id', '<?php echo base64_encode($DocId); ?>');
-		//url.searchParams.set('evento', '<?php echo base64_encode($DocEvent); ?>');
-		//url.searchParams.set('type', '2');
-		// } 
-
-		// Asigna la nueva URL al atributo 'src' del elemento
-		//dataGrid.src = url.href;
+			// ?id&evento&type=2
+			url.searchParams.set('id', '<?php echo base64_encode($DocId); ?>');
+			url.searchParams.set('evento', '<?php echo base64_encode($DocEvent); ?>');
+			url.searchParams.set('type', '2');
+		} else {
+			// ?id=0&type=1&usr&cardcode
+			console.log(url.search);
+		}
 
 		jQuery.each(json, function (key, value) {
 			if (value != "") {
@@ -294,29 +297,31 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 				// Renombro los campos que sean necesarios.
 				if (name == "OcrCode1") name = "OcrCode";
 
-				<?php if ($Edit == 0) { ?>
+				if (edit == 0) {
 					$.ajax({
 						type: "GET",
-						url: `registro.php?P=36&type=1&doctype=${docType}&name=${name}&value=${Base64.encode(value)}&cardcode=<?php echo $CardCode; ?>&actodos=1&whscode=0&line=0`,
+						url: `registro.php?P=36&type=1&doctype=${docType}&name=${name}&value=${Base64.encode(value)}&cardcode=${cc}&actodos=1&whscode=0&line=0`,
 						success: function (response) {
-							dataGrid.src = `detalle_orden_venta.php?type=1&id=0&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode=<?php echo $CardCode; ?>`;
+							// Asigna la nueva URL al atributo 'src' del elemento
+							dataGrid.src = url.href;
 
-							$('.ibox-content').toggleClass('sk-loading', false);
 						}
 					});
-				<?php } else { ?>
+				} else {
 					$.ajax({
 						type: "GET",
-						url: `registro.php?P=36&type=2&doctype=${docType}&name=${name}&value=${Base64.encode(value)}&id=<?php echo $DocId; ?>&evento=<?php echo $DocEvent; ?>&actodos=1&line=0`,
+						url: `registro.php?P=36&type=2&doctype=${docType}&name=${name}&value=${Base64.encode(value)}&id=${did}&evento=${dev}&actodos=1&line=0`,
 						success: function (response) {
-							dataGrid.src = `detalle_orden_venta.php?type=2&id=<?php echo base64_encode($DocId); ?>&evento=<?php echo base64_encode($DocEvent); ?>`;
-
-							$('.ibox-content').toggleClass('sk-loading', false);
+							// Asigna la nueva URL al atributo 'src' del elemento
+							dataGrid.src = url.href;
 						}
 					});
-				<?php } ?>
+				}
 			}
 		});
+
+		// Cerrar el modal al finalizar la lógica
+		$("#mdLoteArticulos").modal("hide");
 	}
 
 	$(document).ready(function () {
@@ -324,6 +329,10 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 
 		$('#formActualizar').on('submit', function (event) {
 			event.preventDefault();
+		});
+
+		$("#btnAceptarUpd").on("click", function () {
+			$("#formActualizar").submit();
 		});
 
 		$("#formActualizar").validate({
@@ -353,16 +362,6 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 			checkboxClass: 'icheckbox_square-green',
 			radioClass: 'iradio_square-green',
 		});
-
-		$("#btnAceptarUpd").on("click", function () {
-			$("#formActualizar").submit();
-
-			let p = <?php echo $Procedure; ?>;
-			let dt = <?php echo $DocType; ?>;
-			let did = <?php echo $DocId; ?>;
-			let dev = <?php echo $DocEvent; ?>;
-			let cc = "<?php echo $CardCode; ?>";
-		}); // Fin Evento CLICK
 
 		// SMM, 15/06/2023
 		$("#IdTipoOT").change(function () {
