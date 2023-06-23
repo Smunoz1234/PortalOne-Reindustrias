@@ -556,8 +556,8 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 									url.searchParams.set('type', '2');
 							<?php } ?>
 
-								// Asigna la nueva URL al atributo 'src' del elemento
-								dataGrid.src = url.href;
+							// Asigna la nueva URL al atributo 'src' del elemento
+							dataGrid.src = url.href;
 
 							// Cerrar el modal al finalizar la lógica
 							$("#mdArticulos").modal("hide");

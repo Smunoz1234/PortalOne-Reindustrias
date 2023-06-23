@@ -87,7 +87,7 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 								<div class="col-xs-12" style="margin-bottom: 10px;">
 									<label class="control-label">Almacén origen</label>
 
-									<select name="Almacen" id="Almacen" class="form-control select2">
+									<select name="AlmacenUpd" id="AlmacenUpd" class="form-control select2">
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_Almacen = sqlsrv_fetch_array($SQL_Almacen)) { ?>
@@ -101,7 +101,7 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 								<div class="col-xs-12" style="margin-bottom: 10px;">
 									<label class="control-label">Almacén destino</label>
 
-									<select name="AlmacenDestino" id="AlmacenDestino" class="form-control select2"
+									<select name="AlmacenDestinoUpd" id="AlmacenDestinoUpd" class="form-control select2"
 										disabled>
 										<option value="">Seleccione...</option>
 
@@ -114,7 +114,7 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 								<div class="col-xs-12" style="margin-bottom: 10px;">
 									<label class="control-label">Proyecto</label>
 
-									<select id="Proyecto" name="Proyecto" class="form-control select2">
+									<select id="PrjCodeUpd" name="PrjCodeUpd" class="form-control select2">
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) { ?>
@@ -130,7 +130,7 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 								<div class="col-xs-12" style="margin-bottom: 10px;">
 									<label class="control-label">Lista Precios</label>
 
-									<select name="ListaPrecio" id="ListaPrecio" class="form-control select2">
+									<select name="ListaPrecioUpd" id="ListaPrecioUpd" class="form-control select2">
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_ListaPrecio = sqlsrv_fetch_array($SQL_ListaPrecios)) { ?>
@@ -148,7 +148,7 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 								<div class="col-xs-12" style="margin-bottom: 10px;">
 									<label class="control-label">Empleado de ventas</label>
 
-									<select name="EmpVentas" id="EmpVentas" class="form-control select2">
+									<select name="EmpVentasUpd" id="EmpVentasUpd" class="form-control select2">
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_EmpleadosVentas = sqlsrv_fetch_array($SQL_EmpleadosVentas)) { ?>
@@ -166,7 +166,7 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 								<div class="col-xs-12" style="margin-bottom: 10px;">
 									<label class="control-label">Tipo OT (Origen Llamada)</label>
 
-									<select name="IdTipoOT" id="IdTipoOT" class="form-control select2">
+									<select name="IdTipoOTUpd" id="IdTipoOTUpd" class="form-control select2">
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_ORIGEN = sqlsrv_fetch_array($SQL_OT_ORIGEN)) { ?>
@@ -178,7 +178,7 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 								<div class="col-xs-12" style="margin-bottom: 10px;">
 									<label class="control-label">Tipo Problema</label>
 
-									<select name="IdTipoProblema" id="IdTipoProblema" class="form-control select2">
+									<select name="IdTipoProblemaUpd" id="IdTipoProblemaUpd" class="form-control select2">
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_TIPOPROBLEMA = sqlsrv_fetch_array($SQL_OT_TIPOPROBLEMA)) { ?>
@@ -190,7 +190,7 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 								<div class="col-xs-12" style="margin-bottom: 10px;">
 									<label class="control-label">Sede Empresa</label>
 
-									<select name="IdSedeEmpresa" id="IdSedeEmpresa" class="form-control select2">
+									<select name="IdSedeEmpresaUpd" id="IdSedeEmpresaUpd" class="form-control select2">
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_SEDE_EMPRESA = sqlsrv_fetch_array($SQL_OT_SEDE_EMPRESA)) { ?>
@@ -202,7 +202,7 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 								<div class="col-xs-12" style="margin-bottom: 10px;">
 									<label class="control-label">Tipo Cargo (Tipo Llamada)</label>
 
-									<select name="IdTipoCargo" id="IdTipoCargo" class="form-control select2">
+									<select name="IdTipoCargoUpd" id="IdTipoCargoUpd" class="form-control select2">
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_CLASES = sqlsrv_fetch_array($SQL_OT_CLASES)) { ?>
@@ -214,7 +214,7 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 								<div class="col-xs-12" style="margin-bottom: 10px;">
 									<label class="control-label">Tipo Preventivo</label>
 
-									<select name="IdTipoPreventivo" id="IdTipoPreventivo" class="form-control select2">
+									<select name="IdTipoPreventivoUpd" id="IdTipoPreventivoUpd" class="form-control select2">
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_TIPOPREVENTI = sqlsrv_fetch_array($SQL_OT_TIPOPREVENTI)) { ?>
@@ -234,8 +234,8 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 											<?php echo $dim['DescPortalOne']; ?>
 										</label>
 
-										<select name="<?php echo $dim['IdPortalOne'] ?>"
-											id="<?php echo $dim['IdPortalOne'] ?>" class="form-control select2">
+										<select name="<?php echo $dim['IdPortalOne'] . "Upd"; ?>"
+											id="<?php echo $dim['IdPortalOne'] . "Upd"; ?>" class="form-control select2">
 											<option value="">Seleccione...</option>
 
 											<?php $SQL_Dim = Seleccionar('uvw_Sap_tbl_DimensionesReparto', '*', 'DimCode=' . $dim['DimCode']); ?>
@@ -266,7 +266,7 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 			<!-- Fin, filtros -->
 		</div> <!-- modal-body -->
 		<div class="modal-footer">
-			<button type="button" class="btn btn-success m-t-md" id="btnAceptar"><i class="fa fa-check"></i>
+			<button type="button" class="btn btn-success m-t-md" id="btnAceptarUpd"><i class="fa fa-check"></i>
 				Aceptar</button>
 			<button type="button" class="btn btn-danger m-t-md" data-dismiss="modal"><i class="fa fa-times"></i>
 				Cerrar</button>
@@ -317,9 +317,37 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 				// Fin, AJAX
 
 				// Actualización del proyecto en las líneas, SMM 23/02/2022
-				let frame = document.getElementById('DataGrid');
 
-				if (document.getElementById('PrjCode').value != "" && document.getElementById('CardCode').value != "" && document.getElementById('TotalItems').value != "0") {
+				// Obtén el elemento con el ID 'DataGrid'
+				let dataGrid = document.getElementById('DataGrid');
+
+				/*
+				// Crea un objeto URL a partir del atributo 'src'
+				let url = new URL(dataGrid.src);
+
+				// ?id=0&type=1&usr&cardcode
+				// console.log(url.search); 
+
+				// if ($Edit == 1) {
+				// Elimina todos los parámetros existentes
+				url.search = '';
+
+				// ?id&evento&type=2
+				url.searchParams.set('id', '<?php echo base64_encode($DocId); ?>');
+				url.searchParams.set('evento', '<?php echo base64_encode($DocEvent); ?>');
+				url.searchParams.set('type', '2');
+				// } 
+
+				// Asigna la nueva URL al atributo 'src' del elemento
+				dataGrid.src = url.href;
+				*/
+
+				let docType = 1;
+				let nombrePrj = "PrjCodeUpd";
+				let nombreCorto = nombrePrj.replace(/Upd$/, ""); 
+				let valorPrj = document.getElementById(nombrePrj).value;
+
+				if (valorPrj != "") {
 					Swal.fire({
 						title: "¿Desea actualizar las lineas?",
 						icon: "question",
@@ -329,21 +357,23 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 					}).then((result) => {
 						if (result.isConfirmed) {
 							$('.ibox-content').toggleClass('sk-loading', true);
-							<?php if ($edit == 0) { ?>
+							<?php if ($Edit == 0) { ?>
 								$.ajax({
 									type: "GET",
-									url: "registro.php?P=36&borrador=1&doctype=1&type=1&name=PrjCode&value=" + Base64.encode(document.getElementById('PrjCode').value) + "&line=0&cardcode=" + document.getElementById('CardCode').value + "&whscode=0&actodos=1",
+									url: `registro.php?P=36&type=1&doctype=${docType}&name=${nombreCorto}&value=${Base64.encode(valorPrj)}&cardcode=<?php echo $CardCode; ?>&actodos=1&whscode=0&line=0`,
 									success: function (response) {
-										frame.src = "detalle_orden_venta_borrador.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode=" + document.getElementById('CardCode').value;
+										dataGrid.src = `detalle_orden_venta.php?type=1&id=0&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode=<?php echo $CardCode; ?>`;
+
 										$('.ibox-content').toggleClass('sk-loading', false);
 									}
 								});
 							<?php } else { ?>
 								$.ajax({
 									type: "GET",
-									url: "registro.php?P=36&borrador=1&doctype=1&type=2&name=PrjCode&value=" + Base64.encode(document.getElementById('PrjCode').value) + "&line=0&id=<?php echo $row['ID_OrdenVenta']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
+									url: `registro.php?P=36&type=2&doctype=${docType}&name=${nombreCorto}&value=${Base64.encode(valorPrj)}&id=<?php echo $DocId; ?>&evento=<?php echo $DocEvent; ?>&actodos=1&line=0`,
 									success: function (response) {
-										frame.src = "detalle_orden_venta_borrador.php?id=<?php echo base64_encode($row['ID_OrdenVenta']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
+										dataGrid.src = `detalle_orden_venta.php?type=2&id=<?php echo base64_encode($DocId); ?>&evento=<?php echo base64_encode($DocEvent); ?>`;
+
 										$('.ibox-content').toggleClass('sk-loading', false);
 									}
 								});
@@ -362,7 +392,7 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 			radioClass: 'iradio_square-green',
 		});
 
-		$("#btnAceptar").on("click", function () {
+		$("#btnAceptarUpd").on("click", function () {
 			$("#formActualizar").submit();
 
 			let p = <?php echo $Procedure; ?>;
