@@ -855,7 +855,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 			</div>
 
 			<div class="wrapper wrapper-content">
-				<!-- SMM, 21/06/2023 -->
+				<!-- SMM, 27/06/2023 -->
 				<div class="modal inmodal fade" id="mdLoteArticulos" tabindex="1" role="dialog" aria-hidden="true">
 				</div>
 
@@ -1566,7 +1566,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 											type="button" onclick="AgregarArticulos();"><i class="fa fa-plus"></i>
 											Agregar artículo</button>
 
-										<!-- SMM, 21/06/2023 -->
+										<!-- SMM, 27/06/2023 -->
 										<button <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || (!PermitirFuncion(402))) {
 											echo "disabled";
 										} ?> class="btn btn-warning"
@@ -2267,7 +2267,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 			}
 		}
 
-		// SMM, 21/06/2023
+		// SMM, 27/06/2023
 		function ActualizarArticulos() {
 			let probarModal = false;
 			let totalItems = parseInt(document.getElementById('TotalItems').value);
@@ -2283,9 +2283,9 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 					type: "POST",
 					url: "md_actualizar_articulos.php",
 					data: {
-						Procedure: 35,
+						Procedure: 36,
 						Edit: <?php echo $edit; ?>,
-						DocType: "<?php echo ($edit == 0) ? 1 : 2; ?>",
+						DocType: "<?php echo 1; ?>",
 						DocId: "<?php echo $row['ID_OrdenVenta'] ?? 0; ?>",
 						DocEvent: "<?php echo $row['IdEvento'] ?? 0; ?>",
 						CardCode: cardCode,

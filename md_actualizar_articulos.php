@@ -271,7 +271,6 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 
 		// Obtén el elemento con el ID 'DataGrid'
 		let dataGrid = document.getElementById('DataGrid');
-		let docType = 1;
 
 		// Crea un objeto URL a partir del atributo 'src'
 		let url = new URL(dataGrid.src);
@@ -298,7 +297,7 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 				if (name == "OcrCode1") name = "OcrCode";
 
 				// URL del Ajax que consulta al registro número 36, actualización en detalle.
-				let urlAjax = `registro.php?P=36&actodos=1&line=0&doctype=${docType}&name=${name}&value=${Base64.encode(value)}`;
+				let urlAjax = `registro.php?P=${p}&actodos=1&line=0&doctype=${dt}&name=${name}&value=${Base64.encode(value)}`;
 
 				if (edit == 0) {
 					urlAjax += `&cardcode=${cc}&whscode=0&type=1`;

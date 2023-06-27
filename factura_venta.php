@@ -698,6 +698,10 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 			</div>
 
 			<div class="wrapper wrapper-content">
+				<!-- SMM, 27/06/2023 -->
+				<div class="modal inmodal fade" id="mdLoteArticulos" tabindex="1" role="dialog" aria-hidden="true">
+				</div>
+				
 				<!-- SMM, 17/06/2023 -->
 				<div class="modal inmodal fade" id="mdArticulos" tabindex="1" role="dialog" aria-hidden="true"></div>
 
@@ -1181,6 +1185,14 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 										} ?> class="btn btn-success"
 											type="button" onclick="AgregarArticulos();"><i class="fa fa-plus"></i>
 											Agregar artículo</button>
+
+										<!-- SMM, 27/06/2023 -->
+										<button <?php if ($edit == 1) {
+											echo "disabled";
+										} ?> class="btn btn-warning"
+											style="margin-left: 20px;" type="button" onclick="ActualizarArticulos();"><i
+												class="fa fa-refresh"></i>
+											Actualización en lote</button>
 									</div>
 
 									<!-- SMM, 04/05/2022 -->
@@ -1752,6 +1764,48 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 				Swal.fire({
 					title: "¡Advertencia!",
 					text: "Debe seleccionar un Cliente y una Serie.",
+					icon: "warning",
+					confirmButtonText: "OK"
+				});
+			}
+		}
+
+		// SMM, 27/06/2023
+		function ActualizarArticulos() {
+			let probarModal = false;
+			let totalItems = parseInt(document.getElementById('TotalItems').value);
+
+			let serie = $("#Serie").val();
+			let proyecto = $("#PrjCode").val();
+			let cardCode = $("#CardCode").val();
+			let listaPrecio = $("#IdListaPrecio").val();
+			let empleado = $("#EmpleadoVentas").val();
+
+			if (((cardCode != "") && (serie != "") && (totalItems > 0)) || probarModal) {
+				$.ajax({
+					type: "POST",
+					url: "md_actualizar_articulos.php",
+					data: {
+						Procedure: 36,
+						Edit: <?php echo $edit; ?>,
+						DocType: "<?php echo 9; ?>",
+						DocId: "<?php echo $row['ID_FacturaVenta'] ?? 0; ?>",
+						DocEvent: "<?php echo $row['IdEvento'] ?? 0; ?>",
+						CardCode: cardCode,
+						IdSeries: serie,
+						IdProyecto: proyecto,
+						ListaPrecio: listaPrecio,
+						IdEmpleado: empleado
+					},
+					success: function (response) {
+						$('#mdLoteArticulos').html(response);
+						$("#mdLoteArticulos").modal("show");
+					}
+				});
+			} else {
+				Swal.fire({
+					title: "¡Advertencia!",
+					text: "Debe seleccionar un Cliente y una Serie. También debe haber al menos un artículo en el detalle del documento.",
 					icon: "warning",
 					confirmButtonText: "OK"
 				});
