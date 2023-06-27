@@ -297,26 +297,29 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 				// Renombro los campos que sean necesarios.
 				if (name == "OcrCode1") name = "OcrCode";
 
-				if (edit == 0) {
-					$.ajax({
-						type: "GET",
-						url: `registro.php?P=36&type=1&doctype=${docType}&name=${name}&value=${Base64.encode(value)}&cardcode=${cc}&actodos=1&whscode=0&line=0`,
-						success: function (response) {
-							// Asigna la nueva URL al atributo 'src' del elemento
-							dataGrid.src = url.href;
+				// URL del Ajax que consulta al registro número 36, actualización en detalle.
+				let urlAjax = `registro.php?P=36&actodos=1&line=0&doctype=${docType}&name=${name}&value=${Base64.encode(value)}`;
 
-						}
-					});
+				if (edit == 0) {
+					urlAjax += `&cardcode=${cc}&whscode=0&type=1`;
 				} else {
-					$.ajax({
-						type: "GET",
-						url: `registro.php?P=36&type=2&doctype=${docType}&name=${name}&value=${Base64.encode(value)}&id=${did}&evento=${dev}&actodos=1&line=0`,
-						success: function (response) {
-							// Asigna la nueva URL al atributo 'src' del elemento
-							dataGrid.src = url.href;
-						}
-					});
+					urlAjax += `&id=${did}&evento=${dev}&type=2`;
 				}
+
+				$.ajax({
+					type: "GET",
+					url: urlAjax,
+					success: function (response) {
+						// Asigna la nueva URL al atributo 'src' del elemento
+						dataGrid.src = url.href;
+					},
+					error: function (error) {
+						// Manejar el error de la petición AJAX
+						console.log("Error actualización:", error);
+						
+						// alert("Ocurrio un error al actualizar los articulos, se recomienda repetir el procedimiento o consultar al administrador");
+					}
+				});
 			}
 		});
 

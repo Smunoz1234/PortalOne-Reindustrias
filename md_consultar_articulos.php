@@ -568,8 +568,9 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 					},
 					error: function (error) {
 						// Manejar el error de la petición AJAX
-						console.log("Error:", error);
-						alert("Ocurrio un error al insertar los articulos, se recomienda repetir el procedimiento o consultar al administrador");
+						console.log("Error inserción:", error);
+						
+						// alert("Ocurrio un error al insertar los articulos, se recomienda repetir el procedimiento o consultar al administrador");
 					}
 				});
 				// Fin AJAX
