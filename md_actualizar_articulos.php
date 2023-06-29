@@ -15,7 +15,6 @@ $encode_Dimensiones = json_encode($array_Dimensiones);
 $cadena_Dimensiones = "JSON.parse('$encode_Dimensiones'.replace(/\\n|\\r/g, ''))";
 // Hasta aquí, SMM 24/05/2023
 
-$Procedure = $_POST['Procedure'];
 $Edit = $_POST['Edit'];
 $DocType = $_POST['DocType'];
 $DocId = $_POST['DocId'];
@@ -262,7 +261,6 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 
 <script>
 	function actualizarLineas(json) {
-		let p = <?php echo $Procedure; ?>;
 		let dt = <?php echo $DocType; ?>;
 		let did = <?php echo $DocId; ?>;
 		let dev = <?php echo $DocEvent; ?>;
@@ -297,7 +295,7 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 				if (name == "OcrCode1") name = "OcrCode";
 
 				// URL del Ajax que consulta al registro número 36, actualización en detalle.
-				let urlAjax = `registro.php?P=${p}&actodos=1&line=0&doctype=${dt}&name=${name}&value=${Base64.encode(value)}`;
+				let urlAjax = `registro.php?P=36&actodos=1&line=0&doctype=${dt}&name=${name}&value=${Base64.encode(value)}`;
 
 				if (edit == 0) {
 					urlAjax += `&cardcode=${cc}&whscode=0&type=1`;

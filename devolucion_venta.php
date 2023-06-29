@@ -1968,6 +1968,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 		// SMM, 15/06/2023
 		function AgregarArticulos() {
 			let probarModal = false;
+			let ordenServicio = $("#OrdenServicioCliente").val();
 
 			let serie = $("#Serie").val();
 			let proyecto = $("#PrjCode").val();
@@ -1980,7 +1981,8 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 					type: "POST",
 					url: "md_consultar_articulos.php",
 					data: {
-						Procedure: 35,
+						ObjType: 16,
+						OT: ordenServicio,
 						Edit: <?php echo $edit; ?>,
 						DocType: "<?php echo ($edit == 0) ? 13 : 14; ?>",
 						DocId: "<?php echo $row['ID_DevolucionVenta'] ?? 0; ?>",
@@ -2022,7 +2024,6 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 					type: "POST",
 					url: "md_actualizar_articulos.php",
 					data: {
-						Procedure: 36,
 						Edit: <?php echo $edit; ?>,
 						DocType: "<?php echo 7; ?>",
 						DocId: "<?php echo $row['ID_DevolucionVenta'] ?? 0; ?>",

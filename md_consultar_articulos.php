@@ -15,7 +15,8 @@ $encode_Dimensiones = json_encode($array_Dimensiones);
 $cadena_Dimensiones = "JSON.parse('$encode_Dimensiones'.replace(/\\n|\\r/g, ''))";
 // Hasta aquí, SMM 24/05/2023
 
-$Procedure = $_POST['Procedure'];
+$OT = $_POST['OT'] ?? "";
+$ObjType = $_POST['ObjType'];
 $Edit = $_POST['Edit'];
 $DocType = $_POST['DocType'];
 $DocId = $_POST['DocId'];
@@ -25,6 +26,33 @@ $IdSeries = $_POST['IdSeries'];
 $Proyecto = $_POST['IdProyecto'];
 $IdEmpleado = $_POST['IdEmpleado'];
 $ListaPrecio = $_POST['ListaPrecio'];
+
+// Valores predeterminados en los campos de documentos del usuario según el tipo.
+$OrigenLlamada = ObtenerValorDefecto($ObjType, "OrigenLlamada");
+$SedeEmpresa = ObtenerValorDefecto($ObjType, "SedeEmpresa");
+$TipoPreventivo = ObtenerValorDefecto($ObjType, "TipoPreventivo");
+$TipoProblemaLlamada = ObtenerValorDefecto($ObjType, "TipoProblemaLlamada");
+$TipoLlamada = ObtenerValorDefecto($ObjType, "TipoLlamada");
+
+// Orden de trabajo (Llamada de servicio). SMM, 28/06/2023
+$SQL_OT = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='$OT'");
+$row_OT = sqlsrv_fetch_array($SQL_OT);
+
+if (isset($row_OT["IdOrigenLlamada"]) && ($row_OT["IdOrigenLlamada"] != "")) {
+	$OrigenLlamada = $row_OT["IdOrigenLlamada"];
+}
+
+if (isset($row_OT["CDU_TipoPreventivo"]) && ($row_OT["CDU_TipoPreventivo"] != "")) {
+	$TipoPreventivo = $row_OT["CDU_TipoPreventivo"];
+}
+
+if (isset($row_OT["IdTipoProblemaLlamada"]) && ($row_OT["IdTipoProblemaLlamada"] != "")) {
+	$TipoProblemaLlamada = $row_OT["IdTipoProblemaLlamada"];
+}
+
+if (isset($row_OT["IdTipoLlamada"]) && ($row_OT["IdTipoLlamada"] != "")) {
+	$TipoLlamada = $row_OT["IdTipoLlamada"];
+}
 
 // Proyectos. SMM, 24/05/2023
 $SQL_Proyecto = Seleccionar('uvw_Sap_tbl_Proyectos', '*', '', 'DeProyecto');
@@ -178,7 +206,11 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_ORIGEN = sqlsrv_fetch_array($SQL_OT_ORIGEN)) { ?>
-											<option value="<?php echo $row_ORIGEN['IdTipoOT']; ?>"><?php echo $row_ORIGEN['IdTipoOT'] . " - " . $row_ORIGEN['TipoOT']; ?></option>
+											<option <?php if ($OrigenLlamada == $row_ORIGEN['IdTipoOT']) {
+												echo "selected";
+											} ?> value="<?php echo $row_ORIGEN['IdTipoOT']; ?>">
+												<?php echo $row_ORIGEN['IdTipoOT'] . " - " . $row_ORIGEN['TipoOT']; ?>
+											</option>
 										<?php } ?>
 									</select>
 								</div> <!-- col-xs-12 -->
@@ -192,7 +224,11 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_TIPOPROBLEMA = sqlsrv_fetch_array($SQL_OT_TIPOPROBLEMA)) { ?>
-											<option value="<?php echo $row_TIPOPROBLEMA['IdTipoProblema']; ?>"><?php echo $row_TIPOPROBLEMA['IdTipoProblema'] . " - " . $row_TIPOPROBLEMA['TipoProblema']; ?></option>
+											<option <?php if ($TipoProblemaLlamada == $row_TIPOPROBLEMA['IdTipoProblema']) {
+												echo "selected";
+											} ?> value="<?php echo $row_TIPOPROBLEMA['IdTipoProblema']; ?>">
+												<?php echo $row_TIPOPROBLEMA['IdTipoProblema'] . " - " . $row_TIPOPROBLEMA['TipoProblema']; ?>
+											</option>
 										<?php } ?>
 									</select>
 								</div> <!-- col-xs-12 -->
@@ -205,7 +241,11 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_SEDE_EMPRESA = sqlsrv_fetch_array($SQL_OT_SEDE_EMPRESA)) { ?>
-											<option value="<?php echo $row_SEDE_EMPRESA['IdSedeEmpresa']; ?>"><?php echo $row_SEDE_EMPRESA['IdSedeEmpresa'] . " - " . $row_SEDE_EMPRESA['SedeEmpresa']; ?></option>
+											<option <?php if ($SedeEmpresa == $row_SEDE_EMPRESA['IdSedeEmpresa']) {
+												echo "selected";
+											} ?> value="<?php echo $row_SEDE_EMPRESA['IdSedeEmpresa']; ?>">
+												<?php echo $row_SEDE_EMPRESA['IdSedeEmpresa'] . " - " . $row_SEDE_EMPRESA['SedeEmpresa']; ?>
+											</option>
 										<?php } ?>
 									</select>
 								</div> <!-- col-xs-12 -->
@@ -218,7 +258,11 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_CLASES = sqlsrv_fetch_array($SQL_OT_CLASES)) { ?>
-											<option value="<?php echo $row_CLASES['IdTipoCargo']; ?>"><?php echo $row_CLASES['IdTipoCargo'] . " - " . $row_CLASES['TipoCargo']; ?></option>
+											<option <?php if ($TipoLlamada == $row_CLASES['IdTipoCargo']) {
+												echo "selected";
+											} ?> value="<?php echo $row_CLASES['IdTipoCargo']; ?>">
+												<?php echo $row_CLASES['IdTipoCargo'] . " - " . $row_CLASES['TipoCargo']; ?>
+											</option>
 										<?php } ?>
 									</select>
 								</div> <!-- col-xs-12 -->
@@ -232,7 +276,10 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_TIPOPREVENTI = sqlsrv_fetch_array($SQL_OT_TIPOPREVENTI)) { ?>
-											<option value="<?php echo $row_TIPOPREVENTI['IdTipoPreventivo']; ?>"><?php echo $row_TIPOPREVENTI['IdTipoPreventivo'] . " - " . $row_TIPOPREVENTI['TipoPreventivo']; ?>
+											<option <?php if ($TipoPreventivo == $row_TIPOPREVENTI['IdTipoPreventivo']) {
+												echo "selected";
+											} ?> value="<?php echo $row_TIPOPREVENTI['IdTipoPreventivo']; ?>">
+												<?php echo $row_TIPOPREVENTI['IdTipoPreventivo'] . " - " . $row_TIPOPREVENTI['TipoPreventivo']; ?>
 											</option>
 										<?php } ?>
 									</select>
@@ -399,6 +446,11 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 	}
 
 	$(document).ready(function () {
+		console.log("<?php echo $row_OT["IdOrigenLlamada"] ?? ""; ?>");
+		console.log("<?php echo $row_OT["CDU_TipoPreventivo"] ?? ""; ?>");
+		console.log("<?php echo $row_OT["IdTipoProblemaLlamada"] ?? ""; ?>");
+		console.log("<?php echo $row_OT["IdTipoLlamada"] ?? ""; ?>");
+		
 		$(".select2").select2();
 		$('#footableOne').footable();
 
@@ -470,7 +522,6 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 		});
 
 		$("#btnAceptar").on("click", function () {
-			let p = <?php echo $Procedure; ?>;
 			let dt = <?php echo $DocType; ?>;
 			let did = <?php echo $DocId; ?>;
 			let dev = <?php echo $DocEvent; ?>;
@@ -500,7 +551,7 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 				let IdTipoPreventivo = $(this).find('.IdTipoPreventivo').text();
 
 				let articulo = {
-					P: p,
+					P: 35,
 					doctype: dt,
 					id: did,
 					evento: dev,
@@ -569,7 +620,7 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 					error: function (error) {
 						// Manejar el error de la petición AJAX
 						console.log("Error inserción:", error);
-						
+
 						// alert("Ocurrio un error al insertar los articulos, se recomienda repetir el procedimiento o consultar al administrador");
 					}
 				});

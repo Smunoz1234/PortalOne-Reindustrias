@@ -1259,12 +1259,18 @@ if (isset($sw_error) && ($sw_error == 1)) {
 					AgregarEsto("CorreosDestinatarios", $("#CDU_CorreoContacto").val());
 					AgregarEsto("TelefonosDestinatarios", $("#CDU_TelefonoContacto").val());
 				<?php }?>
+
+				// SMM, 28/06/2023
+				$("#ContactoCierreContainer").removeClass('collapsed');
 			} else {
 				console.log("cambio el estado de la llamada, diferente a cerrado.");
 
 				$(".cierre-span").css("display", "none");
 				$(".cierre-input").prop("readonly", true);
 				$(".cierre-input").prop("disabled", true);
+
+				// SMM, 28/06/2023
+				$("#ContactoCierreContainer").addClass('collapsed');
 			}
 		});
 	});
@@ -2268,7 +2274,7 @@ $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFor
 
 				<!-- SMM, 16/09/2022 -->
 				<?php if ($type_llmd == 1) {?>
-					<div class="ibox">
+					<div id="ContactoCierreContainer" class="ibox collapsed">
 						<div class="ibox-title bg-success">
 							<h5 class="collapse-link"><i class="fa fa-check-circle"></i> Contacto cierre de llamada de servicio</h5>
 							<a class="collapse-link pull-right">

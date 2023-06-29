@@ -2342,6 +2342,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 		// SMM, 24/05/2023
 		function AgregarArticulos() {
 			let probarModal = false;
+			let ordenServicio = $("#OrdenServicioCliente").val();
 
 			let serie = $("#Serie").val();
 			let proyecto = $("#PrjCode").val();
@@ -2354,7 +2355,8 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 					type: "POST",
 					url: "md_consultar_articulos.php",
 					data: {
-						Procedure: 35,
+						ObjType: 15,
+						OT: ordenServicio,
 						Edit: <?php echo $edit; ?>,
 						DocType: "<?php echo ($edit == 0) ? 5 : 6; ?>",
 						DocId: "<?php echo $row['ID_EntregaVenta'] ?? 0; ?>",
@@ -2396,7 +2398,6 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 					type: "POST",
 					url: "md_actualizar_articulos.php",
 					data: {
-						Procedure: 36,
 						Edit: <?php echo $edit; ?>,
 						DocType: "<?php echo 3; ?>",
 						DocId: "<?php echo $row['ID_EntregaVenta'] ?? 0; ?>",
