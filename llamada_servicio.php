@@ -1,7 +1,7 @@
 <?php require_once "includes/conexion.php";
 PermitirAcceso(303);
 $IdLlamada = "";
-$IncluirCamposAdicionales = false; // SMM, 29/06/2023
+$IncluirCamposAdicionales = PermitirFuncion(332); // SMM, 30/06/2023
 
 $msg = ""; // Mensaje OK, 14/09/2022
 $msg_error = ""; //Mensaje del error
@@ -711,6 +711,12 @@ if ($testMode) {
 	$cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'Not Found'";
 	echo "<script> console.log($cadena); </script>";
 }
+
+// SMM, 30/06/2023
+$OrigenLlamada = ObtenerValorDefecto(191, "IdOrigenLlamada", false);
+$SubtipoProblema = ObtenerValorDefecto(191, "IdSubtipoProblema", false);
+$TipoLlamada = ObtenerValorDefecto(191, "IdTipoLlamada", false);
+$TipoProblema = ObtenerValorDefecto(191, "IdTipoProblema", false);
 ?>
 
 <!DOCTYPE html>
@@ -2051,27 +2057,38 @@ function AgregarEsto(contenedorID, valorElemento) {
 							<div class="col-lg-4">
 								<label class="control-label">Origen <span class="text-danger">*</span></label>
 								<select name="OrigenLlamada" class="form-control" required="required" id="OrigenLlamada" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
-									echo "disabled='disabled'";
+									echo "disabled";
 								} ?>>
-										<option value="">Seleccione...</option>
-								  <?php while ($row_OrigenLlamada = sqlsrv_fetch_array($SQL_OrigenLlamada)) { ?>
+									<option value="">Seleccione...</option>
+									
+									<?php while ($row_OrigenLlamada = sqlsrv_fetch_array($SQL_OrigenLlamada)) { ?>
 										<option value="<?php echo $row_OrigenLlamada['IdOrigenLlamada']; ?>" <?php if ((isset($row['IdOrigenLlamada'])) && (strcmp($row_OrigenLlamada['IdOrigenLlamada'], $row['IdOrigenLlamada']) == 0)) {
-											   echo "selected=\"selected\"";
-										   } ?>><?php echo $row_OrigenLlamada['IdOrigenLlamada'] . " " . $row_OrigenLlamada['DeOrigenLlamada']; ?></option>
-								  <?php } ?>
+												echo "selected";
+										   	}  elseif ($OrigenLlamada == $row_OrigenLlamada['IdOrigenLlamada']) {
+												echo "selected";
+											} ?>>
+											<?php echo $row_OrigenLlamada['IdOrigenLlamada'] . " " . $row_OrigenLlamada['DeOrigenLlamada']; ?>
+										</option>
+								  	<?php } ?>
 								</select>
 							</div>
+
 							<div class="col-lg-4">
 								<label class="control-label">Tipo llamada (Tipo Cliente) <span class="text-danger">*</span></label>
 								<select name="TipoLlamada" class="form-control" required="required" id="TipoLlamada" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
-									echo "disabled='disabled'";
+									echo "disabled";
 								} ?>>
-										<option value="">Seleccione...</option>
-								  <?php while ($row_TipoLlamadas = sqlsrv_fetch_array($SQL_TipoLlamadas)) { ?>
+									<option value="">Seleccione...</option>
+								  		
+									<?php while ($row_TipoLlamadas = sqlsrv_fetch_array($SQL_TipoLlamadas)) { ?>
 										<option value="<?php echo $row_TipoLlamadas['IdTipoLlamada']; ?>" <?php if ((isset($row['IdTipoLlamada'])) && (strcmp($row_TipoLlamadas['IdTipoLlamada'], $row['IdTipoLlamada']) == 0)) {
-											   echo "selected=\"selected\"";
-										   } ?>><?php echo $row_TipoLlamadas['DeTipoLlamada']; ?></option>
-								  <?php } ?>
+											   echo "selected";
+											}  elseif ($TipoLlamada == $row_TipoLlamadas['IdTipoLlamada']) {
+												echo "selected";
+											} ?>>
+											<?php echo $row_TipoLlamadas['DeTipoLlamada']; ?>
+										</option>
+								  	<?php } ?>
 								</select>
 							</div>
 							<!-- SMM -->
@@ -2091,29 +2108,41 @@ function AgregarEsto(contenedorID, valorElemento) {
 							<div class="col-lg-4">
 								<label class="control-label">Tipo problema (Tipo Servicio) <span class="text-danger">*</span></label>
 								<select name="TipoProblema" class="form-control" id="TipoProblema" required <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
-									echo "disabled='disabled'";
+									echo "disabled";
 								} ?>>
-										<option value="">Seleccione...</option>
-								  <?php while ($row_TipoProblema = sqlsrv_fetch_array($SQL_TipoProblema)) { ?>
+									<option value="">Seleccione...</option>
+								  	
+									<?php while ($row_TipoProblema = sqlsrv_fetch_array($SQL_TipoProblema)) { ?>
 										<option value="<?php echo $row_TipoProblema['IdTipoProblemaLlamada']; ?>" <?php if ((isset($row['IdTipoProblemaLlamada'])) && (strcmp($row_TipoProblema['IdTipoProblemaLlamada'], $row['IdTipoProblemaLlamada']) == 0)) {
-											   echo "selected=\"selected\"";
-										   } ?>><?php echo $row_TipoProblema['DeTipoProblemaLlamada']; ?></option>
-								  <?php } ?>
+											  	echo "selected";
+										   	} elseif ($TipoProblema == $row_TipoProblema['IdTipoProblemaLlamada']) {
+												echo "selected";
+											} ?>>
+											<?php echo $row_TipoProblema['DeTipoProblemaLlamada']; ?>
+										</option>
+								  	<?php } ?>
 								</select>
 							</div>
+
 							<div class="col-lg-4">
 								<label class="control-label">SubTipo problema (Subtipo Servicio) <span class="text-danger">*</span></label>
 								<select name="SubTipoProblema" class="form-control" required id="SubTipoProblema" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
-									echo "disabled='disabled'";
+									echo "disabled";
 								} ?>>
-										<option value="">Seleccione...</option>
-								  <?php while ($row_SubTipoProblema = sqlsrv_fetch_array($SQL_SubTipoProblema)) { ?>
+									<option value="">Seleccione...</option>
+								  	
+									<?php while ($row_SubTipoProblema = sqlsrv_fetch_array($SQL_SubTipoProblema)) { ?>
 										<option value="<?php echo $row_SubTipoProblema['IdSubTipoProblemaLlamada']; ?>" <?php if ((isset($row['IdSubTipoProblemaLlamada'])) && (strcmp($row_SubTipoProblema['IdSubTipoProblemaLlamada'], $row['IdSubTipoProblemaLlamada']) == 0)) {
-											   echo "selected=\"selected\"";
-										   } ?>><?php echo $row_SubTipoProblema['DeSubTipoProblemaLlamada']; ?></option>
-								  <?php } ?>
+											   echo "selected";
+										   	} elseif ($SubtipoProblema == $row_SubTipoProblema['IdSubTipoProblemaLlamada']) {
+												echo "selected";
+											} ?>>
+											<?php echo $row_SubTipoProblema['DeSubTipoProblemaLlamada']; ?>
+										</option>
+								  	<?php } ?>
 								</select>
 							</div>
+
 							<!-- SMM -->
 							<div class="col-lg-4">
 								<label class="control-label">Hora Agenda <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?><span class="text-danger">*</span><?php } ?></label>
@@ -2130,6 +2159,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 							</div>
 							<!-- 01/06/2022 -->
 						</div>
+
 						<div class="form-group">
 							<div class="col-lg-4" <?php if(!$IncluirCamposAdicionales) { ?> style="display: none;" <?php } ?>>
 								<label class="control-label"><i onClick="ConsultarContrato();" title="Consultar Contrato servicio" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Contrato servicio</label>
@@ -2146,6 +2176,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 									} ?>
 								</select>
 							</div>
+
 							<div class="col-lg-4" <?php if(!$IncluirCamposAdicionales) { ?> style="display: none;" <?php } ?>>
 								<label class="control-label">Cola</label>
 								<select name="ColaLlamada" class="form-control" id="ColaLlamada" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
@@ -2155,6 +2186,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								</select>
 							</div>
 						</div>
+
 						<div class="form-group">
 							<div class="col-lg-4" <?php if(!$IncluirCamposAdicionales) { ?> style="display: none;" <?php } ?>>
 								<label class="control-label">Aseguradora</label>
@@ -2173,6 +2205,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								  <?php } ?>
 								</select>
 							</div>
+
 							<div class="col-lg-4" <?php if(!$IncluirCamposAdicionales) { ?> style="display: none;" <?php } ?>>
 								<label class="control-label">Contrato/Campaña</label>
 								<select name="CDU_Contrato" class="form-control select2" id="CDU_Contrato"
@@ -2191,6 +2224,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								</select>
 							</div>
 						</div>
+
 						<div class="form-group">
 							<div class="col-lg-8 border-bottom">
 								<label class="control-label text-danger">Información de responsables</label>
