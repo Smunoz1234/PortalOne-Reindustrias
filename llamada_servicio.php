@@ -1,6 +1,7 @@
 <?php require_once "includes/conexion.php";
 PermitirAcceso(303);
 $IdLlamada = "";
+$IncluirCamposAdicionales = false; // SMM, 29/06/2023
 
 $msg = ""; // Mensaje OK, 14/09/2022
 $msg_error = ""; //Mensaje del error
@@ -139,7 +140,7 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
 			"'" . $_POST['TipoLlamada'] . "'",
 			"'" . $_POST['TipoProblema'] . "'",
 			"'" . $_POST['SubTipoProblema'] . "'",
-			"'" . $_POST['ContratoServicio'] . "'",
+			"'" . ($_POST['ContratoServicio'] ?? "") . "'", // SMM, 29/06/2023
 			"'" . $_POST['Tecnico'] . "'",
 			"'" . $_POST['ClienteLlamada'] . "'",
 			"'" . $_POST['ContactoCliente'] . "'",
@@ -184,11 +185,11 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
 			"'" . $_POST['CDU_Linea'] . "'",
 			"'" . $_POST['CDU_Ano'] . "'",
 			"'" . $_POST['CDU_Concesionario'] . "'",
-			"'" . $_POST['CDU_Aseguradora'] . "'",
+			"'" . ($_POST['CDU_Aseguradora'] ?? "") . "'", // SMM, 29/06/2023
 			"'" . $_POST['CDU_TipoPreventivo'] . "'", // SMM, 14/09/2022
 			"'" . $_POST['CDU_TipoServicio'] . "'",
 			isset($_POST['CDU_Kilometros']) ? $_POST['CDU_Kilometros'] : 0, // int
-			"'" . $_POST['CDU_Contrato'] . "'",
+			"'" . ($_POST['CDU_Contrato'] ?? "") . "'", // SMM, 29/06/2023
 			"NULL", // CDU_Asesor
 			"'" . $_POST['CDU_ListaMateriales'] . "'",
 			isset($_POST['CDU_TiempoTarea']) ? $_POST['CDU_TiempoTarea'] : 0, // int
@@ -331,7 +332,7 @@ if (isset($_POST['P']) && ($_POST['P'] == 33)) { //Actualizar llamada de servici
 			"'" . $_POST['TipoLlamada'] . "'",
 			"'" . $_POST['TipoProblema'] . "'",
 			"'" . $_POST['SubTipoProblema'] . "'",
-			"'" . $_POST['ContratoServicio'] . "'",
+			"'" . ($_POST['ContratoServicio'] ?? "") . "'", // SMM, 29/06/2023
 			"'" . $_POST['Tecnico'] . "'",
 			"'" . $_POST['ClienteLlamada'] . "'",
 			"'" . $_POST['ContactoCliente'] . "'",
@@ -376,11 +377,11 @@ if (isset($_POST['P']) && ($_POST['P'] == 33)) { //Actualizar llamada de servici
 			"'" . $_POST['CDU_Linea'] . "'",
 			"'" . $_POST['CDU_Ano'] . "'",
 			"'" . $_POST['CDU_Concesionario'] . "'",
-			"'" . $_POST['CDU_Aseguradora'] . "'",
+			"'" . ($_POST['CDU_Aseguradora'] ?? "") . "'", // SMM, 29/06/2023
 			"NULL",
 			"'" . $_POST['CDU_TipoServicio'] . "'",
 			isset($_POST['CDU_Kilometros']) ? $_POST['CDU_Kilometros'] : 0, // int
-			"'" . $_POST['CDU_Contrato'] . "'",
+			"'" . ($_POST['CDU_Contrato'] ?? "") . "'", // SMM, 29/06/2023
 			"NULL",
 			"'" . $_POST['CDU_ListaMateriales'] . "'",
 			isset($_POST['CDU_TiempoTarea']) ? $_POST['CDU_TiempoTarea'] : 0, // int
@@ -656,8 +657,8 @@ $SQL_CanceladoPorLlamada = Seleccionar('uvw_Sap_tbl_LlamadasServiciosCanceladoPo
 //Causa reprogramacion llamada
 $SQL_CausaReprog = Seleccionar('uvw_Sap_tbl_LlamadasServiciosReprogramacion', '*', '', 'DeReprogramacion');
 
-//Cola llamada
-//$SQL_ColaLlamada=Seleccionar('uvw_Sap_tbl_ColaLlamadas','*','','DeColaLlamada');
+// Cola llamada. SMM, 29/06/2023
+// $SQL_ColaLlamada=Seleccionar('uvw_Sap_tbl_ColaLlamadas','*','','DeColaLlamada');
 
 //Empleados
 $SQL_EmpleadoLlamada = Seleccionar('uvw_Sap_tbl_Empleados', '*', "UsuarioSAP <> ''", 'NombreEmpleado');
@@ -941,15 +942,19 @@ if (isset($sw_error) && ($sw_error == 1)) {
 					$('.ibox-content').toggleClass('sk-loading',false);
 				}
 			});
-			$.ajax({
-				type: "POST",
-				url: "ajx_cbo_select.php?type=29&id="+Cliente,
-				success: function(response){
-					$('#ContratoServicio').html(response).fadeIn();
-					$('#ContratoServicio').trigger('change');
-					$('.ibox-content').toggleClass('sk-loading',false);
-				}
-			});
+
+			<?php if($IncluirCamposAdicionales) { ?>
+				$.ajax({
+					type: "POST",
+					url: "ajx_cbo_select.php?type=29&id="+Cliente,
+					success: function(response){
+						$('#ContratoServicio').html(response).fadeIn();
+						$('#ContratoServicio').trigger('change');
+						$('.ibox-content').toggleClass('sk-loading',false);
+					}
+				});
+			<?php } ?>
+
 			$.ajax({
 				type: "POST",
 				url: "ajx_cbo_select.php?type=30&id="+Cliente,
@@ -1333,14 +1338,17 @@ function ConsultarEquipo(){
 		remote.focus();
 	}
 }
-function ConsultarContrato(){
-	var Contrato=document.getElementById('ContratoServicio');
-	if(Contrato.value!=""){
-		self.name='opener';
-		remote=open('contratos.php?id='+btoa(Contrato.value)+'&ext=1&tl=1','remote','location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
-		remote.focus();
+
+<?php if($IncluirCamposAdicionales) {?>
+	function ConsultarContrato(){
+		var Contrato=document.getElementById('ContratoServicio');
+		if(Contrato.value!=""){
+			self.name='opener';
+			remote=open('contratos.php?id='+btoa(Contrato.value)+'&ext=1&tl=1','remote','location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
+			remote.focus();
+		}
 	}
-}
+<?php } ?>
 
 // Stiven Muñoz Murillo, 30/12/2021
 function ConsultarMateriales(){
@@ -2123,62 +2131,59 @@ function AgregarEsto(contenedorID, valorElemento) {
 							<!-- 01/06/2022 -->
 						</div>
 						<div class="form-group">
-							<div class="col-lg-4">
+							<div class="col-lg-4" <?php if(!$IncluirCamposAdicionales) { ?> style="display: none;" <?php } ?>>
 								<label class="control-label"><i onClick="ConsultarContrato();" title="Consultar Contrato servicio" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Contrato servicio</label>
 								<select name="ContratoServicio" class="form-control" id="ContratoServicio" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
-									echo "disabled='disabled'";
+									echo "disabled";
 								} ?>>
 										<option value="">Seleccione...</option>
 									<?php if (($type_llmd == 1) || ($sw_error == 1)) {
 										while ($row_Contrato = sqlsrv_fetch_array($SQL_Contrato)) { ?>
 											<option value="<?php echo $row_Contrato['ID_Contrato']; ?>" <?php if ((isset($row_Contrato['ID_Contrato'])) && (strcmp($row_Contrato['ID_Contrato'], $row['IdContratoServicio']) == 0)) {
-												   echo "selected=\"selected\"";
+												   echo "selected";
 											   } ?>><?php echo $row_Contrato['ID_Contrato'] . " - " . $row_Contrato['DE_Contrato']; ?></option>
 									<?php }
 									} ?>
 								</select>
 							</div>
-							<div class="col-lg-4">
+							<div class="col-lg-4" <?php if(!$IncluirCamposAdicionales) { ?> style="display: none;" <?php } ?>>
 								<label class="control-label">Cola</label>
 								<select name="ColaLlamada" class="form-control" id="ColaLlamada" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
-									echo "disabled='disabled'";
+									echo "disabled";
 								} ?>>
-										<option value="">Seleccione...</option>
-								  <?php /*while($row_ColaLlamada=sqlsrv_fetch_array($SQL_ColaLlamada)){?>
-				   <option value="<?php echo $row_ColaLlamada['IdColaLlamada'];?>" <?php if((isset($row['IdColaLlamada']))&&(strcmp($row_ColaLlamada['IdColaLlamada'],$row['IdColaLlamada'])==0)){ echo "selected=\"selected\"";}?>><?php echo $row_ColaLlamada['DeColaLlamada'];?></option>
-				   <?php }*/?>
+									<option value="">Seleccione...</option>
 								</select>
 							</div>
 						</div>
 						<div class="form-group">
-							<div class="col-lg-4">
-								<label class="control-label">Aseguradora <span class="text-danger">*</span></label>
-								<select name="CDU_Aseguradora" class="form-control select2" required="required" id="CDU_Aseguradora"
+							<div class="col-lg-4" <?php if(!$IncluirCamposAdicionales) { ?> style="display: none;" <?php } ?>>
+								<label class="control-label">Aseguradora</label>
+								<select name="CDU_Aseguradora" class="form-control select2"id="CDU_Aseguradora"
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
-									echo "disabled='disabled'";
+									echo "disabled";
 								} ?>>
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_Aseguradora = sqlsrv_fetch_array($SQL_Aseguradora)) { ?>
 										<option value="<?php echo $row_Aseguradora['NombreAseguradora']; ?>"
 										<?php if ((isset($row['CDU_Aseguradora'])) && (strcmp($row_Aseguradora['NombreAseguradora'], $row['CDU_Aseguradora']) == 0)) {
-											echo "selected=\"selected\"";
+											echo "selected";
 										} ?>>
 											<?php echo $row_Aseguradora['NombreAseguradora']; ?>
 										</option>
 								  <?php } ?>
 								</select>
 							</div>
-							<div class="col-lg-4">
-								<label class="control-label">Contrato/Campaña <span class="text-danger">*</span></label>
-								<select name="CDU_Contrato" class="form-control select2" required="required" id="CDU_Contrato"
+							<div class="col-lg-4" <?php if(!$IncluirCamposAdicionales) { ?> style="display: none;" <?php } ?>>
+								<label class="control-label">Contrato/Campaña</label>
+								<select name="CDU_Contrato" class="form-control select2" id="CDU_Contrato"
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
-									echo "disabled='disabled'";
+									echo "disabled";
 								} ?>>
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_Contrato = sqlsrv_fetch_array($SQL_ContratosLlamada)) { ?>
 										<option value="<?php echo $row_Contrato['NombreContrato']; ?>"
 										<?php if ((isset($row['CDU_Contrato'])) && (strcmp($row_Contrato['NombreContrato'], $row['CDU_Contrato']) == 0)) {
-											echo "selected=\"selected\"";
+											echo "selected";
 										} ?>>
 											<?php echo $row_Contrato['NombreContrato']; ?>
 										</option>

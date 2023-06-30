@@ -28,30 +28,50 @@ $IdEmpleado = $_POST['IdEmpleado'];
 $ListaPrecio = $_POST['ListaPrecio'];
 
 // Valores predeterminados en los campos de documentos del usuario según el tipo.
-$OrigenLlamada = ObtenerValorDefecto($ObjType, "OrigenLlamada");
-$SedeEmpresa = ObtenerValorDefecto($ObjType, "SedeEmpresa");
-$TipoPreventivo = ObtenerValorDefecto($ObjType, "TipoPreventivo");
-$TipoProblemaLlamada = ObtenerValorDefecto($ObjType, "TipoProblemaLlamada");
-$TipoLlamada = ObtenerValorDefecto($ObjType, "TipoLlamada");
+$OrigenLlamada = ObtenerValorDefecto($ObjType, "OrigenLlamada", false);
+$SedeEmpresa = ObtenerValorDefecto($ObjType, "SedeEmpresa", false);
+$TipoPreventivo = ObtenerValorDefecto($ObjType, "TipoPreventivo", false);
+$TipoProblemaLlamada = ObtenerValorDefecto($ObjType, "TipoProblemaLlamada", false);
+$TipoLlamada = ObtenerValorDefecto($ObjType, "TipoLlamada", false);
 
 // Orden de trabajo (Llamada de servicio). SMM, 28/06/2023
 $SQL_OT = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='$OT'");
 $row_OT = sqlsrv_fetch_array($SQL_OT);
 
 if (isset($row_OT["IdOrigenLlamada"]) && ($row_OT["IdOrigenLlamada"] != "")) {
-	$OrigenLlamada = $row_OT["IdOrigenLlamada"];
+	$IdOrigenLlamada = $row_OT["IdOrigenLlamada"];
+
+	$SQL_Origen = Seleccionar("uvw_Sap_tbl_LlamadasServiciosOrigen", '*', "IdOrigenLlamada='$IdOrigenLlamada'");
+	$row_Origen = sqlsrv_fetch_array($SQL_Origen);
+	
+	$OrigenLlamada = $row_Origen["IdRelacionMarketing"] ?? "";
 }
 
 if (isset($row_OT["CDU_TipoPreventivo"]) && ($row_OT["CDU_TipoPreventivo"] != "")) {
-	$TipoPreventivo = $row_OT["CDU_TipoPreventivo"];
+	$CDU_TipoPreventivo = $row_OT["CDU_TipoPreventivo"];
+
+	$SQL_TipoPreventivo = Seleccionar("uvw_Sap_tbl_LlamadasServicios_TipoPreventivo", '*', "CodigoTipoPreventivo='$CDU_TipoPreventivo'");
+	$row_TipoPreventivo = sqlsrv_fetch_array($SQL_TipoPreventivo);
+	
+	$TipoPreventivo = $row_TipoPreventivo["IdRelacionMarketing"] ?? "";
 }
 
 if (isset($row_OT["IdTipoProblemaLlamada"]) && ($row_OT["IdTipoProblemaLlamada"] != "")) {
-	$TipoProblemaLlamada = $row_OT["IdTipoProblemaLlamada"];
+	$IdTipoProblemaLlamada = $row_OT["IdTipoProblemaLlamada"];
+
+	$SQL_TipoProblema = Seleccionar("uvw_Sap_tbl_TipoProblemasLlamadas", '*', "IdTipoProblemaLlamada='$IdTipoProblemaLlamada'");
+	$row_TipoProblema = sqlsrv_fetch_array($SQL_TipoProblema);
+	
+	$TipoProblemaLlamada = $row_TipoProblema["IdRelacionMarketing"] ?? "";
 }
 
 if (isset($row_OT["IdTipoLlamada"]) && ($row_OT["IdTipoLlamada"] != "")) {
-	$TipoLlamada = $row_OT["IdTipoLlamada"];
+	$IdTipoLlamada = $row_OT["IdTipoLlamada"];
+
+	$SQL_TipoLlamada = Seleccionar("uvw_Sap_tbl_TipoLlamadas", '*', "IdTipoLlamada='$IdTipoLlamada'");
+	$row_TipoLlamada = sqlsrv_fetch_array($SQL_TipoLlamada);
+	
+	$TipoLlamada = $row_TipoLlamada["IdRelacionMarketing"] ?? "";
 }
 
 // Proyectos. SMM, 24/05/2023
