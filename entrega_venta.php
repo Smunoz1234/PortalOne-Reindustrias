@@ -614,10 +614,6 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 			padding: 14px 20px 14px 25px !important;
 		}
 
-		/**
-	* Stiven Muñoz Murillo
-	* 16/08/2022
-	 */
 		.bootstrap-maxlength {
 			background-color: black;
 			z-index: 9999999;
@@ -627,6 +623,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 			z-index: 9999999 !important;
 		}
 	</style>
+	
 	<script>
 		function ConsultarDatosCliente() {
 			var Cliente = document.getElementById('CardCode');
@@ -1529,7 +1526,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 									<label class="col-lg-1 control-label">Proyecto <span
 											class="text-danger">*</span></label>
 									<div class="col-lg-3">
-										<select id="PrjCode" name="PrjCode" class="form-control" required="required"
+										<select id="PrjCode" name="PrjCode" class="form-control select2" required="required"
 											<?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
 												echo "disabled='disabled'";
 											} ?>>
@@ -1637,7 +1634,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 							</form>
 							<div id="tab-3" class="tab-pane">
 								<div class="panel-body">
-									<?php if (($edit == 1) || sqlsrv_has_rows($SQL_Anexo)) {
+								<?php if (($edit == 1) || (isset($SQL_Anexo) && sqlsrv_has_rows($SQL_Anexo))) {
 										if ((($edit == 1) && ($row['IdAnexo'] != 0)) || (sqlsrv_has_rows($SQL_Anexo) && ($edit == 0))) { ?>
 											<div class="form-group">
 												<div class="col-lg-4">
@@ -2123,7 +2120,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 			<?php } ?>
 
 			// $('.chosen-select').chosen({width: "100%"});
-			// $(".select2").select2();
+			$(".select2").select2();
 
 			<?php
 			if ($edit == 1) { ?>

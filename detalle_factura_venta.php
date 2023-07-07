@@ -644,7 +644,8 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 
 								<!-- Nuevos campos basados en la OT -->
 								<td>
-									<select name="IdTipoOT" id="IdTipoOT" class="form-control select2" required>
+									<select name="CDU_IdTipoOT[]" id="CDU_IdTipoOT<?php echo $i; ?>" class="form-control select2" required
+									onChange="ActualizarDatos('CDU_IdTipoOT',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);">
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_ORIGEN = sqlsrv_fetch_array($SQL_OT_ORIGEN)) { ?>
@@ -658,7 +659,8 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 								</td>
 
 								<td>
-									<select name="IdSedeEmpresa" id="IdSedeEmpresa" class="form-control select2" required>
+									<select name="CDU_IdSedeEmpresa[]" id="CDU_IdSedeEmpresa<?php echo $i; ?>" class="form-control select2" required
+									onChange="ActualizarDatos('CDU_IdSedeEmpresa',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);">
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_SEDE_EMPRESA = sqlsrv_fetch_array($SQL_OT_SEDE_EMPRESA)) { ?>
@@ -672,7 +674,8 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 								</td>
 
 								<td>
-									<select name="IdTipoCargo" id="IdTipoCargo" class="form-control select2" required>
+									<select name="CDU_IdTipoCargo[]" id="CDU_IdTipoCargo<?php echo $i; ?>" class="form-control select2" required
+									onChange="ActualizarDatos('CDU_IdTipoCargo',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);">
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_CLASES = sqlsrv_fetch_array($SQL_OT_CLASES)) { ?>
@@ -686,7 +689,8 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 								</td>
 
 								<td>
-									<select name="IdTipoProblema" id="IdTipoProblema" class="form-control select2" required>
+									<select name="CDU_IdTipoProblema[]" id="CDU_IdTipoProblema<?php echo $i; ?>" class="form-control select2" required
+									onChange="ActualizarDatos('CDU_IdTipoProblema',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);">
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_TIPOPROBLEMA = sqlsrv_fetch_array($SQL_OT_TIPOPROBLEMA)) { ?>
@@ -700,7 +704,8 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 								</td>
 
 								<td>
-									<select name="IdTipoPreventivo" id="IdTipoPreventivo" class="form-control select2" required>
+									<select name="CDU_IdTipoPreventivo[]" id="CDU_IdTipoPreventivo<?php echo $i; ?>" class="form-control select2" required
+									onChange="ActualizarDatos('CDU_IdTipoPreventivo',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);">
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_TIPOPREVENTI = sqlsrv_fetch_array($SQL_OT_TIPOPREVENTI)) { ?>
@@ -712,8 +717,8 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 										<?php } ?>
 									</select>
 								</td>
-								<!-- SMM, 08/06/2023 -->
-
+								<!-- SMM, 07/07/2023 -->
+								
 								<td><input size="50" type="text" id="FreeTxt<?php echo $i; ?>" name="FreeTxt[]"
 										class="form-control" value="<?php echo $row['FreeTxt']; ?>"
 										onChange="ActualizarDatos('FreeTxt',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);"

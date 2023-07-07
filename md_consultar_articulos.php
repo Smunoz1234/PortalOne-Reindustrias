@@ -101,7 +101,7 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 ?>
 
 <style>
-	.select2-container {
+	.select2-dropdown {
 		z-index: 9000;
 	}
 

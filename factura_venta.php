@@ -487,7 +487,17 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 		.nav-tabs>li>a {
 			padding: 14px 20px 14px 25px !important;
 		}
+
+		.bootstrap-maxlength {
+			background-color: black;
+			z-index: 9999999;
+		}
+
+		.swal2-container {
+			z-index: 9999999 !important;
+		}
 	</style>
+
 	<script>
 		function ConsultarDatosCliente() {
 			var Cliente = document.getElementById('CardCode');
@@ -1127,7 +1137,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 									<label class="col-lg-1 control-label">Proyecto <span
 											class="text-danger">*</span></label>
 									<div class="col-lg-3">
-										<select id="PrjCode" name="PrjCode" class="form-control"
+										<select id="PrjCode" name="PrjCode" class="form-control select2"
 											required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
 												echo "disabled='disabled'";
 											} ?>>
@@ -1588,7 +1598,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 			<?php } ?>
 			
 			// $('.chosen-select').chosen({width: "100%"});
-			// $(".select2").select2();
+			$(".select2").select2();
 
 			<?php
 			if ($edit == 1) { ?>
