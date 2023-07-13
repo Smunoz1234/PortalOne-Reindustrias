@@ -949,6 +949,15 @@ if (isset($sw_error) && ($sw_error == 1)) {
 						$('.ibox-content').toggleClass('sk-loading',false);
 					}
 				});
+
+				// SMM, 13/07/2023
+				$.ajax({
+					type: "POST",
+					url: `ajx_cbo_select.php?type=47&id=${$(this).val()}`,
+					success: function(response){
+						$('#TipoLlamada').html(response).fadeIn();
+					}
+				});
 			});
 
 

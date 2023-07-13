@@ -78,15 +78,24 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
             //$SQL=sqlsrv_query($conexion,$Cons);
             if ($SQL) {
                 echo "<option value=''>Seleccione...</option>";
+
+                $dirDefecto = ""; // SMM, 13/07/2023
                 while ($row = sqlsrv_fetch_array($SQL)) {
                     if (($row['TipoDireccion'] == "B") && ($sw_dirB == 0)) {
                         echo "<optgroup label='Dirección de facturas'></optgroup>";
                         $sw_dirB = 1;
+
+                        $dirDefecto = $row['BillToDef'] ?? "";
                     } elseif (($row['TipoDireccion'] == "S") && ($sw_dirS == 0)) {
                         echo "<optgroup label='Dirección de destino'></optgroup>";
                         $sw_dirS = 1;
+
+                        $dirDefecto = $row['ShipToDef'] ?? "";
                     }
-                    echo "<option value=\"" . $row['NombreSucursal'] . "\">" . $row['NombreSucursal'] . "</option>";
+
+                    $NombreSucursal = $row['NombreSucursal'];
+                    $SucursalDef = ($NombreSucursal == $dirDefecto) ? "selected" : "";
+                    echo "<option value='$NombreSucursal' $SucursalDef>$NombreSucursal</option>";
                 }
             } else {
                 echo "<option value=''>Seleccione...</option>";
@@ -1071,7 +1080,7 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
                     $rowId = $row['IdOT_TipoProblema'];
                     $rowVal = $row['OT_TipoProblema'];
 
-                    echo "<option value='$rowId'>$rowId - $rowVal</option>";
+                    echo "<option value='$rowId'>$rowVal</option>";
                 }
             } else {
                 echo "<option value=''>Seleccione...</option>";
@@ -1094,7 +1103,30 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
                     $rowId = $row['IdTipoProblemaLlamada'];
                     $rowVal = $row['DeTipoProblemaLlamada'];
 
-                    echo "<option value='$rowId'>$rowId $rowVal</option>";
+                    echo "<option value='$rowId'>$rowVal</option>";
+                }
+            } else {
+                echo "<option value=''>Seleccione...</option>";
+            }
+        }
+    }
+
+    // SMM, 29/06/2023
+    elseif ($_GET['type'] == 47) { // Tipo llamada (tipo cargo), dependiendo del tipo problema. Para Llamada Servicio.
+        if (!isset($_GET['id']) || ($_GET['id'] == "")) {
+            echo "<option value=''>Seleccione...</option>";
+        } else {
+            $Id = "'" . $_GET['id'] . "'";
+            $SQL = Seleccionar('uvw_Sap_tbl_TipoLlamadas', '*', "IdTipoProblema = $Id AND Activo = 'Y'", 'DeTipoLlamada');
+            $Num = sqlsrv_num_rows($SQL);
+            if ($Num) {
+                echo "<option value=''>Seleccione...</option>";
+
+                while ($row = sqlsrv_fetch_array($SQL)) {
+                    $rowId = $row['IdTipoLlamada'];
+                    $rowVal = $row['DeTipoLlamada'];
+
+                    echo "<option value='$rowId'>$rowVal</option>";
                 }
             } else {
                 echo "<option value=''>Seleccione...</option>";
