@@ -486,7 +486,11 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 						while ($row = sqlsrv_fetch_array($SQL)) {
 							sqlsrv_fetch($SQL_Almacen, SQLSRV_SCROLL_ABSOLUTE, -1);
 
-							// Se eliminaron las dimensiones, 31/08/2022
+							sqlsrv_fetch($SQL_OT_ORIGEN, SQLSRV_SCROLL_ABSOLUTE, -1);
+							sqlsrv_fetch($SQL_OT_SEDE_EMPRESA, SQLSRV_SCROLL_ABSOLUTE, -1);
+							sqlsrv_fetch($SQL_OT_CLASES, SQLSRV_SCROLL_ABSOLUTE, -1);
+							sqlsrv_fetch($SQL_OT_TIPOPROBLEMA, SQLSRV_SCROLL_ABSOLUTE, -1);
+							sqlsrv_fetch($SQL_OT_TIPOPREVENTI, SQLSRV_SCROLL_ABSOLUTE, -1);
 					
 							sqlsrv_fetch($SQL_Proyecto, SQLSRV_SCROLL_ABSOLUTE, -1);
 							sqlsrv_fetch($SQL_EmpleadosVentas, SQLSRV_SCROLL_ABSOLUTE, -1); // SMM, 22/02/2022

@@ -758,6 +758,17 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
         echo json_encode($records);
     }
 
+    // Stiven Muñoz Murillo, 12/07/2022
+    elseif ($_GET['type'] == 48) { // TipoProblema por Id
+        $id = $_GET['id'] ?? "";
+        $SQL = Seleccionar("uvw_Sap_tbl_TipoProblemasLlamadas", "*", "IdTipoProblemaLlamada='$id'");
+        $row = sqlsrv_fetch_array($SQL);
+        $records = array(
+            'tiempoTarea' => $row['TiempoTarea'],
+        );
+        echo json_encode($records);
+    }
+
     // Después de los condicionales
     // Se cierra la conexión a la BD
     sqlsrv_close($conexion);

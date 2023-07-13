@@ -139,7 +139,7 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
 			"'" . $_POST['OrigenLlamada'] . "'",
 			"'" . $_POST['TipoLlamada'] . "'",
 			"'" . $_POST['TipoProblema'] . "'",
-			"'" . $_POST['SubTipoProblema'] . "'",
+			"'" . ($_POST['SubTipoProblema'] ?? "") . "'",
 			"'" . ($_POST['ContratoServicio'] ?? "") . "'", // SMM, 29/06/2023
 			"'" . $_POST['Tecnico'] . "'",
 			"'" . $_POST['ClienteLlamada'] . "'",
@@ -153,8 +153,8 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
 			"'" . $_POST['DireccionLlamada'] . "'",
 			"'" . $_POST['CiudadLlamada'] . "'",
 			"'" . $_POST['BarrioDireccionLlamada'] . "'",
-			"'" . $_POST['EmpleadoLlamada'] . "'",
-			"'" . $_POST['Proyecto'] . "'",
+			"'" . ($_POST['EmpleadoLlamada'] ?? "") . "'",
+			"'" . ($_POST['Proyecto'] ?? "") . "'",
 			"'" . LSiqmlObs($_POST['ComentarioLlamada']) . "'",
 			"'" . LSiqmlObs($_POST['ResolucionLlamada']) . "'",
 			"'" . FormatoFecha($_POST['FechaCreacion'], $_POST['HoraCreacion']) . "'",
@@ -177,8 +177,9 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
 			"NULL",
 			"NULL",
 			"'" . $_POST['CDU_CanceladoPor'] . "'",
-			($_POST['CantArticulo'] != "") ? LSiqmlValorDecimal($_POST['CantArticulo']) : 0,
-			($_POST['PrecioArticulo'] != "") ? LSiqmlValorDecimal($_POST['PrecioArticulo']) : 0,
+			// SMM, 12/07/2023
+			(isset($_POST['CantArticulo']) && ($_POST['CantArticulo'] != "")) ? LSiqmlValorDecimal($_POST['CantArticulo']) : 0,
+			(isset($_POST['PrecioArticulo']) && ($_POST['PrecioArticulo'] != "")) ? LSiqmlValorDecimal($_POST['PrecioArticulo']) : 0,
 			"1", // Tipo de SP
 			// Campos nuevos
 			"'" . $_POST['CDU_Marca'] . "'",
@@ -331,7 +332,7 @@ if (isset($_POST['P']) && ($_POST['P'] == 33)) { //Actualizar llamada de servici
 			"'" . $_POST['OrigenLlamada'] . "'",
 			"'" . $_POST['TipoLlamada'] . "'",
 			"'" . $_POST['TipoProblema'] . "'",
-			"'" . $_POST['SubTipoProblema'] . "'",
+			"'" . ($_POST['SubTipoProblema'] ?? "") . "'",
 			"'" . ($_POST['ContratoServicio'] ?? "") . "'", // SMM, 29/06/2023
 			"'" . $_POST['Tecnico'] . "'",
 			"'" . $_POST['ClienteLlamada'] . "'",
@@ -345,8 +346,8 @@ if (isset($_POST['P']) && ($_POST['P'] == 33)) { //Actualizar llamada de servici
 			"'" . $_POST['DireccionLlamada'] . "'",
 			"'" . $_POST['CiudadLlamada'] . "'",
 			"'" . $_POST['BarrioDireccionLlamada'] . "'",
-			"'" . $_POST['EmpleadoLlamada'] . "'",
-			"'" . $_POST['Proyecto'] . "'",
+			"'" . ($_POST['EmpleadoLlamada'] ?? "") . "'",
+			"'" . ($_POST['Proyecto'] ?? "") . "'",
 			"'" . LSiqmlObs($_POST['ComentarioLlamada']) . "'",
 			"'" . LSiqmlObs($_POST['ResolucionLlamada']) . "'",
 			"'" . FormatoFecha($_POST['FechaCreacion'], $_POST['HoraCreacion']) . "'",
@@ -369,8 +370,9 @@ if (isset($_POST['P']) && ($_POST['P'] == 33)) { //Actualizar llamada de servici
 			"NULL",
 			"NULL",
 			"'" . $_POST['CDU_CanceladoPor'] . "'",
-			($_POST['CantArticulo'] != "") ? LSiqmlValorDecimal($_POST['CantArticulo']) : 0,
-			($_POST['PrecioArticulo'] != "") ? LSiqmlValorDecimal($_POST['PrecioArticulo']) : 0,
+			// SMM, 12/07/2023
+			(isset($_POST['CantArticulo']) && ($_POST['CantArticulo'] != "")) ? LSiqmlValorDecimal($_POST['CantArticulo']) : 0,
+			(isset($_POST['PrecioArticulo']) && ($_POST['PrecioArticulo'] != "")) ? LSiqmlValorDecimal($_POST['PrecioArticulo']) : 0,
 			"$Type",
 			// Campos nuevos
 			"'" . $_POST['CDU_Marca'] . "'",
@@ -923,6 +925,33 @@ if (isset($sw_error) && ($sw_error == 1)) {
 			});
 		});
 
+		// SMM, 12/07/2023
+		$("#TipoProblema").change(function(){
+				$('.ibox-content').toggleClass('sk-loading',true);
+				
+				$.ajax({
+					url: "ajx_buscar_datos_json.php",
+					data: {
+						type: 48,
+						id: $(this).val()
+					},
+					dataType: 'json',
+					success: function(data){
+						console.log(data);
+
+						$("#CDU_TiempoTarea").val(data.tiempoTarea || '""');
+						
+						$('.ibox-content').toggleClass('sk-loading',false);
+					},
+					error: function(error) {
+						console.log("AJAX error:", error.responseText);
+						
+						$('.ibox-content').toggleClass('sk-loading',false);
+					}
+				});
+			});
+
+
 		var borrarNumeroSerie = true;
 		var borrarLineaModeloVehiculo = true;
 
@@ -959,17 +988,19 @@ if (isset($sw_error) && ($sw_error == 1)) {
 						$('.ibox-content').toggleClass('sk-loading',false);
 					}
 				});
+
+				$.ajax({
+					type: "POST",
+					url: "ajx_cbo_select.php?type=30&id="+Cliente,
+					success: function(response){
+						$('#Proyecto').html(response).fadeIn();
+						$('#Proyecto').trigger('change');
+						
+						$('.ibox-content').toggleClass('sk-loading',false);
+					}
+				});
 			<?php } ?>
 
-			$.ajax({
-				type: "POST",
-				url: "ajx_cbo_select.php?type=30&id="+Cliente,
-				success: function(response){
-					$('#Proyecto').html(response).fadeIn();
-					$('#Proyecto').trigger('change');
-					$('.ibox-content').toggleClass('sk-loading',false);
-				}
-			});
 			$.ajax({
 					type: "POST",
 					url: "ajx_cbo_select.php?type=28&id=&clt="+Cliente+"&<?php echo isset($_GET['Serial']) ? ("Serial=" . base64_decode($_GET['Serial'])) : ""; ?>&<?php echo isset($_GET['IdTE']) ? ("IdTE=" . base64_decode($_GET['IdTE'])) : ""; ?>",
@@ -1118,33 +1149,48 @@ if (isset($sw_error) && ($sw_error == 1)) {
 			}
 		});
 		<?php if ($type_llmd == 0 && $sw_error == 0) { ?>
-			$("#Series").change(function(){
-				$('.ibox-content').toggleClass('sk-loading',true);
-				var Series=document.getElementById('Series').value;
-				if(Series!=""){
+			// SMM, 12/07/2023
+			$("#Series").change(function() {
+				$('.ibox-content').toggleClass('sk-loading', true);
+				
+				let Series = document.getElementById('Series').value;
+				if(Series !== ""){
 					$.ajax({
-						url:"ajx_buscar_datos_json.php",
-						data:{type:30,id:Series},
-						dataType:'json',
-						success: function(data){
-							if (data.OrigenLlamada){
-								document.getElementById('OrigenLlamada').value=data.OrigenLlamada;
-								document.getElementById('TipoLlamada').value=data.TipoLlamada;
-								document.getElementById('TipoProblema').value=data.TipoProblemaLlamada;
-								// let subtipo = document.getElementById('SubTipoProblema').value=data.SubTipoProblemaLlamada;
-								document.getElementById('AsuntoLlamada').value=data.AsuntoLlamada;
-							} else {
-								document.getElementById('OrigenLlamada').value="";
-								document.getElementById('TipoLlamada').value="";
-								document.getElementById('TipoProblema').value="";
-								// document.getElementById('SubTipoProblema').value="";
-								document.getElementById('AsuntoLlamada').value="";
+						url: "ajx_buscar_datos_json.php",
+						data: {
+							type: 30,
+							id: Series
+						},
+						dataType: 'json',
+						success: function(data) {
+							console.log(data);
+
+							if(data.OrigenLlamada)
+							$('#OrigenLlamada').val(data.OrigenLlamada || '""');
+							$('#TipoLlamada').val(data.TipoLlamada || '""');
+							$('#TipoProblema').val(data.TipoProblemaLlamada || '""');
+
+							let AsuntoLlamada = (data.AsuntoLlamada || '""');
+							let f333 = <?php echo PermitirFuncion(333) ? 'true' : 'false';?>;
+							if(f333) {	
+								let OrigenLlamada = trim($("#OrigenLlamada option:selected").text());
+								let TipoProblema = trim($("#TipoProblema option:selected").text());
+
+								AsuntoLlamada = `${AsuntoLlamada} (${OrigenLlamada}) (${TipoProblema})`;
 							}
-							$('.ibox-content').toggleClass('sk-loading',false);
+
+							$('#AsuntoLlamada').val(AsuntoLlamada);							
+							
+							$('.ibox-content').toggleClass('sk-loading', false);
+						},
+						error: function(error) {
+							console.log("AJAX error:", error);
+
+							$('.ibox-content').toggleClass('sk-loading', false);
 						}
 					});
-				} else{
-					$('.ibox-content').toggleClass('sk-loading',false);
+				} else {
+					$('.ibox-content').toggleClass('sk-loading', false);
 				}
 			});
 
@@ -1920,7 +1966,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 							</div>
 						</div>
 						<div class="form-group">
-							<div class="col-lg-4">
+							<div class="col-lg-4" <?php if(!$IncluirCamposAdicionales) { ?> style="display: none;" <?php } ?>>
 								<label class="control-label">Cantidad artículo</label>
 							<input name="CantArticulo" type="text" class="form-control" id="CantArticulo" maxlength="50" value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {
 								echo number_format($row['CDU_CantArticulo'], 2);
@@ -1928,7 +1974,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								echo "readonly='readonly'";
 							} ?> onKeyPress="return justNumbers(event,this.value);" onKeyUp="revisaCadena(this);">
 							</div>
-							<div class="col-lg-4">
+							<div class="col-lg-4" <?php if(!$IncluirCamposAdicionales) { ?> style="display: none;" <?php } ?>>
 								<label class="control-label">Precio artículo</label>
 							<input name="PrecioArticulo" type="text" class="form-control" id="PrecioArticulo" maxlength="50" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 								echo "readonly='readonly'";
@@ -2067,7 +2113,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 										   	}  elseif ($OrigenLlamada == $row_OrigenLlamada['IdOrigenLlamada']) {
 												echo "selected";
 											} ?>>
-											<?php echo $row_OrigenLlamada['IdOrigenLlamada'] . " " . $row_OrigenLlamada['DeOrigenLlamada']; ?>
+											<?php echo $row_OrigenLlamada['DeOrigenLlamada']; ?>
 										</option>
 								  	<?php } ?>
 								</select>
@@ -2126,7 +2172,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 
 							<div class="col-lg-4">
 								<label class="control-label">SubTipo problema (Subtipo Servicio) <span class="text-danger">*</span></label>
-								<select name="SubTipoProblema" class="form-control" required id="SubTipoProblema" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
+								<select name="SubTipoProblema" class="form-control" required id="SubTipoProblema" <?php if (!$IncluirCamposAdicionales || (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1')))) {
 									echo "disabled";
 								} ?>>
 									<option value="">Seleccione...</option>
@@ -2233,22 +2279,8 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<label class="control-label text-danger">Estados de servicio</label>
 							</div>
 						</div>
+
 						<div class="form-group">
-							<div class="col-lg-4">
-								<label class="control-label">Asignado a</label>
-								<select name="EmpleadoLlamada" class="form-control select2" id="EmpleadoLlamada" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
-									echo "disabled='disabled'";
-								} ?>>
-										<option value="">(Sin asignar)</option>
-								  <?php while ($row_EmpleadoLlamada = sqlsrv_fetch_array($SQL_EmpleadoLlamada)) { ?>
-										<option value="<?php echo $row_EmpleadoLlamada['ID_Empleado']; ?>" <?php if ((isset($row['IdAsignadoA'])) && (strcmp($row_EmpleadoLlamada['ID_Empleado'], $row['IdAsignadoA']) == 0)) {
-											   echo "selected=\"selected\"";
-										   } elseif (($type_llmd == 0) && (isset($_SESSION['CodigoSAP'])) && (strcmp($row_EmpleadoLlamada['ID_Empleado'], $_SESSION['CodigoSAP']) == 0)) {
-											   echo "selected=\"selected\"";
-										   } ?>><?php echo $row_EmpleadoLlamada['NombreEmpleado']; ?></option>
-								  <?php } ?>
-								</select>
-							</div>
 							<div class="col-lg-4">
 								<label class="control-label">Técnico/Asesor <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?><span class="text-danger">*</span><?php } ?></label>
 								<select <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?> required <?php } ?> name="Tecnico" class="form-control select2" id="Tecnico" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
@@ -2262,33 +2294,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								  <?php } ?>
 								</select>
 							</div>
-							<div class="col-lg-4">
-								<label class="control-label">Estado <span class="text-danger">*</span></label>
-								<select name="EstadoLlamada" class="form-control" id="EstadoLlamada" required="required" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
-									echo "disabled='disabled'";
-								} ?>>
-								  <?php while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) { ?>
-										<option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['IdEstadoLlamada'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['IdEstadoLlamada']) == 0)) {
-											   echo "selected=\"selected\"";
-										   } ?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option>
-								  <?php } ?>
-								</select>
-							</div>
-						</div>
-						<div class="form-group">
-							<div class="col-lg-4">
-								<label class="control-label">Proyecto</label>
-								<select name="Proyecto" class="form-control select2" id="Proyecto" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
-									echo "disabled='disabled'";
-								} ?>>
-										<option value="">Seleccione...</option>
-								  <?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) { ?>
-										<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if ((isset($row['IdProyecto'])) && (strcmp($row_Proyecto['IdProyecto'], $row['IdProyecto']) == 0)) {
-											   echo "selected=\"selected\"";
-										   } ?>><?php echo $row_Proyecto['DeProyecto']; ?></option>
-								  <?php } ?>
-								</select>
-							</div>
+
 							<div class="col-lg-4">
 								<label class="control-label">Técnico/Asesor Adicional</label>
 								<select name="CDU_IdTecnicoAdicional" class="form-control select2" id="CDU_IdTecnicoAdicional" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
@@ -2302,6 +2308,63 @@ function AgregarEsto(contenedorID, valorElemento) {
 								  <?php } ?>
 								</select>
 							</div>
+							
+							<div class="col-lg-4">
+								<label class="control-label">Estado <span class="text-danger">*</span></label>
+								<select name="EstadoLlamada" class="form-control" id="EstadoLlamada" required="required" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
+									echo "disabled='disabled'";
+								} ?>>
+								  <?php while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) { ?>
+										<option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['IdEstadoLlamada'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['IdEstadoLlamada']) == 0)) {
+											   echo "selected=\"selected\"";
+										   } ?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option>
+								  <?php } ?>
+								</select>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<div class="col-lg-4" <?php if(!$IncluirCamposAdicionales) { ?> style="visibility: hidden;" <?php } ?>>
+								<label class="control-label">Asignado a</label>
+								<select name="EmpleadoLlamada" class="form-control select2" id="EmpleadoLlamada" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
+									echo "disabled";
+								} ?>>
+									<option value="">(Sin asignar)</option>
+								  	
+									<?php if($IncluirCamposAdicionales) { ?>
+										<?php while ($row_EmpleadoLlamada = sqlsrv_fetch_array($SQL_EmpleadoLlamada)) { ?>
+											<option value="<?php echo $row_EmpleadoLlamada['ID_Empleado']; ?>" <?php if ((isset($row['IdAsignadoA'])) && (strcmp($row_EmpleadoLlamada['ID_Empleado'], $row['IdAsignadoA']) == 0)) {
+											   echo "selected";
+										   	} elseif (($type_llmd == 0) && (isset($_SESSION['CodigoSAP'])) && (strcmp($row_EmpleadoLlamada['ID_Empleado'], $_SESSION['CodigoSAP']) == 0)) {
+											   echo "selected";
+										   	} ?>>
+												<?php echo $row_EmpleadoLlamada['NombreEmpleado']; ?>
+											</option>
+								  		<?php } ?>
+									<?php } ?>
+								</select>
+							</div>
+
+							<div class="col-lg-4" <?php if(!$IncluirCamposAdicionales) { ?> style="visibility: hidden;" <?php } ?>>
+								<label class="control-label">Proyecto</label>
+								
+								<select name="Proyecto" class="form-control select2" id="Proyecto" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
+									echo "disabled";
+								} ?>>
+									<option value="">Seleccione...</option>
+
+									<?php if($IncluirCamposAdicionales) { ?>
+										<?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) { ?>
+											<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if ((isset($row['IdProyecto'])) && (strcmp($row_Proyecto['IdProyecto'], $row['IdProyecto']) == 0)) {
+											   echo "selected";
+										   	} ?>>
+												<?php echo $row_Proyecto['DeProyecto']; ?>
+											</option>
+								  		<?php } ?>
+								  	<?php } ?>
+								</select>
+							</div>
+
 							<div class="col-lg-4">
 								<label class="control-label">Estado de servicio <span class="text-danger">*</span></label>
 								<select name="CDU_EstadoServicio" class="form-control" id="CDU_EstadoServicio" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
