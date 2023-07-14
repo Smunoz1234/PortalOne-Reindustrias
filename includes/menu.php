@@ -178,7 +178,10 @@ if (!isset($_COOKIE["banderaMenu"])) {
 					<?php if (PermitirFuncion(1703)) {?><li><a class="alnk" href="consultar_frm_fitosanitario.php">Monitoreo estado fitosanitario</a></li><?php }?>
 					<?php if (PermitirFuncion(1701)) {?><li><a class="alnk" href="consultar_frm_analisis_lab.php">Monitoreo análisis de laboratorio</a></li><?php }?>
 					<?php if (PermitirFuncion(1704)) {?><li><a class="alnk" href="consultar_frm_eval_tecnico.php">Evaluación de técnicos</a></li><?php }?>
-					<?php if (PermitirFuncion(1706) || PermitirFuncion(1707)) {?><li><a class="alnk" href="consultar_frm_recepcion_vehiculo.php">Recepción de vehículos</a></li> <?php }?>
+					<?php if (PermitirFuncion([1706, 1707])) {?><li><a class="alnk" href="consultar_frm_recepcion_vehiculo.php">Recepción de vehículos</a></li> <?php }?>
+					
+					<?php if (true) {?><li><a class="alnk" href="consultar_frm_entrega_vehiculo.php">Entrega de vehículos</a></li> <?php }?>
+					
 					<?php if (PermitirFuncion(1702)) {?>
 					<li>
 						<a href="#">Informes <span class="fa arrow"></span></a>
