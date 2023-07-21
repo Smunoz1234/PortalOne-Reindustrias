@@ -913,6 +913,20 @@ if (isset($sw_error) && ($sw_error == 1)) {
 </style>
 
 <script type="text/javascript">
+	function ActualizarAsunto() {
+		let f333 = <?php echo PermitirFuncion(333) ? 'true' : 'false';?>;
+		if(f333) {	
+			let AsuntoLlamada = $('#AsuntoLlamada').val();	
+			AsuntoLlamada = AsuntoLlamada.replace(/\([^)]+\)|\(\s*\)/g, '').trim();
+		
+			let OrigenLlamada = ($("#OrigenLlamada").val() != "") ? trim($("#OrigenLlamada option:selected").text()) : "";
+			let TipoProblema = ($("#TipoProblema").val() != "") ? trim($("#TipoProblema option:selected").text()) : "";
+
+			AsuntoLlamada = `${AsuntoLlamada} (${OrigenLlamada}) (${TipoProblema})`;
+			$('#AsuntoLlamada').val(AsuntoLlamada);	
+		}
+	}
+	
 	$(document).ready(function() {
 		// SMM, 29/06/2023
 		$("#OrigenLlamada").change(function(){
@@ -923,6 +937,9 @@ if (isset($sw_error) && ($sw_error == 1)) {
 					$('#TipoProblema').html(response).fadeIn();
 				}
 			});
+
+			// SMM, 21/07/2023
+			ActualizarAsunto();
 		});
 
 		// SMM, 12/07/2023
@@ -958,6 +975,9 @@ if (isset($sw_error) && ($sw_error == 1)) {
 						$('#TipoLlamada').html(response).fadeIn();
 					}
 				});
+
+				// SMM, 21/07/2023
+				ActualizarAsunto();
 			});
 
 
