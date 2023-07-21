@@ -3104,12 +3104,16 @@ function AgregarEsto(contenedorID, valorElemento) {
    									<!-- Agregar formato, Inicio -->
    									<div class="row">
 										   <?php if (PermitirFuncion(302) && ($row['IdEstadoLlamada'] != '-1')) {
-											   if (PermitirFuncion(1706)) { ?>
+											   if (PermitirFuncion([1706])) { ?>
    												<div class="btn-group">
    													<button data-toggle="dropdown" class="btn btn-outline btn-success dropdown-toggle"><i class="fa fa-plus-circle"></i> Agregar formato <i class="fa fa-caret-down"></i></button>
    													<ul class="dropdown-menu">
    														<li>
    															<a class="dropdown-item alkin" href="frm_recepcion_vehiculo.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&LS=<?php echo base64_encode($IdLlamada); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('llamada_servicio.php'); ?>">Recepción vehículo</a>
+   														</li>
+														
+														<li>
+   															<a class="dropdown-item alkin" href="frm_entrega_vehiculo.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&LS=<?php echo base64_encode($IdLlamada); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('llamada_servicio.php'); ?>">Entrega vehículo</a>
    														</li>
    													</ul>
    												</div>

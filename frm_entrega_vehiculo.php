@@ -55,16 +55,13 @@ if (isset($_POST['swError']) && ($_POST['swError'] != "")) { //Para saber si ha 
 }
 
 if ($type_frm == 0) {
-	$Title = "Crear nueva Recepción de vehículo";
+	$Title = "Crear nueva Entrega de vehículo";
 } else {
-	$Title = "Editar Recepción de vehículo";
+	$Title = "Editar Entrega de vehículo";
 }
 
 $dir = CrearObtenerDirTemp();
 $dir_firma = CrearObtenerDirTempFirma();
-
-// @author Stiven Muñoz Murillo
-// @version 10/01/2022
 
 // Marcas de vehiculo en la tarjeta de equipo
 $SQL_MarcaVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_MarcaVehiculo', '*');
@@ -77,9 +74,6 @@ $SQL_ModeloVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_AñoModeloVehicul
 
 // Colores de vehiculo en la tarjeta de equipo
 $SQL_ColorVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_ColorVehiculo', '*');
-
-// Preguntas en la recepción de vehículo
-$SQL_Preguntas = Seleccionar('tbl_RecepcionVehiculos_Preguntas', '*', "estado = 'Y'");
 ?>
 
 <!DOCTYPE html>
@@ -260,8 +254,6 @@ $SQL_Preguntas = Seleccionar('tbl_RecepcionVehiculos_Preguntas', '*', "estado = 
 						document.getElementById('VIN').value = data.SerialFabricante;
 						document.getElementById('no_motor').value = data.No_Motor;
 
-						document.getElementById('km_actual').value = data.CDU_Kilometros; // SMM, 02/03/2022
-
 						<?php if (PermitirFuncion(1708)) { ?> // SMM, 14/06/2022
 							document.getElementById('responsable_cliente').value = data.CDU_NombreContacto; // SMM, 15/02/2022
 							document.getElementById('telefono_responsable_cliente').value = data.CDU_TelefonoContacto; // SMM, 22/02/2022
@@ -360,7 +352,7 @@ $SQL_Preguntas = Seleccionar('tbl_RecepcionVehiculos_Preguntas', '*', "estado = 
 						</li>
 						<li class="active">
 							<a
-								href="<?php echo isset($row_Cat['URL']) ? $row_Cat['URL'] . "?id=" . $frm : "consultar_frm_recepcion_vehiculo.php" ?>"><?php echo isset($row_Cat['NombreCategoria']) ? $row_Cat['NombreCategoria'] : "Recepción de vehículos"; ?></a>
+								href="<?php echo isset($row_Cat['URL']) ? $row_Cat['URL'] . "?id=" . $frm : "consultar_frm_entrega_vehiculo.php" ?>"><?php echo isset($row_Cat['NombreCategoria']) ? $row_Cat['NombreCategoria'] : "Entrega de vehículos"; ?></a>
 						</li>
 						<li class="active">
 							<strong>
@@ -376,8 +368,8 @@ $SQL_Preguntas = Seleccionar('tbl_RecepcionVehiculos_Preguntas', '*', "estado = 
 					<?php include "includes/spinner.php"; ?>
 					<div class="row">
 						<div class="col-lg-12">
-							<form action="frm_recepcion_vehiculo.php" method="post" class="form-horizontal"
-								enctype="multipart/form-data" id="recepcionForm">
+							<form action="frm_entrega_vehiculo.php" method="post" class="form-horizontal"
+								enctype="multipart/form-data" id="entregaForm">
 								<!-- IBOX, Inicio -->
 								<div class="ibox">
 									<div class="ibox-title bg-success">
@@ -707,98 +699,18 @@ $SQL_Preguntas = Seleccionar('tbl_RecepcionVehiculos_Preguntas', '*', "estado = 
 								<!-- IBOX, Inicio -->
 								<div class="ibox">
 									<div class="ibox-title bg-success">
-										<h5 class="collapse-link"><i class="fa fa-info-circle"></i> Datos de recepción
+										<h5 class="collapse-link"><i class="fa fa-info-circle"></i> Datos de Entrega
 										</h5>
 										<a class="collapse-link pull-right" style="color: white;">
 											<i class="fa fa-chevron-up"></i>
 										</a>
 									</div>
 									<div class="ibox-content">
-										<div class="form-group">
-											<div class="col-lg-4">
-												<label class="control-label">Servicio de movilidad ofrecido</label>
-												<select name="servicio_movil_ofrecido" class="form-control"
-													id="servicio_movil_ofrecido" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
-														echo "disabled='disabled'";
-													} ?>>
-													<option value="SI">SI</option>
-													<option value="NO">NO</option>
-													<?php //while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) {?>
-													<!--option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['Cod_Estado'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['Cod_Estado']) == 0)) {
-														   echo "selected=\"selected\"";
-													   } ?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option -->
-													<?php //}?>
-												</select>
-											</div>
-											<div class="col-lg-4">
-												<label class="control-label">Se hizo prueba de ruta</label>
-												<select name="hizo_prueba_ruta" class="form-control"
-													id="hizo_prueba_ruta" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
-														echo "disabled='disabled'";
-													} ?>>
-													<option value="SI">SI</option>
-													<option value="NO">NO</option>
-													<?php //while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) {?>
-													<!--option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['Cod_Estado'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['Cod_Estado']) == 0)) {
-														   echo "selected=\"selected\"";
-													   } ?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option -->
-													<?php //}?>
-												</select>
-											</div>
-											<div class="col-lg-4">
-												<label class="control-label">Campaña autorizada por cliente</label>
-												<select name="campana_autorizada_cliente" class="form-control"
-													id="campana_autorizada_cliente" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
-														echo "disabled='disabled'";
-													} ?>>
-													<option value="SI">SI</option>
-													<option value="NO">NO</option>
-												</select>
-											</div>
-										</div>
-										<div class="form-group">
-											<div class="col-lg-4">
-												<label class="control-label">Nivel de combustible</label>
-												<select name="nivel_combustible" class="form-control"
-													id="nivel_combustible" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
-														echo "disabled='disabled'";
-													} ?>>
-													<option value="1/4">1/4</option>
-													<option value="1/2">1/2</option>
-													<option value="3/4">3/4</option>
-													<option value="Full">Full</option>
-												</select>
-											</div>
-											<div class="col-lg-4">
-												<label class="control-label">Medio por el cual se informo
-													campaña</label>
-												<select name="medio_informa_campana" class="form-control"
-													id="medio_informa_campana" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
-														echo "disabled='disabled'";
-													} ?>>
-													<option value="N/A">N/A</option>
-												</select>
-											</div>
-										</div>
-										<div class="form-group">
-											<div class="col-lg-4">
-												<label class="control-label">KM actual <span
-														class="text-danger">*</span></label>
-												<input autocomplete="off" name="km_actual" required="required"
-													type="text" class="form-control" id="km_actual" maxlength="100">
-											</div>
-											<div class="col-lg-4">
-												<label class="control-label">No. Campaña <span
-														class="text-danger">*</span></label>
-												<input autocomplete="off" name="no_campana" required="required"
-													type="text" class="form-control" id="no_campana" maxlength="100">
-											</div>
-										</div>
 										<!-- Inicio, crono-info -->
 										<div class="form-group">
 											<div class="col-lg-4 border-bottom ">
 												<label class="control-label text-danger">Información cronológica de la
-													recepción</label>
+													Entrega</label>
 											</div>
 										</div>
 										<div class="form-group">
@@ -842,27 +754,27 @@ $SQL_Preguntas = Seleccionar('tbl_RecepcionVehiculos_Preguntas', '*', "estado = 
 											<div class="col-lg-6">
 												<div class="row">
 													<label class="col-lg-6 control-label"
-														style="text-align: left !important;">Fecha y hora de ingreso
+														style="text-align: left !important;">Fecha y hora de entrega
 														<span class="text-danger">*</span></label>
 												</div>
 												<div class="row">
 													<div class="col-lg-6 input-group date">
 														<span class="input-group-addon"><i
 																class="fa fa-calendar"></i></span><input
-															name="fecha_ingreso" type="text" autocomplete="off"
-															class="form-control" id="fecha_ingreso"
-															value="<?php if (($type_frm == 1) && ($row['fecha_ingreso']->format('Y-m-d')) != "1900-01-01") {
-																echo $row['fecha_ingreso']->format('Y-m-d');
+															name="fecha_entrega" type="text" autocomplete="off"
+															class="form-control" id="fecha_entrega"
+															value="<?php if (($type_frm == 1) && ($row['fecha_entrega']->format('Y-m-d')) != "1900-01-01") {
+																echo $row['fecha_entrega']->format('Y-m-d');
 															} else {
 																echo date('Y-m-d');
 															} ?>"
 															placeholder="YYYY-MM-DD" required>
 													</div>
 													<div class="col-lg-6 input-group clockpicker" data-autoclose="true">
-														<input name="hora_ingreso" id="hora_ingreso" type="text"
+														<input name="hora_entrega" id="hora_entrega" type="text"
 															autocomplete="off" class="form-control"
-															value="<?php if (($type_frm == 1) && ($row['fecha_ingreso']->format('Y-m-d')) != "1900-01-01") {
-																echo $row['fecha_ingreso']->format('H:i');
+															value="<?php if (($type_frm == 1) && ($row['fecha_entrega']->format('Y-m-d')) != "1900-01-01") {
+																echo $row['fecha_entrega']->format('H:i');
 															} else {
 																echo date('H:i');
 															} ?>"
@@ -875,268 +787,25 @@ $SQL_Preguntas = Seleccionar('tbl_RecepcionVehiculos_Preguntas', '*', "estado = 
 											</div>
 											<!-- Fin, Componente Fecha y Hora -->
 										</div>
-										<div class="form-group">
-											<!-- Inicio, Componente Fecha y Hora -->
-											<div class="col-lg-6">
-												<div class="row">
-													<label class="col-lg-6 control-label"
-														style="text-align: left !important;">Fecha y hora Aprox. Entrega
-														<span class="text-danger">*</span></label>
-												</div>
-												<div class="row">
-													<div class="col-lg-6 input-group date">
-														<span class="input-group-addon"><i
-																class="fa fa-calendar"></i></span><input
-															name="fecha_aprox_entrega" type="text" autocomplete="off"
-															class="form-control" id="fecha_aprox_entrega"
-															value="<?php if (($type_frm == 1) && ($row['fecha_aprox_entrega']->format('Y-m-d')) != "1900-01-01") {
-																echo $row['fecha_aprox_entrega']->format('Y-m-d');
-															} //else {echo date('Y-m-d');}?>"
-															placeholder="YYYY-MM-DD" required>
-													</div>
-													<div class="col-lg-6 input-group clockpicker" data-autoclose="true">
-														<input name="hora_aprox_entrega" id="hora_aprox_entrega"
-															type="text" autocomplete="off" class="form-control"
-															value="<?php if (($type_frm == 1) && ($row['fecha_aprox_entrega']->format('Y-m-d')) != "1900-01-01") {
-																echo $row['fecha_aprox_entrega']->format('H:i');
-															} //else {echo date('H:i');}?>"
-															placeholder="hh:mm" required>
-														<span class="input-group-addon">
-															<span class="fa fa-clock-o"></span>
-														</span>
-													</div>
-												</div>
-											</div>
-											<!-- Fin, Componente Fecha y Hora -->
-											<!-- Inicio, Componente Fecha y Hora -->
-											<div class="col-lg-6">
-												<div class="row">
-													<label class="col-lg-6 control-label"
-														style="text-align: left !important;">Fecha hora propietario
-														autoriza campaña</label>
-												</div>
-												<div class="row">
-													<div class="col-lg-6 input-group date">
-														<span class="input-group-addon"><i
-																class="fa fa-calendar"></i></span><input
-															name="fecha_autoriza_campana" type="text" autocomplete="off"
-															class="form-control" id="fecha_autoriza_campana"
-															value="<?php if (($type_frm == 1) && ($row['fecha_autoriza_campana']->format('Y-m-d')) != "1900-01-01") {
-																echo $row['fecha_autoriza_campana']->format('Y-m-d');
-															} //else {echo date('Y-m-d');}?>"
-															placeholder="YYYY-MM-DD">
-													</div>
-													<div class="col-lg-6 input-group clockpicker" data-autoclose="true">
-														<input name="hora_autoriza_campana" id="hora_autoriza_campana"
-															type="text" autocomplete="off" class="form-control"
-															value="<?php if (($type_frm == 1) && ($row['fecha_autoriza_campana']->format('Y-m-d')) != "1900-01-01") {
-																echo $row['fecha_autoriza_campana']->format('H:i');
-															} //else {echo date('H:i');}?>"
-															placeholder="hh:mm">
-														<span class="input-group-addon">
-															<span class="fa fa-clock-o"></span>
-														</span>
-													</div>
-												</div>
-											</div>
-											<!-- Fin, Componente Fecha y Hora -->
-										</div>
 										<!-- Fin, crono-info -->
+
+										<br><br>
+										<div class="form-group">
+											<label class="col-lg-2 control-label">Observaciones <span
+													class="text-danger">*</span></label>
+											<div class="col-lg-8">
+												<textarea name="observaciones" id="observaciones" rows="5" type="text"
+													maxlength="3000" class="form-control" required="required" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
+														echo "readonly='readonly'";
+													} ?>><?php if (($type_frm == 1) || ($sw_error == 1)) {
+														echo utf8_decode($row['ComentariosCierre']);
+													} ?></textarea>
+											</div>
+										</div>
 									</div>
 								</div>
 								<!-- IBOX, Fin -->
-								<!-- IBOX, Inicio -->
-								<?php if (PermitirFuncion(1708)) { ?>
-									<div class="ibox">
-										<div class="ibox-title bg-success">
-											<h5 class="collapse-link"><i class="fa fa-image"></i> Registros fotográficos
-											</h5>
-											<a class="collapse-link pull-right" style="color: white;">
-												<i class="fa fa-chevron-up"></i>
-											</a>
-										</div>
-										<div class="ibox-content">
-											<!-- Inicio, Foto 1 -->
-											<div class="form-group">
-												<label class="col-lg-1 control-label">Frente <span
-														class="text-danger">*</span></label>
-												<div class="col-lg-5">
-													<div class="fileinput fileinput-new input-group"
-														data-provides="fileinput">
-														<div class="form-control" data-trigger="fileinput">
-															<i class="glyphicon glyphicon-file fileinput-exists"></i>
-															<span class="fileinput-filename"></span>
-														</div>
-														<span class="input-group-addon btn btn-default btn-file">
-															<span class="fileinput-new">Seleccionar</span>
-															<span class="fileinput-exists">Cambiar</span>
-															<input name="Img1" type="file" id="Img1"
-																onchange="uploadImage('Img1')" required="required" />
-														</span>
-														<a href="#"
-															class="input-group-addon btn btn-default fileinput-exists"
-															data-dismiss="fileinput">Quitar</a>
-													</div>
-													<div class="row">
-														<div id="msgImg1" style="display:none" class="alert alert-info">
-															<i class="fa fa-info-circle"></i> <span>Imagen cargada
-																éxitosamente.<span>
-														</div>
-													</div>
-												</div>
-												<div class="col-lg-5">
-													<img id="viewImg1" style="max-width: 100%; height: 100px;" src="">
-												</div>
-											</div>
-											<!-- Inicio, Foto 1 -->
-											<!-- Inicio, Foto 2 -->
-											<div class="form-group">
-												<label class="col-lg-1 control-label">Lateral Izquierdo <span
-														class="text-danger">*</span></label>
-												<div class="col-lg-5">
-													<div class="fileinput fileinput-new input-group"
-														data-provides="fileinput">
-														<div class="form-control" data-trigger="fileinput">
-															<i class="glyphicon glyphicon-file fileinput-exists"></i>
-															<span class="fileinput-filename"></span>
-														</div>
-														<span class="input-group-addon btn btn-default btn-file">
-															<span class="fileinput-new">Seleccionar</span>
-															<span class="fileinput-exists">Cambiar</span>
-															<input name="Img2" type="file" id="Img2"
-																onchange="uploadImage('Img2')" required="required" />
-														</span>
-														<a href="#"
-															class="input-group-addon btn btn-default fileinput-exists"
-															data-dismiss="fileinput">Quitar</a>
-													</div>
-													<div class="row">
-														<div id="msgImg2" style="display:none" class="alert alert-info">
-															<i class="fa fa-info-circle"></i> <span>Imagen cargada
-																éxitosamente.<span>
-														</div>
-													</div>
-												</div>
-												<div class="col-lg-5">
-													<img id="viewImg2" style="max-width: 100%; height: 100px;" src="">
-												</div>
-											</div>
-											<!-- Fin, Foto 2 -->
-											<!-- Inicio, Foto 3 -->
-											<div class="form-group">
-												<label class="col-lg-1 control-label">Lateral Derecho <span
-														class="text-danger">*</span></label>
-												<div class="col-lg-5">
-													<div class="fileinput fileinput-new input-group"
-														data-provides="fileinput">
-														<div class="form-control" data-trigger="fileinput">
-															<i class="glyphicon glyphicon-file fileinput-exists"></i>
-															<span class="fileinput-filename"></span>
-														</div>
-														<span class="input-group-addon btn btn-default btn-file">
-															<span class="fileinput-new">Seleccionar</span>
-															<span class="fileinput-exists">Cambiar</span>
-															<input name="Img3" type="file" id="Img3"
-																onchange="uploadImage('Img3')" required="required" />
-														</span>
-														<a href="#"
-															class="input-group-addon btn btn-default fileinput-exists"
-															data-dismiss="fileinput">Quitar</a>
-													</div>
-													<div class="row">
-														<div id="msgImg3" style="display:none" class="alert alert-info">
-															<i class="fa fa-info-circle"></i> <span>Imagen cargada
-																éxitosamente.<span>
-														</div>
-													</div>
-												</div>
-												<div class="col-lg-5">
-													<img id="viewImg3" style="max-width: 100%; height: 100px;" src="">
-												</div>
-											</div>
-											<!-- Fin, Foto 3 -->
-											<!-- Inicio, Foto 4 -->
-											<div class="form-group">
-												<label class="col-lg-1 control-label">Trasero <span
-														class="text-danger">*</span></label>
-												<div class="col-lg-5">
-													<div class="fileinput fileinput-new input-group"
-														data-provides="fileinput">
-														<div class="form-control" data-trigger="fileinput">
-															<i class="glyphicon glyphicon-file fileinput-exists"></i>
-															<span class="fileinput-filename"></span>
-														</div>
-														<span class="input-group-addon btn btn-default btn-file">
-															<span class="fileinput-new">Seleccionar</span>
-															<span class="fileinput-exists">Cambiar</span>
-															<input name="Img4" type="file" id="Img4"
-																onchange="uploadImage('Img4')" required="required" />
-														</span>
-														<a href="#"
-															class="input-group-addon btn btn-default fileinput-exists"
-															data-dismiss="fileinput">Quitar</a>
-													</div>
-													<div class="row">
-														<div id="msgImg4" style="display:none" class="alert alert-info">
-															<i class="fa fa-info-circle"></i> <span>Imagen cargada
-																éxitosamente.<span>
-														</div>
-													</div>
-												</div>
-												<div class="col-lg-5">
-													<img id="viewImg4" style="max-width: 100%; height: 100px;" src="">
-												</div>
-											</div>
-											<!-- Fin, Foto 4 -->
-											<!-- Inicio, Foto 5 -->
-											<div class="form-group">
-												<label class="col-lg-1 control-label">Capot <span
-														class="text-danger">*</span></label>
-												<div class="col-lg-5">
-													<div class="fileinput fileinput-new input-group"
-														data-provides="fileinput">
-														<div class="form-control" data-trigger="fileinput">
-															<i class="glyphicon glyphicon-file fileinput-exists"></i>
-															<span class="fileinput-filename"></span>
-														</div>
-														<span class="input-group-addon btn btn-default btn-file">
-															<span class="fileinput-new">Seleccionar</span>
-															<span class="fileinput-exists">Cambiar</span>
-															<input name="Img5" type="file" id="Img5"
-																onchange="uploadImage('Img5')" required="required" />
-														</span>
-														<a href="#"
-															class="input-group-addon btn btn-default fileinput-exists"
-															data-dismiss="fileinput">Quitar</a>
-													</div>
-													<div class="row">
-														<div id="msgImg5" style="display:none" class="alert alert-info">
-															<i class="fa fa-info-circle"></i> <span>Imagen cargada
-																éxitosamente.<span>
-														</div>
-													</div>
-												</div>
-												<div class="col-lg-5">
-													<img id="viewImg5" style="max-width: 100%; height: 100px;" src="">
-												</div>
-											</div>
-											<!-- Fin, Foto 5 -->
-											<div class="form-group">
-												<label class="col-lg-1 control-label">Observaciones <span
-														class="text-danger">*</span></label>
-												<div class="col-lg-8">
-													<textarea name="observaciones" id="observaciones" rows="5" type="text"
-														maxlength="3000" class="form-control" required="required" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
-															echo "readonly='readonly'";
-														} ?>><?php if (($type_frm == 1) || ($sw_error == 1)) {
-															echo utf8_decode($row['ComentariosCierre']);
-														} ?></textarea>
-												</div>
-											</div>
-										</div>
-									</div>
-								<?php } ?>
-								<!-- IBOX, Fin -->
+
 								<!-- IBOX, Inicio -->
 								<?php if (PermitirFuncion(1708)) { ?>
 									<div class="ibox">
@@ -1209,7 +878,7 @@ $SQL_Preguntas = Seleccionar('tbl_RecepcionVehiculos_Preguntas', '*', "estado = 
 																class="fa fa-pencil-square-o"></i> Realizar firma</button>
 														<br>
 														<input type="text" id="SigCliente" name="SigCliente" value=""
-															form="recepcionForm" required="required" readonly="readonly"
+															form="entregaForm" required="required" readonly="readonly"
 															style="width: 0; margin-left: -7px; visibility: hidden;" />
 														<div id="msgInfoSigCliente" style="display: none;"
 															class="alert alert-info"><i class="fa fa-info-circle"></i> El
@@ -1238,7 +907,7 @@ $SQL_Preguntas = Seleccionar('tbl_RecepcionVehiculos_Preguntas', '*', "estado = 
 									$return = base64_decode($_GET['pag']) . "?" . $_GET['return'];
 								} else {
 									// Stiven Muñoz Murillo, 10/01/2022
-									$return = "consultar_frm_recepcion_vehiculo.php?id=" . $frm;
+									$return = "consultar_frm_entrega_vehiculo.php?id=" . $frm;
 								}
 								?>
 								<!-- Fin, relacionado al $return -->
@@ -1259,7 +928,7 @@ $SQL_Preguntas = Seleccionar('tbl_RecepcionVehiculos_Preguntas', '*', "estado = 
 								</div>
 								<div class="ibox-content">
 									<div class="row">
-										<form action="upload.php?persistent=recepcion_vehiculos" class="dropzone"
+										<form action="upload.php?persistent=entrega_vehiculos" class="dropzone"
 											id="dropzoneForm" name="dropzoneForm">
 											<div class="fallback">
 												<input name="File" id="File" type="file" form="dropzoneForm" />
@@ -1274,7 +943,7 @@ $SQL_Preguntas = Seleccionar('tbl_RecepcionVehiculos_Preguntas', '*', "estado = 
 							<div class="form-group">
 								<div class="col-lg-9">
 									<?php if ($type_frm == 0) { ?>
-										<button class="btn btn-primary" form="recepcionForm" type="submit" id="Crear"><i
+										<button class="btn btn-primary" form="entregaForm" type="submit" id="Crear"><i
 												class="fa fa-check"></i> Registrar formulario</button>
 									<?php } ?>
 									<a href="<?php echo $return; ?>" class="alkin btn btn-outline btn-default"><i
@@ -1364,7 +1033,7 @@ $SQL_Preguntas = Seleccionar('tbl_RecepcionVehiculos_Preguntas', '*', "estado = 
 				} else {
 					// Inicio, AJAX
 					$.ajax({
-						url: 'upload_image.php?persistent=recepcion_vehiculos',
+						url: 'upload_image.php?persistent=entrega_vehiculos',
 						type: 'post',
 						data: formData,
 						contentType: false,
@@ -1468,7 +1137,7 @@ $SQL_Preguntas = Seleccionar('tbl_RecepcionVehiculos_Preguntas', '*', "estado = 
 			maxLength('observaciones'); // SMM, 02/03/2022
 
 			var bandera_fechas = false; // SMM, 25/02/2022
-			$('#recepcionForm').on('submit', function (event) {
+			$('#entregaForm').on('submit', function (event) {
 				// Stiven Muñoz Murillo, 08/02/2022
 				event.preventDefault();
 
@@ -1483,7 +1152,7 @@ $SQL_Preguntas = Seleccionar('tbl_RecepcionVehiculos_Preguntas', '*', "estado = 
 				bandera_fechas = (d1 > d2) ? true : false;
 			});
 
-			$("#recepcionForm").validate({
+			$("#entregaForm").validate({
 				submitHandler: function (form) {
 					if (bandera_fechas) {
 						Swal.fire({
@@ -1514,13 +1183,13 @@ $SQL_Preguntas = Seleccionar('tbl_RecepcionVehiculos_Preguntas', '*', "estado = 
 								formData.append("id_color", $("#id_color").val());
 
 								let json = Object.fromEntries(formData);
-								localStorage.recepcionForm = JSON.stringify(json);
+								localStorage.entregaForm = JSON.stringify(json);
 
 								console.log("Line 1790", json);
 
 								// Inicio, AJAX
 								$.ajax({
-									url: 'frm_recepcion_vehiculo_ws.php',
+									url: 'frm_entrega_vehiculo_ws.php',
 									type: 'POST',
 									data: formData,
 									processData: false,  // tell jQuery not to process the data

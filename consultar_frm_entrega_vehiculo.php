@@ -38,7 +38,7 @@ if ($sw == 1) {
 		"'" . $Empleado . "'",
 		"'" . $Supervisor . "'",
 	);
-	$SQL = EjecutarSP('sp_ConsultarFormRecepcionVehiculos', $Param);
+	$SQL = EjecutarSP('sp_ConsultarFormEntregaVehiculos', $Param);
 }
 
 //Estado
@@ -48,7 +48,7 @@ $SQL_EstadoFrm = Seleccionar('tbl_EstadoFormulario', '*');
 $SQL_Empleados = Seleccionar('uvw_Sap_tbl_Empleados', 'ID_Empleado, NombreEmpleado', '', 'NombreEmpleado');
 
 //Supervisor
-$SQL_Supervisor = Seleccionar('uvw_tbl_RecepcionVehiculos', 'DISTINCT id_empleado_supervisor, empleado_supervisor', '', 'empleado_supervisor');
+$SQL_Supervisor = Seleccionar('uvw_tbl_EntregaVehiculos', 'DISTINCT id_empleado_supervisor, empleado_supervisor', '', 'empleado_supervisor');
 ?>
 
 <!DOCTYPE html>
@@ -57,7 +57,7 @@ $SQL_Supervisor = Seleccionar('uvw_tbl_RecepcionVehiculos', 'DISTINCT id_emplead
 <head>
 	<?php include_once "includes/cabecera.php"; ?>
 	<!-- InstanceBeginEditable name="doctitle" -->
-	<title>Recepción de vehículos</title>
+	<title>Entrega de vehículos</title>
 	<!-- InstanceEndEditable -->
 	<!-- InstanceBeginEditable name="head" -->
 	<script type="text/javascript">
@@ -162,7 +162,7 @@ $SQL_Supervisor = Seleccionar('uvw_tbl_RecepcionVehiculos', 'DISTINCT id_emplead
 			<!-- InstanceBeginEditable name="Contenido" -->
 			<div class="row wrapper border-bottom white-bg page-heading">
 				<div class="col-sm-8">
-					<h2>Recepción de vehículos</h2>
+					<h2>Entrega de vehículos</h2>
 					<ol class="breadcrumb">
 						<li>
 							<a href="index1.php">Inicio</a>
@@ -171,15 +171,15 @@ $SQL_Supervisor = Seleccionar('uvw_tbl_RecepcionVehiculos', 'DISTINCT id_emplead
 							<a href="#">Formularios</a>
 						</li>
 						<li class="active">
-							<strong>Recepción de vehículos</strong>
+							<strong>Entrega de vehículos</strong>
 						</li>
 					</ol>
 				</div>
 				<?php if (PermitirFuncion(1706)) { ?>
 					<div class="col-sm-4">
 						<div class="title-action">
-							<a href="frm_recepcion_vehiculo.php" class="alkin btn btn-primary"><i
-									class="fa fa-plus-circle"></i> Crear nueva recepción de vehículo</a>
+							<a href="frm_entrega_vehiculo.php" class="alkin btn btn-primary"><i
+									class="fa fa-plus-circle"></i> Crear nueva Entrega de vehículo</a>
 						</div>
 					</div>
 				<?php } ?>
@@ -196,7 +196,7 @@ $SQL_Supervisor = Seleccionar('uvw_tbl_RecepcionVehiculos', 'DISTINCT id_emplead
 					<div class="col-lg-12">
 						<div class="ibox-content">
 							<?php include "includes/spinner.php"; ?>
-							<form action="consultar_frm_recepcion_vehiculo.php" method="get" id="formBuscar"
+							<form action="consultar_frm_entrega_vehiculo.php" method="get" id="formBuscar"
 								class="form-horizontal">
 								<div class="form-group">
 									<label class="col-xs-12">
@@ -287,7 +287,7 @@ $SQL_Supervisor = Seleccionar('uvw_tbl_RecepcionVehiculos', 'DISTINCT id_emplead
 									<div class="form-group">
 										<div class="col-lg-10">
 											<a
-												href="exportar_excel.php?exp=10&Cons=<?php echo base64_encode(implode(",", $Param)); ?>&sp=<?php echo base64_encode("sp_ConsultarFormRecepcionVehiculos"); ?>">
+												href="exportar_excel.php?exp=10&Cons=<?php echo base64_encode(implode(",", $Param)); ?>&sp=<?php echo base64_encode("sp_ConsultarFormentregaVehiculos"); ?>">
 												<img src="css/exp_excel.png" width="50" height="30" alt="Exportar a Excel"
 													title="Exportar a Excel" />
 											</a>
@@ -338,12 +338,12 @@ $SQL_Supervisor = Seleccionar('uvw_tbl_RecepcionVehiculos', 'DISTINCT id_emplead
 										<tbody>
 											<?php while ($row = sqlsrv_fetch_array($SQL)) { ?>
 
-												<?php $SQL_Formulario = Seleccionar('uvw_tbl_LlamadasServicios_Formularios', '*', "nombre_servicio = 'RecepcionVehiculos' AND id_formulario='" . $row['id_recepcion_vehiculo'] . "'"); ?>
+												<?php $SQL_Formulario = Seleccionar('uvw_tbl_LlamadasServicios_Formularios', '*', "nombre_servicio = 'entregaVehiculos' AND id_formulario='" . $row['id_entrega_vehiculo'] . "'"); ?>
 												<?php $row_Formulario = sqlsrv_fetch_array($SQL_Formulario); ?>
 
-												<tr id="tr_Resum<?php echo $row['id_recepcion_vehiculo']; ?>" class="trResum">
+												<tr id="tr_Resum<?php echo $row['id_entrega_vehiculo']; ?>" class="trResum">
 													<td>
-														<?php echo $row['id_recepcion_vehiculo']; ?>
+														<?php echo $row['id_entrega_vehiculo']; ?>
 													</td>
 													<td>
 														<?php echo $row['empleado_tecnico']; ?>
@@ -375,7 +375,7 @@ $SQL_Supervisor = Seleccionar('uvw_tbl_RecepcionVehiculos', 'DISTINCT id_emplead
 													<td>
 														<?php echo $row['app'] ?? ""; ?>
 													</td>
-													<td><span id="lblEstado<?php echo $row['id_recepcion_vehiculo']; ?>" <?php if ($row['estado'] == 'O') {
+													<td><span id="lblEstado<?php echo $row['id_entrega_vehiculo']; ?>" <?php if ($row['estado'] == 'O') {
 														   echo "class='label label-info'";
 													   } elseif ($row['estado'] == 'A') {
 														   echo "class='label label-danger'";
@@ -384,24 +384,24 @@ $SQL_Supervisor = Seleccionar('uvw_tbl_RecepcionVehiculos', 'DISTINCT id_emplead
 													   } ?>><?php echo $row['nombre_estado']; ?></span></td>
 													<td class="text-center form-inline w-80">
 														<?php if ($row['estado'] == 'O') { ?>
-															<button id="btnEstado<?php echo $row['id_recepcion_vehiculo']; ?>"
+															<button id="btnEstado<?php echo $row['id_entrega_vehiculo']; ?>"
 																class="btn btn-success btn-xs"
-																onClick="CambiarEstado('<?php echo $row['id_recepcion_vehiculo']; ?>');"
+																onClick="CambiarEstado('<?php echo $row['id_entrega_vehiculo']; ?>');"
 																title="Cambiar estado"><i class="fa fa-pencil"></i></button>
 														<?php } ?>
 
-														<a href="filedownload.php?file=<?php echo base64_encode("RecepcionVehiculos/DescargarFormatos/" . $row['id_recepcion_vehiculo'] . "/" . $_SESSION['User']); ?>&api=1"
+														<a href="filedownload.php?file=<?php echo base64_encode("entregaVehiculos/DescargarFormatos/" . $row['id_entrega_vehiculo'] . "/" . $_SESSION['User']); ?>&api=1"
 															target="_blank" class="btn btn-warning btn-xs" title="Descargar"><i
 																class="fa fa-download"></i></a>
 
-														<a href="descargar_frm_recepcion_vehiculo.php?id=<?php echo $row['id_recepcion_vehiculo']; ?>"
+														<a href="descargar_frm_entrega_vehiculo.php?id=<?php echo $row['id_entrega_vehiculo']; ?>"
 															target="_blank" class="btn btn-danger btn-xs"
 															title="Descargar Fotos"><i class="fa fa-file-image-o"></i></a>
 
 														<?php if (isset($row_Formulario['docentry_llamada_servicio']) && ($row_Formulario['docentry_llamada_servicio'] != "")) { ?>
 															<br><br>
 															<a target="_blank" title="Abrir OT"
-																href="llamada_servicio.php?id=<?php echo base64_encode($row_Formulario['docentry_llamada_servicio']); ?>&tl=1&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('consultar_frm_recepcion_vehiculo.php'); ?>"
+																href="llamada_servicio.php?id=<?php echo base64_encode($row_Formulario['docentry_llamada_servicio']); ?>&tl=1&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('consultar_frm_entrega_vehiculo.php'); ?>"
 																class="btn btn-info btn-xs"><i class="fa fa-folder-open-o"></i>
 																<?php echo $row_Formulario['id_llamada_servicio']; ?>
 															</a>
@@ -410,11 +410,11 @@ $SQL_Supervisor = Seleccionar('uvw_tbl_RecepcionVehiculos', 'DISTINCT id_emplead
 													<td class="text-center">
 														<?php if ($row['estado'] == 'O') { ?>
 															<div class="checkbox checkbox-success"
-																id="dvChkSel<?php echo $row['id_recepcion_vehiculo']; ?>">
+																id="dvChkSel<?php echo $row['id_entrega_vehiculo']; ?>">
 																<input type="checkbox" class="chkSelOT"
-																	id="chkSelOT<?php echo $row['id_recepcion_vehiculo']; ?>"
+																	id="chkSelOT<?php echo $row['id_entrega_vehiculo']; ?>"
 																	value=""
-																	onChange="SeleccionarOT('<?php echo $row['id_recepcion_vehiculo']; ?>');"
+																	onChange="SeleccionarOT('<?php echo $row['id_entrega_vehiculo']; ?>');"
 																	aria-label="Single checkbox One"><label></label>
 															</div>
 														<?php } ?>
@@ -537,8 +537,8 @@ $SQL_Supervisor = Seleccionar('uvw_tbl_RecepcionVehiculos', 'DISTINCT id_emplead
 				url: "md_frm_cambiar_estados.php",
 				data: {
 					id: id,
-					frm: 'RecepcionVehiculos',
-					nomID: 'id_recepcion_vehiculo'
+					frm: 'entregaVehiculos',
+					nomID: 'id_entrega_vehiculo'
 				},
 				success: function (response) {
 					$('.ibox-content').toggleClass('sk-loading', false);
