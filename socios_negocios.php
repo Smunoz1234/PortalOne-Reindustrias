@@ -1,7 +1,7 @@
 <?php require_once "includes/conexion.php";
 //require_once("includes/conexion_hn.php");
 if (PermitirAcceso(502) || PermitirAcceso(503)) {
-    $msg_error = "";
+	$msg_error = "";
 }
 //Mensaje del error
 $sw_ext = 0; //Sw que permite saber si la ventana esta abierta en modo pop-up. Si es así, no cargo el menú ni el menú superior.
@@ -10,367 +10,368 @@ $Metod = "";
 $EsProyecto = 0;
 
 if (isset($_GET['id']) && ($_GET['id'] != "")) {
-    $CodCliente = base64_decode($_GET['id']);
+	$CodCliente = base64_decode($_GET['id']);
 }
 
 if (isset($_GET['ext']) && ($_GET['ext'] == 1)) {
-    $sw_ext = 1; //Se está abriendo como pop-up
+	$sw_ext = 1; //Se está abriendo como pop-up
 }
 
 if (isset($_GET['metod']) && ($_GET['metod'] != "")) {
-    $Metod = base64_decode($_GET['metod']);
+	$Metod = base64_decode($_GET['metod']);
 }
 
 if (isset($_POST['swError']) && ($_POST['swError'] != "")) { //Para saber si ha ocurrido un error.
-    $sw_error = $_POST['swError'];
+	$sw_error = $_POST['swError'];
 } else {
-    $sw_error = 0;
+	$sw_error = 0;
 }
 
 if (isset($_GET['tl']) && ($_GET['tl'] != "")) { //0 Si se está creando. 1 Se se está editando.
-    $edit = $_GET['tl'];
+	$edit = $_GET['tl'];
 } elseif (isset($_POST['tl']) && ($_POST['tl'] != "")) {
-    $edit = $_POST['tl'];
+	$edit = $_POST['tl'];
 } else {
-    $edit = 0;
+	$edit = 0;
 }
 
 if ($edit == 0) {
-    $Title = "Crear socios de negocios";
+	$Title = "Crear socios de negocios";
 } elseif ($edit == 1 && $Metod == 4) {
-    $Title = "Crear nuevo contrato";
+	$Title = "Crear nuevo contrato";
 } else {
-    $Title = "Editar socios de negocios";
+	$Title = "Editar socios de negocios";
 }
 
 $Num_Dir = 0;
 $Num_Cont = 0;
 
 if (isset($_POST['P']) && ($_POST['P'] != "")) {
-    try {
-        //LimpiarDirTemp();
-        //Carpeta de archivos anexos
-        $i = 0; //Archivos
-        $RutaAttachSAP = ObtenerDirAttach();
-        $dir = CrearObtenerDirTemp();
-        $dir_firma = CrearObtenerDirTempFirma();
-        $dir_new = CrearObtenerDirAnx("socios_negocios");
-        $route = opendir($dir);
-        $DocFiles = array();
-        while ($archivo = readdir($route)) { //obtenemos un archivo y luego otro sucesivamente
-            if (($archivo == ".") || ($archivo == "..")) {
-                continue;
-            }
+	try {
+		//LimpiarDirTemp();
+		//Carpeta de archivos anexos
+		$i = 0; //Archivos
+		$RutaAttachSAP = ObtenerDirAttach();
+		$dir = CrearObtenerDirTemp();
+		$dir_firma = CrearObtenerDirTempFirma();
+		$dir_new = CrearObtenerDirAnx("socios_negocios");
+		$route = opendir($dir);
+		$DocFiles = array();
+		while ($archivo = readdir($route)) { //obtenemos un archivo y luego otro sucesivamente
+			if (($archivo == ".") || ($archivo == "..")) {
+				continue;
+			}
 
-            if (!is_dir($archivo)) { //verificamos si es o no un directorio
-                $DocFiles[$i] = $archivo;
-                $i++;
-            }
-        }
-        closedir($route);
-        $CantFiles = count($DocFiles);
+			if (!is_dir($archivo)) { //verificamos si es o no un directorio
+				$DocFiles[$i] = $archivo;
+				$i++;
+			}
+		}
+		closedir($route);
+		$CantFiles = count($DocFiles);
 
-        //Si esta creando, cargo los anexos primero
-        //        if($_POST['tl']==0||$_POST['metod']==4){//Creando SN
-        //
-        //            if($_POST['EsProyecto']==1){
-        //                if((isset($_POST['SigCliente']))&&($_POST['SigCliente']!="")){
-        //                    $NombreFileFirma=base64_decode($_POST['SigCliente']);
-        //                    $Nombre_Archivo=$_POST['LicTradNum']."_FR_".$NombreFileFirma;
-        //                    if(!copy($dir_firma.$NombreFileFirma,$dir.$Nombre_Archivo)){
-        //                        $sw_error=1;
-        //                        $msg_error="No se pudo mover la firma";
-        //                    }
-        //                }
-        //            }
-        //
-        //            $route= opendir($dir);
-        //            $DocFiles=array();
-        //            while ($archivo = readdir($route)){ //obtenemos un archivo y luego otro sucesivamente
-        //                if(($archivo == ".")||($archivo == "..")) continue;
-        //
-        //                if (!is_dir($archivo)){//verificamos si es o no un directorio
-        //                    $DocFiles[$i]=$archivo;
-        //                    $i++;
-        //                    }
-        //            }
-        //            closedir($route);
-        //            $CantFiles=count($DocFiles);
-        //        }
+		//Si esta creando, cargo los anexos primero
+		//        if($_POST['tl']==0||$_POST['metod']==4){//Creando SN
+		//
+		//            if($_POST['EsProyecto']==1){
+		//                if((isset($_POST['SigCliente']))&&($_POST['SigCliente']!="")){
+		//                    $NombreFileFirma=base64_decode($_POST['SigCliente']);
+		//                    $Nombre_Archivo=$_POST['LicTradNum']."_FR_".$NombreFileFirma;
+		//                    if(!copy($dir_firma.$NombreFileFirma,$dir.$Nombre_Archivo)){
+		//                        $sw_error=1;
+		//                        $msg_error="No se pudo mover la firma";
+		//                    }
+		//                }
+		//            }
+		//
+		//            $route= opendir($dir);
+		//            $DocFiles=array();
+		//            while ($archivo = readdir($route)){ //obtenemos un archivo y luego otro sucesivamente
+		//                if(($archivo == ".")||($archivo == "..")) continue;
+		//
+		//                if (!is_dir($archivo)){//verificamos si es o no un directorio
+		//                    $DocFiles[$i]=$archivo;
+		//                    $i++;
+		//                    }
+		//            }
+		//            closedir($route);
+		//            $CantFiles=count($DocFiles);
+		//        }
 
-        #Comprobar si el cliente ya esta guardado en la tabla de SN. Si no está guardado se ejecuta el INSERT con el Metodo de actualizar
-        //$SQL_Dir=Seleccionar('tbl_SociosNegocios','CardCode',"CardCode='".$_POST['CardCode']."'");
-        //$row_Dir=sqlsrv_fetch_array($SQL_Dir);
+		#Comprobar si el cliente ya esta guardado en la tabla de SN. Si no está guardado se ejecuta el INSERT con el Metodo de actualizar
+		//$SQL_Dir=Seleccionar('tbl_SociosNegocios','CardCode',"CardCode='".$_POST['CardCode']."'");
+		//$row_Dir=sqlsrv_fetch_array($SQL_Dir);
 
-        $Metodo = 2; //Actualizar en el web services
-        $Type = 2; //Ejecutar actualizar en el SP
-        $IdSNPortal = "NULL";
+		$Metodo = 2; //Actualizar en el web services
+		$Type = 2; //Ejecutar actualizar en el SP
+		$IdSNPortal = "NULL";
 
-        if (base64_decode($_POST['IdSNPortal']) == "") { //Insertando en la tabla
-            $Metodo = 2;
-            $Type = 1;
-        } else {
-            $IdSNPortal = "'" . base64_decode($_POST['IdSNPortal']) . "'";
-        }
+		if (base64_decode($_POST['IdSNPortal']) == "") { //Insertando en la tabla
+			$Metodo = 2;
+			$Type = 1;
+		} else {
+			$IdSNPortal = "'" . base64_decode($_POST['IdSNPortal']) . "'";
+		}
 
-        if ($_POST['tl'] == 0) { //Creando SN
-            $Metodo = 1;
-        }
+		if ($_POST['tl'] == 0) { //Creando SN
+			$Metodo = 1;
+		}
 
-        if ($_POST['metod'] == 4) { //Si esta actualizando pero creando el contrato
-            $Metodo = 4;
-        }
+		if ($_POST['metod'] == 4) { //Si esta actualizando pero creando el contrato
+			$Metodo = 4;
+		}
 
-        $EsProyecto = $_POST['EsProyecto'];
+		$EsProyecto = $_POST['EsProyecto'];
 
-        if (isset($_POST['CapacidadServ']) && ($_POST['CapacidadServ'] != "")) {
-            $CapacidadServ = "'" . $_POST['CapacidadServ'] . "'";
-        } else {
-            $CapacidadServ = "NULL";
-        }
+		if (isset($_POST['CapacidadServ']) && ($_POST['CapacidadServ'] != "")) {
+			$CapacidadServ = "'" . $_POST['CapacidadServ'] . "'";
+		} else {
+			$CapacidadServ = "NULL";
+		}
 
-        if (isset($_POST['VigenciaCont']) && ($_POST['VigenciaCont'] != "")) {
-            $VigenciaCont = "'" . $_POST['VigenciaCont'] . "'";
-        } else {
-            $VigenciaCont = "NULL";
-        }
+		if (isset($_POST['VigenciaCont']) && ($_POST['VigenciaCont'] != "")) {
+			$VigenciaCont = "'" . $_POST['VigenciaCont'] . "'";
+		} else {
+			$VigenciaCont = "NULL";
+		}
 
-        $ParamSN = array(
-            "$IdSNPortal",
-            "'" . $_POST['CardCode'] . "'",
-            "'" . $_POST['CardName'] . "'",
-            "'" . $_POST['PNNombres'] . "'",
-            "'" . $_POST['PNApellido1'] . "'",
-            "'" . $_POST['PNApellido2'] . "'",
-            "'" . $_POST['AliasName'] . "'",
-            "'" . $_POST['CardType'] . "'",
-            "'" . $_POST['TipoEntidad'] . "'",
-            "'" . $_POST['TipoDocumento'] . "'",
-            "'" . $_POST['LicTradNum'] . "'",
-            "'" . $_POST['TelefonoCliente'] . "'",
-            "'" . $_POST['CelularCliente'] . "'",
-            "'" . $_POST['CorreoCliente'] . "'",
-            "'" . $_POST['GroupCode'] . "'",
-            "'" . $_POST['RegimenTributario'] . "'",
-            "'" . $_POST['ID_MunicipioMM'] . "'",
-            "'" . $_POST['GroupNum'] . "'",
-            "'" . $_POST['Industria'] . "'",
-            "'" . $_POST['Territorio'] . "'",
-            "'" . $_POST['Proyecto'] . "'",
-            "'" . $_POST['MedioPago'] . "'",
-            "'" . $_POST['TipoNacionalidad'] . "'",
-            "'" . $_POST['TipoExtranjero'] . "'",
-            "'" . $_POST['RegimenFiscal'] . "'",
-            "'" . $_POST['ResponsabilidadFiscal'] . "'",
-            "'" . $_POST['EmpleadoVentas'] . "'",
-            "'" . $_POST['IdAnexos'] . "'",
-            "'" . $_POST['Latitud'] . "'",
-            "'" . $_POST['Longitud'] . "'",
-            //      "'".$_POST['Genero']."'",
-            //      "'".$_POST['Sexo']."'",
-            //      "'".$_POST['OrienSexual']."'",
-            //      "'".$_POST['Etnia']."'",
-            //      "'".$_POST['Discapacidad']."'",
-            //      "'".$_POST['NivelEduca']."'",
-            $_POST['IdListaPrecio'] ?? -1, // SMM, 17/02/2022
-            isset($_POST['Estado']) ? ("'" . $_POST['Estado'] . "'") : "NULL", // SMM, 15/11/2022
-            $CapacidadServ,
-            $VigenciaCont,
-            $Metodo,
-            "'" . $_SESSION['CodUser'] . "'",
-            $Type,
-        );
-        $SQL_SN = EjecutarSP('sp_tbl_SociosNegocios', $ParamSN, $_POST['P']);
-        if ($SQL_SN) {
-            if (base64_decode($_POST['IdSNPortal']) == "") {
-                $row_NewIdSN = sqlsrv_fetch_array($SQL_SN);
-                $IdSN = $row_NewIdSN[0];
-                $CodCliente = $_POST['CardCode'];
-            } else {
-                $IdSN = base64_decode($_POST['IdSNPortal']);
-                $CodCliente = $_POST['CardCode'];
-            }
+		$ParamSN = array(
+			"$IdSNPortal",
+			"'" . $_POST['CardCode'] . "'",
+			"'" . $_POST['CardName'] . "'",
+			"'" . $_POST['PNNombres'] . "'",
+			"'" . $_POST['PNApellido1'] . "'",
+			"'" . $_POST['PNApellido2'] . "'",
+			"'" . $_POST['AliasName'] . "'",
+			"'" . $_POST['CardType'] . "'",
+			"'" . $_POST['TipoEntidad'] . "'",
+			"'" . $_POST['TipoDocumento'] . "'",
+			"'" . $_POST['LicTradNum'] . "'",
+			"'" . $_POST['TelefonoCliente'] . "'",
+			"'" . $_POST['CelularCliente'] . "'",
+			"'" . $_POST['CorreoCliente'] . "'",
+			"'" . $_POST['GroupCode'] . "'",
+			"'" . $_POST['RegimenTributario'] . "'",
+			"'" . $_POST['ID_MunicipioMM'] . "'",
+			"'" . $_POST['GroupNum'] . "'",
+			"'" . $_POST['Industria'] . "'",
+			"'" . $_POST['Territorio'] . "'",
+			"'" . $_POST['Proyecto'] . "'",
+			"'" . $_POST['MedioPago'] . "'",
+			"'" . $_POST['TipoNacionalidad'] . "'",
+			"'" . $_POST['TipoExtranjero'] . "'",
+			"'" . $_POST['RegimenFiscal'] . "'",
+			"'" . $_POST['ResponsabilidadFiscal'] . "'",
+			"'" . $_POST['EmpleadoVentas'] . "'",
+			"'" . $_POST['IdAnexos'] . "'",
+			"'" . $_POST['Latitud'] . "'",
+			"'" . $_POST['Longitud'] . "'",
+			//      "'".$_POST['Genero']."'",
+			//      "'".$_POST['Sexo']."'",
+			//      "'".$_POST['OrienSexual']."'",
+			//      "'".$_POST['Etnia']."'",
+			//      "'".$_POST['Discapacidad']."'",
+			//      "'".$_POST['NivelEduca']."'",
+			$_POST['IdListaPrecio'] ?? -1, // SMM, 17/02/2022
+			isset($_POST['Estado']) ? ("'" . $_POST['Estado'] . "'") : "NULL",
+			// SMM, 15/11/2022
+			$CapacidadServ,
+			$VigenciaCont,
+			$Metodo,
+			"'" . $_SESSION['CodUser'] . "'",
+			$Type,
+		);
+		$SQL_SN = EjecutarSP('sp_tbl_SociosNegocios', $ParamSN, $_POST['P']);
+		if ($SQL_SN) {
+			if (base64_decode($_POST['IdSNPortal']) == "") {
+				$row_NewIdSN = sqlsrv_fetch_array($SQL_SN);
+				$IdSN = $row_NewIdSN[0];
+				$CodCliente = $_POST['CardCode'];
+			} else {
+				$IdSN = base64_decode($_POST['IdSNPortal']);
+				$CodCliente = $_POST['CardCode'];
+			}
 
-            //Insertar Contactos
-            //            $Count=count($_POST['NombreContacto']);
-            //            $i=0;
-            $json = json_decode($_POST['dataJSON']);
+			//Insertar Contactos
+			//            $Count=count($_POST['NombreContacto']);
+			//            $i=0;
+			$json = json_decode($_POST['dataJSON']);
 
-            $listaContactos = $json[0]->contactos;
-            $Delete = "Delete From tbl_SociosNegocios_Contactos Where ID_SocioNegocio='" . $IdSN . "'";
-            if (sqlsrv_query($conexion, $Delete)) {
-                foreach ($listaContactos as $Contacto) {
-                    if ($Contacto->primer_nombre != "") {
-                        //Insertar el registro en la BD
-                        $ParamInsConct = array(
-                            "'" . $IdSN . "'",
-                            "'" . $_POST['CardCode'] . "'",
-                            "'" . $Contacto->cod_contacto . "'",
-                            "'" . $Contacto->primer_nombre . "'",
-                            "'" . $Contacto->segundo_nombre . "'",
-                            "'" . $Contacto->apellidos . "'",
-                            "'" . $Contacto->telefono . "'",
-                            "'" . $Contacto->celular . "'",
-                            "'" . $Contacto->posicion . "'",
-                            "'" . $Contacto->email . "'",
-                            "'" . $Contacto->act_economica . "'",
-                            "'" . $Contacto->cedula . "'",
-                            "'" . $Contacto->rep_legal . "'",
-                            "'" . $Contacto->grupo_correo . "'",
-                            "'" . $Contacto->estado . "'",
-                            "'" . $Contacto->metodo . "'",
-                            "1",
-                        );
+			$listaContactos = $json[0]->contactos;
+			$Delete = "Delete From tbl_SociosNegocios_Contactos Where ID_SocioNegocio='" . $IdSN . "'";
+			if (sqlsrv_query($conexion, $Delete)) {
+				foreach ($listaContactos as $Contacto) {
+					if ($Contacto->primer_nombre != "") {
+						//Insertar el registro en la BD
+						$ParamInsConct = array(
+							"'" . $IdSN . "'",
+							"'" . $_POST['CardCode'] . "'",
+							"'" . $Contacto->cod_contacto . "'",
+							"'" . $Contacto->primer_nombre . "'",
+							"'" . $Contacto->segundo_nombre . "'",
+							"'" . $Contacto->apellidos . "'",
+							"'" . $Contacto->telefono . "'",
+							"'" . $Contacto->celular . "'",
+							"'" . $Contacto->posicion . "'",
+							"'" . $Contacto->email . "'",
+							"'" . $Contacto->act_economica . "'",
+							"'" . $Contacto->cedula . "'",
+							"'" . $Contacto->rep_legal . "'",
+							"'" . $Contacto->grupo_correo . "'",
+							"'" . $Contacto->estado . "'",
+							"'" . $Contacto->metodo . "'",
+							"1",
+						);
 
-                        $SQL_InsConct = EjecutarSP('sp_tbl_SociosNegocios_Contactos', $ParamInsConct, $_POST['P']);
+						$SQL_InsConct = EjecutarSP('sp_tbl_SociosNegocios_Contactos', $ParamInsConct, $_POST['P']);
 
-                        if (!$SQL_InsConct) {
-                            $sw_error = 1;
-                            $msg_error = "Ha ocurrido un error al insertar los contactos";
-                        }
-                    }
-                }
-            } else {
-                InsertarLog(1, 45, $Delete);
-                $sw_error = 1;
-                $msg_error = "Ha ocurrido un error al eliminar los contactos";
-            }
+						if (!$SQL_InsConct) {
+							$sw_error = 1;
+							$msg_error = "Ha ocurrido un error al insertar los contactos";
+						}
+					}
+				}
+			} else {
+				InsertarLog(1, 45, $Delete);
+				$sw_error = 1;
+				$msg_error = "Ha ocurrido un error al eliminar los contactos";
+			}
 
-            //Insertar direcciones
-            //            $Count=count($_POST['Address']);
-            //            $i=0;
-            $listaDirecciones = $json[0]->direcciones;
-            $Delete = "Delete From tbl_SociosNegocios_Direcciones Where ID_SocioNegocio='" . $IdSN . "'";
-            if (sqlsrv_query($conexion, $Delete)) {
-                foreach ($listaDirecciones as $Direccion) {
-                    if ($Direccion->nombre_direccion != "") {
-                        //Insertar el registro en la BD
-                        $ParamInsDir = array(
-                            "'" . $IdSN . "'",
-                            "'" . $Direccion->nombre_direccion . "'",
-                            "'" . $_POST['CardCode'] . "'",
-                            "'" . $Direccion->direccion . "'",
-                            "'" . $Direccion->barrio . "'",
-                            "'" . $Direccion->ciudad . "'",
-                            "'" . $Direccion->departamento . "'",
-                            "'" . $Direccion->tipo_direccion . "'",
-                            "'" . $Direccion->estrato . "'",
-                            "'" . $Direccion->direccion_contrato . "'",
-                            "'" . $Direccion->codigo_postal . "'",
-                            "'" . $Direccion->numero_linea . "'",
-                            "'" . $Direccion->nombre_contacto . "'",
-                            "'" . $Direccion->cargo_contacto . "'",
-                            "'" . $Direccion->telefono_contacto . "'",
-                            "'" . $Direccion->correo_contacto . "'",
-                            "'" . $Direccion->metodo . "'",
-                            "1",
-                        );
+			//Insertar direcciones
+			//            $Count=count($_POST['Address']);
+			//            $i=0;
+			$listaDirecciones = $json[0]->direcciones;
+			$Delete = "Delete From tbl_SociosNegocios_Direcciones Where ID_SocioNegocio='" . $IdSN . "'";
+			if (sqlsrv_query($conexion, $Delete)) {
+				foreach ($listaDirecciones as $Direccion) {
+					if ($Direccion->nombre_direccion != "") {
+						//Insertar el registro en la BD
+						$ParamInsDir = array(
+							"'" . $IdSN . "'",
+							"'" . $Direccion->nombre_direccion . "'",
+							"'" . $_POST['CardCode'] . "'",
+							"'" . $Direccion->direccion . "'",
+							"'" . $Direccion->barrio . "'",
+							"'" . $Direccion->ciudad . "'",
+							"'" . $Direccion->departamento . "'",
+							"'" . $Direccion->tipo_direccion . "'",
+							"'" . $Direccion->estrato . "'",
+							"'" . $Direccion->direccion_contrato . "'",
+							"'" . $Direccion->codigo_postal . "'",
+							"'" . $Direccion->numero_linea . "'",
+							"'" . $Direccion->nombre_contacto . "'",
+							"'" . $Direccion->cargo_contacto . "'",
+							"'" . $Direccion->telefono_contacto . "'",
+							"'" . $Direccion->correo_contacto . "'",
+							"'" . $Direccion->metodo . "'",
+							"1",
+						);
 
-                        $SQL_InsDir = EjecutarSP('sp_tbl_SociosNegocios_Direcciones', $ParamInsDir, $_POST['P']);
+						$SQL_InsDir = EjecutarSP('sp_tbl_SociosNegocios_Direcciones', $ParamInsDir, $_POST['P']);
 
-                        if (!$SQL_InsDir) {
-                            $sw_error = 1;
-                            $msg_error = "Ha ocurrido un error al insertar las direcciones";
-                        }
-                    }
-                }
-            } else {
-                InsertarLog(1, 45, $Delete);
-                $sw_error = 1;
-                $msg_error = "Ha ocurrido un error al eliminar las direcciones";
-            }
+						if (!$SQL_InsDir) {
+							$sw_error = 1;
+							$msg_error = "Ha ocurrido un error al insertar las direcciones";
+						}
+					}
+				}
+			} else {
+				InsertarLog(1, 45, $Delete);
+				$sw_error = 1;
+				$msg_error = "Ha ocurrido un error al eliminar las direcciones";
+			}
 
-            //if(($_POST['tl']==0&&$_POST['EsProyecto']==1)||$_POST['metod']==4){//Creando SN
-            try {
-                //Mover los anexos a la carpeta de archivos de SAP
-                //                    $Delete="Delete From tbl_DocumentosSAP_Anexos Where TipoDocumento=2 and Metodo=1 and ID_Documento='".$IdSN."'";
-                //                    sqlsrv_query($conexion,$Delete);
-                $j = 0;
-                while ($j < $CantFiles) {
-                    $Archivo = FormatoNombreAnexo($DocFiles[$j]);
-                    $NuevoNombre = $Archivo[0];
-                    $OnlyName = $Archivo[1];
-                    $Ext = $Archivo[2];
+			//if(($_POST['tl']==0&&$_POST['EsProyecto']==1)||$_POST['metod']==4){//Creando SN
+			try {
+				//Mover los anexos a la carpeta de archivos de SAP
+				//                    $Delete="Delete From tbl_DocumentosSAP_Anexos Where TipoDocumento=2 and Metodo=1 and ID_Documento='".$IdSN."'";
+				//                    sqlsrv_query($conexion,$Delete);
+				$j = 0;
+				while ($j < $CantFiles) {
+					$Archivo = FormatoNombreAnexo($DocFiles[$j]);
+					$NuevoNombre = $Archivo[0];
+					$OnlyName = $Archivo[1];
+					$Ext = $Archivo[2];
 
-                    if (file_exists($dir_new)) {
-                        copy($dir . $DocFiles[$j], $dir_new . $NuevoNombre);
-                        copy($dir_new . $NuevoNombre, $RutaAttachSAP[0] . $NuevoNombre);
+					if (file_exists($dir_new)) {
+						copy($dir . $DocFiles[$j], $dir_new . $NuevoNombre);
+						copy($dir_new . $NuevoNombre, $RutaAttachSAP[0] . $NuevoNombre);
 
-                        //Registrar archivo en la BD
-                        $ParamInsAnex = array(
-                            "'2'",
-                            "'" . $IdSN . "'",
-                            "'" . $OnlyName . "'",
-                            "'" . $Ext . "'",
-                            "1",
-                            "'" . $_SESSION['CodUser'] . "'",
-                            "1",
-                        );
-                        $SQL_InsAnex = EjecutarSP('sp_tbl_DocumentosSAP_Anexos', $ParamInsAnex, $_POST['P']);
-                        if (!$SQL_InsAnex) {
-                            $sw_error = 1;
-                            $msg_error = "Error al insertar los anexos.";
-                        }
-                    }
-                    $j++;
-                }
-            } catch (Exception $e) {
-                echo 'Excepcion capturada: ', $e->getMessage(), "\n";
-            }
-            //}
+						//Registrar archivo en la BD
+						$ParamInsAnex = array(
+							"'2'",
+							"'" . $IdSN . "'",
+							"'" . $OnlyName . "'",
+							"'" . $Ext . "'",
+							"1",
+							"'" . $_SESSION['CodUser'] . "'",
+							"1",
+						);
+						$SQL_InsAnex = EjecutarSP('sp_tbl_DocumentosSAP_Anexos', $ParamInsAnex, $_POST['P']);
+						if (!$SQL_InsAnex) {
+							$sw_error = 1;
+							$msg_error = "Error al insertar los anexos.";
+						}
+					}
+					$j++;
+				}
+			} catch (Exception $e) {
+				echo 'Excepcion capturada: ', $e->getMessage(), "\n";
+			}
+			//}
 
-            if ($_POST['tl'] == 0) { //Mensaje para devuelta
-                $Msg = base64_encode("OK_SNAdd");
-            } else {
-                $Msg = base64_encode("OK_SNEdit");
-            }
+			if ($_POST['tl'] == 0) { //Mensaje para devuelta
+				$Msg = base64_encode("OK_SNAdd");
+			} else {
+				$Msg = base64_encode("OK_SNEdit");
+			}
 
-//            sqlsrv_close($conexion);
-            //            if($_POST['ext']==0){//Validar a donde debe ir la respuesta
-            //                header('Location:socios_negocios.php?id='.base64_encode($_POST['CardCode']).'&ext='.$_POST['ext'].'&pag='.$_POST['pag'].'&return='.$_POST['return'].'&a='.$Msg.'&tl='.$_POST['tl']);
-            //            }else{
-            //                header('Location:socios_negocios.php?id='.base64_encode($_POST['CardCode']).'&ext='.$_POST['ext'].'&a='.$Msg.'&tl='.$_POST['tl']);
-            //            }
+			//            sqlsrv_close($conexion);
+			//            if($_POST['ext']==0){//Validar a donde debe ir la respuesta
+			//                header('Location:socios_negocios.php?id='.base64_encode($_POST['CardCode']).'&ext='.$_POST['ext'].'&pag='.$_POST['pag'].'&return='.$_POST['return'].'&a='.$Msg.'&tl='.$_POST['tl']);
+			//            }else{
+			//                header('Location:socios_negocios.php?id='.base64_encode($_POST['CardCode']).'&ext='.$_POST['ext'].'&a='.$Msg.'&tl='.$_POST['tl']);
+			//            }
 
-            //Enviar datos al WebServices
-            try {
-                $Parametros = array(
-                    'id_documento' => intval($IdSN),
-                    'id_evento' => 0,
-                );
-                $Metodo = "SociosNegocios";
-                $Resultado = EnviarWebServiceSAP($Metodo, $Parametros, true, true);
+			//Enviar datos al WebServices
+			try {
+				$Parametros = array(
+					'id_documento' => intval($IdSN),
+					'id_evento' => 0,
+				);
+				$Metodo = "SociosNegocios";
+				$Resultado = EnviarWebServiceSAP($Metodo, $Parametros, true, true);
 
-                if ($Resultado->Success == 0) {
-                    //InsertarLog(1, 0, 'Error al generar el informe');
-                    //throw new Exception('Error al generar el informe. Error de WebServices');
-                    $sw_error = 1;
-                    $msg_error = $Resultado->Mensaje;
-                } else {
-                    if ($_POST['tl'] == 0) { //Mensaje para devuelta
-                        $Msg = base64_encode("OK_SNAdd");
-                    } else {
-                        $Msg = base64_encode("OK_SNEdit");
-                    }
+				if ($Resultado->Success == 0) {
+					//InsertarLog(1, 0, 'Error al generar el informe');
+					//throw new Exception('Error al generar el informe. Error de WebServices');
+					$sw_error = 1;
+					$msg_error = $Resultado->Mensaje;
+				} else {
+					if ($_POST['tl'] == 0) { //Mensaje para devuelta
+						$Msg = base64_encode("OK_SNAdd");
+					} else {
+						$Msg = base64_encode("OK_SNEdit");
+					}
 
-                    sqlsrv_close($conexion);
-                    if ($_POST['ext'] == 0) { //Validar a donde debe ir la respuesta
-                        header('Location:socios_negocios.php?id=' . base64_encode($_POST['CardCode']) . '&ext=' . $_POST['ext'] . '&pag=' . $_POST['pag'] . '&return=' . $_POST['return'] . '&a=' . $Msg . '&tl=' . $_POST['tl']);
-                    } else {
-                        header('Location:socios_negocios.php?id=' . base64_encode($_POST['CardCode']) . '&ext=' . $_POST['ext'] . '&a=' . $Msg . '&tl=' . $_POST['tl']);
-                    }
-                }
-            } catch (Exception $e) {
-                echo 'Excepcion capturada: ', $e->getMessage(), "\n";
-            }
+					sqlsrv_close($conexion);
+					if ($_POST['ext'] == 0) { //Validar a donde debe ir la respuesta
+						header('Location:socios_negocios.php?id=' . base64_encode($_POST['CardCode']) . '&ext=' . $_POST['ext'] . '&pag=' . $_POST['pag'] . '&return=' . $_POST['return'] . '&a=' . $Msg . '&tl=' . $_POST['tl']);
+					} else {
+						header('Location:socios_negocios.php?id=' . base64_encode($_POST['CardCode']) . '&ext=' . $_POST['ext'] . '&a=' . $Msg . '&tl=' . $_POST['tl']);
+					}
+				}
+			} catch (Exception $e) {
+				echo 'Excepcion capturada: ', $e->getMessage(), "\n";
+			}
 
-        } else {
-            $sw_error = 1;
-            $msg_error = "Ha ocurrido un error al crear el Socio de Negocio";
-        }
-    } catch (Exception $e) {
-        echo 'Excepcion capturada: ', $e->getMessage(), "\n";
-    }
+		} else {
+			$sw_error = 1;
+			$msg_error = "Ha ocurrido un error al crear el Socio de Negocio";
+		}
+	} catch (Exception $e) {
+		echo 'Excepcion capturada: ', $e->getMessage(), "\n";
+	}
 
 }
 
@@ -391,75 +392,75 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
 
 if ($edit == 1 && $sw_error == 0) {
 
-//    if($Metod==4){//Actualizar creando contrato
-    //        $SQL_ValorDefault="";//Seleccionar('uvw_Sap_tbl_SN_VlrDef_Usu','*',"IdEmp='".$_SESSION['CodigoSAP']."'");
-    //        $row_ValorDefault=sql_fetch_array($SQL_ValorDefault);
-    //
-    //        if($row_ValorDefault['IdEmp']!=""){
-    //            $EsProyecto=1;
-    //        }
-    //
-    //        if($row_ValorDefault['IdMunicipio']!=""){
-    //            $SQL_Municipio=Seleccionar('uvw_Sap_tbl_SN_Municipio','*',"ID_Municipio='".$row_ValorDefault['IdMunicipio']."'");
-    //            $row_Municipio=sql_fetch_array($SQL_Municipio);
-    //        }
-    //    }
+	//    if($Metod==4){//Actualizar creando contrato
+	//        $SQL_ValorDefault="";//Seleccionar('uvw_Sap_tbl_SN_VlrDef_Usu','*',"IdEmp='".$_SESSION['CodigoSAP']."'");
+	//        $row_ValorDefault=sql_fetch_array($SQL_ValorDefault);
+	//
+	//        if($row_ValorDefault['IdEmp']!=""){
+	//            $EsProyecto=1;
+	//        }
+	//
+	//        if($row_ValorDefault['IdMunicipio']!=""){
+	//            $SQL_Municipio=Seleccionar('uvw_Sap_tbl_SN_Municipio','*',"ID_Municipio='".$row_ValorDefault['IdMunicipio']."'");
+	//            $row_Municipio=sql_fetch_array($SQL_Municipio);
+	//        }
+	//    }
 
-    //Cliente
-    $SQL = Seleccionar("uvw_Sap_tbl_SociosNegocios", "*", "[CodigoCliente]='" . $CodCliente . "'");
-    $row = sql_fetch_array($SQL);
+	//Cliente
+	$SQL = Seleccionar("uvw_Sap_tbl_SociosNegocios", "*", "[CodigoCliente]='" . $CodCliente . "'");
+	$row = sql_fetch_array($SQL);
 
-    //Direcciones
-    //    $SQL_Dir=Seleccionar("uvw_Sap_tbl_Clientes_Sucursales","*","[CodigoCliente]='".$row['CodigoCliente']."'");
-    //    $Num_Dir=sql_num_rows($SQL_Dir);
-    //
-    //    //Contactos
-    //    $SQL_Cont=Seleccionar("uvw_Sap_tbl_ClienteContactos","*","[CodigoCliente]='".$row['CodigoCliente']."'");
-    //    $Num_Cont=sql_num_rows($SQL_Cont);
+	//Direcciones
+	//    $SQL_Dir=Seleccionar("uvw_Sap_tbl_Clientes_Sucursales","*","[CodigoCliente]='".$row['CodigoCliente']."'");
+	//    $Num_Dir=sql_num_rows($SQL_Dir);
+	//
+	//    //Contactos
+	//    $SQL_Cont=Seleccionar("uvw_Sap_tbl_ClienteContactos","*","[CodigoCliente]='".$row['CodigoCliente']."'");
+	//    $Num_Cont=sql_num_rows($SQL_Cont);
 
-    //Municipio MM
-    $SQL_MunMM = Seleccionar('uvw_Sap_tbl_SN_Municipio', '*', "ID_Municipio='" . $row['U_HBT_MunMed'] . "'");
-    $row_MunMM = sql_fetch_array($SQL_MunMM);
+	//Municipio MM
+	$SQL_MunMM = Seleccionar('uvw_Sap_tbl_SN_Municipio', '*', "ID_Municipio='" . $row['U_HBT_MunMed'] . "'");
+	$row_MunMM = sql_fetch_array($SQL_MunMM);
 
-    //Facturas pendientes
-    $SQL_FactPend = Seleccionar('uvw_Sap_tbl_FacturasPendientes', '*', "ID_CodigoCliente='" . $row['CodigoCliente'] . "'", "FechaContabilizacion", "DESC");
+	//Facturas pendientes
+	$SQL_FactPend = Seleccionar('uvw_Sap_tbl_FacturasPendientes', '*', "ID_CodigoCliente='" . $row['CodigoCliente'] . "'", "FechaContabilizacion", "DESC");
 
-    //ID de servicios
-    $SQL_IDServicio = Seleccionar('uvw_Sap_tbl_ArticulosLlamadas', '*', "[CodigoCliente]='" . $row['CodigoCliente'] . "'", '[ItemCode]');
+	//ID de servicios
+	$SQL_IDServicio = Seleccionar('uvw_Sap_tbl_ArticulosLlamadas', '*', "[CodigoCliente]='" . $row['CodigoCliente'] . "'", '[ItemCode]');
 
-    //Historico de gestiones
-    $SQL_HistGestion = Seleccionar('uvw_tbl_Cartera_Gestion', 'TOP 10 *', "CardCode='" . $row['CodigoCliente'] . "'", 'FechaRegistro');
+	//Historico de gestiones
+	$SQL_HistGestion = Seleccionar('uvw_tbl_Cartera_Gestion', 'TOP 10 *', "CardCode='" . $row['CodigoCliente'] . "'", 'FechaRegistro');
 
-    //Anexos
-    $SQL_Anexo = Seleccionar('uvw_Sap_tbl_DocumentosSAP_Anexos', '*', "AbsEntry='" . $row['IdAnexos'] . "'");
+	//Anexos
+	$SQL_Anexo = Seleccionar('uvw_Sap_tbl_DocumentosSAP_Anexos', '*', "AbsEntry='" . $row['IdAnexos'] . "'");
 }
 
 if ($sw_error == 1) {
 
-    //Cliente
-    $SQL = Seleccionar("uvw_tbl_SociosNegocios", "*", "[ID_SocioNegocio]='" . $IdSN . "'");
-    $row = sql_fetch_array($SQL);
+	//Cliente
+	$SQL = Seleccionar("uvw_tbl_SociosNegocios", "*", "[ID_SocioNegocio]='" . $IdSN . "'");
+	$row = sql_fetch_array($SQL);
 
-    //Direcciones
-    $SQL_Dir = Seleccionar("uvw_tbl_SociosNegocios_Direcciones", "*", "[ID_SocioNegocio]='" . $IdSN . "'");
-    $Num_Dir = sql_num_rows($SQL_Dir);
+	//Direcciones
+	$SQL_Dir = Seleccionar("uvw_tbl_SociosNegocios_Direcciones", "*", "[ID_SocioNegocio]='" . $IdSN . "'");
+	$Num_Dir = sql_num_rows($SQL_Dir);
 
-    //Contactos
-    $SQL_Cont = Seleccionar("uvw_tbl_SociosNegocios_Contactos", "*", "[ID_SocioNegocio]='" . $IdSN . "'");
-    $Num_Cont = sql_num_rows($SQL_Cont);
+	//Contactos
+	$SQL_Cont = Seleccionar("uvw_tbl_SociosNegocios_Contactos", "*", "[ID_SocioNegocio]='" . $IdSN . "'");
+	$Num_Cont = sql_num_rows($SQL_Cont);
 
-    //Municipio MM
-    $SQL_MunMM = Seleccionar('uvw_Sap_tbl_SN_Municipio', '*', "ID_Municipio='" . $row['U_HBT_MunMed'] . "'");
-    $row_MunMM = sql_fetch_array($SQL_MunMM);
+	//Municipio MM
+	$SQL_MunMM = Seleccionar('uvw_Sap_tbl_SN_Municipio', '*', "ID_Municipio='" . $row['U_HBT_MunMed'] . "'");
+	$row_MunMM = sql_fetch_array($SQL_MunMM);
 
-    //Facturas pendientes
-    $SQL_FactPend = Seleccionar('uvw_Sap_tbl_FacturasPendientes', 'TOP 10 *', "ID_CodigoCliente='" . $row['CodigoCliente'] . "'", "FechaContabilizacion", "DESC");
+	//Facturas pendientes
+	$SQL_FactPend = Seleccionar('uvw_Sap_tbl_FacturasPendientes', 'TOP 10 *', "ID_CodigoCliente='" . $row['CodigoCliente'] . "'", "FechaContabilizacion", "DESC");
 
-    //ID de servicios
-    $SQL_IDServicio = Seleccionar('uvw_Sap_tbl_ArticulosLlamadas', '*', "[CodigoCliente]='" . $row['CodigoCliente'] . "'", '[ItemCode]');
+	//ID de servicios
+	$SQL_IDServicio = Seleccionar('uvw_Sap_tbl_ArticulosLlamadas', '*', "[CodigoCliente]='" . $row['CodigoCliente'] . "'", '[ItemCode]');
 
-    //Historico de gestiones
-    $SQL_HistGestion = Seleccionar('uvw_tbl_Cartera_Gestion', 'TOP 10 *', "CardCode='" . $row['CodigoCliente'] . "'", 'FechaRegistro');
+	//Historico de gestiones
+	$SQL_HistGestion = Seleccionar('uvw_tbl_Cartera_Gestion', 'TOP 10 *', "CardCode='" . $row['CodigoCliente'] . "'", 'FechaRegistro');
 }
 
 //Condiciones de pago
@@ -539,9 +540,9 @@ $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*');
 
 //Estrato
 if (($edit == 0 || $Metod == 4) && ($EsProyecto == 1 && $row_ValorDefault['IdEstrato'] != "")) {
-    $SQL_Estrato = Seleccionar('tbl_EstratosSN', '*', "Estrato IN ('1','2')", 'Estrato');
+	$SQL_Estrato = Seleccionar('tbl_EstratosSN', '*', "Estrato IN ('1','2')", 'Estrato');
 } else {
-    $SQL_Estrato = Seleccionar('tbl_EstratosSN', '*', '', 'Estrato');
+	$SQL_Estrato = Seleccionar('tbl_EstratosSN', '*', '', 'Estrato');
 }
 
 // Lista de precios, 17/02/2022
@@ -551,12 +552,12 @@ $SQL_ListaPrecios = Seleccionar('uvw_Sap_tbl_ListaPrecios', '*');
 <html><!-- InstanceBegin template="/Templates/PlantillaPrincipal.dwt.php" codeOutsideHTMLIsLocked="false" -->
 
 <head>
-<?php include "includes/cabecera.php";?>
+<?php include "includes/cabecera.php"; ?>
 <!-- InstanceBeginEditable name="doctitle" -->
 <title><?php echo $Title; ?> | <?php echo NOMBRE_PORTAL; ?></title>
 <?php
 if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_SNAdd"))) {
-    echo "<script>
+	echo "<script>
 		$(document).ready(function() {
 			Swal.fire({
                 title: '¡Listo!',
@@ -567,7 +568,7 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_SNAdd"))) {
 		</script>";
 }
 if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_SNEdit"))) {
-    echo "<script>
+	echo "<script>
 		$(document).ready(function() {
 			Swal.fire({
                 title: '¡Listo!',
@@ -578,7 +579,7 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_SNEdit"))) {
 		</script>";
 }
 if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_ArtUpd"))) {
-    echo "<script>
+	echo "<script>
 		$(document).ready(function() {
 			Swal.fire({
                 title: '¡Listo!',
@@ -589,7 +590,7 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_ArtUpd"))) {
 		</script>";
 }
 if (isset($sw_error) && ($sw_error == 1)) {
-    echo "<script>
+	echo "<script>
 		$(document).ready(function() {
 			Swal.fire({
                 title: '¡Lo sentimos!',
@@ -636,10 +637,10 @@ if (isset($sw_error) && ($sw_error == 1)) {
 			if(TipoEntidad==1){//Natural
 				HabilitarCampos(TipoEntidad)
 
-				<?php if ($edit == 0 && $sw_error == 0) {?>
-				CardName.value="";
-				AliasName.value="";
-				<?php }?>
+				<?php if ($edit == 0 && $sw_error == 0) { ?>
+					CardName.value="";
+					AliasName.value="";
+				<?php } ?>
 			}else{//Juridica
 				HabilitarCampos(TipoEntidad)
 
@@ -652,11 +653,11 @@ if (isset($sw_error) && ($sw_error == 1)) {
 			}
 		});
 		//NomDir('1');
-		<?php if ($edit == 0 || $Metod == 4) {?>
-		$('#TipoEntidad').trigger('change');
-		<?php } else {?>
-		HabilitarCampos(<?php echo isset($row['U_HBT_TipEnt']) ? $row['U_HBT_TipEnt'] : ""; ?>);
-		<?php }?>
+		<?php if ($edit == 0 || $Metod == 4) { ?>
+			$('#TipoEntidad').trigger('change');
+		<?php } else { ?>
+			HabilitarCampos(<?php echo isset($row['U_HBT_TipEnt']) ? $row['U_HBT_TipEnt'] : ""; ?>);
+		<?php } ?>
 		CapturarGPS();
 	});
 </script>
@@ -794,101 +795,101 @@ function SeleccionarFactura(Num, Obj, Frm){
 }
 
 
-<?php if (PermitirFuncion(510)) {?>
-function CrearNombre(){
-	var TipoEntidad=document.getElementById("TipoEntidad");
-	var Nombre=document.getElementById("PNNombres");
-	var PrimerApellido=document.getElementById("PNApellido1");
-	var SegundoApellido=document.getElementById("PNApellido2");
-	var CardName=document.getElementById("CardName");
-	var AliasName=document.getElementById("AliasName");
+<?php if (PermitirFuncion(510)) { ?>
+	function CrearNombre(){
+		var TipoEntidad=document.getElementById("TipoEntidad");
+		var Nombre=document.getElementById("PNNombres");
+		var PrimerApellido=document.getElementById("PNApellido1");
+		var SegundoApellido=document.getElementById("PNApellido2");
+		var CardName=document.getElementById("CardName");
+		var AliasName=document.getElementById("AliasName");
 
-	if(TipoEntidad.value==1){//Natural
-	if(Nombre.value!=""&&PrimerApellido.value!=""){
-		CardName.value=PrimerApellido.value + ' ' + SegundoApellido.value + ' ' + Nombre.value;
-		AliasName.value=CardName.value;
-	}else{
-		CardName.value="";
-		AliasName.value=CardName.value;
+		if(TipoEntidad.value==1){//Natural
+		if(Nombre.value!=""&&PrimerApellido.value!=""){
+			CardName.value=PrimerApellido.value + ' ' + SegundoApellido.value + ' ' + Nombre.value;
+			AliasName.value=CardName.value;
+		}else{
+			CardName.value="";
+			AliasName.value=CardName.value;
+		}
+
+		<?php if ($edit == 0 || $Metod == 4) { ?>
+			CopiarNombreCont();
+		<?php } ?>
+		}else{//Juridica
+			AliasName.value=CardName.value;
+		}
 	}
+<?php } else { ?>
+	function CrearNombre(){
+		var TipoEntidad=document.getElementById("TipoEntidad");
+		var Nombre=document.getElementById("PNNombres");
+		var PrimerApellido=document.getElementById("PNApellido1");
+		var SegundoApellido=document.getElementById("PNApellido2");
+		var CardName=document.getElementById("CardName");
+		var AliasName=document.getElementById("AliasName");
 
-	<?php if ($edit == 0 || $Metod == 4) {?>
-	CopiarNombreCont();
-	<?php }?>
-	}else{//Juridica
-		AliasName.value=CardName.value;
+		if(TipoEntidad.value==1){//Natural
+		if(Nombre.value!=""&&PrimerApellido.value!=""){
+			CardName.value=Nombre.value + ' ' + PrimerApellido.value + ' ' + SegundoApellido.value;
+			AliasName.value=CardName.value;
+		}else{
+			CardName.value="";
+			AliasName.value=CardName.value;
+		}
+
+		<?php if ($edit == 0 || $Metod == 4) { ?>
+			CopiarNombreCont();
+		<?php } ?>
+		}else{//Juridica
+			AliasName.value=CardName.value;
+		}
 	}
-}
-<?php } else {?>
-function CrearNombre(){
-	var TipoEntidad=document.getElementById("TipoEntidad");
-	var Nombre=document.getElementById("PNNombres");
-	var PrimerApellido=document.getElementById("PNApellido1");
-	var SegundoApellido=document.getElementById("PNApellido2");
-	var CardName=document.getElementById("CardName");
-	var AliasName=document.getElementById("AliasName");
+<?php } ?>
 
-	if(TipoEntidad.value==1){//Natural
-	if(Nombre.value!=""&&PrimerApellido.value!=""){
-		CardName.value=Nombre.value + ' ' + PrimerApellido.value + ' ' + SegundoApellido.value;
-		AliasName.value=CardName.value;
-	}else{
-		CardName.value="";
-		AliasName.value=CardName.value;
+<?php if ($edit == 0) { ?>
+	function CopiarNombreCont(){
+		//Datos cliente
+		var Nombre=document.getElementById("PNNombres");
+		var PrimerApellido=document.getElementById("PNApellido1");
+		var SegundoApellido=document.getElementById("PNApellido2");
+		var Cedula=document.getElementById("LicTradNum");
+		var TelefonoCliente=document.getElementById("TelefonoCliente");
+		var CelularCliente=document.getElementById("CelularCliente");
+		var CorreoCliente=document.getElementById("CorreoCliente");
+
+		//Datos contacto
+		var NombreContacto=document.getElementById("NombreContacto1");
+		var SegundoNombre=document.getElementById("SegundoNombre1");
+		var Apellidos=document.getElementById("Apellidos1");
+		var CedulaContacto=document.getElementById("CedulaContacto1");
+		var Posicion=document.getElementById("Posicion1");
+		var RepLegal=document.getElementById("RepLegal1");
+		var Address=document.getElementById("Address1");
+		var Address2=document.getElementById("Address2");
+		var Telefono=document.getElementById("Telefono1");
+		var TelefonoCelular=document.getElementById("TelefonoCelular1");
+		var Email=document.getElementById("Email1");
+
+		var res = Nombre.value.split(" ");
+		NombreContacto.value=res[0];
+		if(res[1]===undefined){
+			res[1]="";
+		}
+		SegundoNombre.value=res[1];
+		Apellidos.value=PrimerApellido.value + ' ' + SegundoApellido.value;
+		CedulaContacto.value=Cedula.value;
+		Posicion.value="TITULAR";
+		Address.value="PRINCIPAL";
+		Address2.value="GENERAL";
+		//Address.readOnly=true;
+		RepLegal.value="SI";
+		Telefono.value=TelefonoCliente.value;
+		TelefonoCelular.value=CelularCliente.value;
+		Email.value=CorreoCliente.value;
+
 	}
-
-	<?php if ($edit == 0 || $Metod == 4) {?>
-	CopiarNombreCont();
-	<?php }?>
-	}else{//Juridica
-		AliasName.value=CardName.value;
-	}
-}
-<?php }?>
-
-<?php if ($edit == 0) {?>
-function CopiarNombreCont(){
-	//Datos cliente
-	var Nombre=document.getElementById("PNNombres");
-	var PrimerApellido=document.getElementById("PNApellido1");
-	var SegundoApellido=document.getElementById("PNApellido2");
-	var Cedula=document.getElementById("LicTradNum");
-	var TelefonoCliente=document.getElementById("TelefonoCliente");
-	var CelularCliente=document.getElementById("CelularCliente");
-	var CorreoCliente=document.getElementById("CorreoCliente");
-
-	//Datos contacto
-	var NombreContacto=document.getElementById("NombreContacto1");
-	var SegundoNombre=document.getElementById("SegundoNombre1");
-	var Apellidos=document.getElementById("Apellidos1");
-	var CedulaContacto=document.getElementById("CedulaContacto1");
-	var Posicion=document.getElementById("Posicion1");
-	var RepLegal=document.getElementById("RepLegal1");
-	var Address=document.getElementById("Address1");
-	var Address2=document.getElementById("Address2");
-	var Telefono=document.getElementById("Telefono1");
-	var TelefonoCelular=document.getElementById("TelefonoCelular1");
-	var Email=document.getElementById("Email1");
-
-	var res = Nombre.value.split(" ");
-	NombreContacto.value=res[0];
-	if(res[1]===undefined){
-		res[1]="";
-	}
-	SegundoNombre.value=res[1];
-	Apellidos.value=PrimerApellido.value + ' ' + SegundoApellido.value;
-	CedulaContacto.value=Cedula.value;
-	Posicion.value="TITULAR";
-	Address.value="PRINCIPAL";
-	Address2.value="GENERAL";
-	//Address.readOnly=true;
-	RepLegal.value="SI";
-	Telefono.value=TelefonoCliente.value;
-	TelefonoCelular.value=CelularCliente.value;
-	Email.value=CorreoCliente.value;
-
-}
-<?php }?>
+<?php } ?>
 
 // Stiven Muñoz Murillo, 26/02/2022
 function mayus(e) {
@@ -929,33 +930,39 @@ nombredir.value="<?php echo ObtenerVariable("DirDestino");?>";
 <!-- InstanceEndEditable -->
 </head>
 
-<body <?php if ($sw_ext == 1) {echo "class='mini-navbar'";}?>>
+<body <?php if ($sw_ext == 1) {
+	echo "class='mini-navbar'";
+} ?>>
 
 <div id="wrapper">
 
-    <?php if ($sw_ext != 1) {include "includes/menu.php";}?>
+	<?php if ($sw_ext != 1) {
+		include "includes/menu.php";
+	} ?>
 
-    <div id="page-wrapper" class="gray-bg">
-        <?php if ($sw_ext != 1) {include "includes/menu_superior.php";}?>
-        <!-- InstanceBeginEditable name="Contenido" -->
-        <div class="row wrapper border-bottom white-bg page-heading">
-                <div class="col-sm-8">
-                    <h2><?php echo $Title; ?></h2>
-                    <ol class="breadcrumb">
-                        <li>
-                            <a href="index1.php">Inicio</a>
-                        </li>
-                        <li>
-                            <a href="#">Socios de negocios</a>
-                        </li>
-                        <li class="active">
-                            <strong><?php echo $Title; ?></strong>
-                        </li>
-                    </ol>
-                </div>
-            </div>
+	<div id="page-wrapper" class="gray-bg">
+		<?php if ($sw_ext != 1) {
+			include "includes/menu_superior.php";
+		} ?>
+		<!-- InstanceBeginEditable name="Contenido" -->
+		<div class="row wrapper border-bottom white-bg page-heading">
+				<div class="col-sm-8">
+					<h2><?php echo $Title; ?></h2>
+					<ol class="breadcrumb">
+						<li>
+							<a href="index1.php">Inicio</a>
+						</li>
+						<li>
+							<a href="#">Socios de negocios</a>
+						</li>
+						<li class="active">
+							<strong><?php echo $Title; ?></strong>
+						</li>
+					</ol>
+				</div>
+			</div>
 
-         <div class="wrapper wrapper-content">
+		 <div class="wrapper wrapper-content">
 			<!-- Inicio, myModal -->
 			<div class="modal inmodal fade" id="myModal" tabindex="-1" role="dialog" aria-hidden="true">
 				<div class="modal-dialog modal-lg" style="width: 70% !important;">
@@ -975,34 +982,34 @@ nombredir.value="<?php echo ObtenerVariable("DirDestino");?>";
 			 <div class="row">
 				<div class="col-lg-12">
 					<div class="ibox-content">
-						<?php include "includes/spinner.php";?>
+						<?php include "includes/spinner.php"; ?>
 						<div class="form-group">
 							<div class="col-lg-6">
 								<?php
-if ($edit == 1) {
-    if (PermitirFuncion(503) || ($Metod == 4 && PermitirFuncion(505)) || (PermitirFuncion(504) && ($row['CardType'] == "L"))) {?>
+								if ($edit == 1) {
+									if (PermitirFuncion(503) || ($Metod == 4 && PermitirFuncion(505)) || (PermitirFuncion(504) && ($row['CardType'] == "L"))) { ?>
 										<button class="btn btn-warning" type="submit" id="Crear"><i class="fa fa-refresh"></i> Actualizar Socio de negocio</button>
 								<?php }
-} else {
-    if (PermitirFuncion(501)) {?>
+								} else {
+									if (PermitirFuncion(501)) { ?>
 										<button class="btn btn-primary" type="submit" id="Crear"><i class="fa fa-check"></i> Crear Socio de negocio</button>
 								<?php }
-}?>
+								} ?>
 								<?php
-if (isset($_GET['return'])) {
-    $return = base64_decode($_GET['pag']) . "?" . $_GET['return'];
-} elseif (isset($_POST['return'])) {
-    $return = base64_decode($_POST['return']);
-} else {
-    $return = "socios_negocios.php?";
-}
-$return = QuitarParametrosURL($return, array("a"));
-if ($sw_ext == 0) {?>
+								if (isset($_GET['return'])) {
+									$return = base64_decode($_GET['pag']) . "?" . $_GET['return'];
+								} elseif (isset($_POST['return'])) {
+									$return = base64_decode($_POST['return']);
+								} else {
+									$return = "socios_negocios.php?";
+								}
+								$return = QuitarParametrosURL($return, array("a"));
+								if ($sw_ext == 0) { ?>
 									<a href="<?php echo $return; ?>" class="alkin btn btn-outline btn-default"><i class="fa fa-arrow-circle-o-left"></i> Regresar</a>
-								<?php }?>
+								<?php } ?>
 							</div>
 							<div class="col-lg-3 pull-right">
-								<?php if ($edit == 1 && isset($row["TipoSN"]) && ($row["TipoSN"] == "CLIENTE")) {?>
+								<?php if ($edit == 1 && isset($row["TipoSN"]) && ($row["TipoSN"] == "CLIENTE")) { ?>
 									<div class="btn-group">
 										<button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i class="fa fa-plus-circle"></i> Agregar documento <i class="fa fa-caret-down"></i></button>
 										<ul class="dropdown-menu">
@@ -1014,7 +1021,9 @@ if ($sw_ext == 0) {?>
 											</li>
 										</ul>
 									</div>
-								<?php } else {echo "<script> console.log('El socio de negocio no es un cliente.') </script>";}?>
+								<?php } else {
+									echo "<script> console.log('El socio de negocio no es un cliente.') </script>";
+								} ?>
 							</div>
 						</div>
 						<div class="form-group">
@@ -1022,8 +1031,14 @@ if ($sw_ext == 0) {?>
 								<p><button type="button" class="btn btn-outline btn-link" onClick="CapturarGPS();" title="Obtener coordenadas nuevamente"><i class="fa fa-map-marker"></i> Coordenadas GPS: </button><span id="CoordGPS"></span></p>
 							</div>
 						</div>
-						<input type="hidden" id="P" name="P" value="<?php if ($edit == 1) {echo "45";} else {echo "38";}?>" />
-						<input type="hidden" id="IdSNPortal" name="IdSNPortal" value="<?php if (isset($row['IdSNPortal'])) {echo base64_encode($row['IdSNPortal']);}?>" />
+						<input type="hidden" id="P" name="P" value="<?php if ($edit == 1) {
+							echo "45";
+						} else {
+							echo "38";
+						} ?>" />
+						<input type="hidden" id="IdSNPortal" name="IdSNPortal" value="<?php if (isset($row['IdSNPortal'])) {
+							echo base64_encode($row['IdSNPortal']);
+						} ?>" />
 						<input type="hidden" id="tl" name="tl" value="<?php echo $edit; ?>" />
 						<input type="hidden" id="ext" name="ext" value="<?php echo $sw_ext; ?>" />
 						<input type="hidden" id="Latitud" name="Latitud" value="" />
@@ -1031,40 +1046,48 @@ if ($sw_ext == 0) {?>
 						<input type="hidden" id="metod" name="metod" value="<?php echo $Metod; ?>" />
 						<input type="hidden" id="swError" name="swError" value="<?php echo $sw_error; ?>" />
 						<input type="hidden" id="EsProyecto" name="EsProyecto" value="<?php echo $EsProyecto; ?>" />
-						<input type="hidden" id="IdAnexos" name="IdAnexos" value="<?php if ($edit == 1) {echo $row['IdAnexos'];}?>" />
-						<?php if ($sw_ext == 0) {?>
-						<input type="hidden" id="pag" name="pag" value="<?php if (isset($_GET['pag'])) {echo $_GET['pag'];}?>" />
-						<input type="hidden" id="return" name="return" value="<?php if (isset($_GET['return'])) {echo base64_encode($_GET['return']);}?>" />
-						<?php }?>
+						<input type="hidden" id="IdAnexos" name="IdAnexos" value="<?php if ($edit == 1) {
+							echo $row['IdAnexos'];
+						} ?>" />
+						<?php if ($sw_ext == 0) { ?>
+							<input type="hidden" id="pag" name="pag" value="<?php if (isset($_GET['pag'])) {
+								echo $_GET['pag'];
+							} ?>" />
+							<input type="hidden" id="return" name="return" value="<?php if (isset($_GET['return'])) {
+								echo base64_encode($_GET['return']);
+							} ?>" />
+						<?php } ?>
 						<input type="hidden" id="dataJSON" name="dataJSON" value="" />
 					</div>
 				</div>
 			 </div>
 			 <br>
 			 <div class="row">
-			 	<div class="col-lg-12">
+				 <div class="col-lg-12">
 					<div class="ibox-content">
-						<?php include "includes/spinner.php";?>
-						<?php if ($edit == 1) {?>
-						 <div class="form-group">
-							<h3 class="col-xs-12 bg-primary p-xs b-r-sm">
-								<?php echo ($row['NombreCliente']) . " [" . $row['LicTradNum'] . "]"; ?>
-								<?php if (isset($row["Estado"])) {echo ($row["Estado"] == "Y") ? "(Activo)" : "(Inactivo)";}?>
-							</h3>
-						 </div>
-						 <?php }?>
+						<?php include "includes/spinner.php"; ?>
+						<?php if ($edit == 1) { ?>
+   						 <div class="form-group">
+   							<h3 class="col-xs-12 bg-primary p-xs b-r-sm">
+								   <?php echo ($row['NombreCliente']) . " [" . $row['LicTradNum'] . "]"; ?>
+								   <?php if (isset($row["Estado"])) {
+									   echo ($row["Estado"] == "Y") ? "(Activo)" : "(Inactivo)";
+								   } ?>
+   							</h3>
+   						 </div>
+						 <?php } ?>
 						 <div class="tabs-container">
 							<ul class="nav nav-tabs">
 								<li class="active"><a data-toggle="tab" href="#tabSN-1"><i class="fa fa-info-circle"></i> Información general</a></li>
 								<li><a data-toggle="tab" href="#tabSN-2"><i class="fa fa-user-circle"></i> Contactos</a></li>
 								<li><a data-toggle="tab" href="#tabSN-3"><i class="fa fa-home"></i> Direcciones</a></li>
-								<?php if ($edit == 1) {?><li><a data-toggle="tab" href="#tabSN-4"><i class="fa fa-folder-open"></i> Documentos relacionados</a></li><?php }?>
-								<?php if ($edit == 1) {?><li><a data-toggle="tab" href="#tabSN-5" onClick="ConsultarTab('501');"><i class="fa fa-handshake-o" aria-hidden="true"></i> Contratos</a></li><?php }?>
+								<?php if ($edit == 1) { ?><li><a data-toggle="tab" href="#tabSN-4"><i class="fa fa-folder-open"></i> Documentos relacionados</a></li><?php } ?>
+								<?php if ($edit == 1) { ?><li><a data-toggle="tab" href="#tabSN-5" onClick="ConsultarTab('501');"><i class="fa fa-handshake-o" aria-hidden="true"></i> Contratos</a></li><?php } ?>
 								<li><a data-toggle="tab" href="#tabSN-6"><i class="fa fa-paperclip"></i> Anexos</a></li>
 							</ul>
 						   <div class="tab-content">
 							   <div id="tabSN-1" class="tab-pane active">
-							   		<div class="col-lg-1">
+									   <div class="col-lg-1">
 										<div id="spinner1" style="visibility: hidden;" class="sk-spinner sk-spinner-wave">
 											<div class="sk-rect1"></div>
 											<div class="sk-rect2"></div>
@@ -1075,128 +1098,184 @@ if ($sw_ext == 0) {?>
 									</div>
 									<div id="Validar" class="col-lg-3"></div>
 
-								    <div class="form-group">
+									<div class="form-group">
 										<label class="col-xs-12"><h3 class="bg-success p-xs b-r-sm"><i class="fa fa-info-circle"></i> Información general</h3></label>
 									</div>
 									<div class="form-group">
 										<label class="col-lg-1 control-label">Código</label>
 										<div class="col-lg-3">
-											<input name="CardCode" autofocus="autofocus" type="text" readonly class="form-control" id="CardCode" value="<?php if ($edit == 1) {echo $row['CodigoCliente'];}?>">
+											<input name="CardCode" autofocus="autofocus" type="text" readonly class="form-control" id="CardCode" value="<?php if ($edit == 1) {
+												echo $row['CodigoCliente'];
+											} ?>">
 										</div>
 										<label class="col-lg-1 control-label">Tipo socio de negocio</label>
 										<div class="col-lg-3">
 											<select name="CardType" class="form-control" id="CardType" required>
-											<?php while ($row_TipoSN = sqlsrv_fetch_array($SQL_TipoSN)) {?>
-													<option value="<?php echo $row_TipoSN['CardType']; ?>" <?php if ((isset($row['CardType'])) && (strcmp($row_TipoSN['CardType'], $row['CardType']) == 0)) {echo "selected=\"selected\"";} elseif (PermitirFuncion(504) && ($row_TipoSN['CardType'] == "L")) {echo "selected=\"selected\"";} elseif ((isset($row_ValorDefault['IdTipoSN'])) && (strcmp($row_TipoSN['CardType'], $row_ValorDefault['IdTipoSN']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_TipoSN['DE_CardType']; ?></option>
-											<?php }?>
+											<?php while ($row_TipoSN = sqlsrv_fetch_array($SQL_TipoSN)) { ?>
+													<option value="<?php echo $row_TipoSN['CardType']; ?>" <?php if ((isset($row['CardType'])) && (strcmp($row_TipoSN['CardType'], $row['CardType']) == 0)) {
+														   echo "selected=\"selected\"";
+													   } elseif (PermitirFuncion(504) && ($row_TipoSN['CardType'] == "L")) {
+														   echo "selected=\"selected\"";
+													   } elseif ((isset($row_ValorDefault['IdTipoSN'])) && (strcmp($row_TipoSN['CardType'], $row_ValorDefault['IdTipoSN']) == 0)) {
+														   echo "selected=\"selected\"";
+													   } ?>><?php echo $row_TipoSN['DE_CardType']; ?></option>
+											<?php } ?>
 											</select>
 										</div>
 
 										<!-- SMM, 15/11/2022 -->
-										<?php if (PermitirFuncion(513)) {?>
+										<?php if (PermitirFuncion(513)) { ?>
 											<label class="col-lg-1 control-label">Estado</label>
 											<div class="col-lg-3">
 												<select name="Estado" id="Estado" class="form-control">
-													<option value="Y" <?php if (($edit == 1) && ($row['Estado'] == "Y")) {echo "selected";}?>>Activo</option>
-													<option value="N" <?php if (($edit == 1) && ($row['Estado'] == "N")) {echo "selected";}?>>Inactivo</option>
+													<option value="Y" <?php if (($edit == 1) && ($row['Estado'] == "Y")) {
+														echo "selected";
+													} ?>>Activo</option>
+													<option value="N" <?php if (($edit == 1) && ($row['Estado'] == "N")) {
+														echo "selected";
+													} ?>>Inactivo</option>
 												</select>
 											</div>
-										<?php }?>
+										<?php } ?>
 									</div>
-								    <div class="form-group">
+									<div class="form-group">
 										<label class="col-lg-1 control-label">Tipo entidad <span class="text-danger">*</span></label>
 										<div class="col-lg-3">
 											<select name="TipoEntidad" class="form-control" id="TipoEntidad" required>
 												<option value="">Seleccione...</option>
-											<?php while ($row_TipoEntidad = sqlsrv_fetch_array($SQL_TipoEntidad)) {?>
-													<option value="<?php echo $row_TipoEntidad['ID_TipoEntidad']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['U_HBT_TipEnt'])) && (strcmp($row_TipoEntidad['ID_TipoEntidad'], $row['U_HBT_TipEnt']) == 0)) {echo "selected=\"selected\"";} elseif ((isset($row_ValorDefault['IdTipoEntidad'])) && (strcmp($row_TipoEntidad['ID_TipoEntidad'], $row_ValorDefault['IdTipoEntidad']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_TipoEntidad['NombreEntidad']; ?></option>
-											<?php }?>
+											<?php while ($row_TipoEntidad = sqlsrv_fetch_array($SQL_TipoEntidad)) { ?>
+													<option value="<?php echo $row_TipoEntidad['ID_TipoEntidad']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['U_HBT_TipEnt'])) && (strcmp($row_TipoEntidad['ID_TipoEntidad'], $row['U_HBT_TipEnt']) == 0)) {
+														   echo "selected=\"selected\"";
+													   } elseif ((isset($row_ValorDefault['IdTipoEntidad'])) && (strcmp($row_TipoEntidad['ID_TipoEntidad'], $row_ValorDefault['IdTipoEntidad']) == 0)) {
+														   echo "selected=\"selected\"";
+													   } ?>><?php echo $row_TipoEntidad['NombreEntidad']; ?></option>
+											<?php } ?>
 											</select>
 										</div>
-									    <label class="col-lg-1 control-label">Tipo documento <span class="text-danger">*</span></label>
+										<label class="col-lg-1 control-label">Tipo documento <span class="text-danger">*</span></label>
 										<div class="col-lg-3">
 											<select name="TipoDocumento" class="form-control" id="TipoDocumento" required>
 												<option value="">Seleccione...</option>
-											<?php while ($row_TipoDoc = sqlsrv_fetch_array($SQL_TipoDoc)) {?>
-													<option value="<?php echo $row_TipoDoc['ID_TipoDocumento']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['U_HBT_TipDoc'])) && (strcmp($row_TipoDoc['ID_TipoDocumento'], $row['U_HBT_TipDoc']) == 0)) {echo "selected=\"selected\"";} elseif ((isset($row_ValorDefault['IdTipoDocumento'])) && (strcmp($row_TipoDoc['ID_TipoDocumento'], $row_ValorDefault['IdTipoDocumento']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_TipoDoc['TipoDocumento']; ?></option>
-											<?php }?>
+											<?php while ($row_TipoDoc = sqlsrv_fetch_array($SQL_TipoDoc)) { ?>
+													<option value="<?php echo $row_TipoDoc['ID_TipoDocumento']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['U_HBT_TipDoc'])) && (strcmp($row_TipoDoc['ID_TipoDocumento'], $row['U_HBT_TipDoc']) == 0)) {
+														   echo "selected=\"selected\"";
+													   } elseif ((isset($row_ValorDefault['IdTipoDocumento'])) && (strcmp($row_TipoDoc['ID_TipoDocumento'], $row_ValorDefault['IdTipoDocumento']) == 0)) {
+														   echo "selected=\"selected\"";
+													   } ?>><?php echo $row_TipoDoc['TipoDocumento']; ?></option>
+											<?php } ?>
 											</select>
 										</div>
-									   	<label class="col-lg-1 control-label">Número documento <span class="text-danger">*</span></label>
+										   <label class="col-lg-1 control-label">Número documento <span class="text-danger">*</span></label>
 										<div class="col-lg-3">
-											<input name="LicTradNum" type="text" required class="form-control" id="LicTradNum" value="<?php if ($edit == 1 || $sw_error == 1) {echo $row['LicTradNum'];}?>" maxlength="15" onKeyPress="return justNumbers(event,this.value);" <?php if ($edit == 0) {?>onChange="CopiarNombreCont();ValidarSN(this.value);"<?php }?>>
+											<input name="LicTradNum" type="text" required class="form-control" id="LicTradNum" value="<?php if ($edit == 1 || $sw_error == 1) {
+												echo $row['LicTradNum'];
+											} ?>" maxlength="15" onKeyPress="return justNumbers(event,this.value);" <?php if ($edit == 0) { ?>onChange="CopiarNombreCont();ValidarSN(this.value);"<?php } ?>>
 										</div>
 									</div>
-								    <div class="form-group">
+									<div class="form-group">
 										<label class="col-lg-1 control-label">Nombres</label>
 										<div class="col-lg-3">
-											<input name="PNNombres" type="text" class="form-control" id="PNNombres" onkeyup="mayus(this);" readonly="readonly" value="<?php if ($edit == 1 || $sw_error == 1) {echo strtoupper($row['U_HBT_Nombres']);}?>" onChange="CrearNombre();">
+											<input name="PNNombres" type="text" class="form-control" id="PNNombres" onkeyup="mayus(this);" readonly="readonly" value="<?php if ($edit == 1 || $sw_error == 1) {
+												echo strtoupper($row['U_HBT_Nombres']);
+											} ?>" onChange="CrearNombre();">
 										</div>
 										<label class="col-lg-1 control-label">Primer apellido</label>
 										<div class="col-lg-3">
-											<input name="PNApellido1" type="text" class="form-control" id="PNApellido1" onkeyup="mayus(this);" readonly="readonly" value="<?php if ($edit == 1 || $sw_error == 1) {echo strtoupper($row['U_HBT_Apellido1']);}?>" onChange="CrearNombre();">
+											<input name="PNApellido1" type="text" class="form-control" id="PNApellido1" onkeyup="mayus(this);" readonly="readonly" value="<?php if ($edit == 1 || $sw_error == 1) {
+												echo strtoupper($row['U_HBT_Apellido1']);
+											} ?>" onChange="CrearNombre();">
 										</div>
 										<label class="col-lg-1 control-label">Segundo apellido</label>
 										<div class="col-lg-3">
-											<input name="PNApellido2" type="text" class="form-control" id="PNApellido2" onkeyup="mayus(this);" readonly="readonly" value="<?php if ($edit == 1 || $sw_error == 1) {echo strtoupper($row['U_HBT_Apellido2']);}?>" onChange="CrearNombre();">
+											<input name="PNApellido2" type="text" class="form-control" id="PNApellido2" onkeyup="mayus(this);" readonly="readonly" value="<?php if ($edit == 1 || $sw_error == 1) {
+												echo strtoupper($row['U_HBT_Apellido2']);
+											} ?>" onChange="CrearNombre();">
 										</div>
 									</div>
 									<div class="form-group">
 										<label class="col-lg-1 control-label">Nombre cliente/Razón social <span class="text-danger">*</span></label>
 										<div class="col-lg-3">
-											<input type="text" class="form-control" name="CardName" id="CardName" onkeyup="mayus(this);" required value="<?php if ($edit == 1 || $sw_error == 1) {echo ($row['NombreCliente']);}?>" onChange="CrearNombre();">
+											<input type="text" class="form-control" name="CardName" id="CardName" onkeyup="mayus(this);" required value="<?php if ($edit == 1 || $sw_error == 1) {
+												echo ($row['NombreCliente']);
+											} ?>" onChange="CrearNombre();">
 										</div>
 										<label class="col-lg-1 control-label">Estado servicio</label>
 										<div class="col-lg-3">
-											<input type="text" readonly class="form-control" name="EstadoServicio" id="EstadoServicio" value="<?php if ($edit == 1) {echo $row['DeEstadoServicioCliente'];}?>">
+											<input type="text" readonly class="form-control" name="EstadoServicio" id="EstadoServicio" value="<?php if ($edit == 1) {
+												echo $row['DeEstadoServicioCliente'];
+											} ?>">
 										</div>
 										<label class="col-lg-1 control-label">Correo eléctronico <span class="text-danger">*</span></label>
 										<div class="col-lg-3">
-											<input type="email" class="form-control" name="CorreoCliente" id="CorreoCliente" required value="<?php if ($edit == 1 || $sw_error == 1) {echo ($row['Email']);}?>" <?php if ($edit == 0) {?>onChange="CopiarNombreCont();"<?php }?>>
+											<input type="email" class="form-control" name="CorreoCliente" id="CorreoCliente" required value="<?php if ($edit == 1 || $sw_error == 1) {
+												echo ($row['Email']);
+											} ?>" <?php if ($edit == 0) { ?>onChange="CopiarNombreCont();"<?php } ?>>
 										</div>
 									</div>
-								    <div class="form-group">
+									<div class="form-group">
 										<label class="col-lg-1 control-label">Teléfono <span class="text-danger">*</span></label>
 										<div class="col-lg-3">
-											<input type="text" class="form-control" name="TelefonoCliente" id="TelefonoCliente" onkeyup="mayus(this);" required value="<?php if ($edit == 1 || $sw_error == 1) {echo ($row['Telefono']);}?>" <?php if ($edit == 0) {?>onChange="CopiarNombreCont();"<?php }?>>
+											<input type="text" class="form-control" name="TelefonoCliente" id="TelefonoCliente" onkeyup="mayus(this);" required value="<?php if ($edit == 1 || $sw_error == 1) {
+												echo ($row['Telefono']);
+											} ?>" <?php if ($edit == 0) { ?>onChange="CopiarNombreCont();"<?php } ?>>
 										</div>
 										<label class="col-lg-1 control-label">Celular <span class="text-danger">*</span></label>
 										<div class="col-lg-3">
-											<input type="text" class="form-control" name="CelularCliente" id="CelularCliente" onkeyup="mayus(this);" required value="<?php if ($edit == 1 || $sw_error == 1) {echo ($row['Celular']);}?>" <?php if ($edit == 0) {?>onChange="CopiarNombreCont();"<?php }?>>
+											<input type="text" class="form-control" name="CelularCliente" id="CelularCliente" onkeyup="mayus(this);" required value="<?php if ($edit == 1 || $sw_error == 1) {
+												echo ($row['Celular']);
+											} ?>" <?php if ($edit == 0) { ?>onChange="CopiarNombreCont();"<?php } ?>>
 										</div>
 										<label class="col-lg-1 control-label">Vendedor <span class="text-danger">*</span></label>
 										<div class="col-lg-3">
 											<select name="EmpleadoVentas" class="form-control" id="EmpleadoVentas" required="required">
-											  <?php while ($row_EmpleadosVentas = sqlsrv_fetch_array($SQL_EmpleadosVentas)) {?>
-													<option value="<?php echo $row_EmpleadosVentas['ID_EmpVentas']; ?>" <?php if ($edit == 0) {if (($_SESSION['CodigoEmpVentas'] != "") && (strcmp($row_EmpleadosVentas['ID_EmpVentas'], $_SESSION['CodigoEmpVentas']) == 0)) {echo "selected=\"selected\"";}} elseif ($edit == 1) {if (($row['IdEmpVentas'] != "") && (strcmp($row_EmpleadosVentas['ID_EmpVentas'], $row['IdEmpVentas']) == 0)) {echo "selected=\"selected\"";}}?>><?php echo $row_EmpleadosVentas['DE_EmpVentas']; ?></option>
-											  <?php }?>
+											  <?php while ($row_EmpleadosVentas = sqlsrv_fetch_array($SQL_EmpleadosVentas)) { ?>
+													<option value="<?php echo $row_EmpleadosVentas['ID_EmpVentas']; ?>" <?php if ($edit == 0) {
+														   if (($_SESSION['CodigoEmpVentas'] != "") && (strcmp($row_EmpleadosVentas['ID_EmpVentas'], $_SESSION['CodigoEmpVentas']) == 0)) {
+															   echo "selected=\"selected\"";
+														   }
+													   } elseif ($edit == 1) {
+														   if (($row['IdEmpVentas'] != "") && (strcmp($row_EmpleadosVentas['ID_EmpVentas'], $row['IdEmpVentas']) == 0)) {
+															   echo "selected=\"selected\"";
+														   }
+													   } ?>><?php echo $row_EmpleadosVentas['DE_EmpVentas']; ?></option>
+											  <?php } ?>
 											</select>
 										</div>
 									</div>
-								    <div class="form-group">
+									<div class="form-group">
 										<label class="col-xs-12"><h3 class="bg-success p-xs b-r-sm"><i class="fa fa-briefcase"></i> Información comercial</h3></label>
 									</div>
 									<div class="form-group">
 										<label class="col-lg-1 control-label">Nombre comercial</label>
 										<div class="col-lg-3">
-											<input name="AliasName" type="text" required class="form-control" id="AliasName" value="<?php if ($edit == 1 || $sw_error == 1) {echo ($row['AliasCliente']);}?>" readonly="readonly">
+											<input name="AliasName" type="text" required class="form-control" id="AliasName" value="<?php if ($edit == 1 || $sw_error == 1) {
+												echo ($row['AliasCliente']);
+											} ?>" readonly="readonly">
 										</div>
 										<label class="col-lg-1 control-label">Grupo <span class="text-danger">*</span></label>
 										<div class="col-lg-3">
 											<select name="GroupCode" class="form-control select2" id="GroupCode" required>
 												<option value="">Seleccione...</option>
-												<?php while ($row_GruposClientes = sqlsrv_fetch_array($SQL_GruposClientes)) {?>
-													<option value="<?php echo $row_GruposClientes['GroupCode']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['GrupoCliente'])) && (strcmp($row_GruposClientes['GroupCode'], $row['GrupoCliente']) == 0)) {echo "selected=\"selected\"";} elseif ((isset($row_ValorDefault['IdGrupoSN'])) && (strcmp($row_GruposClientes['GroupCode'], $row_ValorDefault['IdGrupoSN']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_GruposClientes['GroupName']; ?></option>
-												<?php }?>
+												<?php while ($row_GruposClientes = sqlsrv_fetch_array($SQL_GruposClientes)) { ?>
+													<option value="<?php echo $row_GruposClientes['GroupCode']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['GrupoCliente'])) && (strcmp($row_GruposClientes['GroupCode'], $row['GrupoCliente']) == 0)) {
+														   echo "selected=\"selected\"";
+													   } elseif ((isset($row_ValorDefault['IdGrupoSN'])) && (strcmp($row_GruposClientes['GroupCode'], $row_ValorDefault['IdGrupoSN']) == 0)) {
+														   echo "selected=\"selected\"";
+													   } ?>><?php echo $row_GruposClientes['GroupName']; ?></option>
+												<?php } ?>
 											</select>
 										</div>
 										<label class="col-lg-1 control-label">Proyecto</label>
 										<div class="col-lg-3">
 											<select name="Proyecto" class="form-control select2" id="Proyecto">
 												<option value="">(Ninguno)</option>
-												<?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) {?>
-													<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['IdProyecto'])) && (strcmp($row_Proyecto['IdProyecto'], $row['IdProyecto']) == 0)) {echo "selected=\"selected\"";} elseif ((isset($row_ValorDefault['IdProyecto'])) && (strcmp($row_Proyecto['IdProyecto'], $row_ValorDefault['IdProyecto']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Proyecto['DeProyecto']; ?></option>
-												<?php }?>
+												<?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) { ?>
+													<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['IdProyecto'])) && (strcmp($row_Proyecto['IdProyecto'], $row['IdProyecto']) == 0)) {
+														   echo "selected=\"selected\"";
+													   } elseif ((isset($row_ValorDefault['IdProyecto'])) && (strcmp($row_Proyecto['IdProyecto'], $row_ValorDefault['IdProyecto']) == 0)) {
+														   echo "selected=\"selected\"";
+													   } ?>><?php echo $row_Proyecto['DeProyecto']; ?></option>
+												<?php } ?>
 											</select>
 										</div>
 									</div>
@@ -1205,25 +1284,37 @@ if ($sw_ext == 0) {?>
 										<div class="col-lg-3">
 											<select name="GroupNum" class="form-control" id="GroupNum" required>
 												<option value="">Seleccione...</option>
-												<?php while ($row_CondicionPago = sqlsrv_fetch_array($SQL_CondicionPago)) {?>
-													<option value="<?php echo $row_CondicionPago['IdCondicionPago']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['GroupNum'])) && (strcmp($row_CondicionPago['IdCondicionPago'], $row['GroupNum']) == 0)) {echo "selected=\"selected\"";} elseif ((isset($row_ValorDefault['IdCondiPago'])) && (strcmp($row_CondicionPago['IdCondicionPago'], $row_ValorDefault['IdCondiPago']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_CondicionPago['NombreCondicion']; ?></option>
-												<?php }?>
+												<?php while ($row_CondicionPago = sqlsrv_fetch_array($SQL_CondicionPago)) { ?>
+													<option value="<?php echo $row_CondicionPago['IdCondicionPago']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['GroupNum'])) && (strcmp($row_CondicionPago['IdCondicionPago'], $row['GroupNum']) == 0)) {
+														   echo "selected=\"selected\"";
+													   } elseif ((isset($row_ValorDefault['IdCondiPago'])) && (strcmp($row_CondicionPago['IdCondicionPago'], $row_ValorDefault['IdCondiPago']) == 0)) {
+														   echo "selected=\"selected\"";
+													   } ?>><?php echo $row_CondicionPago['NombreCondicion']; ?></option>
+												<?php } ?>
 											</select>
 										</div>
 										<label class="col-lg-1 control-label">Medio de pago <span class="text-danger">*</span></label>
 										<div class="col-lg-3">
 											<select name="MedioPago" class="form-control select2" id="MedioPago" required>
-											<?php while ($row_MedioPago = sqlsrv_fetch_array($SQL_MedioPago)) {?>
-													<option value="<?php echo $row_MedioPago['IdMedioPago']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['IdMedioPago'])) && (strcmp($row_MedioPago['IdMedioPago'], $row['IdMedioPago']) == 0)) {echo "selected=\"selected\"";} elseif ((isset($row_ValorDefault['IdMedioPago'])) && (strcmp($row_MedioPago['IdMedioPago'], $row_ValorDefault['IdMedioPago']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_MedioPago['DeMedioPago']; ?></option>
-											<?php }?>
+											<?php while ($row_MedioPago = sqlsrv_fetch_array($SQL_MedioPago)) { ?>
+													<option value="<?php echo $row_MedioPago['IdMedioPago']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['IdMedioPago'])) && (strcmp($row_MedioPago['IdMedioPago'], $row['IdMedioPago']) == 0)) {
+														   echo "selected=\"selected\"";
+													   } elseif ((isset($row_ValorDefault['IdMedioPago'])) && (strcmp($row_MedioPago['IdMedioPago'], $row_ValorDefault['IdMedioPago']) == 0)) {
+														   echo "selected=\"selected\"";
+													   } ?>><?php echo $row_MedioPago['DeMedioPago']; ?></option>
+											<?php } ?>
 											</select>
 										</div>
 										<label class="col-lg-1 control-label">Tipo nacionalidad <span class="text-danger">*</span></label>
 										<div class="col-lg-3">
 											<select name="TipoNacionalidad" class="form-control" id="TipoNacionalidad" required>
-											<?php while ($row_TipoNacionalidad = sqlsrv_fetch_array($SQL_TipoNacionalidad)) {?>
-													<option value="<?php echo $row_TipoNacionalidad['IdTipoNacionalidad']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['IdTipoNacionalidad'])) && (strcmp($row_TipoNacionalidad['IdTipoNacionalidad'], $row['IdTipoNacionalidad']) == 0)) {echo "selected=\"selected\"";} elseif ((isset($row_ValorDefault['IdTipoNacionalidad'])) && (strcmp($row_TipoNacionalidad['IdTipoNacionalidad'], $row_ValorDefault['IdTipoNacionalidad']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_TipoNacionalidad['DeTipoNacionalidad']; ?></option>
-											<?php }?>
+											<?php while ($row_TipoNacionalidad = sqlsrv_fetch_array($SQL_TipoNacionalidad)) { ?>
+													<option value="<?php echo $row_TipoNacionalidad['IdTipoNacionalidad']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['IdTipoNacionalidad'])) && (strcmp($row_TipoNacionalidad['IdTipoNacionalidad'], $row['IdTipoNacionalidad']) == 0)) {
+														   echo "selected=\"selected\"";
+													   } elseif ((isset($row_ValorDefault['IdTipoNacionalidad'])) && (strcmp($row_TipoNacionalidad['IdTipoNacionalidad'], $row_ValorDefault['IdTipoNacionalidad']) == 0)) {
+														   echo "selected=\"selected\"";
+													   } ?>><?php echo $row_TipoNacionalidad['DeTipoNacionalidad']; ?></option>
+											<?php } ?>
 											</select>
 										</div>
 									</div>
@@ -1231,26 +1322,38 @@ if ($sw_ext == 0) {?>
 										<label class="col-lg-1 control-label">Tipo extranjero <span class="text-danger">*</span></label>
 										<div class="col-lg-3">
 											<select name="TipoExtranjero" class="form-control" id="TipoExtranjero" required>
-											<?php while ($row_TipoExtranjero = sqlsrv_fetch_array($SQL_TipoExtranjero)) {?>
-													<option value="<?php echo $row_TipoExtranjero['IdTipoExtranjero']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['IdTipoExtranjero'])) && (strcmp($row_TipoExtranjero['IdTipoExtranjero'], $row['IdTipoExtranjero']) == 0)) {echo "selected=\"selected\"";} elseif ((isset($row_ValorDefault['IdTipoExtranjero'])) && (strcmp($row_TipoExtranjero['IdTipoExtranjero'], $row_ValorDefault['IdTipoExtranjero']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_TipoExtranjero['DeTipoExtranjero']; ?></option>
-											<?php }?>
+											<?php while ($row_TipoExtranjero = sqlsrv_fetch_array($SQL_TipoExtranjero)) { ?>
+													<option value="<?php echo $row_TipoExtranjero['IdTipoExtranjero']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['IdTipoExtranjero'])) && (strcmp($row_TipoExtranjero['IdTipoExtranjero'], $row['IdTipoExtranjero']) == 0)) {
+														   echo "selected=\"selected\"";
+													   } elseif ((isset($row_ValorDefault['IdTipoExtranjero'])) && (strcmp($row_TipoExtranjero['IdTipoExtranjero'], $row_ValorDefault['IdTipoExtranjero']) == 0)) {
+														   echo "selected=\"selected\"";
+													   } ?>><?php echo $row_TipoExtranjero['DeTipoExtranjero']; ?></option>
+											<?php } ?>
 											</select>
 										</div>
 										<label class="col-lg-1 control-label">Industria <span class="text-danger">*</span></label>
 										<div class="col-lg-3">
 											<select name="Industria" class="form-control" id="Industria" required>
 												<option value="">Seleccione...</option>
-											<?php while ($row_Industria = sqlsrv_fetch_array($SQL_Industria)) {?>
-													<option value="<?php echo $row_Industria['IdIndustria']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['IdIndustria'])) && (strcmp($row_Industria['IdIndustria'], $row['IdIndustria']) == 0)) {echo "selected=\"selected\"";} elseif ((isset($row_ValorDefault['IdIndustria'])) && (strcmp($row_Industria['IdIndustria'], $row_ValorDefault['IdIndustria']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Industria['DeIndustria']; ?></option>
-											<?php }?>
+											<?php while ($row_Industria = sqlsrv_fetch_array($SQL_Industria)) { ?>
+													<option value="<?php echo $row_Industria['IdIndustria']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['IdIndustria'])) && (strcmp($row_Industria['IdIndustria'], $row['IdIndustria']) == 0)) {
+														   echo "selected=\"selected\"";
+													   } elseif ((isset($row_ValorDefault['IdIndustria'])) && (strcmp($row_Industria['IdIndustria'], $row_ValorDefault['IdIndustria']) == 0)) {
+														   echo "selected=\"selected\"";
+													   } ?>><?php echo $row_Industria['DeIndustria']; ?></option>
+											<?php } ?>
 											</select>
 										</div>
 										<label class="col-lg-1 control-label">Territorio <span class="text-danger">*</span></label>
 										<div class="col-lg-3">
 											<select name="Territorio" class="form-control select2" id="Territorio" required>
-											<?php while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorio)) {?>
-													<option value="<?php echo $row_Territorio['IdTerritorio']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['IdTerritorio'])) && (strcmp($row_Territorio['IdTerritorio'], $row['IdTerritorio']) == 0)) {echo "selected=\"selected\"";} elseif ((isset($row_ValorDefault['IdTerritorio'])) && (strcmp($row_Territorio['IdTerritorio'], $row_ValorDefault['IdTerritorio']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Territorio['DeTerritorio']; ?></option>
-											<?php }?>
+											<?php while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorio)) { ?>
+													<option value="<?php echo $row_Territorio['IdTerritorio']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['IdTerritorio'])) && (strcmp($row_Territorio['IdTerritorio'], $row['IdTerritorio']) == 0)) {
+														   echo "selected=\"selected\"";
+													   } elseif ((isset($row_ValorDefault['IdTerritorio'])) && (strcmp($row_Territorio['IdTerritorio'], $row_ValorDefault['IdTerritorio']) == 0)) {
+														   echo "selected=\"selected\"";
+													   } ?>><?php echo $row_Territorio['DeTerritorio']; ?></option>
+											<?php } ?>
 											</select>
 										</div>
 									</div>
@@ -1258,12 +1361,18 @@ if ($sw_ext == 0) {?>
 										<label class="col-lg-1 control-label">Lista de precios <!--span class="text-danger">*</span--></label>
 										<div class="col-lg-3">
 											<select name="IdListaPrecio" class="form-control" id="IdListaPrecio">
-											  <?php while ($row_ListaPrecio = sqlsrv_fetch_array($SQL_ListaPrecios)) {?>
-												<option value="<?php echo $row_ListaPrecio['IdListaPrecio']; ?>"
-												<?php if (isset($row['IdListaPrecio']) && (strcmp($row_ListaPrecio['IdListaPrecio'], $row['IdListaPrecio']) == 0)) {echo "selected=\"selected\"";} elseif ($edit == 0 && (ObtenerValorDefecto(2, 'IdListaPrecio') !== null) && (strcmp($row_ListaPrecio['IdListaPrecio'], ObtenerValorDefecto(2, 'IdListaPrecio')) == 0)) {echo "selected=\"selected\"";} elseif (!PermitirFuncion(511)) {echo "disabled='disabled'";}?>>
-													<?php echo $row_ListaPrecio['DeListaPrecio']; ?>
-												</option>
-											  <?php }?>
+											  <?php while ($row_ListaPrecio = sqlsrv_fetch_array($SQL_ListaPrecios)) { ?>
+  												<option value="<?php echo $row_ListaPrecio['IdListaPrecio']; ?>"
+												  <?php if (isset($row['IdListaPrecio']) && (strcmp($row_ListaPrecio['IdListaPrecio'], $row['IdListaPrecio']) == 0)) {
+													  echo "selected=\"selected\"";
+												  } elseif ($edit == 0 && (ObtenerValorDefecto(2, 'IdListaPrecio') !== null) && (strcmp($row_ListaPrecio['IdListaPrecio'], ObtenerValorDefecto(2, 'IdListaPrecio')) == 0)) {
+													  echo "selected=\"selected\"";
+												  } elseif (!PermitirFuncion(511)) {
+													  echo "disabled='disabled'";
+												  } ?>>
+													  <?php echo $row_ListaPrecio['DeListaPrecio']; ?>
+  												</option>
+											  <?php } ?>
 											</select>
 										</div>
 									</div>
@@ -1276,62 +1385,84 @@ if ($sw_ext == 0) {?>
 										<div class="col-lg-3">
 											<select name="RegimenTributario" class="form-control" id="RegimenTributario" required>
 												<option value="">Seleccione...</option>
-												<?php while ($row_RegimenT = sqlsrv_fetch_array($SQL_RegimenT)) {?>
-													<option value="<?php echo $row_RegimenT['ID_RegimenTributario']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['U_HBT_RegTrib'])) && (strcmp($row_RegimenT['ID_RegimenTributario'], $row['U_HBT_RegTrib']) == 0)) {echo "selected=\"selected\"";} elseif ((isset($row_ValorDefault['IdRegTributario'])) && (strcmp($row_RegimenT['ID_RegimenTributario'], $row_ValorDefault['IdRegTributario']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_RegimenT['RegimenTributario']; ?></option>
-												<?php }?>
+												<?php while ($row_RegimenT = sqlsrv_fetch_array($SQL_RegimenT)) { ?>
+													<option value="<?php echo $row_RegimenT['ID_RegimenTributario']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['U_HBT_RegTrib'])) && (strcmp($row_RegimenT['ID_RegimenTributario'], $row['U_HBT_RegTrib']) == 0)) {
+														   echo "selected=\"selected\"";
+													   } elseif ((isset($row_ValorDefault['IdRegTributario'])) && (strcmp($row_RegimenT['ID_RegimenTributario'], $row_ValorDefault['IdRegTributario']) == 0)) {
+														   echo "selected=\"selected\"";
+													   } ?>><?php echo $row_RegimenT['RegimenTributario']; ?></option>
+												<?php } ?>
 											</select>
 										</div>
 										<label class="col-lg-1 control-label">Régimen fiscal <span class="text-danger">*</span></label>
 										<div class="col-lg-3">
 											<select name="RegimenFiscal" class="form-control" id="RegimenFiscal" required>
 												<option value="">Seleccione...</option>
-												<?php while ($row_RegimenFiscal = sqlsrv_fetch_array($SQL_RegimenFiscal)) {?>
-													<option value="<?php echo $row_RegimenFiscal['IdRegimenFiscal']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['IdRegimenFiscal'])) && (strcmp($row_RegimenFiscal['IdRegimenFiscal'], $row['IdRegimenFiscal']) == 0)) {echo "selected=\"selected\"";} elseif ((isset($row_ValorDefault['IdRegimenFiscal'])) && (strcmp($row_RegimenFiscal['IdRegimenFiscal'], $row_ValorDefault['IdRegimenFiscal']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_RegimenFiscal['DeRegimenFiscal']; ?></option>
-												<?php }?>
+												<?php while ($row_RegimenFiscal = sqlsrv_fetch_array($SQL_RegimenFiscal)) { ?>
+													<option value="<?php echo $row_RegimenFiscal['IdRegimenFiscal']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['IdRegimenFiscal'])) && (strcmp($row_RegimenFiscal['IdRegimenFiscal'], $row['IdRegimenFiscal']) == 0)) {
+														   echo "selected=\"selected\"";
+													   } elseif ((isset($row_ValorDefault['IdRegimenFiscal'])) && (strcmp($row_RegimenFiscal['IdRegimenFiscal'], $row_ValorDefault['IdRegimenFiscal']) == 0)) {
+														   echo "selected=\"selected\"";
+													   } ?>><?php echo $row_RegimenFiscal['DeRegimenFiscal']; ?></option>
+												<?php } ?>
 											</select>
 										</div>
 										<label class="col-lg-1 control-label">Responsabilidad fiscal <span class="text-danger">*</span></label>
 										<div class="col-lg-3">
 											<select name="ResponsabilidadFiscal" class="form-control select2" id="ResponsabilidadFiscal" required>
 												<option value="">Seleccione...</option>
-												<?php while ($row_ResponsabilidadFiscal = sqlsrv_fetch_array($SQL_ResponsabilidadFiscal)) {?>
-													<option value="<?php echo $row_ResponsabilidadFiscal['IdResponsabilidadFiscal']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['IdResponsabilidadFiscal'])) && (strcmp($row_ResponsabilidadFiscal['IdResponsabilidadFiscal'], $row['IdResponsabilidadFiscal']) == 0)) {echo "selected=\"selected\"";} elseif ((isset($row_ValorDefault['IdResponsabilidadFiscal'])) && (strcmp($row_ResponsabilidadFiscal['IdResponsabilidadFiscal'], $row_ValorDefault['IdResponsabilidadFiscal']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_ResponsabilidadFiscal['DeResponsabilidadFiscal']; ?></option>
-												<?php }?>
+												<?php while ($row_ResponsabilidadFiscal = sqlsrv_fetch_array($SQL_ResponsabilidadFiscal)) { ?>
+													<option value="<?php echo $row_ResponsabilidadFiscal['IdResponsabilidadFiscal']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['IdResponsabilidadFiscal'])) && (strcmp($row_ResponsabilidadFiscal['IdResponsabilidadFiscal'], $row['IdResponsabilidadFiscal']) == 0)) {
+														   echo "selected=\"selected\"";
+													   } elseif ((isset($row_ValorDefault['IdResponsabilidadFiscal'])) && (strcmp($row_ResponsabilidadFiscal['IdResponsabilidadFiscal'], $row_ValorDefault['IdResponsabilidadFiscal']) == 0)) {
+														   echo "selected=\"selected\"";
+													   } ?>><?php echo $row_ResponsabilidadFiscal['DeResponsabilidadFiscal']; ?></option>
+												<?php } ?>
 											</select>
 										</div>
 									</div>
-								    <div class="form-group">
+									<div class="form-group">
 										<label class="col-lg-1 control-label">Municipio MM <span class="text-danger">*</span></label>
 										<div class="col-lg-3">
-											<input name="ID_MunicipioMM" type="hidden" id="ID_MunicipioMM" value="<?php if ($edit == 1 || $sw_error == 1) {echo $row_MunMM['ID_Municipio'];} elseif (isset($row_Municipio['ID_Municipio'])) {echo $row_Municipio['ID_Municipio'];}?>">
-											<input name="MunicipioMM" type="text" class="form-control" id="MunicipioMM" placeholder="Digite para buscar..." value="<?php if ($edit == 1 || $sw_error == 1) {echo $row_MunMM['DE_Municipio'];} elseif (isset($row_Municipio['DE_Municipio'])) {echo $row_Municipio['DE_Municipio'];}?>">
+											<input name="ID_MunicipioMM" type="hidden" id="ID_MunicipioMM" value="<?php if ($edit == 1 || $sw_error == 1) {
+												echo $row_MunMM['ID_Municipio'];
+											} elseif (isset($row_Municipio['ID_Municipio'])) {
+												echo $row_Municipio['ID_Municipio'];
+											} ?>">
+											<input name="MunicipioMM" type="text" class="form-control" id="MunicipioMM" placeholder="Digite para buscar..." value="<?php if ($edit == 1 || $sw_error == 1) {
+												echo $row_MunMM['DE_Municipio'];
+											} elseif (isset($row_Municipio['DE_Municipio'])) {
+												echo $row_Municipio['DE_Municipio'];
+											} ?>">
 										</div>
 									</div>
-								   <?php if ($edit == 1) {?>
-									<div class="form-group">
-										<label class="col-xs-12"><h3 class="bg-success p-xs b-r-sm"><i class="fa fa-credit-card"></i> Datos de finanzas</h3></label>
-									</div>
-									<div class="form-group">
-										<label class="col-lg-1 control-label">Saldo de cuenta</label>
-										<div class="col-lg-3">
-											<input name="Balance" type="text" class="form-control" id="Balance" value="<?php echo number_format($row['Balance'] ?? 0, 2); ?>" readonly="readonly">
-										</div>
-										<label class="col-lg-1 control-label">Limite de crédito</label>
-										<div class="col-lg-3">
-											<input name="LimiteCredito" type="text" class="form-control" id="LimiteCredito" value="<?php echo number_format($row['CreditLine'] ?? 0, 2); ?>" readonly="readonly">
-										</div>
-										<label class="col-lg-1 control-label">Crédito consumido</label>
-										<div class="col-lg-3">
-											<input name="CreditoConsumido" type="text" class="form-control" id="CreditoConsumido" value="<?php echo number_format($row['CreditoConsumido'] ?? 0, 2); ?>" readonly="readonly">
-										</div>
-									</div>
-								   <?php }?>
+								   <?php if ($edit == 1) { ?>
+   									<div class="form-group">
+   										<label class="col-xs-12"><h3 class="bg-success p-xs b-r-sm"><i class="fa fa-credit-card"></i> Datos de finanzas</h3></label>
+   									</div>
+   									<div class="form-group">
+   										<label class="col-lg-1 control-label">Saldo de cuenta</label>
+   										<div class="col-lg-3">
+   											<input name="Balance" type="text" class="form-control" id="Balance" value="<?php echo number_format($row['Balance'] ?? 0, 2); ?>" readonly="readonly">
+   										</div>
+   										<label class="col-lg-1 control-label">Limite de crédito</label>
+   										<div class="col-lg-3">
+   											<input name="LimiteCredito" type="text" class="form-control" id="LimiteCredito" value="<?php echo number_format($row['CreditLine'] ?? 0, 2); ?>" readonly="readonly">
+   										</div>
+   										<label class="col-lg-1 control-label">Crédito consumido</label>
+   										<div class="col-lg-3">
+   											<input name="CreditoConsumido" type="text" class="form-control" id="CreditoConsumido" value="<?php echo number_format($row['CreditoConsumido'] ?? 0, 2); ?>" readonly="readonly">
+   										</div>
+   									</div>
+								   <?php } ?>
 							   </div>
 							   <div id="tabSN-2" class="tab-pane">
 								   <br>
 									<div class="panel-body">
 									   <div class="col-lg-6">
-										   <iframe id="frameCtc" name="frameCtc" style="border: 0;" width="100%" height="500" src="sn_contactos_lista.php?id=<?php if ($edit == 1) {echo base64_encode($row['CodigoCliente']);}?>&edit=<?php echo base64_encode($edit); ?>"></iframe>
+										   <iframe id="frameCtc" name="frameCtc" style="border: 0;" width="100%" height="500" src="sn_contactos_lista.php?id=<?php if ($edit == 1) {
+											   echo base64_encode($row['CodigoCliente']);
+										   } ?>&edit=<?php echo base64_encode($edit); ?>"></iframe>
 									   </div>
 									   <div class="col-lg-6">
 										   <div id="frameCtcDetalle"></div>
@@ -1342,228 +1473,250 @@ if ($sw_ext == 0) {?>
 									<br>
 									<div class="panel-body">
 										<div class="col-lg-6">
-											<iframe id="frameDir" name="frameDir" style="border: 0;" width="100%" height="700" src="sn_direcciones_lista.php?id=<?php if ($edit == 1) {echo base64_encode($row['CodigoCliente']);}?>&edit=<?php echo base64_encode($edit); ?>"></iframe>
+											<iframe id="frameDir" name="frameDir" style="border: 0;" width="100%" height="700" src="sn_direcciones_lista.php?id=<?php if ($edit == 1) {
+												echo base64_encode($row['CodigoCliente']);
+											} ?>&edit=<?php echo base64_encode($edit); ?>"></iframe>
 										</div>
 										<div class="col-lg-6">
 											<div id="frameDirDetalle"></div>
 										</div>
 									</div>
 							   </div>
-							   <?php if ($edit == 1) {?>
-							   <div id="tabSN-4" class="tab-pane">
-									<br>
-<div class="tabs-container">
-	<ul class="nav nav-tabs">
-		<li class="active"><a data-toggle="tab" href="#tab-1"><i class="fa fa-laptop"></i> Listas de materiales</a></li>
-		<li><a data-toggle="tab" href="#tab-7" onClick="ConsultarTab('7');"><i class="fa fa-car"></i> Tarjetas de equipo</a></li>
-		<li><a data-toggle="tab" href="#tab-2" onClick="ConsultarTab('2');"><i class="fa fa-phone"></i> Llamadas de servicios</a></li>
-		<li><a data-toggle="tab" href="#tab-3" onClick="ConsultarTab('3');"><i class="fa fa-calendar"></i> Actividades</a></li>
-		<li><a data-toggle="tab" href="#tab-4"><i class="fa fa-file-text"></i> Facturas pendientes</a></li>
-		<li><a data-toggle="tab" href="#tab-5" onClick="ConsultarTab('5');"><i class="fa fa-money"></i> Pagos realizados</a></li>
-		<li><a data-toggle="tab" href="#tab-8" onClick="ConsultarTab('8');"><i class="fa fa-money"></i> Anticipos realizados</a></li>
-		<li><a data-toggle="tab" href="#tab-6"><i class="fa fa-suitcase"></i> Historico de cartera</a></li>
-	</ul>
-	<div class="tab-content">
-		<div id="tab-1" class="tab-pane active">
-			<div class="panel-body">
-				<br>
-				<div class="table-responsive">
-				<table class="table table-striped table-bordered table-hover dataTables-example" >
-					<thead>
-					<tr>
-						<th>Código</th>
-						<th>Nombre lista</th>
-						<th>Sucursal</th>
-						<th>Servicios</th>
-						<th>Áreas</th>
-						<th>Estado</th>
-						<th>Acciones</th>
-					</tr>
-					</thead>
-					<tbody>
-					<?php while ($row_IDServicio = sql_fetch_array($SQL_IDServicio)) {
-    ?>
-						 <tr class="gradeX tooltip-demo">
-							<td><?php echo $row_IDServicio['ItemCode']; ?></td>
-							<td><?php echo $row_IDServicio['ItemName']; ?></td>
-							<td><?php echo $row_IDServicio['NombreSucursal']; ?></td>
-							<td><?php echo $row_IDServicio['Servicios']; ?></td>
-							<td><?php echo $row_IDServicio['Areas']; ?></td>
-							<td><span <?php if ($row_IDServicio['Estado'] == 'Y') {echo "class='label label-info'";} else {echo "class='label label-danger'";}?>><?php echo $row_IDServicio['NombreEstado']; ?></span></td>
-							<td><a href="articulos.php?id=<?php echo base64_encode($row_IDServicio['ItemCode']); ?>&tl=1&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('socios_negocios.php'); ?>" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i> Abrir</a></td>
+							   <?php if ($edit == 1) { ?>
+								   <div id="tabSN-4" class="tab-pane">
+										<br>
+	<div class="tabs-container">
+		<ul class="nav nav-tabs">
+			<li class="active"><a data-toggle="tab" href="#tab-1"><i class="fa fa-laptop"></i> Listas de materiales</a></li>
+			<li><a data-toggle="tab" href="#tab-7" onClick="ConsultarTab('7');"><i class="fa fa-car"></i> Tarjetas de equipo</a></li>
+			<li><a data-toggle="tab" href="#tab-2" onClick="ConsultarTab('2');"><i class="fa fa-phone"></i> Llamadas de servicios</a></li>
+			<li><a data-toggle="tab" href="#tab-3" onClick="ConsultarTab('3');"><i class="fa fa-calendar"></i> Actividades</a></li>
+			<li><a data-toggle="tab" href="#tab-4"><i class="fa fa-file-text"></i> Facturas pendientes</a></li>
+			<li><a data-toggle="tab" href="#tab-5" onClick="ConsultarTab('5');"><i class="fa fa-money"></i> Pagos realizados</a></li>
+			<li><a data-toggle="tab" href="#tab-8" onClick="ConsultarTab('8');"><i class="fa fa-money"></i> Anticipos realizados</a></li>
+			<li><a data-toggle="tab" href="#tab-6"><i class="fa fa-suitcase"></i> Historico de cartera</a></li>
+		</ul>
+		<div class="tab-content">
+			<div id="tab-1" class="tab-pane active">
+				<div class="panel-body">
+					<br>
+					<div class="table-responsive">
+					<table class="table table-striped table-bordered table-hover dataTables-example" >
+						<thead>
+						<tr>
+							<th>Código</th>
+							<th>Nombre lista</th>
+							<th>Sucursal</th>
+							<th>Servicios</th>
+							<th>Áreas</th>
+							<th>Estado</th>
+							<th>Acciones</th>
 						</tr>
-					<?php }?>
-					</tbody>
-				</table>
+						</thead>
+						<tbody>
+						<?php while ($row_IDServicio = sql_fetch_array($SQL_IDServicio)) {
+							?>
+   						 <tr class="gradeX tooltip-demo">
+   							<td><?php echo $row_IDServicio['ItemCode']; ?></td>
+   							<td><?php echo $row_IDServicio['ItemName']; ?></td>
+   							<td><?php echo $row_IDServicio['NombreSucursal']; ?></td>
+   							<td><?php echo $row_IDServicio['Servicios']; ?></td>
+   							<td><?php echo $row_IDServicio['Areas']; ?></td>
+   							<td><span <?php if ($row_IDServicio['Estado'] == 'Y') {
+								   echo "class='label label-info'";
+							   } else {
+								   echo "class='label label-danger'";
+							   } ?>><?php echo $row_IDServicio['NombreEstado']; ?></span></td>
+   							<td><a href="articulos.php?id=<?php echo base64_encode($row_IDServicio['ItemCode']); ?>&tl=1&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('socios_negocios.php'); ?>" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i> Abrir</a></td>
+   						</tr>
+					<?php } ?>
+						</tbody>
+					</table>
+					</div>
 				</div>
 			</div>
-		</div>
-		<div id="tab-8" class="tab-pane">
-			<div id="dv_anticipos" class="panel-body">
-				<!-- neduga, 22/04/2022 -->
+			<div id="tab-8" class="tab-pane">
+				<div id="dv_anticipos" class="panel-body">
+					<!-- neduga, 22/04/2022 -->
+				</div>
 			</div>
-		</div>
-		<div id="tab-7" class="tab-pane">
-			<div id="dv_tarjetas" class="panel-body">
-				<!-- Stiven Muñoz Murillo, 26/01/2022 -->
+			<div id="tab-7" class="tab-pane">
+				<div id="dv_tarjetas" class="panel-body">
+					<!-- Stiven Muñoz Murillo, 26/01/2022 -->
+				</div>
 			</div>
-		</div>
-		<div id="tab-2" class="tab-pane">
-			<div id="dv_llamadasrv" class="panel-body">
+			<div id="tab-2" class="tab-pane">
+				<div id="dv_llamadasrv" class="panel-body">
 
+				</div>
 			</div>
-		</div>
-		<div id="tab-3" class="tab-pane">
-			<div id="dv_actividades" class="panel-body">
+			<div id="tab-3" class="tab-pane">
+				<div id="dv_actividades" class="panel-body">
 
+				</div>
 			</div>
-		</div>
-		<div id="tab-4" class="tab-pane">
-			<div class="panel-body">
-				<div class="form-group">
-					<div class="col-lg-12">
-						<div class="table-responsive">
-						<table class="table table-striped table-bordered">
-							<thead>
-							<tr>
-								<th>Número</th>
-								<th>Fecha contabilización</th>
-								<th>Fecha vencimiento</th>
-								<th>Valor factura</th>
-								<th>Abono</th>
-								<th>Dias vencidos</th>
-								<th>Saldo total</th>
-								<th>Plazos</th>
-								<th>Acciones</th>
-								<th>Seleccionar</th>
-							</tr>
-							</thead>
-							<tbody>
-							<?php while ($row_FactPend = sqlsrv_fetch_array($SQL_FactPend)) {?>
-								 <tr>
-									<td><?php echo $row_FactPend['NoDocumento']; ?></td>
-									<td><?php if ($row_FactPend['FechaContabilizacion']->format('Y-m-d')) {echo $row_FactPend['FechaContabilizacion']->format('Y-m-d');} else {echo $row_FactPend['FechaContabilizacion'];}?></td>
-									<td><?php if ($row_FactPend['FechaVencimiento']->format('Y-m-d')) {echo $row_FactPend['FechaVencimiento']->format('Y-m-d');} else {echo $row_FactPend['FechaVencimiento'];}?></td>
-									<td><?php echo "$" . number_format($row_FactPend['TotalDocumento'], 2); ?></td>
-									<td><?php echo "$" . number_format($row_FactPend['ValorPagoDocumento'], 2); ?></td>
-									<td><?php echo number_format($row_FactPend['DiasVencidos'], 0); ?></td>
-									<td><?php echo "$" . number_format($row_FactPend['SaldoDocumento'], 2); ?></td>
-
-									<td> <!-- SMM, 11/03/2022 -->
-										<a onClick="MostrarPlazos('<?php echo $row_FactPend['NoDocumento']; ?>');"><?php echo $row_FactPend['CantidadPlazo']; ?></a>
-									</td>
-
-									<td>
-										<a href="factura_venta.php?id=<?php echo base64_encode($row_FactPend['NoInterno']); ?>&id_portal=<?php echo base64_encode($row_FactPend['IdDocPortal']); ?>&tl=1" class="btn btn-success btn-xs" target="_blank"><i class="fa fa-folder-open-o"></i> Abrir</a>
-										<a href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row_FactPend['NoInterno']); ?>&ObType=<?php echo base64_encode('13'); ?>&IdFrm=<?php echo base64_encode($row_FactPend['IdSeries']); ?>" target="_blank" class="btn btn-warning btn-xs"><i class="fa fa-download"></i> Descargar</a>
-										<?php if ($row_FactPend['URLVisorPublico'] != "") {?><a href="<?php echo $row_FactPend['URLVisorPublico']; ?>" target="_blank" class="btn btn-primary btn-xs" title="Ver factura eléctronica"><i class="fa fa-external-link"></i> Fact. Elect</a><?php }?>
-									</td>
-									<td><div class="checkbox checkbox-success"><input type="checkbox" id="singleCheckbox<?php echo $row_FactPend['NoDocumento']; ?>" value="" onChange="SeleccionarFactura('<?php echo base64_encode($row_FactPend['NoInterno']); ?>','<?php echo base64_encode('13'); ?>','<?php echo base64_encode($row_FactPend['Series']); ?>');" aria-label="Single checkbox One"><label></label></div></td>
+			<div id="tab-4" class="tab-pane">
+				<div class="panel-body">
+					<div class="form-group">
+						<div class="col-lg-12">
+							<div class="table-responsive">
+							<table class="table table-striped table-bordered">
+								<thead>
+								<tr>
+									<th>Número</th>
+									<th>Fecha contabilización</th>
+									<th>Fecha vencimiento</th>
+									<th>Valor factura</th>
+									<th>Abono</th>
+									<th>Dias vencidos</th>
+									<th>Saldo total</th>
+									<th>Plazos</th>
+									<th>Acciones</th>
+									<th>Seleccionar</th>
 								</tr>
-							<?php }?>
-								<tr id="dwnAllFact" style="display:none">
-									<td colspan="9" class="text-right">
-										<input type="hidden" id="FactSel" name="FactSel" value="" />
-										<input type="hidden" id="FactFrm" name="FactFrm" value="" />
-										<a id="LinkAllFact" href="#" target="_blank" class="btn btn-link btn-xs"><i class="fa fa-download"></i> Descargar facturas seleccionadas</a>
-									</td>
+								</thead>
+								<tbody>
+								<?php while ($row_FactPend = sqlsrv_fetch_array($SQL_FactPend)) { ?>
+   								 <tr>
+   									<td><?php echo $row_FactPend['NoDocumento']; ?></td>
+   									<td><?php if ($row_FactPend['FechaContabilizacion']->format('Y-m-d')) {
+										   echo $row_FactPend['FechaContabilizacion']->format('Y-m-d');
+									   } else {
+										   echo $row_FactPend['FechaContabilizacion'];
+									   } ?></td>
+   									<td><?php if ($row_FactPend['FechaVencimiento']->format('Y-m-d')) {
+										   echo $row_FactPend['FechaVencimiento']->format('Y-m-d');
+									   } else {
+										   echo $row_FactPend['FechaVencimiento'];
+									   } ?></td>
+   									<td><?php echo "$" . number_format($row_FactPend['TotalDocumento'], 2); ?></td>
+   									<td><?php echo "$" . number_format($row_FactPend['ValorPagoDocumento'], 2); ?></td>
+   									<td><?php echo number_format($row_FactPend['DiasVencidos'], 0); ?></td>
+   									<td><?php echo "$" . number_format($row_FactPend['SaldoDocumento'], 2); ?></td>
+
+   									<td> <!-- SMM, 11/03/2022 -->
+   										<a onClick="MostrarPlazos('<?php echo $row_FactPend['NoDocumento']; ?>');"><?php echo $row_FactPend['CantidadPlazo']; ?></a>
+   									</td>
+
+   									<td>
+   										<a href="factura_venta.php?id=<?php echo base64_encode($row_FactPend['NoInterno']); ?>&id_portal=<?php echo base64_encode($row_FactPend['IdDocPortal']); ?>&tl=1" class="btn btn-success btn-xs" target="_blank"><i class="fa fa-folder-open-o"></i> Abrir</a>
+   										<a href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row_FactPend['NoInterno']); ?>&ObType=<?php echo base64_encode('13'); ?>&IdFrm=<?php echo base64_encode($row_FactPend['IdSeries']); ?>" target="_blank" class="btn btn-warning btn-xs"><i class="fa fa-download"></i> Descargar</a>
+										   <?php if ($row_FactPend['URLVisorPublico'] != "") { ?><a href="<?php echo $row_FactPend['URLVisorPublico']; ?>" target="_blank" class="btn btn-primary btn-xs" title="Ver factura eléctronica"><i class="fa fa-external-link"></i> Fact. Elect</a><?php } ?>
+   									</td>
+   									<td><div class="checkbox checkbox-success"><input type="checkbox" id="singleCheckbox<?php echo $row_FactPend['NoDocumento']; ?>" value="" onChange="SeleccionarFactura('<?php echo base64_encode($row_FactPend['NoInterno']); ?>','<?php echo base64_encode('13'); ?>','<?php echo base64_encode($row_FactPend['Series']); ?>');" aria-label="Single checkbox One"><label></label></div></td>
+   								</tr>
+							<?php } ?>
+									<tr id="dwnAllFact" style="display:none">
+										<td colspan="9" class="text-right">
+											<input type="hidden" id="FactSel" name="FactSel" value="" />
+											<input type="hidden" id="FactFrm" name="FactFrm" value="" />
+											<a id="LinkAllFact" href="#" target="_blank" class="btn btn-link btn-xs"><i class="fa fa-download"></i> Descargar facturas seleccionadas</a>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id="tab-5" class="tab-pane">
+				<div id="dv_pagosreal" class="panel-body">
+
+				</div>
+			</div>
+			<div id="tab-6" class="tab-pane">
+				<div class="panel-body">
+					<div class="form-group">
+						<div class="col-lg-12">
+							<div class="table-responsive">
+							<table class="table table-bordered" >
+								<thead>
+								<tr>
+									<th>Tipo gestión</th>
+									<th>Destino</th>
+									<th>Evento</th>
+									<th>Resultado</th>
+									<th>Comentario</th>
+									<th>Causa no pago</th>
+									<th>Acuerdo de pago</th>
+									<th>Fecha registro</th>
+									<th>Usuario</th>
 								</tr>
-							</tbody>
-						</table>
+								</thead>
+								<tbody>
+								<?php while ($row_HistGestion = sqlsrv_fetch_array($SQL_HistGestion)) { ?>
+   								 <tr class="gradeX">
+   									<td><?php echo $row_HistGestion['TipoGestion']; ?></td>
+   									<td><?php echo $row_HistGestion['Destino']; ?></td>
+   									<td><?php echo $row_HistGestion['NombreEvento']; ?></td>
+   									<td><?php echo $row_HistGestion['ResultadoGestion']; ?></td>
+   									<td><?php echo $row_HistGestion['Comentarios']; ?></td>
+   									<td><?php echo $row_HistGestion['CausaNoPago']; ?></td>
+   									<td><?php if ($row_HistGestion['AcuerdoPago'] == 1) {
+										   echo "SI";
+									   } else {
+										   echo "NO";
+									   } ?></td>
+   									<td><?php echo $row_HistGestion['FechaRegistro']->format('Y-m-d H:i'); ?></td>
+   									<td><?php echo $row_HistGestion['Usuario']; ?></td>
+   								</tr>
+							<?php } ?>
+								</tbody>
+							</table>
+					  </div>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-		<div id="tab-5" class="tab-pane">
-			<div id="dv_pagosreal" class="panel-body">
-
-			</div>
-		</div>
-		<div id="tab-6" class="tab-pane">
-			<div class="panel-body">
-				<div class="form-group">
-					<div class="col-lg-12">
-						<div class="table-responsive">
-						<table class="table table-bordered" >
-							<thead>
-							<tr>
-								<th>Tipo gestión</th>
-								<th>Destino</th>
-								<th>Evento</th>
-								<th>Resultado</th>
-								<th>Comentario</th>
-								<th>Causa no pago</th>
-								<th>Acuerdo de pago</th>
-								<th>Fecha registro</th>
-								<th>Usuario</th>
-							</tr>
-							</thead>
-							<tbody>
-							<?php while ($row_HistGestion = sqlsrv_fetch_array($SQL_HistGestion)) {?>
-								 <tr class="gradeX">
-									<td><?php echo $row_HistGestion['TipoGestion']; ?></td>
-									<td><?php echo $row_HistGestion['Destino']; ?></td>
-									<td><?php echo $row_HistGestion['NombreEvento']; ?></td>
-									<td><?php echo $row_HistGestion['ResultadoGestion']; ?></td>
-									<td><?php echo $row_HistGestion['Comentarios']; ?></td>
-									<td><?php echo $row_HistGestion['CausaNoPago']; ?></td>
-									<td><?php if ($row_HistGestion['AcuerdoPago'] == 1) {echo "SI";} else {echo "NO";}?></td>
-									<td><?php echo $row_HistGestion['FechaRegistro']->format('Y-m-d H:i'); ?></td>
-									<td><?php echo $row_HistGestion['Usuario']; ?></td>
-								</tr>
-							<?php }?>
-							</tbody>
-						</table>
-				  </div>
-					</div>
-				</div>
-			</div>
-		</div>
 	</div>
-</div>
-							   </div>
-							   <?php }?>
-							   <?php if ($edit == 1) {?>
-							   <div id="tabSN-5" class="tab-pane">
-									<br>
-									<div id="dv_contratos" class="panel-body">
+								   </div>
+							   <?php } ?>
+							   <?php if ($edit == 1) { ?>
+								   <div id="tabSN-5" class="tab-pane">
+										<br>
+										<div id="dv_contratos" class="panel-body">
 
-									</div>
-							   </div>
-							   <?php }?>
+										</div>
+								   </div>
+							   <?php } ?>
 							   </form>
 							   <div id="tabSN-6" class="tab-pane">
 									<br>
-								   	<div id="dv_anexos" class="panel-body">
-									   <?php if ($edit == 1) {?>
-										<?php if ($row['IdAnexos'] != 0) {?>
-											<div class="form-group">
-												<div class="col-xs-12">
-													<?php while ($row_Anexo = sqlsrv_fetch_array($SQL_Anexo)) {?>
-														<?php $Icon = IconAttach($row_Anexo['FileExt']);?>
-														<div class="file-box">
-															<div class="file">
-																<a href="attachdownload.php?file=<?php echo base64_encode($row_Anexo['AbsEntry']); ?>&line=<?php echo base64_encode($row_Anexo['Line']); ?>" target="_blank">
-																	<div class="icon">
-																		<i class="<?php echo $Icon; ?>"></i>
-																	</div>
-																	<div class="file-name">
-																		<?php echo $row_Anexo['NombreArchivo']; ?>
-																		<br/>
-																		<small><?php echo $row_Anexo['Fecha']; ?></small>
-																	</div>
-																</a>
-															</div>
-														</div>
-													<?php }?>
-												</div>
-											</div>
-										<?php } else {echo "<p>Sin anexos.</p>";}?>
-									<?php }?>
+									   <div id="dv_anexos" class="panel-body">
+									   <?php if ($edit == 1) { ?>
+										   <?php if ($row['IdAnexos'] != 0) { ?>
+   											<div class="form-group">
+   												<div class="col-xs-12">
+													   <?php while ($row_Anexo = sqlsrv_fetch_array($SQL_Anexo)) { ?>
+														   <?php $Icon = IconAttach($row_Anexo['FileExt']); ?>
+   														<div class="file-box">
+   															<div class="file">
+   																<a href="attachdownload.php?file=<?php echo base64_encode($row_Anexo['AbsEntry']); ?>&line=<?php echo base64_encode($row_Anexo['Line']); ?>" target="_blank">
+   																	<div class="icon">
+   																		<i class="<?php echo $Icon; ?>"></i>
+   																	</div>
+   																	<div class="file-name">
+																		   <?php echo $row_Anexo['NombreArchivo']; ?>
+   																		<br/>
+   																		<small><?php echo $row_Anexo['Fecha']; ?></small>
+   																	</div>
+   																</a>
+   															</div>
+   														</div>
+													<?php } ?>
+   												</div>
+   											</div>
+										<?php } else {
+											   echo "<p>Sin anexos.</p>";
+										   } ?>
+									<?php } ?>
 										<div class="row">
 											<form action="upload.php" class="dropzone" id="dropzoneForm" name="dropzoneForm">
-												<?php if ($sw_error == 0) {LimpiarDirTemp();}?>
+												<?php if ($sw_error == 0) {
+													LimpiarDirTemp();
+												} ?>
 												<div class="fallback">
 													<input name="File" id="File" type="file" form="dropzoneForm" />
 												</div>
@@ -1574,16 +1727,16 @@ if ($sw_ext == 0) {?>
 						   </div>
 						 </div>
 					</div>
-          		</div>
+				  </div>
 			 </div>
 
-        </div>
-        <!-- InstanceEndEditable -->
-        <?php include "includes/footer.php";?>
+		</div>
+		<!-- InstanceEndEditable -->
+		<?php include "includes/footer.php"; ?>
 
-    </div>
+	</div>
 </div>
-<?php include "includes/pie.php";?>
+<?php include "includes/pie.php"; ?>
 <!-- InstanceBeginEditable name="EditRegion4" -->
 <script>
  $(document).ready(function(){
@@ -1600,7 +1753,9 @@ if ($sw_ext == 0) {?>
 				}).then((result) => {
 					if (result.isConfirmed) {
 						$('.ibox-content').toggleClass('sk-loading',true);
-						let datosCliente = window.sessionStorage.getItem('<?php if ($edit == 1) {echo $row['CodigoCliente'];}?>')
+						let datosCliente = window.sessionStorage.getItem('<?php if ($edit == 1) {
+							echo $row['CodigoCliente'];
+						} ?>')
 						let dataJSON = document.getElementById('dataJSON')
 						dataJSON.value=datosCliente
 						form.submit();
@@ -1637,50 +1792,50 @@ if ($sw_ext == 0) {?>
 
 	$(".select2").select2();
 
-	<?php if ($edit == 0 && $EsProyecto == 1) {?>
+	<?php if ($edit == 0 && $EsProyecto == 1) { ?>
 		$('#CardType option:not(:selected)').attr('disabled',true);
 		$('#TipoEntidad option:not(:selected)').attr('disabled',true);
-		<?php if ($row_ValorDefault['IdGrupoSN'] != "") {?>
-		$('#GroupCode option:not(:selected)').attr('disabled',true);
-		<?php }?>
-		<?php if ($row_ValorDefault['IdCondiPago'] != "") {?>
-		$('#GroupNum option:not(:selected)').attr('disabled',true);
-		<?php }?>
-		<?php if ($row_ValorDefault['IdIndustria'] != "") {?>
-		$('#Industria option:not(:selected)').attr('disabled',true);
-		<?php }?>
-		<?php if ($row_ValorDefault['IdTerritorio'] != "") {?>
-		$('#Territorio option:not(:selected)').attr('disabled',true);
-		<?php }?>
-		<?php if ($row_ValorDefault['IdProyecto'] != "") {?>
+		<?php if ($row_ValorDefault['IdGrupoSN'] != "") { ?>
+			$('#GroupCode option:not(:selected)').attr('disabled',true);
+		<?php } ?>
+		<?php if ($row_ValorDefault['IdCondiPago'] != "") { ?>
+			$('#GroupNum option:not(:selected)').attr('disabled',true);
+		<?php } ?>
+		<?php if ($row_ValorDefault['IdIndustria'] != "") { ?>
+			$('#Industria option:not(:selected)').attr('disabled',true);
+		<?php } ?>
+		<?php if ($row_ValorDefault['IdTerritorio'] != "") { ?>
+			$('#Territorio option:not(:selected)').attr('disabled',true);
+		<?php } ?>
+		<?php if ($row_ValorDefault['IdProyecto'] != "") { ?>
+			$('#Proyecto option:not(:selected)').attr('disabled',true);
+		<?php } ?>
+		<?php if ($row_ValorDefault['IdCapServicio'] != "") { ?>
+			$('#CapacidadServ option:not(:selected)').attr('disabled',true);
+		<?php } ?>
+		<?php if ($row_ValorDefault['IdVigServicio'] != "") { ?>
+			$('#VigenciaCont option:not(:selected)').attr('disabled',true);
+		<?php } ?>
+		<?php if ($row_ValorDefault['IdRegTributario'] != "") { ?>
+			$('#RegimenTributario option:not(:selected)').attr('disabled',true);
+		<?php } ?>
+	<?php } ?>
+
+	<?php if ($Metod == 4) { ?>
 		$('#Proyecto option:not(:selected)').attr('disabled',true);
-		<?php }?>
-		<?php if ($row_ValorDefault['IdCapServicio'] != "") {?>
-		$('#CapacidadServ option:not(:selected)').attr('disabled',true);
-		<?php }?>
-		<?php if ($row_ValorDefault['IdVigServicio'] != "") {?>
-		$('#VigenciaCont option:not(:selected)').attr('disabled',true);
-		<?php }?>
-		<?php if ($row_ValorDefault['IdRegTributario'] != "") {?>
-		$('#RegimenTributario option:not(:selected)').attr('disabled',true);
-		<?php }?>
-	<?php }?>
-
-	<?php if ($Metod == 4) {?>
-	$('#Proyecto option:not(:selected)').attr('disabled',true);
-	$('#CardType option:not(:selected)').attr('disabled',true);
- 	<?php }?>
-
-	<?php if (PermitirFuncion(504)) {?>
 		$('#CardType option:not(:selected)').attr('disabled',true);
- 	<?php }?>
+	 <?php } ?>
 
-	<?php if ($edit == 1) {?>
-	 window.sessionStorage.removeItem('<?php echo $CodCliente; ?>');
-	 window.sessionStorage.removeItem('newCod');
- 	<?php } else {?>
-	 window.sessionStorage.removeItem('');
- 	<?php }?>
+	<?php if (PermitirFuncion(504)) { ?>
+		$('#CardType option:not(:selected)').attr('disabled',true);
+	 <?php } ?>
+
+	<?php if ($edit == 1) { ?>
+   	 window.sessionStorage.removeItem('<?php echo $CodCliente; ?>');
+   	 window.sessionStorage.removeItem('newCod');
+	 <?php } else { ?>
+		 window.sessionStorage.removeItem('');
+	 <?php } ?>
 
 	$('.dataTables-example').DataTable({
 		pageLength: 10,
@@ -1722,7 +1877,9 @@ if ($sw_ext == 0) {?>
 function Validar(){
 	var result=true;
 
-	let datosCliente = window.sessionStorage.getItem('<?php if ($edit == 1) {echo $row['CodigoCliente'];}?>')
+	let datosCliente = window.sessionStorage.getItem('<?php if ($edit == 1) {
+		echo $row['CodigoCliente'];
+	} ?>')
 	let json=[]
 	if(datosCliente){
 		json = JSON.parse(datosCliente)
@@ -1804,7 +1961,7 @@ function Validar(){
 	}
 
 	// Stiven Muñoz Murillo, 26/01/2022
-	<?php if (!PermitirFuncion(509)) {?>
+	<?php if (!PermitirFuncion(509)) { ?>
 		if(DirPrincipal==0){
 			result=false;
 			Swal.fire({
@@ -1813,7 +1970,7 @@ function Validar(){
 				icon: 'warning'
 			});
 		}
-	<?php }?>
+	<?php } ?>
 
 	if(countNomDireccionLleno==0){
 		result=false;
@@ -2484,7 +2641,9 @@ function ConsultarTab(type){
 			$('.ibox-content').toggleClass('sk-loading',true);
 			$.ajax({
 				type: "POST",
-				url: "sn_llamadas_servicios.php?id=<?php if ($edit == 1) {echo base64_encode($row['CodigoCliente']);}?>",
+				url: "sn_llamadas_servicios.php?id=<?php if ($edit == 1) {
+					echo base64_encode($row['CodigoCliente']);
+				} ?>",
 				success: function(response){
 					$('#dv_llamadasrv').html(response).fadeIn();
 					$('.ibox-content').toggleClass('sk-loading',false);
@@ -2497,7 +2656,9 @@ function ConsultarTab(type){
 			$('.ibox-content').toggleClass('sk-loading',true);
 			$.ajax({
 				type: "POST",
-				url: "sn_actividades.php?id=<?php if ($edit == 1) {echo base64_encode($row['CodigoCliente']);}?>",
+				url: "sn_actividades.php?id=<?php if ($edit == 1) {
+					echo base64_encode($row['CodigoCliente']);
+				} ?>",
 				success: function(response){
 					$('#dv_actividades').html(response).fadeIn();
 					$('.ibox-content').toggleClass('sk-loading',false);
@@ -2510,7 +2671,9 @@ function ConsultarTab(type){
 			$('.ibox-content').toggleClass('sk-loading',true);
 			$.ajax({
 				type: "POST",
-				url: "sn_pagos_realizados.php?id=<?php if ($edit == 1) {echo base64_encode($row['CodigoCliente']);}?>",
+				url: "sn_pagos_realizados.php?id=<?php if ($edit == 1) {
+					echo base64_encode($row['CodigoCliente']);
+				} ?>",
 				success: function(response){
 					$('#dv_pagosreal').html(response).fadeIn();
 					$('.ibox-content').toggleClass('sk-loading',false);
@@ -2523,7 +2686,9 @@ function ConsultarTab(type){
 			$('.ibox-content').toggleClass('sk-loading',true);
 			$.ajax({
 				type: "POST",
-				url: "sn_contratos.php?id=<?php if ($edit == 1) {echo base64_encode($row['CodigoCliente']);}?>",
+				url: "sn_contratos.php?id=<?php if ($edit == 1) {
+					echo base64_encode($row['CodigoCliente']);
+				} ?>",
 				success: function(response){
 					$('#dv_contratos').html(response).fadeIn();
 					$('.ibox-content').toggleClass('sk-loading',false);
@@ -2556,7 +2721,13 @@ function ConsultarTab(type){
 			}else{
 				$.ajax({
 					type: "POST",
-					url: "sn_anexos.php?id=<?php if ($edit == 1) {echo base64_encode($row['CodigoCliente']);}?>&edit=<?php echo $edit; ?>&anx=<?php if ($edit == 1) {echo base64_encode($row['IdAnexos']);}?>&metod=<?php echo $Metod; ?>&esproyecto=<?php echo $EsProyecto; ?>&pediranexos=<?php if ($EsProyecto == 1) {echo $row_ValorDefault['PedirAnexo'];}?>",
+					url: "sn_anexos.php?id=<?php if ($edit == 1) {
+						echo base64_encode($row['CodigoCliente']);
+					} ?>&edit=<?php echo $edit; ?>&anx=<?php if ($edit == 1) {
+						   echo base64_encode($row['IdAnexos']);
+					   } ?>&metod=<?php echo $Metod; ?>&esproyecto=<?php echo $EsProyecto; ?>&pediranexos=<?php if ($EsProyecto == 1) {
+								 echo $row_ValorDefault['PedirAnexo'];
+							 } ?>",
 					success: function(response){
 						$('#dv_anexos').html(response).fadeIn();
 						$('.ibox-content').toggleClass('sk-loading',false);
@@ -2573,7 +2744,9 @@ function ConsultarTab(type){
 			$('.ibox-content').toggleClass('sk-loading',true);
 			$.ajax({
 				type: "POST",
-				url: "sn_tarjetas_equipo.php?id=<?php if ($edit == 1) {echo base64_encode($row['CodigoCliente']);}?>",
+				url: "sn_tarjetas_equipo.php?id=<?php if ($edit == 1) {
+					echo base64_encode($row['CodigoCliente']);
+				} ?>",
 				success: function(response){
 					$('#dv_tarjetas').html(response).fadeIn();
 					$('.ibox-content').toggleClass('sk-loading',false);
@@ -2588,7 +2761,9 @@ function ConsultarTab(type){
 			$('.ibox-content').toggleClass('sk-loading',true);
 			$.ajax({
 				type: "POST",
-				url: "sn_anticipos_realizados.php?id=<?php if ($edit == 1) {echo base64_encode($row['CodigoCliente']);}?>",
+				url: "sn_anticipos_realizados.php?id=<?php if ($edit == 1) {
+					echo base64_encode($row['CodigoCliente']);
+				} ?>",
 				success: function(response){
 					$('#dv_anticipos').html(response).fadeIn();
 					$('.ibox-content').toggleClass('sk-loading',false);
@@ -2625,4 +2800,4 @@ function ConsultarTab(type){
 </body>
 
 <!-- InstanceEnd --></html>
-<?php sqlsrv_close($conexion);?>
+<?php sqlsrv_close($conexion); ?>
