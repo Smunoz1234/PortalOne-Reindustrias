@@ -136,7 +136,7 @@ $sMillares = $row_DatosBase["CaracterSeparadorMillares"] ?? ",";
 // SMM, 08/06/2023
 $SQL_OT_ORIGEN = Seleccionar('uvw_Sap_tbl_OT_Origen', 'IdOT_Origen "IdTipoOT", OT_Origen "TipoOT"', '', 'IdOT_Origen');
 $SQL_OT_SEDE_EMPRESA = Seleccionar('uvw_Sap_tbl_OT_SedeEmpresa', 'IdOT_SedeEmpresa "IdSedeEmpresa", OT_SedeEmpresa "SedeEmpresa"', '', 'IdOT_SedeEmpresa');
-$SQL_OT_CLASES = Seleccionar('uvw_Sap_tbl_OT_Clases', 'IdOT_Clases "IdTipoCargo", OT_Clases "TipoCargo"', '', 'IdOT_Clases');
+$SQL_OT_TipoLlamada = Seleccionar('uvw_Sap_tbl_OT_TipoLlamada', 'IdOT_TipoLlamada "IdTipoCargo", OT_TipoLlamada "TipoCargo"', '', 'IdOT_TipoLlamada');
 $SQL_OT_TIPOPROBLEMA = Seleccionar('uvw_Sap_tbl_OT_TipoProblema', 'IdOT_TipoProblema "IdTipoProblema", OT_TipoProblema "TipoProblema"', '', 'IdOT_TipoProblema');
 $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPreventivo "IdTipoPreventivo", OT_TipoPreventivo "TipoPreventivo"', '', 'IdOT_TipoPreventivo');
 ?>
@@ -624,7 +624,7 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 							// SMM, 08/06/2023
 							sqlsrv_fetch($SQL_OT_ORIGEN, SQLSRV_SCROLL_ABSOLUTE, -1);
 							sqlsrv_fetch($SQL_OT_SEDE_EMPRESA, SQLSRV_SCROLL_ABSOLUTE, -1);
-							sqlsrv_fetch($SQL_OT_CLASES, SQLSRV_SCROLL_ABSOLUTE, -1);
+							sqlsrv_fetch($SQL_OT_TipoLlamada, SQLSRV_SCROLL_ABSOLUTE, -1);
 							sqlsrv_fetch($SQL_OT_TIPOPROBLEMA, SQLSRV_SCROLL_ABSOLUTE, -1);
 							sqlsrv_fetch($SQL_OT_TIPOPREVENTI, SQLSRV_SCROLL_ABSOLUTE, -1);
 
@@ -792,7 +792,7 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 									onChange="ActualizarDatos('CDU_IdTipoCargo',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);">
 										<option value="">Seleccione...</option>
 
-										<?php while ($row_CLASES = sqlsrv_fetch_array($SQL_OT_CLASES)) { ?>
+										<?php while ($row_CLASES = sqlsrv_fetch_array($SQL_OT_TipoLlamada)) { ?>
 											<option value="<?php echo $row_CLASES['IdTipoCargo']; ?>" <?php if ((isset($row["CDU_IdTipoCargo"])) && (strcmp($row_CLASES['IdTipoCargo'], $row["CDU_IdTipoCargo"]) == 0)) {
 												   echo "selected";
 											   } ?>>

@@ -928,6 +928,23 @@ if (isset($sw_error) && ($sw_error == 1)) {
 	}
 	
 	$(document).ready(function() {
+		$("#Series").on("change", function() {
+			$.ajax({
+				type: "POST",
+				url: `ajx_cbo_select.php?type=27&bloquear=0&id=${$(this).val()}`,
+				success: function(response) {
+					// $('#Tecnico').html(response);
+					// $("#Tecnico").trigger("change");
+					
+					// $('#CDU_IdTecnicoAdicional').html(response);
+					// $("#CDU_IdTecnicoAdicional").trigger("change");
+				},
+				error: function(error){
+					console.error("Series", error.responseText);
+				}
+			});
+		});
+
 		// SMM, 29/06/2023
 		$("#OrigenLlamada").change(function(){
 			$.ajax({
@@ -935,6 +952,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 				url: `ajx_cbo_select.php?type=46&id=${$(this).val()}`,
 				success: function(response){
 					$('#TipoProblema').html(response).fadeIn();
+					$('#TipoProblema').trigger('change');
 				}
 			});
 
@@ -973,6 +991,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 					url: `ajx_cbo_select.php?type=47&id=${$(this).val()}`,
 					success: function(response){
 						$('#TipoLlamada').html(response).fadeIn();
+						$('#TipoLlamada').trigger('change');
 					}
 				});
 
@@ -2065,15 +2084,15 @@ function AgregarEsto(contenedorID, valorElemento) {
 							<div class="col-lg-4">
 								<label class="control-label">Serie <span class="text-danger">*</span></label>
 								<select name="Series" class="form-control" required="required" id="Series" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
-									echo "disabled='disabled'";
+									echo "disabled";
 								} ?>>
 										<option value="">Seleccione...</option>
 									<?php while ($row_Series = sqlsrv_fetch_array($SQL_Series)) { ?>
 										<option value="<?php echo $row_Series['IdSeries']; ?>"
 										<?php if ((isset($row['Series'])) && (strcmp($row_Series['IdSeries'], $row['Series']) == 0)) {
-											echo "selected=\"selected\"";
+											echo "selected";
 										} elseif ((isset($row['IdSeries'])) && (strcmp($row_Series['IdSeries'], $row['IdSeries']) == 0)) {
-											echo "selected=\"selected\"";
+											echo "selected";
 										} ?>>
 											<?php echo $row_Series['DeSeries']; ?>
 										</option>
@@ -2313,12 +2332,12 @@ function AgregarEsto(contenedorID, valorElemento) {
 							<div class="col-lg-4">
 								<label class="control-label">Técnico/Asesor <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?><span class="text-danger">*</span><?php } ?></label>
 								<select <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?> required <?php } ?> name="Tecnico" class="form-control select2" id="Tecnico" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
-										   echo "disabled='disabled'";
+										   echo "disabled";
 									   } ?>>
 										<option value="">Seleccione...</option>
 								  <?php while ($row_Tecnicos = sqlsrv_fetch_array($SQL_Tecnicos)) { ?>
 										<option value="<?php echo $row_Tecnicos['ID_Empleado']; ?>" <?php if ((isset($row['IdTecnico'])) && (strcmp($row_Tecnicos['ID_Empleado'], $row['IdTecnico']) == 0)) {
-											   echo "selected=\"selected\"";
+											   echo "selected";
 										   } ?>><?php echo $row_Tecnicos['NombreEmpleado']; ?></option>
 								  <?php } ?>
 								</select>
@@ -2327,12 +2346,12 @@ function AgregarEsto(contenedorID, valorElemento) {
 							<div class="col-lg-4">
 								<label class="control-label">Técnico/Asesor Adicional</label>
 								<select name="CDU_IdTecnicoAdicional" class="form-control select2" id="CDU_IdTecnicoAdicional" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
-									echo "disabled='disabled'";
+									echo "disabled";
 								} ?>>
 										<option value="">Seleccione...</option>
 								  <?php while ($row_Tecnicos = sqlsrv_fetch_array($SQL_TecnicosAdicionales)) { ?>
 										<option value="<?php echo $row_Tecnicos['ID_Empleado']; ?>" <?php if ((isset($row['CDU_IdTecnicoAdicional'])) && (strcmp($row_Tecnicos['ID_Empleado'], $row['CDU_IdTecnicoAdicional']) == 0)) {
-											   echo "selected=\"selected\"";
+											   echo "selected";
 										   } ?>><?php echo $row_Tecnicos['NombreEmpleado']; ?></option>
 								  <?php } ?>
 								</select>
@@ -2341,11 +2360,11 @@ function AgregarEsto(contenedorID, valorElemento) {
 							<div class="col-lg-4">
 								<label class="control-label">Estado <span class="text-danger">*</span></label>
 								<select name="EstadoLlamada" class="form-control" id="EstadoLlamada" required="required" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
-									echo "disabled='disabled'";
+									echo "disabled";
 								} ?>>
 								  <?php while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) { ?>
 										<option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['IdEstadoLlamada'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['IdEstadoLlamada']) == 0)) {
-											   echo "selected=\"selected\"";
+											   echo "selected";
 										   } ?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option>
 								  <?php } ?>
 								</select>
