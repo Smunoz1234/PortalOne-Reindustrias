@@ -5,13 +5,12 @@ PermitirAcceso(502);
 
 if (isset($_GET['id']) && $_GET['id'] != "") {
 	$id = base64_decode($_GET['id']);
-	$edit = 0; //base64_decode($_GET['edit']);
-//	$tipodir=$_GET['tdir'];
+	$edit = 0;
+	//base64_decode($_GET['edit']);
 } else {
 	$id = "";
 	$edit = 0;
 	$linea_direccion = 0;
-	//	$tipodir="";
 }
 
 $Cont = 0;
@@ -32,6 +31,10 @@ $SQL_Dptos = Seleccionar('uvw_Sap_tbl_SN_Municipio', 'Distinct DeDepartamento', 
 //Estrato
 $SQL_Estrato = Seleccionar('tbl_EstratosSN', '*', '', 'Estrato');
 
+// echo $edit . "<br>";
+// echo $id . "<br>";
+// echo $linea_direccion . "<br>";
+// echo $tipodir . "<br>";
 ?>
 
 <div class="form-group">
@@ -164,7 +167,8 @@ $SQL_Estrato = Seleccionar('tbl_EstratosSN', '*', '', 'Estrato');
 
 		//Buscar si existe la direccion en la cadena JSON
 		json[0].direcciones.forEach(function (element, index) {
-			if (json[0].direcciones[index].numero_linea == LineNum) {
+			// Se agrego el filtro de TipoDir. SMM, 26/07/2023
+			if (json[0].direcciones[index].numero_linea == LineNum && json[0].direcciones[index].tipo_direccion == TipoDir) {
 				//Si la encontre, marco el sw con el indice del arreglo
 				sw = index;
 			}
@@ -325,6 +329,7 @@ $SQL_Estrato = Seleccionar('tbl_EstratosSN', '*', '', 'Estrato');
 	}
 
 	function BuscarCiudad(save = true) {
+		console.log("buscando ciudad...");
 		$('.ibox-content').toggleClass('sk-loading', true);
 		$.ajax({
 			type: "POST",
@@ -343,6 +348,7 @@ $SQL_Estrato = Seleccionar('tbl_EstratosSN', '*', '', 'Estrato');
 	}
 
 	function BuscarCodigoPostal() {
+		console.log("buscando código postal...");
 		$('.ibox-content').toggleClass('sk-loading', true);
 		$.ajax({
 			type: "POST",
@@ -357,6 +363,7 @@ $SQL_Estrato = Seleccionar('tbl_EstratosSN', '*', '', 'Estrato');
 	}
 
 	function BuscarBarrio() {
+		console.log("buscando barrio...");
 		$('.ibox-content').toggleClass('sk-loading', true);
 		$.ajax({
 			type: "POST",
