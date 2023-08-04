@@ -48,7 +48,7 @@ if (isset($Cabecera["id_llamada_servicio"])) {
 
 $dir_name = "entrega_vehiculos";
 $dir_log = CrearObtenerDirRuta(ObtenerVariable("RutaAnexosPortalOne") . "/" . $_SESSION['User'] . "/" . $dir_name . "/");
-$dir_main = CrearObtenerDirRuta(ObtenerVariable("RutaAnexosentregaVehiculo"));
+$dir_main = CrearObtenerDirRuta(ObtenerVariable("RutaAnexosFormularios") . "entrega_vehiculo/anexos/");
 
 // Inicio, agregar anexos al JSON.
 if (isset($Cabecera["Anexo0"])) {
@@ -96,7 +96,7 @@ if (isset($Cabecera["SigCliente"])) {
 // Fin, copiar firma a la ruta log y main, y agregarlas al JSON.
 
 try {
-    $Metodo = "entregaVehiculos";
+    $Metodo = "EntregaVehiculos";
     $Resultado = EnviarWebServiceSAP($Metodo, $Cabecera, true, true);
 
     if ($Resultado->Success == 0) {

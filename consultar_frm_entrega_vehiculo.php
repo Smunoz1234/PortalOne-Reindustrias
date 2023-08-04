@@ -390,7 +390,7 @@ $SQL_Supervisor = Seleccionar('uvw_tbl_EntregaVehiculos', 'DISTINCT id_empleado_
 																title="Cambiar estado"><i class="fa fa-pencil"></i></button>
 														<?php } ?>
 
-														<a href="filedownload.php?file=<?php echo base64_encode("entregaVehiculos/DescargarFormatos/" . $row['id_entrega_vehiculo'] . "/" . $_SESSION['User']); ?>&api=1"
+														<a href="filedownload.php?file=<?php echo base64_encode("EntregaVehiculos/DescargarFormatos/" . $row['id_entrega_vehiculo'] . "/" . $_SESSION['User']); ?>&api=1"
 															target="_blank" class="btn btn-warning btn-xs" title="Descargar"><i
 																class="fa fa-download"></i></a>
 
@@ -537,7 +537,7 @@ $SQL_Supervisor = Seleccionar('uvw_tbl_EntregaVehiculos', 'DISTINCT id_empleado_
 				url: "md_frm_cambiar_estados.php",
 				data: {
 					id: id,
-					frm: 'entregaVehiculos',
+					frm: 'EntregaVehiculos',
 					nomID: 'id_entrega_vehiculo'
 				},
 				success: function (response) {

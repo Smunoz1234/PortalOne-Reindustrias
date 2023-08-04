@@ -787,7 +787,7 @@ function DescargarFileAPI($pNombreWS, $method = 'GET')
 
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
     $result = curl_exec($curl);
-    //echo "json: ".$json;
+
     $cod_http = curl_getinfo($curl, CURLINFO_HTTP_CODE);
     $array_res = curl_getinfo($curl);
     //echo "Codigo HTTP:".$cod_http;
@@ -795,6 +795,12 @@ function DescargarFileAPI($pNombreWS, $method = 'GET')
         echo "Codigo " . $cod_http . ": (" . $method . ") " . $array_res['content_type'];
     }
     curl_close($curl);
+
+    // SMM, 28/07/2023
+    // echo "<pre>" . print_r($array_res, true) . "</pre>";
+    // echo "result: $result";
+    // exit();
+
     return $result;
 }
 
