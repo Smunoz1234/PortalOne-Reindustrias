@@ -252,6 +252,7 @@ if (!isset($_COOKIE["banderaMenu"])) {
 					<?php if (PermitirFuncion(316)) {?><li><a href="despacho_rutas.php">Despacho de servicios</a></li><?php }?>
 					<?php if (PermitirFuncion(301)) {?><li><a class="alnk" href="gestionar_llamadas_servicios.php">Llamadas de servicio</a></li><?php }?>
 					<?php if (PermitirFuncion(303)) {?><li><a class="alnk" href="gestionar_actividades.php">Actividades</a></li><?php }?>
+					<?php if (true) {?><li><a class="alnk" href="gestionar_solicitudes_llamadas.php">Solicitudes de llamadas (Agenda)</a></li><?php }?>
 					<?php if (PermitirFuncion(305) || PermitirFuncion(306) || PermitirFuncion(307)) {?>
 						<li>
 							<a href="#">Calendarios <span class="fa arrow"></span></a>
