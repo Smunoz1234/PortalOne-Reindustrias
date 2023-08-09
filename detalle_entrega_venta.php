@@ -2,6 +2,9 @@
 require_once "includes/conexion.php";
 PermitirAcceso(407);
 
+// Permiso para ver los campos de control de plagas. SMM, 08/08/2023
+$ControlPlagas = !PermitirFuncion(425);
+
 // Dimensiones, SMM 22/08/2022
 $DimSeries = intval(ObtenerVariable("DimensionSeries"));
 $SQL_Dimensiones = Seleccionar('uvw_Sap_tbl_Dimensiones', '*', "DimActive='Y'");
@@ -23,9 +26,9 @@ $Usuario = "";
 $type = 1;
 $Id = "";
 $Evento = "";
-$Estado = 1; //Abierto
-$Lotes = 0; //Cantidad de articulos con lotes
-$Seriales = 0; //Cantidad de articulos con seriales
+$Estado = 1; // Abierto (useless)
+$Lotes = 0; // Cantidad de articulos con lotes
+$Seriales = 0; // Cantidad de articulos con seriales
 
 // Se eliminaron las dimensiones, 31/08/2022
 
@@ -167,6 +170,10 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 		.table>tbody>tr>td {
 			padding: 1px !important;
 			vertical-align: middle;
+		}
+
+		.select2-container {
+			width: 300px !important;
 		}
 	</style>
 
@@ -556,10 +563,14 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 								class="btn btn-success btn-xs" disabled onClick="DuplicarLinea();"><i
 									class="fa fa-copy"></i></button>
 						</th>
+						
 						<th>Código artículo</th>
 						<th>Nombre artículo</th>
+						
 						<th>Unidad</th>
-						<th>Cantidad
+						
+						<th>
+							Cantidad
 							<?php if ($Lotes > 0) { ?><span class="badge badge-info pull-right"
 									title="Ver lotes (Alt+Q)" style="cursor: pointer;" onClick="BuscarLote();"><i
 										class="fa fa-tasks"></i></span>
@@ -569,11 +580,20 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 										class="fa fa-barcode"></i></span>
 							<?php } ?>
 						</th>
+						
 						<th>Cant. Pendiente</th>
-						<th>Cant. Litros</th>
+
 						<th>Almacén</th>
-						<th>Dosificación</th>
 						<th>Stock almacén</th>
+
+						<?php if ($ControlPlagas) { ?>
+							<th>Cant. Litros</th>
+							<th>Dosificación</th>
+							<th>Servicio</th>
+							<th>Método aplicación</th>
+							<th>Tipo plaga</th>
+							<th>Áreas controladas</th>
+						<?php } ?>
 
 						<!-- Dimensiones dinámicas, SMM 22/08/2022 -->
 						<?php foreach ($array_Dimensiones as &$dim) { ?>
@@ -586,7 +606,7 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 						<th>Proyecto</th>
 						<th>Empleado de ventas</th>
 
-						<!-- Nuevos campos basados en la OT -->
+						<!-- Campos basados en la OT -->
 						<th>Tipo OT</th>
 						<th>Sede Empresa</th>
 						<th>Tipo Cargo</th>
@@ -594,11 +614,8 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 						<th>Tipo Preventivo</th>
 						<!-- SMM, 08/06/2023 -->
 
-						<th>Servicio</th>
-						<th>Método aplicación</th>
-						<th>Tipo plaga</th>
-						<th>Áreas controladas</th>
 						<th>Texto libre</th>
+
 						<th>Precio</th>
 						<th>Precio con IVA</th>
 						<th>Precio con Desc.</th><!-- SMM, 05/04/2022 -->
@@ -606,6 +623,7 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 						<th>Total</th>
 						<th>CtrlDesc</th><!-- SMM, 10/05/2022 -->
 						<th>Exento</th><!-- SMM, 23/04/2022 -->
+
 						<th><i class="fa fa-refresh"></i></th>
 					</tr>
 				</thead>
@@ -626,7 +644,7 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 							sqlsrv_fetch($SQL_OT_TipoLlamada, SQLSRV_SCROLL_ABSOLUTE, -1);
 							sqlsrv_fetch($SQL_OT_TIPOPROBLEMA, SQLSRV_SCROLL_ABSOLUTE, -1);
 							sqlsrv_fetch($SQL_OT_TIPOPREVENTI, SQLSRV_SCROLL_ABSOLUTE, -1);
-							
+
 							// SMM, 22/02/2022
 							sqlsrv_fetch($SQL_Proyecto, SQLSRV_SCROLL_ABSOLUTE, -1);
 							sqlsrv_fetch($SQL_EmpleadosVentas, SQLSRV_SCROLL_ABSOLUTE, -1);
@@ -673,19 +691,13 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 										} ?> onFocus="focalizarValores(this)">
 								</td>
 
-								<td><input size="15" type="text" id="CantInicial<?php echo $i; ?>" name="CantInicial[]"
+								<td>
+									<input size="15" type="text" id="CantInicial<?php echo $i; ?>" name="CantInicial[]"
 										class="form-control"
 										value="<?php echo number_format($row['CantInicial'], $dCantidades, $sDecimal, $sMillares); ?>"
 										onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);"
-										readonly></td>
-
-								<td><input size="15" type="text" autocomplete="off" id="CDU_CantLitros<?php echo $i; ?>"
-										name="CDU_CantLitros[]" class="form-control"
-										value="<?php echo number_format($row['CDU_CantLitros'], $dCantidades, $sDecimal, $sMillares); ?>"
-										onChange="ActualizarDatos('CDU_CantLitros',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);"
-										onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402))) {
-											echo "readonly";
-										} ?>></td>
+										readonly>
+								</td>
 
 								<td>
 									<select id="WhsCode<?php echo $i; ?>" name="WhsCode[]" class="form-control select2"
@@ -701,17 +713,104 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 										<?php } ?>
 									</select>
 								</td>
-								<td><input size="15" type="text" id="CDU_Dosificacion<?php echo $i; ?>"
-										name="CDU_Dosificacion[]" class="form-control"
-										value="<?php echo number_format($row['CDU_Dosificacion'], $dCantidades, $sDecimal, $sMillares); ?>"
-										onChange="ActualizarDatos('CDU_Dosificacion',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);"
-										onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if ($row['LineStatus'] == 'C') {
-											echo "readonly";
-										} ?>></td>
-								<td><input size="15" type="text" id="OnHand<?php echo $i; ?>" name="OnHand[]"
+
+								<!-- Stock almacén -->
+								<td>
+									<input size="15" type="text" id="OnHand<?php echo $i; ?>" name="OnHand[]"
 										class="form-control"
 										value="<?php echo number_format($row['OnHand'], $dCantidades, $sDecimal, $sMillares); ?>"
-										readonly></td>
+										readonly>
+								</td>
+								<!-- /#OnHand -->
+
+								<?php if ($ControlPlagas) { ?>
+									<td>
+										<input size="15" type="text" autocomplete="off" id="CDU_CantLitros<?php echo $i; ?>"
+											name="CDU_CantLitros[]" class="form-control"
+											value="<?php echo number_format($row['CDU_CantLitros'], $dCantidades, $sDecimal, $sMillares); ?>"
+											onChange="ActualizarDatos('CDU_CantLitros',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);"
+											onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402))) {
+												echo "readonly";
+											} ?>>
+									</td>
+
+									<td>
+										<input size="15" type="text" autocomplete="off" id="CDU_Dosificacion<?php echo $i; ?>"
+											name="CDU_Dosificacion[]" class="form-control"
+											value="<?php echo number_format($row['CDU_Dosificacion'], $dCantidades, $sDecimal, $sMillares); ?>"
+											onChange="ActualizarDatos('CDU_Dosificacion',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);"
+											onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if ($row['LineStatus'] == 'C') {
+												echo "readonly";
+											} ?>>
+									</td>
+
+									<td>
+										<?php if (($row['TreeType'] != "T") || (($row['TreeType'] == "T") && ($row['LineNum'] != 0))) { ?>
+											<select id="CDU_IdServicio<?php echo $i; ?>" name="CDU_IdServicio[]"
+												class="form-control select2"
+												onChange="ActualizarDatos('CDU_IdServicio',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);"
+												<?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402))) {
+													echo "disabled";
+												} ?>>
+												<option value="">(NINGUNO)</option>
+												<?php while ($row_Servicios = sqlsrv_fetch_array($SQL_Servicios)) { ?>
+													<option value="<?php echo $row_Servicios['IdServicio']; ?>" <?php if ((isset($row['CDU_IdServicio'])) && (strcmp($row_Servicios['IdServicio'], $row['CDU_IdServicio']) == 0)) {
+														echo "selected";
+													} ?>><?php echo $row_Servicios['DeServicio']; ?></option>
+												<?php } ?>
+											</select>
+										<?php } ?>
+									</td>
+
+									<td>
+										<?php if (($row['TreeType'] != "T") || (($row['TreeType'] == "T") && ($row['LineNum'] != 0))) { ?>
+											<select id="CDU_IdMetodoAplicacion<?php echo $i; ?>" name="CDU_IdMetodoAplicacion[]"
+												class="form-control select2"
+												onChange="ActualizarDatos('CDU_IdMetodoAplicacion',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);"
+												<?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402))) {
+													echo "disabled";
+												} ?>>
+												<option value="">(NINGUNO)</option>
+												<?php while ($row_MetodoAplicacion = sqlsrv_fetch_array($SQL_MetodoAplicacion)) { ?>
+													<option value="<?php echo $row_MetodoAplicacion['IdMetodoAplicacion']; ?>" <?php if ((isset($row['CDU_IdMetodoAplicacion'])) && (strcmp($row_MetodoAplicacion['IdMetodoAplicacion'], $row['CDU_IdMetodoAplicacion']) == 0)) {
+														echo "selected";
+													} ?>><?php echo $row_MetodoAplicacion['DeMetodoAplicacion']; ?></option>
+												<?php } ?>
+											</select>
+										<?php } ?>
+									</td>
+
+									<td>
+										<?php if (($row['TreeType'] != "T") || (($row['TreeType'] == "T") && ($row['LineNum'] != 0))) { ?>
+											<select id="CDU_IdTipoPlagas<?php echo $i; ?>" name="CDU_IdTipoPlagas[]"
+												class="form-control select2"
+												onChange="ActualizarDatos('CDU_IdTipoPlagas',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);"
+												<?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402))) {
+													echo "disabled";
+												} ?>>
+												<option value="">(NINGUNO)</option>
+												<?php while ($row_TipoPlaga = sqlsrv_fetch_array($SQL_TipoPlaga)) { ?>
+													<option value="<?php echo $row_TipoPlaga['IdTipoPlagas']; ?>" <?php if ((isset($row['CDU_IdTipoPlagas'])) && (strcmp($row_TipoPlaga['IdTipoPlagas'], $row['CDU_IdTipoPlagas']) == 0)) {
+														echo "selected";
+													} ?>><?php echo $row_TipoPlaga['DeTipoPlagas']; ?></option>
+												<?php } ?>
+											</select>
+										<?php } ?>
+									</td>
+
+									<td>
+										<?php if (($row['TreeType'] != "T") || (($row['TreeType'] == "T") && ($row['LineNum'] != 0))) { ?>
+											<input size="50" type="text" id="CDU_AreasControladas<?php echo $i; ?>"
+												name="CDU_AreasControladas[]" class="form-control"
+												value="<?php echo $row['CDU_AreasControladas']; ?>"
+												onChange="ActualizarDatos('CDU_AreasControladas',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);"
+												<?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402))) {
+													echo "readonly";
+												} ?>>
+										<?php } ?>
+									</td>
+								<?php } ?>
+								<!-- SMM, 09/08/2023 -->
 
 								<!-- Dimensiones dinámicas, SMM 22/08/2022 -->
 								<?php foreach ($array_Dimensiones as &$dim) { ?>
@@ -772,8 +871,9 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 
 								<!-- Nuevos campos basados en la OT -->
 								<td>
-									<select name="CDU_IdTipoOT[]" id="CDU_IdTipoOT<?php echo $i; ?>" class="form-control select2" required
-									onChange="ActualizarDatos('CDU_IdTipoOT',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);">
+									<select name="CDU_IdTipoOT[]" id="CDU_IdTipoOT<?php echo $i; ?>"
+										class="form-control select2" required
+										onChange="ActualizarDatos('CDU_IdTipoOT',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);">
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_ORIGEN = sqlsrv_fetch_array($SQL_OT_ORIGEN)) { ?>
@@ -787,8 +887,9 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 								</td>
 
 								<td>
-									<select name="CDU_IdSedeEmpresa[]" id="CDU_IdSedeEmpresa<?php echo $i; ?>" class="form-control select2" required
-									onChange="ActualizarDatos('CDU_IdSedeEmpresa',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);">
+									<select name="CDU_IdSedeEmpresa[]" id="CDU_IdSedeEmpresa<?php echo $i; ?>"
+										class="form-control select2" required
+										onChange="ActualizarDatos('CDU_IdSedeEmpresa',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);">
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_SEDE_EMPRESA = sqlsrv_fetch_array($SQL_OT_SEDE_EMPRESA)) { ?>
@@ -802,8 +903,9 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 								</td>
 
 								<td>
-									<select name="CDU_IdTipoCargo[]" id="CDU_IdTipoCargo<?php echo $i; ?>" class="form-control select2" required
-									onChange="ActualizarDatos('CDU_IdTipoCargo',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);">
+									<select name="CDU_IdTipoCargo[]" id="CDU_IdTipoCargo<?php echo $i; ?>"
+										class="form-control select2" required
+										onChange="ActualizarDatos('CDU_IdTipoCargo',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);">
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_CLASES = sqlsrv_fetch_array($SQL_OT_TipoLlamada)) { ?>
@@ -817,8 +919,9 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 								</td>
 
 								<td>
-									<select name="CDU_IdTipoProblema[]" id="CDU_IdTipoProblema<?php echo $i; ?>" class="form-control select2" required
-									onChange="ActualizarDatos('CDU_IdTipoProblema',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);">
+									<select name="CDU_IdTipoProblema[]" id="CDU_IdTipoProblema<?php echo $i; ?>"
+										class="form-control select2" required
+										onChange="ActualizarDatos('CDU_IdTipoProblema',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);">
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_TIPOPROBLEMA = sqlsrv_fetch_array($SQL_OT_TIPOPROBLEMA)) { ?>
@@ -832,8 +935,9 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 								</td>
 
 								<td>
-									<select name="CDU_IdTipoPreventivo[]" id="CDU_IdTipoPreventivo<?php echo $i; ?>" class="form-control select2" required
-									onChange="ActualizarDatos('CDU_IdTipoPreventivo',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);">
+									<select name="CDU_IdTipoPreventivo[]" id="CDU_IdTipoPreventivo<?php echo $i; ?>"
+										class="form-control select2" required
+										onChange="ActualizarDatos('CDU_IdTipoPreventivo',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);">
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_TIPOPREVENTI = sqlsrv_fetch_array($SQL_OT_TIPOPREVENTI)) { ?>
@@ -847,76 +951,16 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 								</td>
 								<!-- SMM, 07/07/2023 -->
 
+								<!-- Texto Libre -->
 								<td>
-									<?php if (($row['TreeType'] != "T") || (($row['TreeType'] == "T") && ($row['LineNum'] != 0))) { ?>
-										<select id="CDU_IdServicio<?php echo $i; ?>" name="CDU_IdServicio[]"
-											class="form-control select2"
-											onChange="ActualizarDatos('CDU_IdServicio',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);"
-											<?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402))) {
-												echo "disabled='disabled'";
-											} ?>>
-											<option value="">(NINGUNO)</option>
-											<?php while ($row_Servicios = sqlsrv_fetch_array($SQL_Servicios)) { ?>
-												<option value="<?php echo $row_Servicios['IdServicio']; ?>" <?php if ((isset($row['CDU_IdServicio'])) && (strcmp($row_Servicios['IdServicio'], $row['CDU_IdServicio']) == 0)) {
-													   echo "selected=\"selected\"";
-												   } ?>><?php echo $row_Servicios['DeServicio']; ?></option>
-											<?php } ?>
-										</select>
-									<?php } ?>
-								</td>
-								<td>
-									<?php if (($row['TreeType'] != "T") || (($row['TreeType'] == "T") && ($row['LineNum'] != 0))) { ?>
-										<select id="CDU_IdMetodoAplicacion<?php echo $i; ?>" name="CDU_IdMetodoAplicacion[]"
-											class="form-control select2"
-											onChange="ActualizarDatos('CDU_IdMetodoAplicacion',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);ActDosificacion(<?php echo $i; ?>);"
-											<?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402))) {
-												echo "disabled='disabled'";
-											} ?>>
-											<option value="">(NINGUNO)</option>
-											<?php while ($row_MetodoAplicacion = sqlsrv_fetch_array($SQL_MetodoAplicacion)) { ?>
-												<option value="<?php echo $row_MetodoAplicacion['IdMetodoAplicacion']; ?>" <?php if ((isset($row['CDU_IdMetodoAplicacion'])) && (strcmp($row_MetodoAplicacion['IdMetodoAplicacion'], $row['CDU_IdMetodoAplicacion']) == 0)) {
-													   echo "selected=\"selected\"";
-												   } ?>><?php echo $row_MetodoAplicacion['DeMetodoAplicacion']; ?></option>
-											<?php } ?>
-										</select>
-									<?php } ?>
-								</td>
-								<td>
-									<?php if (($row['TreeType'] != "T") || (($row['TreeType'] == "T") && ($row['LineNum'] != 0))) { ?>
-										<select id="CDU_IdTipoPlagas<?php echo $i; ?>" name="CDU_IdTipoPlagas[]"
-											class="form-control select2"
-											onChange="ActualizarDatos('CDU_IdTipoPlagas',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);"
-											<?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402))) {
-												echo "disabled='disabled'";
-											} ?>>
-											<option value="">(NINGUNO)</option>
-											<?php while ($row_TipoPlaga = sqlsrv_fetch_array($SQL_TipoPlaga)) { ?>
-												<option value="<?php echo $row_TipoPlaga['IdTipoPlagas']; ?>" <?php if ((isset($row['CDU_IdTipoPlagas'])) && (strcmp($row_TipoPlaga['IdTipoPlagas'], $row['CDU_IdTipoPlagas']) == 0)) {
-													   echo "selected=\"selected\"";
-												   } ?>><?php echo $row_TipoPlaga['DeTipoPlagas']; ?></option>
-											<?php } ?>
-										</select>
-									<?php } ?>
-								</td>
-								<td>
-									<?php if (($row['TreeType'] != "T") || (($row['TreeType'] == "T") && ($row['LineNum'] != 0))) { ?>
-										<input size="50" type="text" id="CDU_AreasControladas<?php echo $i; ?>"
-											name="CDU_AreasControladas[]" class="form-control"
-											value="<?php echo $row['CDU_AreasControladas']; ?>"
-											onChange="ActualizarDatos('CDU_AreasControladas',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);"
-											<?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402))) {
-												echo "readonly";
-											} ?>>
-									<?php } ?>
-								</td>
-
-								<td><input size="50" type="text" id="FreeTxt<?php echo $i; ?>" name="FreeTxt[]"
+									<input size="50" type="text" id="FreeTxt<?php echo $i; ?>" name="FreeTxt[]"
 										class="form-control" value="<?php echo $row['FreeTxt']; ?>"
 										onChange="ActualizarDatos('FreeTxt',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);"
 										maxlength="100" <?php if (($row['LineStatus'] == 'C') || ($type == 2)) {
 											echo "readonly";
 										} ?>>
 								</td>
+								<!-- /#FreeTxt -->
 
 								<td>
 									<input size="15" type="text" id="Price<?php echo $i; ?>" name="Price[]" class="form-control"
@@ -1011,66 +1055,27 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 						echo "<script> Totalizar(" . ($i - 1) . ", false); </script>";
 					}
 					?>
-					<?php if ($Estado == 1) { ?>
-						<tr>
-							<td>&nbsp;</td>
-							<td><input size="20" type="text" id="ItemCodeNew" name="ItemCodeNew" class="form-control"></td>
-							<td><input size="50" type="text" id="ItemNameNew" name="ItemNameNew" class="form-control"></td>
 
-							<td><input size="15" type="text" id="UnitMsrNew" name="UnitMsrNew" class="form-control"></td>
-							<td><input size="15" type="text" id="QuantityNew" name="QuantityNew" class="form-control"></td>
-							<td><input size="15" type="text" id="CantInicialNew" name="CantInicialNew" class="form-control">
-							</td>
+					<!-- SMM, 08/08/2023 -->
+					<tr>
+						<td>&nbsp;</td>
 
-							<td><input size="20" type="text" id="CDU_CantLitrosNew" name="CDU_CantLitrosNew"
-									class="form-control"></td>
-							<td><input size="20" type="text" id="WhsCodeNew" name="WhsCodeNew" class="form-control"></td>
-							<td><input size="20" type="text" id="CDU_DosificacionNew" name="CDU_DosificacionNew"
-									class="form-control"></td>
-							<td><input size="20" type="text" id="OnHandNew" name="OnHandNew" class="form-control"></td>
+						<td><input size="20" class="form-control"></td>
+						<td><input size="50" class="form-control"></td>
 
-							<td><input size="30" type="text" id="OcrCodeNew" name="OcrCodeNew" class="form-control"></td>
-							<td><input size="30" type="text" id="OcrCode2New" name="OcrCode2New" class="form-control"></td>
-							<td><input size="30" type="text" id="OcrCode3New" name="OcrCode3New" class="form-control"></td>
-
-							<td><input size="50" type="text" id="ProyectoNew" name="ProyectoNew" class="form-control"></td>
-							<td><input size="50" type="text" id="EmpleadoNew" name="EmpleadoNew" class="form-control"></td>
-
-							<td><input size="30" type="text" id="TipoOTNew" name="TipoOTNew" class="form-control"></td>
-							<td><input size="30" type="text" id="SedeEmpresaNew" name="SedeEmpresaNew" class="form-control">
-							</td>
-							<td><input size="30" type="text" id="TipoCargoNew" name="TipoCargoNew" class="form-control">
-							</td>
-							<td><input size="30" type="text" id="TipoProblemaNew" name="TipoProblemaNew"
-									class="form-control"></td>
-							<td><input size="30" type="text" id="TipoPreventivoNew" name="TipoPreventivoNew"
-									class="form-control"></td>
-
-							<td><input size="30" type="text" id="CDU_IdServicioNew" name="CDU_IdServicioNew"
-									class="form-control"></td>
-							<td><input size="30" type="text" id="CDU_IdMetodoAplicacionNew" name="CDU_IdMetodoAplicacionNew"
-									class="form-control"></td>
-							<td><input size="30" type="text" id="CDU_IdTipoPlagasNew" name="CDU_IdTipoPlagasNew"
-									class="form-control"></td>
-
-							<td><input size="50" type="text" id="CDU_AreasControladasNew" name="CDU_AreasControladasNew"
-									class="form-control"></td>
-							<td><input size="50" type="text" id="FreeTxtNew" name="FreeTxtNew" class="form-control"></td>
-
-							<td><input size="15" type="text" id="PriceNew" name="PriceNew" class="form-control"></td>
-							<td><input size="15" type="text" id="PriceTaxNew" name="PriceTaxNew" class="form-control"></td>
-							<td><input size="15" type="text" id="PriceDescNew" name="PriceDescNew" class="form-control">
-							</td>
-							<td><input size="15" type="text" id="DiscPrcntNew" name="DiscPrcntNew" class="form-control">
-							</td>
-							<td><input size="15" type="text" id="LineTotalNew" name="LineTotalNew" class="form-control">
-							</td>
-
-							<td>&nbsp;</td>
-							<td>&nbsp;</td>
-							<td>&nbsp;</td>
-						</tr>
-					<?php } ?>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+					</tr>
 				</tbody>
 			</table>
 		</div>
@@ -1151,6 +1156,7 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 			$(".alkin").on('click', function () {
 				$('.ibox-content').toggleClass('sk-loading');
 			});
+
 			$(".select2").select2();
 
 			shortcut.add("Alt+Q", function () {
@@ -1160,62 +1166,6 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 			shortcut.add("Alt+Y", function () {
 				BuscarSerial();
 			});
-
-			var options = {
-				url: function (phrase) {
-					return "ajx_buscar_datos_json.php?type=12&data=" + phrase + "&whscode=<?php echo $Almacen; ?>&tipodoc=2";
-				},
-				getValue: "IdArticulo",
-				requestDelay: 400,
-				template: {
-					type: "description",
-					fields: {
-						description: "DescripcionArticulo"
-					}
-				},
-				list: {
-					maxNumberOfElements: 8,
-					match: {
-						enabled: true
-					},
-					onClickEvent: function () {
-						var IdArticulo = $("#ItemCodeNew").getSelectedItemData().IdArticulo;
-						var DescripcionArticulo = $("#ItemCodeNew").getSelectedItemData().DescripcionArticulo;
-						var UndMedida = $("#ItemCodeNew").getSelectedItemData().UndMedida;
-						var PrecioSinIVA = $("#ItemCodeNew").getSelectedItemData().PrecioSinIVA;
-						var PrecioConIVA = $("#ItemCodeNew").getSelectedItemData().PrecioConIVA;
-						var CodAlmacen = $("#ItemCodeNew").getSelectedItemData().CodAlmacen;
-						var Almacen = $("#ItemCodeNew").getSelectedItemData().Almacen;
-						var StockAlmacen = $("#ItemCodeNew").getSelectedItemData().StockAlmacen;
-						var StockGeneral = $("#ItemCodeNew").getSelectedItemData().StockGeneral;
-						$("#ItemNameNew").val(DescripcionArticulo);
-						$("#UnitMsrNew").val(UndMedida);
-						$("#QuantityNew").val('1.00');
-						$("#CantInicialNew").val('1.00');
-						$("#CDU_CantLitrosNew").val('1.00');
-						$("#PriceNew").val(PrecioSinIVA);
-						$("#PriceTaxNew").val(PrecioConIVA);
-						$("#DiscPrcntNew").val('0.00');
-						$("#LineTotalNew").val('0.00');
-						$("#OnHandNew").val(StockAlmacen);
-						$("#WhsCodeNew").val(Almacen);
-						$.ajax({
-							type: "GET",
-							<?php if ($type == 1) { ?>
-									url: "registro.php?P=35&doctype=5&item=" + IdArticulo + "&whscode=" + CodAlmacen + "&cardcode=<?php echo $CardCode; ?>",
-							<?php } else { ?>
-									url: "registro.php?P=35&doctype=6&item=" + IdArticulo + "&whscode=" + CodAlmacen + "&cardcode=0&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
-							<?php } ?>
-						success: function (response) {
-								window.location.href = "detalle_entrega_venta.php?<?php echo $_SERVER['QUERY_STRING']; ?>";
-							}
-						});
-					}
-				}
-			};
-			<?php if ($sw == 1 && $Estado == 1 && $type == 1 && PermitirFuncion(404)) { ?>
-				$("#ItemCodeNew").easyAutocomplete(options);
-			<?php } ?>
 		});
 	</script>
 </body>

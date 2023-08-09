@@ -3,7 +3,7 @@ require_once "includes/conexion.php";
 PermitirAcceso(405);
 
 // Permiso para ver los campos de control de plagas. SMM, 08/08/2023
-$ControlPlagas = false;
+$ControlPlagas = !PermitirFuncion(425);
 
 // Dimensiones, SMM 22/08/2022
 $DimSeries = intval(ObtenerVariable("DimensionSeries"));
@@ -25,7 +25,7 @@ $CardCode = "";
 $Id = "";
 $Evento = "";
 $type = 1;
-$Estado = 1; //Abierto
+$Estado = 1; // Abierto (useless)
 
 // Se eliminaron las dimensiones, 31/08/2022
 
@@ -482,10 +482,10 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 								class="btn btn-success btn-xs" disabled onClick="DuplicarLinea();"><i
 									class="fa fa-copy"></i></button>
 						</th> <!-- SMM, 08/03/2022 -->
-						
+
 						<th>Código articulo</th>
 						<th>Nombre articulo</th>
-						
+
 						<th>Unidad</th>
 						<th>Cantidad</th>
 						<th>Cant. Pendiente</th>
@@ -533,6 +533,7 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 						<th>Total</th>
 						<th>CtrlDesc</th><!-- SMM, 10/05/2022 -->
 						<th>Exento</th><!-- SMM, 23/04/2022 -->
+
 						<th><i class="fa fa-refresh"></i></th>
 					</tr>
 				</thead>
@@ -577,8 +578,8 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 										value="<?php echo $row['LineNum']; ?>">
 								</td>
 								<!-- /#ItemCode -->
-								
-								<!-- Nombre articulo -->			
+
+								<!-- Nombre articulo -->
 								<td>
 									<input size="50" type="text" autocomplete="off" id="ItemName<?php echo $i; ?>"
 										name="ItemName[]" class="form-control" value="<?php echo $row['ItemName']; ?>"
@@ -589,7 +590,7 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 										} ?>>
 								</td>
 								<!-- /#ItemName -->
-								
+
 								<!-- Unidad -->
 								<td>
 									<input size="15" type="text" autocomplete="off" id="UnitMsr<?php echo $i; ?>"
@@ -636,13 +637,13 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 									</select>
 								</td>
 								<!-- /#WhsCode -->
-								
+
 								<!-- Stock almacén -->
 								<td>
 									<input size="15" type="text" id="OnHand<?php echo $i; ?>" name="OnHand[]"
 										class="form-control"
 										value="<?php echo number_format($row['OnHand'], $dCantidades, $sDecimal, $sMillares); ?>"
-										readonly>	
+										readonly>
 								</td>
 								<!-- /#OnHand -->
 
@@ -678,13 +679,13 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 												<option value="">(NINGUNO)</option>
 												<?php while ($row_Servicios = sqlsrv_fetch_array($SQL_Servicios)) { ?>
 													<option value="<?php echo $row_Servicios['IdServicio']; ?>" <?php if ((isset($row['CDU_IdServicio'])) && (strcmp($row_Servicios['IdServicio'], $row['CDU_IdServicio']) == 0)) {
-														echo "selected";
-													} ?>><?php echo $row_Servicios['DeServicio']; ?></option>
+														   echo "selected";
+													   } ?>><?php echo $row_Servicios['DeServicio']; ?></option>
 												<?php } ?>
 											</select>
 										<?php } ?>
 									</td>
-									
+
 									<td>
 										<?php if (($row['TreeType'] != "T") || (($row['TreeType'] == "T") && ($row['LineNum'] != 0))) { ?>
 											<select id="CDU_IdMetodoAplicacion<?php echo $i; ?>" name="CDU_IdMetodoAplicacion[]"
@@ -696,13 +697,13 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 												<option value="">(NINGUNO)</option>
 												<?php while ($row_MetodoAplicacion = sqlsrv_fetch_array($SQL_MetodoAplicacion)) { ?>
 													<option value="<?php echo $row_MetodoAplicacion['IdMetodoAplicacion']; ?>" <?php if ((isset($row['CDU_IdMetodoAplicacion'])) && (strcmp($row_MetodoAplicacion['IdMetodoAplicacion'], $row['CDU_IdMetodoAplicacion']) == 0)) {
-														echo "selected";
-													} ?>><?php echo $row_MetodoAplicacion['DeMetodoAplicacion']; ?></option>
+														   echo "selected";
+													   } ?>><?php echo $row_MetodoAplicacion['DeMetodoAplicacion']; ?></option>
 												<?php } ?>
 											</select>
 										<?php } ?>
 									</td>
-									
+
 									<td>
 										<?php if (($row['TreeType'] != "T") || (($row['TreeType'] == "T") && ($row['LineNum'] != 0))) { ?>
 											<select id="CDU_IdTipoPlagas<?php echo $i; ?>" name="CDU_IdTipoPlagas[]"
@@ -714,13 +715,13 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 												<option value="">(NINGUNO)</option>
 												<?php while ($row_TipoPlaga = sqlsrv_fetch_array($SQL_TipoPlaga)) { ?>
 													<option value="<?php echo $row_TipoPlaga['IdTipoPlagas']; ?>" <?php if ((isset($row['CDU_IdTipoPlagas'])) && (strcmp($row_TipoPlaga['IdTipoPlagas'], $row['CDU_IdTipoPlagas']) == 0)) {
-														echo "selected";
-													} ?>><?php echo $row_TipoPlaga['DeTipoPlagas']; ?></option>
+														   echo "selected";
+													   } ?>><?php echo $row_TipoPlaga['DeTipoPlagas']; ?></option>
 												<?php } ?>
 											</select>
 										<?php } ?>
 									</td>
-									
+
 									<td>
 										<?php if (($row['TreeType'] != "T") || (($row['TreeType'] == "T") && ($row['LineNum'] != 0))) { ?>
 											<input size="50" type="text" id="CDU_AreasControladas<?php echo $i; ?>"
@@ -732,7 +733,7 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 												} ?>>
 										<?php } ?>
 									</td>
-								<?php } ?> 
+								<?php } ?>
 								<!-- SMM, 09/08/2023 -->
 
 								<!-- Dimensiones dinámicas, SMM 22/08/2022 -->
@@ -878,7 +879,7 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 									</select>
 								</td>
 								<!-- /#CDU_IdTipoPreventivo -->
-								
+
 								<!-- SMM, 04/08/2023 -->
 								<td>
 									<select name="CDU_IdTipoPreventivo[]" id="CDU_IdTipoPreventivo<?php echo $i; ?>"

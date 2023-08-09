@@ -2,6 +2,9 @@
 require_once "includes/conexion.php";
 PermitirAcceso(410);
 
+// Permiso para ver los campos de control de plagas. SMM, 08/08/2023
+$ControlPlagas = !PermitirFuncion(425);
+
 // Dimensiones, SMM 21/06/2022
 $DimSeries = intval(ObtenerVariable("DimensionSeries"));
 $SQL_Dimensiones = Seleccionar('uvw_Sap_tbl_Dimensiones', '*', "DimActive='Y'");
@@ -28,9 +31,9 @@ $Usuario = "";
 $type = 1;
 $Id = "";
 $Evento = "";
-$Estado = 1; //Abierto
-$Lotes = 0; //Cantidad de articulos con lotes
-$Seriales = 0; //Cantidad de articulos con seriales
+$Estado = 1; // Abierto (useless)
+$Lotes = 0; // Cantidad de articulos con lotes
+$Seriales = 0; // Cantidad de articulos con seriales
 
 if (isset($_GET['id']) && ($_GET['id'] != "")) {
 	if ($_GET['type'] == 1) {
@@ -165,6 +168,10 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 			padding: 1px !important;
 			vertical-align: middle;
 		}
+
+		.select2-container {
+			width: 300px !important;
+		}
 	</style>
 
 	<script>
@@ -263,9 +270,9 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 				$.ajax({
 					type: "GET",
 					<?php if ($type == 1) { ?>
-							url: "includes/procedimientos.php?type=17&edit=<?php echo $type; ?>&linenum=" + json + "&cardcode=<?php echo $CardCode; ?>",
+								url: "includes/procedimientos.php?type=17&edit=<?php echo $type; ?>&linenum=" + json + "&cardcode=<?php echo $CardCode; ?>",
 					<?php } else { ?>
-							url: "includes/procedimientos.php?type=17&edit=<?php echo $type; ?>&linenum=" + json + "&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
+								url: "includes/procedimientos.php?type=17&edit=<?php echo $type; ?>&linenum=" + json + "&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
 					<?php } ?>
 			success: function (response) {
 						window.location.href = "detalle_devolucion_venta.php?<?php echo $_SERVER['QUERY_STRING']; ?>";
@@ -284,9 +291,9 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 				$.ajax({
 					type: "GET",
 					<?php if ($type == 1) { ?>
-							url: "includes/procedimientos.php?type=57&edit=<?php echo $type; ?>&linenum=" + json + "&cardcode=<?php echo $CardCode; ?>",
+								url: "includes/procedimientos.php?type=57&edit=<?php echo $type; ?>&linenum=" + json + "&cardcode=<?php echo $CardCode; ?>",
 					<?php } else { ?>
-							url: "includes/procedimientos.php?type=57&edit=<?php echo $type; ?>&linenum=" + json + "&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
+								url: "includes/procedimientos.php?type=57&edit=<?php echo $type; ?>&linenum=" + json + "&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
 					<?php } ?>
 			success: function (response) {
 						window.location.href = "detalle_devolucion_venta.php?<?php echo $_SERVER['QUERY_STRING']; ?>";
@@ -628,7 +635,7 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 							sqlsrv_fetch($SQL_OT_TIPOPROBLEMA, SQLSRV_SCROLL_ABSOLUTE, -1);
 							sqlsrv_fetch($SQL_OT_TIPOPREVENTI, SQLSRV_SCROLL_ABSOLUTE, -1);
 
- 							// SMM, 22/02/2022
+							// SMM, 22/02/2022
 							sqlsrv_fetch($SQL_Proyecto, SQLSRV_SCROLL_ABSOLUTE, -1);
 							sqlsrv_fetch($SQL_EmpleadosVentas, SQLSRV_SCROLL_ABSOLUTE, -1);
 							?>
@@ -758,8 +765,9 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 
 								<!-- Nuevos campos basados en la OT -->
 								<td>
-									<select name="CDU_IdTipoOT[]" id="CDU_IdTipoOT<?php echo $i; ?>" class="form-control select2" required
-									onChange="ActualizarDatos('CDU_IdTipoOT',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);">
+									<select name="CDU_IdTipoOT[]" id="CDU_IdTipoOT<?php echo $i; ?>"
+										class="form-control select2" required
+										onChange="ActualizarDatos('CDU_IdTipoOT',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);">
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_ORIGEN = sqlsrv_fetch_array($SQL_OT_ORIGEN)) { ?>
@@ -773,8 +781,9 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 								</td>
 
 								<td>
-									<select name="CDU_IdSedeEmpresa[]" id="CDU_IdSedeEmpresa<?php echo $i; ?>" class="form-control select2" required
-									onChange="ActualizarDatos('CDU_IdSedeEmpresa',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);">
+									<select name="CDU_IdSedeEmpresa[]" id="CDU_IdSedeEmpresa<?php echo $i; ?>"
+										class="form-control select2" required
+										onChange="ActualizarDatos('CDU_IdSedeEmpresa',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);">
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_SEDE_EMPRESA = sqlsrv_fetch_array($SQL_OT_SEDE_EMPRESA)) { ?>
@@ -788,8 +797,9 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 								</td>
 
 								<td>
-									<select name="CDU_IdTipoCargo[]" id="CDU_IdTipoCargo<?php echo $i; ?>" class="form-control select2" required
-									onChange="ActualizarDatos('CDU_IdTipoCargo',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);">
+									<select name="CDU_IdTipoCargo[]" id="CDU_IdTipoCargo<?php echo $i; ?>"
+										class="form-control select2" required
+										onChange="ActualizarDatos('CDU_IdTipoCargo',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);">
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_CLASES = sqlsrv_fetch_array($SQL_OT_TipoLlamada)) { ?>
@@ -803,8 +813,9 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 								</td>
 
 								<td>
-									<select name="CDU_IdTipoProblema[]" id="CDU_IdTipoProblema<?php echo $i; ?>" class="form-control select2" required
-									onChange="ActualizarDatos('CDU_IdTipoProblema',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);">
+									<select name="CDU_IdTipoProblema[]" id="CDU_IdTipoProblema<?php echo $i; ?>"
+										class="form-control select2" required
+										onChange="ActualizarDatos('CDU_IdTipoProblema',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);">
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_TIPOPROBLEMA = sqlsrv_fetch_array($SQL_OT_TIPOPROBLEMA)) { ?>
@@ -818,8 +829,9 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 								</td>
 
 								<td>
-									<select name="CDU_IdTipoPreventivo[]" id="CDU_IdTipoPreventivo<?php echo $i; ?>" class="form-control select2" required
-									onChange="ActualizarDatos('CDU_IdTipoPreventivo',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);">
+									<select name="CDU_IdTipoPreventivo[]" id="CDU_IdTipoPreventivo<?php echo $i; ?>"
+										class="form-control select2" required
+										onChange="ActualizarDatos('CDU_IdTipoPreventivo',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);">
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_TIPOPREVENTI = sqlsrv_fetch_array($SQL_OT_TIPOPREVENTI)) { ?>
@@ -996,86 +1008,27 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 						echo "<script> Totalizar(" . ($i - 1) . ", false); </script>";
 					}
 					?>
-					<?php if ($Estado == 1) { ?>
-						<tr>
-							<td>&nbsp;</td>
-							<td><input size="20" type="text" id="ItemCodeNew" name="ItemCodeNew" class="form-control"></td>
-							<td><input size="50" type="text" id="ItemNameNew" name="ItemNameNew" class="form-control"></td>
 
-							<td><input size="15" type="text" id="UnitMsrNew" name="UnitMsrNew" class="form-control"></td>
-							<td><input size="15" type="text" id="QuantityNew" name="QuantityNew" class="form-control"></td>
-							<td><input size="15" type="text" id="CantInicialNew" name="CantInicialNew" class="form-control">
-							</td>
+					<!-- SMM, 08/08/2023 -->
+					<tr>
+						<td>&nbsp;</td>
 
-							<!-- td>
-								<input size="20" type="text" id="CDU_CantLitrosNew" name="CDU_CantLitrosNew"
-									class="form-control">
-							</td -->
+						<td><input size="20" class="form-control"></td>
+						<td><input size="50" class="form-control"></td>
 
-							<td><input size="20" type="text" id="WhsCodeNew" name="WhsCodeNew" class="form-control"></td>
-
-							<!-- td>
-								<input size="20" type="text" id="CDU_DosificacionNew" name="CDU_DosificacionNew"
-									class="form-control">
-							</td -->
-
-							<td><input size="20" type="text" id="OnHandNew" name="OnHandNew" class="form-control"></td>
-
-							<td><input size="30" type="text" id="CDU_SucursalClienteNew" name="CDU_SucursalClienteNew"
-									class="form-control"></td>
-
-							<td><input size="30" type="text" id="OcrCodeNew" name="OcrCodeNew" class="form-control"></td>
-							<td><input size="30" type="text" id="OcrCode2New" name="OcrCode2New" class="form-control"></td>
-							<td><input size="30" type="text" id="OcrCode3New" name="OcrCode3New" class="form-control"></td>
-
-							<td><input size="50" type="text" id="ProyectoNew" name="ProyectoNew" class="form-control"></td>
-							<td><input size="50" type="text" id="EmpleadoNew" name="EmpleadoNew" class="form-control"></td>
-
-							<td><input size="30" type="text" id="TipoOTNew" name="TipoOTNew" class="form-control"></td>
-							<td><input size="30" type="text" id="SedeEmpresaNew" name="SedeEmpresaNew" class="form-control">
-							</td>
-							<td><input size="30" type="text" id="TipoCargoNew" name="TipoCargoNew" class="form-control">
-							</td>
-							<td><input size="30" type="text" id="TipoProblemaNew" name="TipoProblemaNew"
-									class="form-control"></td>
-							<td><input size="30" type="text" id="TipoPreventivoNew" name="TipoPreventivoNew"
-									class="form-control"></td>
-
-							<!-- td>
-								<input size="30" type="text" id="CDU_IdServicioNew" name="CDU_IdServicioNew"
-									class="form-control">
-							</td -->
-
-							<td>
-								<input size="30" type="text" id="CDU_IdMetodoAplicacionNew" name="CDU_IdMetodoAplicacionNew"
-									class="form-control">
-							</td>
-
-							<!-- td>
-								<input size="30" type="text" id="CDU_IdTipoPlagasNew" name="CDU_IdTipoPlagasNew"
-									class="form-control">
-							</td -->
-
-							<td><input size="50" type="text" id="CDU_AreasControladasNew" name="CDU_AreasControladasNew"
-									class="form-control"></td>
-							<td><input size="50" type="text" id="CDU_OrdenServicioNew" name="CDU_OrdenServicioNew"
-									class="form-control"></td>
-							<td><input size="50" type="text" id="FreeTxtNew" name="FreeTxtNew" class="form-control"></td>
-
-							<td><input size="15" type="text" id="PriceNew" name="PriceNew" class="form-control"></td>
-							<td><input size="15" type="text" id="PriceTaxNew" name="PriceTaxNew" class="form-control"></td>
-							<td><input size="15" type="text" id="PriceDescNew" name="PriceDescNew" class="form-control">
-							</td>
-							<td><input size="15" type="text" id="DiscPrcntNew" name="DiscPrcntNew" class="form-control">
-							</td>
-							<td><input size="15" type="text" id="LineTotalNew" name="LineTotalNew" class="form-control">
-							</td>
-
-							<td>&nbsp;</td>
-							<td>&nbsp;</td>
-							<td>&nbsp;</td>
-						</tr>
-					<?php } ?>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+					</tr>
 				</tbody>
 			</table>
 		</div>
@@ -1156,6 +1109,7 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 			$(".alkin").on('click', function () {
 				$('.ibox-content').toggleClass('sk-loading');
 			});
+
 			$(".select2").select2();
 
 			shortcut.add("Alt+Q", function () {
@@ -1165,64 +1119,6 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 			shortcut.add("Alt+Y", function () {
 				BuscarSerial();
 			});
-
-			var options = {
-				url: function (phrase) {
-					return "ajx_buscar_datos_json.php?type=12&data=" + phrase + "&whscode=<?php echo $Almacen; ?>&tipodoc=2";
-				},
-				getValue: "IdArticulo",
-				requestDelay: 400,
-				template: {
-					type: "description",
-					fields: {
-						description: "DescripcionArticulo"
-					}
-				},
-				list: {
-					maxNumberOfElements: 8,
-					match: {
-						enabled: true
-					},
-					onClickEvent: function () {
-						var IdArticulo = $("#ItemCodeNew").getSelectedItemData().IdArticulo;
-						var DescripcionArticulo = $("#ItemCodeNew").getSelectedItemData().DescripcionArticulo;
-						var UndMedida = $("#ItemCodeNew").getSelectedItemData().UndMedida;
-						var PrecioSinIVA = $("#ItemCodeNew").getSelectedItemData().PrecioSinIVA;
-						var PrecioConIVA = $("#ItemCodeNew").getSelectedItemData().PrecioConIVA;
-						var CodAlmacen = $("#ItemCodeNew").getSelectedItemData().CodAlmacen;
-						var Almacen = $("#ItemCodeNew").getSelectedItemData().Almacen;
-						var StockAlmacen = $("#ItemCodeNew").getSelectedItemData().StockAlmacen;
-						var StockGeneral = $("#ItemCodeNew").getSelectedItemData().StockGeneral;
-						$("#ItemNameNew").val(DescripcionArticulo);
-						$("#UnitMsrNew").val(UndMedida);
-						$("#QuantityNew").val('1.00');
-						$("#CantInicialNew").val('1.00');
-						$("#PriceNew").val(PrecioSinIVA);
-						$("#PriceTaxNew").val(PrecioConIVA);
-						$("#DiscPrcntNew").val('0.00');
-						$("#LineTotalNew").val('0.00');
-						$("#OnHandNew").val(StockAlmacen);
-						$("#WhsCodeNew").val(Almacen);
-
-						// Insertar articulos en el carrito.
-						// (type==1) ? "DetalleCarrito":"Detalle";
-						$.ajax({
-							type: "GET",
-							<?php if ($type == 1) { ?>
-										url: "registro.php?P=35&doctype=13&item=" + IdArticulo + "&whscode=" + CodAlmacen + "&cardcode=<?php echo $CardCode; ?>",
-							<?php } else { ?>
-										url: "registro.php?P=35&doctype=14&item=" + IdArticulo + "&whscode=" + CodAlmacen + "&cardcode=0&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
-							<?php } ?>
-						success: function (response) {
-								window.location.href = "detalle_devolucion_venta.php?<?php echo $_SERVER['QUERY_STRING']; ?>";
-							}
-						});
-					}
-				}
-			};
-			<?php if ($sw == 1 && $Estado == 1 && $type == 1 && PermitirFuncion(409)) { ?>
-				$("#ItemCodeNew").easyAutocomplete(options);
-			<?php } ?>
 		});
 	</script>
 </body>
