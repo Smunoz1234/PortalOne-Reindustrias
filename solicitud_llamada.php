@@ -73,7 +73,7 @@ if (isset($_POST['swError']) && ($_POST['swError'] != "")) { //Para saber si ha 
 }
 
 if ($type_llmd == 0) {
-	$Title = "Crear llamada de servicio";
+	$Title = "Crear Solicitud de Llamada de servicio (Agenda)";
 
 	//Origen de llamada
 	$SQL_OrigenLlamada = Seleccionar('uvw_Sap_tbl_LlamadasServiciosOrigen', '*', "Activo = 'Y'", 'DeOrigenLlamada');
@@ -89,7 +89,7 @@ if ($type_llmd == 0) {
 
 	// SMM, 12/02/2022
 } else {
-	$Title = "Editar llamada de servicio";
+	$Title = "Editar Solicitud de Llamada de servicio (Agenda)";
 
 	//Origen de llamada
 	$SQL_OrigenLlamada = Seleccionar('uvw_Sap_tbl_LlamadasServiciosOrigen', '*', '', 'DeOrigenLlamada');
@@ -1556,7 +1556,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 							<a href="#">Gestión de tareas</a>
 						</li>
 						<li>
-							<a href="gestionar_llamadas_servicios.php">Gestionar llamadas de servicios</a>
+							<a href="gestionar_llamadas_servicios.php">Gestionar solicitudes de llamadas de servicios</a>
 						</li>
 						<li class="active">
 							<strong><?php echo $Title; ?></strong>
@@ -1835,10 +1835,6 @@ function AgregarEsto(contenedorID, valorElemento) {
 													<?php } ?>
 													</ul>
 												</div>
-
-												<?php $MostrarCorreo = false; if (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] == '-1') && $MostrarCorreo) { ?>
-													<a href="#" class="btn btn-outline btn-primary" onClick="$('#modalCorreo').modal('show');"><i class="fa fa-envelope"></i> Enviar correo</a>
-												<?php } ?>
 
 												<a href="#" class="btn btn-outline btn-info" onClick="VerMapaRel('<?php echo base64_encode($row['ID_LlamadaServicio']); ?>','<?php echo base64_encode('191'); ?>');"><i class="fa fa-sitemap"></i> Mapa de relaciones</a>
 											</div>

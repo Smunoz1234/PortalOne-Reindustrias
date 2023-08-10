@@ -1,6 +1,5 @@
 <?php require_once "includes/conexion.php";
-//require_once("includes/conexion_hn.php");
-PermitirAcceso(301);
+// PermitirAcceso(301);
 
 $sw = 0;
 
@@ -8,10 +7,7 @@ $sw = 0;
 $SQL_EstadoLlamada = Seleccionar('uvw_tbl_EstadoLlamada', '*');
 
 //Asignado por
-$SQL_AsignadoPor = Seleccionar('uvw_Sap_tbl_LlamadasServicios', 'DISTINCT IdAsignadoPor, DeAsignadoPor', '', 'DeAsignadoPor');
-
-//Asignado a
-//$SQL_AsignadoA=Seleccionar('uvw_Sap_tbl_LlamadasServicios','DISTINCT IdAsignadoA, DeAsignadoA','','DeAsignadoA');
+$SQL_AsignadoPor = Seleccionar('[uvw_tbl_SolicitudLlamadasServicios]', 'DISTINCT IdAsignadoPor, DeAsignadoPor', '', 'DeAsignadoPor');
 
 //Estado servicio llamada
 $SQL_EstServLlamada = Seleccionar('uvw_Sap_tbl_LlamadasServiciosEstadoServicios', '*', '', 'DeEstadoServicio');
@@ -145,7 +141,7 @@ if (isset($_GET['Cliente'])) {
 }
 
 if (isset($_GET['Series']) && $_GET['Series'] != "") {
-    $Filtro .= " and [Series]='" . $_GET['Series'] . "'";
+    $Filtro .= " AND [IdSeries]='" . $_GET['Series'] . "'";
     $sw = 1;
 } else {
     $FilSerie = "";
@@ -158,7 +154,7 @@ if (isset($_GET['Series']) && $_GET['Series'] != "") {
         }
         $i++;
     }
-    $Filtro .= " and [Series] IN (" . $FilSerie . ")";
+    $Filtro .= " AND [IdSeries] IN ($FilSerie)";
     $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 }
 
@@ -184,13 +180,13 @@ if (isset($_GET['AsignadoPor']) && $_GET['AsignadoPor'] != "") {
             $FilAsigPor .= ",'" . $_GET['AsignadoPor'][$i] . "'";
         }
     }
-    $Filtro .= " and [IdAsignadoPor] IN (" . $FilAsigPor . ")";
+    $Filtro .= " AND [ID_Usuario] IN ($FilAsigPor)";
     $sw = 1;
 } elseif (!isset($_GET['AsignadoPor']) && (!isset($_GET['FechaInicial']))) {
     $_GET['AsignadoPor'][0] = $_SESSION['CodUser'];
     $FilAsigPor = "";
     $FilAsigPor .= "'" . $_GET['AsignadoPor'][0] . "'";
-    $Filtro .= " and [IdAsignadoPor] IN (" . $FilAsigPor . ")";
+    $Filtro .= " and [ID_Usuario] IN ($FilAsigPor)";
     //$sw=1;
 }
 
@@ -199,18 +195,6 @@ if (isset($_GET['EstadoServicio']) && $_GET['EstadoServicio'] != "") {
     $sw = 1;
 }
 
-/*if(isset($_GET['AsignadoA'])&&$_GET['AsignadoA']!=""){
-$FilAsigA="";
-for($i=0;$i<count($_GET['AsignadoA']);$i++){
-if($i==0){
-$FilAsigA.="'".$_GET['AsignadoA'][$i]."'";
-}else{
-$FilAsigA.=",'".$_GET['AsignadoA'][$i]."'";
-}
-}
-$Filtro.=" and [IdAsignadoA] IN (".$FilAsigA.")";
-$sw=1;
-}*/
 if (isset($_GET['BuscarDato']) && $_GET['BuscarDato'] != "") {
     // Stiven Muñoz Murillo, 26/01/2022
     // ."%' OR [IdNumeroSerie] LIKE '%".$_GET['BuscarDato']
@@ -219,21 +203,18 @@ if (isset($_GET['BuscarDato']) && $_GET['BuscarDato'] != "") {
 }
 
 if ($sw == 1) {
-    //$Where="([FechaCreacionLLamada] Between '$FechaInicial' and '$FechaFinal') $Filtro";
-    //$SQL=Seleccionar('uvw_Sap_tbl_LlamadasServicios','*',$Where);
-    $Cons = "Select * From uvw_Sap_tbl_LlamadasServicios Where (FechaCreacionLLamada Between '$FechaInicial' and '$FechaFinal') $Filtro";
+    $Cons = "SELECT * FROM [uvw_tbl_SolicitudLlamadasServicios] WHERE (FechaCreacionLLamada BETWEEN '$FechaInicial' AND '$FechaFinal') $Filtro";
     $SQL = sqlsrv_query($conexion, $Cons);
-
-    //echo $Cons;
-    // echo "<br>sw==1";
+    // echo "sw == 1";
 } else {
-    $Where = "([FechaCreacionLLamada] Between '$FechaInicial' and '$FechaFinal') $Filtro";
-    $SQL = Seleccionar('uvw_Sap_tbl_LlamadasServicios', 'TOP 10 *', $Where);
-    //$Cons="Select TOP 100 * From uvw_Sap_tbl_LlamadasServicios ";
-    //$Cons="";
-
-    //echo "sw!=1";
+    $Cons = "SELECT TOP 10 * FROM [uvw_tbl_SolicitudLlamadasServicios] WHERE (FechaCreacionLLamada BETWEEN '$FechaInicial' AND '$FechaFinal') $Filtro";
+    $SQL = sqlsrv_query($conexion, $Cons);
+    // echo "sw != 1";
 }
+
+// SMM, 08/08/2023
+// echo "<br>$Cons";
+
 
 if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
     $Where = "DocNum LIKE '%" . trim($_GET['IDTicket']) . "%'";
@@ -251,7 +232,7 @@ if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
     $Where .= " and [Series] IN (" . $FilSerie . ")";
     $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 
-    $SQL = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', $Where);
+    $SQL = Seleccionar('[uvw_tbl_SolicitudLlamadasServicios]', '*', $Where);
 }
 
 ?>
@@ -261,7 +242,7 @@ if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
 <head>
     <?php include_once "includes/cabecera.php"; ?>
     <!-- InstanceBeginEditable name="doctitle" -->
-    <title>Llamadas de servicio |
+    <title>Solicitudes de Llamadas de servicio (Agenda) |
         <?php echo NOMBRE_PORTAL; ?>
     </title>
     <!-- InstanceEndEditable -->
@@ -337,7 +318,7 @@ if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
             <!-- InstanceBeginEditable name="Contenido" -->
             <div class="row wrapper border-bottom white-bg page-heading">
                 <div class="col-sm-8">
-                    <h2>Llamadas de servicio</h2>
+                    <h2>Solicitudes de Llamadas de servicio (Agenda)</h2>
                     <ol class="breadcrumb">
                         <li>
                             <a href="index1.php">Inicio</a>
@@ -346,15 +327,16 @@ if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
                             <a href="#">Servicios</a>
                         </li>
                         <li class="active">
-                            <strong>Llamadas de servicio</strong>
+                            <strong>Solicitudes de Llamadas de servicio (Agenda)</strong>
                         </li>
                     </ol>
                 </div>
-                <?php if (PermitirFuncion(302)) { ?>
+                <!-- PermitirFuncion(302) -->
+                <?php if (true) { ?>
                     <div class="col-sm-4">
                         <div class="title-action">
-                            <a href="llamada_servicio.php" class="alkin btn btn-primary"><i class="fa fa-plus-circle"></i>
-                                Crear llamada de servicio</a>
+                            <a href="solicitud_llamada.php" class="alkin btn btn-primary"><i class="fa fa-plus-circle"></i>
+                                Crear Solicitud de Llamada (Agenda)</a>
                         </div>
                     </div>
                 <?php } ?>
@@ -407,23 +389,6 @@ if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
                                             <?php } ?>
                                         </select>
                                     </div>
-                                    <?php /*?><label class="col-lg-1 control-label">Tipo problema</label>
-           <div class="col-lg-3">
-           <select name="TipoProblema" class="form-control " id="TipoProblema">
-           <option value="">(Todos)</option>
-           <?php while($row_TipoProblema=sqlsrv_fetch_array($SQL_TipoProblema)){?>
-           <option value="<?php echo $row_TipoProblema['IdTipoProblemaLlamada'];?>" <?php if((isset($_GET['TipoProblema']))&&(strcmp($row_TipoProblema['IdTipoProblemaLlamada'],$_GET['TipoProblema'])==0)){ echo "selected=\"selected\"";}?>><?php echo $row_TipoProblema['DeTipoProblemaLlamada'];?></option>
-           <?php }?>
-           </select>
-           </div><?php */?>
-                                    <?php /*?><label class="col-lg-1 control-label">Tipo tarea</label>
-           <div class="col-lg-2">
-           <select name="TipoTarea" class="form-control " id="TipoTarea">
-           <option value="" selected="selected">(Todos)</option>
-           <option value="Externa" <?php if((isset($_GET['TipoTarea']))&&($_GET['TipoTarea']=='Externa')){ echo "selected=\"selected\"";}?>>Externa</option>
-           <option value="Interna" <?php if((isset($_GET['TipoTarea']))&&($_GET['TipoTarea']=='Interna')){ echo "selected=\"selected\"";}?>>Interna</option>
-           </select>
-           </div><?php */?>
                                 </div>
                                 <div class="form-group">
                                     <label class="col-lg-1 control-label">Cliente</label>
@@ -550,7 +515,7 @@ if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <?php while ($row = sql_fetch_array($SQL)) { ?>
+                                        <?php while ($row = sqlsrv_fetch_array($SQL)) { ?>
                                             <tr class="gradeX">
                                                 <td>
                                                     <?php echo $row['DocNum']; ?>
