@@ -1,21 +1,20 @@
 <?php require_once "includes/conexion.php";
 // PermitirAcceso(301);
-
 $sw = 0;
 
-//Estado llamada
+// Estado llamada
 $SQL_EstadoLlamada = Seleccionar('uvw_tbl_EstadoLlamada', '*');
 
-//Asignado por
-$SQL_AsignadoPor = Seleccionar('[uvw_tbl_SolicitudLlamadasServicios]', 'DISTINCT IdAsignadoPor, DeAsignadoPor', '', 'DeAsignadoPor');
+// Asignado por
+$SQL_AsignadoPor = Seleccionar('uvw_tbl_SolicitudLlamadasServicios', 'DISTINCT IdAsignadoPor, DeAsignadoPor', '', 'DeAsignadoPor');
 
-//Estado servicio llamada
+// Estado servicio llamada
 $SQL_EstServLlamada = Seleccionar('uvw_Sap_tbl_LlamadasServiciosEstadoServicios', '*', '', 'DeEstadoServicio');
 
-//Tipo de problema llamada
+// Tipo de problema llamada
 $SQL_TipoProblema = Seleccionar('uvw_Sap_tbl_TipoProblemasLlamadas', '*', '', 'DeTipoProblemaLlamada');
 
-//Serie de llamada
+// Serie de llamada
 $ParamSerie = array(
     "'" . $_SESSION['CodUser'] . "'",
     "'191'",
@@ -23,12 +22,12 @@ $ParamSerie = array(
 );
 $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 
-//Fechas
+// Fechas
 if (isset($_GET['FechaInicial']) && $_GET['FechaInicial'] != "") {
     $FechaInicial = $_GET['FechaInicial'];
     $sw = 1;
 } else {
-    //Restar 7 dias a la fecha actual
+    // Restar 7 dias a la fecha actual
     $fecha = date('Y-m-d');
     $nuevafecha = strtotime('-' . ObtenerVariable("DiasRangoFechasDocSAP") . ' day');
     $nuevafecha = date('Y-m-d', $nuevafecha);
@@ -41,21 +40,21 @@ if (isset($_GET['FechaFinal']) && $_GET['FechaFinal'] != "") {
     $FechaFinal = date('Y-m-d');
 }
 
-//Filtros
-$Filtro = ""; //Filtro
+// Filtros
+$Filtro = "";
 if (isset($_GET['EstadoLlamada']) && $_GET['EstadoLlamada'] != "") {
     $Filtro .= " and [IdEstadoLlamada]='" . $_GET['EstadoLlamada'] . "'";
     $sw = 1;
 }
 
-//Cliente
+// Cliente
 if (isset($_GET['Cliente'])) {
-    if ($_GET['Cliente'] != "") { //Si se selecciono el cliente
+    if ($_GET['Cliente'] != "") { // Si se selecciono el cliente
         $Filtro .= " and ID_CodigoCliente='" . $_GET['Cliente'] . "'";
-        $sw_suc = 1; //Cuando se ha seleccionado una sucursal
+        $sw_suc = 1; // Cuando se ha seleccionado una sucursal
         if (isset($_GET['Sucursal'])) {
             if ($_GET['Sucursal'] == "") {
-                //Sucursales
+                // Sucursales
                 if (PermitirFuncion(205)) {
                     $Where = "CodigoCliente='" . $_GET['Cliente'] . "'";
                     $SQL_Sucursal = Seleccionar("uvw_Sap_tbl_Clientes_Sucursales", "NombreSucursal", $Where);
@@ -84,7 +83,7 @@ if (isset($_GET['Cliente'])) {
             $k = 0;
             while ($row_Cliente = sqlsrv_fetch_array($SQL_Cliente)) {
 
-                //Sucursales
+                // Sucursales
                 $Where = "CodigoCliente='" . $row_Cliente['CodigoCliente'] . "' and ID_Usuario = " . $_SESSION['CodUser'];
                 $SQL_Sucursal = Seleccionar("uvw_tbl_SucursalesClienteUsuario", "NombreSucursal", $Where);
 
@@ -115,7 +114,7 @@ if (isset($_GET['Cliente'])) {
         $k = 0;
         while ($row_Cliente = sqlsrv_fetch_array($SQL_Cliente)) {
 
-            //Sucursales
+            // Sucursales
             $Where = "CodigoCliente='" . $row_Cliente['CodigoCliente'] . "' and ID_Usuario = " . $_SESSION['CodUser'];
             $SQL_Sucursal = Seleccionar("uvw_tbl_SucursalesClienteUsuario", "NombreSucursal", $Where);
 
@@ -158,11 +157,6 @@ if (isset($_GET['Series']) && $_GET['Series'] != "") {
     $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 }
 
-/*if(isset($_GET['TipoTarea'])&&$_GET['TipoTarea']!=""){
-$Filtro.=" and TipoTarea='".$_GET['TipoTarea']."'";
-$sw=1;
-}*/
-
 if (isset($_GET['TipoProblema']) && $_GET['TipoProblema'] != "") {
     $Filtro .= " and [IdTipoProblemaLlamada]='" . $_GET['TipoProblema'] . "'";
     $sw = 1;
@@ -187,7 +181,7 @@ if (isset($_GET['AsignadoPor']) && $_GET['AsignadoPor'] != "") {
     $FilAsigPor = "";
     $FilAsigPor .= "'" . $_GET['AsignadoPor'][0] . "'";
     $Filtro .= " and [ID_Usuario] IN ($FilAsigPor)";
-    //$sw=1;
+    // $sw=1;
 }
 
 if (isset($_GET['EstadoServicio']) && $_GET['EstadoServicio'] != "") {
@@ -232,7 +226,7 @@ if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
     $Where .= " and [Series] IN (" . $FilSerie . ")";
     $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 
-    $SQL = Seleccionar('[uvw_tbl_SolicitudLlamadasServicios]', '*', $Where);
+    $SQL = Seleccionar('uvw_tbl_SolicitudLlamadasServicios', '*', $Where);
 }
 
 ?>
@@ -253,7 +247,7 @@ if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
 		$(document).ready(function() {
 			Swal.fire({
                 title: '¡Listo!',
-                text: 'La llamada de servicio ha sido creada exitosamente.',
+                text: 'La Solicitud de Llamada de servicio ha sido creada exitosamente.',
                 icon: 'success'
             });
 		});
@@ -264,24 +258,14 @@ if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
 		$(document).ready(function() {
 			Swal.fire({
                 title: '¡Listo!',
-                text: 'La llamada de servicio ha sido actualizada exitosamente.',
-                icon: 'success'
-            });
-		});
-		</script>";
-    }
-    if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_ClosLlam"))) {
-        echo "<script>
-		$(document).ready(function() {
-			Swal.fire({
-                title: '¡Listo!',
-                text: 'La llamada de servicio ha sido cerrada exitosamente.',
+                text: 'La Solicitud de Llamada de servicio ha sido actualizada exitosamente.',
                 icon: 'success'
             });
 		});
 		</script>";
     }
     ?>
+
     <script type="text/javascript">
         $(document).ready(function () {
             $("#NombreCliente").change(function () {
@@ -346,7 +330,7 @@ if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
                     <div class="col-lg-12">
                         <div class="ibox-content">
                             <?php include "includes/spinner.php"; ?>
-                            <form action="gestionar_llamadas_servicios.php" method="get" id="formBuscar"
+                            <form action="gestionar_solicitudes_llamadas.php" method="get" id="formBuscar"
                                 class="form-horizontal">
                                 <div class="form-group">
                                     <label class="col-xs-12">
@@ -486,7 +470,7 @@ if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
                                 <table class="table table-striped table-bordered table-hover dataTables-example">
                                     <thead>
                                         <tr>
-                                            <th>Ticket</th>
+                                            <th>ID</th>
 
                                             <th>Estado</th>
                                             <th>Acciones</th>
@@ -518,33 +502,33 @@ if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
                                         <?php while ($row = sqlsrv_fetch_array($SQL)) { ?>
                                             <tr class="gradeX">
                                                 <td>
-                                                    <?php echo $row['DocNum']; ?>
+                                                    <?php echo $row['ID_SolicitudLlamadaServicio']; ?>
                                                 </td>
 
                                                 <td><span class="label"
-                                                        style="color: white; background-color: <?php echo $row['ColorEstadoLlamada']; ?>;"><?php echo $row['DeEstadoLlamada']; ?></span></td>
+                                                        style="color: white; background-color: <?php echo $row['ColorEstadoLlamada']; ?>;"><?php echo $row['DeEstadoLlamada'] ?? ""; ?></span></td>
 
                                                 <td>
-                                                    <a href="llamada_servicio.php?id=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&tl=1&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('gestionar_llamadas_servicios.php'); ?>"
+                                                    <a href="solicitud_llamada.php?id=<?php echo base64_encode($row['ID_SolicitudLlamadaServicio']); ?>&tl=1&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('gestionar_solicitudes_llamadas.php'); ?>"
                                                         class="alkin btn btn-success btn-xs"><i
                                                             class="fa fa-folder-open-o"></i> Abrir</a>
-                                                    <a href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&ObType=<?php echo base64_encode('191'); ?>&IdFrm=<?php echo base64_encode($row['Series']); ?>"
+                                                    <a href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row['ID_SolicitudLlamadaServicio']); ?>&ObType=<?php echo base64_encode('191'); ?>&IdFrm=<?php echo base64_encode($row['Series']); ?>"
                                                         target="_blank" class="btn btn-warning btn-xs"><i
                                                             class="fa fa-download"></i> Descargar</a>
                                                 </td>
 
                                                 <td><span class="label"
-                                                        style="color: white; background-color: <?php echo $row['ColorEstadoServicioLlamada']; ?>;"><?php echo $row['DeEstadoServicio']; ?></span></td>
+                                                        style="color: white; background-color: <?php echo $row['ColorEstadoServicioLlamada']; ?>;"><?php echo $row['DeEstadoServicio'] ?? ""; ?></span></td>
 
                                                 <td>
-                                                    <?php echo $row['NombreTecnicoAsesor']; ?>
+                                                    <?php echo $row['NombreTecnicoAsesor'] ?? ""; ?>
                                                 </td>
                                                 <td>
-                                                    <?php echo $row['CargoTecnicoAsesor']; ?>
+                                                    <?php echo $row['CargoTecnicoAsesor'] ?? ""; ?>
                                                 </td>
 
                                                 <td>
-                                                    <?php echo $row['DeAsignadoPor']; ?>
+                                                    <?php echo $row['DeAsignadoPor'] ?? ""; ?>
                                                 </td>
                                                 <td>
                                                     <?php echo $row['AsuntoLlamada']; ?>
