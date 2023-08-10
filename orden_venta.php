@@ -374,7 +374,9 @@ if (isset($_GET['dt_OF']) && ($_GET['dt_OF']) == 1) { //Verificar que viene de u
 		"'" . $_SESSION['CodUser'] . "'",
 	);
 
-	$SQL_CopiarOfertaToOrden = EjecutarSP('sp_tbl_OfertaVentaDet_To_OrdenVentaDet', $ParametrosCopiarOfertaToOrden);
+	$SP_Aprobados = isset($_GET['Aprobados']) ? 'sp_tbl_OfertaVentaDet_Aprobados_To_OrdenVentaDet' : 'sp_tbl_OfertaVentaDet_To_OrdenVentaDet';
+
+	$SQL_CopiarOfertaToOrden = EjecutarSP($SP_Aprobados, $ParametrosCopiarOfertaToOrden);
 	if (!$SQL_CopiarOfertaToOrden) {
 		echo "<script>
 		$(document).ready(function() {
@@ -1230,8 +1232,8 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 										<label class="col-lg-1 control-label">Contacto <span
 												class="text-danger">*</span></label>
 										<div class="col-lg-5">
-											<select class="form-control select2" id="ContactoCliente" name="ContactoCliente" 
-												required <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
+											<select class="form-control select2" id="ContactoCliente"
+												name="ContactoCliente" required <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
 													echo "disabled='disabled'";
 												} ?>>
 												<option value="">Seleccione...</option>
@@ -1251,9 +1253,10 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 										<label class="col-lg-1 control-label">Lista Precios
 											<!--span class="text-danger">*</span--></label>
 										<div class="col-lg-5">
-											<select class="form-control select2" name="IdListaPrecio" id="IdListaPrecio" <?php if (!PermitirFuncion(418)) {
-												echo "disabled";
-											} ?>>
+											<select class="form-control select2" name="IdListaPrecio" id="IdListaPrecio"
+												<?php if (!PermitirFuncion(418)) {
+													echo "disabled";
+												} ?>>
 												<?php while ($row_ListaPrecio = sqlsrv_fetch_array($SQL_ListaPrecios)) { ?>
 													<option <?php if (isset($row['IdListaPrecio']) && ($row_ListaPrecio['IdListaPrecio'] == $row['IdListaPrecio'])) {
 														echo "selected";
@@ -1269,8 +1272,8 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 										<label class="col-lg-1 control-label">Sucursal destino <span
 												class="text-danger">*</span></label>
 										<div class="col-lg-5">
-											<select class="form-control select2" name="SucursalDestino" id="SucursalDestino"
-												required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
+											<select class="form-control select2" name="SucursalDestino"
+												id="SucursalDestino" required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
 													echo "disabled";
 												} ?>>
 												<option value="">Seleccione...</option>
@@ -1339,9 +1342,9 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 									<div class="form-group">
 										<label class="col-lg-1 control-label">
 											<?php if (($edit == 1) && ($row['ID_LlamadaServicio'] != 0)) { ?><a
-													href="llamada_servicio.php?id=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&tl=1"
-													target="_blank" title="Consultar Llamada de servicio"
-													class="btn-xs btn-success fa fa-search"></a>
+												href="llamada_servicio.php?id=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&tl=1"
+												target="_blank" title="Consultar Llamada de servicio"
+												class="btn-xs btn-success fa fa-search"></a>
 											<?php } ?>Orden servicio
 										</label>
 										<div class="col-lg-7">

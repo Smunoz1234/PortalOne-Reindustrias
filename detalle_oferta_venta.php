@@ -121,6 +121,9 @@ $SQL_OT_SEDE_EMPRESA = Seleccionar('uvw_Sap_tbl_OT_SedeEmpresa', 'IdOT_SedeEmpre
 $SQL_OT_TipoLlamada = Seleccionar('uvw_Sap_tbl_OT_TipoLlamada', 'IdOT_TipoLlamada "IdTipoCargo", OT_TipoLlamada "TipoCargo"', '', 'IdOT_TipoLlamada');
 $SQL_OT_TIPOPROBLEMA = Seleccionar('uvw_Sap_tbl_OT_TipoProblema', 'IdOT_TipoProblema "IdTipoProblema", OT_TipoProblema "TipoProblema"', '', 'IdOT_TipoProblema');
 $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPreventivo "IdTipoPreventivo", OT_TipoPreventivo "TipoPreventivo"', '', 'IdOT_TipoPreventivo');
+
+// SMM, 09/08/2023
+$SQL_CausaAprobacion = Seleccionar("uvw_Sap_tbl_OfertasVentasDetalle_Causa_Aprobacion", "*", "", "CausaAprobacion");
 ?>
 
 <!doctype html>
@@ -556,7 +559,9 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 
 							sqlsrv_fetch($SQL_Proyecto, SQLSRV_SCROLL_ABSOLUTE, -1);
 							sqlsrv_fetch($SQL_EmpleadosVentas, SQLSRV_SCROLL_ABSOLUTE, -1);
+							sqlsrv_fetch($SQL_CausaAprobacion, SQLSRV_SCROLL_ABSOLUTE, -1);
 							?>
+							
 							<tr>
 								<td class="text-center form-inline w-150">
 									<div class="checkbox checkbox-success"><input type="checkbox" class="chkSel"
@@ -896,13 +901,12 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 									<select name="CDU_IdTipoPreventivo[]" id="CDU_IdTipoPreventivo<?php echo $i; ?>"
 										class="form-control select2" required
 										onChange="ActualizarDatos('CDU_IdTipoPreventivo',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);">
-										<option value="">Seleccione...</option>
 
-										<?php while ($row_TIPOPREVENTI = sqlsrv_fetch_array($SQL_OT_TIPOPREVENTI)) { ?>
-											<option value="<?php echo $row_TIPOPREVENTI['IdTipoPreventivo']; ?>" <?php if ((isset($row["CDU_IdTipoPreventivo"])) && (strcmp($row_TIPOPREVENTI['IdTipoPreventivo'], $row["CDU_IdTipoPreventivo"]) == 0)) {
+										<?php while ($row_CausaAprobacion = sqlsrv_fetch_array($SQL_CausaAprobacion)) { ?>
+											<option value="<?php echo $row_CausaAprobacion['IdCausaAprobacion']; ?>" <?php if ((isset($row["CDU_IdCausaAprobacion"])) && (strcmp($row_CausaAprobacion['IdCausaAprobacion'], $row["CDU_IdCausaAprobacion"]) == 0)) {
 												   echo "selected";
 											   } ?>>
-												<?php echo $row_TIPOPREVENTI['IdTipoPreventivo'] . " - " . $row_TIPOPREVENTI['TipoPreventivo']; ?>
+												<?php echo $row_CausaAprobacion['IdCausaAprobacion'] . " - " . $row_CausaAprobacion['CausaAprobacion']; ?>
 											</option>
 										<?php } ?>
 									</select>
