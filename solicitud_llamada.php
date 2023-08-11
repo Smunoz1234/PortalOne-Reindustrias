@@ -178,7 +178,7 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
 			"NULL",
 			"NULL",
 			"'" . $_POST['CDU_CanceladoPor'] . "'",
-			// SMM, 12/07/2023
+				// SMM, 12/07/2023
 			(isset($_POST['CantArticulo']) && ($_POST['CantArticulo'] != "")) ? LSiqmlValorDecimal($_POST['CantArticulo']) : 0,
 			(isset($_POST['PrecioArticulo']) && ($_POST['PrecioArticulo'] != "")) ? LSiqmlValorDecimal($_POST['PrecioArticulo']) : 0,
 			"1", // Tipo de SP
@@ -191,7 +191,8 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
 			"'" . $_POST['CDU_TipoPreventivo'] . "'", // SMM, 14/09/2022
 			"'" . $_POST['CDU_TipoServicio'] . "'",
 			isset($_POST['CDU_Kilometros']) ? $_POST['CDU_Kilometros'] : 0, // int
-			"'" . ($_POST['CDU_Contrato'] ?? "") . "'", // SMM, 29/06/2023
+			"'" . ($_POST['CDU_Contrato'] ?? "") . "'",
+			// SMM, 29/06/2023
 			"NULL", // CDU_Asesor
 			"'" . $_POST['CDU_ListaMateriales'] . "'",
 			isset($_POST['CDU_TiempoTarea']) ? $_POST['CDU_TiempoTarea'] : 0, // int
@@ -204,9 +205,9 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
 			"'" . ($_POST['NombreContactoFirma'] ?? "") . "'", // SMM, 18/10/2022
 			"'" . ($_POST['CedulaContactoFirma'] ?? "") . "'", // SMM, 18/10/2022
 			"'" . ($_POST['TelefonosContactosFirma'] ?? "") . "'", // SMM, 18/10/2022
-			"'" . ($_POST['CorreosContactosFirma'] ?? "") . "'", // SMM, 18/10/2022
-			"'" . $FirmaContactoResponsable . "'",
-			// SMM, 16/09/2022
+			"'" . ($_POST['CorreosContactosFirma'] ?? "") . "'",
+			// SMM, 18/10/2022
+			"'$FirmaContactoResponsable'",
 			"0", // FormatoCierreLlamada, SMM 14/10/2022
 		);
 		$SQL_InsLlamada = EjecutarSP('sp_tbl_SolicitudLlamadaServicios', $ParamInsLlamada, 32);
@@ -245,6 +246,15 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
 						}
 					}
 					$j++;
+				}
+
+				// SMM, 11/08/2023
+				if ($_POST['P'] == 32) { // Creando 
+					sqlsrv_close($conexion);
+					header('Location:gestionar_solicitudes_llamadas.php?a=' . base64_encode("OK_OTSolAdd"));
+				} else { // Actualizando solicitud
+					sqlsrv_close($conexion);
+					header('Location:gestionar_solicitudes_llamadas.php?a=' . base64_encode("OK_OTSolUpd"));
 				}
 			} catch (Exception $e) {
 				echo 'Excepcion capturada: ', $e->getMessage(), "\n";
@@ -294,13 +304,13 @@ if ($edit == 1 && $sw_error == 0) {
 	$SQL_ListaMateriales = Seleccionar('uvw_Sap_tbl_ListaMateriales', '*', "CDU_IdMarca='" . $CDU_IdMarca_TarjetaEquipo . "' AND CDU_IdLinea='" . $CDU_IdLinea_TarjetaEquipo . "'");
 
 	//Activides relacionadas
-	$SQL_Actividad = Seleccionar('uvw_Sap_tbl_Actividades', '*', "ID_LlamadaServicio='" . $IdSolicitud . "'", 'ID_Actividad');
+	$SQL_Actividad = Seleccionar('uvw_Sap_tbl_Actividades', '*', "ID_LlamadaServicio='$IdSolicitud'", 'ID_Actividad');
 
 	//Documentos relacionados
-	$SQL_DocRel = Seleccionar('uvw_Sap_tbl_LlamadasServiciosDocRelacionados', '*', "ID_LlamadaServicio='" . $IdSolicitud . "'");
+	$SQL_DocRel = Seleccionar('uvw_Sap_tbl_LlamadasServiciosDocRelacionados', '*', "ID_LlamadaServicio='$IdSolicitud'");
 
 	//Formularios de llamadas de servicios
-	$SQL_Formularios = Seleccionar('uvw_tbl_LlamadasServicios_Formularios', '*', "docentry_llamada_servicio='" . $IdSolicitud . "'");
+	$SQL_Formularios = Seleccionar('uvw_tbl_LlamadasServicios_Formularios', '*', "docentry_llamada_servicio='$IdSolicitud'");
 
 	//Contratos de servicio
 	$SQL_Contrato = Seleccionar('uvw_Sap_tbl_Contratos', '*', "CodigoCliente='" . $row['ID_CodigoCliente'] . "'", 'ID_Contrato');
@@ -312,7 +322,7 @@ if ($edit == 1 && $sw_error == 0) {
 
 if ($sw_error == 1) {
 	//Si ocurre un error, vuelvo a consultar los datos insertados desde la base de datos.
-	$SQL = Seleccionar('uvw_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . $IdSolicitud . "'");
+	$SQL = Seleccionar('uvw_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='$IdSolicitud'");
 	$row = sqlsrv_fetch_array($SQL);
 
 	//Clientes
@@ -391,7 +401,7 @@ $SQL_GruposUsuario = Seleccionar("uvw_tbl_UsuariosGruposEmpleados", "*", "[ID_Us
 
 $ids_grupos = array();
 while ($row_GruposUsuario = sqlsrv_fetch_array($SQL_GruposUsuario)) {
-    $ids_grupos[] = $row_GruposUsuario['IdCargo'];
+	$ids_grupos[] = $row_GruposUsuario['IdCargo'];
 }
 
 $SQL_Tecnicos = Seleccionar('uvw_Sap_tbl_Recursos', '*', '', 'NombreEmpleado');
@@ -476,94 +486,6 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_UpdAdd"))) {
 		});
 		</script>";
 }
-if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_ActAdd"))) {
-	echo "<script>
-		$(document).ready(function() {
-			Swal.fire({
-                title: '¡Listo!',
-                text: 'La actividad ha sido agregada exitosamente.',
-                icon: 'success'
-            });
-		});
-		</script>";
-}
-if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_UpdActAdd"))) {
-	echo "<script>
-		$(document).ready(function() {
-			Swal.fire({
-                title: '¡Listo!',
-                text: 'La actividad ha sido actualizada exitosamente.',
-                icon: 'success'
-            });
-		});
-		</script>";
-}
-if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_OVenAdd"))) {
-	echo "<script>
-		$(document).ready(function() {
-			Swal.fire({
-                title: '¡Listo!',
-                text: 'La Orden de venta ha sido agregada exitosamente.',
-                icon: 'success'
-            });
-		});
-		</script>";
-}
-if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_OVenUpd"))) {
-	echo "<script>
-		$(document).ready(function() {
-			Swal.fire({
-                title: '¡Listo!',
-                text: 'La Orden de venta ha sido actualizada exitosamente.',
-                icon: 'success'
-            });
-		});
-		</script>";
-}
-if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_EVenAdd"))) {
-	echo "<script>
-		$(document).ready(function() {
-			Swal.fire({
-                title: '¡Listo!',
-                text: 'La Entrega de venta ha sido agregada exitosamente.',
-                icon: 'success'
-            });
-		});
-		</script>";
-}
-if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_EVenUpd"))) {
-	echo "<script>
-		$(document).ready(function() {
-			Swal.fire({
-                title: '¡Listo!',
-                text: 'La Entrega de venta ha sido actualizada exitosamente.',
-                icon: 'success'
-            });
-		});
-		</script>";
-}
-if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_OpenLlam"))) {
-	echo "<script>
-		$(document).ready(function() {
-			Swal.fire({
-                title: '¡Listo!',
-                text: 'La llamada de servicio ha sido abierta nuevamente.',
-                icon: 'success'
-            });
-		});
-		</script>";
-}
-if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_DelAct"))) {
-	echo "<script>
-		$(document).ready(function() {
-			Swal.fire({
-                title: '¡Listo!',
-                text: 'La actividad ha sido eliminado exitosamente.',
-                icon: 'success'
-            });
-		});
-		</script>";
-}
 if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_OpenAct"))) {
 	echo "<script>
 		$(document).ready(function() {
@@ -637,7 +559,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 
 <script type="text/javascript">
 	function ActualizarAsunto() {
-		let f333 = <?php echo PermitirFuncion(333) ? 'true' : 'false';?>;
+		let f333 = <?php echo PermitirFuncion(333) ? 'true' : 'false'; ?>;
 		if(f333) {	
 			let AsuntoLlamada = $('#AsuntoLlamada').val();	
 			AsuntoLlamada = AsuntoLlamada.replace(/\([^)]+\)|\(\s*\)/g, '').trim();
@@ -731,27 +653,27 @@ if (isset($sw_error) && ($sw_error == 1)) {
 				}
 			});
 
-			<?php if($IncluirCamposAdicionales) { ?>
-				$.ajax({
-					type: "POST",
-					url: "ajx_cbo_select.php?type=29&id="+Cliente,
-					success: function(response){
-						$('#ContratoServicio').html(response).fadeIn();
-						$('#ContratoServicio').trigger('change');
-						$('.ibox-content').toggleClass('sk-loading',false);
-					}
-				});
+			<?php if ($IncluirCamposAdicionales) { ?>
+					$.ajax({
+						type: "POST",
+						url: "ajx_cbo_select.php?type=29&id="+Cliente,
+						success: function(response){
+							$('#ContratoServicio').html(response).fadeIn();
+							$('#ContratoServicio').trigger('change');
+							$('.ibox-content').toggleClass('sk-loading',false);
+						}
+					});
 
-				$.ajax({
-					type: "POST",
-					url: "ajx_cbo_select.php?type=30&id="+Cliente,
-					success: function(response){
-						$('#Proyecto').html(response).fadeIn();
-						$('#Proyecto').trigger('change');
+					$.ajax({
+						type: "POST",
+						url: "ajx_cbo_select.php?type=30&id="+Cliente,
+						success: function(response){
+							$('#Proyecto').html(response).fadeIn();
+							$('#Proyecto').trigger('change');
 						
-						$('.ibox-content').toggleClass('sk-loading',false);
-					}
-				});
+							$('.ibox-content').toggleClass('sk-loading',false);
+						}
+					});
 			<?php } ?>
 
 			$.ajax({
@@ -902,167 +824,167 @@ if (isset($sw_error) && ($sw_error == 1)) {
 			}
 		});
 		<?php if ($edit == 0 && $sw_error == 0) { ?>
-			// SMM, 12/07/2023
-			$("#Series").change(function() {
-				$('.ibox-content').toggleClass('sk-loading', true);
+				// SMM, 12/07/2023
+				$("#Series").change(function() {
+					$('.ibox-content').toggleClass('sk-loading', true);
 				
-				let Series = document.getElementById('Series').value;
-				if(Series !== ""){
-					$.ajax({
-						url: "ajx_buscar_datos_json.php",
-						data: {
-							type: 30,
-							id: Series
-						},
-						dataType: 'json',
-						success: function(data) {
-							console.log(data);
+					let Series = document.getElementById('Series').value;
+					if(Series !== ""){
+						$.ajax({
+							url: "ajx_buscar_datos_json.php",
+							data: {
+								type: 30,
+								id: Series
+							},
+							dataType: 'json',
+							success: function(data) {
+								console.log(data);
 
-							if(data.OrigenLlamada)
-							$('#OrigenLlamada').val(data.OrigenLlamada || '""');
-							$('#TipoLlamada').val(data.TipoLlamada || '""');
-							$('#TipoProblema').val(data.TipoProblemaLlamada || '""');
+								if(data.OrigenLlamada)
+								$('#OrigenLlamada').val(data.OrigenLlamada || '""');
+								$('#TipoLlamada').val(data.TipoLlamada || '""');
+								$('#TipoProblema').val(data.TipoProblemaLlamada || '""');
 
-							let AsuntoLlamada = (data.AsuntoLlamada || '""');
-							let f333 = <?php echo PermitirFuncion(333) ? 'true' : 'false';?>;
-							if(f333) {	
-								let OrigenLlamada = trim($("#OrigenLlamada option:selected").text());
-								let TipoProblema = trim($("#TipoProblema option:selected").text());
+								let AsuntoLlamada = (data.AsuntoLlamada || '""');
+								let f333 = <?php echo PermitirFuncion(333) ? 'true' : 'false'; ?>;
+								if(f333) {	
+									let OrigenLlamada = trim($("#OrigenLlamada option:selected").text());
+									let TipoProblema = trim($("#TipoProblema option:selected").text());
 
-								AsuntoLlamada = `${AsuntoLlamada} (${OrigenLlamada}) (${TipoProblema})`;
-							}
+									AsuntoLlamada = `${AsuntoLlamada} (${OrigenLlamada}) (${TipoProblema})`;
+								}
 
-							$('#AsuntoLlamada').val(AsuntoLlamada);							
+								$('#AsuntoLlamada').val(AsuntoLlamada);							
 							
-							$('.ibox-content').toggleClass('sk-loading', false);
-						},
-						error: function(error) {
-							console.log("AJAX error:", error);
+								$('.ibox-content').toggleClass('sk-loading', false);
+							},
+							error: function(error) {
+								console.log("AJAX error:", error);
 
-							$('.ibox-content').toggleClass('sk-loading', false);
-						}
-					});
-				} else {
-					$('.ibox-content').toggleClass('sk-loading', false);
-				}
-			});
-
-			// Stiven Muñoz Murillo, 07/02/2022
-			$("#CDU_ListaMateriales").change(function(){
-				$('.ibox-content').toggleClass('sk-loading',true);
-				let listaMaterial=document.getElementById('CDU_ListaMateriales').value;
-
-				if(listaMaterial != "") {
-					$.ajax({
-						url: "ajx_buscar_datos_json.php",
-						data: {
-							type: 47,
-							id: listaMaterial
-						},
-						dataType: 'json',
-						success: function(data){
-							// console.log(data);
-
-							document.getElementById('CDU_TiempoTarea').value = data.tiempoTarea;
-							$('.ibox-content').toggleClass('sk-loading',false);
-						},
-						error: function(error) {
-							console.error(error.responseText);
-							$('.ibox-content').toggleClass('sk-loading',false);
-						}
-					});
-				}
-			});
-
-			// Stiven Muñoz Murillo, 20/12/2021
-			$("#CDU_Marca").change(function(){
-				$('.ibox-content').toggleClass('sk-loading',true);
-				var marcaVehiculo=document.getElementById('CDU_Marca').value;
-				$.ajax({
-					type: "POST",
-					url: "ajx_cbo_select.php?type=39&id="+marcaVehiculo,
-					success: function(response){
-						// console.log(response);
-
-						if(borrarLineaModeloVehiculo) {
-							$('#CDU_Linea').html(response).fadeIn();
-							$('#CDU_Linea').trigger('change');
-						} else {
-							borrarLineaModeloVehiculo = true;
-						}
-
-						$('.ibox-content').toggleClass('sk-loading',false);
+								$('.ibox-content').toggleClass('sk-loading', false);
+							}
+						});
+					} else {
+						$('.ibox-content').toggleClass('sk-loading', false);
 					}
 				});
-			});
 
-			// Stiven Muñoz Murillo, 22/12/2021
-			$("#NumeroSerie").change(function(){
-				$('.ibox-content').toggleClass('sk-loading', true);
+				// Stiven Muñoz Murillo, 07/02/2022
+				$("#CDU_ListaMateriales").change(function(){
+					$('.ibox-content').toggleClass('sk-loading',true);
+					let listaMaterial=document.getElementById('CDU_ListaMateriales').value;
 
-				var ID=document.getElementById('NumeroSerie').value;
-				var Cliente=document.getElementById('ClienteLlamada').value;
+					if(listaMaterial != "") {
+						$.ajax({
+							url: "ajx_buscar_datos_json.php",
+							data: {
+								type: 47,
+								id: listaMaterial
+							},
+							dataType: 'json',
+							success: function(data){
+								// console.log(data);
 
-				// SMM, 19/05/2022
-				let IdTarjetaEquipo = $("#NumeroSerie").find(':selected').data('id');
+								document.getElementById('CDU_TiempoTarea').value = data.tiempoTarea;
+								$('.ibox-content').toggleClass('sk-loading',false);
+							},
+							error: function(error) {
+								console.error(error.responseText);
+								$('.ibox-content').toggleClass('sk-loading',false);
+							}
+						});
+					}
+				});
 
-				if(ID != "") {
-					$.ajax({
-						url:"ajx_buscar_datos_json.php",
-						data:{
-							type:44,
-							id:IdTarjetaEquipo, // Antes, ID.
-							clt:Cliente,
-							si:0 // SMM, 19/05/2022
-						},
-						dataType:'json',
-						success: function(data){
-							// console.log(data);
-
-							borrarNumeroSerie = false;
-							document.getElementById('IdArticuloLlamada').value = data.IdArticuloLlamada;
-							document.getElementById('DeArticuloLlamada').value = data.DeArticuloLlamada;
-							// $('#IdArticuloLlamada').trigger('change');
-
-							document.getElementById('CDU_Marca').value = data.CDU_IdMarca;
-							$('#CDU_Marca').trigger('change');
-
-							borrarLineaModeloVehiculo = false;
-							document.getElementById('CDU_Linea').value = data.CDU_IdLinea;
-							$('#CDU_Linea').trigger('change');
-
-							document.getElementById('CDU_Ano').value = data.CDU_Ano;
-							$('#CDU_Ano').trigger('change');
-
-							document.getElementById('CDU_Concesionario').value = data.CDU_Concesionario;
-							$('#CDU_Concesionario').trigger('change');
-
-							document.getElementById('CDU_TipoServicio').value = (data.CDU_TipoServicio != null) ? data.CDU_TipoServicio : "";
-							$('#CDU_TipoServicio').trigger('change');
-
-							$('.ibox-content').toggleClass('sk-loading',false);
-						},
-						error: function(data) {
-							console.error("Line 1133", data.responseText);
-						}
-					});
+				// Stiven Muñoz Murillo, 20/12/2021
+				$("#CDU_Marca").change(function(){
+					$('.ibox-content').toggleClass('sk-loading',true);
+					var marcaVehiculo=document.getElementById('CDU_Marca').value;
 					$.ajax({
 						type: "POST",
-						url: "ajx_cbo_select.php?type=40&id="+ID,
+						url: "ajx_cbo_select.php?type=39&id="+marcaVehiculo,
 						success: function(response){
 							// console.log(response);
 
-							$('#CDU_ListaMateriales').html(response).fadeIn();
-							$('#CDU_ListaMateriales').trigger('change');
+							if(borrarLineaModeloVehiculo) {
+								$('#CDU_Linea').html(response).fadeIn();
+								$('#CDU_Linea').trigger('change');
+							} else {
+								borrarLineaModeloVehiculo = true;
+							}
 
 							$('.ibox-content').toggleClass('sk-loading',false);
 						}
 					});
-				}
-				$('.ibox-content').toggleClass('sk-loading',false);
-			});
+				});
 
-			$('#Series').trigger('change');
+				// Stiven Muñoz Murillo, 22/12/2021
+				$("#NumeroSerie").change(function(){
+					$('.ibox-content').toggleClass('sk-loading', true);
+
+					var ID=document.getElementById('NumeroSerie').value;
+					var Cliente=document.getElementById('ClienteLlamada').value;
+
+					// SMM, 19/05/2022
+					let IdTarjetaEquipo = $("#NumeroSerie").find(':selected').data('id');
+
+					if(ID != "") {
+						$.ajax({
+							url:"ajx_buscar_datos_json.php",
+							data:{
+								type:44,
+								id:IdTarjetaEquipo, // Antes, ID.
+								clt:Cliente,
+								si:0 // SMM, 19/05/2022
+							},
+							dataType:'json',
+							success: function(data){
+								// console.log(data);
+
+								borrarNumeroSerie = false;
+								document.getElementById('IdArticuloLlamada').value = data.IdArticuloLlamada;
+								document.getElementById('DeArticuloLlamada').value = data.DeArticuloLlamada;
+								// $('#IdArticuloLlamada').trigger('change');
+
+								document.getElementById('CDU_Marca').value = data.CDU_IdMarca;
+								$('#CDU_Marca').trigger('change');
+
+								borrarLineaModeloVehiculo = false;
+								document.getElementById('CDU_Linea').value = data.CDU_IdLinea;
+								$('#CDU_Linea').trigger('change');
+
+								document.getElementById('CDU_Ano').value = data.CDU_Ano;
+								$('#CDU_Ano').trigger('change');
+
+								document.getElementById('CDU_Concesionario').value = data.CDU_Concesionario;
+								$('#CDU_Concesionario').trigger('change');
+
+								document.getElementById('CDU_TipoServicio').value = (data.CDU_TipoServicio != null) ? data.CDU_TipoServicio : "";
+								$('#CDU_TipoServicio').trigger('change');
+
+								$('.ibox-content').toggleClass('sk-loading',false);
+							},
+							error: function(data) {
+								console.error("Line 1133", data.responseText);
+							}
+						});
+						$.ajax({
+							type: "POST",
+							url: "ajx_cbo_select.php?type=40&id="+ID,
+							success: function(response){
+								// console.log(response);
+
+								$('#CDU_ListaMateriales').html(response).fadeIn();
+								$('#CDU_ListaMateriales').trigger('change');
+
+								$('.ibox-content').toggleClass('sk-loading',false);
+							}
+						});
+					}
+					$('.ibox-content').toggleClass('sk-loading',false);
+				});
+
+				$('#Series').trigger('change');
 		<?php } ?>
 
 		$("#EstadoLlamada").on("change", function() {
@@ -1077,11 +999,11 @@ if (isset($sw_error) && ($sw_error == 1)) {
 
 				// SMM, 14/10/2022
 				<?php if ($sw_error == 0) { ?>
-					$("#NombreContactoFirma").val($("#CDU_NombreContacto").val());
-					$("#CorreosDestinatarios").html("");
-					$("#TelefonosDestinatarios").html("");
-					AgregarEsto("CorreosDestinatarios", $("#CDU_CorreoContacto").val());
-					AgregarEsto("TelefonosDestinatarios", $("#CDU_TelefonoContacto").val());
+						$("#NombreContactoFirma").val($("#CDU_NombreContacto").val());
+						$("#CorreosDestinatarios").html("");
+						$("#TelefonosDestinatarios").html("");
+						AgregarEsto("CorreosDestinatarios", $("#CDU_CorreoContacto").val());
+						AgregarEsto("TelefonosDestinatarios", $("#CDU_TelefonoContacto").val());
 				<?php } ?>
 
 				// SMM, 28/06/2023
@@ -1144,15 +1066,15 @@ function ConsultarEquipo(){
 	}
 }
 
-<?php if($IncluirCamposAdicionales) {?>
-	function ConsultarContrato(){
-		var Contrato=document.getElementById('ContratoServicio');
-		if(Contrato.value!=""){
-			self.name='opener';
-			remote=open('contratos.php?id='+btoa(Contrato.value)+'&ext=1&tl=1','remote','location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
-			remote.focus();
+<?php if ($IncluirCamposAdicionales) { ?>
+		function ConsultarContrato(){
+			var Contrato=document.getElementById('ContratoServicio');
+			if(Contrato.value!=""){
+				self.name='opener';
+				remote=open('contratos.php?id='+btoa(Contrato.value)+'&ext=1&tl=1','remote','location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
+				remote.focus();
+			}
 		}
-	}
 <?php } ?>
 
 // Stiven Muñoz Murillo, 30/12/2021
@@ -1408,121 +1330,95 @@ function AgregarEsto(contenedorID, valorElemento) {
 
 			<!-- Inicio, modalCorreo. SMM, 13/10/2022 -->
 			<?php if (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] == '-1')) { ?>
-				<div class="modal inmodal fade" id="modalCorreo" tabindex="-1" role="dialog" aria-hidden="true">
-					<div class="modal-dialog modal-lg" style="width: 70% !important;">
-						<div class="modal-content">
-							<div class="modal-header">
-								<h4 class="modal-title">Envío de llamada de servicio No.<?php echo $row['DocNum']; ?></h4>
+					<div class="modal inmodal fade" id="modalCorreo" tabindex="-1" role="dialog" aria-hidden="true">
+						<div class="modal-dialog modal-lg" style="width: 70% !important;">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h4 class="modal-title">Envío de llamada de servicio No.<?php echo $row['DocNum']; ?></h4>
+								</div>
+
+								<!-- form id="formCambiarSN" -->
+									<div class="modal-body">
+										<div class="row">
+											<div class="col-lg-1"></div>
+											<div class="col-lg-10">
+												<div class="form-group">
+													<label class="control-label">Para</label>
+													<input placeholder="Ingrese un nuevo correo y utilice la tecla [ESP] para agregar" onKeyUp="ValidarCorreo(event, this, 'CorreosPara')" autocomplete="off" name="EmailPara" type="text" class="form-control" id="EmailPara" maxlength="50" value="">
+													<input type="hidden" id="CorreosContactosFirma" name="CorreosContactosFirma">
+
+													<div id="CorreosPara"></div>
+												</div>
+											</div>
+											<div class="col-lg-1"></div>
+										</div>
+										<div class="row">
+											<div class="col-lg-1"></div>
+											<div class="col-lg-10">
+												<div class="form-group">
+													<label class="control-label">Con copia a</label>
+													<input placeholder="Ingrese un nuevo correo y utilice la tecla [ESP] para agregar" onKeyUp="ValidarCorreo(event, this, 'CorreosCC')" autocomplete="off" name="EmailCC" type="text" class="form-control" id="CorreoContactoFirma" maxlength="50" value="">
+													<input type="hidden" id="CorreosContactosFirma" name="CorreosContactosFirma">
+
+													<div id="CorreosCC"></div>
+												</div>
+											</div>
+											<div class="col-lg-1"></div>
+										</div>
+									</div>
+
+									<div class="modal-footer">
+										<button type="submit" class="btn btn-success m-t-md"><i class="fa fa-check"></i> Aceptar</button>
+										<button type="button" class="btn btn-secondary m-t-md CancelarSN" data-dismiss="modal"><i class="fa fa-times"></i> Cancelar</button>
+									</div>
+								<!-- /form -->
 							</div>
-
-							<!-- form id="formCambiarSN" -->
-								<div class="modal-body">
-									<div class="row">
-										<div class="col-lg-1"></div>
-										<div class="col-lg-10">
-											<div class="form-group">
-												<label class="control-label">Para</label>
-												<input placeholder="Ingrese un nuevo correo y utilice la tecla [ESP] para agregar" onKeyUp="ValidarCorreo(event, this, 'CorreosPara')" autocomplete="off" name="EmailPara" type="text" class="form-control" id="EmailPara" maxlength="50" value="">
-												<input type="hidden" id="CorreosContactosFirma" name="CorreosContactosFirma">
-
-												<div id="CorreosPara"></div>
-											</div>
-										</div>
-										<div class="col-lg-1"></div>
-									</div>
-									<div class="row">
-										<div class="col-lg-1"></div>
-										<div class="col-lg-10">
-											<div class="form-group">
-												<label class="control-label">Con copia a</label>
-												<input placeholder="Ingrese un nuevo correo y utilice la tecla [ESP] para agregar" onKeyUp="ValidarCorreo(event, this, 'CorreosCC')" autocomplete="off" name="EmailCC" type="text" class="form-control" id="CorreoContactoFirma" maxlength="50" value="">
-												<input type="hidden" id="CorreosContactosFirma" name="CorreosContactosFirma">
-
-												<div id="CorreosCC"></div>
-											</div>
-										</div>
-										<div class="col-lg-1"></div>
-									</div>
-								</div>
-
-								<div class="modal-footer">
-									<button type="submit" class="btn btn-success m-t-md"><i class="fa fa-check"></i> Aceptar</button>
-									<button type="button" class="btn btn-secondary m-t-md CancelarSN" data-dismiss="modal"><i class="fa fa-times"></i> Cancelar</button>
-								</div>
-							<!-- /form -->
 						</div>
 					</div>
-				</div>
 			<?php } ?>
 			<!-- Fin, modalCorreo -->
 
 			<?php if ($edit == 1) { ?>
-				<div class="row">
-					<div class="col-lg-3">
-						<div class="ibox ">
-							<div class="ibox-title">
-								<h5><span class="font-normal">Llamada de servicio</span></h5>
+					<div class="row">
+						<div class="col-lg-4">
+							<div class="ibox ">
+								<div class="ibox-title">
+									<h5><span class="font-normal">ID Agenda</span></h5>
+								</div>
+								<div class="ibox-content">
+									<h3 class="no-margins"><?php echo $row['ID_SolicitudLlamadaServicio']; ?></h3>
+								</div>
 							</div>
-							<div class="ibox-content">
-								<h3 class="no-margins"><?php echo $row['DocNum']; ?></h3>
+						</div>
+						<div class="col-lg-4">
+							<div class="ibox ">
+								<div class="ibox-title">
+									<h5>
+										<span class="font-normal">Creada por: <b><?php echo $row['UsuarioCreacion'] ?? "&nbsp;"; ?></b></span>
+									</h5>
+								</div>
+								<div class="ibox-content">
+									<h3 class="no-margins">
+										<?php echo $row['FechaRegistro']->format("Y-m-d H:i:s") ?? "&nbsp;"; ?>
+									</h3>
+								</div>
+							</div>
+						</div>
+						<div class="col-lg-4">
+							<div class="ibox ">
+								<div class="ibox-title">
+									<h5>
+										<span class="font-normal">Actualizado por: <b><?php echo $row['UsuarioActualizacion'] ?? "&nbsp;"; ?></b></span>
+									</h5>
+								</div>
+								<div class="ibox-content">
+									<h3 class="no-margins">
+										<?php echo (isset($row['FechaActualizacion']) && ($row['FechaActualizacion'] != "")) ? $row['FechaActualizacion']->format("Y-m-d H:i:s") : "&nbsp;"; ?>
+									</h3>
+								</div>
 							</div>
 						</div>
 					</div>
-					<div class="col-lg-3">
-						<div class="ibox ">
-							<div class="ibox-title">
-								<h5><span class="font-normal">Creada por: <b><?php if ($row['UsuarioCreacion'] != "") {
-									echo $row['UsuarioCreacion'];
-								} else {
-									echo "&nbsp;";
-								} ?></b></span></h5>
-							</div>
-							<div class="ibox-content">
-							<h3 class="no-margins"><?php if ($row['FechaCreacion'] != "") {
-								echo $row['FechaCreacion'] . " " . $row['HoraCreacion'];
-							} else {
-								echo "&nbsp;";
-							} ?></h3>
-							</div>
-						</div>
-					</div>
-					<div class="col-lg-3">
-						<div class="ibox ">
-							<div class="ibox-title">
-								<h5><span class="font-normal">Actualizado por: <b><?php if ($row['UsuarioActualizacion'] != "") {
-									echo $row['UsuarioActualizacion'];
-								} else {
-									echo "&nbsp;";
-								} ?></b></span></h5>
-							</div>
-							<div class="ibox-content">
-								<h3 class="no-margins"><?php if ($row['FechaActualizacion'] != "") {
-									echo $row['FechaActualizacion'] . " " . $row['HoraActualizacion'];
-								} else {
-									echo "&nbsp;";
-								} ?></h3>
-							</div>
-						</div>
-					</div>
-					<div class="col-lg-3">
-						<div class="ibox ">
-							<div class="ibox-title">
-								<h5><span class="font-normal">Reabierta por: <b><?php if (isset($row['UsuarioReabrio']) && ($row['UsuarioReabrio'] != "")) {
-									echo $row['UsuarioReabrio'];
-								} else {
-									echo "&nbsp;";
-								} ?></b></span></h5>
-							</div>
-							<div class="ibox-content">
-							<h3 class="no-margins"><?php if (isset($row['FechaReabrio']) && ($row['FechaReabrio'] != "")) {
-								echo $row['FechaReabrio'] . " " . $row['HoraReabrio'];
-							} else {
-								echo "&nbsp;";
-							} ?></h3>
-							</div>
-						</div>
-					</div>
-				</div>
 			<?php } ?>
 				<div class="ibox-content">
 				<?php include "includes/spinner.php"; ?>
@@ -1538,25 +1434,25 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<div class="ibox-content">
 									<div class="form-group">
 										<?php if ($edit == 1) { ?>
-											<div class="col-lg-6">
-												<div class="btn-group">
-													<button data-toggle="dropdown" class="btn btn-outline btn-success dropdown-toggle"><i class="fa fa-download"></i> Descargar formato <i class="fa fa-caret-down"></i></button>
-													<ul class="dropdown-menu">
-														<?php
-														$SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFormato='" . $row['Series'] . "' OR DeSeries is null) and VerEnDocumento='Y'");
-														while ($row_Formato = sqlsrv_fetch_array($SQL_Formato)) { ?>
-															<li>
-																<a class="dropdown-item" target="_blank" href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&ObType=<?php echo base64_encode('191'); ?>&IdFrm=<?php echo base64_encode($row_Formato['IdFormato']); ?>&IdReg=<?php echo base64_encode($row_Formato['ID']); ?>"><?php echo $row_Formato['NombreVisualizar']; ?></a>
-															</li>
-													<?php } ?>
-													</ul>
-												</div>
+												<div class="col-lg-6">
+													<div class="btn-group">
+														<button data-toggle="dropdown" class="btn btn-outline btn-success dropdown-toggle"><i class="fa fa-download"></i> Descargar formato <i class="fa fa-caret-down"></i></button>
+														<ul class="dropdown-menu">
+															<?php
+															$SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFormato='" . $row['Series'] . "' OR DeSeries is null) and VerEnDocumento='Y'");
+															while ($row_Formato = sqlsrv_fetch_array($SQL_Formato)) { ?>
+																	<li>
+																		<a class="dropdown-item" target="_blank" href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&ObType=<?php echo base64_encode('191'); ?>&IdFrm=<?php echo base64_encode($row_Formato['IdFormato']); ?>&IdReg=<?php echo base64_encode($row_Formato['ID']); ?>"><?php echo $row_Formato['NombreVisualizar']; ?></a>
+																	</li>
+														<?php } ?>
+														</ul>
+													</div>
 
-												<a href="#" class="btn btn-outline btn-info" onClick="VerMapaRel('<?php echo base64_encode($row['ID_LlamadaServicio']); ?>','<?php echo base64_encode('191'); ?>');"><i class="fa fa-sitemap"></i> Mapa de relaciones</a>
-											</div>
+													<a href="#" class="btn btn-outline btn-info" onClick="VerMapaRel('<?php echo base64_encode($row['ID_LlamadaServicio']); ?>','<?php echo base64_encode('191'); ?>');"><i class="fa fa-sitemap"></i> Mapa de relaciones</a>
+												</div>
 										<?php } else if (PermitirFuncion(508)) { ?>
-												<button onClick="CrearLead();" class="btn btn-outline btn-primary"><i class="fa fa-user-circle"></i> Crear Prospecto</button>
-												<a href="tarjeta_equipo.php" class="btn btn-outline btn-info" target="_blank"><i class="fa fa-plus-circle"></i> Crear nueva tarjeta de equipo</a>
+														<button onClick="CrearLead();" class="btn btn-outline btn-primary"><i class="fa fa-user-circle"></i> Crear Prospecto</button>
+														<a href="tarjeta_equipo.php" class="btn btn-outline btn-info" target="_blank"><i class="fa fa-plus-circle"></i> Crear nueva tarjeta de equipo</a>
 										<?php } ?>
 									</div>
 								</div>
@@ -1591,10 +1487,10 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<input name="NombreClienteLlamada" type="text" required="required" class="form-control" id="NombreClienteLlamada" placeholder="Digite para buscar..." <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1') || ($row['TipoTarea'] == 'Interna')) || ($dt_LS == 1) || ($edit == 1)) {
 									echo "readonly='readonly'";
 								} ?> value="<?php if (($edit == 1) || ($sw_error == 1)) {
-									 echo $row['NombreClienteLlamada'];
-								 } elseif ($dt_LS == 1) {
-									 echo $row_Cliente['NombreCliente'];
-								 } ?>">
+									  echo $row['NombreClienteLlamada'];
+								  } elseif ($dt_LS == 1) {
+									  echo $row_Cliente['NombreCliente'];
+								  } ?>">
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">Contacto</label>
@@ -1604,10 +1500,10 @@ function AgregarEsto(contenedorID, valorElemento) {
 								  <?php if (($edit == 0) || ($sw_error == 1)) { ?><option value="">Seleccione...</option><?php } ?>
 								  <?php if (($edit == 1) || ($sw_error == 1)) {
 									  while ($row_ContactoCliente = sqlsrv_fetch_array($SQL_ContactoCliente)) { ?>
-  										<option value="<?php echo $row_ContactoCliente['CodigoContacto']; ?>" <?php if ((isset($row['IdContactoLLamada'])) && (strcmp($row_ContactoCliente['CodigoContacto'], $row['IdContactoLLamada']) == 0)) {
-												 echo "selected=\"selected\"";
-											 } ?>><?php echo $row_ContactoCliente['ID_Contacto']; ?></option>
-								  <?php }
+												  <option value="<?php echo $row_ContactoCliente['CodigoContacto']; ?>" <?php if ((isset($row['IdContactoLLamada'])) && (strcmp($row_ContactoCliente['CodigoContacto'], $row['IdContactoLLamada']) == 0)) {
+														 echo "selected=\"selected\"";
+													 } ?>><?php echo $row_ContactoCliente['ID_Contacto']; ?></option>
+								  	<?php }
 								  } ?>
 								</select>
 							</div>
@@ -1619,13 +1515,13 @@ function AgregarEsto(contenedorID, valorElemento) {
 								  <?php if (($edit == 0) || ($sw_error == 1)) { ?><option value="">Seleccione...</option><?php } ?>
 								  <?php if (($edit == 1) || ($sw_error == 1)) {
 									  while ($row_SucursalCliente = sqlsrv_fetch_array($SQL_SucursalCliente)) { ?>
-  										<option value="<?php echo $row_SucursalCliente['NombreSucursal']; ?>" <?php if (isset($row['NombreSucursal']) && (strcmp($row_SucursalCliente['NombreSucursal'], $row['NombreSucursal']) == 0)) {
-												 echo "selected=\"selected\"";
-											 } elseif (isset($row['NombreSucursal']) && (strcmp($row_SucursalCliente['NumeroLinea'], $row['IdNombreSucursal']) == 0)) {
-												 echo "selected=\"selected\"";
-												 $sw_valDir = 1;
-											 } ?>><?php echo $row_SucursalCliente['NombreSucursal']; ?></option>
-								  <?php }
+												  <option value="<?php echo $row_SucursalCliente['NombreSucursal']; ?>" <?php if (isset($row['NombreSucursal']) && (strcmp($row_SucursalCliente['NombreSucursal'], $row['NombreSucursal']) == 0)) {
+														 echo "selected=\"selected\"";
+													 } elseif (isset($row['NombreSucursal']) && (strcmp($row_SucursalCliente['NumeroLinea'], $row['IdNombreSucursal']) == 0)) {
+														 echo "selected=\"selected\"";
+														 $sw_valDir = 1;
+													 } ?>><?php echo $row_SucursalCliente['NombreSucursal']; ?></option>
+								  	<?php }
 								  } ?>
 								</select>
 							</div>
@@ -1636,24 +1532,24 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<input name="DireccionLlamada" type="text" required="required" class="form-control" id="DireccionLlamada" maxlength="100" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "readonly='readonly'";
 								} ?> value="<?php if (($edit == 1) || ($sw_error == 1)) {
-									 echo $row['DireccionLlamada'];
-								 } ?>">
+									  echo $row['DireccionLlamada'];
+								  } ?>">
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">Barrio</label>
 								<input name="BarrioDireccionLlamada" type="text" class="form-control" id="BarrioDireccionLlamada" maxlength="50" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "readonly='readonly'";
 								} ?> value="<?php if (($edit == 1) || ($sw_error == 1)) {
-									 echo $row['BarrioDireccionLlamada'];
-								 } ?>">
+									  echo $row['BarrioDireccionLlamada'];
+								  } ?>">
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">Teléfono <span class="text-danger">*</span></label>
 								<input name="TelefonoLlamada" type="text" class="form-control" required="required" id="TelefonoLlamada" maxlength="50" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "readonly='readonly'";
 								} ?> value="<?php if (($edit == 1) || ($sw_error == 1)) {
-									 echo $row['TelefonoContactoLlamada'];
-								 } ?>">
+									  echo $row['TelefonoContactoLlamada'];
+								  } ?>">
 							</div>
 						</div>
 						<div class="form-group">
@@ -1662,16 +1558,16 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<input name="CiudadLlamada" type="text" class="form-control" id="CiudadLlamada" maxlength="100" value="<?php if (($edit == 1) || ($sw_error == 1)) {
 									echo $row['CiudadLlamada'];
 								} ?>" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
-									echo "readonly='readonly'";
-								} ?>>
+									 echo "readonly='readonly'";
+								 } ?>>
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">Correo</label>
 								<input name="CorreoLlamada" type="email" class="form-control" id="CorreoLlamada" maxlength="100" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "readonly='readonly'";
 								} ?> value="<?php if (($edit == 1) || ($sw_error == 1)) {
-									 echo $row['CorreoContactoLlamada'];
-								 } ?>">
+									  echo $row['CorreoContactoLlamada'];
+								  } ?>">
 							</div>
 						</div>
 						<div class="form-group">
@@ -1705,32 +1601,32 @@ function AgregarEsto(contenedorID, valorElemento) {
 										<option value="">Seleccione...</option>
 									<?php if (($edit == 1) || ($sw_error == 1)) {
 										while ($row_NumeroSerie = sqlsrv_fetch_array($SQL_NumeroSerie)) { ?>
-											<option value="<?php echo $row_NumeroSerie['SerialInterno']; ?>" data-id="<?php echo $row_NumeroSerie['IdTarjetaEquipo'] ?? ""; ?>" <?php if ((isset($row_NumeroSerie['SerialInterno'])) && (strcmp($row_NumeroSerie['SerialInterno'], $row['IdNumeroSerie']) == 0)) {
-														echo "selected=\"selected\"";
-													} elseif ((isset($_GET['Serial'])) && (strcmp(base64_decode($_GET['Serial']), $row_NumeroSerie['SerialInterno']) == 0)) {
-														echo "selected=\"selected\"";
-													} ?>><?php echo "SN Fabricante: " . $row_NumeroSerie['SerialFabricante'] . " - Núm. Serie: " . $row_NumeroSerie['SerialInterno']; ?></option>
-									<?php }
+													<option value="<?php echo $row_NumeroSerie['SerialInterno']; ?>" data-id="<?php echo $row_NumeroSerie['IdTarjetaEquipo'] ?? ""; ?>" <?php if ((isset($row_NumeroSerie['SerialInterno'])) && (strcmp($row_NumeroSerie['SerialInterno'], $row['IdNumeroSerie']) == 0)) {
+																echo "selected=\"selected\"";
+															} elseif ((isset($_GET['Serial'])) && (strcmp(base64_decode($_GET['Serial']), $row_NumeroSerie['SerialInterno']) == 0)) {
+																echo "selected=\"selected\"";
+															} ?>><?php echo "SN Fabricante: " . $row_NumeroSerie['SerialFabricante'] . " - Núm. Serie: " . $row_NumeroSerie['SerialInterno']; ?></option>
+										<?php }
 									} ?>
 								</select>
 							</div>
 						</div>
 						<div class="form-group">
-							<div class="col-lg-4" <?php if(!$IncluirCamposAdicionales) { ?> style="display: none;" <?php } ?>>
+							<div class="col-lg-4" <?php if (!$IncluirCamposAdicionales) { ?> style="display: none;" <?php } ?>>
 								<label class="control-label">Cantidad artículo</label>
 							<input name="CantArticulo" type="text" class="form-control" id="CantArticulo" maxlength="50" value="<?php if (($edit == 1) || ($sw_error == 1)) {
 								echo number_format($row['CDU_CantArticulo'], 2);
 							} ?>" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
-								echo "readonly='readonly'";
-							} ?> onKeyPress="return justNumbers(event,this.value);" onKeyUp="revisaCadena(this);">
+								 echo "readonly='readonly'";
+							 } ?> onKeyPress="return justNumbers(event,this.value);" onKeyUp="revisaCadena(this);">
 							</div>
-							<div class="col-lg-4" <?php if(!$IncluirCamposAdicionales) { ?> style="display: none;" <?php } ?>>
+							<div class="col-lg-4" <?php if (!$IncluirCamposAdicionales) { ?> style="display: none;" <?php } ?>>
 								<label class="control-label">Precio artículo</label>
 							<input name="PrecioArticulo" type="text" class="form-control" id="PrecioArticulo" maxlength="50" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 								echo "readonly='readonly'";
 							} ?> value="<?php if (($edit == 1) || ($sw_error == 1)) {
-								 echo number_format($row['CDU_PrecioArticulo'], 2);
-							 } ?>" onKeyPress="return justNumbers(event,this.value);" onKeyUp="revisaCadena(this);">
+								  echo number_format($row['CDU_PrecioArticulo'], 2);
+							  } ?>" onKeyPress="return justNumbers(event,this.value);" onKeyUp="revisaCadena(this);">
 							</div>
 						</div>
 						<div class="form-group">
@@ -1747,10 +1643,10 @@ function AgregarEsto(contenedorID, valorElemento) {
 										<option value="">Seleccione...</option>
 									<?php if (($edit == 1) || ($sw_error == 1)) {
 										while ($row_ListaMateriales = sqlsrv_fetch_array($SQL_ListaMateriales)) { ?>
-											<option value="<?php echo $row_ListaMateriales['ItemCode']; ?>" <?php if ((isset($row['CDU_ListaMateriales'])) && (strcmp($row_ListaMateriales['ItemCode'], $row['CDU_ListaMateriales']) == 0)) {
-												   echo "selected=\"selected\"";
-											   } ?>><?php echo $row_ListaMateriales['ItemName']; ?></option>
-									<?php }
+													<option value="<?php echo $row_ListaMateriales['ItemCode']; ?>" <?php if ((isset($row['CDU_ListaMateriales'])) && (strcmp($row_ListaMateriales['ItemCode'], $row['CDU_ListaMateriales']) == 0)) {
+														   echo "selected=\"selected\"";
+													   } ?>><?php echo $row_ListaMateriales['ItemName']; ?></option>
+										<?php }
 									} ?>
 								</select>
 							</div>
@@ -1759,8 +1655,8 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<input name="CDU_TiempoTarea" type="number" class="form-control" id="CDU_TiempoTarea" required="required" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "readonly='readonly'";
 								} ?> value="<?php if (($edit == 1) || ($sw_error == 1)) {
-									 echo $row['CDU_TiempoTarea'];
-								 } ?>">
+									  echo $row['CDU_TiempoTarea'];
+								  } ?>">
 							</div>
 						</div>
 					</div>
@@ -1790,14 +1686,14 @@ function AgregarEsto(contenedorID, valorElemento) {
 								} ?>>
 										<option value="">Seleccione...</option>
 									<?php while ($row_Series = sqlsrv_fetch_array($SQL_Series)) { ?>
-										<option value="<?php echo $row_Series['IdSeries']; ?>"
-										<?php if ((isset($row['Series'])) && (strcmp($row_Series['IdSeries'], $row['Series']) == 0)) {
-											echo "selected";
-										} elseif ((isset($row['IdSeries'])) && (strcmp($row_Series['IdSeries'], $row['IdSeries']) == 0)) {
-											echo "selected";
-										} ?>>
-											<?php echo $row_Series['DeSeries']; ?>
-										</option>
+											<option value="<?php echo $row_Series['IdSeries']; ?>"
+											<?php if ((isset($row['Series'])) && (strcmp($row_Series['IdSeries'], $row['Series']) == 0)) {
+												echo "selected";
+											} elseif ((isset($row['IdSeries'])) && (strcmp($row_Series['IdSeries'], $row['IdSeries']) == 0)) {
+												echo "selected";
+											} ?>>
+												<?php echo $row_Series['DeSeries']; ?>
+											</option>
 									  <?php } ?>
 								</select>
 							</div>
@@ -1830,10 +1726,10 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<input autocomplete="off" name="AsuntoLlamada" type="text" required="required" class="form-control" id="AsuntoLlamada" maxlength="150" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "readonly='readonly'";
 								} ?> value="<?php if (($edit == 1) || ($sw_error == 1)) {
-									 echo $row['AsuntoLlamada'];
-								 } else {
-									 echo $TituloLlamada;
-								 } ?>">
+									  echo $row['AsuntoLlamada'];
+								  } else {
+									  echo $TituloLlamada;
+								  } ?>">
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">Hora de creación <span class="text-danger">*</span></label>
@@ -1858,14 +1754,14 @@ function AgregarEsto(contenedorID, valorElemento) {
 									<option value="">Seleccione...</option>
 									
 									<?php while ($row_OrigenLlamada = sqlsrv_fetch_array($SQL_OrigenLlamada)) { ?>
-										<option value="<?php echo $row_OrigenLlamada['IdOrigenLlamada']; ?>" <?php if ((isset($row['IdOrigenLlamada'])) && (strcmp($row_OrigenLlamada['IdOrigenLlamada'], $row['IdOrigenLlamada']) == 0)) {
-												echo "selected";
-										   	}  elseif ($OrigenLlamada == $row_OrigenLlamada['IdOrigenLlamada']) {
-												echo "selected";
-											} ?>>
-											<?php echo $row_OrigenLlamada['DeOrigenLlamada']; ?>
-										</option>
-								  	<?php } ?>
+											<option value="<?php echo $row_OrigenLlamada['IdOrigenLlamada']; ?>" <?php if ((isset($row['IdOrigenLlamada'])) && (strcmp($row_OrigenLlamada['IdOrigenLlamada'], $row['IdOrigenLlamada']) == 0)) {
+												   echo "selected";
+											   } elseif ($OrigenLlamada == $row_OrigenLlamada['IdOrigenLlamada']) {
+												   echo "selected";
+											   } ?>>
+												<?php echo $row_OrigenLlamada['DeOrigenLlamada']; ?>
+											</option>
+									  <?php } ?>
 								</select>
 							</div>
 
@@ -1875,16 +1771,16 @@ function AgregarEsto(contenedorID, valorElemento) {
 									echo "disabled";
 								} ?>>
 									<option value="">Seleccione...</option>
-								  		
+										  
 									<?php while ($row_TipoLlamadas = sqlsrv_fetch_array($SQL_TipoLlamadas)) { ?>
-										<option value="<?php echo $row_TipoLlamadas['IdTipoLlamada']; ?>" <?php if ((isset($row['IdTipoLlamada'])) && (strcmp($row_TipoLlamadas['IdTipoLlamada'], $row['IdTipoLlamada']) == 0)) {
-											   echo "selected";
-											}  elseif ($TipoLlamada == $row_TipoLlamadas['IdTipoLlamada']) {
-												echo "selected";
-											} ?>>
-											<?php echo $row_TipoLlamadas['DeTipoLlamada']; ?>
-										</option>
-								  	<?php } ?>
+											<option value="<?php echo $row_TipoLlamadas['IdTipoLlamada']; ?>" <?php if ((isset($row['IdTipoLlamada'])) && (strcmp($row_TipoLlamadas['IdTipoLlamada'], $row['IdTipoLlamada']) == 0)) {
+												   echo "selected";
+											   } elseif ($TipoLlamada == $row_TipoLlamadas['IdTipoLlamada']) {
+												   echo "selected";
+											   } ?>>
+												<?php echo $row_TipoLlamadas['DeTipoLlamada']; ?>
+											</option>
+									  <?php } ?>
 								</select>
 							</div>
 							<!-- SMM -->
@@ -1892,10 +1788,10 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<label class="control-label">Fecha Agenda <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?><span class="text-danger">*</span><?php } ?></label>
 								<div class="input-group date">
 									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input <?php if ($edit != 0) { ?> readonly <?php } ?> <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?> required <?php } ?> name="FechaAgenda" type="text" class="form-control" id="FechaAgenda" value="<?php if (($edit == 1) && ($row['FechaAgenda'] != "")) {
-													   echo is_string($row['FechaAgenda']) ? date("Y-m-d", strtotime($row['FechaAgenda'])) : $row['FechaAgenda']->format("Y-m-d");
-												   } else {
-													   echo date('Y-m-d');
-												   } ?>">
+														   echo is_string($row['FechaAgenda']) ? date("Y-m-d", strtotime($row['FechaAgenda'])) : $row['FechaAgenda']->format("Y-m-d");
+													   } else {
+														   echo date('Y-m-d');
+													   } ?>">
 								</div>
 							</div>
 							<!-- 01/06/2022 -->
@@ -1907,16 +1803,16 @@ function AgregarEsto(contenedorID, valorElemento) {
 									echo "disabled";
 								} ?>>
 									<option value="">Seleccione...</option>
-								  	
+									  
 									<?php while ($row_TipoProblema = sqlsrv_fetch_array($SQL_TipoProblema)) { ?>
-										<option value="<?php echo $row_TipoProblema['IdTipoProblemaLlamada']; ?>" <?php if ((isset($row['IdTipoProblemaLlamada'])) && (strcmp($row_TipoProblema['IdTipoProblemaLlamada'], $row['IdTipoProblemaLlamada']) == 0)) {
-											  	echo "selected";
-										   	} elseif ($TipoProblema == $row_TipoProblema['IdTipoProblemaLlamada']) {
-												echo "selected";
-											} ?>>
-											<?php echo $row_TipoProblema['DeTipoProblemaLlamada']; ?>
-										</option>
-								  	<?php } ?>
+											<option value="<?php echo $row_TipoProblema['IdTipoProblemaLlamada']; ?>" <?php if ((isset($row['IdTipoProblemaLlamada'])) && (strcmp($row_TipoProblema['IdTipoProblemaLlamada'], $row['IdTipoProblemaLlamada']) == 0)) {
+												   echo "selected";
+											   } elseif ($TipoProblema == $row_TipoProblema['IdTipoProblemaLlamada']) {
+												   echo "selected";
+											   } ?>>
+												<?php echo $row_TipoProblema['DeTipoProblemaLlamada']; ?>
+											</option>
+									  <?php } ?>
 								</select>
 							</div>
 
@@ -1926,16 +1822,16 @@ function AgregarEsto(contenedorID, valorElemento) {
 									echo "disabled";
 								} ?>>
 									<option value="">Seleccione...</option>
-								  	
+									  
 									<?php while ($row_SubTipoProblema = sqlsrv_fetch_array($SQL_SubTipoProblema)) { ?>
-										<option value="<?php echo $row_SubTipoProblema['IdSubTipoProblemaLlamada']; ?>" <?php if ((isset($row['IdSubTipoProblemaLlamada'])) && (strcmp($row_SubTipoProblema['IdSubTipoProblemaLlamada'], $row['IdSubTipoProblemaLlamada']) == 0)) {
-											   echo "selected";
-										   	} elseif ($SubtipoProblema == $row_SubTipoProblema['IdSubTipoProblemaLlamada']) {
-												echo "selected";
-											} ?>>
-											<?php echo $row_SubTipoProblema['DeSubTipoProblemaLlamada']; ?>
-										</option>
-								  	<?php } ?>
+											<option value="<?php echo $row_SubTipoProblema['IdSubTipoProblemaLlamada']; ?>" <?php if ((isset($row['IdSubTipoProblemaLlamada'])) && (strcmp($row_SubTipoProblema['IdSubTipoProblemaLlamada'], $row['IdSubTipoProblemaLlamada']) == 0)) {
+												   echo "selected";
+											   } elseif ($SubtipoProblema == $row_SubTipoProblema['IdSubTipoProblemaLlamada']) {
+												   echo "selected";
+											   } ?>>
+												<?php echo $row_SubTipoProblema['DeSubTipoProblemaLlamada']; ?>
+											</option>
+									  <?php } ?>
 								</select>
 							</div>
 
@@ -1947,17 +1843,17 @@ function AgregarEsto(contenedorID, valorElemento) {
 										<span class="fa fa-clock-o"></span>
 									</span>
 									<input <?php if ($edit != 0) { ?> readonly <?php } ?> <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?> required <?php } ?> name="HoraAgenda" id="HoraAgenda" type="text" class="form-control" value="<?php if (($edit == 1) && ($row['HoraAgenda'] != "")) {
-													  echo is_string($row['FechaAgenda']) ? date("H:i", strtotime($row['HoraAgenda'])) : $row['HoraAgenda']->format("H:i");
-												  } else {
-													  echo date('H:i');
-												  } ?>" required="required">
+														  echo is_string($row['FechaAgenda']) ? date("H:i", strtotime($row['HoraAgenda'])) : $row['HoraAgenda']->format("H:i");
+													  } else {
+														  echo date('H:i');
+													  } ?>" required="required">
 								</div>
 							</div>
 							<!-- 01/06/2022 -->
 						</div>
 
 						<div class="form-group">
-							<div class="col-lg-4" <?php if(!$IncluirCamposAdicionales) { ?> style="display: none;" <?php } ?>>
+							<div class="col-lg-4" <?php if (!$IncluirCamposAdicionales) { ?> style="display: none;" <?php } ?>>
 								<label class="control-label"><i onClick="ConsultarContrato();" title="Consultar Contrato servicio" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Contrato servicio</label>
 								<select name="ContratoServicio" class="form-control" id="ContratoServicio" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "disabled";
@@ -1965,15 +1861,15 @@ function AgregarEsto(contenedorID, valorElemento) {
 										<option value="">Seleccione...</option>
 									<?php if (($edit == 1) || ($sw_error == 1)) {
 										while ($row_Contrato = sqlsrv_fetch_array($SQL_Contrato)) { ?>
-											<option value="<?php echo $row_Contrato['ID_Contrato']; ?>" <?php if ((isset($row_Contrato['ID_Contrato'])) && (strcmp($row_Contrato['ID_Contrato'], $row['IdContratoServicio']) == 0)) {
-												   echo "selected";
-											   } ?>><?php echo $row_Contrato['ID_Contrato'] . " - " . $row_Contrato['DE_Contrato']; ?></option>
-									<?php }
+													<option value="<?php echo $row_Contrato['ID_Contrato']; ?>" <?php if ((isset($row_Contrato['ID_Contrato'])) && (strcmp($row_Contrato['ID_Contrato'], $row['IdContratoServicio']) == 0)) {
+														   echo "selected";
+													   } ?>><?php echo $row_Contrato['ID_Contrato'] . " - " . $row_Contrato['DE_Contrato']; ?></option>
+										<?php }
 									} ?>
 								</select>
 							</div>
 
-							<div class="col-lg-4" <?php if(!$IncluirCamposAdicionales) { ?> style="display: none;" <?php } ?>>
+							<div class="col-lg-4" <?php if (!$IncluirCamposAdicionales) { ?> style="display: none;" <?php } ?>>
 								<label class="control-label">Cola</label>
 								<select name="ColaLlamada" class="form-control" id="ColaLlamada" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "disabled";
@@ -1984,7 +1880,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 						</div>
 
 						<div class="form-group">
-							<div class="col-lg-4" <?php if(!$IncluirCamposAdicionales) { ?> style="display: none;" <?php } ?>>
+							<div class="col-lg-4" <?php if (!$IncluirCamposAdicionales) { ?> style="display: none;" <?php } ?>>
 								<label class="control-label">Aseguradora</label>
 								<select name="CDU_Aseguradora" class="form-control select2"id="CDU_Aseguradora"
 								<?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
@@ -1992,17 +1888,17 @@ function AgregarEsto(contenedorID, valorElemento) {
 								} ?>>
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_Aseguradora = sqlsrv_fetch_array($SQL_Aseguradora)) { ?>
-										<option value="<?php echo $row_Aseguradora['NombreAseguradora']; ?>"
-										<?php if ((isset($row['CDU_Aseguradora'])) && (strcmp($row_Aseguradora['NombreAseguradora'], $row['CDU_Aseguradora']) == 0)) {
-											echo "selected";
-										} ?>>
-											<?php echo $row_Aseguradora['NombreAseguradora']; ?>
-										</option>
+											<option value="<?php echo $row_Aseguradora['NombreAseguradora']; ?>"
+											<?php if ((isset($row['CDU_Aseguradora'])) && (strcmp($row_Aseguradora['NombreAseguradora'], $row['CDU_Aseguradora']) == 0)) {
+												echo "selected";
+											} ?>>
+												<?php echo $row_Aseguradora['NombreAseguradora']; ?>
+											</option>
 								  <?php } ?>
 								</select>
 							</div>
 
-							<div class="col-lg-4" <?php if(!$IncluirCamposAdicionales) { ?> style="display: none;" <?php } ?>>
+							<div class="col-lg-4" <?php if (!$IncluirCamposAdicionales) { ?> style="display: none;" <?php } ?>>
 								<label class="control-label">Contrato/Campaña</label>
 								<select name="CDU_Contrato" class="form-control select2" id="CDU_Contrato"
 								<?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
@@ -2010,12 +1906,12 @@ function AgregarEsto(contenedorID, valorElemento) {
 								} ?>>
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_Contrato = sqlsrv_fetch_array($SQL_ContratosLlamada)) { ?>
-										<option value="<?php echo $row_Contrato['NombreContrato']; ?>"
-										<?php if ((isset($row['CDU_Contrato'])) && (strcmp($row_Contrato['NombreContrato'], $row['CDU_Contrato']) == 0)) {
-											echo "selected";
-										} ?>>
-											<?php echo $row_Contrato['NombreContrato']; ?>
-										</option>
+											<option value="<?php echo $row_Contrato['NombreContrato']; ?>"
+											<?php if ((isset($row['CDU_Contrato'])) && (strcmp($row_Contrato['NombreContrato'], $row['CDU_Contrato']) == 0)) {
+												echo "selected";
+											} ?>>
+												<?php echo $row_Contrato['NombreContrato']; ?>
+											</option>
 								  <?php } ?>
 								</select>
 							</div>
@@ -2035,19 +1931,21 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<label class="control-label">Técnico/Asesor <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?><span class="text-danger">*</span><?php } ?></label>
 								
 								<select <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?> required <?php } ?> name="Tecnico" class="form-control select2" id="Tecnico" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
-										   echo "disabled";
-									   } ?>>
+											 echo "disabled";
+										 } ?>>
 									<option value="">Seleccione...</option>
-								  	
+									  
 									<?php while ($row_Tecnicos = sqlsrv_fetch_array($SQL_Tecnicos)) { ?>
-										<?php if (in_array($row_Tecnicos['IdCargo'], $ids_grupos) || ($MostrarTodosRecursos || (count($ids_grupos) == 0))) { ?>
-											<option value="<?php echo $row_Tecnicos['ID_Empleado']; ?>" <?php if ((isset($row['IdTecnico'])) && (strcmp($row_Tecnicos['ID_Empleado'], $row['IdTecnico']) == 0)) {
-												echo "selected";
-											} ?> <?php if ((count($ids_grupos) > 0) && (!in_array($row_Tecnicos['IdCargo'], $ids_grupos))) { echo "disabled"; } ?>>
-											<?php echo $row_Tecnicos['NombreEmpleado'] . " (" . $row_Tecnicos['NombreCentroCosto2'] . " - " . $row_Tecnicos['DeCargo'] . ")"; ?>
-											</option>
-										<?php } ?>
-								  	<?php } ?>
+											<?php if (in_array($row_Tecnicos['IdCargo'], $ids_grupos) || ($MostrarTodosRecursos || (count($ids_grupos) == 0))) { ?>
+													<option value="<?php echo $row_Tecnicos['ID_Empleado']; ?>" <?php if ((isset($row['IdTecnico'])) && (strcmp($row_Tecnicos['ID_Empleado'], $row['IdTecnico']) == 0)) {
+														   echo "selected";
+													   } ?> 		<?php if ((count($ids_grupos) > 0) && (!in_array($row_Tecnicos['IdCargo'], $ids_grupos))) {
+																	 echo "disabled";
+																 } ?>>
+													<?php echo $row_Tecnicos['NombreEmpleado'] . " (" . $row_Tecnicos['NombreCentroCosto2'] . " - " . $row_Tecnicos['DeCargo'] . ")"; ?>
+													</option>
+											<?php } ?>
+									  <?php } ?>
 								</select>
 							</div>
 
@@ -2060,14 +1958,16 @@ function AgregarEsto(contenedorID, valorElemento) {
 									<option value="">Seleccione...</option>
 								  
 									<?php while ($row_Tecnicos = sqlsrv_fetch_array($SQL_TecnicosAdicionales)) { ?>
-										<?php if (in_array($row_Tecnicos['IdCargo'], $ids_grupos) || ($MostrarTodosRecursos || (count($ids_grupos) == 0))) { ?>
-											<option value="<?php echo $row_Tecnicos['ID_Empleado']; ?>" <?php if ((isset($row['CDU_IdTecnicoAdicional'])) && (strcmp($row_Tecnicos['ID_Empleado'], $row['CDU_IdTecnicoAdicional']) == 0)) {
-												echo "selected";
-											} ?> <?php if ((count($ids_grupos) > 0) && (!in_array($row_Tecnicos['IdCargo'], $ids_grupos))) { echo "disabled"; } ?>>
-											<?php echo $row_Tecnicos['NombreEmpleado'] . " (" . $row_Tecnicos['NombreCentroCosto2'] . " - " . $row_Tecnicos['DeCargo'] . ")"; ?>
-											</option>
-										<?php } ?>
-								  	<?php } ?>
+											<?php if (in_array($row_Tecnicos['IdCargo'], $ids_grupos) || ($MostrarTodosRecursos || (count($ids_grupos) == 0))) { ?>
+													<option value="<?php echo $row_Tecnicos['ID_Empleado']; ?>" <?php if ((isset($row['CDU_IdTecnicoAdicional'])) && (strcmp($row_Tecnicos['ID_Empleado'], $row['CDU_IdTecnicoAdicional']) == 0)) {
+														   echo "selected";
+													   } ?> 		<?php if ((count($ids_grupos) > 0) && (!in_array($row_Tecnicos['IdCargo'], $ids_grupos))) {
+																	 echo "disabled";
+																 } ?>>
+													<?php echo $row_Tecnicos['NombreEmpleado'] . " (" . $row_Tecnicos['NombreCentroCosto2'] . " - " . $row_Tecnicos['DeCargo'] . ")"; ?>
+													</option>
+											<?php } ?>
+									  <?php } ?>
 								</select>
 							</div>
 							
@@ -2077,37 +1977,37 @@ function AgregarEsto(contenedorID, valorElemento) {
 									echo "disabled";
 								} ?>>
 								  <?php while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) { ?>
-										<option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['IdEstadoLlamada'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['IdEstadoLlamada']) == 0)) {
-											   echo "selected";
-										   } ?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option>
+											<option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['IdEstadoLlamada'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['IdEstadoLlamada']) == 0)) {
+												   echo "selected";
+											   } ?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option>
 								  <?php } ?>
 								</select>
 							</div>
 						</div>
 
 						<div class="form-group">
-							<div class="col-lg-4" <?php if(!$IncluirCamposAdicionales) { ?> style="visibility: hidden;" <?php } ?>>
+							<div class="col-lg-4" <?php if (!$IncluirCamposAdicionales) { ?> style="visibility: hidden;" <?php } ?>>
 								<label class="control-label">Asignado a</label>
 								<select name="EmpleadoLlamada" class="form-control select2" id="EmpleadoLlamada" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "disabled";
 								} ?>>
 									<option value="">(Sin asignar)</option>
-								  	
-									<?php if($IncluirCamposAdicionales) { ?>
-										<?php while ($row_EmpleadoLlamada = sqlsrv_fetch_array($SQL_EmpleadoLlamada)) { ?>
-											<option value="<?php echo $row_EmpleadoLlamada['ID_Empleado']; ?>" <?php if ((isset($row['IdAsignadoA'])) && (strcmp($row_EmpleadoLlamada['ID_Empleado'], $row['IdAsignadoA']) == 0)) {
-											   echo "selected";
-										   	} elseif (($edit == 0) && (isset($_SESSION['CodigoSAP'])) && (strcmp($row_EmpleadoLlamada['ID_Empleado'], $_SESSION['CodigoSAP']) == 0)) {
-											   echo "selected";
-										   	} ?>>
-												<?php echo $row_EmpleadoLlamada['NombreEmpleado']; ?>
-											</option>
-								  		<?php } ?>
+									  
+									<?php if ($IncluirCamposAdicionales) { ?>
+											<?php while ($row_EmpleadoLlamada = sqlsrv_fetch_array($SQL_EmpleadoLlamada)) { ?>
+													<option value="<?php echo $row_EmpleadoLlamada['ID_Empleado']; ?>" <?php if ((isset($row['IdAsignadoA'])) && (strcmp($row_EmpleadoLlamada['ID_Empleado'], $row['IdAsignadoA']) == 0)) {
+														   echo "selected";
+													   } elseif (($edit == 0) && (isset($_SESSION['CodigoSAP'])) && (strcmp($row_EmpleadoLlamada['ID_Empleado'], $_SESSION['CodigoSAP']) == 0)) {
+														   echo "selected";
+													   } ?>>
+														<?php echo $row_EmpleadoLlamada['NombreEmpleado']; ?>
+													</option>
+										  	<?php } ?>
 									<?php } ?>
 								</select>
 							</div>
 
-							<div class="col-lg-4" <?php if(!$IncluirCamposAdicionales) { ?> style="visibility: hidden;" <?php } ?>>
+							<div class="col-lg-4" <?php if (!$IncluirCamposAdicionales) { ?> style="visibility: hidden;" <?php } ?>>
 								<label class="control-label">Proyecto</label>
 								
 								<select name="Proyecto" class="form-control select2" id="Proyecto" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
@@ -2115,15 +2015,15 @@ function AgregarEsto(contenedorID, valorElemento) {
 								} ?>>
 									<option value="">Seleccione...</option>
 
-									<?php if($IncluirCamposAdicionales) { ?>
-										<?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) { ?>
-											<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if ((isset($row['IdProyecto'])) && (strcmp($row_Proyecto['IdProyecto'], $row['IdProyecto']) == 0)) {
-											   echo "selected";
-										   	} ?>>
-												<?php echo $row_Proyecto['DeProyecto']; ?>
-											</option>
-								  		<?php } ?>
-								  	<?php } ?>
+									<?php if ($IncluirCamposAdicionales) { ?>
+											<?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) { ?>
+													<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if ((isset($row['IdProyecto'])) && (strcmp($row_Proyecto['IdProyecto'], $row['IdProyecto']) == 0)) {
+														   echo "selected";
+													   } ?>>
+														<?php echo $row_Proyecto['DeProyecto']; ?>
+													</option>
+										  	<?php } ?>
+									  <?php } ?>
 								</select>
 							</div>
 
@@ -2133,9 +2033,9 @@ function AgregarEsto(contenedorID, valorElemento) {
 									echo "disabled='disabled'";
 								} ?> required>
 								  <?php while ($row_EstServLlamada = sqlsrv_fetch_array($SQL_EstServLlamada)) { ?>
-										<option value="<?php echo $row_EstServLlamada['IdEstadoServicio']; ?>" <?php if ((($edit == 0) && ($row_EstServLlamada['IdEstadoServicio'] == 0)) || ((isset($row['CDU_EstadoServicio'])) && (strcmp($row_EstServLlamada['IdEstadoServicio'], $row['CDU_EstadoServicio']) == 0))) {
-											   echo "selected=\"selected\"";
-										   } ?>><?php echo $row_EstServLlamada['DeEstadoServicio']; ?></option>
+											<option value="<?php echo $row_EstServLlamada['IdEstadoServicio']; ?>" <?php if ((($edit == 0) && ($row_EstServLlamada['IdEstadoServicio'] == 0)) || ((isset($row['CDU_EstadoServicio'])) && (strcmp($row_EstServLlamada['IdEstadoServicio'], $row['CDU_EstadoServicio']) == 0))) {
+												   echo "selected=\"selected\"";
+											   } ?>><?php echo $row_EstServLlamada['DeEstadoServicio']; ?></option>
 								  <?php } ?>
 								</select>
 							</div>
@@ -2146,8 +2046,8 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<textarea name="ComentarioLlamada" rows="7" maxlength="3000" required="required" class="form-control" id="ComentarioLlamada" type="text" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "readonly='readonly'";
 								} ?>><?php if (($edit == 1) || ($sw_error == 1)) {
-									echo $row['ComentarioLlamada'];
-								} ?></textarea>
+									 echo $row['ComentarioLlamada'];
+								 } ?></textarea>
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">Cancelado por <span class="text-danger">*</span></label>
@@ -2155,9 +2055,9 @@ function AgregarEsto(contenedorID, valorElemento) {
 									echo "disabled='disabled'";
 								} ?> required>
 								  <?php while ($row_CanceladoPorLlamada = sqlsrv_fetch_array($SQL_CanceladoPorLlamada)) { ?>
-										<option value="<?php echo $row_CanceladoPorLlamada['IdCanceladoPor']; ?>" <?php if ((isset($row['CDU_CanceladoPor'])) && (strcmp($row_CanceladoPorLlamada['IdCanceladoPor'], $row['CDU_CanceladoPor']) == 0)) {
-											   echo "selected=\"selected\"";
-										   } ?>><?php echo $row_CanceladoPorLlamada['DeCanceladoPor']; ?></option>
+											<option value="<?php echo $row_CanceladoPorLlamada['IdCanceladoPor']; ?>" <?php if ((isset($row['CDU_CanceladoPor'])) && (strcmp($row_CanceladoPorLlamada['IdCanceladoPor'], $row['CDU_CanceladoPor']) == 0)) {
+												   echo "selected=\"selected\"";
+											   } ?>><?php echo $row_CanceladoPorLlamada['DeCanceladoPor']; ?></option>
 								  <?php } ?>
 								</select>
 							</div>
@@ -2197,12 +2097,12 @@ function AgregarEsto(contenedorID, valorElemento) {
 								} ?>>
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_TipoPreventivo = sqlsrv_fetch_array($SQL_TipoPreventivo)) { ?>
-										<option value="<?php echo $row_TipoPreventivo['CodigoTipoPreventivo']; ?>"
-										<?php if ((isset($row['CDU_TipoPreventivo'])) && (strcmp($row_TipoPreventivo['CodigoTipoPreventivo'], $row['CDU_TipoPreventivo']) == 0)) {
-											echo "selected=\"selected\"";
-										} ?>>
-											<?php echo $row_TipoPreventivo['TipoPreventivo']; ?>
-										</option>
+											<option value="<?php echo $row_TipoPreventivo['CodigoTipoPreventivo']; ?>"
+											<?php if ((isset($row['CDU_TipoPreventivo'])) && (strcmp($row_TipoPreventivo['CodigoTipoPreventivo'], $row['CDU_TipoPreventivo']) == 0)) {
+												echo "selected=\"selected\"";
+											} ?>>
+												<?php echo $row_TipoPreventivo['TipoPreventivo']; ?>
+											</option>
 								  <?php } ?>
 								</select>
 							</div>
@@ -2217,14 +2117,14 @@ function AgregarEsto(contenedorID, valorElemento) {
 								} ?>>
 									<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) { ?>
-  									<option value="<?php echo $row_MarcaVehiculo['IdMarcaVehiculo']; ?>"
-									  <?php if ((isset($row['CDU_IdMarca'])) && (strcmp($row_MarcaVehiculo['IdMarcaVehiculo'], $row['CDU_IdMarca']) == 0)) {
-										  echo "selected=\"selected\"";
-									  } elseif ((isset($row['CDU_Marca'])) && (strcmp($row_MarcaVehiculo['IdMarcaVehiculo'], $row['CDU_Marca']) == 0)) {
-										  echo "selected=\"selected\"";
-									  } ?>>
-										  <?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
-  									</option>
+										  <option value="<?php echo $row_MarcaVehiculo['IdMarcaVehiculo']; ?>"
+									  	<?php if ((isset($row['CDU_IdMarca'])) && (strcmp($row_MarcaVehiculo['IdMarcaVehiculo'], $row['CDU_IdMarca']) == 0)) {
+											  echo "selected=\"selected\"";
+										  } elseif ((isset($row['CDU_Marca'])) && (strcmp($row_MarcaVehiculo['IdMarcaVehiculo'], $row['CDU_Marca']) == 0)) {
+											  echo "selected=\"selected\"";
+										  } ?>>
+										  	<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
+										  </option>
 								  <?php } ?>
 								</select>
 							</div>
@@ -2236,14 +2136,14 @@ function AgregarEsto(contenedorID, valorElemento) {
 								} ?>>
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_LineaVehiculo = sqlsrv_fetch_array($SQL_LineaVehiculo)) { ?>
-										<option value="<?php echo $row_LineaVehiculo['IdLineaModeloVehiculo']; ?>"
-										<?php if ((isset($row['CDU_IdLinea'])) && (strcmp($row_LineaVehiculo['IdLineaModeloVehiculo'], $row['CDU_IdLinea']) == 0)) {
-											echo "selected=\"selected\"";
-										} elseif ((isset($row['CDU_Linea'])) && (strcmp($row_LineaVehiculo['IdLineaModeloVehiculo'], $row['CDU_Linea']) == 0)) {
-											echo "selected=\"selected\"";
-										} ?>>
-											<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; ?>
-										</option>
+											<option value="<?php echo $row_LineaVehiculo['IdLineaModeloVehiculo']; ?>"
+											<?php if ((isset($row['CDU_IdLinea'])) && (strcmp($row_LineaVehiculo['IdLineaModeloVehiculo'], $row['CDU_IdLinea']) == 0)) {
+												echo "selected=\"selected\"";
+											} elseif ((isset($row['CDU_Linea'])) && (strcmp($row_LineaVehiculo['IdLineaModeloVehiculo'], $row['CDU_Linea']) == 0)) {
+												echo "selected=\"selected\"";
+											} ?>>
+												<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; ?>
+											</option>
 								  <?php } ?>
 								</select>
 							</div>
@@ -2255,12 +2155,12 @@ function AgregarEsto(contenedorID, valorElemento) {
 								} ?>>
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_ModeloVehiculo = sqlsrv_fetch_array($SQL_ModeloVehiculo)) { ?>
-										<option value="<?php echo $row_ModeloVehiculo['CodigoModeloVehiculo']; ?>"
-										<?php if ((isset($row['CDU_Ano'])) && ((strcmp($row_ModeloVehiculo['CodigoModeloVehiculo'], $row['CDU_Ano']) == 0) || (strcmp($row_ModeloVehiculo['AñoModeloVehiculo'], $row['CDU_Ano']) == 0))) {
-											echo "selected=\"selected\"";
-										} ?>>
-											<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; ?>
-										</option>
+											<option value="<?php echo $row_ModeloVehiculo['CodigoModeloVehiculo']; ?>"
+											<?php if ((isset($row['CDU_Ano'])) && ((strcmp($row_ModeloVehiculo['CodigoModeloVehiculo'], $row['CDU_Ano']) == 0) || (strcmp($row_ModeloVehiculo['AñoModeloVehiculo'], $row['CDU_Ano']) == 0))) {
+												echo "selected=\"selected\"";
+											} ?>>
+												<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; ?>
+											</option>
 								  <?php } ?>
 								</select>
 							</div>
@@ -2274,12 +2174,12 @@ function AgregarEsto(contenedorID, valorElemento) {
 								} ?>>
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_Concesionario = sqlsrv_fetch_array($SQL_Concesionario)) { ?>
-										<option value="<?php echo $row_Concesionario['NombreConcesionario']; ?>"
-										<?php if ((isset($row['CDU_Concesionario'])) && (strcmp($row_Concesionario['NombreConcesionario'], $row['CDU_Concesionario']) == 0)) {
-											echo "selected=\"selected\"";
-										} ?>>
-											<?php echo $row_Concesionario['NombreConcesionario']; ?>
-										</option>
+											<option value="<?php echo $row_Concesionario['NombreConcesionario']; ?>"
+											<?php if ((isset($row['CDU_Concesionario'])) && (strcmp($row_Concesionario['NombreConcesionario'], $row['CDU_Concesionario']) == 0)) {
+												echo "selected=\"selected\"";
+											} ?>>
+												<?php echo $row_Concesionario['NombreConcesionario']; ?>
+											</option>
 								  <?php } ?>
 								</select>
 							</div>
@@ -2291,12 +2191,12 @@ function AgregarEsto(contenedorID, valorElemento) {
 								} ?>>
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_TipoServicio = sqlsrv_fetch_array($SQL_TipoServicio)) { ?>
-										<option value="<?php echo $row_TipoServicio['NombreTipoServicio']; ?>"
-										<?php if ((isset($row['CDU_TipoServicio'])) && (strcmp($row_TipoServicio['NombreTipoServicio'], $row['CDU_TipoServicio']) == 0)) {
-											echo "selected=\"selected\"";
-										} ?>>
-											<?php echo $row_TipoServicio['NombreTipoServicio']; ?>
-										</option>
+											<option value="<?php echo $row_TipoServicio['NombreTipoServicio']; ?>"
+											<?php if ((isset($row['CDU_TipoServicio'])) && (strcmp($row_TipoServicio['NombreTipoServicio'], $row['CDU_TipoServicio']) == 0)) {
+												echo "selected=\"selected\"";
+											} ?>>
+												<?php echo $row_TipoServicio['NombreTipoServicio']; ?>
+											</option>
 								  <?php } ?>
 								</select>
 							</div>
@@ -2326,34 +2226,34 @@ function AgregarEsto(contenedorID, valorElemento) {
 							<div class="form-group">
 								<label class="control-label">Nombre de contacto <?php if (PermitirFuncion(324)) { ?><span class="text-danger">*</span><?php } ?></label>
 								<input <?php if (PermitirFuncion(324)) { ?> required <?php } ?> autocomplete="off" name="CDU_NombreContacto" type="text" class="form-control" id="CDU_NombreContacto" maxlength="100" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
-										 echo "readonly='readonly'";
-									 } ?> value="<?php if (($edit == 1) || ($sw_error == 1)) {
-										  echo $row['CDU_NombreContacto'];
-									  } ?>">
+										   echo "readonly='readonly'";
+									   } ?> value="<?php if (($edit == 1) || ($sw_error == 1)) {
+											 echo $row['CDU_NombreContacto'];
+										 } ?>">
 							</div>
 							<div class="form-group">
 								<label class="control-label">Cargo de contacto <?php if (PermitirFuncion(324)) { ?><span class="text-danger">*</span><?php } ?></label>
 								<input <?php if (PermitirFuncion(324)) { ?> required <?php } ?> autocomplete="off" name="CDU_CargoContacto" type="text" class="form-control" id="CDU_CargoContacto" maxlength="100" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
-										 echo "readonly='readonly'";
-									 } ?> value="<?php if (($edit == 1) || ($sw_error == 1)) {
-										  echo $row['CDU_CargoContacto'];
-									  } ?>">
+										   echo "readonly='readonly'";
+									   } ?> value="<?php if (($edit == 1) || ($sw_error == 1)) {
+											 echo $row['CDU_CargoContacto'];
+										 } ?>">
 							</div>
 							<div class="form-group">
 								<label class="control-label">Teléfono de contacto <?php if (PermitirFuncion(324)) { ?><span class="text-danger">*</span><?php } ?></label>
 								<input <?php if (PermitirFuncion(324)) { ?> required <?php } ?> autocomplete="off" name="CDU_TelefonoContacto" type="text" class="form-control" id="CDU_TelefonoContacto" maxlength="100" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
-										 echo "readonly='readonly'";
-									 } ?> value="<?php if (($edit == 1) || ($sw_error == 1)) {
-										  echo $row['CDU_TelefonoContacto'];
-									  } ?>">
+										   echo "readonly='readonly'";
+									   } ?> value="<?php if (($edit == 1) || ($sw_error == 1)) {
+											 echo $row['CDU_TelefonoContacto'];
+										 } ?>">
 							</div>
 							<div class="form-group">
 								<label class="control-label">Correo de contacto <?php if (PermitirFuncion(324)) { ?><span class="text-danger">*</span><?php } ?></label>
 								<input <?php if (PermitirFuncion(324)) { ?> required <?php } ?> autocomplete="off" name="CDU_CorreoContacto" type="email" class="form-control" id="CDU_CorreoContacto" maxlength="100" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
-										 echo "readonly='readonly'";
-									 } ?> value="<?php if (($edit == 1) || ($sw_error == 1)) {
-										  echo $row['CDU_CorreoContacto'];
-									  } ?>">
+										   echo "readonly='readonly'";
+									   } ?> value="<?php if (($edit == 1) || ($sw_error == 1)) {
+											 echo $row['CDU_CorreoContacto'];
+										 } ?>">
 							</div>
 						</div>
 						<div class="col-lg-6">
@@ -2362,16 +2262,16 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<textarea name="CDU_Servicios" rows="5" maxlength="2000" class="form-control" id="CDU_Servicios" type="text" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "readonly='readonly'";
 								} ?>><?php if (($edit == 1) || ($sw_error == 1)) {
-									echo $row['CDU_Servicios'];
-								} ?></textarea>
+									 echo $row['CDU_Servicios'];
+								 } ?></textarea>
 							</div>
 							<div class="form-group">
 								<label class="control-label">Áreas</label>
 								<textarea name="CDU_Areas" rows="5" maxlength="2000" class="form-control" id="CDU_Areas" type="text" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "readonly='readonly'";
 								} ?>><?php if (($edit == 1) || ($sw_error == 1)) {
-									echo $row['CDU_Areas'];
-								} ?></textarea>
+									 echo $row['CDU_Areas'];
+								 } ?></textarea>
 							</div>
 						</div>
 					</div>
@@ -2387,28 +2287,28 @@ function AgregarEsto(contenedorID, valorElemento) {
 					<div class="ibox-content">
 						<?php if ($edit == 1) {
 							if ($row['IdAnexoLlamada'] != 0) { ?>
-								<div class="form-group">
-									<div class="col-xs-12">
-										<?php while ($row_AnexoLlamada = sqlsrv_fetch_array($SQL_AnexoLlamada)) {
-											$Icon = IconAttach($row_AnexoLlamada['FileExt']); ?>
-											<div class="file-box">
-												<div class="file">
-													<a href="attachdownload.php?file=<?php echo base64_encode($row_AnexoLlamada['AbsEntry']); ?>&line=<?php echo base64_encode($row_AnexoLlamada['Line']); ?>" target="_blank">
-														<div class="icon">
-															<i class="<?php echo $Icon; ?>"></i>
+										<div class="form-group">
+											<div class="col-xs-12">
+												<?php while ($row_AnexoLlamada = sqlsrv_fetch_array($SQL_AnexoLlamada)) {
+													$Icon = IconAttach($row_AnexoLlamada['FileExt']); ?>
+														<div class="file-box">
+															<div class="file">
+																<a href="attachdownload.php?file=<?php echo base64_encode($row_AnexoLlamada['AbsEntry']); ?>&line=<?php echo base64_encode($row_AnexoLlamada['Line']); ?>" target="_blank">
+																	<div class="icon">
+																		<i class="<?php echo $Icon; ?>"></i>
+																	</div>
+																	<div class="file-name">
+																		<?php echo $row_AnexoLlamada['NombreArchivo']; ?>
+																		<br/>
+																		<small><?php echo $row_AnexoLlamada['Fecha']; ?></small>
+																	</div>
+																</a>
+															</div>
 														</div>
-														<div class="file-name">
-															<?php echo $row_AnexoLlamada['NombreArchivo']; ?>
-															<br/>
-															<small><?php echo $row_AnexoLlamada['Fecha']; ?></small>
-														</div>
-													</a>
-												</div>
+												<?php } ?>
 											</div>
-										<?php } ?>
-									</div>
-								</div>
-						<?php } else {
+										</div>
+							<?php } else {
 								echo "<p>Sin anexos.</p>";
 							}
 						} ?>
@@ -2448,37 +2348,37 @@ function AgregarEsto(contenedorID, valorElemento) {
 						} ?>" />
 					   </form>
 						<?php if (($edit == 0) || (($edit == 1) && ($row['IdEstadoLlamada'] != '-1'))) { ?>
-							<div class="row">
-								<form action="upload.php" class="dropzone" id="dropzoneForm" name="dropzoneForm">
-									<?php if ($sw_error == 0) {
-										LimpiarDirTemp();
-									} ?>
-									<div class="fallback">
-										<input name="File" id="File" type="file" form="dropzoneForm" />
-									</div>
-								 </form>
-							</div>
+								<div class="row">
+									<form action="upload.php" class="dropzone" id="dropzoneForm" name="dropzoneForm">
+										<?php if ($sw_error == 0) {
+											LimpiarDirTemp();
+										} ?>
+										<div class="fallback">
+											<input name="File" id="File" type="file" form="dropzoneForm" />
+										</div>
+									 </form>
+								</div>
 						<?php } ?>
 					</div>
 				</div>
 				   <div class="form-group">
 						<br>
 						<?php if (($edit == 1) && (PermitirFuncion(302) && (($row['IdEstadoLlamada'] == '-3') || ($row['IdEstadoLlamada'] == '-2')))) { ?>
-							<div class="col-lg-2">
-								<button class="btn btn-warning" type="submit" form="CrearLlamada" id="Actualizar"><i class="fa fa-refresh"></i> Actualizar llamada</button>
-							</div>
+								<div class="col-lg-2">
+									<button class="btn btn-warning" type="submit" form="CrearLlamada" id="Actualizar"><i class="fa fa-refresh"></i> Actualizar llamada</button>
+								</div>
 						<?php } ?>
 						<?php if (($edit == 1) && (PermitirFuncion(302) && ($row['IdEstadoLlamada'] == '-1'))) { ?>
-							<?php if (PermitirFuncion(322)) { ?>
-								<div class="col-lg-2">
-									<button class="btn btn-success" type="submit" form="CrearLlamada" onClick="EnviarFrm('40');" id="Reabrir"><i class="fa fa-reply"></i> Reabrir</button>
-								</div>
-							<?php } ?>
+								<?php if (PermitirFuncion(322)) { ?>
+										<div class="col-lg-2">
+											<button class="btn btn-success" type="submit" form="CrearLlamada" onClick="EnviarFrm('40');" id="Reabrir"><i class="fa fa-reply"></i> Reabrir</button>
+										</div>
+								<?php } ?>
 						<?php } ?>
 						<?php if ($edit == 0) { ?>
-							<div class="col-lg-2">
-								<button class="btn btn-primary" form="CrearLlamada" type="submit" id="Crear"><i class="fa fa-check"></i> Crear Solicitud (Agenda)</button>
-							</div>
+								<div class="col-lg-2">
+									<button class="btn btn-primary" form="CrearLlamada" type="submit" id="Crear"><i class="fa fa-check"></i> Crear Solicitud (Agenda)</button>
+								</div>
 						<?php } ?>
 							<div class="col-lg-2">
 								<a href="<?php echo $return; ?>" class="alkin btn btn-outline btn-default"><i class="fa fa-arrow-circle-o-left"></i> Regresar</a>
@@ -2486,295 +2386,295 @@ function AgregarEsto(contenedorID, valorElemento) {
 					</div>
 					  <br><br>
 			   <?php if ($edit == 1) { ?>
-   				<div class="ibox">
-   					<div class="ibox-title bg-success">
-   						<h5 class="collapse-link"><i class="fa fa-pencil-square-o"></i> Seguimiento de llamada</h5>
-   						 <a class="collapse-link pull-right">
-   							<i class="fa fa-chevron-up"></i>
-   						</a>
-   					</div>
-   					<div class="ibox-content">
-   						<div class="tabs-container">
-   							<ul class="nav nav-tabs">
-   								<li class="active"><a data-toggle="tab" href="#tab-1"><i class="fa fa-calendar"></i> Actividades</a></li>
-   								<li><a data-toggle="tab" href="#tab-2"><i class="fa fa-tags"></i> Documentos relacionados</a></li>
-   								<li><a data-toggle="tab" href="#tab-3"><i class="fa fa-clipboard"></i> Formatos adicionales</a></li>
-   							</ul>
-   							<div class="tab-content">
-   							<div id="tab-1" class="tab-pane active">
-   								<div class="panel-body">
-   									<div class="row">
-									   <?php if (PermitirFuncion(304) && (($row['IdEstadoLlamada'] == '-3') || ($row['IdEstadoLlamada'] == '-2'))) { ?>
-	   									<button type="button" onClick="javascript:location.href='actividad.php?dt_LS=1&TTarea=<?php echo base64_encode($row['TipoTarea']); ?>&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&Ciudad=<?php echo base64_encode($row['CiudadLlamada']); ?>&Barrio=<?php echo base64_encode($row['BarrioDireccionLlamada']); ?>&Telefono=<?php echo base64_encode($row['TelefonoContactoLlamada']); ?>&Correo=<?php echo base64_encode($row['CorreoContactoLlamada']); ?>&LS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>'" class="alkin btn btn-primary btn-xs"><i class="fa fa-plus-circle"></i> Agregar actividad</button>
-									   <?php } ?>
-   									</div>
-   									<br>
-   									<div class="table-responsive">
-   										<table class="table table-striped table-bordered table-hover dataTables-example" >
-   											<thead>
-   											<tr>
-   												<th>Número</th>
-   												<th>Asignado por</th>
-   												<th>Asignado a</th>
+					   <div class="ibox">
+						   <div class="ibox-title bg-success">
+							   <h5 class="collapse-link"><i class="fa fa-pencil-square-o"></i> Seguimiento de llamada</h5>
+								<a class="collapse-link pull-right">
+								   <i class="fa fa-chevron-up"></i>
+							   </a>
+						   </div>
+						   <div class="ibox-content">
+							   <div class="tabs-container">
+								   <ul class="nav nav-tabs">
+									   <li class="active"><a data-toggle="tab" href="#tab-1"><i class="fa fa-calendar"></i> Actividades</a></li>
+									   <li><a data-toggle="tab" href="#tab-2"><i class="fa fa-tags"></i> Documentos relacionados</a></li>
+									   <li><a data-toggle="tab" href="#tab-3"><i class="fa fa-clipboard"></i> Formatos adicionales</a></li>
+								   </ul>
+								   <div class="tab-content">
+								   <div id="tab-1" class="tab-pane active">
+									   <div class="panel-body">
+										   <div class="row">
+									   	<?php if (PermitirFuncion(304) && (($row['IdEstadoLlamada'] == '-3') || ($row['IdEstadoLlamada'] == '-2'))) { ?>
+												   <button type="button" onClick="javascript:location.href='actividad.php?dt_LS=1&TTarea=<?php echo base64_encode($row['TipoTarea']); ?>&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&Ciudad=<?php echo base64_encode($row['CiudadLlamada']); ?>&Barrio=<?php echo base64_encode($row['BarrioDireccionLlamada']); ?>&Telefono=<?php echo base64_encode($row['TelefonoContactoLlamada']); ?>&Correo=<?php echo base64_encode($row['CorreoContactoLlamada']); ?>&LS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>'" class="alkin btn btn-primary btn-xs"><i class="fa fa-plus-circle"></i> Agregar actividad</button>
+									   	<?php } ?>
+										   </div>
+										   <br>
+										   <div class="table-responsive">
+											   <table class="table table-striped table-bordered table-hover dataTables-example" >
+												   <thead>
+												   <tr>
+													   <th>Número</th>
+													   <th>Asignado por</th>
+													   <th>Asignado a</th>
 
-   												<th>Perfil</th> <!-- SMM, 14/09/2022 -->
+													   <th>Perfil</th> <!-- SMM, 14/09/2022 -->
 
-   												<th>Titulo</th>
-   												<th>Fecha creación</th>
-   												<th>Fecha limite</th>
-   												<th>Dias venc.</th>
-   												<th>Estado</th>
-   												<th>Estado Servicio</th>
-   												<th>Acciones</th>
-   											</tr>
-   											</thead>
-   											<tbody>
-											   <?php while ($row_Actividad = sqlsrv_fetch_array($SQL_Actividad)) {
-												   if ($row_Actividad['IdEstadoActividad'] == 'N') {
-													   $DVenc = DiasTranscurridos(date('Y-m-d'), $row_Actividad['FechaFinActividad']);
-												   } else {
-													   $DVenc = array('text-primary', 0);
-												   }
-												   ?>
-  												 <tr class="gradeX">
-  													<td><?php echo $row_Actividad['ID_Actividad']; ?></td>
-  													<td><?php echo $row_Actividad['DeAsignadoPor']; ?></td>
-  													<td><?php if ($row_Actividad['NombreEmpleado'] != "") {
-														  echo $row_Actividad['NombreEmpleado'];
-													  } else {
-														  echo "(Sin asignar)";
-													  } ?></td>
+													   <th>Titulo</th>
+													   <th>Fecha creación</th>
+													   <th>Fecha limite</th>
+													   <th>Dias venc.</th>
+													   <th>Estado</th>
+													   <th>Estado Servicio</th>
+													   <th>Acciones</th>
+												   </tr>
+												   </thead>
+												   <tbody>
+											   	<?php while ($row_Actividad = sqlsrv_fetch_array($SQL_Actividad)) {
+													   if ($row_Actividad['IdEstadoActividad'] == 'N') {
+														   $DVenc = DiasTranscurridos(date('Y-m-d'), $row_Actividad['FechaFinActividad']);
+													   } else {
+														   $DVenc = array('text-primary', 0);
+													   }
+													   ?>
+														   <tr class="gradeX">
+															  <td><?php echo $row_Actividad['ID_Actividad']; ?></td>
+															  <td><?php echo $row_Actividad['DeAsignadoPor']; ?></td>
+															  <td><?php if ($row_Actividad['NombreEmpleado'] != "") {
+																  echo $row_Actividad['NombreEmpleado'];
+															  } else {
+																  echo "(Sin asignar)";
+															  } ?></td>
 
-  													<td><?php echo $row_Actividad['CargoEmpleado']; ?></td>
+															  <td><?php echo $row_Actividad['CargoEmpleado']; ?></td>
 
-  													<td><?php echo $row_Actividad['TituloActividad']; ?></td>
-  													<td><?php if ($row_Actividad['FechaHoraInicioActividad'] != "") {
-														  echo $row_Actividad['FechaHoraInicioActividad']->format('Y-m-d H:s');
-													  } else { ?><p class="text-muted">--</p><?php } ?></td>
-  													<td><?php if ($row_Actividad['FechaHoraFinActividad'] != "") {
-														  echo $row_Actividad['FechaHoraFinActividad']->format('Y-m-d H:s');
-													  } else { ?><p class="text-muted">--</p><?php } ?></td>
-  													<td><p class='<?php echo $DVenc[0]; ?>'><?php echo $DVenc[1]; ?></p></td>
-  													<td><span <?php if ($row_Actividad['IdEstadoActividad'] == 'N') {
-														  echo "class='label label-info'";
-													  } else {
-														  echo "class='label label-danger'";
-													  } ?>><?php echo $row_Actividad['DeEstadoActividad']; ?></span></td>
+															  <td><?php echo $row_Actividad['TituloActividad']; ?></td>
+															  <td><?php if ($row_Actividad['FechaHoraInicioActividad'] != "") {
+																  echo $row_Actividad['FechaHoraInicioActividad']->format('Y-m-d H:s');
+															  } else { ?><p class="text-muted">--</p><?php } ?></td>
+															  <td><?php if ($row_Actividad['FechaHoraFinActividad'] != "") {
+																  echo $row_Actividad['FechaHoraFinActividad']->format('Y-m-d H:s');
+															  } else { ?><p class="text-muted">--</p><?php } ?></td>
+															  <td><p class='<?php echo $DVenc[0]; ?>'><?php echo $DVenc[1]; ?></p></td>
+															  <td><span <?php if ($row_Actividad['IdEstadoActividad'] == 'N') {
+																  echo "class='label label-info'";
+															  } else {
+																  echo "class='label label-danger'";
+															  } ?>><?php echo $row_Actividad['DeEstadoActividad']; ?></span></td>
 
-  													<td>
-														  <?php $SQL_TiposEstadoServ = Seleccionar("uvw_tbl_TipoEstadoServicio", "*"); ?>
-														  <?php while ($row_TipoEstadoServ = sqlsrv_fetch_array($SQL_TiposEstadoServ)) { ?>
-															  <?php if ($row_Actividad['IdTipoEstadoActividad'] == $row_TipoEstadoServ['ID_TipoEstadoServicio']) { ?>
-  																<span class='label text-white' style="background-color: <?php echo $row_TipoEstadoServ['ColorEstadoServicio']; ?>;"><?php echo $row_Actividad['DeTipoEstadoActividad']; ?></span>
-															<?php } ?>
-														<?php } ?>
-  													</td>
-
-  													<td>
-  														<a href="actividad.php?tl=1&id=<?php echo base64_encode($row_Actividad['ID_Actividad']); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i> Abrir</a>
-
-  														<!-- Botón de descarga -->
-  														<div class="btn-group">
-  															<button data-toggle="dropdown" class="btn btn-xs btn-warning dropdown-toggle"><i class="fa fa-download"></i> Descargar formato <i class="fa fa-caret-down"></i></button>
-  															<ul class="dropdown-menu">
-																  <?php $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=66 and VerEnDocumento='Y'"); ?>
-																  <?php while ($row_Formato = sqlsrv_fetch_array($SQL_Formato)) { ?>
-  																	<li>
-  																		<a class="dropdown-item" target="_blank" href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row_Actividad['ID_Actividad']); ?>&ObType=<?php echo base64_encode('66'); ?>&IdFrm=<?php echo base64_encode($row_Formato['IdFormato']); ?>&IdReg=<?php echo base64_encode($row_Formato['ID']); ?>"><?php echo $row_Formato['NombreVisualizar']; ?></a>
-  																	</li>
+															  <td>
+														  		<?php $SQL_TiposEstadoServ = Seleccionar("uvw_tbl_TipoEstadoServicio", "*"); ?>
+														  		<?php while ($row_TipoEstadoServ = sqlsrv_fetch_array($SQL_TiposEstadoServ)) { ?>
+															  			<?php if ($row_Actividad['IdTipoEstadoActividad'] == $row_TipoEstadoServ['ID_TipoEstadoServicio']) { ?>
+																				  <span class='label text-white' style="background-color: <?php echo $row_TipoEstadoServ['ColorEstadoServicio']; ?>;"><?php echo $row_Actividad['DeTipoEstadoActividad']; ?></span>
+																		<?php } ?>
 																<?php } ?>
-  															</ul>
-  														</div>
-  														<!-- SMM, 25/07/2022 -->
-  													</td>
-  												</tr>
-											<?php } ?>
-   											</tbody>
-   										</table>
-   									</div>
-   								</div>
-   							</div>
-   							<div id="tab-2" class="tab-pane">
-   								<div class="panel-body">
-   									<!-- Agregar documento, Inicio -->
-   									<div class="row">
-   										<div class="col-lg-9">
-   											<!-- Gestionar Llamadas, NO Cerradas -->
-											   <?php if (PermitirFuncion(302) && ($row['IdEstadoLlamada'] != '-1')) { ?>
-												   <?php if (PermitirFuncion([401, 402, 404, 409])) { ?>
-   													<div class="btn-group">
-   														<button data-toggle="dropdown" class="btn btn-outline btn-success dropdown-toggle"><i class="fa fa-plus-circle"></i> Agregar documento <i class="fa fa-caret-down"></i></button>
-   														<ul class="dropdown-menu">
-															   <?php if (PermitirFuncion(401)) { ?>
-   																<li><a class="dropdown-item alkin d-venta" href="oferta_venta.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&LS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>">Oferta de venta con LMT</a></li>
-   																<li><a class="dropdown-item alkin d-venta" href="oferta_venta.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&LS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>&LMT=false">Oferta de venta sin LMT</a></li>
-															<?php } ?>
+															  </td>
 
-															   <?php if (PermitirFuncion(402)) { ?>
-   																<li><a class="dropdown-item alkin d-venta" href="orden_venta.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&LS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>">Orden de venta con LMT</a></li>
-   																<li><a class="dropdown-item alkin d-venta" href="orden_venta.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&LS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>&LMT=false">Orden de venta sin LMT</a></li>
-															<?php } ?>
+															  <td>
+																  <a href="actividad.php?tl=1&id=<?php echo base64_encode($row_Actividad['ID_Actividad']); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i> Abrir</a>
 
-															   <?php if (PermitirFuncion(404)) { ?>
-   																<li><a class="dropdown-item alkin d-venta" href="entrega_venta.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&LS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>">Entrega de venta con LMT</a></li>
-   																<li><a class="dropdown-item alkin d-venta" href="entrega_venta.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&LS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>&LMT=false">Entrega de venta sin LMT</a></li>
-															<?php } ?>
+																  <!-- Botón de descarga -->
+																  <div class="btn-group">
+																	  <button data-toggle="dropdown" class="btn btn-xs btn-warning dropdown-toggle"><i class="fa fa-download"></i> Descargar formato <i class="fa fa-caret-down"></i></button>
+																	  <ul class="dropdown-menu">
+																  		<?php $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=66 and VerEnDocumento='Y'"); ?>
+																  		<?php while ($row_Formato = sqlsrv_fetch_array($SQL_Formato)) { ?>
+																				  <li>
+																					  <a class="dropdown-item" target="_blank" href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row_Actividad['ID_Actividad']); ?>&ObType=<?php echo base64_encode('66'); ?>&IdFrm=<?php echo base64_encode($row_Formato['IdFormato']); ?>&IdReg=<?php echo base64_encode($row_Formato['ID']); ?>"><?php echo $row_Formato['NombreVisualizar']; ?></a>
+																				  </li>
+																		<?php } ?>
+																	  </ul>
+																  </div>
+																  <!-- SMM, 25/07/2022 -->
+															  </td>
+														  </tr>
+												<?php } ?>
+												   </tbody>
+											   </table>
+										   </div>
+									   </div>
+								   </div>
+								   <div id="tab-2" class="tab-pane">
+									   <div class="panel-body">
+										   <!-- Agregar documento, Inicio -->
+										   <div class="row">
+											   <div class="col-lg-9">
+												   <!-- Gestionar Llamadas, NO Cerradas -->
+											   	<?php if (PermitirFuncion(302) && ($row['IdEstadoLlamada'] != '-1')) { ?>
+												   		<?php if (PermitirFuncion([401, 402, 404, 409])) { ?>
+																   <div class="btn-group">
+																	   <button data-toggle="dropdown" class="btn btn-outline btn-success dropdown-toggle"><i class="fa fa-plus-circle"></i> Agregar documento <i class="fa fa-caret-down"></i></button>
+																	   <ul class="dropdown-menu">
+															   			<?php if (PermitirFuncion(401)) { ?>
+																				   <li><a class="dropdown-item alkin d-venta" href="oferta_venta.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&LS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>">Oferta de venta con LMT</a></li>
+																				   <li><a class="dropdown-item alkin d-venta" href="oferta_venta.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&LS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>&LMT=false">Oferta de venta sin LMT</a></li>
+																		<?php } ?>
 
-															   <?php if (PermitirFuncion(409)) { ?>
-   																<li><a class="dropdown-item alkin d-venta" href="devolucion_venta.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&LS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>">Devolución de venta con LMT</a></li>
-   																<li><a class="dropdown-item alkin d-venta" href="devolucion_venta.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&LS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>&LMT=false">Devolución de venta sin LMT</a></li>
-															<?php } ?>
-   														</ul>
-   													</div>
-											<?php }
-											   } ?>
-   										</div>
-   										<div class="col-lg-3">
-   											<div class="row">
-   												<div class="col-lg-6">
-   													<button class="pull-right btn btn-primary" id="btnPreCostos" name="btnPreCostos" onClick="MostrarCostos('<?php echo $IdSolicitud; ?>');"><i class="fa fa-money"></i> Previsualizar Precios</button>
-   												</div>
-   												<div class="col-lg-6">
-   													<div class="btn-group pull-right">
-   														<button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i class="fa fa-mail-forward"></i> Liquidación <i class="fa fa-caret-down"></i></button>
-   														<ul class="dropdown-menu">
-   															<li><a class="alkin dropdown-item" href="#" onClick="CopiarToFactura(1);">Prefactura de venta</a></li>
-   															<!-- li><a class="alkin dropdown-item" href="#" onClick="CopiarToFactura(0);">Factura de venta (<strong>NO</strong> copiar adjuntos)</a></li -->
-   															<!--li class="dropdown-divider"></li>
+															   			<?php if (PermitirFuncion(402)) { ?>
+																				   <li><a class="dropdown-item alkin d-venta" href="orden_venta.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&LS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>">Orden de venta con LMT</a></li>
+																				   <li><a class="dropdown-item alkin d-venta" href="orden_venta.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&LS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>&LMT=false">Orden de venta sin LMT</a></li>
+																		<?php } ?>
+
+															   			<?php if (PermitirFuncion(404)) { ?>
+																				   <li><a class="dropdown-item alkin d-venta" href="entrega_venta.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&LS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>">Entrega de venta con LMT</a></li>
+																				   <li><a class="dropdown-item alkin d-venta" href="entrega_venta.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&LS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>&LMT=false">Entrega de venta sin LMT</a></li>
+																		<?php } ?>
+
+															   			<?php if (PermitirFuncion(409)) { ?>
+																				   <li><a class="dropdown-item alkin d-venta" href="devolucion_venta.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&LS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>">Devolución de venta con LMT</a></li>
+																				   <li><a class="dropdown-item alkin d-venta" href="devolucion_venta.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&LS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>&LMT=false">Devolución de venta sin LMT</a></li>
+																		<?php } ?>
+																	   </ul>
+																   </div>
+													<?php }
+												   } ?>
+											   </div>
+											   <div class="col-lg-3">
+												   <div class="row">
+													   <div class="col-lg-6">
+														   <button class="pull-right btn btn-primary" id="btnPreCostos" name="btnPreCostos" onClick="MostrarCostos('<?php echo $IdSolicitud; ?>');"><i class="fa fa-money"></i> Previsualizar Precios</button>
+													   </div>
+													   <div class="col-lg-6">
+														   <div class="btn-group pull-right">
+															   <button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i class="fa fa-mail-forward"></i> Liquidación <i class="fa fa-caret-down"></i></button>
+															   <ul class="dropdown-menu">
+																   <li><a class="alkin dropdown-item" href="#" onClick="CopiarToFactura(1);">Prefactura de venta</a></li>
+																   <!-- li><a class="alkin dropdown-item" href="#" onClick="CopiarToFactura(0);">Factura de venta (<strong>NO</strong> copiar adjuntos)</a></li -->
+																   <!--li class="dropdown-divider"></li>
 															<li><a class="alkin dropdown-item" href="#" onClick="CopiarToFactura(1,2);">Orden de venta (copiar adjuntos)</a></li>
 															<li><a class="alkin dropdown-item" href="#" onClick="CopiarToFactura(0,2);">Orden de venta (<strong>NO</strong> copiar adjuntos)</a></li-->
-   														</ul>
-   													</div>
-   												</div>
-   											</div>
-   										</div>
-   									</div>
-   									<br>
-   									<!-- Agregar documento, Fin -->
-   									<div class="table-responsive">
-   										<table class="table table-striped table-bordered table-hover dataTables-example" >
-   											<thead>
-   											<tr>
-   												<th>Nombre cliente</th>
-   												<th>Tipo de documento</th>
-   												<th>Número de documento</th>
-   												<th>Fecha de documento</th>
-   												<th>Autorización</th>
-   												<th>Estado de documento</th>
-   												<th>Creado por</th>
-   												<th>Artículos/Costos</th>
-   												<th>Acciones</th>
-   											</tr>
-   											</thead>
-   											<tbody>
-											   <?php while ($row_DocRel = sqlsrv_fetch_array($SQL_DocRel)) { ?>
-  												 <tr class="gradeX">
-  													 <td><?php echo $row_DocRel['NombreCliente']; ?></td>
-  													 <td><?php echo $row_DocRel['DeObjeto']; ?></td>
-  													<td><?php echo $row_DocRel['DocNum']; ?></td>
-  													<td><?php echo $row_DocRel['DocDate']; ?></td>
-  													<td><?php echo $row_DocRel['DeAuthPortal']; ?></td>
-  													<td><span <?php if ($row_DocRel['Cod_Estado'] == 'O') {
-														  echo "class='label label-info'";
-													  } else {
-														  echo "class='label label-danger'";
-													  } ?>><?php echo $row_DocRel['NombreEstado']; ?></span></td>
-  													<td><?php echo $row_DocRel['Usuario']; ?></td>
-  													<td>
-  														<a class="btn btn-primary btn-xs" id="btnPreCostos" name="btnPreCostos" onClick="MostrarCostos_Documentos('<?php echo $row_DocRel['DocNum']; ?>', '<?php echo $row_DocRel['IdObjeto']; ?>', '<?php echo $row_DocRel['DeObjeto']; ?>');"><i class="fa fa-money"></i> Previsualizar Precios</a>
-  													</td>
-  													<td>
-													  <?php if ($row_DocRel['Link'] != "") { ?>
-  														<a href="<?php echo $row_DocRel['Link']; ?>.php?id=<?php echo base64_encode($row_DocRel['DocEntry']); ?>&id_portal=<?php echo base64_encode($row_DocRel['IdPortal']); ?>&tl=1&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i> Abrir</a>
-													<?php } ?>
-													  <?php if ($row_DocRel['Descargar'] != "") { ?>
-  														<a href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row_DocRel['DocEntry']); ?>&ObType=<?php echo base64_encode($row_DocRel['IdObjeto']); ?>&IdFrm=<?php echo base64_encode($row_DocRel['IdSeries']); ?>" target="_blank" class="btn btn-warning btn-xs"><i class="fa fa-download"></i> Descargar</a>
-													<?php } ?>
-  													</td>
-  												</tr>
-											<?php } ?>
-   											</tbody>
-   										</table>
-   									</div>
-   								</div>
-   							</div>
-   							<div id="tab-3" class="tab-pane">
-   								<div class="panel-body">
-   									<!-- Agregar formato, Inicio -->
-   									<div class="row">
-										   <?php if (PermitirFuncion(302) && ($row['IdEstadoLlamada'] != '-1')) {
-											   if (PermitirFuncion([1706])) { ?>
-   												<div class="btn-group">
-   													<button data-toggle="dropdown" class="btn btn-outline btn-success dropdown-toggle"><i class="fa fa-plus-circle"></i> Agregar formato <i class="fa fa-caret-down"></i></button>
-   													<ul class="dropdown-menu">
-   														<li>
-   															<a class="dropdown-item alkin" href="frm_recepcion_vehiculo.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&LS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>">Recepción vehículo</a>
-   														</li>
-														
-														<li>
-   															<a class="dropdown-item alkin" href="frm_entrega_vehiculo.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&LS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>">Entrega vehículo</a>
-   														</li>
-   													</ul>
-   												</div>
-											<?php }
-										   } ?>
-   									</div>
-   									<br>
-   									<!-- Agregar formato, Fin -->
-   									<div class="table-responsive">
-   											<table class="table table-striped table-bordered table-hover dataTables-example" >
-   												<thead>
-   												<tr>
-   													<th>Tipo de documento</th>
-   													<th>Número de documento</th>
-   													<th>Fecha de documento</th>
-   													<th>Observaciones</th>
-   													<th>Comentarios de cierre</th>
-   													<th>Fecha cierre</th>
-   													<th>Creado por</th>
-   													<th>Estado de documento</th>
-   													<th>Acciones</th>
-   												</tr>
-   												</thead>
-   												<tbody>
-												   <?php while ($row_Formularios = sqlsrv_fetch_array($SQL_Formularios)) { ?>
-   													<tr class="gradeX">
-   														<td><?php echo $row_Formularios['tipo_objeto']; ?></td>
-   														<td><?php echo $row_Formularios['id_formulario']; ?></td>
-   														<td><?php echo isset($row_Formularios['hora_actualizacion']) ? $row_Formularios['hora_actualizacion']->format('Y-m-d H:i') : ""; ?></td>
-   														<td><?php echo SubComent($row_Formularios['observaciones'], 140); ?></td>
-   														<td id="comentCierre<?php echo $row_Formularios['id_formulario']; ?>"><?php echo SubComent($row_Formularios['comentarios_cierre'], 140); ?></td>
-   														<td><?php echo ($row_Formularios['fecha_cierre'] != "") ? $row_Formularios['fecha_cierre']->format('Y-m-d H:i') : ""; ?></td>
-   														<td><?php echo $row_Formularios['nombre_usuario_creacion']; ?></td>
-   														<td><span id="lblEstado<?php echo $row_Formularios['id_formulario']; ?>" <?php if ($row_Formularios['estado'] == 'O') {
+															   </ul>
+														   </div>
+													   </div>
+												   </div>
+											   </div>
+										   </div>
+										   <br>
+										   <!-- Agregar documento, Fin -->
+										   <div class="table-responsive">
+											   <table class="table table-striped table-bordered table-hover dataTables-example" >
+												   <thead>
+												   <tr>
+													   <th>Nombre cliente</th>
+													   <th>Tipo de documento</th>
+													   <th>Número de documento</th>
+													   <th>Fecha de documento</th>
+													   <th>Autorización</th>
+													   <th>Estado de documento</th>
+													   <th>Creado por</th>
+													   <th>Artículos/Costos</th>
+													   <th>Acciones</th>
+												   </tr>
+												   </thead>
+												   <tbody>
+											   	<?php while ($row_DocRel = sqlsrv_fetch_array($SQL_DocRel)) { ?>
+														   <tr class="gradeX">
+															   <td><?php echo $row_DocRel['NombreCliente']; ?></td>
+															   <td><?php echo $row_DocRel['DeObjeto']; ?></td>
+															  <td><?php echo $row_DocRel['DocNum']; ?></td>
+															  <td><?php echo $row_DocRel['DocDate']; ?></td>
+															  <td><?php echo $row_DocRel['DeAuthPortal']; ?></td>
+															  <td><span <?php if ($row_DocRel['Cod_Estado'] == 'O') {
 																  echo "class='label label-info'";
-															  } elseif ($row_Formularios['estado'] == 'A') {
-																  echo "class='label label-danger'";
 															  } else {
-																  echo "class='label label-primary'";
-															  } ?>><?php echo $row_Formularios['nombre_estado']; ?></span></td>
-   														<td class="text-center form-inline w-80">
-															   <?php if ($row_Formularios['estado'] == 'O') { ?>
-   																<button id="btnEstado<?php echo $row_Formularios['id_formulario']; ?>" class="btn btn-success btn-xs" onClick="CambiarEstado('<?php echo $row_Formularios['id_formulario']; ?>','<?php echo $row_Formularios['nombre_servicio']; ?>','<?php echo $row_Formularios['columna_id']; ?>');" title="Cambiar estado"><i class="fa fa-pencil"></i></button>
+																  echo "class='label label-danger'";
+															  } ?>><?php echo $row_DocRel['NombreEstado']; ?></span></td>
+															  <td><?php echo $row_DocRel['Usuario']; ?></td>
+															  <td>
+																  <a class="btn btn-primary btn-xs" id="btnPreCostos" name="btnPreCostos" onClick="MostrarCostos_Documentos('<?php echo $row_DocRel['DocNum']; ?>', '<?php echo $row_DocRel['IdObjeto']; ?>', '<?php echo $row_DocRel['DeObjeto']; ?>');"><i class="fa fa-money"></i> Previsualizar Precios</a>
+															  </td>
+															  <td>
+													  		<?php if ($row_DocRel['Link'] != "") { ?>
+																	  <a href="<?php echo $row_DocRel['Link']; ?>.php?id=<?php echo base64_encode($row_DocRel['DocEntry']); ?>&id_portal=<?php echo base64_encode($row_DocRel['IdPortal']); ?>&tl=1&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i> Abrir</a>
 															<?php } ?>
-   															<a href="filedownload.php?file=<?php echo base64_encode($row_Formularios['nombre_servicio'] . "/DescargarFormatos/" . $row_Formularios['id_formulario'] . "/" . $_SESSION['User']); ?>&api=1" target="_blank" class="btn btn-warning btn-xs" title="Descargar"><i class="fa fa-download"></i></a>
-
-   															<!-- SMM, 05/10/2022 -->
-															   <?php if (isset($row_Formularios['nombre_servicio']) && ($row_Formularios['nombre_servicio'] == "RecepcionVehiculos")) { ?>
-   																<a href="descargar_frm_recepcion_vehiculo.php?id=<?php echo $row_Formularios['id_formulario']; ?>" target="_blank" class="btn btn-danger btn-xs" title="Descargar Fotos"><i class="fa fa-file-image-o"></i></a>
+													  		<?php if ($row_DocRel['Descargar'] != "") { ?>
+																	  <a href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row_DocRel['DocEntry']); ?>&ObType=<?php echo base64_encode($row_DocRel['IdObjeto']); ?>&IdFrm=<?php echo base64_encode($row_DocRel['IdSeries']); ?>" target="_blank" class="btn btn-warning btn-xs"><i class="fa fa-download"></i> Descargar</a>
 															<?php } ?>
-   														</td>
-   													</tr>
+															  </td>
+														  </tr>
 												<?php } ?>
-   												</tbody>
-   											</table>
-   										</div>
-   									</div>
-   							</div>
-   						</div>
-   						</div>
-   					</div>
-   				</div>
+												   </tbody>
+											   </table>
+										   </div>
+									   </div>
+								   </div>
+								   <div id="tab-3" class="tab-pane">
+									   <div class="panel-body">
+										   <!-- Agregar formato, Inicio -->
+										   <div class="row">
+										   	<?php if (PermitirFuncion(302) && ($row['IdEstadoLlamada'] != '-1')) {
+												   if (PermitirFuncion([1706])) { ?>
+															   <div class="btn-group">
+																   <button data-toggle="dropdown" class="btn btn-outline btn-success dropdown-toggle"><i class="fa fa-plus-circle"></i> Agregar formato <i class="fa fa-caret-down"></i></button>
+																   <ul class="dropdown-menu">
+																	   <li>
+																		   <a class="dropdown-item alkin" href="frm_recepcion_vehiculo.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&LS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>">Recepción vehículo</a>
+																	   </li>
+														
+																	<li>
+																		   <a class="dropdown-item alkin" href="frm_entrega_vehiculo.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&LS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>">Entrega vehículo</a>
+																	   </li>
+																   </ul>
+															   </div>
+													<?php }
+											   } ?>
+										   </div>
+										   <br>
+										   <!-- Agregar formato, Fin -->
+										   <div class="table-responsive">
+												   <table class="table table-striped table-bordered table-hover dataTables-example" >
+													   <thead>
+													   <tr>
+														   <th>Tipo de documento</th>
+														   <th>Número de documento</th>
+														   <th>Fecha de documento</th>
+														   <th>Observaciones</th>
+														   <th>Comentarios de cierre</th>
+														   <th>Fecha cierre</th>
+														   <th>Creado por</th>
+														   <th>Estado de documento</th>
+														   <th>Acciones</th>
+													   </tr>
+													   </thead>
+													   <tbody>
+												   	<?php while ($row_Formularios = sqlsrv_fetch_array($SQL_Formularios)) { ?>
+															   <tr class="gradeX">
+																   <td><?php echo $row_Formularios['tipo_objeto']; ?></td>
+																   <td><?php echo $row_Formularios['id_formulario']; ?></td>
+																   <td><?php echo isset($row_Formularios['hora_actualizacion']) ? $row_Formularios['hora_actualizacion']->format('Y-m-d H:i') : ""; ?></td>
+																   <td><?php echo SubComent($row_Formularios['observaciones'], 140); ?></td>
+																   <td id="comentCierre<?php echo $row_Formularios['id_formulario']; ?>"><?php echo SubComent($row_Formularios['comentarios_cierre'], 140); ?></td>
+																   <td><?php echo ($row_Formularios['fecha_cierre'] != "") ? $row_Formularios['fecha_cierre']->format('Y-m-d H:i') : ""; ?></td>
+																   <td><?php echo $row_Formularios['nombre_usuario_creacion']; ?></td>
+																   <td><span id="lblEstado<?php echo $row_Formularios['id_formulario']; ?>" <?php if ($row_Formularios['estado'] == 'O') {
+																		  echo "class='label label-info'";
+																	  } elseif ($row_Formularios['estado'] == 'A') {
+																		  echo "class='label label-danger'";
+																	  } else {
+																		  echo "class='label label-primary'";
+																	  } ?>><?php echo $row_Formularios['nombre_estado']; ?></span></td>
+																   <td class="text-center form-inline w-80">
+															   		<?php if ($row_Formularios['estado'] == 'O') { ?>
+																			   <button id="btnEstado<?php echo $row_Formularios['id_formulario']; ?>" class="btn btn-success btn-xs" onClick="CambiarEstado('<?php echo $row_Formularios['id_formulario']; ?>','<?php echo $row_Formularios['nombre_servicio']; ?>','<?php echo $row_Formularios['columna_id']; ?>');" title="Cambiar estado"><i class="fa fa-pencil"></i></button>
+																	<?php } ?>
+																	   <a href="filedownload.php?file=<?php echo base64_encode($row_Formularios['nombre_servicio'] . "/DescargarFormatos/" . $row_Formularios['id_formulario'] . "/" . $_SESSION['User']); ?>&api=1" target="_blank" class="btn btn-warning btn-xs" title="Descargar"><i class="fa fa-download"></i></a>
+
+																	   <!-- SMM, 05/10/2022 -->
+															   		<?php if (isset($row_Formularios['nombre_servicio']) && ($row_Formularios['nombre_servicio'] == "RecepcionVehiculos")) { ?>
+																			   <a href="descargar_frm_recepcion_vehiculo.php?id=<?php echo $row_Formularios['id_formulario']; ?>" target="_blank" class="btn btn-danger btn-xs" title="Descargar Fotos"><i class="fa fa-file-image-o"></i></a>
+																	<?php } ?>
+																   </td>
+															   </tr>
+													<?php } ?>
+													   </tbody>
+												   </table>
+											   </div>
+										   </div>
+								   </div>
+							   </div>
+							   </div>
+						   </div>
+					   </div>
 			   <?php } ?>
 		   </div>
 			</div>
@@ -2791,7 +2691,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 	 $(document).ready(function(){
 		// SMM, 11/05/2022
 		<?php if (isset($_GET['Serial'])) { ?>
-			// $('#NumeroSerie').trigger('change');
+				// $('#NumeroSerie').trigger('change');
 		 <?php } ?>
 
 		$("#CrearLlamada").validate({
@@ -2856,34 +2756,34 @@ function AgregarEsto(contenedorID, valorElemento) {
 		maxLength('CDU_Areas'); // SMM, 02/03/2022
 
 		 <?php if (($edit == 0) || (($edit == 1) && (PermitirFuncion(302) && ($row['IdEstadoLlamada'] != '-1')))) { ?>
-			 $('#FechaCreacion, #FechaAgenda').datepicker({
-					todayBtn: "linked",
-					keyboardNavigation: false,
-					forceParse: false,
-					calendarWeeks: true,
-					autoclose: true,
-					format: 'yyyy-mm-dd',
-					 todayHighlight: true,
-					 //startDate: '<?php if ($edit == 1) {
-						 echo $row['FechaCreacionLLamada'];
-					 } else {
-						 echo date('Y-m-d');
-					 } ?>'
-				});
-			 $('.clockpicker').clockpicker();
+				 $('#FechaCreacion, #FechaAgenda').datepicker({
+						todayBtn: "linked",
+						keyboardNavigation: false,
+						forceParse: false,
+						calendarWeeks: true,
+						autoclose: true,
+						format: 'yyyy-mm-dd',
+						 todayHighlight: true,
+						 //startDate: '<?php if ($edit == 1) {
+							 echo $row['FechaCreacionLLamada'];
+						 } else {
+							 echo date('Y-m-d');
+						 } ?>'
+					});
+				 $('.clockpicker').clockpicker();
 		  <?php } ?>
 		 <?php if (($edit == 1) && (PermitirFuncion(302) && ($row['IdEstadoLlamada'] != '-1'))) { ?>
-			 $('#FechaCierre').datepicker({
-					todayBtn: "linked",
-					keyboardNavigation: false,
-					forceParse: false,
-					calendarWeeks: true,
-					autoclose: true,
-					format: 'yyyy-mm-dd',
-					 todayHighlight: true,
-					 startDate: '<?php echo $row['FechaCreacionLLamada']; ?>',
-					 endDate: '<?php echo date('Y-m-d'); ?>'
-				});
+				 $('#FechaCierre').datepicker({
+						todayBtn: "linked",
+						keyboardNavigation: false,
+						forceParse: false,
+						calendarWeeks: true,
+						autoclose: true,
+						format: 'yyyy-mm-dd',
+						 todayHighlight: true,
+						 startDate: '<?php echo $row['FechaCreacionLLamada']; ?>',
+						 endDate: '<?php echo date('Y-m-d'); ?>'
+					});
 		<?php } ?>
 		 $(".select2").select2();
 		 var options = {
@@ -2943,7 +2843,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 
 		<?php
 		if ($edit == 0) { ?>
-			$("#NombreClienteLlamada").easyAutocomplete(options);
+				$("#NombreClienteLlamada").easyAutocomplete(options);
 		<?php } ?>
 		$("#CiudadLlamada").easyAutocomplete(options2);
 
@@ -2951,15 +2851,15 @@ function AgregarEsto(contenedorID, valorElemento) {
 		$("#DeArticuloLlamada").easyAutocomplete(options3);
 
 		<?php if ($dt_LS == 1) { ?>
-			$('#ClienteLlamada').trigger('change');
+				$('#ClienteLlamada').trigger('change');
 
-			// Stiven Muñoz Murillo, 24/01/2022
-			$('#IdArticuloLlamada').trigger('change');
+				// Stiven Muñoz Murillo, 24/01/2022
+				$('#IdArticuloLlamada').trigger('change');
 		 <?php } ?>
 
 		<?php
 		if ($edit == 1) { ?>
-			$('#Series option:not(:selected)').attr('disabled',true);
+				$('#Series option:not(:selected)').attr('disabled',true);
 		<?php } ?>
 
 		$('.dataTables-example').DataTable({
@@ -3110,29 +3010,29 @@ function CopiarToFactura(adj=1,dest=1){
 	if(dest==2)	docDest="orden_venta.php";
 
 	<?php if (PermitirFuncion(419)) { ?>
-		Swal.fire({
-			title: "¿Desea cambiar de socio de negocio?",
-			icon: "question",
-			showCancelButton: true,
-			confirmButtonText: "Si, confirmo",
-			cancelButtonText: "No"
-		}).then((result) => {
-			if (result.isConfirmed) {
-				$.ajax({
-					type: "POST",
-					url: "ajx_cbo_select.php?type=42&id=" + $('#CallID').val(),
-					success: function(response){
-						$('#ClienteFactSN').html(response).fadeIn();
-						$('#ClienteFactSN').trigger('change');
-					}
-				});
-				$('#modalFactSN').modal("show");
-			} else {
-				CopiarFactura(adj, docDest);
-			}
-		});
+			Swal.fire({
+				title: "¿Desea cambiar de socio de negocio?",
+				icon: "question",
+				showCancelButton: true,
+				confirmButtonText: "Si, confirmo",
+				cancelButtonText: "No"
+			}).then((result) => {
+				if (result.isConfirmed) {
+					$.ajax({
+						type: "POST",
+						url: "ajx_cbo_select.php?type=42&id=" + $('#CallID').val(),
+						success: function(response){
+							$('#ClienteFactSN').html(response).fadeIn();
+							$('#ClienteFactSN').trigger('change');
+						}
+					});
+					$('#modalFactSN').modal("show");
+				} else {
+					CopiarFactura(adj, docDest);
+				}
+			});
 	<?php } else { ?>
-		CopiarFactura(adj, docDest);
+			CopiarFactura(adj, docDest);
 	<?php } ?>
 }
 
@@ -3197,28 +3097,28 @@ function CopiarFacturaSN(Cliente, Contacto, Sucursal, Direccion) {
 
 		$(".d-venta").on("click", function(event){
 			<?php if (PermitirFuncion(419)) { ?>
-				event.preventDefault(); // Evitar redirección del ancla
-				console.log(event);
+					event.preventDefault(); // Evitar redirección del ancla
+					console.log(event);
 
-				Swal.fire({
-					title: "¿Desea cambiar de socio de negocio?",
-					icon: "question",
-					showCancelButton: true,
-					confirmButtonText: "Si, confirmo",
-					cancelButtonText: "No"
-				}).then((result) => {
-					if (result.isConfirmed) {
-						let qs = "";
-						[url, qs] = $(this).attr('href').split('?');
-						params = Object.fromEntries(new URLSearchParams(qs));
+					Swal.fire({
+						title: "¿Desea cambiar de socio de negocio?",
+						icon: "question",
+						showCancelButton: true,
+						confirmButtonText: "Si, confirmo",
+						cancelButtonText: "No"
+					}).then((result) => {
+						if (result.isConfirmed) {
+							let qs = "";
+							[url, qs] = $(this).attr('href').split('?');
+							params = Object.fromEntries(new URLSearchParams(qs));
 
-						$('#modalSN').modal("show");
-					} else {
-						location.href = $(this).attr('href');
-					}
-				});
+							$('#modalSN').modal("show");
+						} else {
+							location.href = $(this).attr('href');
+						}
+					});
 			<?php } else { ?>
-				console.log("Permiso 419, no esta activo");
+					console.log("Permiso 419, no esta activo");
 			<?php } ?>
 		});
 

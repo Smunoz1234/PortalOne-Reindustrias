@@ -561,7 +561,7 @@ $SQL_CausaAprobacion = Seleccionar("uvw_Sap_tbl_OfertasVentasDetalle_Causa_Aprob
 							sqlsrv_fetch($SQL_EmpleadosVentas, SQLSRV_SCROLL_ABSOLUTE, -1);
 							sqlsrv_fetch($SQL_CausaAprobacion, SQLSRV_SCROLL_ABSOLUTE, -1);
 							?>
-							
+
 							<tr>
 								<td class="text-center form-inline w-150">
 									<div class="checkbox checkbox-success"><input type="checkbox" class="chkSel"
@@ -887,23 +887,27 @@ $SQL_CausaAprobacion = Seleccionar("uvw_Sap_tbl_OfertasVentasDetalle_Causa_Aprob
 
 								<!-- SMM, 04/08/2023 -->
 								<td>
-									<select name="CDU_IdTipoPreventivo[]" id="CDU_IdTipoPreventivo<?php echo $i; ?>"
+									<select name="CDU_AprobacionArticulo[]" id="CDU_AprobacionArticulo<?php echo $i; ?>"
 										class="form-control select2" required
-										onChange="ActualizarDatos('CDU_IdTipoPreventivo',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);">
-										<option value="SI">SI</option>
-										<option value="NO">NO</option>
+										onChange="ActualizarDatos('CDU_AprobacionArticulo',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);">
+										<option value="SI" <?php if (isset($row["CDU_AprobacionArticulo"]) && ("SI" == $row["CDU_AprobacionArticulo"])) {
+											echo "selected";
+										} ?>>SI</option>
+										<option value="NO" <?php if (isset($row["CDU_AprobacionArticulo"]) && ("NO" == $row["CDU_AprobacionArticulo"])) {
+											echo "selected";
+										} ?>>NO</option>
 									</select>
 								</td>
 								<!-- /# -->
 
 								<!-- SMM, 04/08/2023 -->
 								<td>
-									<select name="CDU_IdTipoPreventivo[]" id="CDU_IdTipoPreventivo<?php echo $i; ?>"
-										class="form-control select2" required
-										onChange="ActualizarDatos('CDU_IdTipoPreventivo',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);">
+									<select name="CDU_AprobacionArticuloCausal[]"
+										id="CDU_AprobacionArticuloCausal<?php echo $i; ?>" class="form-control select2" required
+										onChange="ActualizarDatos('CDU_AprobacionArticuloCausal',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);">
 
 										<?php while ($row_CausaAprobacion = sqlsrv_fetch_array($SQL_CausaAprobacion)) { ?>
-											<option value="<?php echo $row_CausaAprobacion['IdCausaAprobacion']; ?>" <?php if ((isset($row["CDU_IdCausaAprobacion"])) && (strcmp($row_CausaAprobacion['IdCausaAprobacion'], $row["CDU_IdCausaAprobacion"]) == 0)) {
+											<option value="<?php echo $row_CausaAprobacion['IdCausaAprobacion']; ?>" <?php if (isset($row["CDU_AprobacionArticuloCausal"]) && ($row_CausaAprobacion['IdCausaAprobacion'] == $row["CDU_AprobacionArticuloCausal"])) {
 												   echo "selected";
 											   } ?>>
 												<?php echo $row_CausaAprobacion['IdCausaAprobacion'] . " - " . $row_CausaAprobacion['CausaAprobacion']; ?>

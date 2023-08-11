@@ -242,7 +242,7 @@ if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
     <!-- InstanceEndEditable -->
     <!-- InstanceBeginEditable name="head" -->
     <?php
-    if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_LlamAdd"))) {
+    if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_OTSolAdd"))) {
         echo "<script>
 		$(document).ready(function() {
 			Swal.fire({
@@ -253,7 +253,7 @@ if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
 		});
 		</script>";
     }
-    if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_UpdAdd"))) {
+    if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_OTSolUpd"))) {
         echo "<script>
 		$(document).ready(function() {
 			Swal.fire({
