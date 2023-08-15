@@ -129,6 +129,17 @@ if (isset($_POST['P'])) { //Crear llamada de servicio
 		closedir($route);
 		$CantFiles = count($DocFiles);
 
+		$Metodo = 2; //Actualizar en el web services
+		$Type = 2; //Ejecutar actualizar en el SP
+
+		if (($sw_error == 0) && (base64_decode($_POST['IdLlamadaPortal']) == "")) {
+			$Metodo = 2; //Actualizar en el web services
+			$Type = 1; //Ejecutar insertar en el SP
+		} elseif (($type_llmd == 0) && ($sw_error == 1) && (base64_decode($_POST['IdLlamadaPortal']) != "")) {
+			$Metodo = 1; //Insertar en el web services
+			$Type = 2; //Ejecutar Actualizar en el SP
+		}
+
 		$ParamLlamada = array(
 			($_POST['P'] == 32) ? "NULL" : ("'" . base64_decode($_POST['IdLlamadaPortal'] ?? "") . "'"),
 			($_POST['P'] == 32) ? "NULL" : ("'" . base64_decode($_POST['DocEntry'] ?? "") . "'"),
@@ -161,7 +172,7 @@ if (isset($_POST['P'])) { //Crear llamada de servicio
 			"'" . FormatoFecha($_POST['FechaCreacion'], $_POST['HoraCreacion']) . "'",
 			"'" . FormatoFecha(date('Y-m-d'), date('H:i')) . "'",
 			"'" . $_POST['IdAnexos'] . "'",
-			"1",
+			($_POST['P'] == 32) ? "1" : "$Metodo",
 			"'" . $_SESSION['CodUser'] . "'",
 			"'" . $_SESSION['CodUser'] . "'",
 			"'" . $_POST['CDU_EstadoServicio'] . "'",
@@ -180,42 +191,61 @@ if (isset($_POST['P'])) { //Crear llamada de servicio
 			"'" . $_POST['CDU_CanceladoPor'] . "'",
 			(isset($_POST['CantArticulo']) && ($_POST['CantArticulo'] != "")) ? LSiqmlValorDecimal($_POST['CantArticulo']) : 0,
 			(isset($_POST['PrecioArticulo']) && ($_POST['PrecioArticulo'] != "")) ? LSiqmlValorDecimal($_POST['PrecioArticulo']) : 0,
-			"1", // Tipo de SP
+			($_POST['P'] == 32) ? "1" : "$Type", // Tipo de SP
 			"'" . $_POST['CDU_Marca'] . "'",
 			"'" . $_POST['CDU_Linea'] . "'",
 			"'" . $_POST['CDU_Ano'] . "'",
 			"'" . $_POST['CDU_Concesionario'] . "'",
-			"'" . ($_POST['CDU_Aseguradora'] ?? "") . "'", // SMM, 29/06/2023
-			"'" . $_POST['CDU_TipoPreventivo'] . "'", // SMM, 14/09/2022
+			"'" . ($_POST['CDU_Aseguradora'] ?? "") . "'",
+			"'" . $_POST['CDU_TipoPreventivo'] . "'",
 			"'" . $_POST['CDU_TipoServicio'] . "'",
 			isset($_POST['CDU_Kilometros']) ? $_POST['CDU_Kilometros'] : 0, // int
 			"'" . ($_POST['CDU_Contrato'] ?? "") . "'",
-			// SMM, 29/06/2023
 			"NULL", // CDU_Asesor
 			"'" . $_POST['CDU_ListaMateriales'] . "'",
 			isset($_POST['CDU_TiempoTarea']) ? $_POST['CDU_TiempoTarea'] : 0, // int
-			"'" . $_POST['CDU_IdTecnicoAdicional'] . "'", // SMM, 25/05/2022
-			"'" . FormatoFecha($_POST['FechaAgenda'], $_POST['HoraAgenda']) . "'", // SMM 01/06/2022
-			"'" . FormatoFecha($_POST['FechaAgenda'], $_POST['HoraAgenda']) . "'", // SMM 01/06/2022
-			(PermitirFuncion(323) && PermitirFuncion(304)) ? "1" : "0",
-			// CreacionActividad, SMM 28/07/2022
-			"0", // EnvioCorreo, SMM 28/07/2022
-			"'" . ($_POST['NombreContactoFirma'] ?? "") . "'", // SMM, 18/10/2022
-			"'" . ($_POST['CedulaContactoFirma'] ?? "") . "'", // SMM, 18/10/2022
-			"'" . ($_POST['TelefonosContactosFirma'] ?? "") . "'", // SMM, 18/10/2022
+			"'" . $_POST['CDU_IdTecnicoAdicional'] . "'",
+			"'" . FormatoFecha($_POST['FechaAgenda'], $_POST['HoraAgenda']) . "'",
+			"'" . FormatoFecha($_POST['FechaAgenda'], $_POST['HoraAgenda']) . "'",
+			"0", // CreacionActividad
+			"0", // EnvioCorreo
+			"'" . ($_POST['NombreContactoFirma'] ?? "") . "'",
+			"'" . ($_POST['CedulaContactoFirma'] ?? "") . "'",
+			"'" . ($_POST['TelefonosContactosFirma'] ?? "") . "'",
 			"'" . ($_POST['CorreosContactosFirma'] ?? "") . "'",
-			// SMM, 18/10/2022
 			"'$FirmaContactoResponsable'",
-			"0", // FormatoCierreLlamada, SMM 14/10/2022
+			"0", // FormatoCierreLlamada
 		);
-		$SQL_Llamada = EjecutarSP('sp_tbl_SolicitudLlamadaServicios', $ParamLlamada, 32);
+
+		$SQL_Llamada = EjecutarSP('sp_tbl_SolicitudLlamadaServicios', $ParamLlamada, $_POST['P']);
 		if ($SQL_Llamada) {
-			$row_NewIdLlamada = sqlsrv_fetch_array($SQL_Llamada);
-			$IdSolicitud = $row_NewIdLlamada[0];
+			if (base64_decode($_POST['IdLlamadaPortal']) == "") {
+				$row_NewIdLlamada = sqlsrv_fetch_array($SQL_Llamada);
+				$IdSolicitud = $row_NewIdLlamada[0];
+			} else {
+				$IdSolicitud = base64_decode($_POST['IdLlamadaPortal']);
+			}
 
 			try {
 				//Mover los anexos a la carpeta de archivos de SAP
 				$j = 0;
+
+				// Esto viene del P33 de la llamada
+				if ($sw_error == 1) { //Si hay un error, limpiar los anexos ya cargados, para volverlos a cargar a la tabla
+					//Registrar archivo en la BD
+					$ParamDelAnex = array(
+						"'191'",
+						"'$IdSolicitud'",
+						"NULL",
+						"NULL",
+						"NULL",
+						"'" . $_SESSION['CodUser'] . "'",
+						"2",
+					);
+					$SQL_DelAnex = EjecutarSP('sp_tbl_DocumentosSAP_Anexos', $ParamDelAnex, 33);
+				}
+				// Hasta aquí. SMM, 15/08/2023 
+
 				while ($j < $CantFiles) {
 					$Archivo = FormatoNombreAnexo($DocFiles[$j], false);
 					$NuevoNombre = $Archivo[0];
@@ -230,23 +260,28 @@ if (isset($_POST['P'])) { //Crear llamada de servicio
 						//Registrar archivo en la BD
 						$ParamInsAnex = array(
 							"'191'",
-							"'" . $row_NewIdLlamada[0] . "'",
+							"'$IdSolicitud'",
 							"'" . $OnlyName . "'",
 							"'" . $Ext . "'",
 							"1",
 							"'" . $_SESSION['CodUser'] . "'",
 							"1",
 						);
-						$SQL_InsAnex = EjecutarSP('sp_tbl_DocumentosSAP_Anexos', $ParamInsAnex, 32);
+						$SQL_InsAnex = EjecutarSP('sp_tbl_DocumentosSAP_Anexos', $ParamInsAnex, $_POST['P']);
 						if (!$SQL_InsAnex) {
 							$sw_error = 1;
-							$msg_error = "Error al crear la llamada de servicio";
+							
+							$tipo = ($_POST['P'] == 32) ? "Creación" : "Actualización";
+							$msg_error = "Error en la $tipo de la Solicitud de Llamada de servicio";
+							
+							// throw new Exception('Error al insertar los anexos.');
+							// sqlsrv_close($conexion);
 						}
 					}
 					$j++;
 				}
 
-				// SMM, 11/08/2023
+				// SMM, 15/08/2023
 				if ($_POST['P'] == 32) { // Creando 
 					sqlsrv_close($conexion);
 					header('Location:gestionar_solicitudes_llamadas.php?a=' . base64_encode("OK_OTSolAdd"));
