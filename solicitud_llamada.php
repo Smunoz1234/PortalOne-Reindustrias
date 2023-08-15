@@ -106,7 +106,7 @@ if ($edit == 0) {
 	// SMM, 12/02/2022
 }
 
-if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
+if (isset($_POST['P'])) { //Crear llamada de servicio
 	//Insertar llamada de servicio
 	try {
 		//*** Carpeta temporal ***
@@ -129,10 +129,10 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
 		closedir($route);
 		$CantFiles = count($DocFiles);
 
-		$ParamInsLlamada = array(
-			"NULL",
-			"NULL",
-			"NULL",
+		$ParamLlamada = array(
+			($_POST['P'] == 32) ? "NULL" : ("'" . base64_decode($_POST['IdLlamadaPortal'] ?? "") . "'"),
+			($_POST['P'] == 32) ? "NULL" : ("'" . base64_decode($_POST['DocEntry'] ?? "") . "'"),
+			($_POST['P'] == 32) ? "NULL" : ("'" . base64_decode($_POST['DocNum'] ?? "") . "'"),
 			"'Externa'",
 			"'" . $_POST['AsuntoLlamada'] . "'",
 			"'" . $_POST['Series'] . "'",
@@ -141,13 +141,13 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
 			"'" . $_POST['TipoLlamada'] . "'",
 			"'" . $_POST['TipoProblema'] . "'",
 			"'" . ($_POST['SubTipoProblema'] ?? "") . "'",
-			"'" . ($_POST['ContratoServicio'] ?? "") . "'", // SMM, 29/06/2023
+			"'" . ($_POST['ContratoServicio'] ?? "") . "'",
 			"'" . $_POST['Tecnico'] . "'",
 			"'" . $_POST['ClienteLlamada'] . "'",
 			"'" . $_POST['ContactoCliente'] . "'",
 			"'" . $_POST['TelefonoLlamada'] . "'",
 			"'" . $_POST['CorreoLlamada'] . "'",
-			"'" . $_POST['IdArticuloLlamada'] . "'", // SMM, 24/01/2022
+			"'" . $_POST['IdArticuloLlamada'] . "'",
 			"'" . $_POST['NumeroSerie'] . "'",
 			"'" . $_POST['SucursalCliente'] . "'",
 			"'" . $_POST['IdSucursalCliente'] . "'",
@@ -157,7 +157,7 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
 			"'" . ($_POST['EmpleadoLlamada'] ?? "") . "'",
 			"'" . ($_POST['Proyecto'] ?? "") . "'",
 			"'" . LSiqmlObs($_POST['ComentarioLlamada']) . "'",
-			"''", // ResolucionLlamada
+			isset($_POST['ResolucionLlamada']) ? "''" : ("'" . LSiqmlObs($_POST['ResolucionLlamada']) . "'"),
 			"'" . FormatoFecha($_POST['FechaCreacion'], $_POST['HoraCreacion']) . "'",
 			"'" . FormatoFecha(date('Y-m-d'), date('H:i')) . "'",
 			"'" . $_POST['IdAnexos'] . "'",
@@ -178,11 +178,9 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
 			"NULL",
 			"NULL",
 			"'" . $_POST['CDU_CanceladoPor'] . "'",
-				// SMM, 12/07/2023
 			(isset($_POST['CantArticulo']) && ($_POST['CantArticulo'] != "")) ? LSiqmlValorDecimal($_POST['CantArticulo']) : 0,
 			(isset($_POST['PrecioArticulo']) && ($_POST['PrecioArticulo'] != "")) ? LSiqmlValorDecimal($_POST['PrecioArticulo']) : 0,
 			"1", // Tipo de SP
-			// Campos nuevos
 			"'" . $_POST['CDU_Marca'] . "'",
 			"'" . $_POST['CDU_Linea'] . "'",
 			"'" . $_POST['CDU_Ano'] . "'",
@@ -210,9 +208,9 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
 			"'$FirmaContactoResponsable'",
 			"0", // FormatoCierreLlamada, SMM 14/10/2022
 		);
-		$SQL_InsLlamada = EjecutarSP('sp_tbl_SolicitudLlamadaServicios', $ParamInsLlamada, 32);
-		if ($SQL_InsLlamada) {
-			$row_NewIdLlamada = sqlsrv_fetch_array($SQL_InsLlamada);
+		$SQL_Llamada = EjecutarSP('sp_tbl_SolicitudLlamadaServicios', $ParamLlamada, 32);
+		if ($SQL_Llamada) {
+			$row_NewIdLlamada = sqlsrv_fetch_array($SQL_Llamada);
 			$IdSolicitud = $row_NewIdLlamada[0];
 
 			try {
