@@ -1,6 +1,7 @@
 <?php require_once "includes/conexion.php";
 PermitirAcceso(405);
 
+$dt_SLS = 0; // Para saber si viene desde la Solicitud de Llamada de servicio.
 $dt_LS = 0; //sw para saber si vienen datos de la llamada de servicio. 0 no vienen. 1 si vienen.
 $dt_OF = 0; //sw para saber si vienen datos de una Oferta de venta.
 
@@ -79,7 +80,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Oferta de venta
 			"'" . FormatoFecha($_POST['TaxDate']) . "'",
 			"'" . $_POST['CardCode'] . "'",
 			"'" . $_POST['ContactoCliente'] . "'",
-			"'" . $_POST['OrdenServicioCliente'] . "'",
+			"'" . $_POST['OrdenServicioCliente'] ?? "" . "'",
 			"'" . $_POST['Referencia'] . "'",
 			"'" . $_POST['EmpleadoVentas'] . "'",
 			"'" . LSiqmlObs($_POST['Comentarios']) . "'",
@@ -190,8 +191,25 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Oferta de venta
 
 }
 
+// SMM, 16/08/2023
+if (isset($_GET['dt_SLS']) && ($_GET['dt_SLS']) == 1) {
+	$dt_SLS = 1;
+
+	// SMM 16/08/2023
+	if(isset($_GET['SLS'])) {
+		$SQL_SolicitudLlamada = Seleccionar('uvw_tbl_SolicitudLlamadasServicios', '*', "ID_SolicitudLlamadaServicio='" . base64_decode($_GET['SLS']) . "'");
+		$row_SolicitudLlamada = sqlsrv_fetch_array($SQL_SolicitudLlamada);
+	}
+}
+
 if (isset($_GET['dt_LS']) && ($_GET['dt_LS']) == 1) { //Verificar que viene de una Llamada de servicio (Datos Llamada servicio)
 	$dt_LS = 1;
+
+	// Orden de servicio, SMM 16/08/2023
+	if(isset($_GET['LS'])) {
+		$SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . base64_decode($_GET['LS']) . "'");
+		$row_OrdenServicioCliente = sqlsrv_fetch_array($SQL_OrdenServicioCliente);
+	}
 
 	if (!isset($_GET['LMT']) && isset($_GET['ItemCode']) && $_GET['ItemCode'] != "") {
 		//Consultar datos de la LMT
@@ -220,10 +238,6 @@ if (isset($_GET['dt_LS']) && ($_GET['dt_LS']) == 1) { //Verificar que viene de u
 	//Sucursales, SMM 06/05/2022
 	$SQL_SucursalDestino = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "' AND TipoDireccion='S'", 'NombreSucursal');
 	$SQL_SucursalFacturacion = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "' AND TipoDireccion='B'", 'NombreSucursal');
-
-	//Orden de servicio, SMM 05/08/2022
-	$SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . base64_decode($_GET['LS']) . "'");
-	$row_OrdenServicioCliente = sqlsrv_fetch_array($SQL_OrdenServicioCliente);
 }
 
 // SMM, 26/04/2022
@@ -293,6 +307,10 @@ if ($edit == 1 && $sw_error == 0) {
 	$SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . $row['ID_LlamadaServicio'] . "'");
 	$row_OrdenServicioCliente = sqlsrv_fetch_array($SQL_OrdenServicioCliente);
 
+	// SMM, 16/08/2023
+	$SQL_SolicitudLlamada = Seleccionar('uvw_tbl_SolicitudLlamadasServicios', '*', "ID_SolicitudLlamadaServicio='" . $row['ID_SolicitudLlamadaServicio'] . "'");
+	$row_SolicitudLlamada = sqlsrv_fetch_array($SQL_SolicitudLlamada);
+
 	//Sucursal
 	$SQL_Sucursal = Seleccionar('uvw_tbl_SeriesSucursalesAlmacenes', 'IdSucursal, DeSucursal', "IdSeries='" . $row['IdSeries'] . "'");
 
@@ -324,6 +342,10 @@ if ($sw_error == 1) {
 	//Orden de servicio, SMM 05/08/2022
 	$SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . $row['ID_LlamadaServicio'] . "'");
 	$row_OrdenServicioCliente = sqlsrv_fetch_array($SQL_OrdenServicioCliente);
+
+	// SMM, 16/08/2023
+	$SQL_SolicitudLlamada = Seleccionar('uvw_tbl_SolicitudLlamadasServicios', '*', "ID_SolicitudLlamadaServicio='" . $row['ID_SolicitudLlamadaServicio'] . "'");
+	$row_SolicitudLlamada = sqlsrv_fetch_array($SQL_SolicitudLlamada);
 
 	//Sucursal
 	$SQL_Sucursal = Seleccionar('uvw_tbl_SeriesSucursalesAlmacenes', 'IdSucursal, DeSucursal', "IdSeries='" . $row['IdSeries'] . "'");
@@ -671,6 +693,9 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 				<!-- SMM, 02/08/2022 -->
 				<?php include_once 'md_consultar_llamadas_servicios.php'; ?>
 
+				<!-- SMM, 16/08/2023 -->
+				<?php include_once 'md_consultar_solicitudes_llamadas.php'; ?>
+
 				<!-- Inicio, modalSN -->
 				<div class="modal inmodal fade" id="modalSN" tabindex="-1" role="dialog" aria-hidden="true">
 					<div class="modal-dialog modal-lg" style="width: 70% !important;">
@@ -1013,35 +1038,9 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 												} ?>>
 										</div>
 									</div>
-
-									<div class="form-group">
-										<label class="col-lg-1 control-label">
-											<?php if (($edit == 1) && ($row['ID_LlamadaServicio'] != 0)) { ?><a
-													href="llamada_servicio.php?id=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&tl=1"
-													target="_blank" title="Consultar Llamada de servicio"
-													class="btn-xs btn-success fa fa-search"></a>
-											<?php } ?>Orden servicio
-										</label>
-										<div class="col-lg-7">
-											<input type="hidden" class="form-control" name="OrdenServicioCliente"
-												id="OrdenServicioCliente"
-												value="<?php if (isset($row_OrdenServicioCliente['ID_LlamadaServicio']) && ($row_OrdenServicioCliente['ID_LlamadaServicio'] != 0)) {
-													echo $row_OrdenServicioCliente['ID_LlamadaServicio'];
-												} ?>">
-											<input readonly type="text" class="form-control"
-												name="Desc_OrdenServicioCliente" id="Desc_OrdenServicioCliente"
-												placeholder="Haga clic en el botón"
-												value="<?php if (isset($row_OrdenServicioCliente['ID_LlamadaServicio']) && ($row_OrdenServicioCliente['ID_LlamadaServicio'] != 0)) {
-													echo $row_OrdenServicioCliente['DocNum'] . " - " . $row_OrdenServicioCliente['AsuntoLlamada'] . " (" . $row_OrdenServicioCliente['DeTipoLlamada'] . ")";
-												} ?>">
-										</div>
-										<div class="col-lg-4">
-											<button class="btn btn-success" type="button"
-												onClick="$('#mdOT').modal('show');"><i class="fa fa-refresh"></i>
-												Cambiar orden servicio</button>
-										</div>
-									</div>
 								</div>
+								<!-- /.col-lg-8 -->
+
 								<div class="col-lg-4">
 									<div class="form-group">
 										<label class="col-lg-5">Número</label>
@@ -1119,6 +1118,76 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 										</div>
 									</div>
 								</div>
+								<!-- /.col-lg-4 -->
+								
+								<div class="form-group">
+									<label class="col-xs-12">
+										<h3 class="bg-success p-xs b-r-sm">
+											<i class="fa fa-user"></i> Documentos relacionados
+										</h3>
+									</label>
+								</div>
+								<div class="col-lg-12">
+									<div class="form-group">
+										<label class="col-lg-1 control-label">
+										<?php if (($edit == 1) && ($row['ID_SolicitudLlamadaServicio'] != 0)) { ?><a
+													href="solicitud_llamada.php?id=<?php echo base64_encode($row['ID_SolicitudLlamadaServicio']); ?>&tl=1"
+													target="_blank" title="Consultar Solicitud de Llamada de servicio"
+													class="btn-xs btn-success fa fa-search"></a>
+											<?php } ?>Solicitud de Llamada (Agenda)
+										</label>
+										<div class="col-lg-7">
+											<input type="hidden" class="form-control" name="SolicitudLlamadaCliente"
+												id="SolicitudLlamadaCliente"
+												value="<?php if (isset($row_SolicitudLlamada['ID_SolicitudLlamadaServicio']) && ($row_SolicitudLlamada['ID_SolicitudLlamadaServicio'] != 0)) {
+													echo $row_SolicitudLlamada['ID_SolicitudLlamadaServicio'];
+												} ?>">
+											<input readonly type="text" class="form-control"
+												name="Desc_SolicitudLlamadaCliente" id="Desc_SolicitudLlamadaCliente"
+												placeholder="Haga clic en el botón"
+												value="<?php if (isset($row_SolicitudLlamada['ID_SolicitudLlamadaServicio']) && ($row_SolicitudLlamada['ID_SolicitudLlamadaServicio'] != 0)) {
+													echo $row_SolicitudLlamada['DocNum'] . " - " . $row_SolicitudLlamada['AsuntoLlamada'] . " (" . $row_SolicitudLlamada['DeTipoLlamada'] . ")";
+												} ?>">
+										</div>
+										<div class="col-lg-4">
+											<button class="btn btn-success" type="button"
+												onClick="$('#mdSLS').modal('show');"><i class="fa fa-refresh"></i>
+												Cambiar Agenda</button>
+										</div>
+									</div>
+									
+									<div class="form-group">
+										<label class="col-lg-1 control-label">
+											<?php if (($edit == 1) && ($row['ID_LlamadaServicio'] != 0)) { ?><a
+													href="llamada_servicio.php?id=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&tl=1"
+													target="_blank" title="Consultar Llamada de servicio"
+													class="btn-xs btn-success fa fa-search"></a>
+											<?php } ?>Orden de Servicio
+										</label>
+										<div class="col-lg-7">
+											<input type="hidden" class="form-control" name="OrdenServicioCliente"
+												id="OrdenServicioCliente"
+												value="<?php if (isset($row_OrdenServicioCliente['ID_LlamadaServicio']) && ($row_OrdenServicioCliente['ID_LlamadaServicio'] != 0)) {
+													echo $row_OrdenServicioCliente['ID_LlamadaServicio'];
+												} ?>">
+											<input readonly type="text" class="form-control"
+												name="Desc_OrdenServicioCliente" id="Desc_OrdenServicioCliente"
+												placeholder="Haga clic en el botón"
+												value="<?php if (isset($row_OrdenServicioCliente['ID_LlamadaServicio']) && ($row_OrdenServicioCliente['ID_LlamadaServicio'] != 0)) {
+													echo $row_OrdenServicioCliente['DocNum'] . " - " . $row_OrdenServicioCliente['AsuntoLlamada'] . " (" . $row_OrdenServicioCliente['DeTipoLlamada'] . ")";
+												} ?>">
+										</div>
+										<div class="col-lg-4">
+											<button class="btn btn-success" type="button"
+												onClick="$('#mdOT').modal('show');"><i class="fa fa-refresh"></i>
+												Cambiar Orden de Servicio</button>
+										</div>
+									</div>
+								</div>
+								<!-- /.col-lg-12 -->
+
+
+
 								<div class="form-group">
 									<label class="col-xs-12">
 										<h3 class="bg-success p-xs b-r-sm"><i class="fa fa-info-circle"></i> Datos de la
@@ -1543,8 +1612,10 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 							value="<?php if ($edit == 1) {
 								echo base64_encode($IdEvento);
 							} ?>" />
-						<input type="hidden" form="CrearOfertaVenta" id="d_LS" name="d_LS"
-							value="<?php echo $dt_LS; ?>" />
+						
+						<input type="hidden" form="CrearOfertaVenta" id="dt_SLS" name="dt_SLS"
+							value="<?php echo $dt_SLS; ?>" />
+
 						<input type="hidden" form="CrearOfertaVenta" id="tl" name="tl" value="<?php echo $edit; ?>" />
 						<input type="hidden" form="CrearOfertaVenta" id="return" name="return"
 							value="<?php echo base64_encode($return); ?>" />
