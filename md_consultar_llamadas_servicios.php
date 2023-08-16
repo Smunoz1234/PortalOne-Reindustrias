@@ -56,7 +56,6 @@ $FechaFinal = $fecha;
 // Realizar consulta con filtros
 $Where = "Metodo = 0 AND ([FechaCreacionLLamada] BETWEEN '$FechaInicial' AND '$FechaFinal') $Filtro";
 $SQL_Llamadas = Seleccionar('uvw_Sap_tbl_LlamadasServicios', 'TOP 100 *', $Where);
-// echo "SELECT TOP 100 * FROM uvw_Sap_tbl_LlamadasServicios WHERE $Where";
 ?>
 
 <div class="modal inmodal fade" id="mdOT" tabindex="1" role="dialog" aria-hidden="true">
@@ -127,6 +126,11 @@ $SQL_Llamadas = Seleccionar('uvw_Sap_tbl_LlamadasServicios', 'TOP 100 *', $Where
 				</div>
 				<!-- Fin, filtros -->
 
+				<?php
+				if (!$SQL_Llamadas) {
+					echo "SELECT TOP 100 * FROM uvw_Sap_tbl_LlamadasServicios WHERE $Where";
+				} ?>
+
 				<!-- Inicio, tabla -->
 				<div class="row">
 					<div class="col-lg-12">
@@ -150,7 +154,7 @@ $SQL_Llamadas = Seleccionar('uvw_Sap_tbl_LlamadasServicios', 'TOP 100 *', $Where
 										</tr>
 									</thead>
 									<tbody>
-									<?php while ($row_Llamadas = sql_fetch_array($SQL_Llamadas)) {?>
+									<?php while ($row_Llamadas = sqlsrv_fetch_array($SQL_Llamadas)) {?>
 										<tr>
 											<td><?php echo $row_Llamadas['FechaHoraCreacionLLamada']->format('Y-m-d H:i'); ?></td>
 											<td><?php echo $row_Llamadas['NombreSucursal']; ?></td>

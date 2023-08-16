@@ -47,12 +47,12 @@ while ($row_Series = sqlsrv_fetch_array($SQL_SeriesLlamada)) {
     }
     $i++;
 }
-$Filtro .= " AND [Series] IN (" . $FilSerie . ")";
+$Filtro .= " AND [IdSeries] IN (" . $FilSerie . ")";
 $SQL_SeriesLlamada = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 
 // Filtrar serie seleccionada
 if (isset($_POST['Series']) && $_POST['Series'] != "") {
-    $Filtro .= " and [Series]='" . $_POST['Series'] . "'";
+    $Filtro .= " and [IdSeries]='" . $_POST['Series'] . "'";
 }
 
 // Filtrar cliente
@@ -113,7 +113,7 @@ echo $dataString;
 </tr>
 </thead>
 <tbody>
-<?php while ($row = sql_fetch_array($SQL)) {?>
+<?php while ($row = sqlsrv_fetch_array($SQL)) {?>
 <tr>
 <td><?php echo $row['FechaHoraCreacionLLamada']->format('Y-m-d H:i'); ?></td>
 <td><?php echo $row['NombreSucursal']; ?></td>
