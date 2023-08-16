@@ -211,7 +211,7 @@ if ($sw == 1) {
 
 
 if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
-    $Where = "DocNum LIKE '%" . trim($_GET['IDTicket']) . "%'";
+    $Where = "ID_SolicitudLlamadaServicio LIKE '%" . trim($_GET['IDTicket']) . "%'";
 
     $FilSerie = "";
     $i = 0;
@@ -443,7 +443,7 @@ if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
                                             <?php } ?>
                                         </select>
                                     </div>
-                                    <label class="col-lg-1 control-label">Ticket</label>
+                                    <label class="col-lg-1 control-label">ID Agenda</label>
                                     <div class="col-lg-2">
                                         <input name="IDTicket" type="text" class="form-control" id="IDTicket"
                                             maxlength="50"
@@ -479,7 +479,6 @@ if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
                                             <th>Técnico/Asesor</th> <!-- SMM, 14/09/2022 -->
                                             <th>Cargo Técnico/Asesor</th> <!-- SMM, 14/09/2022 -->
 
-                                            <th>Asignado por</th>
                                             <th>Asunto</th>
                                             <th>Tipo problema</th>
 
@@ -505,8 +504,12 @@ if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
                                                     <?php echo $row['ID_SolicitudLlamadaServicio']; ?>
                                                 </td>
 
-                                                <td><span class="label"
-                                                        style="color: white; background-color: <?php echo $row['ColorEstadoLlamada']; ?>;"><?php echo $row['DeEstadoLlamada'] ?? ""; ?></span></td>
+                                                <td><span
+                                                        class="label <?php if ($row['IdEstadoLlamada'] == -3) {
+                                                            echo "label-primary";
+                                                        } else {
+                                                            echo "label-danger";
+                                                        } ?>"><?php echo $row['NombreEstado'] ?? ""; ?></span></td>
 
                                                 <td>
                                                     <a href="solicitud_llamada.php?id=<?php echo base64_encode($row['ID_SolicitudLlamadaServicio']); ?>&tl=1&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('gestionar_solicitudes_llamadas.php'); ?>"
@@ -517,18 +520,13 @@ if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
                                                             class="fa fa-download"></i> Descargar</a>
                                                 </td>
 
-                                                <td><span class="label"
-                                                        style="color: white; background-color: <?php echo $row['ColorEstadoServicioLlamada']; ?>;"><?php echo $row['DeEstadoServicio'] ?? ""; ?></span></td>
+                                                <td><span class="label label-primary"><?php echo $row['DeEstadoServicio'] ?? ""; ?></span></td>
 
                                                 <td>
                                                     <?php echo $row['NombreTecnicoAsesor'] ?? ""; ?>
                                                 </td>
                                                 <td>
                                                     <?php echo $row['CargoTecnicoAsesor'] ?? ""; ?>
-                                                </td>
-
-                                                <td>
-                                                    <?php echo $row['DeAsignadoPor'] ?? ""; ?>
                                                 </td>
                                                 <td>
                                                     <?php echo $row['AsuntoLlamada']; ?>
@@ -552,10 +550,10 @@ if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
                                                 </td>
 
                                                 <td>
-                                                    <?php echo $row['CDU_Marca'] ?? ""; ?>
+                                                    <?php echo $row['DeMarcaVehiculo'] ?? ""; ?>
                                                 </td>
                                                 <td>
-                                                    <?php echo $row['CDU_Linea'] ?? ""; ?>
+                                                    <?php echo $row['DeLineaModeloVehiculo'] ?? ""; ?>
                                                 </td>
 
                                                 <td>

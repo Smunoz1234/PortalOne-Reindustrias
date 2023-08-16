@@ -135,7 +135,7 @@ if (isset($_POST['P'])) { //Crear llamada de servicio
 		if (($sw_error == 0) && (base64_decode($_POST['IdLlamadaPortal']) == "")) {
 			$Metodo = 2; //Actualizar en el web services
 			$Type = 1; //Ejecutar insertar en el SP
-		} elseif (($type_llmd == 0) && ($sw_error == 1) && (base64_decode($_POST['IdLlamadaPortal']) != "")) {
+		} elseif (($edit == 0) && ($sw_error == 1) && (base64_decode($_POST['IdLlamadaPortal']) != "")) {
 			$Metodo = 1; //Insertar en el web services
 			$Type = 2; //Ejecutar Actualizar en el SP
 		}
@@ -168,7 +168,7 @@ if (isset($_POST['P'])) { //Crear llamada de servicio
 			"'" . ($_POST['EmpleadoLlamada'] ?? "") . "'",
 			"'" . ($_POST['Proyecto'] ?? "") . "'",
 			"'" . LSiqmlObs($_POST['ComentarioLlamada']) . "'",
-			isset($_POST['ResolucionLlamada']) ? "''" : ("'" . LSiqmlObs($_POST['ResolucionLlamada']) . "'"),
+			"''", // ResolucionLlamada
 			"'" . FormatoFecha($_POST['FechaCreacion'], $_POST['HoraCreacion']) . "'",
 			"'" . FormatoFecha(date('Y-m-d'), date('H:i')) . "'",
 			"'" . $_POST['IdAnexos'] . "'",
@@ -258,7 +258,7 @@ if (isset($_POST['P'])) { //Crear llamada de servicio
 						copy($dir_new . $NuevoNombre, $RutaAttachSAP[0] . $NuevoNombre);
 
 						//Registrar archivo en la BD
-						$ParamInsAnex = array(
+						$ParamAnex = array(
 							"'191'",
 							"'$IdSolicitud'",
 							"'" . $OnlyName . "'",
@@ -267,12 +267,12 @@ if (isset($_POST['P'])) { //Crear llamada de servicio
 							"'" . $_SESSION['CodUser'] . "'",
 							"1",
 						);
-						$SQL_InsAnex = EjecutarSP('sp_tbl_DocumentosSAP_Anexos', $ParamInsAnex, $_POST['P']);
-						if (!$SQL_InsAnex) {
+						$SQL_Anex = EjecutarSP('sp_tbl_DocumentosSAP_Anexos', $ParamAnex, $_POST['P']);
+						if (!$SQL_Anex) {
 							$sw_error = 1;
 							
-							$tipo = ($_POST['P'] == 32) ? "Creación" : "Actualización";
-							$msg_error = "Error en la $tipo de la Solicitud de Llamada de servicio";
+							$tipo = ($_POST['P'] == 32) ? "Inserción" : "Actualización";
+							$msg_error = "Error en la $tipo de los Anexos";
 							
 							// throw new Exception('Error al insertar los anexos.');
 							// sqlsrv_close($conexion);
@@ -294,7 +294,9 @@ if (isset($_POST['P'])) { //Crear llamada de servicio
 			}
 		} else {
 			$sw_error = 1;
-			$msg_error = "Error al crear la llamada de servicio";
+			
+			$tipo = ($_POST['P'] == 32) ? "Creación" : "Actualización";
+			$msg_error = "Error en la $tipo de la Solicitud de Llamada de servicio";
 		}
 	} catch (Exception $e) {
 		echo 'Excepcion capturada: ', $e->getMessage(), "\n";
@@ -302,7 +304,6 @@ if (isset($_POST['P'])) { //Crear llamada de servicio
 }
 
 if ($edit == 1 && $sw_error == 0) {
-	//Llamada
 	$SQL = Seleccionar('uvw_tbl_SolicitudLlamadasServicios', '*', "ID_SolicitudLlamadaServicio='$IdSolicitud'");
 	$row = sqlsrv_fetch_array($SQL);
 
@@ -355,7 +356,7 @@ if ($edit == 1 && $sw_error == 0) {
 
 if ($sw_error == 1) {
 	//Si ocurre un error, vuelvo a consultar los datos insertados desde la base de datos.
-	$SQL = Seleccionar('uvw_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='$IdSolicitud'");
+	$SQL = Seleccionar('uvw_tbl_SolicitudLlamadasServicios', '*', "ID_SolicitudLlamadaServicio='$IdSolicitud'");
 	$row = sqlsrv_fetch_array($SQL);
 
 	//Clientes
@@ -1737,9 +1738,9 @@ function AgregarEsto(contenedorID, valorElemento) {
 								} ?>">
 							</div>
 							<div class="col-lg-2">
-								<label class="control-label">ID de llamada</label>
+								<label class="control-label">ID de solicitud</label>
 								<input autocomplete="off" name="CallID" type="text" class="form-control" id="CallID" maxlength="50" readonly="readonly" value="<?php if (($edit == 1) || ($sw_error == 1)) {
-									echo $row['ID_LlamadaServicio'];
+									echo $row['ID_SolicitudLlamadaServicio'];
 								} ?>">
 							</div>
 							<div class="col-lg-4">
@@ -2360,19 +2361,19 @@ function AgregarEsto(contenedorID, valorElemento) {
 						<input type="hidden" id="swTipo" name="swTipo" value="0" />
 						<input type="hidden" id="swError" name="swError" value="<?php echo $sw_error; ?>" />
 						<input type="hidden" id="tl" name="tl" value="<?php echo $edit; ?>" />
-						<input type="hidden" id="IdLlamadaPortal" name="IdLlamadaPortal" value="<?php if (($edit == 1) && ($sw_error == 0)) {
-							echo base64_encode($row['IdLlamadaPortal']);
-						} elseif (($edit == 1) && ($sw_error == 1)) {
-							echo base64_encode($row['ID_LlamadaServicio']);
-						} elseif (($edit == 0) && ($sw_error == 1)) {
-							echo base64_encode($row['ID_LlamadaServicio']);
+						
+						<input type="hidden" id="IdLlamadaPortal" name="IdLlamadaPortal" value="<?php if (isset($row['ID_SolicitudLlamadaServicio'])) {
+							echo base64_encode($row['ID_SolicitudLlamadaServicio']);
 						} ?>" />
-						<input type="hidden" id="DocEntry" name="DocEntry" value="<?php if ($edit == 1) {
-							echo base64_encode($row['ID_LlamadaServicio']);
+						
+						<input type="hidden" id="DocEntry" name="DocEntry" value="<?php if (isset($row['ID_SolicitudLlamadaServicio'])) {
+							echo base64_encode($row['ID_SolicitudLlamadaServicio']);
 						} ?>" />
-						<input type="hidden" id="DocNum" name="DocNum" value="<?php if ($edit == 1) {
-							echo base64_encode($row['DocNum']);
+						
+						<input type="hidden" id="DocNum" name="DocNum" value="<?php if (isset($row['ID_SolicitudLlamadaServicio'])) {
+							echo base64_encode($row['ID_SolicitudLlamadaServicio']);
 						} ?>" />
+
 						<input type="hidden" id="IdAnexos" name="IdAnexos" value="<?php if ($edit == 1) {
 							echo $row['IdAnexoLlamada'];
 						} ?>" />

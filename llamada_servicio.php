@@ -584,6 +584,7 @@ if ($type_llmd == 1 && $sw_error == 0) {
 	$SQL_DocRel = Seleccionar('uvw_Sap_tbl_LlamadasServiciosDocRelacionados', '*', "ID_LlamadaServicio='" . $IdLlamada . "'");
 
 	//Formularios de llamadas de servicios
+	// SELECT * FROM uvw_tbl_LlamadasServicios_Formularios WHERE docentry_llamada_servicio='$IdLlamada';
 	$SQL_Formularios = Seleccionar('uvw_tbl_LlamadasServicios_Formularios', '*', "docentry_llamada_servicio='" . $IdLlamada . "'");
 
 	//Contratos de servicio
