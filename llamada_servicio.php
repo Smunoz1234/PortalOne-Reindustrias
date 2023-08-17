@@ -585,7 +585,7 @@ if ($type_llmd == 1 && $sw_error == 0) {
 
 	//Formularios de llamadas de servicios
 	// SELECT * FROM uvw_tbl_LlamadasServicios_Formularios WHERE docentry_llamada_servicio='$IdLlamada';
-	$SQL_Formularios = Seleccionar('uvw_tbl_LlamadasServicios_Formularios', '*', "docentry_llamada_servicio='" . $IdLlamada . "'");
+	$SQL_Formularios = Seleccionar('uvw_tbl_LlamadasServicios_Formularios', '*', "docentry_llamada_servicio='$IdLlamada'");
 
 	//Contratos de servicio
 	$SQL_Contrato = Seleccionar('uvw_Sap_tbl_Contratos', '*', "CodigoCliente='" . $row['ID_CodigoCliente'] . "'", 'ID_Contrato');

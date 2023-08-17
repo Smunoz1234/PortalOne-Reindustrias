@@ -26,17 +26,17 @@ $Filtro .= " AND [IdSeries] IN (" . $FilSerie . ")";
 $SQL_SeriesLlamada = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 
 // Filtrar cliente y sucursales
-$ID_CodigoCliente = "";
+$ID_CodigoCliente2 = "";
 if (($edit == 1) || ($sw_error == 1)) {
-	$ID_CodigoCliente = $row['CardCode'];
+	$ID_CodigoCliente2 = $row['CardCode'];
 } elseif ((isset($dt_LS) && ($dt_LS == 1)) || (isset($dt_OV) && ($dt_OV == 1)) || (isset($dt_ET) && ($dt_ET == 1))) {
-	$ID_CodigoCliente = $row_Cliente['CodigoCliente'];
+	$ID_CodigoCliente2 = $row_Cliente['CodigoCliente'];
 }
 
-if ($ID_CodigoCliente != "") {
-	$Filtro .= " AND ID_CodigoCliente = '$ID_CodigoCliente'";
+if ($ID_CodigoCliente2 != "") {
+	$Filtro .= " AND ID_CodigoCliente = '$ID_CodigoCliente2'";
 
-	$Where = "CodigoCliente = '$ID_CodigoCliente'";
+	$Where = "CodigoCliente = '$ID_CodigoCliente2'";
 	$SQL_ClienteLlamada = Seleccionar("uvw_Sap_tbl_SociosNegocios", "NombreCliente", $Where);
 	$row_ClienteLlamada = sqlsrv_fetch_array($SQL_ClienteLlamada);
 	// var_dump($row_ClienteLlamada);
@@ -54,7 +54,7 @@ $FechaInicial = $nuevafecha;
 $FechaFinal = $fecha;
 
 // Realizar consulta con filtros
-$Where = "Metodo = 0 AND ([FechaCreacionLLamada] BETWEEN '$FechaInicial' AND '$FechaFinal') $Filtro";
+$Where = "([FechaCreacionLLamada] BETWEEN '$FechaInicial' AND '$FechaFinal') $Filtro";
 $SQL_SolicitudesLlamadas = Seleccionar('uvw_tbl_SolicitudLlamadasServicios', 'TOP 100 *', $Where);
 ?>
 
@@ -95,10 +95,10 @@ $SQL_SolicitudesLlamadas = Seleccionar('uvw_tbl_SolicitudLlamadasServicios', 'TO
 									<label class="col-lg-1 control-label">Cliente</label>
 									<div class="col-lg-5">
 										<input name="Cliente2" type="hidden" id="Cliente2"
-											value="<?php echo $ID_CodigoCliente ?? ''; ?>">
+											value="<?php echo $ID_CodigoCliente2 ?? ''; ?>">
 										<input name="NombreCliente2" type="text" class="form-control" id="NombreCliente2"
 											placeholder="Para TODOS, dejar vacio..."
-											value="<?php echo $row_ClienteLlamada['NombreCliente2'] ?? ''; ?>">
+											value="<?php echo $row_ClienteLlamada['NombreCliente'] ?? ''; ?>">
 									</div>
 								</div>
 								<div class="form-group">
@@ -143,6 +143,7 @@ $SQL_SolicitudesLlamadas = Seleccionar('uvw_tbl_SolicitudLlamadasServicios', 'TO
 
 				<?php
 				if (!$SQL_SolicitudesLlamadas) {
+					echo "Consulta:<br>";
 					echo "SELECT TOP 100 * FROM uvw_tbl_SolicitudLlamadasServicios WHERE $Where";
 				} ?>
 
@@ -150,7 +151,7 @@ $SQL_SolicitudesLlamadas = Seleccionar('uvw_tbl_SolicitudLlamadasServicios', 'TO
 				<div class="row">
 					<div class="col-lg-12">
 						<div class="ibox-content">
-							<div class="table-responsive" id="tableContainer">
+							<div class="table-responsive" id="tableContainer2">
 								<table id="footable2" class="table" data-paging="true" data-sorting="true">
 									<thead>
 										<tr>
@@ -178,7 +179,7 @@ $SQL_SolicitudesLlamadas = Seleccionar('uvw_tbl_SolicitudLlamadasServicios', 'TO
 													<?php echo $row_SolicitudesLlamadas['NombreSucursal']; ?>
 												</td>
 												<td>
-													<?php echo $row_SolicitudesLlamadas['NombreCliente2Llamada']; ?>
+													<?php echo $row_SolicitudesLlamadas['NombreClienteLlamada']; ?>
 												</td>
 												<td>
 													<span <?php if ($row_SolicitudesLlamadas['IdEstadoLlamada'] == '-3') {
@@ -199,7 +200,7 @@ $SQL_SolicitudesLlamadas = Seleccionar('uvw_tbl_SolicitudLlamadasServicios', 'TO
 												</td>
 												<td>
 													<a type="button" class="btn btn-success btn-xs"
-														onclick="cambiarSLS('<?php echo $row_SolicitudesLlamadas['ID_SolicitudesLlamadaServicio']; ?>', '<?php echo $row_SolicitudesLlamadas['DocNum'] . ' - ' . $row_SolicitudesLlamadas['AsuntoLlamada'] . ' (' . $row_SolicitudesLlamadas['DeTipoLlamada'] . ')'; ?>')"><b>
+														onclick="cambiarSLS('<?php echo $row_SolicitudesLlamadas['ID_SolicitudLlamadaServicio']; ?>', '<?php echo $row_SolicitudesLlamadas['DocNum'] . ' - ' . $row_SolicitudesLlamadas['AsuntoLlamada'] . ' (' . $row_SolicitudesLlamadas['DeTipoLlamada'] . ')'; ?>')"><b>
 															<?php echo $row_SolicitudesLlamadas['DocNum']; ?>
 														</b></a>
 												</td>
@@ -255,28 +256,25 @@ $SQL_SolicitudesLlamadas = Seleccionar('uvw_tbl_SolicitudLlamadasServicios', 'TO
 		$('#mdSLS').modal('hide');
 	}
 
-
-
 	$(document).ready(function () {
 		$('#footable2').footable();
 
 		// Inicio, cambio asincrono de sucursal en base al cliente.
 		$("#NombreCliente2").on("change", function () {
-			var NomCliente = document.getElementById("NombreCliente2");
-			var Cliente = document.getElementById("Cliente");
-
-			if (NomCliente.value == "") {
-				Cliente.value = "";
+			let NomCliente2 = document.getElementById("NombreCliente2");
+			
+			if (NomCliente2.value == "") {
+				$("#Cliente2").val("");
 				$("#Cliente2").trigger("change");
 			}
 		});
 
 		$("#Cliente2").change(function () {
-			var Cliente = document.getElementById("Cliente");
+			let Cliente2 = document.getElementById("Cliente2").value;
 
 			$.ajax({
 				type: "POST",
-				url: "ajx_cbo_sucursales_clientes_simple.php?CardCode=" + Cliente.value,
+				url: `ajx_cbo_sucursales_clientes_simple.php?CardCode=${Cliente2}`,
 				success: function (response) {
 					$('#Sucursal').html(response).fadeIn();
 				}
@@ -296,7 +294,7 @@ $SQL_SolicitudesLlamadas = Seleccionar('uvw_tbl_SolicitudLlamadasServicios', 'TO
 				let formData = new FormData(form);
 
 				let json = Object.fromEntries(formData);
-				console.log("Line 250", json);
+				console.log("Line 300", json);
 
 				// Inicio, AJAX
 				$.ajax({
@@ -306,9 +304,9 @@ $SQL_SolicitudesLlamadas = Seleccionar('uvw_tbl_SolicitudLlamadasServicios', 'TO
 					processData: false,  // tell jQuery not to process the data
 					contentType: false,   // tell jQuery not to set contentType
 					success: function (response) {
-						// console.log("Line 260", response);
+						// console.log("Line 310", response);
 
-						$("#tableContainer").html(response);
+						$("#tableContainer2").html(response);
 						$('#footable2').footable();
 
 						$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
@@ -340,7 +338,9 @@ $SQL_SolicitudesLlamadas = Seleccionar('uvw_tbl_SolicitudLlamadasServicios', 'TO
 			todayHighlight: true,
 			format: 'yyyy-mm-dd'
 		});
+		
 		$('.chosen-select').chosen({ width: "100%" });
+		
 		var options = {
 			adjustWidth: false,
 			url: function (phrase) {

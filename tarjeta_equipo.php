@@ -438,7 +438,7 @@ if (isset($_GET['dt_TE']) && ($_GET['dt_TE']) == 1) { //Verificar que viene de u
 }
 
 // SMM, 15/08/2023
-$SQL_Formularios = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_RecepcionEntregaVehiculo', '*'); // , "IdTarjetaEquipo='$IdTarjetaEquipo'"
+$SQL_Formularios = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_RecepcionEntregaVehiculo', '*', "IdTarjetaEquipo='$IdTarjetaEquipo'");
 
 // Stiven Muñoz Murillo, 28/01/2022
 $row_encode = isset($row) ? json_encode($row) : "";
@@ -1375,7 +1375,6 @@ function ConsultarDocVentas(tipo){
 																<th>Número de artículo</th>
 																<th>Número de serie</th>
 																<th>Nombre del cliente</th>
-
 															</tr>
 														</thead>
 														<tbody>
@@ -1445,28 +1444,26 @@ function ConsultarDocVentas(tipo){
 													<table class="table table-striped table-bordered table-hover dataTables-example">
 														<thead>
 															<tr>
-																<th>Acciones</th>
 																<th>Tipo Documento</th> 
 																<th>No de Documento</th>
 																<th>Fecha Creacion Reg.</th>
 																<th>Fecha Recepcion/Entrega</th>
 																<th>Observaciones</th>
 																<th>Asesor Servicio</th>
+
 																<th>No Llamada Servicio</th>
+																
 																<th>Origen</th>
 																<th>Tipo Problema</th>
 																<th>SubTipo Problema</th>
+
+																<th>Acciones</th>
 															</tr>
 														</thead>
 														<tbody>
 															<?php
 															while ($row_Formulario = sqlsrv_fetch_array($SQL_Formularios)) { ?>
 																	<tr class="gradeX">
-																		<td>
-																			<a href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row_Formulario['id_llamada_servicio']); ?>&ObType=<?php echo base64_encode('191'); ?>&IdFrm=<?php echo base64_encode($row_Formulario['IdSerieLlamada']); ?>"
-																				target="_blank" class="btn btn-warning btn-xs"><i
-																					class="fa fa-download"></i> Descargar Llamada</a>
-																		</td>
 
 																		<td><?php echo $row_Formulario["tipo_objeto"]; ?></td>
 																		<td><?php echo $row_Formulario['id_formulario']; ?></td>
@@ -1474,10 +1471,28 @@ function ConsultarDocVentas(tipo){
 																		<td><?php echo (isset($row_Formulario["fecha_recepcion_entrega"]) && $row_Formulario["fecha_recepcion_entrega"] != "") ? $row_Formulario['fecha_recepcion_entrega']->format("Y-m-d h:m:s") : ""; ?></td>
 																		<td><?php echo $row_Formulario['observaciones']; ?></td>
 																		<td><?php echo $row_Formulario['empleado_tecnico']; ?></td>
-																		<td><?php echo $row_Formulario['id_llamada_servicio']; ?></td>
+
+																		<td class="text-left">
+																			<a href="llamada_servicio.php?id=<?php echo base64_encode($row_Formulario['docentry_llamada_servicio']); ?>&tl=1&pag=<?php echo base64_encode('gestionar_llamadas_servicios.php'); ?>" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i>
+																				<?php echo $row_Formulario['id_llamada_servicio']; ?>
+																			</a>
+																		</td>
+																		
 																		<td><?php echo $row_Formulario['DeOrigenLlamada']; ?></td>
 																		<td><?php echo $row_Formulario['DeTipoProblemaLlamada']; ?></td>
 																		<td><?php echo $row_Formulario['DeSubTipoProblemaLlamada']; ?></td>
+
+																		<td>
+																			<a href="filedownload.php?file=<?php echo base64_encode($row_Formulario['nombre_servicio'] . "/DescargarFormatos/" . $row_Formulario['id_formulario'] . "/" . $_SESSION['User']); ?>&api=1" 
+																				target="_blank" class="btn btn-primary btn-xs" title="Descargar Formato">
+																				<i class="fa fa-download"></i> Descargar Formato
+																			</a>
+
+																			<a href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row_Formulario['id_llamada_servicio']); ?>&ObType=<?php echo base64_encode('191'); ?>&IdFrm=<?php echo base64_encode($row_Formulario['IdSerieLlamada']); ?>"
+																				target="_blank" class="btn btn-warning btn-xs" title="Descargar Llamada">
+																				<i class="fa fa-download"></i> Descargar Llamada
+																			</a>
+																		</td>
 																	</tr>
 															<?php } ?>
 														</tbody>
@@ -1485,7 +1500,7 @@ function ConsultarDocVentas(tipo){
 												</div>
 										<?php } else { ?>
 												<i class="fa fa-search" style="font-size: 18px; color: lightgray;"></i>
-												<span style="font-size: 13px; color: lightgray;">No hay registros de llamadas de servicio</span>
+												<span style="font-size: 13px; color: lightgray;">No hay registros de Recepciones o Entregas de Vehiculo</span>
 										<?php } ?>
 									</div>
 								</div>
