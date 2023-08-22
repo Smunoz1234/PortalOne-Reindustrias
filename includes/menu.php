@@ -250,6 +250,7 @@ if (!isset($_COOKIE["banderaMenu"])) {
 				<ul class="nav nav-second-level collapse">
 					<?php if (PermitirFuncion(312)) {?><li><a href="programacion_rutas.php" target="_blank">Programación de servicios</a></li><?php }?>
 					<?php if (PermitirFuncion(316)) {?><li><a href="despacho_rutas.php">Despacho de servicios</a></li><?php }?>
+					<?php if (PermitirFuncion(301)) {?><li><a class="alnk" href="gestionar_campanas_vehiculo.php">Campañas</a></li><?php }?>
 					<?php if (PermitirFuncion(301)) {?><li><a class="alnk" href="gestionar_llamadas_servicios.php">Llamadas de servicio</a></li><?php }?>
 					<?php if (PermitirFuncion(303)) {?><li><a class="alnk" href="gestionar_actividades.php">Actividades</a></li><?php }?>
 					<?php if (true) {?><li><a class="alnk" href="gestionar_solicitudes_llamadas.php">Solicitudes de llamadas (Agenda)</a></li><?php }?>
