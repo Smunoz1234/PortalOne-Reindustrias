@@ -158,12 +158,13 @@ $SQL_SolicitudesLlamadas = Seleccionar('uvw_tbl_SolicitudLlamadasServicios', 'TO
 											<th>Fecha creación</th>
 											<th>Sucursal</th>
 											<th>Cliente</th>
+
 											<th>Estado</th>
+											
 											<th>Tipo llamada</th>
 											<th>Asunto</th>
 											<th>Ticket</th>
 											<th data-breakpoints="all">Serial Interno</th>
-											<th data-breakpoints="all">Asignado por</th>
 											<th data-breakpoints="all">Tipo problema</th>
 											<th data-breakpoints="all">Estado servicio</th>
 											<th data-breakpoints="all">Acciones</th>
@@ -181,17 +182,17 @@ $SQL_SolicitudesLlamadas = Seleccionar('uvw_tbl_SolicitudLlamadasServicios', 'TO
 												<td>
 													<?php echo $row_SolicitudesLlamadas['NombreClienteLlamada']; ?>
 												</td>
+
 												<td>
 													<span <?php if ($row_SolicitudesLlamadas['IdEstadoLlamada'] == '-3') {
 														echo "class='label label-info'";
-													} elseif ($row_SolicitudesLlamadas['IdEstadoLlamada'] == '-2') {
-														echo "class='label label-warning'";
 													} else {
-														echo "class='label label-danger'";
+														echo "class='label label-warning'";
 													} ?>>
-														<?php echo $row_SolicitudesLlamadas['DeEstadoLlamada']; ?>
+														<?php echo $row_SolicitudesLlamadas['NombreEstado']; ?>
 													</span>
 												</td>
+												
 												<td>
 													<?php echo $row_SolicitudesLlamadas['DeTipoLlamada']; ?>
 												</td>
@@ -200,15 +201,13 @@ $SQL_SolicitudesLlamadas = Seleccionar('uvw_tbl_SolicitudLlamadasServicios', 'TO
 												</td>
 												<td>
 													<a type="button" class="btn btn-success btn-xs"
-														onclick="cambiarSLS('<?php echo $row_SolicitudesLlamadas['ID_SolicitudLlamadaServicio']; ?>', '<?php echo $row_SolicitudesLlamadas['DocNum'] . ' - ' . $row_SolicitudesLlamadas['AsuntoLlamada'] . ' (' . $row_SolicitudesLlamadas['DeTipoLlamada'] . ')'; ?>')"><b>
-															<?php echo $row_SolicitudesLlamadas['DocNum']; ?>
-														</b></a>
+														title="Cambiar Agenda"
+														onclick="cambiarSLS('<?php echo $row_SolicitudesLlamadas['ID_SolicitudLlamadaServicio']; ?>', '<?php echo $row_SolicitudesLlamadas['ID_SolicitudLlamadaServicio'] . ' - ' . $row_SolicitudesLlamadas['AsuntoLlamada'] . ' (' . $row_SolicitudesLlamadas['DeTipoLlamada'] . ')'; ?>')">
+														<i class="fa fa-refresh"></i> <b><?php echo $row_SolicitudesLlamadas['ID_SolicitudLlamadaServicio']; ?></b>
+													</a>
 												</td>
 												<td>
 													<?php echo $row_SolicitudesLlamadas['IdNumeroSerie']; ?>
-												</td>
-												<td>
-													<?php echo $row_SolicitudesLlamadas['DeAsignadoPor']; ?>
 												</td>
 												<td>
 													<?php echo $row_SolicitudesLlamadas['DeTipoProblemaLlamada']; ?>

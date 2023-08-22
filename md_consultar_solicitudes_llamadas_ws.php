@@ -106,12 +106,13 @@ echo $dataString;
             <th>Fecha creación</th>
             <th>Sucursal</th>
             <th>Cliente</th>
+
             <th>Estado</th>
+            
             <th>Tipo llamada</th>
             <th>Asunto</th>
             <th>Ticket</th>
             <th data-breakpoints="all">Serial Interno</th>
-            <th data-breakpoints="all">Asignado por</th>
             <th data-breakpoints="all">Tipo problema</th>
             <th data-breakpoints="all">Estado servicio</th>
             <th data-breakpoints="all">Acciones</th>
@@ -129,17 +130,17 @@ echo $dataString;
                 <td>
                     <?php echo $row['NombreClienteLlamada']; ?>
                 </td>
+
                 <td>
                     <span <?php if ($row['IdEstadoLlamada'] == '-3') {
                         echo "class='label label-info'";
-                    } elseif ($row['IdEstadoLlamada'] == '-2') {
-                        echo "class='label label-warning'";
                     } else {
                         echo "class='label label-danger'";
                     } ?>>
-                        <?php echo $row['DeEstadoLlamada']; ?>
+                        <?php echo $row['NombreEstado']; ?>
                     </span>
                 </td>
+
                 <td>
                     <?php echo $row['DeTipoLlamada']; ?>
                 </td>
@@ -148,15 +149,13 @@ echo $dataString;
                 </td>
                 <td>
                     <a type="button" class="btn btn-success btn-xs"
-                        onclick="cambiarOT('<?php echo $row['ID_LlamadaServicio']; ?>', '<?php echo $row['DocNum'] . ' - ' . $row['AsuntoLlamada'] . ' (' . $row['DeTipoLlamada'] . ')'; ?>')"><b>
-                            <?php echo $row['DocNum']; ?>
-                        </b></a>
+                        title="Cambiar Agenda"
+                        onclick="cambiarSLS('<?php echo $row['ID_SolicitudLlamadaServicio']; ?>', '<?php echo $row['ID_SolicitudLlamadaServicio'] . ' - ' . $row['AsuntoLlamada'] . ' (' . $row['DeTipoLlamada'] . ')'; ?>')">
+                        <i class="fa fa-refresh"></i> <b><?php echo $row['ID_SolicitudLlamadaServicio']; ?></b>
+                    </a>
                 </td>
                 <td>
                     <?php echo $row['IdNumeroSerie']; ?>
-                </td>
-                <td>
-                    <?php echo $row['DeAsignadoPor']; ?>
                 </td>
                 <td>
                     <?php echo $row['DeTipoProblemaLlamada']; ?>

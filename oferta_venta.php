@@ -80,7 +80,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Oferta de venta
 			"'" . FormatoFecha($_POST['TaxDate']) . "'",
 			"'" . $_POST['CardCode'] . "'",
 			"'" . $_POST['ContactoCliente'] . "'",
-			"'" . $_POST['OrdenServicioCliente'] ?? "" . "'",
+			"'" . ($_POST['OrdenServicioCliente'] ?? "") . "'",
 			"'" . $_POST['Referencia'] . "'",
 			"'" . $_POST['EmpleadoVentas'] . "'",
 			"'" . LSiqmlObs($_POST['Comentarios']) . "'",
@@ -103,6 +103,8 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Oferta de venta
 			"'" . $_SESSION['CodUser'] . "'",
 			"'" . $_SESSION['CodUser'] . "'",
 			"$Type",
+			"'" . ($_POST['SolicitudLlamadaCliente'] ?? "") . "'",
+			"'" . ($_POST['dt_SLS'] ?? "") . "'",
 		);
 		$SQL_CabeceraOfertaVenta = EjecutarSP('sp_tbl_OfertaVenta', $ParametrosCabOfertaVenta, $_POST['P']);
 		if ($SQL_CabeceraOfertaVenta) {
@@ -192,7 +194,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Oferta de venta
 }
 
 // SMM, 16/08/2023
-if (isset($_GET['dt_SLS']) && ($_GET['dt_SLS']) == 1) {
+if (isset($_GET['dt_SLS']) && ($_GET['dt_SLS'] == 1)) {
 	$dt_SLS = 1;
 
 	// SMM 16/08/2023
@@ -202,7 +204,7 @@ if (isset($_GET['dt_SLS']) && ($_GET['dt_SLS']) == 1) {
 	}
 }
 
-if (isset($_GET['dt_LS']) && ($_GET['dt_LS']) == 1) { //Verificar que viene de una Llamada de servicio (Datos Llamada servicio)
+if (isset($_GET['dt_LS']) && ($_GET['dt_LS'] == 1)) { //Verificar que viene de una Llamada de servicio (Datos Llamada servicio)
 	$dt_LS = 1;
 
 	// Orden de servicio, SMM 16/08/2023

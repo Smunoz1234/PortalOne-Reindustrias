@@ -504,12 +504,14 @@ if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
                                                     <?php echo $row['ID_SolicitudLlamadaServicio']; ?>
                                                 </td>
 
-                                                <td><span
+                                                <td>
+                                                    <span
                                                         class="label <?php if ($row['IdEstadoLlamada'] == -3) {
                                                             echo "label-primary";
                                                         } else {
-                                                            echo "label-danger";
-                                                        } ?>"><?php echo $row['NombreEstado'] ?? ""; ?></span></td>
+                                                            echo "label-warning";
+                                                        } ?>"><?php echo $row['NombreEstado'] ?? ""; ?></span>
+                                                </td>
 
                                                 <td>
                                                     <a href="solicitud_llamada.php?id=<?php echo base64_encode($row['ID_SolicitudLlamadaServicio']); ?>&tl=1&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('gestionar_solicitudes_llamadas.php'); ?>"
