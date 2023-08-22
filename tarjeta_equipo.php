@@ -440,6 +440,10 @@ if (isset($_GET['dt_TE']) && ($_GET['dt_TE']) == 1) { //Verificar que viene de u
 // SMM, 15/08/2023
 $SQL_Formularios = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_RecepcionEntregaVehiculo', '*', "IdTarjetaEquipo='$IdTarjetaEquipo'");
 
+// SMM, 15/08/2023
+$VIN = $row['SerialFabricante'] ?? "";
+$SQL_Campanas = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_CampañaVehiculo', '*', "VIN='$VIN'");
+
 // Stiven Muñoz Murillo, 28/01/2022
 $row_encode = isset($row) ? json_encode($row) : "";
 $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'Not Found'";
@@ -1284,6 +1288,7 @@ function ConsultarDocVentas(tipo){
 						<li class="active"><a data-toggle="tab" href="#tab-address"><i class="fa fa-address-book-o"></i> Dirección</a></li>
 						<li><a data-toggle="tab" href="#tab-service-calls"><i class="fa fa-table"></i> Llamadas de servicio</a></li>
 						<li><a data-toggle="tab" href="#tab-3"><i class="fa fa-table"></i> Formularios</a></li>
+						<li><a data-toggle="tab" href="#tab-4"><i class="fa fa-table"></i> Campañas</a></li>
 						<li><a data-toggle="tab" href="#tab-service-contracts"><i class="fa fa-table"></i> Contratos de servicio</a></li>
 						<li><a data-toggle="tab" href="#tab-sales-data"><i class="fa fa-table"></i> Datos de ventas</a></li>
 						<li><a data-toggle="tab" href="#tab-crm"><i class="fa fa-suitcase"></i> Gestión de CRM</a></li>
@@ -1431,9 +1436,9 @@ function ConsultarDocVentas(tipo){
 						</div>
 						<!-- End Llamadas de servicio -->
 
-						<!-- Llamadas de servicio -->
+						<!-- Formularios -->
 						<div id="tab-3" class="tab-pane">
-							<!-- Table Llamadas de servicio -->
+							<!-- Table Formularios -->
 							<div class="row">
 								<div class="col-12 text-center">
 									<div class="ibox-content">
@@ -1505,9 +1510,91 @@ function ConsultarDocVentas(tipo){
 									</div>
 								</div>
 							</div>
-							<!-- End Table Llamadas de servicio -->
+							<!-- End Table Campanas -->
 						</div>
-						<!-- End Llamadas de servicio -->
+						<!-- End Formularios -->
+
+						<!-- Campanas -->
+						<div id="tab-4" class="tab-pane">
+							<!-- Table Campanas -->
+							<div class="row">
+								<div class="col-12 text-center">
+									<div class="ibox-content">
+										<?php
+										$hasRowsCampanas = ($SQL_Campanas) ? sqlsrv_has_rows($SQL_Campanas) : false;
+										if ($edit == 1 && $hasRowsCampanas) { ?>
+												<div class="table" style="max-height: 230px; overflow-y: auto;">
+													<table class="table table-striped table-bordered table-hover dataTables-example">
+														<thead>
+															<tr>
+																<th>ID Campaña</th> 
+																<th>VIN</th>
+
+																<th>Estado VIN Campaña</th>
+
+																<th>Fecha Límite Vigencia</th>
+
+																<th>ID Llamada Servicio</th>
+																
+																<th>Origen</th>
+																<th>Estado Llamada</th>
+																<th>SubTipo Problema</th>
+
+																<th>Nombre Cliente</th>
+																<th>Fecha Cierre</th>
+																
+																<th>Acciones</th>
+															</tr>
+														</thead>
+														<tbody>
+															<?php
+															while ($row_Campana = sqlsrv_fetch_array($SQL_Campanas)) { ?>
+																	<tr class="gradeX">
+																		<td><?php echo $row_Campana['id_campana']; ?></td>
+																		<td><?php echo $row_Campana['VIN']; ?></td>
+
+																		<td><?php echo $row_Campana['nombre_estado_VIN_campaña']; ?></td>
+
+																		<td><?php echo (isset($row_Campana["fecha_limite_vigencia"]) && $row_Campana["fecha_limite_vigencia"] != "") ? $row_Campana['fecha_limite_vigencia']->format("Y-m-d") : ""; ?></td>
+
+																		<td class="text-left">
+																			<?php if(isset($row_Campana['docnum_llamada_servicio']) && ($row_Campana['docnum_llamada_servicio'] != "")) { ?>
+																				<a href="llamada_servicio.php?id=<?php echo base64_encode($row_Campana['docentry_llamada_servicio']); ?>&tl=1&pag=<?php echo base64_encode('gestionar_llamadas_servicios.php'); ?>" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i>
+																					<?php echo $row_Campana['docnum_llamada_servicio']; ?>
+																				</a>
+																			<?php } ?>
+																		</td>
+																		
+																		<td><?php echo $row_Campana['DeOrigenLlamada']; ?></td>
+																		<td><?php echo $row_Campana['DeEstadoLlamada']; ?></td>
+																		<td><?php echo $row_Campana['DeSubTipoProblemaLlamada']; ?></td>
+
+																		<td><?php echo $row_Campana['socio_negocios'] ?? ""; ?></td>
+																		<td><?php echo (isset($row_Campana["FechaCierre"]) && $row_Campana["FechaCierre"] != "") ? $row_Campana['FechaCierre']->format("Y-m-d") : ""; ?></td>
+
+																		<td>
+																			<?php if(isset($row_Campana['docnum_llamada_servicio']) && ($row_Campana['docnum_llamada_servicio'] != "")) { ?>
+																				<a href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row_Campana['docnum_llamada_servicio']); ?>&ObType=<?php echo base64_encode('191'); ?>&IdFrm=<?php echo base64_encode($row_Formulario['IdSerieLlamada']); ?>"
+																					target="_blank" class="btn btn-warning btn-xs" title="Descargar Llamada">
+																					<i class="fa fa-download"></i> Descargar Llamada
+																				</a>
+																			<?php } ?>
+																		</td>
+																	</tr>
+															<?php } ?>
+														</tbody>
+													</table>
+												</div>
+										<?php } else { ?>
+												<i class="fa fa-search" style="font-size: 18px; color: lightgray;"></i>
+												<span style="font-size: 13px; color: lightgray;">No hay registros de Campañas de Vehículo</span>
+										<?php } ?>
+									</div>
+								</div>
+							</div>
+							<!-- End Table Campanas -->
+						</div>
+						<!-- End Campanas -->
 
 						<!-- Contractos de servicio -->
 						<div id="tab-service-contracts" class="tab-pane">

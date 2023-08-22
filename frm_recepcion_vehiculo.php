@@ -80,6 +80,16 @@ $SQL_ColorVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_ColorVehiculo', '*
 
 // Preguntas en la recepción de vehículo
 $SQL_Preguntas = Seleccionar('tbl_RecepcionVehiculos_Preguntas', '*', "estado = 'Y'");
+
+// Stiven Muñoz Murillo, 22/08/2023
+$SucursalCliente = base64_decode($_GET["Sucursal"] ?? "");
+
+$testMode = false;
+if ($testMode) {
+	$row_encode = isset($row) ? json_encode($row) : "";
+	$cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'Not Found'";
+	echo "<script> console.log($cadena); </script>";
+}
 ?>
 
 <!DOCTYPE html>
@@ -399,7 +409,7 @@ function ConsultarEquipo(){
 								<select name="SucursalCliente" class="form-control select2" id="SucursalCliente" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {echo "disabled='disabled'";}?>>
 								<?php if ((($type_frm == 0) || ($sw_error == 1)) && ($dt_LS != 1)) {?><option value="">Seleccione...</option><?php }?>
 								<?php if (($type_frm == 1) || ($sw_error == 1) || ($dt_LS == 1)) {while ($row_SucursalCliente = sqlsrv_fetch_array($SQL_SucursalCliente)) {?>
-										<option value="<?php echo $row_SucursalCliente['NombreSucursal']; ?>" <?php if ((isset($row['NombreSucursal'])) && (strcmp($row_SucursalCliente['NombreSucursal'], $row['NombreSucursal']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_SucursalCliente['NombreSucursal']; ?></option>
+										<option value="<?php echo $row_SucursalCliente['NombreSucursal']; ?>" <?php if ((isset($row['NombreSucursal'])) && (strcmp($row_SucursalCliente['NombreSucursal'], $row['NombreSucursal']) == 0)) {echo "selected";} elseif($SucursalCliente == $row_SucursalCliente['NombreSucursal']) {echo "selected";}?>><?php echo $row_SucursalCliente['NombreSucursal']; ?></option>
 								<?php }}?>
 								</select>
 							</div>
@@ -717,7 +727,7 @@ function ConsultarEquipo(){
 							<div class="form-group">
 								<label class="col-lg-1 control-label">Disponibilidad</label>
 								<div class="col-lg-2">
-									<select class="form-control" name="<?php echo "p_disponible_$count_rp"; ?>" id="<?php echo "p_disponible_$count_rp"; ?>" <?php if (false) {echo "disabled='disabled'";}?>>
+									<select class="form-control" name="<?php echo "p_disponible_$count_rp"; ?>" id="<?php echo "p_disponible_$count_rp"; ?>">
 										<option value="SI" <?php if ((isset($row["p_disponible_$count_rp"])) && (strcmp("si", $row["p_disponible_$count_rp"]) == 0)) {echo "selected=\"selected\"";}?>>
 											Si
 										</option>
@@ -728,7 +738,7 @@ function ConsultarEquipo(){
 								</div>
 								<label class="col-lg-1 control-label">Estado</label>
 								<div class="col-lg-2">
-									<select class="form-control" name="<?php echo "p_estado_$count_rp"; ?>" id="<?php echo "p_estado_$count_rp"; ?>" <?php if (false) {echo "disabled='disabled'";}?>>
+									<select class="form-control" name="<?php echo "p_estado_$count_rp"; ?>" id="<?php echo "p_estado_$count_rp"; ?>">
 										<option value="BUENO" <?php if ((isset($row["p_estado_$count_rp"])) && (strcmp("BUENO", $row["p_estado_$count_rp"]) == 0)) {echo "selected=\"selected\"";}?>>
 											Bueno
 										</option>
