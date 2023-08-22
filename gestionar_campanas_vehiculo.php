@@ -1,24 +1,7 @@
 <?php require_once "includes/conexion.php";
+
 // PermitirAcceso(1605);
-
 $sw = 0;
-if (isset($_GET['Marca']) && $_GET['Marca'] != "") {
-	$sw = 1;
-}
-
-// Clientes
-if (PermitirFuncion(205)) {
-	$SQL_Cliente = Seleccionar("uvw_Sap_tbl_Clientes", "CodigoCliente, NombreCliente", "", 'NombreCliente');
-} else {
-	$Where = "ID_Usuario = " . $_SESSION['CodUser'];
-	$SQL_Cliente = Seleccionar("uvw_tbl_ClienteUsuario", "CodigoCliente, NombreCliente", $Where);
-}
-
-// Marcas de vehiculo
-$SQL_Marca = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_MarcaVehiculo', '*');
-
-// Concesionarios en la tarjeta de equipo
-$SQL_Concesionario = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_Concesionario', '*');
 
 // Fechas
 $FI_FechaVigencia = "";
@@ -49,7 +32,7 @@ $BuscarDato = $_GET['BuscarDato'] ?? "";
 
 if ($sw == 1) {
 	$Filtro = "(fecha_limite_vigencia BETWEEN '" . FormatoFecha($FI_FechaVigencia) . "' AND '" . FormatoFecha($FI_FechaVigencia) . "')";
-	
+
 	$Filtro .= ($Estado == "") ? "" : "AND estado = '$Estado'";
 	$Filtro .= ($Campana == "") ? "" : "AND id_campana = '$Campana'";
 	$Filtro .= ($Proveedor == "") ? "" : "AND id_socio_negocio = '$Proveedor'";
@@ -65,8 +48,20 @@ if ($sw == 1) {
 	$Cons = "SELECT * FROM uvw_Sap_tbl_CampanaVehiculos WHERE $Filtro";
 	$SQL = sqlsrv_query($conexion, $Cons);
 
-	if(!$SQL) {
+	if (!$SQL) {
 		echo $Cons;
+	}
+
+	// Desde ajx_cbo_select(3)
+	if ($Proveedor != "") {
+		$Parametros = array(
+			"'$Proveedor'",
+			"'S'", // Destino (S) / Facturacion (B)
+			"'" . $_SESSION['CodUser'] . "'",
+			1, // Proveedor (1) / Cliente (0)
+		);
+
+		$SQL_Sucursal = EjecutarSP('sp_ConsultarSucursalesClientes', $Parametros);
 	}
 }
 ?>
@@ -77,16 +72,16 @@ if ($sw == 1) {
 <head>
 	<?php include "includes/cabecera.php"; ?>
 	<!-- InstanceBeginEditable name="doctitle" -->
-	<title>Gestión de tarjetas de equipo |
+	<title>Campañas de Vehículos |
 		<?php echo NOMBRE_PORTAL; ?>
 	</title>
 	<!-- InstanceEndEditable -->
 	<!-- InstanceBeginEditable name="head" -->
 	<script type="text/javascript">
 		$(document).ready(function () {
-			$("#NombreClienteEquipo").change(function () {
-				var NomCliente = document.getElementById("NombreClienteEquipo");
-				var Cliente = document.getElementById("ClienteEquipo");
+			$("#NombreProveedor").change(function () {
+				var NomCliente = document.getElementById("NombreProveedor");
+				var Cliente = document.getElementById("Proveedor");
 				if (NomCliente.value == "") {
 					Cliente.value = "";
 				}
@@ -113,16 +108,16 @@ if ($sw == 1) {
 			<!-- InstanceBeginEditable name="Contenido" -->
 			<div class="row wrapper border-bottom white-bg page-heading">
 				<div class="col-sm-8">
-					<h2>Gestión de tarjetas de equipo</h2>
+					<h2>Campañas de Vehículos</h2>
 					<ol class="breadcrumb">
 						<li>
-							<a href="#">Mantenimiento</a>
+							<a href="#">Inicio</a>
 						</li>
 						<li>
-							<a href="#">Informes</a>
+							<a href="#">Servicios</a>
 						</li>
 						<li class="active">
-							<strong>Gestión de tarjetas de equipo</strong>
+							<strong>Campañas de Vehículos</strong>
 						</li>
 					</ol>
 				</div>
@@ -141,7 +136,8 @@ if ($sw == 1) {
 					<div class="col-lg-12">
 						<div class="ibox-content">
 							<?php include "includes/spinner.php"; ?>
-							<form action="informe_tarjeta_equipo.php" method="get" id="formBuscar"
+
+							<form action="gestionar_campanas_vehiculo.php" method="get" id="formBuscar"
 								class="form-horizontal">
 								<div class="form-group">
 									<label class="col-xs-12">
@@ -166,11 +162,18 @@ if ($sw == 1) {
 										</div>
 									</div>
 
-									<label class="col-lg-1 control-label">Estado Campaña</label>
+									<label class="col-lg-1 control-label">
+										Estado Campaña <span class="text-danger">*</span>
+									</label>
 									<div class="col-lg-3">
-										<select name="Marca" class="form-control" id="Marca" required>
-											<option value="Y" <?php if($Estado == "Y"){echo "selected";}?>>Activa</option>
-                           					<option value="N" <?php if($Estado == "N"){echo "selected";}?>>Inactiva</option>
+										<select name="Estado" class="form-control" id="Estado" required>
+											<option value="Y" <?php if ($Estado == "Y") {
+												echo "selected";
+											} ?>>Activa</option>
+											<option value="N" <?php if ($Estado == "N") {
+												echo "selected";
+											} ?>>Inactiva
+											</option>
 										</select>
 									</div>
 
@@ -184,28 +187,32 @@ if ($sw == 1) {
 								<div class="form-group">
 									<label class="col-lg-1 control-label">Proveedor</label>
 									<div class="col-lg-3">
-										<input name="ClienteEquipo" type="hidden" id="ClienteEquipo" value="<?php if (isset($_GET['ClienteEquipo']) && ($_GET['ClienteEquipo'] != "")) {
-											echo $_GET['ClienteEquipo'];
+										<input name="Proveedor" type="hidden" id="Proveedor" value="<?php if (isset($_GET['Proveedor']) && ($_GET['Proveedor'] != "")) {
+											echo $_GET['Proveedor'];
 										} ?>">
-										<input name="NombreClienteEquipo" type="text" class="form-control"
-											id="NombreClienteEquipo" placeholder="Para TODOS, dejar vacio..." value="<?php if (isset($_GET['NombreClienteEquipo']) && ($_GET['NombreClienteEquipo'] != "")) {
-												echo $_GET['NombreClienteEquipo'];
+										<input name="NombreProveedor" type="text" class="form-control"
+											id="NombreProveedor" placeholder="Para TODOS, dejar vacio..." value="<?php if (isset($_GET['NombreProveedor']) && ($_GET['NombreProveedor'] != "")) {
+												echo $_GET['NombreProveedor'];
 											} ?>">
 									</div>
 
 									<label class="col-lg-1 control-label">Sucursal Proveedor</label>
 									<div class="col-lg-3">
-										<select name="Concesionario" class="form-control" id="Concesionario">
+										<select id="Sucursal" name="Sucursal" class="form-control select2">
 											<option value="">(Todos)</option>
-											<?php while ($row_Concesionario = sqlsrv_fetch_array($SQL_Concesionario)) { ?>
-												<option value="<?php echo $row_Concesionario['CodigoConcesionario']; ?>"
-													<?php if ((isset($_GET['Concesionario'])) && (strcmp($row_Concesionario['CodigoConcesionario'], $_GET['Concesionario']) == 0)) {
-														echo "selected";
-													} ?>><?php echo $row_Concesionario['NombreConcesionario']; ?></option>
+
+											<?php if ($Proveedor != "") { ?>
+												<?php while ($row_Sucursal = sqlsrv_fetch_array($SQL_Sucursal)) { ?>
+													<option value="<?php echo $row_Sucursal['NombreSucursal']; ?>" <?php if (strcmp($row_Sucursal['NombreSucursal'], $_GET['Sucursal']) == 0) {
+														   echo "selected";
+													   } ?>>
+														<?php echo $row_Sucursal['NombreSucursal']; ?>
+													</option>
+												<?php } ?>
 											<?php } ?>
 										</select>
 									</div>
-								
+
 									<label class="col-lg-1 control-label">Buscar Dato</label>
 									<div class="col-lg-3">
 										<input name="BuscarDato" type="text" class="form-control" id="BuscarDato"
@@ -223,8 +230,7 @@ if ($sw == 1) {
 								<?php if (($sw == 1) && sqlsrv_has_rows($SQL)) { ?>
 									<div class="form-group">
 										<div class="col-lg-10">
-											<a
-												href="exportar_excel.php?exp=10&Cons=<?php echo base64_encode(implode(",", $Param)); ?>&sp=<?php echo base64_encode("usp_inf_GestionTarjetaEquipos"); ?>">
+											<a href="exportar_excel.php?exp=20&b64=0&Cons=<?php echo $Cons; ?>">
 												<img src="css/exp_excel.png" width="50" height="30" alt="Exportar a Excel"
 													title="Exportar a Excel" />
 											</a>
@@ -398,7 +404,7 @@ if ($sw == 1) {
 
 			var options = {
 				url: function (phrase) {
-					return "ajx_buscar_datos_json.php?type=7&id=" + phrase;
+					return `ajx_buscar_datos_json.php?type=7&id=${phrase}&pv=1`;
 				},
 
 				getValue: "NombreBuscarCliente",
@@ -408,17 +414,17 @@ if ($sw == 1) {
 						enabled: true
 					},
 					onClickEvent: function () {
-						var value = $("#NombreClienteEquipo").getSelectedItemData().CodigoCliente;
-						$("#ClienteEquipo").val(value).trigger("change");
+						var value = $("#NombreProveedor").getSelectedItemData().CodigoCliente;
+						$("#Proveedor").val(value).trigger("change");
 					},
 					onKeyEnterEvent: function () {
-						var value = $("#NombreClienteEquipo").getSelectedItemData().CodigoCliente;
-						$("#ClienteEquipo").val(value).trigger("change");
+						var value = $("#NombreProveedor").getSelectedItemData().CodigoCliente;
+						$("#Proveedor").val(value).trigger("change");
 					}
 				}
 			};
 
-			$("#NombreClienteEquipo").easyAutocomplete(options);
+			$("#NombreProveedor").easyAutocomplete(options);
 
 			$('.dataTables-example').DataTable({
 				pageLength: 25,
@@ -461,4 +467,5 @@ if ($sw == 1) {
 <!-- InstanceEnd -->
 
 </html>
+
 <?php sqlsrv_close($conexion); ?>
