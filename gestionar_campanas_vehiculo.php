@@ -1,5 +1,5 @@
 <?php require_once "includes/conexion.php";
-PermitirAcceso(1605);
+// PermitirAcceso(1605);
 
 $sw = 0;
 if (isset($_GET['Marca']) && $_GET['Marca'] != "") {
