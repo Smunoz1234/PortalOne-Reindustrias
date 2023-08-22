@@ -45,7 +45,7 @@ if ($sw == 1) {
 		direccion_destino LIKE '%$BuscarDato%'
 	)";
 
-	$Cons = "SELECT * FROM uvw_Sap_tbl_CampanaVehiculos WHERE $Filtro";
+	$Cons = "SELECT * FROM tbl_CampanaVehiculos WHERE $Filtro";
 	$SQL = sqlsrv_query($conexion, $Cons);
 
 	if (!$SQL) {

@@ -1,68 +1,32 @@
 <?php require_once "includes/conexion.php";
-
 // PermitirAcceso(1605);
-$sw = 0;
-
-// Fechas
-$FI_FechaVigencia = "";
-$FF_FechaVigencia = "";
-if (isset($_GET['FI_FechaVigencia']) && $_GET['FI_FechaVigencia'] != "") {
-	$FI_FechaVigencia = $_GET['FI_FechaVigencia'];
-	$sw = 1;
-} else {
-	// Restar 7 dias a la fecha actual
-	$fecha = date('Y-m-d');
-	$nuevafecha = strtotime('-' . ObtenerVariable("DiasRangoFechasGestionar") . ' day');
-	$nuevafecha = date('Y-m-d', $nuevafecha);
-	$FI_FechaVigencia = $nuevafecha;
-}
-if (isset($_GET['FF_FechaVigencia']) && $_GET['FF_FechaVigencia'] != "") {
-	$FF_FechaVigencia = $_GET['FF_FechaVigencia'];
-	$sw = 1;
-} else {
-	$FF_FechaVigencia = date('Y-m-d');
-}
 
 // Filtros
+$ID = $_GET['ID'] ?? "";
 $Estado = $_GET['Estado'] ?? "";
 $Campana = $_GET['Campana'] ?? "";
 $Proveedor = $_GET['Proveedor'] ?? "";
 $Sucursal = $_GET['Sucursal'] ?? "";
 $BuscarDato = $_GET['BuscarDato'] ?? "";
 
-if ($sw == 1) {
-	$Filtro = "(fecha_limite_vigencia BETWEEN '" . FormatoFecha($FI_FechaVigencia) . "' AND '" . FormatoFecha($FI_FechaVigencia) . "')";
 
-	$Filtro .= ($Estado == "") ? "" : "AND estado = '$Estado'";
-	$Filtro .= ($Campana == "") ? "" : "AND id_campana = '$Campana'";
-	$Filtro .= ($Proveedor == "") ? "" : "AND id_socio_negocio = '$Proveedor'";
-	$Filtro .= ($Sucursal == "") ? "" : "AND id_consecutivo_direccion = '$Sucursal'";
+$Cons_Detalle = "SELECT * FROM tbl_CampanaVehiculosDetalle WHERE id_campana = $ID";
+$SQL_Detalle = sqlsrv_query($conexion, $Cons_Detalle);
 
-	$Filtro .= ($BuscarDato == "") ? "" : " AND (
-		id_campana LIKE '%$BuscarDato%' OR
-		campana LIKE '%$BuscarDato%' OR
-		socio_negocio LIKE '%$BuscarDato%' OR
-		direccion_destino LIKE '%$BuscarDato%'
-	)";
+if (!$SQL_Detalle) {
+	echo $Cons_Detalle;
+}
 
-	$Cons = "SELECT * FROM uvw_Sap_tbl_CampanaVehiculos WHERE $Filtro";
-	$SQL = sqlsrv_query($conexion, $Cons);
+// Desde ajx_cbo_select(3)
+if ($Proveedor != "") {
+	$Parametros = array(
+		"'$Proveedor'",
+		"'S'", // Destino (S) / Facturacion (B)
+		"'" . $_SESSION['CodUser'] . "'",
+		1, // Proveedor (1) / Cliente (0)
+	);
 
-	if (!$SQL) {
-		echo $Cons;
-	}
-
-	// Desde ajx_cbo_select(3)
-	if ($Proveedor != "") {
-		$Parametros = array(
-			"'$Proveedor'",
-			"'S'", // Destino (S) / Facturacion (B)
-			"'" . $_SESSION['CodUser'] . "'",
-			1, // Proveedor (1) / Cliente (0)
-		);
-
-		$SQL_Sucursal = EjecutarSP('sp_ConsultarSucursalesClientes', $Parametros);
-	}
+	$SQL_Sucursal = EjecutarSP('sp_ConsultarSucursalesClientes', $Parametros);
 }
 ?>
 
@@ -121,17 +85,10 @@ if ($sw == 1) {
 						</li>
 					</ol>
 				</div>
-				<?php if (PermitirFuncion(1602)) { ?>
-					<div class="col-sm-4">
-						<div class="title-action">
-							<a href="campanas_vehiculo.php" class="alkin btn btn-primary"><i class="fa fa-plus-circle"></i>
-								Crear Campaña
-							</a>
-						</div>
-					</div>
-				<?php } ?>
-				<?php //echo $Cons;?>
+
+				<?php // echo $Cons_Detalle;?>
 			</div>
+
 			<div class="wrapper wrapper-content">
 				<div class="row">
 					<div class="col-lg-12">
@@ -142,8 +99,8 @@ if ($sw == 1) {
 								class="form-horizontal">
 								<div class="form-group">
 									<label class="col-xs-12">
-										<h3 class="bg-success p-xs b-r-sm"><i class="fa fa-filter"></i> Datos para
-											filtrar</h3>
+										<h3 class="bg-success p-xs b-r-sm">
+											<i class="fa fa-info-circle"></i> Información de la Campaña</h3>
 									</label>
 								</div>
 
@@ -228,10 +185,11 @@ if ($sw == 1) {
 									</div>
 								</div>
 
-								<?php if (($sw == 1) && sqlsrv_has_rows($SQL)) { ?>
+								<?php $Exportar = false; ?>
+								<?php if ($Exportar) { ?>
 									<div class="form-group">
 										<div class="col-lg-10">
-											<a href="exportar_excel.php?exp=20&b64=0&Cons=<?php echo $Cons; ?>">
+											<a href="exportar_excel.php?exp=20&b64=0&Cons=<?php echo $Cons_Detalle; ?>">
 												<img src="css/exp_excel.png" width="50" height="30" alt="Exportar a Excel"
 													title="Exportar a Excel" />
 											</a>
@@ -244,7 +202,7 @@ if ($sw == 1) {
 				</div>
 				<br>
 
-				<?php if ($sw == 1) { ?>
+				<?php if ($SQL_Detalle || true) { ?>
 					<div class="row">
 						<div class="col-lg-12">
 							<div class="ibox-content">
@@ -275,7 +233,7 @@ if ($sw == 1) {
 											</tr>
 										</thead>
 										<tbody>
-											<?php while ($row = sqlsrv_fetch_array($SQL)) { ?>
+											<?php while ($row = sqlsrv_fetch_array($SQL_Detalle)) { ?>
 												<tr class="gradeX tooltip-demo">
 													<td>
 														<?php echo $row['IdTarjetaEquipo']; ?>
