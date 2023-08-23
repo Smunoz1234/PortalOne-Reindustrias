@@ -1553,7 +1553,7 @@ function ConsultarDocVentas(tipo){
 																while ($row_Campana = sqlsrv_fetch_array($SQL_Campanas)) { ?>
 																			<tr class="gradeX">
 																				<td>
-																					<a href="campanas_vehiculo.php?id=<?php echo $row_Campana['id_campana']; ?>&edit=1" class="alkin btn btn-success btn-xs" target="_blank">
+																					<a href="campanas_vehiculo.php?id=<?php echo $row_Campana['id_campana']; ?>&edit=1" class="btn btn-success btn-xs" target="_blank">
 																						<i class="fa fa-folder-open-o"></i> <?php echo $row_Campana['id_campana']; ?>
 																					</a>
 																				</td>

@@ -122,7 +122,8 @@ if ($sw == 1) {
 						</li>
 					</ol>
 				</div>
-				<?php if (PermitirFuncion(1602)) { ?>
+
+				<?php if (true) { ?>
 					<div class="col-sm-4">
 						<div class="title-action">
 							<a href="campanas_vehiculo.php" class="alkin btn btn-primary"><i class="fa fa-plus-circle"></i>
@@ -131,7 +132,8 @@ if ($sw == 1) {
 						</div>
 					</div>
 				<?php } ?>
-				<?php //echo $Cons;?>
+
+				<?php // echo $Cons;?>
 			</div>
 			<div class="wrapper wrapper-content">
 				<div class="row">
@@ -256,44 +258,13 @@ if ($sw == 1) {
 										<thead>
 											<tr>
 												<th>ID Campaña</th>
-
 												<th>Campaña</th>
-												<th>VIN</th>
-
-												<th>Estado VIN Campaña</th>
-
-												<th>Fecha Límite Vigencia</th>
-
-												<th>ID Llamada Servicio</th>
-
-												<th>Origen</th>
-												<th>Estado Llamada</th>
-												<th>SubTipo Problema</th>
-
-												<th>Nombre Cliente</th>
-												<th>Fecha Cierre</th>
-
-												<th>Acciones</th>
-
-
-												<th>Núm.</th>
-												<th>Código cliente</th>
-												<th>Nombre cliente</th>
-												<th>Serial interno</th>
-												<th>Marca vehículo</th>
-												<th>Ciudad Sede</th>
-												<th>Concesionario</th>
-												<th>Fecha Matricula</th>
-												<th>Fecha SOAT</th>
-												<th>Fecha Tecno.</th>
-												<th>Fecha Ult. Camb. Aceite</th>
-												<th>Fecha Prox. Camb. Aceite</th>
-												<th>Novedad</th>
-												<th>Fecha Agenda</th>
-												<th>Fecha Ult. Mant.</th>
-												<th>Fecha Prox. Mant.</th>
+												<th>Descripción</th>
 												<th>Estado</th>
-												<th>Acciones</th>
+												<th>Proveedor</th>
+												<th>Sucursal Proveedor</th>
+												<th>Fecha Creación</th>
+												<th>Fecha Vigencia</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -306,136 +277,30 @@ if ($sw == 1) {
 															<?php echo $row['id_campana']; ?>
 														</a>
 													</td>
-
 													<td>
-														<?php echo $row['campana']; ?>
+														<?php echo $row['campana'] ?? ""; ?>
 													</td>
 													<td>
-														<?php echo $row['VIN']; ?>
+														<?php echo $row['descripcion_campana'] ?? ""; ?>
 													</td>
-
 													<td>
-														<span
-															class="label <?php echo ($row['estado_VIN_campaña'] == "P") ? "label-warning" : "label-info"; ?>">
-															<?php echo $row['nombre_estado_VIN_campaña']; ?>
-														</span>
-													</td>
-
-													<td>
-														<?php echo (isset($row["fecha_limite_vigencia"]) && $row["fecha_limite_vigencia"] != "") ? $row['fecha_limite_vigencia']->format("Y-m-d") : ""; ?>
-													</td>
-
-													<td class="text-left">
-														<?php if (isset($row['docnum_llamada_servicio']) && ($row['docnum_llamada_servicio'] != "")) { ?>
-															<a href="llamada_servicio.php?id=<?php echo base64_encode($row['docentry_llamada_servicio']); ?>&tl=1&pag=<?php echo base64_encode('gestionar_llamadas_servicios.php'); ?>"
-																class="alkin btn btn-success btn-xs">
-																<i class="fa fa-folder-open-o"></i>
-																<?php echo $row['docnum_llamada_servicio']; ?>
-															</a>
+														<?php if ($row['estado'] == 'Y') { ?>
+															<span class='label label-info'>Activa</span>
+														<?php } else { ?>
+															<span class='label label-danger'>Inactiva</span>
 														<?php } ?>
 													</td>
-
-													<td>
-														<?php echo $row['DeOrigenLlamada']; ?>
-													</td>
-													<td>
-														<?php echo $row['DeEstadoLlamada']; ?>
-													</td>
-													<td>
-														<?php echo $row['DeSubTipoProblemaLlamada']; ?>
-													</td>
-
 													<td>
 														<?php echo $row['socio_negocios'] ?? ""; ?>
 													</td>
 													<td>
-														<?php echo (isset($row["FechaCierre"]) && $row["FechaCierre"] != "") ? $row['FechaCierre']->format("Y-m-d") : ""; ?>
-													</td>
-
-													<td>
-														<?php if (isset($row['docnum_llamada_servicio']) && ($row['docnum_llamada_servicio'] != "")) { ?>
-															<a href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row['docnum_llamada_servicio']); ?>&ObType=<?php echo base64_encode('191'); ?>&IdFrm=<?php echo base64_encode($row_Formulario['IdSerieLlamada']); ?>"
-																target="_blank" class="btn btn-warning btn-xs"
-																title="Descargar Llamada">
-																<i class="fa fa-download"></i> Descargar Llamada
-															</a>
-														<?php } ?>
-													</td>
-
-
-													<td>
-														<?php echo $row['IdTarjetaEquipo']; ?>
+														<?php echo $row['id_direccion_destino'] ?? ""; ?>
 													</td>
 													<td>
-														<?php echo $row['CardCode']; ?>
+														<?php echo (isset($row["fecha_creacion"]) && $row["fecha_creacion"] != "") ? $row['fecha_creacion']->format("Y-m-d") : ""; ?>
 													</td>
 													<td>
-														<?php echo $row['CardName']; ?>
-													</td>
-													<td>
-														<?php echo $row['SerialInterno']; ?>
-													</td>
-													<td>
-														<?php echo $row['CDU_Marca']; ?>
-													</td>
-													<td>
-														<?php echo $row['CDU_SedeVenta']; ?>
-													</td>
-													<td>
-														<?php echo $row['CDU_Concesionario']; ?>
-													</td>
-													<td>
-														<?php echo ($row['CDU_FechaMatricula'] != "") ? $row['CDU_FechaMatricula']->format('Y-m-d') : ""; ?>
-													</td>
-													<td>
-														<?php echo ($row['CDU_Fecha_SOAT'] != "") ? $row['CDU_Fecha_SOAT']->format('Y-m-d') : ""; ?>
-													</td>
-													<td>
-														<?php echo ($row['CDU_Fecha_Tecno'] != "") ? $row['CDU_Fecha_Tecno']->format('Y-m-d') : ""; ?>
-													</td>
-													<td>
-														<?php echo ($row['CDU_FechaUlt_CambAceite'] != "") ? $row['CDU_FechaUlt_CambAceite']->format('Y-m-d') : ""; ?>
-													</td>
-													<td>
-														<?php echo ($row['CDU_FechaProx_CambAceite'] != "") ? $row['CDU_FechaProx_CambAceite']->format('Y-m-d') : ""; ?>
-													</td>
-
-													<td>
-														<?php echo $row['CDU_Novedad']; ?>
-													</td>
-													<td>
-														<?php echo ($row['CDU_FechaAgenda'] != "") ? $row['CDU_FechaAgenda']->format('Y-m-d') : ""; ?>
-													</td>
-
-													<td>
-														<?php echo ($row['CDU_FechaUlt_Mant'] != "") ? $row['CDU_FechaUlt_Mant']->format('Y-m-d') : ""; ?>
-													</td>
-													<td>
-														<?php echo ($row['CDU_FechaProx_Mant'] != "") ? $row['CDU_FechaProx_Mant']->format('Y-m-d') : ""; ?>
-													</td>
-													<td>
-														<?php if ($row['CodEstado'] == 'A') { ?>
-															<span class='label label-info'>Activo</span>
-														<?php } elseif ($row['CodEstado'] == 'R') { ?>
-															<span class='label label-danger'>Devuelto</span>
-														<?php } elseif ($row['CodEstado'] == 'T') { ?>
-															<span class='label label-success'>Finalizado</span>
-														<?php } elseif ($row['CodEstado'] == 'L') { ?>
-															<span class='label label-secondary'>Concedido en préstamo</span>
-														<?php } elseif ($row['CodEstado'] == 'I') { ?>
-															<span class='label label-warning'>En laboratorio de reparación</span>
-														<?php } ?>
-													</td>
-													<td>
-														<div>
-															<a href="tarjeta_equipo.php?id=<?php echo base64_encode($row['IdTarjetaEquipo']); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('informe_tarjeta_equipo.php'); ?>&tl=1"
-																class="alkin btn btn-success btn-xs"><i
-																	class="fa fa-folder-open-o"></i> Abrir</a>
-															<a target="_blank"
-																href="gestionar_cartera.php?Clt=<?php echo base64_encode($row['CardCode']); ?>&TE=<?php echo base64_encode($row['IdTarjetaEquipo']); ?>"
-																class="btn btn-info btn-xs"><i class="fa fa-plus"></i> Crear
-																Gestión CRM</a>
-														</div>
+														<?php echo (isset($row["fecha_limite_vigencia"]) && $row["fecha_limite_vigencia"] != "") ? $row['fecha_limite_vigencia']->format("Y-m-d") : ""; ?>
 													</td>
 												</tr>
 											<?php } ?>

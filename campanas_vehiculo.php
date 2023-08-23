@@ -13,7 +13,9 @@ $row_Encabezado = sqlsrv_fetch_array($SQL_Encabezado);
 $Campana = $row_Encabezado['campana'] ?? "";
 $Comentario = $row_Encabezado['descripcion_campana'] ?? "";
 $Estado = $row_Encabezado['estado'] ?? "";
-$FechaVigencia = FormatoFecha($row_Encabezado['fecha_limite_vigencia']) ?? "";
+
+$FechaVigencia = isset($row_Encabezado['fecha_limite_vigencia']) ? $row_Encabezado['fecha_limite_vigencia']->format("Y-m-d") : "";
+
 $Proveedor = $row_Encabezado['id_socio_negocio'] ?? "";
 $Sucursal = $row_Encabezado['id_consecutivo_direccion'] ?? "";
 
@@ -98,7 +100,17 @@ if ($Proveedor != "") {
 					</ol>
 				</div>
 
-				<?php // echo $Cons_Detalle;?>
+				<?php if (true) { ?>
+					<div class="col-sm-4">
+						<div class="title-action">
+							<a href="gestionar_campanas_vehiculo.php" class="alkin btn btn-default">
+								<i class="fa fa-arrow-circle-o-left"></i> Regresar
+							</a>
+						</div>
+					</div>
+				<?php } ?>
+
+				<?php // echo $Cons_Detalle; ?>
 			</div>
 
 			<div class="wrapper wrapper-content">
@@ -196,15 +208,22 @@ if ($Proveedor != "") {
 									</div>
 
 									<div class="col-lg-4">
-										<button type="submit" class="btn btn-outline btn-primary pull-right">
-											<i class="fa fa-plus-circle"></i>
-											<?php echo ($Edit != 0) ? "Adicionar VIN" : "Crear Campaña"; ?>
-										</button>
+										<br>
+										<div class="btn-group pull-right">
+											<button type="button" class="btn btn-outline btn-primary">
+												<i class="fa <?php echo ($Edit == 0) ? "fa-plus" : "fa-refresh"; ?>"></i>
+												<?php echo ($Edit == 0) ? "Crear Campaña" : "Actualizar Campaña"; ?>
+											</button>
+
+											<button type="button" class="btn btn-outline btn-info" style="margin-left: 10px;"
+												<?php if ($Edit == 0) { echo "disabled"; } ?>>
+												<i class="fa fa-plus"></i> Adicionar VIN
+											</button>
+										</div>
 									</div>
 								</div>
 
-								<?php $Exportar = false; ?>
-								<?php if ($Exportar) { ?>
+								<?php if (($Edit == 1) && sqlsrv_has_rows($SQL_Detalle)) { ?>
 									<div class="form-group">
 										<div class="col-lg-10">
 											<a href="exportar_excel.php?exp=20&b64=0&Cons=<?php echo $Cons_Detalle; ?>">
@@ -220,7 +239,7 @@ if ($Proveedor != "") {
 				</div>
 				<br>
 
-				<?php if ($SQL_Detalle) { ?>
+				<?php if ($Edit == 1) { ?>
 					<div class="row">
 						<div class="col-lg-12">
 							<div class="ibox-content">
