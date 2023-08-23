@@ -16,6 +16,7 @@ $sw_valDir = 0; //Validar si el nombre de la direccion cambio
 $TituloLlamada = ""; //Titulo por defecto cuando se está creando la llamada de servicio
 
 $testMode = false; // SMM, 04/03/2022
+$ActivarCorreo = false; // SMM, 23/08/2023
 
 // Inicio, copiar firma a la ruta log y main. SMM, 17/09/2022
 $FirmaContactoResponsable = "";
@@ -520,6 +521,9 @@ if (isset($_POST['P']) && ($_POST['P'] == 40)) { //Reabrir llamada de servicio
 		if ($Resultado->Success == 0) {
 			$sw_error = 1;
 			$msg_error = $Resultado->Mensaje;
+
+			// SMM, 23/08/2023
+			$IdLlamada = base64_decode($_POST['DocEntry']);
 		} else {
 			sqlsrv_close($conexion);
 			header('Location:llamada_servicio.php?id=' . $_POST['DocEntry'] . '&tl=1&a=' . base64_encode("OK_OpenLlam"));
@@ -546,8 +550,10 @@ if (isset($_GET['dt_LS']) && ($_GET['dt_LS']) == 1) { //Verificar que viene de u
 }
 
 if ($type_llmd == 1 && $sw_error == 0) {
-	//Llamada
-	$SQL = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . $IdLlamada . "'");
+	// Llamada
+	$SQL = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='$IdLlamada'");
+	$Cons = "SELECT * FROM uvw_Sap_tbl_LlamadasServicios WHERE ID_LlamadaServicio = '$IdLlamada'";
+
 	$row = sqlsrv_fetch_array($SQL);
 
 	//Clientes
@@ -599,8 +605,15 @@ if ($type_llmd == 1 && $sw_error == 0) {
 }
 
 if ($sw_error == 1) {
-	//Si ocurre un error, vuelvo a consultar los datos insertados desde la base de datos.
-	$SQL = Seleccionar('uvw_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . $IdLlamada . "'");
+	// Si ocurre un error, vuelvo a consultar los datos insertados desde la base de datos.
+	$SQL = Seleccionar('uvw_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='$IdLlamada'");
+	$Cons = "SELECT * FROM uvw_tbl_LlamadasServicios WHERE ID_LlamadaServicio = '$IdLlamada'";
+
+	if (!$SQL || !sqlsrv_has_rows($SQL)) {
+		$SQL = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='$IdLlamada'");
+		$Cons = "SELECT * FROM uvw_Sap_tbl_LlamadasServicios WHERE ID_LlamadaServicio = '$IdLlamada'";
+	}
+
 	$row = sqlsrv_fetch_array($SQL);
 
 	//Clientes
@@ -720,6 +733,7 @@ $SQL_ContratosLlamada = Seleccionar('uvw_Sap_tbl_LlamadasServicios_Contratos_TBU
 
 // Stiven Muñoz Murillo, 04/03/2022
 if ($testMode) {
+	echo $Cons;
 	$row_encode = isset($row) ? json_encode($row) : "";
 	$cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'Not Found'";
 	echo "<script> console.log($cadena); </script>";
@@ -1840,8 +1854,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 														</ul>
 													</div>
 
-													<?php $MostrarCorreo = false;
-													if (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] == '-1') && $MostrarCorreo) { ?>
+													<?php if (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] == '-1') && $ActivarCorreo) { ?>
 															<a href="#" class="btn btn-outline btn-primary" onClick="$('#modalCorreo').modal('show');"><i class="fa fa-envelope"></i> Enviar correo</a>
 													<?php } ?>
 
