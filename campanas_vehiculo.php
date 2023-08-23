@@ -249,102 +249,46 @@ if ($Proveedor != "") {
 										id="example">
 										<thead>
 											<tr>
-												<th>Núm.</th>
-												<th>Código cliente</th>
-												<th>Nombre cliente</th>
-												<th>Serial interno</th>
-												<th>Marca vehículo</th>
-												<th>Ciudad Sede</th>
-												<th>Concesionario</th>
-												<th>Fecha Matricula</th>
-												<th>Fecha SOAT</th>
-												<th>Fecha Tecno.</th>
-												<th>Fecha Ult. Camb. Aceite</th>
-												<th>Fecha Prox. Camb. Aceite</th>
-												<th>Novedad</th>
-												<th>Fecha Agenda</th>
-												<th>Fecha Ult. Mant.</th>
-												<th>Fecha Prox. Mant.</th>
-												<th>Estado</th>
+												<th>ID</th>
+												<th>VIN</th>
+												<th>Estado VIN</th>
+												<th>ID Llamada Servicio</th>
+												<th>Origen</th>
+												<th>Estado Llamada</th>
+												<th>Nombre Cliente</th>
+												<th>Fecha Cierre</th>
 												<th>Acciones</th>
 											</tr>
 										</thead>
 										<tbody>
-											<?php while ($row = sqlsrv_fetch_array($SQL_Detalle)) { ?>
+											<?php while ($row_Detalle = sqlsrv_fetch_array($SQL_Detalle)) { ?>
 												<tr class="gradeX tooltip-demo">
 													<td>
-														<?php echo $row['IdTarjetaEquipo']; ?>
+														<?php echo $row_Detalle['id_campana'] . "-" . $row_Detalle['id_campana_detalle']; ?>
 													</td>
 													<td>
-														<?php echo $row['CardCode']; ?>
+														<?php echo $row_Detalle['VIN']; ?>
 													</td>
 													<td>
-														<?php echo $row['CardName']; ?>
+														<span class="label <?php echo ($row_Detalle['estado_VIN'] == "P") ? "label-warning" : "label-info"; ?>">
+															<?php echo ($row_Detalle['estado_VIN'] == "P") ? "Pendiente" : "Aplicado"; ?>
+														</span>
 													</td>
-													<td>
-														<?php echo $row['SerialInterno']; ?>
-													</td>
-													<td>
-														<?php echo $row['CDU_Marca']; ?>
-													</td>
-													<td>
-														<?php echo $row['CDU_SedeVenta']; ?>
-													</td>
-													<td>
-														<?php echo $row['CDU_Concesionario']; ?>
-													</td>
-													<td>
-														<?php echo ($row['CDU_FechaMatricula'] != "") ? $row['CDU_FechaMatricula']->format('Y-m-d') : ""; ?>
-													</td>
-													<td>
-														<?php echo ($row['CDU_Fecha_SOAT'] != "") ? $row['CDU_Fecha_SOAT']->format('Y-m-d') : ""; ?>
-													</td>
-													<td>
-														<?php echo ($row['CDU_Fecha_Tecno'] != "") ? $row['CDU_Fecha_Tecno']->format('Y-m-d') : ""; ?>
-													</td>
-													<td>
-														<?php echo ($row['CDU_FechaUlt_CambAceite'] != "") ? $row['CDU_FechaUlt_CambAceite']->format('Y-m-d') : ""; ?>
-													</td>
-													<td>
-														<?php echo ($row['CDU_FechaProx_CambAceite'] != "") ? $row['CDU_FechaProx_CambAceite']->format('Y-m-d') : ""; ?>
-													</td>
-
-													<td>
-														<?php echo $row['CDU_Novedad']; ?>
-													</td>
-													<td>
-														<?php echo ($row['CDU_FechaAgenda'] != "") ? $row['CDU_FechaAgenda']->format('Y-m-d') : ""; ?>
-													</td>
-
-													<td>
-														<?php echo ($row['CDU_FechaUlt_Mant'] != "") ? $row['CDU_FechaUlt_Mant']->format('Y-m-d') : ""; ?>
-													</td>
-													<td>
-														<?php echo ($row['CDU_FechaProx_Mant'] != "") ? $row['CDU_FechaProx_Mant']->format('Y-m-d') : ""; ?>
-													</td>
-													<td>
-														<?php if ($row['CodEstado'] == 'A') { ?>
-															<span class='label label-info'>Activo</span>
-														<?php } elseif ($row['CodEstado'] == 'R') { ?>
-															<span class='label label-danger'>Devuelto</span>
-														<?php } elseif ($row['CodEstado'] == 'T') { ?>
-															<span class='label label-success'>Finalizado</span>
-														<?php } elseif ($row['CodEstado'] == 'L') { ?>
-															<span class='label label-secondary'>Concedido en préstamo</span>
-														<?php } elseif ($row['CodEstado'] == 'I') { ?>
-															<span class='label label-warning'>En laboratorio de reparación</span>
+													<td class="text-left">
+														<?php if (isset($row_Detalle['docnum_llamada_servicio']) && ($row_Detalle['docnum_llamada_servicio'] != "")) { ?>
+																<a href="llamada_servicio.php?id=<?php echo base64_encode($row_Detalle['docentry_llamada_servicio']); ?>&tl=1&pag=<?php echo base64_encode('gestionar_llamadas_servicios.php'); ?>" class="alkin btn btn-success btn-xs">
+																	<i class="fa fa-folder-open-o"></i> <?php echo $row_Detalle['docnum_llamada_servicio']; ?>
+																</a>
 														<?php } ?>
 													</td>
+
+													<td><?php echo $row_Detalle['DeOrigenLlamada'] ?? ""; ?></td>
+													<td><?php echo $row_Detalle['DeEstadoLlamada'] ?? ""; ?></td>
+													<td><?php echo $row_Detalle['socio_negocios'] ?? ""; ?></td>
+													<td><?php echo (isset($row_Detalle["FechaCierre"]) && $row_Detalle["FechaCierre"] != "") ? $row_Detalle['FechaCierre']->format("Y-m-d") : ""; ?></td>
+													
 													<td>
-														<div>
-															<a href="tarjeta_equipo.php?id=<?php echo base64_encode($row['IdTarjetaEquipo']); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('informe_tarjeta_equipo.php'); ?>&tl=1"
-																class="alkin btn btn-success btn-xs"><i
-																	class="fa fa-folder-open-o"></i> Abrir</a>
-															<a target="_blank"
-																href="gestionar_cartera.php?Clt=<?php echo base64_encode($row['CardCode']); ?>&TE=<?php echo base64_encode($row['IdTarjetaEquipo']); ?>"
-																class="btn btn-info btn-xs"><i class="fa fa-plus"></i> Crear
-																Gestión CRM</a>
-														</div>
+														<button type="button" id="btnDelete<?php //echo $row_Proceso['IdInterno']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php //echo $row_Proceso['IdInterno']; ?>');"><i class="fa fa-trash"></i> Eliminar</button>
 													</td>
 												</tr>
 											<?php } ?>
