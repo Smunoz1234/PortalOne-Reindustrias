@@ -1,12 +1,12 @@
 <?php require_once "includes/conexion.php";
 
 // PermitirAcceso(1605);
-$ID = $_GET['ID'] ?? "";
-$Edit = $_GET['Edit'] ?? 0;
+$ID = $_GET['id'] ?? "";
+$Edit = $_GET['edit'] ?? 0;
 
 $Titulo = ($Edit != 0) ? "Editar Campaña de Vehículos" : "Crear Campaña de Vehículos";
 
-$Cons_Encabezado = "SELECT * FROM tbl_CampanaVehiculos WHERE id_campana = $ID";
+$Cons_Encabezado = "SELECT * FROM tbl_CampanaVehiculos WHERE id_campana = '$ID'";
 $SQL_Encabezado = sqlsrv_query($conexion, $Cons_Encabezado);
 $row_Encabezado = sqlsrv_fetch_array($SQL_Encabezado);
 
@@ -17,7 +17,7 @@ $FechaVigencia = FormatoFecha($row_Encabezado['fecha_limite_vigencia']) ?? "";
 $Proveedor = $row_Encabezado['id_socio_negocio'] ?? "";
 $Sucursal = $row_Encabezado['id_consecutivo_direccion'] ?? "";
 
-$Cons_Detalle = "SELECT * FROM tbl_CampanaVehiculosDetalle WHERE id_campana = $ID";
+$Cons_Detalle = "SELECT * FROM tbl_CampanaVehiculosDetalle WHERE id_campana = '$ID'";
 $SQL_Detalle = sqlsrv_query($conexion, $Cons_Detalle);
 
 if (!$SQL_Encabezado || !$SQL_Detalle) {
@@ -48,7 +48,7 @@ if ($Proveedor != "") {
 		<?php echo $Titulo; ?>
 	</title>
 	<!-- InstanceEndEditable -->
-	
+
 	<!-- InstanceBeginEditable name="head" -->
 	<script type="text/javascript">
 		$(document).ready(function () {
@@ -122,8 +122,8 @@ if ($Proveedor != "") {
 										ID Campaña <span class="text-danger">*</span>
 									</label>
 									<div class="col-lg-3">
-										<input name="ID" type="text" class="form-control" id="ID"
-											maxlength="100" value="<?php echo $ID; ?>">
+										<input name="ID" type="text" class="form-control" id="ID" maxlength="100"
+											value="<?php echo $ID; ?>">
 									</div>
 
 									<label class="col-lg-1 control-label">
@@ -153,9 +153,10 @@ if ($Proveedor != "") {
 								<div class="form-group">
 									<label class="col-lg-1 control-label">Fecha Límite Vigente</label>
 									<div class="col-lg-3 input-group date">
-										<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input autocomplete="off" 
-										name="FechaVigencia" id="FechaVigencia" type="text" class="form-control fecha"
-										placeholder="AAAA-MM-DD" value="<?php echo $FechaVigencia; ?>">
+										<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input
+											autocomplete="off" name="FechaVigencia" id="FechaVigencia" type="text"
+											class="form-control fecha" placeholder="AAAA-MM-DD"
+											value="<?php echo $FechaVigencia; ?>">
 									</div>
 
 									<label class="col-lg-1 control-label">Proveedor</label>
@@ -189,13 +190,15 @@ if ($Proveedor != "") {
 
 								<div class="form-group">
 									<label class="col-lg-1 control-label">Comentario</label>
-									<div class="col-lg-7">	
-										<textarea name="Comentario" rows="3" maxlength="3000" class="form-control" id="Comentario" type="text"><?php echo $Comentario; ?></textarea>
+									<div class="col-lg-7">
+										<textarea name="Comentario" rows="3" maxlength="3000" class="form-control"
+											id="Comentario" type="text"><?php echo $Comentario; ?></textarea>
 									</div>
 
 									<div class="col-lg-4">
 										<button type="submit" class="btn btn-outline btn-primary pull-right">
-											<i class="fa fa-plus-circle"></i> <?php echo ($Edit != 0) ? "Adicionar VIN" : "Crear Campaña"; ?>
+											<i class="fa fa-plus-circle"></i>
+											<?php echo ($Edit != 0) ? "Adicionar VIN" : "Crear Campaña"; ?>
 										</button>
 									</div>
 								</div>

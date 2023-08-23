@@ -46,6 +46,7 @@ if ($sw == 1) {
 	)";
 
 	$Cons = "SELECT * FROM tbl_CampanaVehiculos WHERE $Filtro";
+	$Cons = "SELECT * FROM tbl_CampanaVehiculos";
 	$SQL = sqlsrv_query($conexion, $Cons);
 
 	if (!$SQL) {
@@ -254,6 +255,27 @@ if ($sw == 1) {
 										id="example">
 										<thead>
 											<tr>
+												<th>ID Campaña</th>
+
+												<th>Campaña</th>
+												<th>VIN</th>
+
+												<th>Estado VIN Campaña</th>
+
+												<th>Fecha Límite Vigencia</th>
+
+												<th>ID Llamada Servicio</th>
+
+												<th>Origen</th>
+												<th>Estado Llamada</th>
+												<th>SubTipo Problema</th>
+
+												<th>Nombre Cliente</th>
+												<th>Fecha Cierre</th>
+
+												<th>Acciones</th>
+
+
 												<th>Núm.</th>
 												<th>Código cliente</th>
 												<th>Nombre cliente</th>
@@ -277,6 +299,70 @@ if ($sw == 1) {
 										<tbody>
 											<?php while ($row = sqlsrv_fetch_array($SQL)) { ?>
 												<tr class="gradeX tooltip-demo">
+													<td>
+														<a href="campanas_vehiculo.php?id=<?php echo $row['id_campana']; ?>&edit=1"
+															class="btn btn-success btn-xs" target="_blank">
+															<i class="fa fa-folder-open-o"></i>
+															<?php echo $row['id_campana']; ?>
+														</a>
+													</td>
+
+													<td>
+														<?php echo $row['campana']; ?>
+													</td>
+													<td>
+														<?php echo $row['VIN']; ?>
+													</td>
+
+													<td>
+														<span
+															class="label <?php echo ($row['estado_VIN_campaña'] == "P") ? "label-warning" : "label-info"; ?>">
+															<?php echo $row['nombre_estado_VIN_campaña']; ?>
+														</span>
+													</td>
+
+													<td>
+														<?php echo (isset($row["fecha_limite_vigencia"]) && $row["fecha_limite_vigencia"] != "") ? $row['fecha_limite_vigencia']->format("Y-m-d") : ""; ?>
+													</td>
+
+													<td class="text-left">
+														<?php if (isset($row['docnum_llamada_servicio']) && ($row['docnum_llamada_servicio'] != "")) { ?>
+															<a href="llamada_servicio.php?id=<?php echo base64_encode($row['docentry_llamada_servicio']); ?>&tl=1&pag=<?php echo base64_encode('gestionar_llamadas_servicios.php'); ?>"
+																class="alkin btn btn-success btn-xs">
+																<i class="fa fa-folder-open-o"></i>
+																<?php echo $row['docnum_llamada_servicio']; ?>
+															</a>
+														<?php } ?>
+													</td>
+
+													<td>
+														<?php echo $row['DeOrigenLlamada']; ?>
+													</td>
+													<td>
+														<?php echo $row['DeEstadoLlamada']; ?>
+													</td>
+													<td>
+														<?php echo $row['DeSubTipoProblemaLlamada']; ?>
+													</td>
+
+													<td>
+														<?php echo $row['socio_negocios'] ?? ""; ?>
+													</td>
+													<td>
+														<?php echo (isset($row["FechaCierre"]) && $row["FechaCierre"] != "") ? $row['FechaCierre']->format("Y-m-d") : ""; ?>
+													</td>
+
+													<td>
+														<?php if (isset($row['docnum_llamada_servicio']) && ($row['docnum_llamada_servicio'] != "")) { ?>
+															<a href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row['docnum_llamada_servicio']); ?>&ObType=<?php echo base64_encode('191'); ?>&IdFrm=<?php echo base64_encode($row_Formulario['IdSerieLlamada']); ?>"
+																target="_blank" class="btn btn-warning btn-xs"
+																title="Descargar Llamada">
+																<i class="fa fa-download"></i> Descargar Llamada
+															</a>
+														<?php } ?>
+													</td>
+
+
 													<td>
 														<?php echo $row['IdTarjetaEquipo']; ?>
 													</td>

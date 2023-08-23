@@ -685,47 +685,47 @@ function ConsultarDocVentas(tipo){
 		<!-- Fin, myModal -->
 
 		<?php if ($edit == 1) { ?>
-					<div class="ibox-content">
-					<?php include "includes/spinner.php"; ?>
-						<div class="row">
-							<div class="col-lg-12">
-								<div class="ibox">
-									<div class="ibox-title bg-success">
-										<h5 class="collapse-link"><i class="fa fa-play-circle"></i> Acciones</h5>
-										 <a class="collapse-link pull-right">
-											<i class="fa fa-chevron-up"></i>
-										</a>
-									</div>
-									<div class="ibox-content">
-										<div class="form-group">
-											<div class="col-lg-6">
+						<div class="ibox-content">
+						<?php include "includes/spinner.php"; ?>
+							<div class="row">
+								<div class="col-lg-12">
+									<div class="ibox">
+										<div class="ibox-title bg-success">
+											<h5 class="collapse-link"><i class="fa fa-play-circle"></i> Acciones</h5>
+											 <a class="collapse-link pull-right">
+												<i class="fa fa-chevron-up"></i>
+											</a>
+										</div>
+										<div class="ibox-content">
+											<div class="form-group">
+												<div class="col-lg-6">
 
-												<div class="btn-group">
-													<button data-toggle="dropdown" class="btn btn-outline btn-success dropdown-toggle"><i class="fa fa-download"></i> Descargar formato <i class="fa fa-caret-down"></i></button>
-													<ul class="dropdown-menu">
-														<?php
-														$SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=176 and VerEnDocumento='Y'");
-														while ($row_Formato = sqlsrv_fetch_array($SQL_Formato)) { ?>
-																<li>
-																	<a class="dropdown-item" target="_blank" href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row['IdTarjetaEquipo']); ?>&ObType=<?php echo base64_encode('176'); ?>&IdFrm=<?php echo base64_encode($row_Formato['IdFormato']); ?>&IdReg=<?php echo base64_encode($row_Formato['ID']); ?>"><?php echo $row_Formato['NombreVisualizar']; ?></a>
-																</li>
+													<div class="btn-group">
+														<button data-toggle="dropdown" class="btn btn-outline btn-success dropdown-toggle"><i class="fa fa-download"></i> Descargar formato <i class="fa fa-caret-down"></i></button>
+														<ul class="dropdown-menu">
+															<?php
+															$SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=176 and VerEnDocumento='Y'");
+															while ($row_Formato = sqlsrv_fetch_array($SQL_Formato)) { ?>
+																		<li>
+																			<a class="dropdown-item" target="_blank" href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row['IdTarjetaEquipo']); ?>&ObType=<?php echo base64_encode('176'); ?>&IdFrm=<?php echo base64_encode($row_Formato['IdFormato']); ?>&IdReg=<?php echo base64_encode($row_Formato['ID']); ?>"><?php echo $row_Formato['NombreVisualizar']; ?></a>
+																		</li>
+															<?php } ?>
+														</ul>
+
+														<!-- Crear llamada, SMM 23/05/2022 -->
+														<?php if (isset($row['CodEstado']) && (strcmp("A", $row['CodEstado']) == 0)) { ?>
+																	<a style="margin-left: 10px;" class="btn btn-outline btn-info" href="llamada_servicio.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Serial=<?php echo base64_encode($row['SerialInterno']); ?>&IdTE=<?php echo base64_encode($row['IdTarjetaEquipo']); ?>" target="_blank"><i class="fa fa-plus-circle"></i> Crear llamada de servicio</a>
 														<?php } ?>
-													</ul>
+													</div>
 
-													<!-- Crear llamada, SMM 23/05/2022 -->
-													<?php if (isset($row['CodEstado']) && (strcmp("A", $row['CodEstado']) == 0)) { ?>
-															<a style="margin-left: 10px;" class="btn btn-outline btn-info" href="llamada_servicio.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Serial=<?php echo base64_encode($row['SerialInterno']); ?>&IdTE=<?php echo base64_encode($row['IdTarjetaEquipo']); ?>" target="_blank"><i class="fa fa-plus-circle"></i> Crear llamada de servicio</a>
-													<?php } ?>
 												</div>
-
 											</div>
 										</div>
 									</div>
 								</div>
 							</div>
 						</div>
-					</div>
-				<br>
+					<br>
 			<?php } ?>
 
 		<div class="ibox-content">
@@ -870,10 +870,10 @@ function ConsultarDocVentas(tipo){
 									<option value="">Seleccione...</option>
 									<?php if (($edit == 1) || ($sw_error == 1) || ($dt_TE == 1)) {
 										while ($row_ContactoCliente = sqlsrv_fetch_array($SQL_ContactoCliente)) { ?>
-													<option value="<?php echo $row_ContactoCliente['CodigoContacto']; ?>" <?php if ((isset($row['CodigoContacto'])) && (strcmp($row_ContactoCliente['CodigoContacto'], $row['CodigoContacto']) == 0)) {
-														   echo "selected=\"selected\"";
-													   } ?>><?php echo $row_ContactoCliente['ID_Contacto']; ?></option>
-								  	<?php }
+															<option value="<?php echo $row_ContactoCliente['CodigoContacto']; ?>" <?php if ((isset($row['CodigoContacto'])) && (strcmp($row_ContactoCliente['CodigoContacto'], $row['CodigoContacto']) == 0)) {
+																   echo "selected=\"selected\"";
+															   } ?>><?php echo $row_ContactoCliente['ID_Contacto']; ?></option>
+									  	<?php }
 									} ?>
 								</select>
 							</div>
@@ -896,9 +896,9 @@ function ConsultarDocVentas(tipo){
 								} ?> name="IdTecnico" class="form-control select2" id="IdTecnico">
 										<option value="">Seleccione...</option>
 								  <?php while ($row_Tecnicos = sqlsrv_fetch_array($SQL_Tecnicos)) { ?>
-											<option value="<?php echo $row_Tecnicos['ID_Empleado']; ?>" <?php if ((isset($row['IdTecnico'])) && (strcmp($row_Tecnicos['ID_Empleado'], $row['IdTecnico']) == 0)) {
-												   echo "selected=\"selected\"";
-											   } ?>><?php echo $row_Tecnicos['NombreEmpleado']; ?></option>
+												<option value="<?php echo $row_Tecnicos['ID_Empleado']; ?>" <?php if ((isset($row['IdTecnico'])) && (strcmp($row_Tecnicos['ID_Empleado'], $row['IdTecnico']) == 0)) {
+													   echo "selected=\"selected\"";
+												   } ?>><?php echo $row_Tecnicos['NombreEmpleado']; ?></option>
 								  <?php } ?>
 								</select>
 							</div>
@@ -910,9 +910,9 @@ function ConsultarDocVentas(tipo){
 									<option value="">(Ninguno)</option>
 								<?php
 								while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorios)) { ?>
-											<option value="<?php echo $row_Territorio['IdTerritorio']; ?>" <?php if ((isset($row['IdTerritorio'])) && (strcmp($row_Territorio['IdTerritorio'], $row['IdTerritorio']) == 0)) {
-												   echo "selected=\"selected\"";
-											   } ?>><?php echo $row_Territorio['DeTerritorio']; ?></option>
+												<option value="<?php echo $row_Territorio['IdTerritorio']; ?>" <?php if ((isset($row['IdTerritorio'])) && (strcmp($row_Territorio['IdTerritorio'], $row['IdTerritorio']) == 0)) {
+													   echo "selected=\"selected\"";
+												   } ?>><?php echo $row_Territorio['DeTerritorio']; ?></option>
 								<?php } ?>
 								</select>
 							</div>
@@ -955,12 +955,12 @@ function ConsultarDocVentas(tipo){
 								} ?> name="CDU_IdMarca" class="form-control select2" required="required" id="CDU_IdMarca">
 									<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) { ?>
-										  <option value="<?php echo $row_MarcaVehiculo['IdMarcaVehiculo']; ?>"
-									  	<?php if ((isset($row['CDU_IdMarca'])) && (strcmp($row_MarcaVehiculo['IdMarcaVehiculo'], $row['CDU_IdMarca']) == 0)) {
-											  echo "selected=\"selected\"";
-										  } ?>>
-										  	<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
-										  </option>
+											  <option value="<?php echo $row_MarcaVehiculo['IdMarcaVehiculo']; ?>"
+										  	<?php if ((isset($row['CDU_IdMarca'])) && (strcmp($row_MarcaVehiculo['IdMarcaVehiculo'], $row['CDU_IdMarca']) == 0)) {
+												  echo "selected=\"selected\"";
+											  } ?>>
+											  	<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
+											  </option>
 								  <?php } ?>
 								</select>
 							</div>
@@ -971,12 +971,12 @@ function ConsultarDocVentas(tipo){
 								} ?> name="CDU_IdLinea" class="form-control select2" required="required" id="CDU_IdLinea">
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_LineaVehiculo = sqlsrv_fetch_array($SQL_LineaVehiculo)) { ?>
-											<option value="<?php echo $row_LineaVehiculo['IdLineaModeloVehiculo']; ?>"
-											<?php if ((isset($row['CDU_IdLinea'])) && (strcmp($row_LineaVehiculo['IdLineaModeloVehiculo'], $row['CDU_IdLinea']) == 0)) {
-												echo "selected=\"selected\"";
-											} ?>>
-												<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; ?>
-											</option>
+												<option value="<?php echo $row_LineaVehiculo['IdLineaModeloVehiculo']; ?>"
+												<?php if ((isset($row['CDU_IdLinea'])) && (strcmp($row_LineaVehiculo['IdLineaModeloVehiculo'], $row['CDU_IdLinea']) == 0)) {
+													echo "selected=\"selected\"";
+												} ?>>
+													<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; ?>
+												</option>
 								  <?php } ?>
 								</select>
 							</div>
@@ -987,12 +987,12 @@ function ConsultarDocVentas(tipo){
 								} ?> name="CDU_Ano" class="form-control select2" required="required" id="CDU_Ano">
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_ModeloVehiculo = sqlsrv_fetch_array($SQL_ModeloVehiculo)) { ?>
-											<option value="<?php echo $row_ModeloVehiculo['CodigoModeloVehiculo']; ?>"
-											<?php if (isset($row['CDU_Ano']) && ((strcmp($row_ModeloVehiculo['CodigoModeloVehiculo'], $row['CDU_Ano']) == 0) || (strcmp($row_ModeloVehiculo['AñoModeloVehiculo'], $row['CDU_Ano']) == 0))) {
-												echo "selected=\"selected\"";
-											} ?>>
-												<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; ?>
-											</option>
+												<option value="<?php echo $row_ModeloVehiculo['CodigoModeloVehiculo']; ?>"
+												<?php if (isset($row['CDU_Ano']) && ((strcmp($row_ModeloVehiculo['CodigoModeloVehiculo'], $row['CDU_Ano']) == 0) || (strcmp($row_ModeloVehiculo['AñoModeloVehiculo'], $row['CDU_Ano']) == 0))) {
+													echo "selected=\"selected\"";
+												} ?>>
+													<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; ?>
+												</option>
 								  <?php } ?>
 								</select>
 							</div>
@@ -1004,17 +1004,17 @@ function ConsultarDocVentas(tipo){
 									echo "disabled='disabled'";
 								} ?> name="CDU_Concesionario" class="form-control select2" required="required" id="CDU_Concesionario">
 									<?php while ($row_Concesionario = sqlsrv_fetch_array($SQL_Concesionario)) { ?>
-											<option value="<?php echo $row_Concesionario['NombreConcesionario']; ?>"
-											<?php if (isset($row['CDU_Concesionario']) && (strcmp($row_Concesionario['NombreConcesionario'], $row['CDU_Concesionario']) == 0)) {
-												echo "selected=\"selected\"";
-											} elseif (($edit == 0) && (strcmp($row_Concesionario['NombreConcesionario'], ObtenerValorDefecto(176, "IdConcesionario", false)) == 0)) {
-												echo "selected='selected'";
-											} elseif (($edit == 0) && (ObtenerValorDefecto(176, "IdConcesionario", false) == "") && (strcmp($row_Concesionario['NombreConcesionario'], "Otro") == 0)) {
-												echo "selected='selected'";
-											} ?>>
+												<option value="<?php echo $row_Concesionario['NombreConcesionario']; ?>"
+												<?php if (isset($row['CDU_Concesionario']) && (strcmp($row_Concesionario['NombreConcesionario'], $row['CDU_Concesionario']) == 0)) {
+													echo "selected=\"selected\"";
+												} elseif (($edit == 0) && (strcmp($row_Concesionario['NombreConcesionario'], ObtenerValorDefecto(176, "IdConcesionario", false)) == 0)) {
+													echo "selected='selected'";
+												} elseif (($edit == 0) && (ObtenerValorDefecto(176, "IdConcesionario", false) == "") && (strcmp($row_Concesionario['NombreConcesionario'], "Otro") == 0)) {
+													echo "selected='selected'";
+												} ?>>
 
-												<?php echo $row_Concesionario['NombreConcesionario']; ?>
-											</option>
+													<?php echo $row_Concesionario['NombreConcesionario']; ?>
+												</option>
 									  <?php } ?>
 								</select>
 							</div>
@@ -1025,12 +1025,12 @@ function ConsultarDocVentas(tipo){
 								} ?> name="CDU_Color" class="form-control select2" required="required" id="CDU_Color">
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_ColorVehiculo = sqlsrv_fetch_array($SQL_ColorVehiculo)) { ?>
-											<option value="<?php echo $row_ColorVehiculo['CodigoColorVehiculo']; ?>"
-											<?php if (isset($row['CDU_Color']) && (strcmp($row_ColorVehiculo['CodigoColorVehiculo'], $row['CDU_Color']) == 0)) {
-												echo "selected=\"selected\"";
-											} ?>>
-												<?php echo $row_ColorVehiculo['NombreColorVehiculo']; ?>
-											</option>
+												<option value="<?php echo $row_ColorVehiculo['CodigoColorVehiculo']; ?>"
+												<?php if (isset($row['CDU_Color']) && (strcmp($row_ColorVehiculo['CodigoColorVehiculo'], $row['CDU_Color']) == 0)) {
+													echo "selected=\"selected\"";
+												} ?>>
+													<?php echo $row_ColorVehiculo['NombreColorVehiculo']; ?>
+												</option>
 								  <?php } ?>
 								</select>
 							</div>
@@ -1041,12 +1041,12 @@ function ConsultarDocVentas(tipo){
 								} ?> name="CDU_IdTipoVehiculo" class="form-control select2" id="CDU_IdTipoVehiculo">
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_TipoVehiculo = sqlsrv_fetch_array($SQL_TipoVehiculo)) { ?>
-											<option value="<?php echo $row_TipoVehiculo['IdTipoVehiculo']; ?>"
-											<?php if (isset($row['CDU_IdTipoVehiculo']) && (strcmp($row_TipoVehiculo['IdTipoVehiculo'], $row['CDU_IdTipoVehiculo']) == 0)) {
-												echo "selected=\"selected\"";
-											} ?>>
-												<?php echo $row_TipoVehiculo['DeTipoVehiculo']; ?>
-											</option>
+												<option value="<?php echo $row_TipoVehiculo['IdTipoVehiculo']; ?>"
+												<?php if (isset($row['CDU_IdTipoVehiculo']) && (strcmp($row_TipoVehiculo['IdTipoVehiculo'], $row['CDU_IdTipoVehiculo']) == 0)) {
+													echo "selected=\"selected\"";
+												} ?>>
+													<?php echo $row_TipoVehiculo['DeTipoVehiculo']; ?>
+												</option>
 								  <?php } ?>
 								</select>
 							</div>
@@ -1059,12 +1059,12 @@ function ConsultarDocVentas(tipo){
 								} ?> name="CDU_Cilindraje" class="form-control select2" required="required" id="CDU_Cilindraje">
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_Cilindraje = sqlsrv_fetch_array($SQL_CilindrajeVehiculo)) { ?>
-											<option value="<?php echo $row_Cilindraje['DescripcionCilindraje']; ?>"
-											<?php if (isset($row['CDU_Cilindraje']) && (strcmp($row_Cilindraje['DescripcionCilindraje'], $row['CDU_Cilindraje']) == 0)) {
-												echo "selected=\"selected\"";
-											} ?>>
-												<?php echo $row_Cilindraje['DescripcionCilindraje']; ?>
-											</option>
+												<option value="<?php echo $row_Cilindraje['DescripcionCilindraje']; ?>"
+												<?php if (isset($row['CDU_Cilindraje']) && (strcmp($row_Cilindraje['DescripcionCilindraje'], $row['CDU_Cilindraje']) == 0)) {
+													echo "selected=\"selected\"";
+												} ?>>
+													<?php echo $row_Cilindraje['DescripcionCilindraje']; ?>
+												</option>
 								  <?php } ?>
 								</select>
 							</div>
@@ -1075,12 +1075,12 @@ function ConsultarDocVentas(tipo){
 								} ?> name="CDU_TipoServicio" class="form-control select2" required="required" id="CDU_TipoServicio">
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_TipoServicio = sqlsrv_fetch_array($SQL_TipoServicio)) { ?>
-											<option value="<?php echo $row_TipoServicio['NombreTipoServicio']; ?>"
-											<?php if (isset($row['CDU_TipoServicio']) && (strcmp($row_TipoServicio['NombreTipoServicio'], $row['CDU_TipoServicio']) == 0)) {
-												echo "selected=\"selected\"";
-											} ?>>
-												<?php echo $row_TipoServicio['NombreTipoServicio']; ?>
-											</option>
+												<option value="<?php echo $row_TipoServicio['NombreTipoServicio']; ?>"
+												<?php if (isset($row['CDU_TipoServicio']) && (strcmp($row_TipoServicio['NombreTipoServicio'], $row['CDU_TipoServicio']) == 0)) {
+													echo "selected=\"selected\"";
+												} ?>>
+													<?php echo $row_TipoServicio['NombreTipoServicio']; ?>
+												</option>
 								  <?php } ?>
 								</select>
 							</div>
@@ -1091,12 +1091,12 @@ function ConsultarDocVentas(tipo){
 								} ?> name="CDU_IdTipoRin" class="form-control select2" id="CDU_IdTipoRin">
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_TipoRin = sqlsrv_fetch_array($SQL_TipoRines)) { ?>
-											<option value="<?php echo $row_TipoRin['IdTipoRines']; ?>"
-											<?php if (isset($row['CDU_IdTipoRin']) && (strcmp($row_TipoRin['IdTipoRines'], $row['CDU_IdTipoRin']) == 0)) {
-												echo "selected=\"selected\"";
-											} ?>>
-												<?php echo $row_TipoRin['DeTipoRines']; ?>
-											</option>
+												<option value="<?php echo $row_TipoRin['IdTipoRines']; ?>"
+												<?php if (isset($row['CDU_IdTipoRin']) && (strcmp($row_TipoRin['IdTipoRines'], $row['CDU_IdTipoRin']) == 0)) {
+													echo "selected=\"selected\"";
+												} ?>>
+													<?php echo $row_TipoRin['DeTipoRines']; ?>
+												</option>
 								  <?php } ?>
 								</select>
 							</div>
@@ -1248,12 +1248,12 @@ function ConsultarDocVentas(tipo){
 								} ?> name="CDU_Novedad" id="CDU_Novedad" class="form-control select2">
 									<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_Novedad = sqlsrv_fetch_array($SQL_Novedades)) { ?>
-										  <option value="<?php echo $row_Novedad['IdNovedad']; ?>"
-									  	<?php if ((isset($row['CDU_Novedad'])) && (strcmp($row_Novedad['IdNovedad'], $row['CDU_Novedad']) == 0)) {
-											  echo "selected=\"selected\"";
-										  } ?>>
-										  	<?php echo $row_Novedad['DeNovedad']; ?>
-										  </option>
+											  <option value="<?php echo $row_Novedad['IdNovedad']; ?>"
+										  	<?php if ((isset($row['CDU_Novedad'])) && (strcmp($row_Novedad['IdNovedad'], $row['CDU_Novedad']) == 0)) {
+												  echo "selected=\"selected\"";
+											  } ?>>
+											  	<?php echo $row_Novedad['DeNovedad']; ?>
+											  </option>
 								  <?php } ?>
 								</select>
 							</div>
@@ -1365,69 +1365,69 @@ function ConsultarDocVentas(tipo){
 										<?php
 										$hasRowsLlamadaServicio = (isset($SQL_LlamadasServicio)) ? sqlsrv_has_rows($SQL_LlamadasServicio) : false;
 										if ($edit == 1 && $hasRowsLlamadaServicio === true) { ?>
-												<div class="table" style="max-height: 230px; overflow-y: auto;">
-													<table class="table table-striped table-bordered table-hover dataTables-example">
-														<thead>
-															<tr>
-																<th>Número de llamada</th>
-																<th>Estado</th>
-																<th>Artículos/Costos</th>
-																<th>Fecha de creación</th>
-																<th>Origen</th> <!-- SMM, 03/09/2022 -->
-																<th>Tipo Problema</th>
-																<th>Subtipo Problema</th> <!-- SMM, 03/09/2022 -->
-																<th>Asunto</th>
-																<th>Número de artículo</th>
-																<th>Número de serie</th>
-																<th>Nombre del cliente</th>
-															</tr>
-														</thead>
-														<tbody>
-															<?php
-															while ($row_LlamadaServicio = sqlsrv_fetch_array($SQL_LlamadasServicio)) { ?>
-																	<tr class="gradeX">
-																		<td class="text-left">
-																			<a href="llamada_servicio.php?id=<?php echo base64_encode($row_LlamadaServicio['ID_LlamadaServicio']); ?>&tl=1&pag=<?php echo base64_encode('gestionar_llamadas_servicios.php'); ?>" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i>
-																				<?php echo $row_LlamadaServicio['DocNum']; ?>
-																			</a>
-																		</td>
+													<div class="table" style="max-height: 230px; overflow-y: auto;">
+														<table class="table table-striped table-bordered table-hover dataTables-example">
+															<thead>
+																<tr>
+																	<th>Número de llamada</th>
+																	<th>Estado</th>
+																	<th>Artículos/Costos</th>
+																	<th>Fecha de creación</th>
+																	<th>Origen</th> <!-- SMM, 03/09/2022 -->
+																	<th>Tipo Problema</th>
+																	<th>Subtipo Problema</th> <!-- SMM, 03/09/2022 -->
+																	<th>Asunto</th>
+																	<th>Número de artículo</th>
+																	<th>Número de serie</th>
+																	<th>Nombre del cliente</th>
+																</tr>
+															</thead>
+															<tbody>
+																<?php
+																while ($row_LlamadaServicio = sqlsrv_fetch_array($SQL_LlamadasServicio)) { ?>
+																			<tr class="gradeX">
+																				<td class="text-left">
+																					<a href="llamada_servicio.php?id=<?php echo base64_encode($row_LlamadaServicio['ID_LlamadaServicio']); ?>&tl=1&pag=<?php echo base64_encode('gestionar_llamadas_servicios.php'); ?>" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i>
+																						<?php echo $row_LlamadaServicio['DocNum']; ?>
+																					</a>
+																				</td>
 
-																		<td>
-																			<span <?php if ($row_LlamadaServicio['IdEstadoLlamada'] == '-3') {
-																				echo "class='label label-info'";
-																			} elseif ($row_LlamadaServicio['IdEstadoLlamada'] == '-2') {
-																				echo "class='label label-warning'";
-																			} else {
-																				echo "class='label label-danger'";
-																			} ?>>
-																				<?php echo $row_LlamadaServicio['DeEstadoLlamada']; ?>
-																			</span>
-																		</td>
+																				<td>
+																					<span <?php if ($row_LlamadaServicio['IdEstadoLlamada'] == '-3') {
+																						echo "class='label label-info'";
+																					} elseif ($row_LlamadaServicio['IdEstadoLlamada'] == '-2') {
+																						echo "class='label label-warning'";
+																					} else {
+																						echo "class='label label-danger'";
+																					} ?>>
+																						<?php echo $row_LlamadaServicio['DeEstadoLlamada']; ?>
+																					</span>
+																				</td>
 
-																		<td>
-																			<a class="btn btn-primary btn-xs" id="btnPreCostos" name="btnPreCostos" onClick="MostrarCostos('<?php echo $row_LlamadaServicio['ID_LlamadaServicio']; ?>');"><i class="fa fa-money"></i> Previsualizar Precios</a>
-																		</td>
-																		<td><?php echo $row_LlamadaServicio['FechaHoraCreacionLLamada']->format('Y-m-d h:m:i'); ?></td>
+																				<td>
+																					<a class="btn btn-primary btn-xs" id="btnPreCostos" name="btnPreCostos" onClick="MostrarCostos('<?php echo $row_LlamadaServicio['ID_LlamadaServicio']; ?>');"><i class="fa fa-money"></i> Previsualizar Precios</a>
+																				</td>
+																				<td><?php echo $row_LlamadaServicio['FechaHoraCreacionLLamada']->format('Y-m-d h:m:i'); ?></td>
 
-																		<td><?php echo $row_LlamadaServicio["DeOrigenLlamada"]; ?></td>
+																				<td><?php echo $row_LlamadaServicio["DeOrigenLlamada"]; ?></td>
 
-																		<td><?php echo $row_LlamadaServicio['DeTipoProblemaLlamada']; ?></td>
+																				<td><?php echo $row_LlamadaServicio['DeTipoProblemaLlamada']; ?></td>
 
-																		<td><?php echo $row_LlamadaServicio["DeSubTipoProblemaLlamada"]; ?></td>
+																				<td><?php echo $row_LlamadaServicio["DeSubTipoProblemaLlamada"]; ?></td>
 
-																		<td><?php echo $row_LlamadaServicio['AsuntoLlamada']; ?></td>
-																		<td><?php echo $row_LlamadaServicio['ItemCode']; ?></td>
-																		<td><?php echo $row_LlamadaServicio['SerialFabricante']; ?></td>
-																		<td><?php echo $row_LlamadaServicio['CardName']; ?></td>
+																				<td><?php echo $row_LlamadaServicio['AsuntoLlamada']; ?></td>
+																				<td><?php echo $row_LlamadaServicio['ItemCode']; ?></td>
+																				<td><?php echo $row_LlamadaServicio['SerialFabricante']; ?></td>
+																				<td><?php echo $row_LlamadaServicio['CardName']; ?></td>
 
-																	</tr>
-															<?php } ?>
-														</tbody>
-													</table>
-												</div>
+																			</tr>
+																<?php } ?>
+															</tbody>
+														</table>
+													</div>
 										<?php } else { ?>
-												<i class="fa fa-search" style="font-size: 18px; color: lightgray;"></i>
-												<span style="font-size: 13px; color: lightgray;">No hay registros de llamadas de servicio</span>
+													<i class="fa fa-search" style="font-size: 18px; color: lightgray;"></i>
+													<span style="font-size: 13px; color: lightgray;">No hay registros de llamadas de servicio</span>
 										<?php } ?>
 									</div>
 								</div>
@@ -1445,67 +1445,67 @@ function ConsultarDocVentas(tipo){
 										<?php
 										$hasRowsFormularios = ($SQL_Formularios) ? sqlsrv_has_rows($SQL_Formularios) : false;
 										if ($edit == 1 && $hasRowsFormularios) { ?>
-												<div class="table" style="max-height: 230px; overflow-y: auto;">
-													<table class="table table-striped table-bordered table-hover dataTables-example">
-														<thead>
-															<tr>
-																<th>Tipo Documento</th> 
-																<th>No de Documento</th>
-																<th>Fecha Creacion Reg.</th>
-																<th>Fecha Recepcion/Entrega</th>
-																<th>Observaciones</th>
-																<th>Asesor Servicio</th>
+													<div class="table" style="max-height: 230px; overflow-y: auto;">
+														<table class="table table-striped table-bordered table-hover dataTables-example">
+															<thead>
+																<tr>
+																	<th>Tipo Documento</th> 
+																	<th>No de Documento</th>
+																	<th>Fecha Creacion Reg.</th>
+																	<th>Fecha Recepcion/Entrega</th>
+																	<th>Observaciones</th>
+																	<th>Asesor Servicio</th>
 
-																<th>No Llamada Servicio</th>
+																	<th>No Llamada Servicio</th>
 																
-																<th>Origen</th>
-																<th>Tipo Problema</th>
-																<th>SubTipo Problema</th>
+																	<th>Origen</th>
+																	<th>Tipo Problema</th>
+																	<th>SubTipo Problema</th>
 
-																<th>Acciones</th>
-															</tr>
-														</thead>
-														<tbody>
-															<?php
-															while ($row_Formulario = sqlsrv_fetch_array($SQL_Formularios)) { ?>
-																	<tr class="gradeX">
+																	<th>Acciones</th>
+																</tr>
+															</thead>
+															<tbody>
+																<?php
+																while ($row_Formulario = sqlsrv_fetch_array($SQL_Formularios)) { ?>
+																			<tr class="gradeX">
 
-																		<td><?php echo $row_Formulario["tipo_objeto"]; ?></td>
-																		<td><?php echo $row_Formulario['id_formulario']; ?></td>
-																		<td><?php echo (isset($row_Formulario["hora_creacion"]) && $row_Formulario["hora_creacion"] != "") ? $row_Formulario["hora_creacion"]->format("Y-m-d h:m:s") : ""; ?></td>
-																		<td><?php echo (isset($row_Formulario["fecha_recepcion_entrega"]) && $row_Formulario["fecha_recepcion_entrega"] != "") ? $row_Formulario['fecha_recepcion_entrega']->format("Y-m-d h:m:s") : ""; ?></td>
-																		<td><?php echo $row_Formulario['observaciones']; ?></td>
-																		<td><?php echo $row_Formulario['empleado_tecnico']; ?></td>
+																				<td><?php echo $row_Formulario["tipo_objeto"]; ?></td>
+																				<td><?php echo $row_Formulario['id_formulario']; ?></td>
+																				<td><?php echo (isset($row_Formulario["hora_creacion"]) && $row_Formulario["hora_creacion"] != "") ? $row_Formulario["hora_creacion"]->format("Y-m-d h:m:s") : ""; ?></td>
+																				<td><?php echo (isset($row_Formulario["fecha_recepcion_entrega"]) && $row_Formulario["fecha_recepcion_entrega"] != "") ? $row_Formulario['fecha_recepcion_entrega']->format("Y-m-d h:m:s") : ""; ?></td>
+																				<td><?php echo $row_Formulario['observaciones']; ?></td>
+																				<td><?php echo $row_Formulario['empleado_tecnico']; ?></td>
 
-																		<td class="text-left">
-																			<a href="llamada_servicio.php?id=<?php echo base64_encode($row_Formulario['docentry_llamada_servicio']); ?>&tl=1&pag=<?php echo base64_encode('gestionar_llamadas_servicios.php'); ?>" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i>
-																				<?php echo $row_Formulario['id_llamada_servicio']; ?>
-																			</a>
-																		</td>
+																				<td class="text-left">
+																					<a href="llamada_servicio.php?id=<?php echo base64_encode($row_Formulario['docentry_llamada_servicio']); ?>&tl=1&pag=<?php echo base64_encode('gestionar_llamadas_servicios.php'); ?>" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i>
+																						<?php echo $row_Formulario['id_llamada_servicio']; ?>
+																					</a>
+																				</td>
 																		
-																		<td><?php echo $row_Formulario['DeOrigenLlamada']; ?></td>
-																		<td><?php echo $row_Formulario['DeTipoProblemaLlamada']; ?></td>
-																		<td><?php echo $row_Formulario['DeSubTipoProblemaLlamada']; ?></td>
+																				<td><?php echo $row_Formulario['DeOrigenLlamada']; ?></td>
+																				<td><?php echo $row_Formulario['DeTipoProblemaLlamada']; ?></td>
+																				<td><?php echo $row_Formulario['DeSubTipoProblemaLlamada']; ?></td>
 
-																		<td>
-																			<a href="filedownload.php?file=<?php echo base64_encode($row_Formulario['nombre_servicio'] . "/DescargarFormatos/" . $row_Formulario['id_formulario'] . "/" . $_SESSION['User']); ?>&api=1" 
-																				target="_blank" class="btn btn-primary btn-xs" title="Descargar Formato">
-																				<i class="fa fa-download"></i> Descargar Formato
-																			</a>
+																				<td>
+																					<a href="filedownload.php?file=<?php echo base64_encode($row_Formulario['nombre_servicio'] . "/DescargarFormatos/" . $row_Formulario['id_formulario'] . "/" . $_SESSION['User']); ?>&api=1" 
+																						target="_blank" class="btn btn-primary btn-xs" title="Descargar Formato">
+																						<i class="fa fa-download"></i> Descargar Formato
+																					</a>
 
-																			<a href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row_Formulario['id_llamada_servicio']); ?>&ObType=<?php echo base64_encode('191'); ?>&IdFrm=<?php echo base64_encode($row_Formulario['IdSerieLlamada']); ?>"
-																				target="_blank" class="btn btn-warning btn-xs" title="Descargar Llamada">
-																				<i class="fa fa-download"></i> Descargar Llamada
-																			</a>
-																		</td>
-																	</tr>
-															<?php } ?>
-														</tbody>
-													</table>
-												</div>
+																					<a href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row_Formulario['id_llamada_servicio']); ?>&ObType=<?php echo base64_encode('191'); ?>&IdFrm=<?php echo base64_encode($row_Formulario['IdSerieLlamada']); ?>"
+																						target="_blank" class="btn btn-warning btn-xs" title="Descargar Llamada">
+																						<i class="fa fa-download"></i> Descargar Llamada
+																					</a>
+																				</td>
+																			</tr>
+																<?php } ?>
+															</tbody>
+														</table>
+													</div>
 										<?php } else { ?>
-												<i class="fa fa-search" style="font-size: 18px; color: lightgray;"></i>
-												<span style="font-size: 13px; color: lightgray;">No hay registros de Recepciones o Entregas de Vehiculo</span>
+													<i class="fa fa-search" style="font-size: 18px; color: lightgray;"></i>
+													<span style="font-size: 13px; color: lightgray;">No hay registros de Recepciones o Entregas de Vehiculo</span>
 										<?php } ?>
 									</div>
 								</div>
@@ -1523,71 +1523,83 @@ function ConsultarDocVentas(tipo){
 										<?php
 										$hasRowsCampanas = ($SQL_Campanas) ? sqlsrv_has_rows($SQL_Campanas) : false;
 										if ($edit == 1 && $hasRowsCampanas) { ?>
-												<div class="table" style="max-height: 230px; overflow-y: auto;">
-													<table class="table table-striped table-bordered table-hover dataTables-example">
-														<thead>
-															<tr>
-																<th>ID Campaña</th> 
-																<th>VIN</th>
+													<div class="table" style="max-height: 230px; overflow-y: auto;">
+														<table class="table table-striped table-bordered table-hover dataTables-example">
+															<thead>
+																<tr>
+																	<th>ID Campaña</th> 
 
-																<th>Estado VIN Campaña</th>
+																	<th>Campaña</th> 
+																	<th>VIN</th>
 
-																<th>Fecha Límite Vigencia</th>
+																	<th>Estado VIN Campaña</th>
 
-																<th>ID Llamada Servicio</th>
+																	<th>Fecha Límite Vigencia</th>
+
+																	<th>ID Llamada Servicio</th>
 																
-																<th>Origen</th>
-																<th>Estado Llamada</th>
-																<th>SubTipo Problema</th>
+																	<th>Origen</th>
+																	<th>Estado Llamada</th>
+																	<th>SubTipo Problema</th>
 
-																<th>Nombre Cliente</th>
-																<th>Fecha Cierre</th>
+																	<th>Nombre Cliente</th>
+																	<th>Fecha Cierre</th>
 																
-																<th>Acciones</th>
-															</tr>
-														</thead>
-														<tbody>
-															<?php
-															while ($row_Campana = sqlsrv_fetch_array($SQL_Campanas)) { ?>
-																	<tr class="gradeX">
-																		<td><?php echo $row_Campana['id_campana']; ?></td>
-																		<td><?php echo $row_Campana['VIN']; ?></td>
+																	<th>Acciones</th>
+																</tr>
+															</thead>
+															<tbody>
+																<?php
+																while ($row_Campana = sqlsrv_fetch_array($SQL_Campanas)) { ?>
+																			<tr class="gradeX">
+																				<td>
+																					<a href="campanas_vehiculo.php?id=<?php echo $row_Campana['id_campana']; ?>&edit=1" class="alkin btn btn-success btn-xs" target="_blank">
+																						<i class="fa fa-folder-open-o"></i> <?php echo $row_Campana['id_campana']; ?>
+																					</a>
+																				</td>
 
-																		<td><?php echo $row_Campana['nombre_estado_VIN_campaña']; ?></td>
+																				<td><?php echo $row_Campana['campana']; ?></td>
+																				<td><?php echo $row_Campana['VIN']; ?></td>
 
-																		<td><?php echo (isset($row_Campana["fecha_limite_vigencia"]) && $row_Campana["fecha_limite_vigencia"] != "") ? $row_Campana['fecha_limite_vigencia']->format("Y-m-d") : ""; ?></td>
+																				<td>
+																					<span class="label <?php echo ($row_Campana['estado_VIN_campaña'] == "P") ? "label-warning" : "label-info"; ?>">
+																						<?php echo $row_Campana['nombre_estado_VIN_campaña']; ?>
+																					</span>
+																				</td>
 
-																		<td class="text-left">
-																			<?php if(isset($row_Campana['docnum_llamada_servicio']) && ($row_Campana['docnum_llamada_servicio'] != "")) { ?>
-																				<a href="llamada_servicio.php?id=<?php echo base64_encode($row_Campana['docentry_llamada_servicio']); ?>&tl=1&pag=<?php echo base64_encode('gestionar_llamadas_servicios.php'); ?>" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i>
-																					<?php echo $row_Campana['docnum_llamada_servicio']; ?>
-																				</a>
-																			<?php } ?>
-																		</td>
+																				<td><?php echo (isset($row_Campana["fecha_limite_vigencia"]) && $row_Campana["fecha_limite_vigencia"] != "") ? $row_Campana['fecha_limite_vigencia']->format("Y-m-d") : ""; ?></td>
+
+																				<td class="text-left">
+																					<?php if (isset($row_Campana['docnum_llamada_servicio']) && ($row_Campana['docnum_llamada_servicio'] != "")) { ?>
+																							<a href="llamada_servicio.php?id=<?php echo base64_encode($row_Campana['docentry_llamada_servicio']); ?>&tl=1&pag=<?php echo base64_encode('gestionar_llamadas_servicios.php'); ?>" class="alkin btn btn-success btn-xs">
+																								<i class="fa fa-folder-open-o"></i> <?php echo $row_Campana['docnum_llamada_servicio']; ?>
+																							</a>
+																					<?php } ?>
+																				</td>
 																		
-																		<td><?php echo $row_Campana['DeOrigenLlamada']; ?></td>
-																		<td><?php echo $row_Campana['DeEstadoLlamada']; ?></td>
-																		<td><?php echo $row_Campana['DeSubTipoProblemaLlamada']; ?></td>
+																				<td><?php echo $row_Campana['DeOrigenLlamada']; ?></td>
+																				<td><?php echo $row_Campana['DeEstadoLlamada']; ?></td>
+																				<td><?php echo $row_Campana['DeSubTipoProblemaLlamada']; ?></td>
 
-																		<td><?php echo $row_Campana['socio_negocios'] ?? ""; ?></td>
-																		<td><?php echo (isset($row_Campana["FechaCierre"]) && $row_Campana["FechaCierre"] != "") ? $row_Campana['FechaCierre']->format("Y-m-d") : ""; ?></td>
+																				<td><?php echo $row_Campana['socio_negocios'] ?? ""; ?></td>
+																				<td><?php echo (isset($row_Campana["FechaCierre"]) && $row_Campana["FechaCierre"] != "") ? $row_Campana['FechaCierre']->format("Y-m-d") : ""; ?></td>
 
-																		<td>
-																			<?php if(isset($row_Campana['docnum_llamada_servicio']) && ($row_Campana['docnum_llamada_servicio'] != "")) { ?>
-																				<a href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row_Campana['docnum_llamada_servicio']); ?>&ObType=<?php echo base64_encode('191'); ?>&IdFrm=<?php echo base64_encode($row_Formulario['IdSerieLlamada']); ?>"
-																					target="_blank" class="btn btn-warning btn-xs" title="Descargar Llamada">
-																					<i class="fa fa-download"></i> Descargar Llamada
-																				</a>
-																			<?php } ?>
-																		</td>
-																	</tr>
-															<?php } ?>
-														</tbody>
-													</table>
-												</div>
+																				<td>
+																					<?php if (isset($row_Campana['docnum_llamada_servicio']) && ($row_Campana['docnum_llamada_servicio'] != "")) { ?>
+																							<a href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row_Campana['docnum_llamada_servicio']); ?>&ObType=<?php echo base64_encode('191'); ?>&IdFrm=<?php echo base64_encode($row_Formulario['IdSerieLlamada']); ?>"
+																								target="_blank" class="btn btn-warning btn-xs" title="Descargar Llamada">
+																								<i class="fa fa-download"></i> Descargar Llamada
+																							</a>
+																					<?php } ?>
+																				</td>
+																			</tr>
+																<?php } ?>
+															</tbody>
+														</table>
+													</div>
 										<?php } else { ?>
-												<i class="fa fa-search" style="font-size: 18px; color: lightgray;"></i>
-												<span style="font-size: 13px; color: lightgray;">No hay registros de Campañas de Vehículo</span>
+													<i class="fa fa-search" style="font-size: 18px; color: lightgray;"></i>
+													<span style="font-size: 13px; color: lightgray;">No hay registros de Campañas de Vehículo</span>
 										<?php } ?>
 									</div>
 								</div>
@@ -1605,34 +1617,34 @@ function ConsultarDocVentas(tipo){
 										<?php
 										$hasRowsContratosServicio = (isset($SQL_ContratosServicio)) ? sqlsrv_has_rows($SQL_ContratosServicio) : false;
 										if ($edit == 1 && $hasRowsContratosServicio === true) { ?>
-												<div class="table-responsive" style="max-height: 230px; overflow: hidden; overflow-y: auto;">
-													<table class="table table-striped table-bordered table-hover dataTables-example">
-														<thead>
-															<tr>
-																<th>Contrato</th>
-																<th>Fecha de inicio</th>
-																<th>Fecha final</th>
-																<th>Fecha de rescisión del contrato</th>
-																<th>Tipo de contrato</th>
-															</tr>
-														</thead>
-														<tbody>
-															<?php
-															while ($row_ContratoServicio = sqlsrv_fetch_array($SQL_ContratosServicio)) { ?>
-																	<tr class="gradeX">
-																		<td><?php echo $row_ContratoServicio['ID_Contrato']; ?></td>
-																		<td><?php echo $row_ContratoServicio['FechaInicioContrato']; ?></td>
-																		<td><?php echo $row_ContratoServicio['FechaFinContrato']; ?></td>
-																		<td><?php echo $row_ContratoServicio['FechaRescisionContrato']; ?></td>
-																		<td><?php echo $row_ContratoServicio['DeTipoServicio']; ?></td>
-																	</tr>
-															<?php } ?>
-														</tbody>
-													</table>
-												</div>
+													<div class="table-responsive" style="max-height: 230px; overflow: hidden; overflow-y: auto;">
+														<table class="table table-striped table-bordered table-hover dataTables-example">
+															<thead>
+																<tr>
+																	<th>Contrato</th>
+																	<th>Fecha de inicio</th>
+																	<th>Fecha final</th>
+																	<th>Fecha de rescisión del contrato</th>
+																	<th>Tipo de contrato</th>
+																</tr>
+															</thead>
+															<tbody>
+																<?php
+																while ($row_ContratoServicio = sqlsrv_fetch_array($SQL_ContratosServicio)) { ?>
+																			<tr class="gradeX">
+																				<td><?php echo $row_ContratoServicio['ID_Contrato']; ?></td>
+																				<td><?php echo $row_ContratoServicio['FechaInicioContrato']; ?></td>
+																				<td><?php echo $row_ContratoServicio['FechaFinContrato']; ?></td>
+																				<td><?php echo $row_ContratoServicio['FechaRescisionContrato']; ?></td>
+																				<td><?php echo $row_ContratoServicio['DeTipoServicio']; ?></td>
+																			</tr>
+																<?php } ?>
+															</tbody>
+														</table>
+													</div>
 										<?php } else { ?>
-												<i class="fa fa-search" style="font-size: 18px; color: lightgray;"></i>
-												<span style="font-size: 13px; color: lightgray;">No hay registros de contratos de servicio</span>
+													<i class="fa fa-search" style="font-size: 18px; color: lightgray;"></i>
+													<span style="font-size: 13px; color: lightgray;">No hay registros de contratos de servicio</span>
 										<?php } ?>
 									</div>
 								</div>
@@ -1689,50 +1701,50 @@ function ConsultarDocVentas(tipo){
 							<div class="row">
 								<div class="col-lg-12 text-center">
 									<?php if (sqlsrv_has_rows($SQL_HistGestion)) { ?>
-											<div class="table-responsive" style="max-height: 230px; overflow: hidden; overflow-y: auto;">
-												<table class="table table-striped table-bordered table-hover dataTables-example">
-													<thead>
-													<tr>
-														<th>Tipo gestión</th>
-														<th>Destino</th>
-														<th>Evento</th>
-														<th>Resultado</th>
-														<th>Comentario</th>
-														<th>Causa no pago</th>
-														<th>Acuerdo de pago</th>
-														<th>Fecha registro</th>
-														<th>Usuario</th>
-														<th>Sucursal</th>
-													</tr>
-													</thead>
-													<tbody>
-													<?php while ($row_HistGestion = sqlsrv_fetch_array($SQL_HistGestion)) { ?>
-															<?php if (false || (isset($row['SerialInterno']) && ($row_HistGestion['NumeroSerie'] == $row['SerialInterno']))) { ?>
-																	<tr class="gradeX">
-																		<td><?php echo $row_HistGestion['TipoGestion']; ?></td>
-																		<td><?php echo $row_HistGestion['Destino']; ?></td>
-																		<td><?php echo $row_HistGestion['NombreEvento']; ?></td>
-																		<td><?php echo $row_HistGestion['ResultadoGestion']; ?></td>
-																		<td><?php echo $row_HistGestion['Comentarios']; ?></td>
-																		<td><?php echo $row_HistGestion['CausaNoPago']; ?></td>
-																		<td><?php if ($row_HistGestion['AcuerdoPago'] == 1) {
-																			echo "SI";
-																		} else {
-																			echo "NO";
-																		} ?></td>
-																		<td><?php echo $row_HistGestion['FechaRegistro']->format('Y-m-d H:i'); ?></td>
-																		<td><?php echo $row_HistGestion['Usuario']; ?></td>
-																		<td><?php echo $row_HistGestion['SucursalCliente']; ?></td>
-																	</tr>
-															<?php } ?>
-												<?php } ?>
-													</tbody>
-												</table>
-											</div>
+												<div class="table-responsive" style="max-height: 230px; overflow: hidden; overflow-y: auto;">
+													<table class="table table-striped table-bordered table-hover dataTables-example">
+														<thead>
+														<tr>
+															<th>Tipo gestión</th>
+															<th>Destino</th>
+															<th>Evento</th>
+															<th>Resultado</th>
+															<th>Comentario</th>
+															<th>Causa no pago</th>
+															<th>Acuerdo de pago</th>
+															<th>Fecha registro</th>
+															<th>Usuario</th>
+															<th>Sucursal</th>
+														</tr>
+														</thead>
+														<tbody>
+														<?php while ($row_HistGestion = sqlsrv_fetch_array($SQL_HistGestion)) { ?>
+																	<?php if (false || (isset($row['SerialInterno']) && ($row_HistGestion['NumeroSerie'] == $row['SerialInterno']))) { ?>
+																				<tr class="gradeX">
+																					<td><?php echo $row_HistGestion['TipoGestion']; ?></td>
+																					<td><?php echo $row_HistGestion['Destino']; ?></td>
+																					<td><?php echo $row_HistGestion['NombreEvento']; ?></td>
+																					<td><?php echo $row_HistGestion['ResultadoGestion']; ?></td>
+																					<td><?php echo $row_HistGestion['Comentarios']; ?></td>
+																					<td><?php echo $row_HistGestion['CausaNoPago']; ?></td>
+																					<td><?php if ($row_HistGestion['AcuerdoPago'] == 1) {
+																						echo "SI";
+																					} else {
+																						echo "NO";
+																					} ?></td>
+																					<td><?php echo $row_HistGestion['FechaRegistro']->format('Y-m-d H:i'); ?></td>
+																					<td><?php echo $row_HistGestion['Usuario']; ?></td>
+																					<td><?php echo $row_HistGestion['SucursalCliente']; ?></td>
+																				</tr>
+																	<?php } ?>
+													<?php } ?>
+														</tbody>
+													</table>
+												</div>
 									<?php } else { ?>
-											<br>
-											<i class="fa fa-search" style="font-size: 18px; color: lightgray;"></i>
-											<span style="font-size: 13px; color: lightgray;">No hay registros de cartera</span>
+												<br>
+												<i class="fa fa-search" style="font-size: 18px; color: lightgray;"></i>
+												<span style="font-size: 13px; color: lightgray;">No hay registros de cartera</span>
 									<?php } ?>
 								</div>
 							</div>
@@ -1769,41 +1781,41 @@ function ConsultarDocVentas(tipo){
 								</form>
 
 								<?php if (($edit == 1) && ($row['IdAnexo'] != 0)) { ?>
-										<div class="form-group">
-											<div class="col-xs-12">
-												<?php while ($row_Anexo = sqlsrv_fetch_array($SQL_Anexos)) {
-													$Icon = IconAttach($row_Anexo['FileExt']); ?>
-														<div class="file-box">
-															<div class="file">
-																<!-- attachdownload.php?swError=<?php echo $sw_error; ?>& -->
-																<a href="attachdownload.php?file=<?php echo base64_encode($row_Anexo['AbsEntry']); ?>&line=<?php echo base64_encode($row_Anexo['Line']); ?>" target="_blank">
-																	<div class="icon">
-																		<i class="<?php echo $Icon; ?>"></i>
+											<div class="form-group">
+												<div class="col-xs-12">
+													<?php while ($row_Anexo = sqlsrv_fetch_array($SQL_Anexos)) {
+														$Icon = IconAttach($row_Anexo['FileExt']); ?>
+																<div class="file-box">
+																	<div class="file">
+																		<!-- attachdownload.php?swError=<?php echo $sw_error; ?>& -->
+																		<a href="attachdownload.php?file=<?php echo base64_encode($row_Anexo['AbsEntry']); ?>&line=<?php echo base64_encode($row_Anexo['Line']); ?>" target="_blank">
+																			<div class="icon">
+																				<i class="<?php echo $Icon; ?>"></i>
+																			</div>
+																			<div class="file-name">
+																				<?php echo $row_Anexo['NombreArchivo']; ?>
+																				<br/>
+																				<!-- $row_Anexo['Fecha']->format('Y-m-d') -->
+																				<small><?php echo $row_Anexo['Fecha']; ?></small>
+																			</div>
+																		</a>
 																	</div>
-																	<div class="file-name">
-																		<?php echo $row_Anexo['NombreArchivo']; ?>
-																		<br/>
-																		<!-- $row_Anexo['Fecha']->format('Y-m-d') -->
-																		<small><?php echo $row_Anexo['Fecha']; ?></small>
-																	</div>
-																</a>
-															</div>
-														</div>
-												<?php } ?>
+																</div>
+													<?php } ?>
+												</div>
 											</div>
-										</div>
 								<?php } else {
 									echo "<p>Sin anexos.</p>";
 								} ?>
 								<?php if (($edit == 0) || ($edit == 1)) { ?>
-										<div class="row">
-											<form action="upload.php" class="dropzone" id="dropzoneForm" name="dropzoneForm">
-												<?php LimpiarDirTemp(); ?>
-												<div class="fallback">
-													<input name="File" id="File" type="file" form="dropzoneForm" />
-												</div>
-											</form>
-										</div>
+											<div class="row">
+												<form action="upload.php" class="dropzone" id="dropzoneForm" name="dropzoneForm">
+													<?php LimpiarDirTemp(); ?>
+													<div class="fallback">
+														<input name="File" id="File" type="file" form="dropzoneForm" />
+													</div>
+												</form>
+											</div>
 								<?php } ?>
 							</div>
 							<!-- End Anexos -->
@@ -1814,16 +1826,16 @@ function ConsultarDocVentas(tipo){
 				<br><br>
 				<div class="form-group">
 					<?php if (PermitirFuncion(1602)) { ?>
-							<div class="col-lg-12">
-								<?php if ($edit == 1) { ?>
-										<button class="btn btn-warning" form="CrearTarjetaEquipo" type="submit" id="Actualizar"><i class="fa fa-refresh"></i> Actualizar tarjeta de equipo</button>
-										<a target="_blank" href="gestionar_cartera.php?Clt=<?php echo base64_encode($row['CardCode']); ?>&TE=<?php echo base64_encode($row['IdTarjetaEquipo']); ?>" class="btn btn-info pull-right"><i class="fa fa-plus"></i> Crear Gestión CRM</a>
-							<?php } ?>
-								<?php if ($edit == 0) { ?>
-										<button class="btn btn-primary" form="CrearTarjetaEquipo" type="submit" id="Crear"><i class="fa fa-check"></i> Crear tarjeta de equipo</button>
-							<?php } ?>
-								<a href="<?php echo $return; ?>" class="alkin btn btn-outline btn-default"><i class="fa fa-arrow-circle-o-left"></i> Regresar</a>
-							</div>
+								<div class="col-lg-12">
+									<?php if ($edit == 1) { ?>
+												<button class="btn btn-warning" form="CrearTarjetaEquipo" type="submit" id="Actualizar"><i class="fa fa-refresh"></i> Actualizar tarjeta de equipo</button>
+												<a target="_blank" href="gestionar_cartera.php?Clt=<?php echo base64_encode($row['CardCode']); ?>&TE=<?php echo base64_encode($row['IdTarjetaEquipo']); ?>" class="btn btn-info pull-right"><i class="fa fa-plus"></i> Crear Gestión CRM</a>
+								<?php } ?>
+									<?php if ($edit == 0) { ?>
+												<button class="btn btn-primary" form="CrearTarjetaEquipo" type="submit" id="Crear"><i class="fa fa-check"></i> Crear tarjeta de equipo</button>
+								<?php } ?>
+									<a href="<?php echo $return; ?>" class="alkin btn btn-outline btn-default"><i class="fa fa-arrow-circle-o-left"></i> Regresar</a>
+								</div>
 					<?php } ?>
 				</div>
 				<br><br>
@@ -1842,15 +1854,15 @@ function ConsultarDocVentas(tipo){
 <script>
 	 $(document).ready(function(){
 		<?php if ($dt_TE == 1) { ?>
-				$('#ClienteEquipo').trigger('change'); // SMM, 17/02/2022
+					$('#ClienteEquipo').trigger('change'); // SMM, 17/02/2022
 		<?php } ?>
 
 		// SMM, 07/06/2022
 		<?php if ((($edit == 0) && (!PermitirFuncion(1603))) || (($edit == 1) && (!PermitirFuncion(1604)))) { ?>
-				let CDU_Concesionario_Options=$('#CDU_Concesionario').find('option');
-				$.each(CDU_Concesionario_Options,function() {
-					$(this).is(":selected") ? "" :$(this).attr('disabled', true);
-				});
+					let CDU_Concesionario_Options=$('#CDU_Concesionario').find('option');
+					$.each(CDU_Concesionario_Options,function() {
+						$(this).is(":selected") ? "" :$(this).attr('disabled', true);
+					});
 		<?php } ?>
 
 		 $("#CrearTarjetaEquipo").validate({
