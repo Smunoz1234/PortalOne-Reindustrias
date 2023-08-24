@@ -17,6 +17,7 @@ $Estado = $row_Encabezado['estado'] ?? "";
 $FechaVigencia = isset($row_Encabezado['fecha_limite_vigencia']) ? $row_Encabezado['fecha_limite_vigencia']->format("Y-m-d") : "";
 
 $Proveedor = $row_Encabezado['id_socio_negocio'] ?? "";
+$NombreProveedor = $row_Encabezado['socio_negocio'] ?? "";
 $Sucursal = $row_Encabezado['id_consecutivo_direccion'] ?? "";
 
 $Cons_Detalle = "SELECT * FROM tbl_CampanaVehiculosDetalle WHERE id_campana = '$ID'";
@@ -329,13 +330,9 @@ if ($type != 0) {
 									<label class="col-lg-1 control-label">Proveedor <span
 											class="text-danger">*</span></label>
 									<div class="col-lg-3">
-										<input name="id_socio_negocio" type="hidden" id="id_socio_negocio" value="<?php if (isset($_GET['Proveedor']) && ($_GET['Proveedor'] != "")) {
-											echo $_GET['Proveedor'];
-										} ?>">
+										<input name="id_socio_negocio" type="hidden" id="id_socio_negocio" value="<?php echo $Proveedor; ?>">
 										<input name="socio_negocio" type="text" class="form-control" required
-											id="socio_negocio" placeholder="Para TODOS, dejar vacio..." value="<?php if (isset($_GET['socio_negocio']) && ($_GET['socio_negocio'] != "")) {
-												echo $_GET['socio_negocio'];
-											} ?>">
+											id="socio_negocio" placeholder="Para TODOS, dejar vacio..." value="<?php echo $NombreProveedor; ?>">
 									</div>
 
 									<label class="col-lg-1 control-label">Sucursal Proveedor <span
@@ -347,7 +344,7 @@ if ($type != 0) {
 
 											<?php if ($Proveedor != "") { ?>
 												<?php while ($row_Sucursal = sqlsrv_fetch_array($SQL_Sucursal)) { ?>
-													<option value="<?php echo $row_Sucursal['NumeroLinea']; ?>" <?php if (strcmp($row_Sucursal['NumeroLinea'], $_GET['Sucursal']) == 0) {
+													<option value="<?php echo $row_Sucursal['NumeroLinea']; ?>" <?php if (strcmp($row_Sucursal['NumeroLinea'], $Sucursal) == 0) {
 														   echo "selected";
 													   } ?>>
 														<?php echo $row_Sucursal['NombreSucursal']; ?>
