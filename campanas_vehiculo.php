@@ -135,7 +135,13 @@ if ($type != 0) {
 
 			$msg_error .= " (" . $row['Error'] . ")";
 		} else {
-			$sw_OK = 1;
+			$SQL_Corregir = EjecutarSP('sp_tbl_CampanaVehiculos', [4]); // @type = 4 -- Corregir
+
+			if(!$SQL_Corregir){
+				$sw_error = 1;
+			} else {
+				$sw_OK = 1;
+			}
 		}
 	}
 }
