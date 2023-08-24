@@ -52,7 +52,7 @@ $campana = $_POST['campana'] ?? "";
 $descripcion_campana = $_POST['descripcion_campana'] ?? "";
 $id_socio_negocio = $_POST['id_socio_negocio'] ?? "";
 $socio_negocio = $_POST['socio_negocio'] ?? "";
-$id_consecutivo_direccion = ($_POST['id_consecutivo_direccion'] != "") ? $_POST['id_consecutivo_direccion'] : "NULL";
+$id_consecutivo_direccion = isset($_POST['id_consecutivo_direccion']) && ($_POST['id_consecutivo_direccion'] != "") ? $_POST['id_consecutivo_direccion'] : "NULL";
 $id_direccion_destino = $_POST['id_direccion_destino'] ?? "";
 $direccion_destino = $_POST['direccion_destino'] ?? "";
 $tiempo_campana_meses = $_POST['tiempo_campana_meses'] ?? "";
@@ -119,24 +119,24 @@ if ($type == 1) {
     );
 }
 
+$sw_OK = 0;
+$sw_error = 0;
 if ($type != 0) {
 	$SQL_Operacion = EjecutarSP('sp_tbl_CampanaVehiculos', $parametros);
 
     if (!$SQL_Operacion) {
-        echo $msg_error;
+        $sw_error = 1;
     } else {
         $row = sqlsrv_fetch_array($SQL_Operacion);
 
         if (isset($row['Error']) && ($row['Error'] != "")) {
-            echo "$msg_error ";
-            echo "(" . $row['Error'] . ")";
+            $sw_error = 1;
+
+			$msg_error .=  " (" . $row['Error'] . ")";
         } else {
-            echo "OK";
+            $sw_OK = 1;
         }
     }
-
-    // Mostrar mensajes AJAX.
-	exit();
 }
 ?>
 
@@ -150,6 +150,32 @@ if ($type != 0) {
 		<?php echo $Titulo; ?>
 	</title>
 	<!-- InstanceEndEditable -->
+
+	<?php
+	if ($sw_error == 1) {
+		echo "<script>
+			$(document).ready(function() {
+				Swal.fire({
+					title: '¡Ha ocurrido un error!',
+					text: '$msg_error',
+					icon: 'warning'
+				});
+			});
+			</script>";
+	}
+	if ($sw_OK == 1) {
+		// echo ($Edit == 0) ? "Crear Campaña" : "Actualizar Campaña";
+		echo "<script>
+			$(document).ready(function() {
+				Swal.fire({
+					title: '¡Listo!',
+					text: 'La operación se ejecuto exitosamente',
+					icon: 'success'
+				});
+			});
+			</script>";
+	}
+	?>
 
 	<!-- InstanceBeginEditable name="head" -->
 	<script type="text/javascript">
@@ -166,7 +192,7 @@ if ($type != 0) {
 				
 				$.ajax({
 					type: "POST",
-					url: "ajx_cbo_select.php?type=3&pv=1&tdir=S&id=" + $("#id_socio_negocio").val(),
+					url: "ajx_cbo_select.php?type=3&pv=1&sucline=1&tdir=S&id=" + $("#id_socio_negocio").val(),
 					success: function(response){
 						$('#id_consecutivo_direccion').html(response).fadeIn();
 						$('#id_consecutivo_direccion').trigger('change');
@@ -284,33 +310,33 @@ if ($type != 0) {
 								</div>
 
 								<div class="form-group">
-									<label class="col-lg-1 control-label">Fecha Límite Vigente</label>
+									<label class="col-lg-1 control-label">Fecha Límite Vigente <span class="text-danger">*</span></label>
 									<div class="col-lg-3 input-group date">
-										<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input
+										<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input required
 											autocomplete="off" name="fecha_limite_vigencia" id="fecha_limite_vigencia" type="text"
 											class="form-control fecha" placeholder="AAAA-MM-DD"
 											value="<?php echo $FechaVigencia; ?>">
 									</div>
 
-									<label class="col-lg-1 control-label">Proveedor</label>
+									<label class="col-lg-1 control-label">Proveedor <span class="text-danger">*</span></label>
 									<div class="col-lg-3">
 										<input name="id_socio_negocio" type="hidden" id="id_socio_negocio" value="<?php if (isset($_GET['Proveedor']) && ($_GET['Proveedor'] != "")) {
 											echo $_GET['Proveedor'];
 										} ?>">
-										<input name="socio_negocio" type="text" class="form-control"
+										<input name="socio_negocio" type="text" class="form-control" required
 											id="socio_negocio" placeholder="Para TODOS, dejar vacio..." value="<?php if (isset($_GET['socio_negocio']) && ($_GET['socio_negocio'] != "")) {
 												echo $_GET['socio_negocio'];
 											} ?>">
 									</div>
 
-									<label class="col-lg-1 control-label">Sucursal Proveedor</label>
+									<label class="col-lg-1 control-label">Sucursal Proveedor <span class="text-danger">*</span></label>
 									<div class="col-lg-3">
-										<select id="id_consecutivo_direccion" name="id_consecutivo_direccion" class="form-control select2">
+										<select id="id_consecutivo_direccion" name="id_consecutivo_direccion" class="form-control select2" required>
 											<option value="">Seleccione...</option>
 
 											<?php if ($Proveedor != "") { ?>
 												<?php while ($row_Sucursal = sqlsrv_fetch_array($SQL_Sucursal)) { ?>
-													<option value="<?php echo $row_Sucursal['NombreSucursal']; ?>" <?php if (strcmp($row_Sucursal['NombreSucursal'], $_GET['Sucursal']) == 0) {
+													<option value="<?php echo $row_Sucursal['NumeroLinea']; ?>" <?php if (strcmp($row_Sucursal['NumeroLinea'], $_GET['Sucursal']) == 0) {
 														   echo "selected";
 													   } ?>>
 														<?php echo $row_Sucursal['NombreSucursal']; ?>
@@ -322,9 +348,9 @@ if ($type != 0) {
 								</div>
 
 								<div class="form-group">
-									<label class="col-lg-1 control-label">Comentario</label>
+									<label class="col-lg-1 control-label">Comentario <span class="text-danger">*</span></label>
 									<div class="col-lg-7">
-										<textarea name="descripcion_campana" rows="3" maxlength="3000" class="form-control"
+										<textarea name="descripcion_campana" rows="3" maxlength="3000" class="form-control" required
 											id="descripcion_campana" type="text"><?php echo $Comentario; ?></textarea>
 									</div>
 

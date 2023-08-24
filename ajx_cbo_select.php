@@ -57,15 +57,21 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
             echo "<option value=''>Seleccione...</option>";
         } else {
             $type_dir = 'S';
-            $sw_dirS = 0; //Destino (Envio)
-            $sw_dirB = 0; //Factura
-            $prov = 0; //Si es proveedor
+            $sw_dirS = 0; // Destino (Envio)
+            $sw_dirB = 0; // Factura
+            $prov = 0; // Si es proveedor
+            $sucline = 0; // 0 - Por Nombre, 1 Por Consecutivo
+
             if (isset($_GET['tdir']) && $_GET['tdir'] != "") {
                 $type_dir = $_GET['tdir'];
             }
             if (isset($_GET['pv']) && ($_GET['pv'] == 1)) {
                 $prov = 1;
             }
+            if (isset($_GET['sucline']) && ($_GET['sucline'] == 1)) {
+                $sucline = 1;
+            }
+            
             $Parametros = array(
                 "'" . $_GET['id'] . "'",
                 "'" . $type_dir . "'",
@@ -93,9 +99,21 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
                         $dirDefecto = $row['ShipToDef'] ?? "";
                     }
 
-                    $NombreSucursal = $row['NombreSucursal'];
-                    $SucursalDef = ($NombreSucursal == $dirDefecto) ? "selected" : "";
-                    echo "<option value='$NombreSucursal' $SucursalDef>$NombreSucursal</option>";
+                    if($sucline == 0) {
+                        $NombreSucursal = $row['NombreSucursal'];
+                        $SucursalDef = ($NombreSucursal == $dirDefecto) ? "selected" : "";
+                        
+                        echo "<option value='$NombreSucursal' $SucursalDef>$NombreSucursal</option>";
+                    } else {
+                        // SMM, 24/08/2023
+                        $NumeroLinea = $row['NumeroLinea'];
+                        
+                        $NombreSucursal = $row['NombreSucursal'];
+                        $SucursalDef = ($NombreSucursal == $dirDefecto) ? "selected" : "";
+                        
+                        echo "<option value='$NumeroLinea' $SucursalDef>$NombreSucursal</option>";
+                    }
+                    
                 }
             } else {
                 echo "<option value=''>Seleccione...</option>";

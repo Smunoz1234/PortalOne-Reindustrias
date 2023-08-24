@@ -291,7 +291,7 @@ if ($sw == 1) {
 														<?php } ?>
 													</td>
 													<td>
-														<?php echo $row['socio_negocios'] ?? ""; ?>
+														<?php echo $row['socio_negocio'] ?? ""; ?>
 													</td>
 													<td>
 														<?php echo $row['id_direccion_destino'] ?? ""; ?>
@@ -381,7 +381,6 @@ if ($sw == 1) {
 			$('.dataTables-example').DataTable({
 				pageLength: 25,
 				dom: '<"html5buttons"B>lTfgitp',
-				order: [[0, "desc"]],
 				language: {
 					"decimal": "",
 					"emptyTable": "No se encontraron resultados.",
@@ -406,8 +405,8 @@ if ($sw == 1) {
 						"sortDescending": ": Activar para ordenar la columna descendente"
 					}
 				},
-				buttons: []
-
+				buttons: [],
+				order: [[6, "desc"]]
 			});
 
 		});
