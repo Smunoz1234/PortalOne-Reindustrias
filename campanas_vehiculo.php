@@ -38,6 +38,106 @@ if ($Proveedor != "") {
 
 	$SQL_Sucursal = EjecutarSP('sp_ConsultarSucursalesClientes', $Parametros);
 }
+
+// SMM, 24/08/2023
+$msg_error = "";
+$parametros = array();
+
+$coduser = $_SESSION['CodUser'];
+$datetime = FormatoFecha(date('Y-m-d'), date('H:i:s'));
+
+$type = $_POST['type'] ?? 0;
+$id_campana = $_POST['id_campana'] ?? "";
+$campana = $_POST['campana'] ?? "";
+$descripcion_campana = $_POST['descripcion_campana'] ?? "";
+$id_socio_negocio = $_POST['id_socio_negocio'] ?? "";
+$socio_negocio = $_POST['socio_negocio'] ?? "";
+$id_consecutivo_direccion = ($_POST['id_consecutivo_direccion'] != "") ? $_POST['id_consecutivo_direccion'] : "NULL";
+$id_direccion_destino = $_POST['id_direccion_destino'] ?? "";
+$direccion_destino = $_POST['direccion_destino'] ?? "";
+$tiempo_campana_meses = $_POST['tiempo_campana_meses'] ?? "";
+$fecha_limite_vigencia = isset($_POST['fecha_limite_vigencia']) ? FormatoFecha($_POST['fecha_limite_vigencia']) : "";
+$estado = $_POST['estado'] ?? "";
+$id_usuario_creacion = "'$coduser'";
+$fecha_creacion = "'$datetime'";
+$hora_creacion = "'$datetime'";
+$id_usuario_actualizacion = "'$coduser'";
+$fecha_actualizacion = "'$datetime'";
+$hora_actualizacion = "'$datetime'";
+
+if ($type == 1) {
+    $msg_error = "No se pudo crear el registro.";
+
+    $parametros = array(
+        $type,
+        "'$id_campana'",
+        "'$campana'",
+		"'$descripcion_campana'",
+        "'$id_socio_negocio'",
+        "'$socio_negocio'",
+        $id_consecutivo_direccion,
+        "'$id_direccion_destino'",
+        "'$direccion_destino'",
+        "'$tiempo_campana_meses'",
+		"'$fecha_limite_vigencia'",
+		"'$estado'",
+        $id_usuario_actualizacion,
+        $fecha_actualizacion,
+        $hora_actualizacion,
+        $id_usuario_creacion,
+        $fecha_creacion,
+        $hora_creacion,
+    );
+
+} elseif ($type == 2) {
+    $msg_error = "No se pudo actualizar el registro.";
+
+    $parametros = array(
+        $type,
+        "'$id_campana'",
+        "'$campana'",
+		"'$descripcion_campana'",
+        "'$id_socio_negocio'",
+        "'$socio_negocio'",
+        $id_consecutivo_direccion,
+        "'$id_direccion_destino'",
+        "'$direccion_destino'",
+        "'$tiempo_campana_meses'",
+		"'$fecha_limite_vigencia'",
+		"'$estado'",
+        $id_usuario_actualizacion,
+        $fecha_actualizacion,
+        $hora_actualizacion,
+    );
+
+} elseif ($type == 3) {
+    $msg_error = "No se pudo eliminar el registro.";
+
+    $parametros = array(
+        $type, // 3 - Eliminar
+        "'$id_zona_sn'",
+    );
+}
+
+if ($type != 0) {
+	$SQL_Operacion = EjecutarSP('sp_tbl_CampanaVehiculos', $parametros);
+
+    if (!$SQL_Operacion) {
+        echo $msg_error;
+    } else {
+        $row = sqlsrv_fetch_array($SQL_Operacion);
+
+        if (isset($row['Error']) && ($row['Error'] != "")) {
+            echo "$msg_error ";
+            echo "(" . $row['Error'] . ")";
+        } else {
+            echo "OK";
+        }
+    }
+
+    // Mostrar mensajes AJAX.
+	exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -54,12 +154,31 @@ if ($Proveedor != "") {
 	<!-- InstanceBeginEditable name="head" -->
 	<script type="text/javascript">
 		$(document).ready(function () {
-			$("#NombreProveedor").change(function () {
-				var NomCliente = document.getElementById("NombreProveedor");
-				var Cliente = document.getElementById("Proveedor");
-				if (NomCliente.value == "") {
-					Cliente.value = "";
+			$("#socio_negocio").change(function () {
+				if ($("#socio_negocio").val() == "") {
+					$("#id_socio_negocio").val("");
+					$("#id_socio_negocio").trigger("change");
 				}
+			});
+
+			$("#id_socio_negocio").change(function () {
+				$('.ibox-content').toggleClass('sk-loading', true);
+				
+				$.ajax({
+					type: "POST",
+					url: "ajx_cbo_select.php?type=3&pv=1&tdir=S&id=" + $("#id_socio_negocio").val(),
+					success: function(response){
+						$('#id_consecutivo_direccion').html(response).fadeIn();
+						$('#id_consecutivo_direccion').trigger('change');
+
+						$('.ibox-content').toggleClass('sk-loading', false);
+					},
+					error: function(error) {
+						console.log("Line 180", error.responseText);
+
+						$('.ibox-content').toggleClass('sk-loading', false);
+					}
+				});
 			});
 		});
 	</script>
@@ -119,7 +238,7 @@ if ($Proveedor != "") {
 						<div class="ibox-content">
 							<?php include "includes/spinner.php"; ?>
 
-							<form action="gestionar_campanas_vehiculo.php" method="get" id="formBuscar"
+							<form action="campanas_vehiculo.php" method="post" id="formEncabezado"
 								class="form-horizontal">
 								<div class="form-group">
 									<label class="col-xs-12">
@@ -129,12 +248,14 @@ if ($Proveedor != "") {
 									</label>
 								</div>
 
+								<input type="hidden" id="type" name="type" value="<?php echo ($Edit == 0) ? 1 : 2; ?>">
+
 								<div class="form-group">
 									<label class="col-lg-1 control-label">
 										ID Campaña <span class="text-danger">*</span>
 									</label>
 									<div class="col-lg-3">
-										<input name="ID" type="text" class="form-control" id="ID" maxlength="100"
+										<input name="id_campana" type="text" class="form-control" id="id_campana" maxlength="100"
 											value="<?php echo $ID; ?>">
 									</div>
 
@@ -142,7 +263,7 @@ if ($Proveedor != "") {
 										Nombre Campaña <span class="text-danger">*</span>
 									</label>
 									<div class="col-lg-3">
-										<input name="Campana" type="text" class="form-control" id="Campana"
+										<input name="campana" type="text" class="form-control" id="campana"
 											maxlength="100" value="<?php echo $Campana; ?>">
 									</div>
 
@@ -150,7 +271,7 @@ if ($Proveedor != "") {
 										Estado Campaña <span class="text-danger">*</span>
 									</label>
 									<div class="col-lg-3">
-										<select name="Estado" class="form-control" id="Estado" required>
+										<select name="estado" class="form-control" id="estado" required>
 											<option value="Y" <?php if ($Estado == "Y") {
 												echo "selected";
 											} ?>>Activa</option>
@@ -166,26 +287,26 @@ if ($Proveedor != "") {
 									<label class="col-lg-1 control-label">Fecha Límite Vigente</label>
 									<div class="col-lg-3 input-group date">
 										<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input
-											autocomplete="off" name="FechaVigencia" id="FechaVigencia" type="text"
+											autocomplete="off" name="fecha_limite_vigencia" id="fecha_limite_vigencia" type="text"
 											class="form-control fecha" placeholder="AAAA-MM-DD"
 											value="<?php echo $FechaVigencia; ?>">
 									</div>
 
 									<label class="col-lg-1 control-label">Proveedor</label>
 									<div class="col-lg-3">
-										<input name="Proveedor" type="hidden" id="Proveedor" value="<?php if (isset($_GET['Proveedor']) && ($_GET['Proveedor'] != "")) {
+										<input name="id_socio_negocio" type="hidden" id="id_socio_negocio" value="<?php if (isset($_GET['Proveedor']) && ($_GET['Proveedor'] != "")) {
 											echo $_GET['Proveedor'];
 										} ?>">
-										<input name="NombreProveedor" type="text" class="form-control"
-											id="NombreProveedor" placeholder="Para TODOS, dejar vacio..." value="<?php if (isset($_GET['NombreProveedor']) && ($_GET['NombreProveedor'] != "")) {
-												echo $_GET['NombreProveedor'];
+										<input name="socio_negocio" type="text" class="form-control"
+											id="socio_negocio" placeholder="Para TODOS, dejar vacio..." value="<?php if (isset($_GET['socio_negocio']) && ($_GET['socio_negocio'] != "")) {
+												echo $_GET['socio_negocio'];
 											} ?>">
 									</div>
 
 									<label class="col-lg-1 control-label">Sucursal Proveedor</label>
 									<div class="col-lg-3">
-										<select id="Sucursal" name="Sucursal" class="form-control select2">
-											<option value="">(Todos)</option>
+										<select id="id_consecutivo_direccion" name="id_consecutivo_direccion" class="form-control select2">
+											<option value="">Seleccione...</option>
 
 											<?php if ($Proveedor != "") { ?>
 												<?php while ($row_Sucursal = sqlsrv_fetch_array($SQL_Sucursal)) { ?>
@@ -203,14 +324,14 @@ if ($Proveedor != "") {
 								<div class="form-group">
 									<label class="col-lg-1 control-label">Comentario</label>
 									<div class="col-lg-7">
-										<textarea name="Comentario" rows="3" maxlength="3000" class="form-control"
-											id="Comentario" type="text"><?php echo $Comentario; ?></textarea>
+										<textarea name="descripcion_campana" rows="3" maxlength="3000" class="form-control"
+											id="descripcion_campana" type="text"><?php echo $Comentario; ?></textarea>
 									</div>
 
 									<div class="col-lg-4">
 										<br>
 										<div class="btn-group pull-right">
-											<button type="button" class="btn btn-outline btn-primary">
+											<button type="submit" class="btn btn-outline btn-primary">
 												<i class="fa <?php echo ($Edit == 0) ? "fa-plus" : "fa-refresh"; ?>"></i>
 												<?php echo ($Edit == 0) ? "Crear Campaña" : "Actualizar Campaña"; ?>
 											</button>
@@ -319,12 +440,14 @@ if ($Proveedor != "") {
 				}
 			});
 
-			$("#formBuscar").validate({
+			$("#formEncabezado").validate({
 				submitHandler: function (form) {
 					$('.ibox-content').toggleClass('sk-loading');
+					
 					form.submit();
 				}
 			});
+			
 			$(".alkin").on('click', function () {
 				$('.ibox-content').toggleClass('sk-loading');
 			});
@@ -354,17 +477,17 @@ if ($Proveedor != "") {
 						enabled: true
 					},
 					onClickEvent: function () {
-						var value = $("#NombreProveedor").getSelectedItemData().CodigoCliente;
-						$("#Proveedor").val(value).trigger("change");
+						var value = $("#socio_negocio").getSelectedItemData().CodigoCliente;
+						$("#id_socio_negocio").val(value).trigger("change");
 					},
 					onKeyEnterEvent: function () {
-						var value = $("#NombreProveedor").getSelectedItemData().CodigoCliente;
-						$("#Proveedor").val(value).trigger("change");
+						var value = $("#socio_negocio").getSelectedItemData().CodigoCliente;
+						$("#id_socio_negocio").val(value).trigger("change");
 					}
 				}
 			};
 
-			$("#NombreProveedor").easyAutocomplete(options);
+			$("#socio_negocio").easyAutocomplete(options);
 
 			$('.dataTables-example').DataTable({
 				pageLength: 25,
@@ -395,11 +518,8 @@ if ($Proveedor != "") {
 					}
 				},
 				buttons: []
-
 			});
-
 		});
-
 	</script>
 	<!-- InstanceEndEditable -->
 </body>
