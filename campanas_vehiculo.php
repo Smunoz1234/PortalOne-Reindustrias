@@ -1,8 +1,8 @@
 <?php require_once "includes/conexion.php";
 
 // PermitirAcceso(1605);
-$ID = $_GET['id'] ?? "";
-$Edit = $_GET['edit'] ?? 0;
+$ID = $_GET['id'] ?? ($_POST['id'] ?? "");
+$Edit = $_GET['edit'] ?? ($_POST['edit'] ?? 0);
 
 $Titulo = ($Edit != 0) ? "Editar Campaña de Vehículos" : "Crear Campaña de Vehículos";
 
@@ -66,57 +66,58 @@ $fecha_actualizacion = "'$datetime'";
 $hora_actualizacion = "'$datetime'";
 
 if ($type == 1) {
-    $msg_error = "No se pudo crear el registro.";
+	$msg_error = "No se pudo crear el registro.";
 
-    $parametros = array(
-        $type,
-        "'$id_campana'",
-        "'$campana'",
+	$parametros = array(
+		$type,
+		"'$id_campana'",
+		"'$campana'",
 		"'$descripcion_campana'",
-        "'$id_socio_negocio'",
-        "'$socio_negocio'",
-        $id_consecutivo_direccion,
-        "'$id_direccion_destino'",
-        "'$direccion_destino'",
-        "'$tiempo_campana_meses'",
+		"'$id_socio_negocio'",
+		"'$socio_negocio'",
+		$id_consecutivo_direccion,
+		"'$id_direccion_destino'",
+		"'$direccion_destino'",
+		"'$tiempo_campana_meses'",
 		"'$fecha_limite_vigencia'",
 		"'$estado'",
-        $id_usuario_actualizacion,
-        $fecha_actualizacion,
-        $hora_actualizacion,
-        $id_usuario_creacion,
-        $fecha_creacion,
-        $hora_creacion,
-    );
+		$id_usuario_actualizacion,
+		$fecha_actualizacion,
+		$hora_actualizacion,
+		$id_usuario_creacion,
+		$fecha_creacion,
+		$hora_creacion,
+	);
 
 } elseif ($type == 2) {
-    $msg_error = "No se pudo actualizar el registro.";
+	$msg_error = "No se pudo actualizar el registro.";
 
-    $parametros = array(
-        $type,
-        "'$id_campana'",
-        "'$campana'",
+	$parametros = array(
+		$type,
+		"'$id_campana'",
+		"'$campana'",
 		"'$descripcion_campana'",
-        "'$id_socio_negocio'",
-        "'$socio_negocio'",
-        $id_consecutivo_direccion,
-        "'$id_direccion_destino'",
-        "'$direccion_destino'",
-        "'$tiempo_campana_meses'",
+		"'$id_socio_negocio'",
+		"'$socio_negocio'",
+		$id_consecutivo_direccion,
+		"'$id_direccion_destino'",
+		"'$direccion_destino'",
+		"'$tiempo_campana_meses'",
 		"'$fecha_limite_vigencia'",
 		"'$estado'",
-        $id_usuario_actualizacion,
-        $fecha_actualizacion,
-        $hora_actualizacion,
-    );
+		$id_usuario_actualizacion,
+		$fecha_actualizacion,
+		$hora_actualizacion,
+	);
 
 } elseif ($type == 3) {
-    $msg_error = "No se pudo eliminar el registro.";
+	$msg_error = "No se pudo eliminar el registro.";
 
-    $parametros = array(
-        $type, // 3 - Eliminar
-        "'$id_zona_sn'",
-    );
+	$parametros = array(
+		$type,
+		// 3 - Eliminar
+		"'$id_zona_sn'",
+	);
 }
 
 $sw_OK = 0;
@@ -124,19 +125,19 @@ $sw_error = 0;
 if ($type != 0) {
 	$SQL_Operacion = EjecutarSP('sp_tbl_CampanaVehiculos', $parametros);
 
-    if (!$SQL_Operacion) {
-        $sw_error = 1;
-    } else {
-        $row = sqlsrv_fetch_array($SQL_Operacion);
+	if (!$SQL_Operacion) {
+		$sw_error = 1;
+	} else {
+		$row = sqlsrv_fetch_array($SQL_Operacion);
 
-        if (isset($row['Error']) && ($row['Error'] != "")) {
-            $sw_error = 1;
+		if (isset($row['Error']) && ($row['Error'] != "")) {
+			$sw_error = 1;
 
-			$msg_error .=  " (" . $row['Error'] . ")";
-        } else {
-            $sw_OK = 1;
-        }
-    }
+			$msg_error .= " (" . $row['Error'] . ")";
+		} else {
+			$sw_OK = 1;
+		}
+	}
 }
 ?>
 
@@ -151,31 +152,29 @@ if ($type != 0) {
 	</title>
 	<!-- InstanceEndEditable -->
 
-	<?php
-	if ($sw_error == 1) {
-		echo "<script>
-			$(document).ready(function() {
+	<script>
+		$(document).ready(function () {
+			<?php if ($sw_error == 1) { ?>
 				Swal.fire({
 					title: '¡Ha ocurrido un error!',
-					text: '$msg_error',
+					text: '<?php echo $msg_error; ?>',
 					icon: 'warning'
 				});
-			});
-			</script>";
-	}
-	if ($sw_OK == 1) {
-		// echo ($Edit == 0) ? "Crear Campaña" : "Actualizar Campaña";
-		echo "<script>
-			$(document).ready(function() {
+			<?php } ?>
+
+			<?php if ($sw_OK == 1) { ?>
 				Swal.fire({
 					title: '¡Listo!',
-					text: 'La operación se ejecuto exitosamente',
+					text: 'La <?php echo ($Edit == 0) ? "creación" : "actualización"; ?> se realizo exitosamente.',
 					icon: 'success'
+				}).then((result) => {
+					if (result.isConfirmed) {
+						location.href = "campanas_vehiculo.php?id=<?php echo $id_campana; ?>&edit=1";
+					}
 				});
-			});
-			</script>";
-	}
-	?>
+			<?php } ?>
+		}); // SMM, 24/08/2023
+	</script>
 
 	<!-- InstanceBeginEditable name="head" -->
 	<script type="text/javascript">
@@ -189,17 +188,17 @@ if ($type != 0) {
 
 			$("#id_socio_negocio").change(function () {
 				$('.ibox-content').toggleClass('sk-loading', true);
-				
+
 				$.ajax({
 					type: "POST",
 					url: "ajx_cbo_select.php?type=3&pv=1&sucline=1&tdir=S&id=" + $("#id_socio_negocio").val(),
-					success: function(response){
+					success: function (response) {
 						$('#id_consecutivo_direccion').html(response).fadeIn();
 						$('#id_consecutivo_direccion').trigger('change');
 
 						$('.ibox-content').toggleClass('sk-loading', false);
 					},
-					error: function(error) {
+					error: function (error) {
 						console.log("Line 180", error.responseText);
 
 						$('.ibox-content').toggleClass('sk-loading', false);
@@ -274,6 +273,8 @@ if ($type != 0) {
 									</label>
 								</div>
 
+								<input type="hidden" id="id" name="id" value="<?php echo $ID; ?>">
+								<input type="hidden" id="edit" name="edit" value="<?php echo $Edit; ?>">
 								<input type="hidden" id="type" name="type" value="<?php echo ($Edit == 0) ? 1 : 2; ?>">
 
 								<div class="form-group">
@@ -281,8 +282,8 @@ if ($type != 0) {
 										ID Campaña <span class="text-danger">*</span>
 									</label>
 									<div class="col-lg-3">
-										<input name="id_campana" type="text" class="form-control" id="id_campana" maxlength="100"
-											value="<?php echo $ID; ?>">
+										<input name="id_campana" type="text" class="form-control" id="id_campana"
+											maxlength="100" value="<?php echo $ID; ?>">
 									</div>
 
 									<label class="col-lg-1 control-label">
@@ -310,15 +311,17 @@ if ($type != 0) {
 								</div>
 
 								<div class="form-group">
-									<label class="col-lg-1 control-label">Fecha Límite Vigente <span class="text-danger">*</span></label>
+									<label class="col-lg-1 control-label">Fecha Límite Vigente <span
+											class="text-danger">*</span></label>
 									<div class="col-lg-3 input-group date">
-										<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input required
-											autocomplete="off" name="fecha_limite_vigencia" id="fecha_limite_vigencia" type="text"
-											class="form-control fecha" placeholder="AAAA-MM-DD"
-											value="<?php echo $FechaVigencia; ?>">
+										<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input
+											required autocomplete="off" name="fecha_limite_vigencia"
+											id="fecha_limite_vigencia" type="text" class="form-control fecha"
+											placeholder="AAAA-MM-DD" value="<?php echo $FechaVigencia; ?>">
 									</div>
 
-									<label class="col-lg-1 control-label">Proveedor <span class="text-danger">*</span></label>
+									<label class="col-lg-1 control-label">Proveedor <span
+											class="text-danger">*</span></label>
 									<div class="col-lg-3">
 										<input name="id_socio_negocio" type="hidden" id="id_socio_negocio" value="<?php if (isset($_GET['Proveedor']) && ($_GET['Proveedor'] != "")) {
 											echo $_GET['Proveedor'];
@@ -329,9 +332,11 @@ if ($type != 0) {
 											} ?>">
 									</div>
 
-									<label class="col-lg-1 control-label">Sucursal Proveedor <span class="text-danger">*</span></label>
+									<label class="col-lg-1 control-label">Sucursal Proveedor <span
+											class="text-danger">*</span></label>
 									<div class="col-lg-3">
-										<select id="id_consecutivo_direccion" name="id_consecutivo_direccion" class="form-control select2" required>
+										<select id="id_consecutivo_direccion" name="id_consecutivo_direccion"
+											class="form-control select2" required>
 											<option value="">Seleccione...</option>
 
 											<?php if ($Proveedor != "") { ?>
@@ -348,22 +353,27 @@ if ($type != 0) {
 								</div>
 
 								<div class="form-group">
-									<label class="col-lg-1 control-label">Comentario <span class="text-danger">*</span></label>
+									<label class="col-lg-1 control-label">Comentario <span
+											class="text-danger">*</span></label>
 									<div class="col-lg-7">
-										<textarea name="descripcion_campana" rows="3" maxlength="3000" class="form-control" required
-											id="descripcion_campana" type="text"><?php echo $Comentario; ?></textarea>
+										<textarea name="descripcion_campana" rows="3" maxlength="3000"
+											class="form-control" required id="descripcion_campana"
+											type="text"><?php echo $Comentario; ?></textarea>
 									</div>
 
 									<div class="col-lg-4">
 										<br>
 										<div class="btn-group pull-right">
 											<button type="submit" class="btn btn-outline btn-primary">
-												<i class="fa <?php echo ($Edit == 0) ? "fa-plus" : "fa-refresh"; ?>"></i>
+												<i
+													class="fa <?php echo ($Edit == 0) ? "fa-plus" : "fa-refresh"; ?>"></i>
 												<?php echo ($Edit == 0) ? "Crear Campaña" : "Actualizar Campaña"; ?>
 											</button>
 
-											<button type="button" class="btn btn-outline btn-info" style="margin-left: 10px;"
-												<?php if ($Edit == 0) { echo "disabled"; } ?>>
+											<button type="button" class="btn btn-outline btn-info"
+												style="margin-left: 10px;" <?php if ($Edit == 0) {
+													echo "disabled";
+												} ?>>
 												<i class="fa fa-plus"></i> Adicionar VIN
 											</button>
 										</div>
@@ -417,25 +427,40 @@ if ($type != 0) {
 														<?php echo $row_Detalle['VIN']; ?>
 													</td>
 													<td>
-														<span class="label <?php echo ($row_Detalle['estado_VIN'] == "P") ? "label-warning" : "label-info"; ?>">
+														<span
+															class="label <?php echo ($row_Detalle['estado_VIN'] == "P") ? "label-warning" : "label-info"; ?>">
 															<?php echo ($row_Detalle['estado_VIN'] == "P") ? "Pendiente" : "Aplicado"; ?>
 														</span>
 													</td>
 													<td class="text-left">
 														<?php if (isset($row_Detalle['docnum_llamada_servicio']) && ($row_Detalle['docnum_llamada_servicio'] != "")) { ?>
-																<a href="llamada_servicio.php?id=<?php echo base64_encode($row_Detalle['docentry_llamada_servicio']); ?>&tl=1&pag=<?php echo base64_encode('gestionar_llamadas_servicios.php'); ?>" class="alkin btn btn-success btn-xs">
-																	<i class="fa fa-folder-open-o"></i> <?php echo $row_Detalle['docnum_llamada_servicio']; ?>
-																</a>
+															<a href="llamada_servicio.php?id=<?php echo base64_encode($row_Detalle['docentry_llamada_servicio']); ?>&tl=1&pag=<?php echo base64_encode('gestionar_llamadas_servicios.php'); ?>"
+																class="alkin btn btn-success btn-xs">
+																<i class="fa fa-folder-open-o"></i>
+																<?php echo $row_Detalle['docnum_llamada_servicio']; ?>
+															</a>
 														<?php } ?>
 													</td>
 
-													<td><?php echo $row_Detalle['DeOrigenLlamada'] ?? ""; ?></td>
-													<td><?php echo $row_Detalle['DeEstadoLlamada'] ?? ""; ?></td>
-													<td><?php echo $row_Detalle['socio_negocios'] ?? ""; ?></td>
-													<td><?php echo (isset($row_Detalle["FechaCierre"]) && $row_Detalle["FechaCierre"] != "") ? $row_Detalle['FechaCierre']->format("Y-m-d") : ""; ?></td>
-													
 													<td>
-														<button type="button" id="btnDelete<?php //echo $row_Proceso['IdInterno']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php //echo $row_Proceso['IdInterno']; ?>');"><i class="fa fa-trash"></i> Eliminar</button>
+														<?php echo $row_Detalle['DeOrigenLlamada'] ?? ""; ?>
+													</td>
+													<td>
+														<?php echo $row_Detalle['DeEstadoLlamada'] ?? ""; ?>
+													</td>
+													<td>
+														<?php echo $row_Detalle['socio_negocios'] ?? ""; ?>
+													</td>
+													<td>
+														<?php echo (isset($row_Detalle["FechaCierre"]) && $row_Detalle["FechaCierre"] != "") ? $row_Detalle['FechaCierre']->format("Y-m-d") : ""; ?>
+													</td>
+
+													<td>
+														<button type="button"
+															id="btnDelete<?php //echo $row_Proceso['IdInterno']; ?>"
+															class="btn btn-danger btn-xs"
+															onClick="EliminarCampo('<?php //echo $row_Proceso['IdInterno']; ?>');"><i
+																class="fa fa-trash"></i> Eliminar</button>
 													</td>
 												</tr>
 											<?php } ?>
@@ -469,11 +494,11 @@ if ($type != 0) {
 			$("#formEncabezado").validate({
 				submitHandler: function (form) {
 					$('.ibox-content').toggleClass('sk-loading');
-					
+
 					form.submit();
 				}
 			});
-			
+
 			$(".alkin").on('click', function () {
 				$('.ibox-content').toggleClass('sk-loading');
 			});
