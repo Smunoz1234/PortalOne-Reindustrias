@@ -138,7 +138,7 @@ if ($type != 0) {
 		} else {
 			$SQL_Corregir = EjecutarSP('sp_tbl_CampanaVehiculos', [4]); // @type = 4 -- Corregir
 
-			if(!$SQL_Corregir){
+			if (!$SQL_Corregir) {
 				$sw_error = 1;
 			} else {
 				$sw_OK = 1;
@@ -330,9 +330,11 @@ if ($type != 0) {
 									<label class="col-lg-1 control-label">Proveedor <span
 											class="text-danger">*</span></label>
 									<div class="col-lg-3">
-										<input name="id_socio_negocio" type="hidden" id="id_socio_negocio" value="<?php echo $Proveedor; ?>">
+										<input name="id_socio_negocio" type="hidden" id="id_socio_negocio"
+											value="<?php echo $Proveedor; ?>">
 										<input name="socio_negocio" type="text" class="form-control" required
-											id="socio_negocio" placeholder="Para TODOS, dejar vacio..." value="<?php echo $NombreProveedor; ?>">
+											id="socio_negocio" placeholder="Para TODOS, dejar vacio..."
+											value="<?php echo $NombreProveedor; ?>">
 									</div>
 
 									<label class="col-lg-1 control-label">Sucursal Proveedor <span
@@ -376,7 +378,7 @@ if ($type != 0) {
 											<button type="button" class="btn btn-outline btn-info"
 												style="margin-left: 10px;" <?php if ($Edit == 0) {
 													echo "disabled";
-												} ?>>
+												} ?> onclick="CrearRegistro();">
 												<i class="fa fa-plus"></i> Adicionar VIN
 											</button>
 										</div>
@@ -462,7 +464,7 @@ if ($type != 0) {
 														<button type="button"
 															id="btnDelete<?php //echo $row_Proceso['IdInterno']; ?>"
 															class="btn btn-danger btn-xs"
-															onClick="EliminarCampo('<?php //echo $row_Proceso['IdInterno']; ?>');"><i
+															onclick="EliminarCampo('<?php //echo $row_Proceso['IdInterno']; ?>');"><i
 																class="fa fa-trash"></i> Eliminar</button>
 													</td>
 												</tr>
@@ -574,6 +576,72 @@ if ($type != 0) {
 				buttons: []
 			});
 		});
+	</script>
+
+	<script>
+		function CrearRegistro() {
+			$('.ibox-content').toggleClass('sk-loading', true);
+
+			$.ajax({
+				type: "POST",
+				url: "md_campanas_vehiculo.php",
+				success: function (response) {
+					$('.ibox-content').toggleClass('sk-loading', false);
+					
+					$('#ContenidoModal').html(response);
+					$('#myModal').modal("show");
+				}
+			});
+		}
+		function EditarCampo(id, doc) {
+			$('.ibox-content').toggleClass('sk-loading', true);
+
+			$.ajax({
+				type: "POST",
+				url: "md_autorizaciones_documentos.php",
+				data: {
+					doc: doc,
+					id: id,
+					edit: 1
+				},
+				success: function (response) {
+					$('.ibox-content').toggleClass('sk-loading', false);
+					$('#ContenidoModal').html(response);
+					$('#myModal').modal("show");
+				}
+			});
+		}
+		function EliminarCampo(id, doc) {
+			Swal.fire({
+				title: "¿Está seguro que desea eliminar este registro?",
+				icon: "question",
+				showCancelButton: true,
+				confirmButtonText: "Si, confirmo",
+				cancelButtonText: "No"
+			}).then((result) => {
+				if (result.isConfirmed) {
+					//$('.ibox-content').toggleClass('sk-loading',true);
+					$.ajax({
+						type: "post",
+						url: "parametros_autorizaciones_documentos.php",
+						data: {
+							TipoDoc: doc,
+							IdInterno: id,
+							Metodo: 3
+						},
+						async: false,
+						success: function (data) {
+							location.href = "parametros_autorizaciones_documentos.php?a=<?php echo base64_encode("OK_PRDel"); ?>";
+						},
+						error: function (error) {
+							console.error("consulta erronea");
+						}
+					});
+				}
+			});
+
+			return result;
+		}
 	</script>
 	<!-- InstanceEndEditable -->
 </body>
