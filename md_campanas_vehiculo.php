@@ -1,41 +1,6 @@
 <?php
 require_once "includes/conexion.php";
 
-$Title = "Crear nuevo registro";
-$Metodo = 1;
-
-$edit = isset($_POST['edit']) ? $_POST['edit'] : 0;
-$doc = isset($_POST['doc']) ? $_POST['doc'] : "";
-$id = isset($_POST['id']) ? $_POST['id'] : "";
-
-// SMM, 26/08/2022
-$palabra = ($doc == "Procesos") ? "proceso" : "motivo";
-
-// Usuarios de SAP, (NO bloqueados).
-$SQL_UsuariosSAP = Seleccionar("uvw_Sap_tbl_UsuariosSAP", "*", "Locked = 'N'", "USER_CODE");
-
-// SMM, 18/07/2022
-$SQL_TipoDoc = Seleccionar("uvw_tbl_ObjetosSAP", "*", "CategoriaObjeto = 'Documentos de ventas' OR IdTipoDocumento = '1250000001'", 'CategoriaObjeto, DeTipoDocumento');
-$SQL_ModeloAutorizacion = Seleccionar("uvw_Sap_tbl_ModelosAutorizaciones", "*");
-
-
-$ids_perfiles = array();
-if ($edit == 1 && $id != "") {
-	$Title = "Editar registro";
-	$Metodo = 2;
-	if ($doc == "Motivos") {
-		$SQL = Seleccionar('tbl_Autorizaciones_Motivos', '*', "IdInterno='" . $id . "'");
-		$row = sqlsrv_fetch_array($SQL);
-
-	} elseif ($doc == "Procesos") {
-		$SQL = Seleccionar('tbl_Autorizaciones_Procesos', '*', "IdInterno='" . $id . "'");
-		$row = sqlsrv_fetch_array($SQL);
-
-		// SMM 27/07/2022
-		$ids_perfiles = isset($row['Perfiles']) ? explode(";", $row['Perfiles']) : [];
-	}
-}
-
 // SMM, 25/02/2023
 $msg_error_detalle = "";
 $parametros_detalle = array();
@@ -179,6 +144,7 @@ if ($type_detalle != 0) {
 						</h4>
 					</div>
 					<!-- /.panel_heading -->
+					
 					<div id="collapseOne" class="panel-collapse collapse in" role="tabpanel"
 						aria-labelledby="headingOne">
 						<div class="panel-body">
@@ -219,10 +185,7 @@ if ($type_detalle != 0) {
 		<button type="button" class="btn btn-danger m-t-md" data-dismiss="modal"><i class="fa fa-times"></i>
 			Cerrar</button>
 	</div>
-	<input type="hidden" id="TipoDoc" name="TipoDoc" value="<?php echo $doc; ?>" />
-	<input type="hidden" id="ID_Actual" name="ID_Actual" value="<?php echo $id; ?>" />
-	<input type="hidden" id="Metodo" name="Metodo" value="<?php echo $Metodo; ?>" />
-	<input type="hidden" id="frmType" name="frmType" value="1" />
+	<!-- /modal-footer -->
 </form>
 
 <script>
