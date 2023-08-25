@@ -213,32 +213,52 @@ if ($type_detalle != 0) {
 					return vin !== "";
 				});
 
-				$.ajax({
-					type: "POST",
-					url: "md_campanas_vehiculo.php",
-					data: {
-						type: 1,
-						ID: $("#id_campana").val(),
-						VIN: arregloVINs[0],
-					},
-					success: function (response) {
-						console.log(response);
+				
 
-						Swal.fire({
-							icon: (response == "OK") ? "success" : "warning'",
-							title: (response == "OK") ? "Operación exitosa" : "Ocurrió un error",
-							text: (response == "OK") ? "La consulta se ha ejecutado correctamente." : response
-						}).then((result) => {
-							if (result.isConfirmed) {
-								location.reload();
+				// Validación del ciclo
+				var validarAjax = true;
+				var contadorAjax = 0;
+
+				// Iterar sobre cada VIN y realizar una llamada AJAX por separado
+				arregloVINs.forEach(function (vin) {
+					$.ajax({
+						type: "POST",
+						url: "md_campanas_vehiculo.php",
+						data: {
+							type: 1,
+							ID: $("#id_campana").val(),
+							VIN: vin,  // Usar el VIN actual en esta iteración
+						},
+						success: function (response) {
+							console.log(response);
+
+							contadorAjax++;
+							if (response !== "OK") {
+								validarAjax = false;
 							}
-						});
-					},
-					error: function (error) {
-						console.error("280->", error.responseText);
-					}
+
+							// Verificar si todas las solicitudes AJAX han finalizado
+							if (contadorAjax === arregloVINs.length) {
+								Swal.fire({
+									icon: (validarAjax) ? "success" : "warning'",
+									title: (validarAjax) ? "¡Listo!" : "¡Error!",
+									text: (validarAjax) ? "Todos los VINs se insertaron correctamente." : "No se pudieron insertar algunos VINs"
+								}).then((result) => {
+									if (result.isConfirmed) {
+										location.reload();
+									}
+								});
+								// Swal.fire
+							}
+						},
+						error: function (error) {
+							console.error("240->", error.responseText);
+
+							validarAjax = false;
+						}
+					});
 				});
-				// $.ajax
+				// .forEach()
 			}
 			// submitHandler
 		});
