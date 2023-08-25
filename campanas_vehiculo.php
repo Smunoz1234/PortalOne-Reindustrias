@@ -298,7 +298,9 @@ if ($type != 0) {
 									</label>
 									<div class="col-lg-3">
 										<input name="id_campana" type="text" class="form-control" id="id_campana"
-											maxlength="100" value="<?php echo $ID; ?>">
+											maxlength="100" value="<?php echo $ID; ?>" <?php if ($Edit == 1) {
+												echo "readonly";
+											} ?>>
 									</div>
 
 									<label class="col-lg-1 control-label">
