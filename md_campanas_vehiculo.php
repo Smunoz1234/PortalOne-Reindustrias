@@ -11,11 +11,7 @@ $datetime_detalle = FormatoFecha(date('Y-m-d'), date('H:i:s'));
 $type_detalle = $_POST['type'] ?? 0;
 $ID_detalle = $_POST['ID'] ?? "";
 
-$Cons_Nuevo = "SELECT (MAX(id_campana_detalle) + 1) \"id_nuevo\" FROM tbl_CampanaVehiculosDetalle WHERE id_campana = '$ID_detalle'";
-$SQL_Nuevo = sqlsrv_query($conexion, $Cons_Nuevo);
-$row_Nuevo = sqlsrv_fetch_array($SQL_Nuevo);
-
-$id_campana_detalle = $_POST['id_campana_detalle'] ?? ($row_Nuevo['id_nuevo'] ?? "");
+$id_campana_detalle = $_POST['id_campana_detalle'] ?? "NULL";
 $VIN_detalle = $_POST['VIN'] ?? "";
 
 $id_usuario_creacion_detalle = "'$coduser'";
@@ -226,6 +222,8 @@ if ($type_detalle != 0) {
 						VIN: arregloVINs[0],
 					},
 					success: function (response) {
+						console.log(response);
+
 						Swal.fire({
 							icon: (response == "OK") ? "success" : "warning'",
 							title: (response == "OK") ? "Operación exitosa" : "Ocurrió un error",
