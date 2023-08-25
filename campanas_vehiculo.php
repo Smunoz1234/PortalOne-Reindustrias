@@ -24,9 +24,13 @@ $Sucursal = $row_Encabezado['id_consecutivo_direccion'] ?? "";
 $Cons_Detalle = "SELECT * FROM tbl_CampanaVehiculosDetalle WHERE id_campana = '$ID'";
 $SQL_Detalle = sqlsrv_query($conexion, $Cons_Detalle);
 
-if (!$SQL_Encabezado || !$SQL_Detalle) {
+$Cons_Articulos = "SELECT * FROM tbl_CampanaVehiculosDetalle WHERE id_campana = '$ID'";
+$SQL_Articulos = sqlsrv_query($conexion, $Cons_Articulos);
+
+if (!$SQL_Encabezado || !$SQL_Detalle || !$SQL_Articulos) {
 	echo $Cons_Encabezado;
 	echo "<br>$Cons_Detalle";
+	echo "<br>$Cons_Articulos";
 }
 
 // Desde ajx_cbo_select(3)
