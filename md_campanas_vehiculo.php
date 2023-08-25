@@ -245,7 +245,11 @@ if ($type_detalle != 0) {
 									text: (validarAjax) ? "Todos los VINs se insertaron correctamente." : "No se pudieron insertar algunos VINs, por favor verifique"
 								}).then((result) => {
 									if (result.isConfirmed) {
-										location.reload();
+										if(validarAjax) {
+											location.reload();
+										} else {
+											console.log("Hubo un problema al insertar VINs");
+										}
 									}
 								});
 								// Swal.fire
