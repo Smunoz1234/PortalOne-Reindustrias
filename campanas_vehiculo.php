@@ -265,6 +265,14 @@ if ($type != 0) {
 			</div>
 
 			<div class="wrapper wrapper-content">
+				<div class="modal inmodal fade" id="myModal" tabindex="-1" role="dialog" aria-hidden="true">
+					<div class="modal-dialog modal-lg">
+						<div class="modal-content" id="ContenidoModal">
+							<!-- Contenido generado por JS -->
+						</div>
+					</div>
+				</div>
+
 				<div class="row">
 					<div class="col-lg-12">
 						<div class="ibox-content">
@@ -341,7 +349,7 @@ if ($type != 0) {
 											class="text-danger">*</span></label>
 									<div class="col-lg-3">
 										<select id="id_consecutivo_direccion" name="id_consecutivo_direccion"
-											class="form-control select2" required>
+											class="form-control" required>
 											<option value="">Seleccione...</option>
 
 											<?php if ($Proveedor != "") { ?>
