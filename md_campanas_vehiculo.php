@@ -242,7 +242,7 @@ if ($type_detalle != 0) {
 								Swal.fire({
 									icon: (validarAjax) ? "success" : "warning",
 									title: (validarAjax) ? "¡Listo!" : "¡Error!",
-									text: (validarAjax) ? "Todos los VINs se insertaron correctamente." : "No se pudieron insertar algunos VINs"
+									text: (validarAjax) ? "Todos los VINs se insertaron correctamente." : "No se pudieron insertar algunos VINs, por favor verifique"
 								}).then((result) => {
 									if (result.isConfirmed) {
 										location.reload();
