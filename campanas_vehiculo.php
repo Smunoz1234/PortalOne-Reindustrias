@@ -472,9 +472,9 @@ if ($type != 0) {
 
 													<td>
 														<button type="button"
-															id="btnDelete<?php //echo $row_Proceso['IdInterno']; ?>"
+															id="btnDelete<?php echo $row_Detalle['id_campana_detalle']; ?>"
 															class="btn btn-danger btn-xs"
-															onclick="EliminarCampo('<?php //echo $row_Proceso['IdInterno']; ?>');"><i
+															onclick="EliminarRegistro('<?php echo $row_Detalle['id_campana_detalle']; ?>');"><i
 																class="fa fa-trash"></i> Eliminar</button>
 													</td>
 												</tr>
@@ -603,25 +603,8 @@ if ($type != 0) {
 				}
 			});
 		}
-		function EditarCampo(id, doc) {
-			$('.ibox-content').toggleClass('sk-loading', true);
 
-			$.ajax({
-				type: "POST",
-				url: "md_autorizaciones_documentos.php",
-				data: {
-					doc: doc,
-					id: id,
-					edit: 1
-				},
-				success: function (response) {
-					$('.ibox-content').toggleClass('sk-loading', false);
-					$('#ContenidoModal').html(response);
-					$('#myModal').modal("show");
-				}
-			});
-		}
-		function EliminarCampo(id, doc) {
+		function EliminarRegistro(id) {
 			Swal.fire({
 				title: "¿Está seguro que desea eliminar este registro?",
 				icon: "question",
@@ -630,27 +613,32 @@ if ($type != 0) {
 				cancelButtonText: "No"
 			}).then((result) => {
 				if (result.isConfirmed) {
-					//$('.ibox-content').toggleClass('sk-loading',true);
 					$.ajax({
-						type: "post",
-						url: "parametros_autorizaciones_documentos.php",
+						type: "POST",
+						url: "md_campanas_vehiculo.php",
 						data: {
-							TipoDoc: doc,
-							IdInterno: id,
-							Metodo: 3
+							type: 3,
+							ID: $("#id_campana").val(),
+							id_campana_detalle: id,
 						},
-						async: false,
-						success: function (data) {
-							location.href = "parametros_autorizaciones_documentos.php?a=<?php echo base64_encode("OK_PRDel"); ?>";
+						success: function (response) {
+							Swal.fire({
+								icon: (response == "OK") ? "success" : "warning'",
+								title: (response == "OK") ? "¡Listo!" : "¡Error!",
+								text: (response == "OK") ? "Se elimino el VIN correctamente." : response
+							}).then((result) => {
+								if (result.isConfirmed) {
+									location.reload();
+								}
+							});
 						},
 						error: function (error) {
-							console.error("consulta erronea");
+							console.error("640->", error.responseText);
 						}
 					});
+					// $.ajax
 				}
 			});
-
-			return result;
 		}
 	</script>
 	<!-- InstanceEndEditable -->

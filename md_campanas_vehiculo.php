@@ -8,10 +8,14 @@ $parametros_detalle = array();
 $coduser = $_SESSION['CodUser'];
 $datetime_detalle = FormatoFecha(date('Y-m-d'), date('H:i:s'));
 
-$id_campana_detalle = 0;
-
 $type_detalle = $_POST['type'] ?? 0;
 $ID_detalle = $_POST['ID'] ?? "";
+
+$Cons_Nuevo = "SELECT (MAX(id_campana_detalle) + 1) \"id_nuevo\" FROM tbl_CampanaVehiculosDetalle WHERE id_campana = '$ID_detalle'";
+$SQL_Nuevo = sqlsrv_query($conexion, $Cons_Nuevo);
+$row_Nuevo = sqlsrv_fetch_array($SQL_Nuevo);
+
+$id_campana_detalle = $_POST['id_campana_detalle'] ?? ($row_Nuevo['id_nuevo'] ?? "");
 $VIN_detalle = $_POST['VIN'] ?? "";
 
 $id_usuario_creacion_detalle = "'$coduser'";
@@ -54,7 +58,7 @@ if ($type_detalle == 1) {
 	$msg_error = "No se pudo eliminar el VIN.";
 
 	$parametros = array(
-		$type,
+		$type_detalle,
 		"'$ID_detalle'",
 		$id_campana_detalle,
 	);
@@ -162,9 +166,7 @@ if ($type_detalle != 0) {
 					<div class="col-md-12">
 						<label class="control-label">Lista VIN</label>
 						<textarea name="ListaVIN" rows="5" maxlength="3000" class="form-control" id="ListaVIN"
-							type="text"><?php if ($edit == 1) {
-								echo $row['Comentarios'];
-							} ?></textarea>
+							type="text"></textarea>
 					</div>
 				</div>
 				<!-- /.row -->
@@ -238,6 +240,7 @@ if ($type_detalle != 0) {
 						console.error("280->", error.responseText);
 					}
 				});
+				// $.ajax
 			}
 			// submitHandler
 		});
@@ -273,12 +276,12 @@ if ($type_detalle != 0) {
 				});
 
 				// Realiza la validación
-				var formatoCorrecto = arregloVINs.every(function (vin) {
+				let formatoCorrecto = arregloVINs.every(function (vin) {
 					// Verificar si tiene entre 1 y 32 caracteres alfanuméricos.
 					return /^[a-zA-Z0-9]{1,32}$/.test(vin);
 				});
 
-				if (formatoCorrecto) {
+				if (formatoCorrecto && (listaVINs != "")) {
 					Swal.fire({
 						title: '¡Listo!',
 						text: 'Puede continuar con el proceso dando clic en el botón Aceptar.',
