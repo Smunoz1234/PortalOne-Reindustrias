@@ -299,8 +299,8 @@ if ($type != 0) {
 									<div class="col-lg-3">
 										<input name="id_campana" type="text" class="form-control" id="id_campana"
 											maxlength="100" value="<?php echo $ID; ?>" <?php if ($Edit == 1) {
-												echo "readonly";
-											} ?>>
+												   echo "readonly";
+											   } ?>>
 									</div>
 
 									<label class="col-lg-1 control-label">
@@ -415,76 +415,111 @@ if ($type != 0) {
 					<div class="row">
 						<div class="col-lg-12">
 							<div class="ibox-content">
-								<?php include "includes/spinner.php"; ?>
-								<div class="table-responsive">
-									<table class="table table-striped table-bordered table-hover dataTables-example"
-										id="example">
-										<thead>
-											<tr>
-												<th>ID</th>
-												<th>VIN</th>
-												<th>Estado VIN</th>
-												<th>ID Llamada Servicio</th>
-												<th>Origen</th>
-												<th>Estado Llamada</th>
-												<th>Nombre Cliente</th>
-												<th>Fecha Cierre</th>
-												<th>Acciones</th>
-											</tr>
-										</thead>
-										<tbody>
-											<?php while ($row_Detalle = sqlsrv_fetch_array($SQL_Detalle)) { ?>
-												<tr class="gradeX tooltip-demo">
-													<td>
-														<?php echo $row_Detalle['id_campana'] . "-" . $row_Detalle['id_campana_detalle']; ?>
-													</td>
-													<td>
-														<?php echo $row_Detalle['VIN']; ?>
-													</td>
-													<td>
-														<span
-															class="label <?php echo ($row_Detalle['estado_VIN'] == "P") ? "label-warning" : "label-info"; ?>">
-															<?php echo ($row_Detalle['estado_VIN'] == "P") ? "Pendiente" : "Aplicado"; ?>
-														</span>
-													</td>
-													<td class="text-left">
-														<?php if (isset($row_Detalle['docnum_llamada_servicio']) && ($row_Detalle['docnum_llamada_servicio'] != "")) { ?>
-															<a href="llamada_servicio.php?id=<?php echo base64_encode($row_Detalle['docentry_llamada_servicio']); ?>&tl=1&pag=<?php echo base64_encode('gestionar_llamadas_servicios.php'); ?>"
-																class="alkin btn btn-success btn-xs">
-																<i class="fa fa-folder-open-o"></i>
-																<?php echo $row_Detalle['docnum_llamada_servicio']; ?>
-															</a>
-														<?php } ?>
-													</td>
 
-													<td>
-														<?php echo $row_Detalle['DeOrigenLlamada'] ?? ""; ?>
-													</td>
-													<td>
-														<?php echo $row_Detalle['DeEstadoLlamada'] ?? ""; ?>
-													</td>
-													<td>
-														<?php echo $row_Detalle['socio_negocios'] ?? ""; ?>
-													</td>
-													<td>
-														<?php echo (isset($row_Detalle["FechaCierre"]) && $row_Detalle["FechaCierre"] != "") ? $row_Detalle['FechaCierre']->format("Y-m-d") : ""; ?>
-													</td>
+								<div class="tabs-container">
+									<ul class="nav nav-tabs">
+										<li class="active"><a data-toggle="tab" href="#tab-1"><i class="fa fa-table"></i>
+												Lista de VINs</a></li>
+										<li><a data-toggle="tab" href="#tab-2"><i class="fa fa-table"></i> Lista de
+												Articulos</a></li>
+									</ul>
+									<!-- /.nav-tabs -->
 
-													<td>
-														<button type="button"
-															id="btnDelete<?php echo $row_Detalle['id_campana_detalle']; ?>"
-															class="btn btn-danger btn-xs"
-															onclick="EliminarRegistro('<?php echo $row_Detalle['id_campana_detalle']; ?>');"><i
-																class="fa fa-trash"></i> Eliminar</button>
-													</td>
-												</tr>
-											<?php } ?>
-										</tbody>
-									</table>
+									<div class="tab-content">
+										<div id="tab-1" class="tab-pane active">
+											<div class="row">
+												<div class="col-lg-12">
+													<div class="ibox-content">
+														<?php include "includes/spinner.php"; ?>
+
+														<div class="table-responsive">
+															<table
+																class="table table-striped table-bordered table-hover dataTables-example"
+																id="example">
+																<thead>
+																	<tr>
+																		<th>ID</th>
+																		<th>VIN</th>
+																		<th>Estado VIN</th>
+																		<th>ID Llamada Servicio</th>
+																		<th>Origen</th>
+																		<th>Estado Llamada</th>
+																		<th>Nombre Cliente</th>
+																		<th>Fecha Cierre</th>
+																		<th>Acciones</th>
+																	</tr>
+																</thead>
+																<tbody>
+																	<?php while ($row_Detalle = sqlsrv_fetch_array($SQL_Detalle)) { ?>
+																		<tr class="gradeX tooltip-demo">
+																			<td>
+																				<?php echo $row_Detalle['id_campana'] . "-" . $row_Detalle['id_campana_detalle']; ?>
+																			</td>
+																			<td>
+																				<?php echo $row_Detalle['VIN']; ?>
+																			</td>
+																			<td>
+																				<span
+																					class="label <?php echo ($row_Detalle['estado_VIN'] == "P") ? "label-warning" : "label-info"; ?>">
+																					<?php echo ($row_Detalle['estado_VIN'] == "P") ? "Pendiente" : "Aplicado"; ?>
+																				</span>
+																			</td>
+																			<td class="text-left">
+																				<?php if (isset($row_Detalle['docnum_llamada_servicio']) && ($row_Detalle['docnum_llamada_servicio'] != "")) { ?>
+																					<a href="llamada_servicio.php?id=<?php echo base64_encode($row_Detalle['docentry_llamada_servicio']); ?>&tl=1&pag=<?php echo base64_encode('gestionar_llamadas_servicios.php'); ?>"
+																						class="alkin btn btn-success btn-xs">
+																						<i class="fa fa-folder-open-o"></i>
+																						<?php echo $row_Detalle['docnum_llamada_servicio']; ?>
+																					</a>
+																				<?php } ?>
+																			</td>
+
+																			<td>
+																				<?php echo $row_Detalle['DeOrigenLlamada'] ?? ""; ?>
+																			</td>
+																			<td>
+																				<?php echo $row_Detalle['DeEstadoLlamada'] ?? ""; ?>
+																			</td>
+																			<td>
+																				<?php echo $row_Detalle['socio_negocios'] ?? ""; ?>
+																			</td>
+																			<td>
+																				<?php echo (isset($row_Detalle["FechaCierre"]) && $row_Detalle["FechaCierre"] != "") ? $row_Detalle['FechaCierre']->format("Y-m-d") : ""; ?>
+																			</td>
+
+																			<td>
+																				<button type="button"
+																					id="btnDelete<?php echo $row_Detalle['id_campana_detalle']; ?>"
+																					class="btn btn-danger btn-xs"
+																					onclick="EliminarRegistro('<?php echo $row_Detalle['id_campana_detalle']; ?>');"><i
+																						class="fa fa-trash"></i>
+																					Eliminar</button>
+																			</td>
+																		</tr>
+																	<?php } ?>
+																</tbody>
+															</table>
+														</div>
+														<!-- /.table-responsive -->
+													</div>
+													<!-- /.ibox-content -->
+												</div>
+												<!-- /.col-lg-12 -->
+											</div>
+											<!-- /.row -->
+										</div>
+										<!-- /#tab-1 -->
+									</div>
+									<!-- /.tab-content-->
 								</div>
+								<!-- /.tabs-container -->
+
 							</div>
+							<!-- /.ibox-content -->
 						</div>
+						<!-- /.col-lg-12 -->
 					</div>
+					<!-- /.row -->
 				<?php } ?>
 
 			</div>
@@ -597,7 +632,7 @@ if ($type != 0) {
 				url: "md_campanas_vehiculo.php",
 				success: function (response) {
 					$('.ibox-content').toggleClass('sk-loading', false);
-					
+
 					$('#ContenidoModal').html(response);
 					$('#myModal').modal("show");
 				}
