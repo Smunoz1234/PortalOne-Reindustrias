@@ -240,7 +240,7 @@ if ($type_detalle != 0) {
 							// Verificar si todas las solicitudes AJAX han finalizado
 							if (contadorAjax === arregloVINs.length) {
 								Swal.fire({
-									icon: (validarAjax) ? "success" : "warning'",
+									icon: (validarAjax) ? "success" : "warning",
 									title: (validarAjax) ? "¡Listo!" : "¡Error!",
 									text: (validarAjax) ? "Todos los VINs se insertaron correctamente." : "No se pudieron insertar algunos VINs"
 								}).then((result) => {
@@ -274,53 +274,43 @@ if ($type_detalle != 0) {
 
 <script>
 	function Validar() {
-		Swal.fire({
-			title: 'Validando VINs',
-			text: 'Se esta validando la estructura de los códigos VIN.',
-			icon: 'info'
-		}).then((result) => {
-			if (result.isConfirmed) {
-				// Obtén el valor del campo de entrada
-				let listaVINs = $("#ListaVIN").val();
+		let listaVINs = $("#ListaVIN").val();
 
-				// Divide la lista en un arreglo usando el separador ";"
-				let arregloVINs = listaVINs.split(";");
+		// Divide la lista en un arreglo usando el separador ";"
+		let arregloVINs = listaVINs.split(";");
 
-				// Limpia los espacios en blanco y elementos vacíos del arreglo
-				arregloVINs = arregloVINs.map(function (vin) {
-					return vin.trim();
-				}).filter(function (vin) {
-					return vin !== "";
-				});
-
-				// Realiza la validación
-				let formatoCorrecto = arregloVINs.every(function (vin) {
-					// Verificar si tiene entre 1 y 32 caracteres alfanuméricos.
-					return /^[a-zA-Z0-9]{1,32}$/.test(vin);
-				});
-
-				if (formatoCorrecto && (listaVINs != "")) {
-					Swal.fire({
-						title: '¡Listo!',
-						text: 'Puede continuar con el proceso dando clic en el botón Aceptar.',
-						icon: 'success'
-					}).then((result) => {
-						if (result.isConfirmed) {
-							$("#btnAdicionar").prop("disabled", false);
-						}
-					});
-
-					// Haz algo con los VINs válidos en arregloVINs
-					console.log("VINs válidos:", arregloVINs);
-				} else {
-					Swal.fire({
-						title: '¡Error!',
-						text: 'La estructura es incorrecta, por favor verifique.',
-						icon: 'warning'
-					});
-				}
-			}
-			// if (result.isConfirmed)
+		// Limpia los espacios en blanco y elementos vacíos del arreglo
+		arregloVINs = arregloVINs.map(function (vin) {
+			return vin.trim();
+		}).filter(function (vin) {
+			return vin !== "";
 		});
+
+		// Realiza la validación
+		let formatoCorrecto = arregloVINs.every(function (vin) {
+			// Verificar si tiene entre 1 y 32 caracteres alfanuméricos.
+			return /^[a-zA-Z0-9]{1,32}$/.test(vin);
+		});
+
+		if (formatoCorrecto && (listaVINs != "")) {
+			Swal.fire({
+				title: '¡Listo!',
+				text: 'Puede continuar con el proceso dando clic en el botón Aceptar.',
+				icon: 'success'
+			}).then((result) => {
+				if (result.isConfirmed) {
+					$("#btnAdicionar").prop("disabled", false);
+				}
+			});
+
+			// Haz algo con los VINs válidos en arregloVINs
+			console.log("VINs válidos:", arregloVINs);
+		} else {
+			Swal.fire({
+				title: '¡Error!',
+				text: 'La estructura es incorrecta, por favor verifique.',
+				icon: 'warning'
+			});
+		}
 	}
 </script>
