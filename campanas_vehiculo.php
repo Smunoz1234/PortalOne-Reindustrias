@@ -24,7 +24,7 @@ $Sucursal = $row_Encabezado['id_consecutivo_direccion'] ?? "";
 $Cons_Detalle = "SELECT * FROM tbl_CampanaVehiculosDetalle WHERE id_campana = '$ID'";
 $SQL_Detalle = sqlsrv_query($conexion, $Cons_Detalle);
 
-$Cons_Articulos = "SELECT * FROM tbl_CampanaVehiculosDetalle WHERE id_campana = '$ID'";
+$Cons_Articulos = "SELECT * FROM tbl_CampanaVehiculosDetalle_Articulos WHERE id_campana = '$ID'";
 $SQL_Articulos = sqlsrv_query($conexion, $Cons_Articulos);
 
 if (!$SQL_Encabezado || !$SQL_Detalle || !$SQL_Articulos) {
@@ -523,59 +523,35 @@ if ($type != 0) {
 															<thead>
 																<tr>
 																	<th>ID</th>
+																	<th>Nombre</th>
 																	<th>VIN</th>
 																	<th>Estado VIN</th>
-																	<th>ID Llamada Servicio</th>
-																	<th>Origen</th>
-																	<th>Estado Llamada</th>
-																	<th>Nombre Cliente</th>
-																	<th>Fecha Cierre</th>
 																	<th>Acciones</th>
 																</tr>
 															</thead>
 															<tbody>
-																<?php while ($row_Detalle = sqlsrv_fetch_array($SQL_Detalle)) { ?>
+																<?php while ($row_Articulos = sqlsrv_fetch_array($SQL_Articulos)) { ?>
 																	<tr class="gradeX tooltip-demo">
 																		<td>
-																			<?php echo $row_Detalle['id_campana'] . "-" . $row_Detalle['id_campana_detalle']; ?>
+																			<?php echo $row_Articulos['id_campana'] . "-" . $row_Articulos['id_campana_detalle_articulo']; ?>
 																		</td>
 																		<td>
-																			<?php echo $row_Detalle['VIN']; ?>
+																			<?php echo $row_Articulos['articulo']; ?>
+																		</td>
+																		<td>
+																			<?php echo $row_Articulos['VIN']; ?>
 																		</td>
 																		<td>
 																			<span
-																				class="label <?php echo ($row_Detalle['estado_VIN'] == "P") ? "label-warning" : "label-info"; ?>">
-																				<?php echo ($row_Detalle['estado_VIN'] == "P") ? "Pendiente" : "Aplicado"; ?>
+																				class="label <?php echo ($row_Articulos['estado_VIN'] == "P") ? "label-warning" : "label-info"; ?>">
+																				<?php echo ($row_Articulos['estado_VIN'] == "P") ? "Pendiente" : "Aplicado"; ?>
 																			</span>
 																		</td>
-																		<td class="text-left">
-																			<?php if (isset($row_Detalle['docnum_llamada_servicio']) && ($row_Detalle['docnum_llamada_servicio'] != "")) { ?>
-																				<a href="llamada_servicio.php?id=<?php echo base64_encode($row_Detalle['docentry_llamada_servicio']); ?>&tl=1&pag=<?php echo base64_encode('gestionar_llamadas_servicios.php'); ?>"
-																					class="alkin btn btn-success btn-xs">
-																					<i class="fa fa-folder-open-o"></i>
-																					<?php echo $row_Detalle['docnum_llamada_servicio']; ?>
-																				</a>
-																			<?php } ?>
-																		</td>
-
-																		<td>
-																			<?php echo $row_Detalle['DeOrigenLlamada'] ?? ""; ?>
-																		</td>
-																		<td>
-																			<?php echo $row_Detalle['DeEstadoLlamada'] ?? ""; ?>
-																		</td>
-																		<td>
-																			<?php echo $row_Detalle['socio_negocios'] ?? ""; ?>
-																		</td>
-																		<td>
-																			<?php echo (isset($row_Detalle["FechaCierre"]) && $row_Detalle["FechaCierre"] != "") ? $row_Detalle['FechaCierre']->format("Y-m-d") : ""; ?>
-																		</td>
-
 																		<td>
 																			<button type="button"
-																				id="btnDelete<?php echo $row_Detalle['id_campana_detalle']; ?>"
+																				id="btnDelete<?php echo $row_Articulos['id_campana_detalle_articulos']; ?>"
 																				class="btn btn-danger btn-xs"
-																				onclick="EliminarRegistro('<?php echo $row_Detalle['id_campana_detalle']; ?>');"><i
+																				onclick="EliminarRegistro('<?php echo $row_Articulos['id_campana_detalle_articulos']; ?>');"><i
 																					class="fa fa-trash"></i>
 																				Eliminar</button>
 																		</td>
