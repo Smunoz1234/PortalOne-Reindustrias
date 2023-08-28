@@ -1,43 +1,12 @@
 <?php require_once "includes/conexion.php";
-// Dimensiones. SMM, 29/05/2023
-$SQL_Dimensiones = Seleccionar('uvw_Sap_tbl_Dimensiones', '*', "DimActive='Y'");
 
-$array_Dimensiones = [];
-while ($row_Dimension = sqlsrv_fetch_array($SQL_Dimensiones)) {
-    array_push($array_Dimensiones, $row_Dimension);
-}
-// Hasta aquí, SMM 29/05/2023
-
-// Realizar consulta con filtros. SMM, 24/05/2023
+$VIN = $_POST['VIN'] ?? 0;
 $DatoBuscar = $_POST['BuscarItem'] ?? 0;
-$WhsCode = $_POST['Almacen'] ?? 0;
-
-$TipoDoc = $_POST['tipodoc'] ?? 1;
-// @TipoDoc: 1 COMPRA, 2 VENTA, 3 INVENTARIO
-
-$TodosArticulos = $_POST['todosart'] ?? 0;
-
-$SoloStock = $_POST['chkStock'] ?? 2;
-$IdListaPrecio = $_POST['ListaPrecio'] ?? "";
-
-$Usuario = "'" . $_SESSION['CodUser'] . "'";
-$SQL_GruposArticulos = Seleccionar("uvw_tbl_UsuariosGruposArticulos", "ID_Usuario", "ID_Usuario=$Usuario");
-
-if (!sqlsrv_has_rows($SQL_GruposArticulos)) {
-    $Usuario = "NULL";
-}
 
 $Param = array(
-    "'$DatoBuscar'",
-    "'$WhsCode'",
-    "'$TipoDoc'",
-    "'$SoloStock'",
-    "'$TodosArticulos'",
-    "'$IdListaPrecio'",
-    $Usuario,
+    "'$DatoBuscar'"
 );
-
-$SQL = EjecutarSP('sp_ConsultarArticulos_ListaPrecios', $Param);
+$SQL = EjecutarSP('sp_ConsultarArticulosTodos', $Param);
 ?>
 
 <table id="footableOne" class="table" data-paging="true" data-sorting="true">
@@ -58,19 +27,7 @@ $SQL = EjecutarSP('sp_ConsultarArticulos_ListaPrecios', $Param);
             <th data-breakpoints="all">Maneja Lote</th>
             <th data-breakpoints="all">Stock General</th>
             <th data-breakpoints="all">Grupo Artículos</th>
-            <?php foreach ($array_Dimensiones as &$dim) { ?>
-                <th data-breakpoints="all">
-                    <?php echo $dim['IdPortalOne']; ?>
-                </th>
-            <?php } ?>
-            <th data-breakpoints="all">EmpVentas</th>
-            <th data-breakpoints="all">PrjCode</th>
-
-            <th data-breakpoints="all">Tipo OT</th>
-            <th data-breakpoints="all">Sede Empresa</th>
-            <th data-breakpoints="all">Tipo Cargo</th>
-            <th data-breakpoints="all">Tipo Problema</th>
-            <th data-breakpoints="all">Tipo Preventivo</th>
+            <th data-breakpoints="all">VIN</th>
         </tr>
     </thead>
     <tbody>
@@ -123,32 +80,8 @@ $SQL = EjecutarSP('sp_ConsultarArticulos_ListaPrecios', $Param);
                 <td>
                     <?php echo $row['ItmsGrpCod']; ?>
                 </td>
-                <?php foreach ($array_Dimensiones as &$dim) { ?>
-                    <td class="<?php echo $dim['IdPortalOne']; ?>">
-                        <?php echo $_POST[$dim['IdPortalOne']] ?? ""; ?>
-                    </td>
-                <?php } ?>
-                <td class="EmpVentas">
-                    <?php echo $_POST['EmpVentas'] ?? ""; ?>
-                </td>
-                <td class="PrjCode">
-                    <?php echo $_POST['Proyecto'] ?? ""; ?>
-                </td>
-
-                <td class="IdTipoOT">
-                    <?php echo $_POST['IdTipoOT'] ?? ""; ?>
-                </td>
-                <td class="IdSedeEmpresa">
-                    <?php echo $_POST['IdSedeEmpresa'] ?? ""; ?>
-                </td>
-                <td class="IdTipoCargo">
-                    <?php echo $_POST['IdTipoCargo'] ?? ""; ?>
-                </td>
-                <td class="IdTipoProblema">
-                    <?php echo $_POST['IdTipoProblema'] ?? ""; ?>
-                </td>
-                <td class="IdTipoPreventivo">
-                    <?php echo $_POST['IdTipoPreventivo'] ?? ""; ?>
+                <td class="VIN">
+                    <?php echo $VIN; ?>
                 </td>
             </tr>
         <?php } ?>

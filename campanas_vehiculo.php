@@ -272,7 +272,7 @@ if ($type != 0) {
 
 			<div class="wrapper wrapper-content">
 				<div class="modal inmodal fade" id="myModal" tabindex="-1" role="dialog" aria-hidden="true">
-					<div class="modal-dialog modal-lg">
+					<div class="modal-dialog modal-lg" style="width: 70% !important;">
 						<div class="modal-content" id="ContenidoModal">
 							<!-- Contenido generado por JS -->
 						</div>

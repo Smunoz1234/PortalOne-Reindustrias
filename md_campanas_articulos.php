@@ -1,6 +1,8 @@
 <?php
 require_once "includes/conexion.php";
 
+$SQL_VIN = Seleccionar('tbl_CampanaVehiculosDetalle', '*', '', 'VIN');
+
 // SMM, 25/02/2023
 $msg_error_detalle = "";
 $parametros_detalle = array();
@@ -124,48 +126,71 @@ if ($type_detalle != 0) {
 	}
 </style>
 
-<form id="frmCampanasDetalle" method="post" enctype="multipart/form-data">
-	<div class="modal-header">
-		<h4 class="modal-title">Crear VIN a Campaña</h4>
-	</div>
-	<!-- /.modal-title -->
-
+<form id="frmBuscarArticulo" method="post" enctype="multipart/form-data">
 	<div class="modal-body">
 		<div class="form-group">
 			<div class="ibox-content">
 				<?php include "includes/spinner.php"; ?>
 
-				<div class="panel panel-info">
-					<div class="panel-heading active" role="tab" id="headingOne">
-						<h4 class="panel-title">
-							<a role="button" data-toggle="collapse" href="#collapseOne" aria-controls="collapseOne">
-								<i class="fa fa-info-circle"></i> Información importante
-							</a>
-						</h4>
+				<div class="row">
+					<div class="col-xs-12" style="margin-bottom: 10px;">
+						<label class="control-label">
+							VIN <span class="text-danger">*</span>
+						</label>
+
+						<select id="VIN" name="VIN" class="form-control select2" required>
+							<option value="">Seleccione...</option>
+
+							<?php while ($row_VIN = sqlsrv_fetch_array($SQL_VIN)) { ?>
+								<option value="<?php echo $row_VIN['VIN']; ?>">
+									<?php echo $row_VIN['VIN']; ?>
+								</option>
+							<?php } ?>
+						</select>
 					</div>
-					<!-- /.panel_heading -->
-					
-					<div id="collapseOne" class="panel-collapse collapse in" role="tabpanel"
-						aria-labelledby="headingOne">
-						<div class="panel-body">
-							<p>Para adicionar más de un (1) VIN es necesario separar con (;)</p>
-							<p><b>Ejemplo:</b> <span style="color: red;">9BWBH6BF0M4091426;WV1ZZZ2HZHA007804</span></p>
-							<p><b>32 caracteres máximo por VIN, recuerde usar el botón Validar</b></p>
-						</div>
-						<!-- /.panel-body-->
-					</div>
-					<!-- /.panel-collapse -->
+					<!-- /.col-xs-12 -->
 				</div>
-				<!-- /.panel-info -->
+				<!-- /.row -->
 
 				<div class="row">
-					<div class="col-md-12">
-						<label class="control-label">Lista VIN</label>
-						<textarea name="ListaVIN" rows="5" maxlength="3000" class="form-control" id="ListaVIN"
-							type="text"></textarea>
+					<div class="col-lg-10">
+						<label class="control-label">
+							Buscar artículo <span class="text-danger">*</span>
+						</label>
+
+						<input name="BuscarItem" id="BuscarItem" type="text" class="form-control"
+							placeholder="Escriba para buscar..." required>
+					</div>
+
+					<div class="col-lg-2" style="margin-top: 20px;">
+						<button type="submit" class="btn btn-outline btn-success pull-right"><i
+								class="fa fa-search"></i> Buscar</button>
 					</div>
 				</div>
 				<!-- /.row -->
+
+				<!-- Inicio, tabla -->
+				<br><br><br>
+				<div class="row">
+					<div class="col-lg-6">
+						<div class="ibox-content">
+							<div class="table-responsive" id="tableContainerOne">
+								<i class="fa fa-search" style="font-size: 20px; color: gray;"></i>
+								<span style="font-size: 15px; color: gray;">Debe buscar un artículo.</span>
+							</div> <!-- table-responsive -->
+						</div> <!-- ibox-content -->
+					</div> <!-- col-lg-6 -->
+					<div class="col-lg-6">
+						<div class="ibox-content">
+							<div class="table-responsive" id="tableContainerTwo">
+								<i class="fa fa-exclamation-circle" style="font-size: 20px; color: gray;"></i>
+								<span style="font-size: 15px; color: gray;">Todavía no se han agregado artículos al
+									carrito.</span>
+							</div> <!-- table-responsive -->
+						</div> <!-- ibox-content -->
+					</div> <!-- col-lg-6 -->
+				</div>
+				<!-- Fin, tabla -->
 			</div>
 			<!-- /.ibox-content -->
 		</div>
@@ -174,11 +199,8 @@ if ($type_detalle != 0) {
 	<!-- /.modal-body -->
 
 	<div class="modal-footer">
-		<button type="submit" class="btn btn-success m-t-md" id="btnAdicionar" disabled><i class="fa fa-check"></i>
+		<button type="button" class="btn btn-success m-t-md" id="btnAceptar"><i class="fa fa-check"></i>
 			Aceptar</button>
-
-		<button type="button" class="btn btn-info m-t-md pull-left" onclick="Validar();"><i class="fa fa-thumbs-up"></i>
-			Validar</button>
 
 		<button type="button" class="btn btn-danger m-t-md" data-dismiss="modal"><i class="fa fa-times"></i>
 			Cerrar</button>
@@ -188,133 +210,50 @@ if ($type_detalle != 0) {
 
 <script>
 	$(document).ready(function () {
-		// SMM, 19/08/2022
-		$('.panel-collapse').on('show.bs.collapse', function () {
-			$(this).siblings('.panel-heading').addClass('active');
+		$(".select2").select2();
+		$('#footableOne').footable();
+		$('.chosen-select').chosen({ width: "100%" });
+
+		$('#formBuscarArticulo').on('submit', function (event) {
+			event.preventDefault();
 		});
 
-		$('.panel-collapse').on('hide.bs.collapse', function () {
-			$(this).siblings('.panel-heading').removeClass('active');
-		});
-		// Hasta aquí, 19/08/2022
-
-		$("#frmCampanasDetalle").validate({
+		$("#frmBuscarArticulo").validate({
 			submitHandler: function (form) {
-				// Obtén el valor del campo de entrada
-				let listaVINs = $("#ListaVIN").val();
+				$('.ibox-content').toggleClass('sk-loading', true);
 
-				// Divide la lista en un arreglo usando el separador ";"
-				let arregloVINs = listaVINs.split(";");
+				let formData = new FormData(form);
 
-				// Limpia los espacios en blanco y elementos vacíos del arreglo
-				arregloVINs = arregloVINs.map(function (vin) {
-					return vin.trim();
-				}).filter(function (vin) {
-					return vin !== "";
+				// Ejemplo de como agregar nuevos campos.
+				// formData.append("Dim1", $("#Dim1").val() || "");
+
+				let json = Object.fromEntries(formData);
+				console.log("Line 240", json);
+
+				// Inicio, AJAX
+				$.ajax({
+					url: 'md_campanas_articulos_ws.php',
+					type: 'POST',
+					data: formData,
+					processData: false,  // tell jQuery not to process the data
+					contentType: false,   // tell jQuery not to set contentType
+					success: function (response) {
+						// console.log("Line 260", response);
+
+						$("#tableContainerOne").html(response);
+						$('#footableOne').footable();
+
+						$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
+					},
+					error: function (error) {
+						console.error(error.responseText);
+
+						$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
+					}
 				});
-
-				
-
-				// Validación del ciclo
-				var validarAjax = true;
-				var contadorAjax = 0;
-
-				// Iterar sobre cada VIN y realizar una llamada AJAX por separado
-				arregloVINs.forEach(function (vin) {
-					$.ajax({
-						type: "POST",
-						url: "md_campanas_vehiculo.php",
-						data: {
-							type: 1,
-							ID: $("#id_campana").val(),
-							VIN: vin,  // Usar el VIN actual en esta iteración
-						},
-						success: function (response) {
-							console.log(response);
-
-							contadorAjax++;
-							if (response !== "OK") {
-								validarAjax = false;
-							}
-
-							// Verificar si todas las solicitudes AJAX han finalizado
-							if (contadorAjax === arregloVINs.length) {
-								Swal.fire({
-									icon: (validarAjax) ? "success" : "warning",
-									title: (validarAjax) ? "¡Listo!" : "¡Error!",
-									text: (validarAjax) ? "Todos los VINs se insertaron correctamente." : "No se pudieron insertar algunos VINs, por favor verifique"
-								}).then((result) => {
-									if (result.isConfirmed) {
-										if(validarAjax) {
-											location.reload();
-										} else {
-											console.log("Hubo un problema al insertar VINs");
-										}
-									}
-								});
-								// Swal.fire
-							}
-						},
-						error: function (error) {
-							console.error("240->", error.responseText);
-
-							validarAjax = false;
-						}
-					});
-				});
-				// .forEach()
+				// Fin, AJAX
 			}
 			// submitHandler
 		});
-
-		$('.chosen-select').chosen({ width: "100%" });
-		$(".select2").select2();
-
-		$("#ListaVIN").on("input", function () {
-			$("#btnAdicionar").prop("disabled", true);
-		});
 	});
-</script>
-
-<script>
-	function Validar() {
-		let listaVINs = $("#ListaVIN").val();
-
-		// Divide la lista en un arreglo usando el separador ";"
-		let arregloVINs = listaVINs.split(";");
-
-		// Limpia los espacios en blanco y elementos vacíos del arreglo
-		arregloVINs = arregloVINs.map(function (vin) {
-			return vin.trim();
-		}).filter(function (vin) {
-			return vin !== "";
-		});
-
-		// Realiza la validación
-		let formatoCorrecto = arregloVINs.every(function (vin) {
-			// Verificar si tiene entre 1 y 32 caracteres alfanuméricos.
-			return /^[a-zA-Z0-9]{1,32}$/.test(vin);
-		});
-
-		if (formatoCorrecto && (listaVINs != "")) {
-			Swal.fire({
-				title: '¡Listo!',
-				text: 'Puede continuar con el proceso dando clic en el botón Aceptar.',
-				icon: 'success'
-			}).then((result) => {
-				if (result.isConfirmed) {
-					$("#btnAdicionar").prop("disabled", false);
-				}
-			});
-
-			// Haz algo con los VINs válidos en arregloVINs
-			console.log("VINs válidos:", arregloVINs);
-		} else {
-			Swal.fire({
-				title: '¡Error!',
-				text: 'La estructura es incorrecta, por favor verifique.',
-				icon: 'warning'
-			});
-		}
-	}
 </script>
