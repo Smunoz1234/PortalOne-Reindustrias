@@ -15,6 +15,8 @@ $Campana = $row_Encabezado['campana'] ?? "";
 $Comentario = $row_Encabezado['descripcion_campana'] ?? "";
 $Estado = $row_Encabezado['estado'] ?? "";
 
+$TiempoMeses = number_format($row_Encabezado['tiempo_campana_meses']) ?? 0;
+
 $FechaVigencia = isset($row_Encabezado['fecha_limite_vigencia']) ? $row_Encabezado['fecha_limite_vigencia']->format("Y-m-d") : "";
 
 $Proveedor = $row_Encabezado['id_socio_negocio'] ?? "";
@@ -375,10 +377,18 @@ if ($type != 0) {
 								<div class="form-group">
 									<label class="col-lg-1 control-label">Comentario <span
 											class="text-danger">*</span></label>
-									<div class="col-lg-7">
+									<div class="col-lg-3">
 										<textarea name="descripcion_campana" rows="3" maxlength="3000"
 											class="form-control" required id="descripcion_campana"
 											type="text"><?php echo $Comentario; ?></textarea>
+									</div>
+
+									<label class="col-lg-1 control-label">
+										Tiempo meses
+									</label>
+									<div class="col-lg-3">
+										<input name="tiempo_campana_meses" type="number" class="form-control" id="tiempo_campana_meses"
+											value="<?php echo $TiempoMeses; ?>">
 									</div>
 
 									<div class="col-lg-4">
@@ -389,16 +399,10 @@ if ($type != 0) {
 													class="fa <?php echo ($Edit == 0) ? "fa-plus" : "fa-refresh"; ?>"></i>
 												<?php echo ($Edit == 0) ? "Crear Campaña" : "Actualizar Campaña"; ?>
 											</button>
-
-											<button type="button" class="btn btn-outline btn-info"
-												style="margin-left: 10px;" <?php if ($Edit == 0) {
-													echo "disabled";
-												} ?> onclick="CrearRegistro();">
-												<i class="fa fa-plus"></i> Adicionar VIN
-											</button>
 										</div>
 									</div>
 								</div>
+								<!-- /.form-group -->
 
 								<?php if (($Edit == 1) && sqlsrv_has_rows($SQL_Detalle)) { ?>
 									<div class="form-group">
@@ -420,6 +424,23 @@ if ($type != 0) {
 					<div class="row">
 						<div class="col-lg-12">
 							<div class="ibox-content">
+								<div class="col-lg-12">
+									<div class="btn-group pull-right">
+										<button type="button" class="btn btn-outline btn-primary"
+											style="margin-left: 10px;" <?php if ($Edit == 0) {
+												echo "disabled";
+											} ?> onclick="CrearRegistro();">
+											<i class="fa fa-plus"></i> Adicionar VIN
+										</button>
+
+										<button type="button" class="btn btn-outline btn-info"
+											style="margin-left: 10px;" <?php if ($Edit == 0) {
+												echo "disabled";
+											} ?> onclick="CrearRegistro();">
+											<i class="fa fa-shopping-cart"></i> Adicionar Articulo
+										</button>
+									</div>
+								</div>
 
 								<div class="tabs-container">
 									<ul class="nav nav-tabs">
