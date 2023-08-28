@@ -15,7 +15,7 @@ $Campana = $row_Encabezado['campana'] ?? "";
 $Comentario = $row_Encabezado['descripcion_campana'] ?? "";
 $Estado = $row_Encabezado['estado'] ?? "";
 
-$TiempoMeses = number_format($row_Encabezado['tiempo_campana_meses']) ?? 0;
+$TiempoMeses = number_format($row_Encabezado['tiempo_campana_meses'], 2) ?? 0;
 
 $FechaVigencia = isset($row_Encabezado['fecha_limite_vigencia']) ? $row_Encabezado['fecha_limite_vigencia']->format("Y-m-d") : "";
 
@@ -63,7 +63,7 @@ $socio_negocio = $_POST['socio_negocio'] ?? "";
 $id_consecutivo_direccion = isset($_POST['id_consecutivo_direccion']) && ($_POST['id_consecutivo_direccion'] != "") ? $_POST['id_consecutivo_direccion'] : "NULL";
 $id_direccion_destino = $_POST['id_direccion_destino'] ?? "";
 $direccion_destino = $_POST['direccion_destino'] ?? "";
-$tiempo_campana_meses = $_POST['tiempo_campana_meses'] ?? "";
+$tiempo_campana_meses = $_POST['tiempo_campana_meses'] ?? "NULL";
 $fecha_limite_vigencia = isset($_POST['fecha_limite_vigencia']) ? FormatoFecha($_POST['fecha_limite_vigencia']) : "";
 $estado = $_POST['estado'] ?? "";
 $id_usuario_creacion = "'$coduser'";
@@ -86,7 +86,7 @@ if ($type == 1) {
 		$id_consecutivo_direccion,
 		"'$id_direccion_destino'",
 		"'$direccion_destino'",
-		"'$tiempo_campana_meses'",
+		$tiempo_campana_meses,
 		"'$fecha_limite_vigencia'",
 		"'$estado'",
 		$id_usuario_actualizacion,
@@ -110,7 +110,7 @@ if ($type == 1) {
 		$id_consecutivo_direccion,
 		"'$id_direccion_destino'",
 		"'$direccion_destino'",
-		"'$tiempo_campana_meses'",
+		$tiempo_campana_meses,
 		"'$fecha_limite_vigencia'",
 		"'$estado'",
 		$id_usuario_actualizacion,
@@ -123,7 +123,6 @@ if ($type == 1) {
 
 	$parametros = array(
 		$type,
-		// 3 - Eliminar
 		"'$id_zona_sn'",
 	);
 }
@@ -375,8 +374,9 @@ if ($type != 0) {
 								</div>
 
 								<div class="form-group">
-									<label class="col-lg-1 control-label">Comentario <span
-											class="text-danger">*</span></label>
+									<label class="col-lg-1 control-label">
+										Comentario <span class="text-danger">*</span>
+									</label>
 									<div class="col-lg-3">
 										<textarea name="descripcion_campana" rows="3" maxlength="3000"
 											class="form-control" required id="descripcion_campana"
@@ -384,11 +384,11 @@ if ($type != 0) {
 									</div>
 
 									<label class="col-lg-1 control-label">
-										Tiempo meses
+										Tiempo meses <span class="text-danger">*</span>
 									</label>
 									<div class="col-lg-3">
 										<input name="tiempo_campana_meses" type="number" class="form-control" id="tiempo_campana_meses"
-											value="<?php echo $TiempoMeses; ?>">
+											value="<?php echo $TiempoMeses; ?>" required>
 									</div>
 
 									<div class="col-lg-4">
@@ -436,11 +436,12 @@ if ($type != 0) {
 										<button type="button" class="btn btn-outline btn-info"
 											style="margin-left: 10px;" <?php if ($Edit == 0) {
 												echo "disabled";
-											} ?> onclick="CrearRegistro();">
+											} ?> onclick="AgregarArticulo();">
 											<i class="fa fa-shopping-cart"></i> Adicionar Articulo
 										</button>
 									</div>
 								</div>
+								<!-- /.col-lg-12 > .btn-group -->
 
 								<div class="tabs-container">
 									<ul class="nav nav-tabs">
@@ -719,6 +720,21 @@ if ($type != 0) {
 			});
 		}
 
+		function AgregarArticulo() {
+			$('.ibox-content').toggleClass('sk-loading', true);
+
+			$.ajax({
+				type: "POST",
+				url: "md_campanas_articulos.php",
+				success: function (response) {
+					$('.ibox-content').toggleClass('sk-loading', false);
+
+					$('#ContenidoModal').html(response);
+					$('#myModal').modal("show");
+				}
+			});
+		}
+
 		function EliminarRegistro(id) {
 			Swal.fire({
 				title: "¿Está seguro que desea eliminar este registro?",
@@ -749,6 +765,43 @@ if ($type != 0) {
 						},
 						error: function (error) {
 							console.error("640->", error.responseText);
+						}
+					});
+					// $.ajax
+				}
+			});
+		}
+
+		function EliminarArticulo(id) {
+			Swal.fire({
+				title: "¿Está seguro que desea eliminar articulo?",
+				icon: "question",
+				showCancelButton: true,
+				confirmButtonText: "Si, confirmo",
+				cancelButtonText: "No"
+			}).then((result) => {
+				if (result.isConfirmed) {
+					$.ajax({
+						type: "POST",
+						url: "md_campanas_articulos.php",
+						data: {
+							type: 3,
+							ID: $("#id_campana").val(),
+							id_campana_detalle: id,
+						},
+						success: function (response) {
+							Swal.fire({
+								icon: (response == "OK") ? "success" : "warning'",
+								title: (response == "OK") ? "¡Listo!" : "¡Error!",
+								text: (response == "OK") ? "Se elimino el articulo correctamente." : response
+							}).then((result) => {
+								if (result.isConfirmed) {
+									location.reload();
+								}
+							});
+						},
+						error: function (error) {
+							console.error("800->", error.responseText);
 						}
 					});
 					// $.ajax
