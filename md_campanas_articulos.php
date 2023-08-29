@@ -270,9 +270,9 @@ if ($type_articulo != 0) {
 					data: {
 						type: 1,
 						ID: $("#id_campana").val(),
-						VIN: vin,
+						VIN: vin.trim(),
 						IdArticulo: id_articulo,
-						DescripcionArticulo: articulo
+						DescripcionArticulo: articulo.trim()
 					},
 					success: function (response) {
 						console.log(response);
