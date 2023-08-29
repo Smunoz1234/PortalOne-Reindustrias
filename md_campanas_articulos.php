@@ -214,7 +214,7 @@ if ($type_detalle != 0) {
 		$('#footableOne').footable();
 		$('.chosen-select').chosen({ width: "100%" });
 
-		$('#formBuscarArticulo').on('submit', function (event) {
+		$('#frmBuscarArticulo').on('submit', function (event) {
 			event.preventDefault();
 		});
 
@@ -256,4 +256,72 @@ if ($type_detalle != 0) {
 			// submitHandler
 		});
 	});
+</script>
+
+<script>
+	function VerificarFilas() {
+		if ($(".footable-detail-row").length) {
+			Swal.fire({
+				"title": "¡Advertencia!",
+				"text": "Debe contraer todas las filas para poder realizar alguna acción en las tablas.",
+				"icon": "warning"
+			});
+
+			return false;
+		}
+
+		return true;
+	}
+
+	function AgregarArticulo(ID) {
+		if (VerificarFilas()) {
+
+			if ($("#footableTwo").length) {
+				console.log("footableTwo existe.");
+			} else {
+				console.log("footableTwo no existe.");
+
+				// Clonar la tabla con el ID "footableOne"
+				let tableTwo = $('#footableOne').clone();
+
+				// Vaciar el tbody de la tabla clonada
+				tableTwo.find('tbody').empty();
+
+				// Asignar el ID "footableTwo" a la tabla clonada
+				tableTwo.attr('id', 'footableTwo');
+
+				// Agregar la tabla clonada al DOM
+				$('#tableContainerTwo').replaceWith(tableTwo);
+			}
+
+			// Obtener la fila correspondiente al artículo seleccionado
+			let fila = $(`#${ID}`).clone();
+
+			// Eliminar el botón "fooicon" de la fila clonada
+			fila.find('.fooicon').remove();
+
+			// Reemplazar el botón "Agregar" por "Eliminar"
+			fila.find(".btn-success")
+				.removeClass("btn-success")
+				.addClass("btn-danger")
+				.html('<i class="fa fa-trash"></i> Eliminar')
+				.attr("onclick", `EliminarArticulo(this);`);
+
+
+			// Agregar la fila al carrito de compras
+			$("#footableTwo tbody").append(fila);
+
+			// Re-renderizar.
+			$('#footableTwo').footable();
+
+		} // VerificarFilas()
+	}
+
+	function EliminarArticulo(btn) {
+		if (VerificarFilas()) {
+
+			$(btn).closest("tr").remove(); // Eliminar la fila padre del botón
+
+		} // VerificarFilas()
+	}
 </script>

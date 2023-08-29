@@ -436,7 +436,7 @@ if ($type != 0) {
 										<button type="button" class="btn btn-outline btn-info"
 											style="margin-left: 10px;" <?php if ($Edit == 0) {
 												echo "disabled";
-											} ?> onclick="AgregarArticulo();">
+											} ?> onclick="AgregarArticulos();">
 											<i class="fa fa-shopping-cart"></i> Adicionar Articulo
 										</button>
 									</div>
@@ -720,7 +720,7 @@ if ($type != 0) {
 			});
 		}
 
-		function AgregarArticulo() {
+		function AgregarArticulos() {
 			$('.ibox-content').toggleClass('sk-loading', true);
 
 			$.ajax({
@@ -772,7 +772,7 @@ if ($type != 0) {
 			});
 		}
 
-		function EliminarArticulo(id) {
+		function EliminarArticulos(id) {
 			Swal.fire({
 				title: "¿Está seguro que desea eliminar articulo?",
 				icon: "question",

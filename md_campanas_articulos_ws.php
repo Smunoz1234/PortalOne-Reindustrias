@@ -13,20 +13,9 @@ $SQL = EjecutarSP('sp_ConsultarArticulosTodos', $Param);
     <thead>
         <tr>
             <th>Nombre</th>
-            <th>Stock</th>
-            <th>Precio Con IVA</th>
             <th>Acciones</th>
-            <th data-breakpoints="all">Cod. Lista Precios</th>
-            <th data-breakpoints="all">Lista Precios</th>
-            <th data-breakpoints="all">Cod. Proveedor</th>
-            <th data-breakpoints="all">Unidad Medida</th>
-            <th data-breakpoints="all">Precio Sin IVA</th> 
-            <th data-breakpoints="all">Cod. Almacen</th>
-            <th data-breakpoints="all">Nombre Almacen</th>
-            <th data-breakpoints="all">Maneja Serial</th>
-            <th data-breakpoints="all">Maneja Lote</th>
-            <th data-breakpoints="all">Stock General</th>
-            <th data-breakpoints="all">Grupo Artículos</th>
+            <th data-breakpoints="all">ID</th>
+            <th data-breakpoints="all">Descripción</th>
             <th data-breakpoints="all">VIN</th>
         </tr>
     </thead>
@@ -37,48 +26,15 @@ $SQL = EjecutarSP('sp_ConsultarArticulosTodos', $Param);
                     <?php echo $row['NombreBuscarArticulo']; ?>
                 </td>
                 <td>
-                    <?php echo $row['StockAlmacen']; ?>
-                </td>
-                <td>
-                    <?php echo $row['PrecioConIVA']; ?>
-                </td>
-                <td>
-                    <button class="btn btn-success btn-xs"
+                    <button type="button" class="btn btn-success btn-xs"
                         onclick="AgregarArticulo('<?php echo $row['IdArticulo']; ?>');"><i class="fa fa-plus"></i>
                         Agregar</a>
                 </td>
-                <td class="PriceList">
-                    <?php echo $row['PriceList']; ?>
+                <td>
+                    <?php echo $row['IdArticulo']; ?>
                 </td>
                 <td>
-                    <?php echo $row['ListaPrecio']; ?>
-                </td>
-                <td>
-                    <?php echo $row['CodArticuloProveedor'] ?? "--"; ?>
-                </td>
-                <td>
-                    <?php echo $row['UndMedida']; ?>
-                </td>
-                <td>
-                    <?php echo $row['PrecioSinIVA']; ?>
-                </td>
-                <td class="WhsCode">
-                    <?php echo $row['CodAlmacen']; ?>
-                </td>
-                <td>
-                    <?php echo $row['Almacen']; ?>
-                </td>
-                <td>
-                    <?php echo $row['ManejaSerial']; ?>
-                </td>
-                <td>
-                    <?php echo $row['ManejaLote']; ?>
-                </td>
-                <td>
-                    <?php echo $row['StockGeneral']; ?>
-                </td>
-                <td>
-                    <?php echo $row['ItmsGrpCod']; ?>
+                    <?php echo $row['DescripcionArticulo']; ?>
                 </td>
                 <td class="VIN">
                     <?php echo $VIN; ?>
