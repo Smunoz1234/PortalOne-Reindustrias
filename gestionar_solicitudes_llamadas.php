@@ -8,8 +8,8 @@ $SQL_EstadoLlamada = Seleccionar('uvw_tbl_EstadoLlamada', '*');
 // Asignado por
 $SQL_AsignadoPor = Seleccionar('uvw_tbl_SolicitudLlamadasServicios', 'DISTINCT IdAsignadoPor, DeAsignadoPor', '', 'DeAsignadoPor');
 
-// Estado servicio llamada
-$SQL_EstServLlamada = Seleccionar('uvw_Sap_tbl_LlamadasServiciosEstadoServicios', '*', '', 'DeEstadoServicio');
+// Estado servicio de la Solicitud de Llamada de servicio. SMM, 29/08/2023
+$SQL_EstServLlamada = Seleccionar('tbl_SolicitudLlamadasServiciosEstadoServicios', '*');
 
 // Tipo de problema llamada
 $SQL_TipoProblema = Seleccionar('uvw_Sap_tbl_TipoProblemasLlamadas', '*', '', 'DeTipoProblemaLlamada');
@@ -437,9 +437,9 @@ if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
                                         <select name="EstadoServicio" class="form-control" id="EstadoServicio">
                                             <option value="">(Todos)</option>
                                             <?php while ($row_EstServLlamada = sqlsrv_fetch_array($SQL_EstServLlamada)) { ?>
-                                                <option value="<?php echo $row_EstServLlamada['IdEstadoServicio']; ?>" <?php if ((isset($_GET['EstadoServicio'])) && (strcmp($row_EstServLlamada['IdEstadoServicio'], $_GET['EstadoServicio']) == 0)) {
-                                                       echo "selected=\"selected\"";
-                                                   } ?>><?php echo $row_EstServLlamada['DeEstadoServicio']; ?></option>
+                                                <option value="<?php echo $row_EstServLlamada['id_tipo_estado_servicio_sol_llamada']; ?>" <?php if ((isset($_GET['EstadoServicio'])) && (strcmp($row_EstServLlamada['id_tipo_estado_servicio_sol_llamada'], $_GET['EstadoServicio']) == 0)) {
+                                                       echo "selected";
+                                                   } ?>><?php echo $row_EstServLlamada['tipo_estado_servicio_sol_llamada']; ?></option>
                                             <?php } ?>
                                         </select>
                                     </div>
@@ -509,7 +509,7 @@ if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
                                                         class="label <?php if ($row['IdEstadoLlamada'] == -3) {
                                                             echo "label-primary";
                                                         } else {
-                                                            echo "label-warning";
+                                                            echo "label-danger";
                                                         } ?>"><?php echo $row['NombreEstado'] ?? ""; ?></span>
                                                 </td>
 
@@ -522,7 +522,11 @@ if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
                                                             class="fa fa-download"></i> Descargar</a>
                                                 </td>
 
-                                                <td><span class="label label-primary"><?php echo $row['DeEstadoServicio'] ?? ""; ?></span></td>
+                                                <td>
+                                                    <span class="label" style="color: white; background-color: <?php echo $row['ColorEstadoServicioLlamada']; ?>;">
+                                                        <?php echo $row['DeEstadoServicio']; ?>
+                                                    </span>
+                                                </td>
 
                                                 <td>
                                                     <?php echo $row['NombreTecnicoAsesor'] ?? ""; ?>

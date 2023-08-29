@@ -411,8 +411,8 @@ $ParamSerie = array(
 );
 $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 
-//Estado servicio llamada
-$SQL_EstServLlamada = Seleccionar('uvw_Sap_tbl_LlamadasServiciosEstadoServicios', '*', '', 'DeEstadoServicio');
+// Estado servicio de la Solicitud de Llamada de servicio. SMM, 29/08/2023
+$SQL_EstServLlamada = Seleccionar('tbl_SolicitudLlamadasServiciosEstadoServicios', '*');
 
 //Cancelado por llamada
 $SQL_CanceladoPorLlamada = Seleccionar('uvw_Sap_tbl_LlamadasServiciosCanceladoPor', '*', '', 'DeCanceladoPor');
@@ -2063,13 +2063,11 @@ function AgregarEsto(contenedorID, valorElemento) {
 
 							<div class="col-lg-4">
 								<label class="control-label">Estado de servicio <span class="text-danger">*</span></label>
-								<select name="CDU_EstadoServicio" class="form-control" id="CDU_EstadoServicio" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
-									echo "disabled='disabled'";
-								} ?> required>
+								<select name="CDU_EstadoServicio" class="form-control" id="CDU_EstadoServicio" required>
 								  <?php while ($row_EstServLlamada = sqlsrv_fetch_array($SQL_EstServLlamada)) { ?>
-											<option value="<?php echo $row_EstServLlamada['IdEstadoServicio']; ?>" <?php if ((($edit == 0) && ($row_EstServLlamada['IdEstadoServicio'] == 0)) || ((isset($row['CDU_EstadoServicio'])) && (strcmp($row_EstServLlamada['IdEstadoServicio'], $row['CDU_EstadoServicio']) == 0))) {
-												   echo "selected=\"selected\"";
-											   } ?>><?php echo $row_EstServLlamada['DeEstadoServicio']; ?></option>
+											<option value="<?php echo $row_EstServLlamada['id_tipo_estado_servicio_sol_llamada']; ?>" <?php if ((($edit == 0) && ($row_EstServLlamada['id_tipo_estado_servicio_sol_llamada'] == 0)) || ((isset($row['CDU_EstadoServicio'])) && (strcmp($row_EstServLlamada['id_tipo_estado_servicio_sol_llamada'], $row['CDU_EstadoServicio']) == 0))) {
+												   echo "selected";
+											   } ?>><?php echo $row_EstServLlamada['tipo_estado_servicio_sol_llamada']; ?></option>
 								  <?php } ?>
 								</select>
 							</div>
@@ -2398,25 +2396,20 @@ function AgregarEsto(contenedorID, valorElemento) {
 				   <div class="form-group">
 						<br>
 						<?php if (($edit == 1) && (PermitirFuncion(302) && (($row['IdEstadoLlamada'] == '-3') || ($row['IdEstadoLlamada'] == '-2')))) { ?>
-								<div class="col-lg-2">
-									<button class="btn btn-warning" type="submit" form="CrearLlamada" id="Actualizar"><i class="fa fa-refresh"></i> Actualizar llamada</button>
-								</div>
-						<?php } ?>
-						<?php if (($edit == 1) && (PermitirFuncion(302) && ($row['IdEstadoLlamada'] == '-1'))) { ?>
-								<?php if (PermitirFuncion(322)) { ?>
-										<div class="col-lg-2">
-											<button class="btn btn-success" type="submit" form="CrearLlamada" onClick="EnviarFrm('40');" id="Reabrir"><i class="fa fa-reply"></i> Reabrir</button>
-										</div>
-								<?php } ?>
+							<div class="col-lg-8">
+								<button class="btn btn-warning" type="submit" form="CrearLlamada" id="Actualizar"><i class="fa fa-refresh"></i> Actualizar Solicitud (Agenda)</button>
+								<button style="margin-left: 10px;" class="btn btn-success" type="button" form="CrearLlamada" id="Copiar"><i class="fa fa-copy"></i> Copiar a Llamada Servicio</button>
+							</div>
 						<?php } ?>
 						<?php if ($edit == 0) { ?>
-								<div class="col-lg-2">
-									<button class="btn btn-primary" form="CrearLlamada" type="submit" id="Crear"><i class="fa fa-check"></i> Crear Solicitud (Agenda)</button>
-								</div>
-						<?php } ?>
-							<div class="col-lg-2">
-								<a href="<?php echo $return; ?>" class="alkin btn btn-outline btn-default"><i class="fa fa-arrow-circle-o-left"></i> Regresar</a>
+							<div class="col-lg-8">
+								<button class="btn btn-primary" form="CrearLlamada" type="submit" id="Crear"><i class="fa fa-check"></i> Crear Solicitud (Agenda)</button>
 							</div>
+						<?php } ?>
+
+						<div class="col-lg-4">
+							<a href="<?php echo $return; ?>" class="alkin btn btn-outline btn-default pull-right"><i class="fa fa-arrow-circle-o-left"></i> Regresar</a>
+						</div>
 					</div>
 					  <br><br>
 			   <?php if ($edit == 1) { ?>

@@ -148,9 +148,9 @@ if ($type_detalle != 0) {
 					<div id="collapseOne" class="panel-collapse collapse in" role="tabpanel"
 						aria-labelledby="headingOne">
 						<div class="panel-body">
-							<p>Para adicionar más de un (1) VIN es necesario separar con (;)</p>
+							<p>Para adicionar más de un (1) VIN es necesario separar con (;). <b>Recuerde usar el botón Validar para verificar la estructura.</b></p>
 							<p><b>Ejemplo:</b> <span style="color: red;">9BWBH6BF0M4091426;WV1ZZZ2HZHA007804</span></p>
-							<p><b>32 caracteres máximo por VIN, recuerde usar el botón Validar</b></p>
+							<p><b>32 caracteres máximo por VIN, recuerde solo usar caracteres alfanúmericos, no se permiten simbolos.</b></p>
 						</div>
 						<!-- /.panel-body-->
 					</div>

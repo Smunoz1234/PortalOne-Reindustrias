@@ -15,7 +15,7 @@ $Campana = $row_Encabezado['campana'] ?? "";
 $Comentario = $row_Encabezado['descripcion_campana'] ?? "";
 $Estado = $row_Encabezado['estado'] ?? "";
 
-$TiempoMeses = number_format($row_Encabezado['tiempo_campana_meses'], 2) ?? 0;
+$TiempoMeses = number_format(($row_Encabezado['tiempo_campana_meses'] ?? 0), 2);
 
 $FechaVigencia = isset($row_Encabezado['fecha_limite_vigencia']) ? $row_Encabezado['fecha_limite_vigencia']->format("Y-m-d") : "";
 
