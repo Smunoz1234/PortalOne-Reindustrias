@@ -3,7 +3,7 @@
 // PermitirAcceso(1605);
 $ID = $_GET['id'] ?? ($_POST['id'] ?? "");
 $Edit = $_GET['edit'] ?? ($_POST['edit'] ?? 0);
-$Active = 1; // SMM, 25/08/2023
+$Active = $_GET['active'] ?? 1; // Tag active -> (1) VINs & (2) Articulos
 
 $Titulo = ($Edit != 0) ? "Editar Campaña de Vehículos" : "Crear Campaña de Vehículos";
 
@@ -545,9 +545,10 @@ if ($type != 0) {
 															<thead>
 																<tr>
 																	<th>ID</th>
-																	<th>Nombre</th>
 																	<th>VIN</th>
 																	<th>Estado VIN</th>
+																	<th>ID Articulo</th>
+																	<th>Articulo</th>
 																	<th>Acciones</th>
 																</tr>
 															</thead>
@@ -556,9 +557,6 @@ if ($type != 0) {
 																	<tr class="gradeX tooltip-demo">
 																		<td>
 																			<?php echo $row_Articulos['id_campana'] . "-" . $row_Articulos['id_campana_detalle_articulo']; ?>
-																		</td>
-																		<td>
-																			<?php echo $row_Articulos['articulo']; ?>
 																		</td>
 																		<td>
 																			<?php echo $row_Articulos['VIN']; ?>
@@ -570,10 +568,16 @@ if ($type != 0) {
 																			</span>
 																		</td>
 																		<td>
+																			<?php echo $row_Articulos['id_articulo']; ?>
+																		</td>
+																		<td>
+																			<?php echo $row_Articulos['articulo']; ?>
+																		</td>
+																		<td>
 																			<button type="button"
-																				id="btnDelete<?php echo $row_Articulos['id_campana_detalle_articulos']; ?>"
+																				id="btnDelete<?php echo $row_Articulos['id_campana_detalle_articulo']; ?>"
 																				class="btn btn-danger btn-xs"
-																				onclick="EliminarRegistro('<?php echo $row_Articulos['id_campana_detalle_articulos']; ?>');"><i
+																				onclick="EliminarArticulos('<?php echo $row_Articulos['id_campana_detalle_articulo']; ?>');"><i
 																					class="fa fa-trash"></i>
 																				Eliminar</button>
 																		</td>
@@ -759,7 +763,20 @@ if ($type != 0) {
 								text: (response == "OK") ? "Se elimino el VIN correctamente." : response
 							}).then((result) => {
 								if (result.isConfirmed) {
-									location.reload();
+									// Obtén la URL actual
+									let currentUrl = new URL(window.location.href);
+
+									// Obtén los parámetros del query string
+									let searchParams = currentUrl.searchParams;
+
+									// Actualiza el valor del parámetro 'active' o agrega si no existe
+									searchParams.set('active', 1);
+
+									// Crea una nueva URL con los parámetros actualizados
+									let newUrl = currentUrl.origin + currentUrl.pathname + '?' + searchParams.toString();
+
+									// Recarga la página con la nueva URL
+									window.location.href = newUrl;
 								}
 							});
 						},
@@ -787,7 +804,7 @@ if ($type != 0) {
 						data: {
 							type: 3,
 							ID: $("#id_campana").val(),
-							id_campana_detalle: id,
+							id_campana_articulo: id,
 						},
 						success: function (response) {
 							Swal.fire({
@@ -796,7 +813,20 @@ if ($type != 0) {
 								text: (response == "OK") ? "Se elimino el articulo correctamente." : response
 							}).then((result) => {
 								if (result.isConfirmed) {
-									location.reload();
+									// Obtén la URL actual
+									let currentUrl = new URL(window.location.href);
+
+									// Obtén los parámetros del query string
+									let searchParams = currentUrl.searchParams;
+
+									// Actualiza el valor del parámetro 'active' o agrega si no existe
+									searchParams.set('active', 2);
+
+									// Crea una nueva URL con los parámetros actualizados
+									let newUrl = currentUrl.origin + currentUrl.pathname + '?' + searchParams.toString();
+
+									// Recarga la página con la nueva URL
+									window.location.href = newUrl;
 								}
 							});
 						},

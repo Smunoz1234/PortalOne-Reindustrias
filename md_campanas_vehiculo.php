@@ -144,7 +144,7 @@ if ($type_detalle != 0) {
 						</h4>
 					</div>
 					<!-- /.panel_heading -->
-					
+
 					<div id="collapseOne" class="panel-collapse collapse in" role="tabpanel"
 						aria-labelledby="headingOne">
 						<div class="panel-body">
@@ -180,7 +180,8 @@ if ($type_detalle != 0) {
 		<button type="button" class="btn btn-info m-t-md pull-left" onclick="Validar();"><i class="fa fa-thumbs-up"></i>
 			Validar</button>
 
-		<button type="button" class="btn btn-danger m-t-md" data-dismiss="modal"><i class="fa fa-times"></i>
+		<button type="button" class="btn btn-danger m-t-md" data-dismiss="modal" id="btnCerrar"><i
+				class="fa fa-times"></i>
 			Cerrar</button>
 	</div>
 	<!-- /modal-footer -->
@@ -211,7 +212,7 @@ if ($type_detalle != 0) {
 					return vin.trim();
 				}).filter(function (vin) {
 					return vin !== "";
-				});				
+				});
 
 				// Validación del ciclo
 				var validarAjax = true;
@@ -243,11 +244,24 @@ if ($type_detalle != 0) {
 									text: (validarAjax) ? "Todos los VINs se insertaron correctamente." : "No se pudieron insertar algunos VINs, por favor verifique."
 								}).then((result) => {
 									if (result.isConfirmed) {
-										if(validarAjax) {
-											location.reload();
-										} else {
-											console.log("Hubo un problema al insertar VINs");
-										}
+										// if(validarAjax) {
+
+										// Obtén la URL actual
+										let currentUrl = new URL(window.location.href);
+
+										// Obtén los parámetros del query string
+										let searchParams = currentUrl.searchParams;
+
+										// Actualiza el valor del parámetro 'active' o agrega si no existe
+										searchParams.set('active', 1);
+
+										// Crea una nueva URL con los parámetros actualizados
+										let newUrl = currentUrl.origin + currentUrl.pathname + '?' + searchParams.toString();
+
+										// Recarga la página con la nueva URL
+										window.location.href = newUrl;
+
+										// }
 									}
 								});
 								// Swal.fire
@@ -270,6 +284,23 @@ if ($type_detalle != 0) {
 
 		$("#ListaVIN").on("input", function () {
 			$("#btnAdicionar").prop("disabled", true);
+		});
+
+		$("#btnCerrar").on("click", function () {
+			// Obtén la URL actual
+			let currentUrl = new URL(window.location.href);
+
+			// Obtén los parámetros del query string
+			let searchParams = currentUrl.searchParams;
+
+			// Actualiza el valor del parámetro 'active' o agrega si no existe
+			searchParams.set('active', 1);
+
+			// Crea una nueva URL con los parámetros actualizados
+			let newUrl = currentUrl.origin + currentUrl.pathname + '?' + searchParams.toString();
+
+			// Recarga la página con la nueva URL
+			window.location.href = newUrl;
 		});
 	});
 </script>

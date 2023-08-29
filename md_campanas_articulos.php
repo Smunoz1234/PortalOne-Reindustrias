@@ -48,7 +48,7 @@ if ($type_articulo == 1) {
 
 	$parametros = array(
 		$type_articulo,
-		"'$ID_articulo'",
+		"'$ID'",
 		$id_campana_articulo,
 	);
 }
@@ -193,7 +193,8 @@ if ($type_articulo != 0) {
 		<button type="button" class="btn btn-success m-t-md" id="btnAceptar"><i class="fa fa-check"></i>
 			Aceptar</button>
 
-		<button type="button" class="btn btn-danger m-t-md" data-dismiss="modal"><i class="fa fa-times"></i>
+		<button type="button" class="btn btn-danger m-t-md" data-dismiss="modal" id="btnCerrar"><i
+				class="fa fa-times"></i>
 			Cerrar</button>
 	</div>
 	<!-- /modal-footer -->
@@ -271,7 +272,7 @@ if ($type_articulo != 0) {
 						ID: $("#id_campana").val(),
 						VIN: vin,
 						IdArticulo: id_articulo,
-						DescripcionArticulo:articulo
+						DescripcionArticulo: articulo
 					},
 					success: function (response) {
 						console.log(response);
@@ -289,11 +290,24 @@ if ($type_articulo != 0) {
 								text: (validarAjax) ? "Todos los articulos se insertaron correctamente." : "No se pudieron insertar algunos articulos, por favor verifique."
 							}).then((result) => {
 								if (result.isConfirmed) {
-									if(validarAjax) {
-										location.reload();
-									} else {
-										console.log("Hubo un problema al insertar los articulos");
-									}
+									// if(validarAjax) {
+
+									// Obtén la URL actual
+									let currentUrl = new URL(window.location.href);
+
+									// Obtén los parámetros del query string
+									let searchParams = currentUrl.searchParams;
+
+									// Actualiza el valor del parámetro 'active' o agrega si no existe
+									searchParams.set('active', 2);
+
+									// Crea una nueva URL con los parámetros actualizados
+									let newUrl = currentUrl.origin + currentUrl.pathname + '?' + searchParams.toString();
+
+									// Recarga la página con la nueva URL
+									window.location.href = newUrl;
+
+									// }
 								}
 							});
 							// Swal.fire
@@ -306,10 +320,29 @@ if ($type_articulo != 0) {
 					}
 				});
 				// Fin AJAX
-			}); 
+			});
 			// Fin Loop Articulos
-		}); 
+		});
 		// Fin Evento CLICK
+
+		$("#btnCerrar").on("click", function () {
+			// location.reload();
+
+			// Obtén la URL actual
+			let currentUrl = new URL(window.location.href);
+
+			// Obtén los parámetros del query string
+			let searchParams = currentUrl.searchParams;
+
+			// Actualiza el valor del parámetro 'active' o agrega si no existe
+			searchParams.set('active', 2);
+
+			// Crea una nueva URL con los parámetros actualizados
+			let newUrl = currentUrl.origin + currentUrl.pathname + '?' + searchParams.toString();
+
+			// Recarga la página con la nueva URL
+			window.location.href = newUrl;
+		});
 	});
 </script>
 
