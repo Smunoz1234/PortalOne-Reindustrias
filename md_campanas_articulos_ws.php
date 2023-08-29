@@ -23,7 +23,7 @@ $SQL = EjecutarSP('sp_ConsultarArticulosTodos', $Param);
         <?php while ($row = sql_fetch_array($SQL)) { ?>
             <tr id="<?php echo $row['IdArticulo']; ?>">
                 <td>
-                    <?php echo $row['NombreBuscarArticulo']; ?>
+                    <?php echo $row['NombreBuscarArticulo'] ?? ""; ?>
                 </td>
                 <td>
                     <button type="button" class="btn btn-success btn-xs"
@@ -33,10 +33,10 @@ $SQL = EjecutarSP('sp_ConsultarArticulosTodos', $Param);
                 <td>
                     <?php echo $row['IdArticulo']; ?>
                 </td>
-                <td>
-                    <?php echo $row['DescripcionArticulo']; ?>
+                <td class="descripcion">
+                    <?php echo $row['DescripcionArticulo'] ?? ""; ?>
                 </td>
-                <td class="VIN">
+                <td class="vin">
                     <?php echo $VIN; ?>
                 </td>
             </tr>

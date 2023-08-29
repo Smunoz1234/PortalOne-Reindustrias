@@ -211,9 +211,7 @@ if ($type_detalle != 0) {
 					return vin.trim();
 				}).filter(function (vin) {
 					return vin !== "";
-				});
-
-				
+				});				
 
 				// Validación del ciclo
 				var validarAjax = true;
@@ -242,7 +240,7 @@ if ($type_detalle != 0) {
 								Swal.fire({
 									icon: (validarAjax) ? "success" : "warning",
 									title: (validarAjax) ? "¡Listo!" : "¡Error!",
-									text: (validarAjax) ? "Todos los VINs se insertaron correctamente." : "No se pudieron insertar algunos VINs, por favor verifique"
+									text: (validarAjax) ? "Todos los VINs se insertaron correctamente." : "No se pudieron insertar algunos VINs, por favor verifique."
 								}).then((result) => {
 									if (result.isConfirmed) {
 										if(validarAjax) {

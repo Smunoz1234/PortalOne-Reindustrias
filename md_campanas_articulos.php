@@ -4,74 +4,65 @@ require_once "includes/conexion.php";
 $SQL_VIN = Seleccionar('tbl_CampanaVehiculosDetalle', '*', '', 'VIN');
 
 // SMM, 25/02/2023
-$msg_error_detalle = "";
-$parametros_detalle = array();
+$msg_error_articulo = "";
+$parametros_articulo = array();
 
 $coduser = $_SESSION['CodUser'];
-$datetime_detalle = FormatoFecha(date('Y-m-d'), date('H:i:s'));
+$datetime_articulo = FormatoFecha(date('Y-m-d'), date('H:i:s'));
 
-$type_detalle = $_POST['type'] ?? 0;
-$ID_detalle = $_POST['ID'] ?? "";
+$type_articulo = $_POST['type'] ?? 0;
 
-$id_campana_detalle = $_POST['id_campana_detalle'] ?? "NULL";
-$VIN_detalle = $_POST['VIN'] ?? "";
+$ID = $_POST['ID'] ?? "";
+$id_campana_articulo = $_POST['id_campana_articulo'] ?? "NULL";
+$VIN_articulo = $_POST['VIN'] ?? "";
 
-$id_usuario_creacion_detalle = "'$coduser'";
-$fecha_creacion_detalle = "'$datetime_detalle'";
-$hora_creacion_detalle = "'$datetime_detalle'";
-$id_usuario_actualizacion_detalle = "'$coduser'";
-$fecha_actualizacion_detalle = "'$datetime_detalle'";
-$hora_actualizacion_detalle = "'$datetime_detalle'";
+$id_articulo = $_POST['IdArticulo'] ?? "";
+$descripcion_articulo = $_POST['DescripcionArticulo'] ?? "";
 
-if ($type_detalle == 1) {
-	$msg_error = "No se pudo crear el VIN.";
+$id_usuario_creacion_articulo = "'$coduser'";
+$fecha_creacion_articulo = "'$datetime_articulo'";
+$hora_creacion_articulo = "'$datetime_articulo'";
+$id_usuario_actualizacion_articulo = "'$coduser'";
+$fecha_actualizacion_articulo = "'$datetime_articulo'";
+$hora_actualizacion_articulo = "'$datetime_articulo'";
+
+if ($type_articulo == 1) {
+	$msg_error = "No se pudo crear el Articulo.";
 
 	$parametros = array(
-		$type_detalle,
-		"'$ID_detalle'",
-		$id_campana_detalle,
-		"'$VIN_detalle'",
-		$id_usuario_actualizacion_detalle,
-		$fecha_actualizacion_detalle,
-		$hora_actualizacion_detalle,
-		$id_usuario_creacion_detalle,
-		$fecha_creacion_detalle,
-		$hora_creacion_detalle,
+		$type_articulo,
+		"'$ID'",
+		$id_campana_articulo,
+		"'$VIN_articulo'",
+		"'$id_articulo'",
+		"'$descripcion_articulo'",
+		$id_usuario_actualizacion_articulo,
+		$fecha_actualizacion_articulo,
+		$hora_actualizacion_articulo,
+		$id_usuario_creacion_articulo,
+		$fecha_creacion_articulo,
+		$hora_creacion_articulo,
 	);
-
-} elseif ($type_detalle == 2) {
-	$msg_error = "No se pudo actualizar el VIN.";
-
-	$parametros = array(
-		$type_detalle,
-		"'$ID_detalle'",
-		$id_campana_detalle,
-		"'$VIN_detalle'",
-		$id_usuario_actualizacion_detalle,
-		$fecha_actualizacion_detalle,
-		$hora_actualizacion_detalle,
-	);
-
-} elseif ($type_detalle == 3) {
-	$msg_error = "No se pudo eliminar el VIN.";
+} elseif ($type_articulo == 3) {
+	$msg_error = "No se pudo eliminar el Articulo.";
 
 	$parametros = array(
-		$type_detalle,
-		"'$ID_detalle'",
-		$id_campana_detalle,
+		$type_articulo,
+		"'$ID_articulo'",
+		$id_campana_articulo,
 	);
 }
 
-if ($type_detalle != 0) {
-	$SQL_Operacion = EjecutarSP('sp_tbl_CampanaVehiculosDetalle', $parametros);
+if ($type_articulo != 0) {
+	$SQL_Operacion = EjecutarSP('sp_tbl_CampanaVehiculosDetalle_Articulos', $parametros);
 
 	if (!$SQL_Operacion) {
-		echo $msg_error_detalle;
+		echo $msg_error_articulo;
 	} else {
 		$row = sqlsrv_fetch_array($SQL_Operacion);
 
 		if (isset($row['Error']) && ($row['Error'] != "")) {
-			echo "$msg_error_detalle";
+			echo "$msg_error_articulo";
 			echo "(" . $row['Error'] . ")";
 		} else {
 			echo "OK";
@@ -221,7 +212,6 @@ if ($type_detalle != 0) {
 		$("#frmBuscarArticulo").validate({
 			submitHandler: function (form) {
 				$('.ibox-content').toggleClass('sk-loading', true);
-
 				let formData = new FormData(form);
 
 				// Ejemplo de como agregar nuevos campos.
@@ -255,6 +245,71 @@ if ($type_detalle != 0) {
 			}
 			// submitHandler
 		});
+
+		// SMM, 29/08/2023
+		$("#btnAceptar").on("click", function () {
+			var totalArticulos = $("#footableTwo tbody tr").length; // Obtener el total de artículos
+
+			// Validación del ciclo
+			var validarAjax = true;
+			var contadorAjax = 0;
+
+			$("#footableTwo tbody tr").each(function () {
+				let id_articulo = $(this).attr("id");
+				let articulo = $(this).find('.descripcion').text();
+				let vin = $(this).find('.vin').text();
+
+				// Articulo que se esta enviando a registro.
+				console.log(articulo);
+
+				// Envio AJAX del Articulo.
+				$.ajax({
+					type: "POST",
+					url: "md_campanas_articulos.php",
+					data: {
+						type: 1,
+						ID: $("#id_campana").val(),
+						VIN: vin,
+						IdArticulo: id_articulo,
+						DescripcionArticulo:articulo
+					},
+					success: function (response) {
+						console.log(response);
+
+						contadorAjax++;
+						if (response !== "OK") {
+							validarAjax = false;
+						}
+
+						// Verificar si todas las solicitudes AJAX han finalizado
+						if (contadorAjax === totalArticulos) {
+							Swal.fire({
+								icon: (validarAjax) ? "success" : "warning",
+								title: (validarAjax) ? "¡Listo!" : "¡Error!",
+								text: (validarAjax) ? "Todos los articulos se insertaron correctamente." : "No se pudieron insertar algunos articulos, por favor verifique."
+							}).then((result) => {
+								if (result.isConfirmed) {
+									if(validarAjax) {
+										location.reload();
+									} else {
+										console.log("Hubo un problema al insertar los articulos");
+									}
+								}
+							});
+							// Swal.fire
+						}
+					},
+					error: function (error) {
+						console.error("320->", error.responseText);
+
+						validarAjax = false;
+					}
+				});
+				// Fin AJAX
+			}); 
+			// Fin Loop Articulos
+		}); 
+		// Fin Evento CLICK
 	});
 </script>
 

@@ -26,7 +26,7 @@ $Sucursal = $row_Encabezado['id_consecutivo_direccion'] ?? "";
 $Cons_Detalle = "SELECT * FROM tbl_CampanaVehiculosDetalle WHERE id_campana = '$ID'";
 $SQL_Detalle = sqlsrv_query($conexion, $Cons_Detalle);
 
-$Cons_Articulos = "SELECT * FROM tbl_CampanaVehiculosDetalle_Articulos WHERE id_campana = '$ID'";
+$Cons_Articulos = "SELECT * FROM uvw_tbl_CampanaVehiculosDetalle_Articulos WHERE id_campana = '$ID'";
 $SQL_Articulos = sqlsrv_query($conexion, $Cons_Articulos);
 
 if (!$SQL_Encabezado || !$SQL_Detalle || !$SQL_Articulos) {
