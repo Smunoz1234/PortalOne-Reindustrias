@@ -1,7 +1,14 @@
 <?php
 require_once "includes/conexion.php";
+$id_campana = $_POST['id_campana'] ?? "";
 
-$SQL_VIN = Seleccionar('tbl_CampanaVehiculosDetalle', '*', '', 'VIN');
+if ($id_campana == "") {
+	$SQL_VIN = Seleccionar('tbl_CampanaVehiculosDetalle', '*', "", 'VIN');
+} else {
+	$SQL_VIN = Seleccionar('tbl_CampanaVehiculosDetalle', '*', "[id_campana] = '$id_campana'", '[VIN]');
+	// echo "SELECT * FROM tbl_CampanaVehiculosDetalle WHERE [id_campana] = '$id_campana' ORDER BY [VIN]";
+	// exit();
+}
 
 // SMM, 25/02/2023
 $msg_error_articulo = "";

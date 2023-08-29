@@ -678,7 +678,6 @@ if ($type != 0) {
 			$('.dataTables-example').DataTable({
 				pageLength: 25,
 				dom: '<"html5buttons"B>lTfgitp',
-				order: [[0, "desc"]],
 				language: {
 					"decimal": "",
 					"emptyTable": "No se encontraron resultados.",
@@ -703,7 +702,8 @@ if ($type != 0) {
 						"sortDescending": ": Activar para ordenar la columna descendente"
 					}
 				},
-				buttons: []
+				buttons: [],
+				order: [[1, "desc"]]
 			});
 		});
 	</script>
@@ -729,6 +729,9 @@ if ($type != 0) {
 
 			$.ajax({
 				type: "POST",
+				data: {
+					id_campana: $("#id_campana").val()
+				},
 				url: "md_campanas_articulos.php",
 				success: function (response) {
 					$('.ibox-content').toggleClass('sk-loading', false);
