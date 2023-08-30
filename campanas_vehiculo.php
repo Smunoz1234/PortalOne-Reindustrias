@@ -568,7 +568,11 @@ if ($type != 0) {
 																			</span>
 																		</td>
 																		<td>
-																			<?php echo $row_Articulos['id_articulo']; ?>
+																			<button type="button" class="btn btn-success btn-xs"
+																				onClick="ConsultarArticulo('<?php echo base64_encode($row_Articulos['id_articulo']); ?>');"
+																				title="Consultar Articulo">
+																				<i class="fa fa-folder"></i><?php echo $row_Articulos['id_articulo']; ?>
+																			</button>
 																		</td>
 																		<td>
 																			<?php echo $row_Articulos['articulo']; ?>
@@ -840,6 +844,15 @@ if ($type != 0) {
 					// $.ajax
 				}
 			});
+		}
+
+		// SMM, 30/08/2023
+		function ConsultarArticulo(articulo) {
+			if (articulo != "") {
+				self.name = 'opener';
+				remote = open(`articulos.php?id=${articulo}&ext=1&tl=1`, 'remote', 'location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
+				remote.focus();
+			}
 		}
 	</script>
 	<!-- InstanceEndEditable -->

@@ -517,7 +517,7 @@ if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
                                                     <a href="solicitud_llamada.php?id=<?php echo base64_encode($row['ID_SolicitudLlamadaServicio']); ?>&tl=1&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('gestionar_solicitudes_llamadas.php'); ?>"
                                                         class="alkin btn btn-success btn-xs"><i
                                                             class="fa fa-folder-open-o"></i> Abrir</a>
-                                                    <a href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row['ID_SolicitudLlamadaServicio']); ?>&ObType=<?php echo base64_encode('191'); ?>&IdFrm=<?php echo base64_encode($row['Series']); ?>"
+                                                    <a href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row['ID_SolicitudLlamadaServicio']); ?>&ObType=<?php echo base64_encode('20008'); ?>&IdFrm=<?php echo base64_encode(0); ?>"
                                                         target="_blank" class="btn btn-warning btn-xs"><i
                                                             class="fa fa-download"></i> Descargar</a>
                                                 </td>
