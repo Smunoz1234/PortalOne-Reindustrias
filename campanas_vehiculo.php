@@ -571,7 +571,7 @@ if ($type != 0) {
 																			<button type="button" class="btn btn-success btn-xs"
 																				onClick="ConsultarArticulo('<?php echo base64_encode($row_Articulos['id_articulo']); ?>');"
 																				title="Consultar Articulo">
-																				<i class="fa fa-folder"></i><?php echo $row_Articulos['id_articulo']; ?>
+																				<i class="fa fa-search"></i> <?php echo $row_Articulos['id_articulo']; ?>
 																			</button>
 																		</td>
 																		<td>
@@ -581,9 +581,9 @@ if ($type != 0) {
 																			<button type="button"
 																				id="btnDelete<?php echo $row_Articulos['id_campana_detalle_articulo']; ?>"
 																				class="btn btn-danger btn-xs"
-																				onclick="EliminarArticulos('<?php echo $row_Articulos['id_campana_detalle_articulo']; ?>');"><i
-																					class="fa fa-trash"></i>
-																				Eliminar</button>
+																				onclick="EliminarArticulos('<?php echo $row_Articulos['id_campana_detalle_articulo']; ?>');">
+																				<i class="fa fa-trash"></i> Eliminar
+																			</button>
 																		</td>
 																	</tr>
 																<?php } ?>

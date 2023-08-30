@@ -136,7 +136,7 @@ if ($type_articulo != 0) {
 							VIN <span class="text-danger">*</span>
 						</label>
 
-						<select id="VIN" name="VIN" class="form-control select2" required>
+						<select id="VIN" name="VIN" class="form-control select2" onchange="EliminarFilas()" required>
 							<option value="">Seleccione...</option>
 
 							<?php while ($row_VIN = sqlsrv_fetch_array($SQL_VIN)) { ?>
@@ -366,6 +366,13 @@ if ($type_articulo != 0) {
 		}
 
 		return true;
+	}
+
+	function EliminarFilas() {
+		let contenido = `<i class="fa fa-search" style="font-size: 20px; color: gray;"></i>
+		<span style="font-size: 15px; color: gray;">Debe buscar un artículo.</span>`;
+
+		$("#tableContainerOne").html(contenido);
 	}
 
 	function AgregarArticulo(ID) {

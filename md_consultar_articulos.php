@@ -413,6 +413,13 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 		return true;
 	}
 
+	function EliminarFilas() {
+		let contenido = `<i class="fa fa-search" style="font-size: 20px; color: gray;"></i>
+		<span style="font-size: 15px; color: gray;">Debe buscar un artículo.</span>`;
+
+		$("#tableContainerOne").html(contenido);
+	}
+
 	function AgregarArticulo(ID) {
 		if (VerificarFilas()) {
 
@@ -670,6 +677,11 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 					$('#IdTipoCargo').trigger('change');
 				}
 			});
+		});
+
+		// SMM, 30/08/2023
+		$(".select2").on("change", function() {
+			EliminarFilas();
 		});
 	});
 </script>
