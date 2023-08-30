@@ -170,7 +170,7 @@ if ($type != 0) {
 			<?php if ($sw_error == 1) { ?>
 				Swal.fire({
 					title: '¡Ha ocurrido un error!',
-					text: '<?php echo $msg_error; ?>',
+					text: '<?php echo LSiqmlObs($msg_error); ?>',
 					icon: 'warning'
 				});
 			<?php } ?>
