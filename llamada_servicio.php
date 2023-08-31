@@ -615,50 +615,134 @@ if ($sw_error == 1) {
 	}
 
 	$row = sqlsrv_fetch_array($SQL);
+	$ID_CodigoCliente = $row['ID_CodigoCliente'] ?? "";
 
-	//Clientes
-	$SQL_Cliente = Seleccionar("uvw_Sap_tbl_Clientes", "CodigoCliente, NombreCliente", "CodigoCliente='" . $row['ID_CodigoCliente'] . "'", 'NombreCliente');
+	// Clientes
+	$SQL_Cliente = Seleccionar("uvw_Sap_tbl_Clientes", "CodigoCliente, NombreCliente", "CodigoCliente='$ID_CodigoCliente'", 'NombreCliente');
 
-	//Contactos clientes
-	$SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', 'CodigoContacto, ID_Contacto', "CodigoCliente='" . $row['ID_CodigoCliente'] . "'", 'NombreContacto');
+	// Contactos clientes
+	$SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', 'CodigoContacto, ID_Contacto', "CodigoCliente='$ID_CodigoCliente'", 'NombreContacto');
 
-	//Sucursales
-	$SQL_SucursalCliente = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', 'NombreSucursal, NumeroLinea, TipoDireccion', "CodigoCliente='" . $row['ID_CodigoCliente'] . "' and TipoDireccion='S'", 'TipoDireccion, NombreSucursal');
+	// Sucursales
+	$SQL_SucursalCliente = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', 'NombreSucursal, NumeroLinea, TipoDireccion', "CodigoCliente='$ID_CodigoCliente' AND TipoDireccion='S'", 'TipoDireccion, NombreSucursal');
 
-	//Articulos del cliente (ID servicio)
+	// Contratos de servicio
+	$SQL_Contrato = Seleccionar('uvw_Sap_tbl_Contratos', '*', "CodigoCliente='$ID_CodigoCliente'", 'ID_Contrato');
+
+	// DocEntry de la Llamada
+	$DocEntry = $row['DocEntry'] ?? "";
+	
+	// Activides relacionadas
+	$SQL_Actividad = Seleccionar('uvw_Sap_tbl_Actividades', '*', "ID_LlamadaServicio='$DocEntry'", 'ID_Actividad');
+
+	// Documentos relacionados
+	$SQL_DocRel = Seleccionar('uvw_Sap_tbl_LlamadasServiciosDocRelacionados', '*', "ID_LlamadaServicio='$DocEntry'");
+
+	// Formularios de llamadas de servicios
+	$SQL_Formularios = Seleccionar('uvw_tbl_LlamadasServicios_Formularios', '*', "docentry_llamada_servicio='$DocEntry'");
+	
+	// Articulos del cliente (ID servicio)
 	$ParamArt = array(
-		"'" . $row['ID_CodigoCliente'] . "'",
+		"'$ID_CodigoCliente'",
 		"'" . $row['NombreSucursal'] . "'",
 		"'0'",
 	);
 	$SQL_Articulos = EjecutarSP('sp_ConsultarArticulosLlamadas', $ParamArt);
 
-	//Numero de series -> Tarjeta de equipo
+	// Numero de series -> Tarjeta de equipo
 	$SQL_NumeroSerie = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', '*', "ItemCode='" . $row['IdArticuloLlamada'] . "'", 'SerialFabricante');
 
-	//Activides relacionadas
-	$SQL_Actividad = Seleccionar('uvw_Sap_tbl_Actividades', '*', "ID_LlamadaServicio='" . $row['DocEntry'] . "'", 'ID_Actividad');
-
-	//Documentos relacionados
-	$SQL_DocRel = Seleccionar('uvw_Sap_tbl_LlamadasServiciosDocRelacionados', '*', "ID_LlamadaServicio='" . $row['DocEntry'] . "'");
-
-	//Formularios de llamadas de servicios
-	$SQL_Formularios = Seleccionar('uvw_tbl_LlamadasServicios_Formularios', '*', "docentry_llamada_servicio='" . $row['DocEntry'] . "'");
-
-	//Contratos de servicio
-	$SQL_Contrato = Seleccionar('uvw_Sap_tbl_Contratos', '*', "CodigoCliente='" . $row['ID_CodigoCliente'] . "'", 'ID_Contrato');
-
-	// SMM, 01/03/2022
-	$CDU_IdMarca_TarjetaEquipo = $row['CDU_IdMarca_TarjetaEquipo'] ?? '';
-	$CDU_IdLinea_TarjetaEquipo = $row['CDU_IdLinea_TarjetaEquipo'] ?? '';
-
-	// Lista de materiales
-	$SQL_ListaMateriales = Seleccionar('uvw_Sap_tbl_ListaMateriales', '*', "CDU_IdMarca='" . $CDU_IdMarca_TarjetaEquipo . "' AND CDU_IdLinea='" . $CDU_IdLinea_TarjetaEquipo . "'");
-
-	// Stiven Muñoz Murillo, 02/06/2022
+	// Articulos
 	$SQL_Articulo = Seleccionar('uvw_Sap_tbl_ArticulosLlamadas', '*', "ItemCode='" . $row['IdArticuloLlamada'] . "'");
 	$row_Articulo = sqlsrv_fetch_array($SQL_Articulo);
+
+	// Variables LMT
+	$CDU_IdMarca_TarjetaEquipo = $row['CDU_IdMarca_TarjetaEquipo'] ?? "";
+	$CDU_IdLinea_TarjetaEquipo = $row['CDU_IdLinea_TarjetaEquipo'] ?? "";
+
+	// Lista de materiales
+	$SQL_ListaMateriales = Seleccionar('uvw_Sap_tbl_ListaMateriales', '*', "CDU_IdMarca='$CDU_IdMarca_TarjetaEquipo' AND CDU_IdLinea='$CDU_IdLinea_TarjetaEquipo'");
 }
+
+// Inicio, verificar que viene de una Solicitud. SMM, 30/08/2023
+if (isset($_GET['dt_SLS']) && ($_GET['dt_SLS']) == 1) {
+	$dt_SLS = 1;
+	$ID_Documento = "'" . base64_decode($_GET['SLS']) . "'";
+
+	$ParametrosCopiar = array(
+		$ID_Documento,
+		$_SESSION['CodUser'],
+		0, // CopiarAdjuntos
+	);
+
+	$SQL_Copiar = EjecutarSP("sp_tbl_SolicitudLlamadaServicios_To_LlamadaServicios", $ParametrosCopiar);
+	if (!$SQL_Copiar) {
+		echo "<script>
+		$(document).ready(function() {
+			Swal.fire({
+				title: '¡Ha ocurrido un error!',
+				text: 'No se pudo copiar la Solicitud en la Llamada de servicio.',
+				icon: 'error'
+			});
+		});
+		</script>";
+	}
+
+	// Obtener la Llamada de servicio creada desde la Solicitud
+	$Cons = "SELECT * FROM uvw_tbl_LlamadasServicios WHERE [ID_SolicitudLlamadaServicio] = $ID_Documento";
+	$SQL = sqlsrv_query($conexion, $Cons);
+	
+	$sw_error = 1; // Para probar
+	$row = sqlsrv_fetch_array($SQL);
+	$ID_CodigoCliente = $row['ID_CodigoCliente'] ?? "";
+
+	// Clientes
+	$SQL_Cliente = Seleccionar("uvw_Sap_tbl_Clientes", "CodigoCliente, NombreCliente", "CodigoCliente='$ID_CodigoCliente'", 'NombreCliente');
+
+	// Contactos clientes
+	$SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', 'CodigoContacto, ID_Contacto', "CodigoCliente='$ID_CodigoCliente'", 'NombreContacto');
+
+	// Sucursales
+	$SQL_SucursalCliente = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', 'NombreSucursal, NumeroLinea, TipoDireccion', "CodigoCliente='$ID_CodigoCliente' AND TipoDireccion='S'", 'TipoDireccion, NombreSucursal');
+
+	// Contratos de servicio
+	$SQL_Contrato = Seleccionar('uvw_Sap_tbl_Contratos', '*', "CodigoCliente='$ID_CodigoCliente'", 'ID_Contrato');
+
+	// DocEntry de la Llamada
+	$DocEntry = $row['DocEntry'] ?? "";
+	
+	// Activides relacionadas
+	$SQL_Actividad = Seleccionar('uvw_Sap_tbl_Actividades', '*', "ID_LlamadaServicio='$DocEntry'", 'ID_Actividad');
+
+	// Documentos relacionados
+	$SQL_DocRel = Seleccionar('uvw_Sap_tbl_LlamadasServiciosDocRelacionados', '*', "ID_LlamadaServicio='$DocEntry'");
+
+	// Formularios de llamadas de servicios
+	$SQL_Formularios = Seleccionar('uvw_tbl_LlamadasServicios_Formularios', '*', "docentry_llamada_servicio='$DocEntry'");
+	
+	// Articulos del cliente (ID servicio)
+	$ParamArt = array(
+		"'$ID_CodigoCliente'",
+		"'" . $row['NombreSucursal'] . "'",
+		"'0'",
+	);
+	$SQL_Articulos = EjecutarSP('sp_ConsultarArticulosLlamadas', $ParamArt);
+
+	// Numero de series -> Tarjeta de equipo
+	$SQL_NumeroSerie = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', '*', "ItemCode='" . $row['IdArticuloLlamada'] . "'", 'SerialFabricante');
+
+	// Articulos
+	$SQL_Articulo = Seleccionar('uvw_Sap_tbl_ArticulosLlamadas', '*', "ItemCode='" . $row['IdArticuloLlamada'] . "'");
+	$row_Articulo = sqlsrv_fetch_array($SQL_Articulo);
+
+	// Variables LMT
+	$CDU_IdMarca_TarjetaEquipo = $row['CDU_IdMarca_TarjetaEquipo'] ?? "";
+	$CDU_IdLinea_TarjetaEquipo = $row['CDU_IdLinea_TarjetaEquipo'] ?? "";
+
+	// Lista de materiales
+	$SQL_ListaMateriales = Seleccionar('uvw_Sap_tbl_ListaMateriales', '*', "CDU_IdMarca='$CDU_IdMarca_TarjetaEquipo' AND CDU_IdLinea='$CDU_IdLinea_TarjetaEquipo'");
+}
+// Fin, verificar que viene de una Solicitud. SMM, 30/08/2023
 
 //Serie de llamada
 $ParamSerie = array(

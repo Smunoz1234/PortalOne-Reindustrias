@@ -2414,15 +2414,19 @@ function AgregarEsto(contenedorID, valorElemento) {
 				   <div class="form-group">
 						<br>
 						<div class="col-lg-8">
-							<?php if (($edit == 1) && (PermitirFuncion(302) && (($row['IdEstadoLlamada'] == '-3') || ($row['IdEstadoLlamada'] == '-2')))) { ?>
+							<?php if (($edit == 1) && (($row['IdEstadoLlamada'] == '-3') || ($row['IdEstadoLlamada'] == '-2'))) { ?>
 								
-								<button class="btn btn-warning" type="submit" form="CrearLlamada" id="Actualizar"><i class="fa fa-refresh"></i> Actualizar Solicitud (Agenda)</button>
-								<button style="margin-left: 10px;" class="btn btn-success" type="button" form="CrearLlamada" id="Copiar"><i class="fa fa-copy"></i> Copiar a Llamada Servicio</button>
+								<button class="btn btn-warning" type="submit" form="CrearLlamada" id="Actualizar">
+									<i class="fa fa-refresh"></i> Actualizar Solicitud (Agenda)
+								</button>
 								
+								<a style="margin-left: 10px;" class="alkin btn btn-success" href="llamada_servicio.php?dt_SLS=1&SLS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>">
+									<i class="fa fa-copy"></i> Copiar a Llamada Servicio
+								</a>
 							<?php } elseif ($edit == 0) { ?>
-								
-								<button class="btn btn-primary" form="CrearLlamada" type="submit" id="Crear"><i class="fa fa-check"></i> Crear Solicitud (Agenda)</button>
-								
+								<button class="btn btn-primary" form="CrearLlamada" type="submit" id="Crear">
+									<i class="fa fa-check"></i> Crear Solicitud (Agenda)
+								</button>
 							<?php } ?>
 						</div>
 
@@ -2545,20 +2549,19 @@ function AgregarEsto(contenedorID, valorElemento) {
 										   <!-- Agregar documento, Inicio -->
 										   <div class="row">
 											   <div class="col-lg-9">
-												   <!-- Gestionar Llamadas, NO Cerradas -->
-											   	<?php if (PermitirFuncion(302) && ($row['IdEstadoLlamada'] != '-1')) { ?>
-												   		<?php if (PermitirFuncion([401, 402, 404, 409])) { ?>
-																   <div class="btn-group">
-																	   <button data-toggle="dropdown" class="btn btn-outline btn-success dropdown-toggle"><i class="fa fa-plus-circle"></i> Agregar documento <i class="fa fa-caret-down"></i></button>
-																	   <ul class="dropdown-menu">
-															   				<?php if (PermitirFuncion(401)) { ?>
-																				<li><a class="dropdown-item alkin d-venta" href="oferta_venta.php?dt_SLS=1&dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&SLS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>">Oferta de venta con LMT</a></li>
-																				<li><a class="dropdown-item alkin d-venta" href="oferta_venta.php?dt_SLS=1&dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&SLS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>&LMT=false">Oferta de venta sin LMT</a></li>
-																			<?php } ?>
-																	   </ul>
-																   </div>
-													<?php }
-												   } ?>
+													<?php if (PermitirFuncion(302) && ($row['IdEstadoLlamada'] != '-1')) { ?>
+															<?php if (PermitirFuncion([401, 402, 404, 409])) { ?>
+																	<div class="btn-group">
+																		<button data-toggle="dropdown" class="btn btn-outline btn-success dropdown-toggle"><i class="fa fa-plus-circle"></i> Agregar documento <i class="fa fa-caret-down"></i></button>
+																		<ul class="dropdown-menu">
+																				<?php if (PermitirFuncion(401)) { ?>
+																					<li><a class="dropdown-item alkin d-venta" href="oferta_venta.php?dt_SLS=1&dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&SLS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>">Oferta de venta con LMT</a></li>
+																					<li><a class="dropdown-item alkin d-venta" href="oferta_venta.php?dt_SLS=1&dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&SLS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>&LMT=false">Oferta de venta sin LMT</a></li>
+																				<?php } ?>
+																		</ul>
+																	</div>
+															<?php } ?>
+													<?php } ?>
 											   </div>
 											   <div class="col-lg-3">
 												   <div class="row">
