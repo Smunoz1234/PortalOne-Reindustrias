@@ -494,7 +494,7 @@ if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
                                             <th>Serial Interno</th>
                                             <th>Fecha creación</th>
 
-                                            <th><i class="fa fa-refresh"></i></th>
+                                            <th>Documento destino</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -570,12 +570,7 @@ if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
                                                 </td>
 
                                                 <td>
-                                                    <?php if ($row['Metodo'] == 0) { ?><i
-                                                            class="fa fa-check-circle text-info"
-                                                            title="Sincronizado con SAP"></i>
-                                                    <?php } else { ?><i class="fa fa-times-circle text-danger"
-                                                            title="Error de sincronización con SAP"></i>
-                                                    <?php } ?>
+							                        <?php if ($row['DocDestinoDocEntry'] != "") {?><a href="llamada_servicio.php?id=<?php echo base64_encode($row['DocDestinoDocEntry']); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('gestionar_solicitudes_llamadas.php'); ?>&tl=1" target="_blank"><?php echo $row['DocDestinoDocNum']; ?></a><?php } else {echo "--";}?>
                                                 </td>
                                             </tr>
                                         <?php } ?>

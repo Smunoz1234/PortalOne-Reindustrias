@@ -170,7 +170,8 @@ if (isset($_POST['P'])) { //Crear llamada de servicio
 			"'" . LSiqmlObs($_POST['ComentarioLlamada']) . "'",
 			"''", // ResolucionLlamada
 			"'" . FormatoFecha($_POST['FechaCreacion'], $_POST['HoraCreacion']) . "'",
-			"'" . FormatoFecha(date('Y-m-d'), date('H:i')) . "'",
+			"'" . FormatoFecha(date('Y-m-d'), date('H:i')) . "'", // FechaActualizacion
+			"'" . FormatoFecha(date('Y-m-d'), date('H:i:s')) . "'", // FechaCierreLlamada
 			"'" . $_POST['IdAnexos'] . "'",
 			($_POST['P'] == 32) ? "1" : "$Metodo",
 			"'" . $_SESSION['CodUser'] . "'",
@@ -1433,7 +1434,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								</div>
 								<div class="ibox-content">
 									<h3 class="no-margins">
-										<?php echo $row['FechaRegistro']->format("Y-m-d H:i:s") ?? "&nbsp;"; ?>
+										<?php echo $row['FechaHoraCreacionLLamada']->format("Y-m-d H:i:s") ?? "&nbsp;"; ?>
 									</h3>
 								</div>
 							</div>
@@ -1467,27 +1468,42 @@ function AgregarEsto(contenedorID, valorElemento) {
 								</div>
 								<div class="ibox-content">
 									<div class="form-group">
-										<?php if ($edit == 1) { ?>
-												<div class="col-lg-6">
-													<div class="btn-group">
-														<button data-toggle="dropdown" class="btn btn-outline btn-success dropdown-toggle"><i class="fa fa-download"></i> Descargar formato <i class="fa fa-caret-down"></i></button>
-														<ul class="dropdown-menu">
-															<?php
-															$SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=20008 AND VerEnDocumento='Y'");
-															while ($row_Formato = sqlsrv_fetch_array($SQL_Formato)) { ?>
-																	<li>
-																		<a class="dropdown-item" target="_blank" href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row['ID_SolicitudLlamadaServicio']); ?>&ObType=<?php echo base64_encode('191'); ?>&IdFrm=<?php echo base64_encode($row_Formato['IdFormato']); ?>&IdReg=<?php echo base64_encode($row_Formato['ID']); ?>"><?php echo $row_Formato['NombreVisualizar']; ?></a>
-																	</li>
+										<div class="col-lg-6">
+											<?php if ($edit == 1) { ?>
+						
+												<div class="btn-group">
+													<button data-toggle="dropdown" class="btn btn-outline btn-success dropdown-toggle"><i class="fa fa-download"></i> Descargar formato <i class="fa fa-caret-down"></i></button>
+													<ul class="dropdown-menu">
+														<?php $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=20008 AND VerEnDocumento='Y'"); ?>
+														
+														<?php while ($row_Formato = sqlsrv_fetch_array($SQL_Formato)) { ?>
+															<li>
+																<a class="dropdown-item" target="_blank" href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row['ID_SolicitudLlamadaServicio']); ?>&ObType=<?php echo base64_encode('191'); ?>&IdFrm=<?php echo base64_encode($row_Formato['IdFormato']); ?>&IdReg=<?php echo base64_encode($row_Formato['ID']); ?>"><?php echo $row_Formato['NombreVisualizar']; ?></a>
+															</li>
 														<?php } ?>
-														</ul>
-													</div>
-
-													<a href="#" class="btn btn-outline btn-info" onClick="VerMapaRel('<?php echo base64_encode($row['ID_SolicitudLlamadaServicio']); ?>','<?php echo base64_encode('191'); ?>');"><i class="fa fa-sitemap"></i> Mapa de relaciones</a>
+													</ul>
 												</div>
-										<?php } else if (PermitirFuncion(508)) { ?>
-														<button onClick="CrearLead();" class="btn btn-outline btn-primary"><i class="fa fa-user-circle"></i> Crear Prospecto</button>
-														<a href="tarjeta_equipo.php" class="btn btn-outline btn-info" target="_blank"><i class="fa fa-plus-circle"></i> Crear nueva tarjeta de equipo</a>
-										<?php } ?>
+
+												<a href="#" class="btn btn-outline btn-info" onClick="VerMapaRel('<?php echo base64_encode($row['ID_SolicitudLlamadaServicio']); ?>','<?php echo base64_encode('191'); ?>');"><i class="fa fa-sitemap"></i> Mapa de relaciones</a>	
+
+											<?php } elseif (PermitirFuncion(508)) { ?>
+												
+												<button onClick="CrearLead();" class="btn btn-outline btn-primary"><i class="fa fa-user-circle"></i> Crear Prospecto</button>
+												<a href="tarjeta_equipo.php" class="btn btn-outline btn-info" target="_blank"><i class="fa fa-plus-circle"></i> Crear nueva tarjeta de equipo</a>
+											
+											<?php } ?>
+										</div>
+										<!-- /.col-lg-6 -->
+
+										<div class="col-lg-6">
+											<?php if (isset($row['DocDestinoDocEntry']) && $row['DocDestinoDocEntry'] != "") { ?>
+												<a href="llamada_servicio.php?id=<?php echo base64_encode($row['DocDestinoDocEntry']); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('gestionar_solicitudes_llamadas.php'); ?>&tl=1"
+													target="_blank" class="btn btn-outline btn-primary pull-right">
+													Ir a documento destino <i class="fa fa-external-link"></i>
+												</a>
+											<?php } ?>
+										</div>
+										<!-- /.col-lg-6 -->
 									</div>
 								</div>
 							</div>
