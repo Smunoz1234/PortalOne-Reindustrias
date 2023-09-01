@@ -692,7 +692,7 @@ if (isset($_GET['dt_SLS']) && ($_GET['dt_SLS']) == 1) {
 	$Cons = "SELECT * FROM uvw_tbl_LlamadasServicios WHERE [ID_SolicitudLlamadaServicio] = $ID_Documento";
 	$SQL = sqlsrv_query($conexion, $Cons);
 	
-	$sw_error = 1; // Para probar
+	// $sw_error = 1; // Para probar
 	$row = sqlsrv_fetch_array($SQL);
 	$ID_CodigoCliente = $row['ID_CodigoCliente'] ?? "";
 
@@ -1973,14 +1973,14 @@ function AgregarEsto(contenedorID, valorElemento) {
 						<div class="form-group">
 							<div class="col-lg-4">
 								<label class="control-label"><i onClick="ConsultarDatosCliente();" title="Consultar cliente" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Cliente <span class="text-danger">*</span></label>
-								<input name="ClienteLlamada" type="hidden" id="ClienteLlamada" value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {
+								<input name="ClienteLlamada" type="hidden" id="ClienteLlamada" value="<?php if (($type_llmd == 1) || ($sw_error == 1 || ($dt_SLS == 1))) {
 									echo $row['ID_CodigoCliente'];
 								} elseif ($dt_LS == 1) {
 									echo $row_Cliente['CodigoCliente'];
 								} ?>">
 								<input name="NombreClienteLlamada" type="text" required="required" class="form-control" id="NombreClienteLlamada" placeholder="Digite para buscar..." <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1') || ($row['TipoTarea'] == 'Interna')) || ($dt_LS == 1) || ($type_llmd == 1)) {
 									echo "readonly='readonly'";
-								} ?> value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {
+								} ?> value="<?php if (($type_llmd == 1) || ($sw_error == 1 || ($dt_SLS == 1))) {
 									  echo $row['NombreClienteLlamada'];
 								  } elseif ($dt_LS == 1) {
 									  echo $row_Cliente['NombreCliente'];
@@ -1991,8 +1991,8 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<select name="ContactoCliente" class="form-control" id="ContactoCliente" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "disabled='disabled'";
 								} ?>>
-								  <?php if (($type_llmd == 0) || ($sw_error == 1)) { ?><option value="">Seleccione...</option><?php } ?>
-								  <?php if (($type_llmd == 1) || ($sw_error == 1)) {
+								  <?php if (($type_llmd == 0) || ($sw_error == 1 || ($dt_SLS == 1))) { ?><option value="">Seleccione...</option><?php } ?>
+								  <?php if (($type_llmd == 1) || ($sw_error == 1 || ($dt_SLS == 1))) {
 									  while ($row_ContactoCliente = sqlsrv_fetch_array($SQL_ContactoCliente)) { ?>
 												  <option value="<?php echo $row_ContactoCliente['CodigoContacto']; ?>" <?php if ((isset($row['IdContactoLLamada'])) && (strcmp($row_ContactoCliente['CodigoContacto'], $row['IdContactoLLamada']) == 0)) {
 														 echo "selected=\"selected\"";
@@ -2006,8 +2006,8 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<select name="SucursalCliente" class="form-control select2" id="SucursalCliente" required="required" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "disabled='disabled'";
 								} ?>>
-								  <?php if (($type_llmd == 0) || ($sw_error == 1)) { ?><option value="">Seleccione...</option><?php } ?>
-								  <?php if (($type_llmd == 1) || ($sw_error == 1)) {
+								  <?php if (($type_llmd == 0) || ($sw_error == 1 || ($dt_SLS == 1))) { ?><option value="">Seleccione...</option><?php } ?>
+								  <?php if (($type_llmd == 1) || ($sw_error == 1 || ($dt_SLS == 1))) {
 									  while ($row_SucursalCliente = sqlsrv_fetch_array($SQL_SucursalCliente)) { ?>
 												  <option value="<?php echo $row_SucursalCliente['NombreSucursal']; ?>" <?php if (isset($row['NombreSucursal']) && (strcmp($row_SucursalCliente['NombreSucursal'], $row['NombreSucursal']) == 0)) {
 														 echo "selected=\"selected\"";
@@ -2025,7 +2025,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<label class="control-label">Dirección <span class="text-danger">*</span></label>
 								<input name="DireccionLlamada" type="text" required="required" class="form-control" id="DireccionLlamada" maxlength="100" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "readonly='readonly'";
-								} ?> value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {
+								} ?> value="<?php if (($type_llmd == 1) || ($sw_error == 1 || ($dt_SLS == 1))) {
 									  echo $row['DireccionLlamada'];
 								  } ?>">
 							</div>
@@ -2033,7 +2033,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<label class="control-label">Barrio</label>
 								<input name="BarrioDireccionLlamada" type="text" class="form-control" id="BarrioDireccionLlamada" maxlength="50" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "readonly='readonly'";
-								} ?> value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {
+								} ?> value="<?php if (($type_llmd == 1) || ($sw_error == 1 || ($dt_SLS == 1))) {
 									  echo $row['BarrioDireccionLlamada'];
 								  } ?>">
 							</div>
@@ -2041,7 +2041,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<label class="control-label">Teléfono <span class="text-danger">*</span></label>
 								<input name="TelefonoLlamada" type="text" class="form-control" required="required" id="TelefonoLlamada" maxlength="50" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "readonly='readonly'";
-								} ?> value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {
+								} ?> value="<?php if (($type_llmd == 1) || ($sw_error == 1 || ($dt_SLS == 1))) {
 									  echo $row['TelefonoContactoLlamada'];
 								  } ?>">
 							</div>
@@ -2049,7 +2049,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 						<div class="form-group">
 							<div class="col-lg-4">
 								<label class="control-label">Ciudad</label>
-								<input name="CiudadLlamada" type="text" class="form-control" id="CiudadLlamada" maxlength="100" value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {
+								<input name="CiudadLlamada" type="text" class="form-control" id="CiudadLlamada" maxlength="100" value="<?php if (($type_llmd == 1) || ($sw_error == 1 || ($dt_SLS == 1))) {
 									echo $row['CiudadLlamada'];
 								} ?>" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									 echo "readonly='readonly'";
@@ -2059,7 +2059,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<label class="control-label">Correo</label>
 								<input name="CorreoLlamada" type="email" class="form-control" id="CorreoLlamada" maxlength="100" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "readonly='readonly'";
-								} ?> value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {
+								} ?> value="<?php if (($type_llmd == 1) || ($sw_error == 1 || ($dt_SLS == 1))) {
 									  echo $row['CorreoContactoLlamada'];
 								  } ?>">
 							</div>
@@ -2072,7 +2072,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 						<div class="form-group">
 							<div class="col-lg-8">
 								<label class="control-label"><i onClick="ConsultarArticulo();" title="Consultar ID Servicio" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> ID servicio <span class="text-danger">*</span></label>
-								<input name="IdArticuloLlamada" type="hidden" id="IdArticuloLlamada" value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {
+								<input name="IdArticuloLlamada" type="hidden" id="IdArticuloLlamada" value="<?php if (($type_llmd == 1) || ($sw_error == 1 || ($dt_SLS == 1))) {
 									echo $row['IdArticuloLlamada'];
 								} elseif ($dt_LS == 1 && isset($row_Articulo['ItemCode'])) {
 									echo $row_Articulo['ItemCode'];
@@ -2093,7 +2093,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 									echo "disabled='disabled'";
 								} ?>>
 										<option value="">Seleccione...</option>
-									<?php if (($type_llmd == 1) || ($sw_error == 1)) {
+									<?php if (($type_llmd == 1) || ($sw_error == 1 || ($dt_SLS == 1))) {
 										while ($row_NumeroSerie = sqlsrv_fetch_array($SQL_NumeroSerie)) { ?>
 													<option value="<?php echo $row_NumeroSerie['SerialInterno']; ?>" data-id="<?php echo $row_NumeroSerie['IdTarjetaEquipo'] ?? ""; ?>" <?php if ((isset($row_NumeroSerie['SerialInterno'])) && (strcmp($row_NumeroSerie['SerialInterno'], $row['IdNumeroSerie']) == 0)) {
 																echo "selected=\"selected\"";
@@ -2108,7 +2108,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 						<div class="form-group">
 							<div class="col-lg-4" <?php if (!$IncluirCamposAdicionales) { ?> style="display: none;" <?php } ?>>
 								<label class="control-label">Cantidad artículo</label>
-							<input name="CantArticulo" type="text" class="form-control" id="CantArticulo" maxlength="50" value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {
+							<input name="CantArticulo" type="text" class="form-control" id="CantArticulo" maxlength="50" value="<?php if (($type_llmd == 1) || ($sw_error == 1 || ($dt_SLS == 1))) {
 								echo number_format($row['CDU_CantArticulo'], 2);
 							} ?>" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 								 echo "readonly='readonly'";
@@ -2118,7 +2118,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<label class="control-label">Precio artículo</label>
 							<input name="PrecioArticulo" type="text" class="form-control" id="PrecioArticulo" maxlength="50" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 								echo "readonly='readonly'";
-							} ?> value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {
+							} ?> value="<?php if (($type_llmd == 1) || ($sw_error == 1 || ($dt_SLS == 1))) {
 								  echo number_format($row['CDU_PrecioArticulo'], 2);
 							  } ?>" onKeyPress="return justNumbers(event,this.value);" onKeyUp="revisaCadena(this);">
 							</div>
@@ -2135,7 +2135,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 									echo "disabled='disabled'";
 								} ?>>
 										<option value="">Seleccione...</option>
-									<?php if (($type_llmd == 1) || ($sw_error == 1)) {
+									<?php if (($type_llmd == 1) || ($sw_error == 1 || ($dt_SLS == 1))) {
 										while ($row_ListaMateriales = sqlsrv_fetch_array($SQL_ListaMateriales)) { ?>
 													<option value="<?php echo $row_ListaMateriales['ItemCode']; ?>" <?php if ((isset($row['CDU_ListaMateriales'])) && (strcmp($row_ListaMateriales['ItemCode'], $row['CDU_ListaMateriales']) == 0)) {
 														   echo "selected=\"selected\"";
@@ -2148,7 +2148,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<label class="control-label">Tiempo tarea (Minutos) <span class="text-danger">*</span></label>
 								<input name="CDU_TiempoTarea" type="number" class="form-control" id="CDU_TiempoTarea" required="required" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "readonly='readonly'";
-								} ?> value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {
+								} ?> value="<?php if (($type_llmd == 1) || ($sw_error == 1 || ($dt_SLS == 1))) {
 									  echo $row['CDU_TiempoTarea'];
 								  } ?>">
 							</div>
@@ -2193,13 +2193,13 @@ function AgregarEsto(contenedorID, valorElemento) {
 							</div>
 							<div class="col-lg-2">
 								<label class="control-label">Número de llamada</label>
-								<input autocomplete="off" name="Ticket" type="text" class="form-control" id="Ticket" maxlength="50" readonly="readonly" value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {
+								<input autocomplete="off" name="Ticket" type="text" class="form-control" id="Ticket" maxlength="50" readonly="readonly" value="<?php if (($type_llmd == 1) || ($sw_error == 1 || ($dt_SLS == 1))) {
 									echo $row['DocNum'];
 								} ?>">
 							</div>
 							<div class="col-lg-2">
 								<label class="control-label">ID de llamada</label>
-								<input autocomplete="off" name="CallID" type="text" class="form-control" id="CallID" maxlength="50" readonly="readonly" value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {
+								<input autocomplete="off" name="CallID" type="text" class="form-control" id="CallID" maxlength="50" readonly="readonly" value="<?php if (($type_llmd == 1) || ($sw_error == 1 || ($dt_SLS == 1))) {
 									echo $row['ID_LlamadaServicio'];
 								} ?>">
 							</div>
@@ -2219,7 +2219,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<label class="control-label">Asunto de llamada <span class="text-danger">*</span></label>
 								<input autocomplete="off" name="AsuntoLlamada" type="text" required="required" class="form-control" id="AsuntoLlamada" maxlength="150" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "readonly='readonly'";
-								} ?> value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {
+								} ?> value="<?php if (($type_llmd == 1) || ($sw_error == 1 || ($dt_SLS == 1))) {
 									  echo $row['AsuntoLlamada'];
 								  } else {
 									  echo $TituloLlamada;
@@ -2353,7 +2353,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 									echo "disabled";
 								} ?>>
 										<option value="">Seleccione...</option>
-									<?php if (($type_llmd == 1) || ($sw_error == 1)) {
+									<?php if (($type_llmd == 1) || ($sw_error == 1 || ($dt_SLS == 1))) {
 										while ($row_Contrato = sqlsrv_fetch_array($SQL_Contrato)) { ?>
 													<option value="<?php echo $row_Contrato['ID_Contrato']; ?>" <?php if ((isset($row_Contrato['ID_Contrato'])) && (strcmp($row_Contrato['ID_Contrato'], $row['IdContratoServicio']) == 0)) {
 														   echo "selected";
@@ -2539,7 +2539,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<label class="control-label">Comentario <span class="text-danger">*</span></label>
 								<textarea name="ComentarioLlamada" rows="7" maxlength="3000" required="required" class="form-control" id="ComentarioLlamada" type="text" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "readonly='readonly'";
-								} ?>><?php if (($type_llmd == 1) || ($sw_error == 1)) {
+								} ?>><?php if (($type_llmd == 1) || ($sw_error == 1 || ($dt_SLS == 1))) {
 									 echo $row['ComentarioLlamada'];
 								 } ?></textarea>
 							</div>
@@ -2574,7 +2574,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 							<div class="col-lg-4">
 								<label class="control-label">Kilometros <span class="text-danger">*</span></label>
 								<input autocomplete="off" name="CDU_Kilometros" type="number" class="form-control" id="CDU_Kilometros" maxlength="100"
-								value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {
+								value="<?php if (($type_llmd == 1) || ($sw_error == 1 || ($dt_SLS == 1))) {
 									echo $row['CDU_Kilometros'];
 								} ?>" required="required"
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
@@ -2721,7 +2721,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<label class="control-label">Nombre de contacto <?php if (PermitirFuncion(324)) { ?><span class="text-danger">*</span><?php } ?></label>
 								<input <?php if (PermitirFuncion(324)) { ?> required <?php } ?> autocomplete="off" name="CDU_NombreContacto" type="text" class="form-control" id="CDU_NombreContacto" maxlength="100" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 										   echo "readonly='readonly'";
-									   } ?> value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {
+									   } ?> value="<?php if (($type_llmd == 1) || ($sw_error == 1 || ($dt_SLS == 1))) {
 											 echo $row['CDU_NombreContacto'];
 										 } ?>">
 							</div>
@@ -2729,7 +2729,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<label class="control-label">Cargo de contacto <?php if (PermitirFuncion(324)) { ?><span class="text-danger">*</span><?php } ?></label>
 								<input <?php if (PermitirFuncion(324)) { ?> required <?php } ?> autocomplete="off" name="CDU_CargoContacto" type="text" class="form-control" id="CDU_CargoContacto" maxlength="100" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 										   echo "readonly='readonly'";
-									   } ?> value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {
+									   } ?> value="<?php if (($type_llmd == 1) || ($sw_error == 1 || ($dt_SLS == 1))) {
 											 echo $row['CDU_CargoContacto'];
 										 } ?>">
 							</div>
@@ -2737,7 +2737,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<label class="control-label">Teléfono de contacto <?php if (PermitirFuncion(324)) { ?><span class="text-danger">*</span><?php } ?></label>
 								<input <?php if (PermitirFuncion(324)) { ?> required <?php } ?> autocomplete="off" name="CDU_TelefonoContacto" type="text" class="form-control" id="CDU_TelefonoContacto" maxlength="100" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 										   echo "readonly='readonly'";
-									   } ?> value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {
+									   } ?> value="<?php if (($type_llmd == 1) || ($sw_error == 1 || ($dt_SLS == 1))) {
 											 echo $row['CDU_TelefonoContacto'];
 										 } ?>">
 							</div>
@@ -2745,7 +2745,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<label class="control-label">Correo de contacto <?php if (PermitirFuncion(324)) { ?><span class="text-danger">*</span><?php } ?></label>
 								<input <?php if (PermitirFuncion(324)) { ?> required <?php } ?> autocomplete="off" name="CDU_CorreoContacto" type="email" class="form-control" id="CDU_CorreoContacto" maxlength="100" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 										   echo "readonly='readonly'";
-									   } ?> value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {
+									   } ?> value="<?php if (($type_llmd == 1) || ($sw_error == 1 || ($dt_SLS == 1))) {
 											 echo $row['CDU_CorreoContacto'];
 										 } ?>">
 							</div>
@@ -2755,7 +2755,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<label class="control-label">Servicios</label>
 								<textarea name="CDU_Servicios" rows="5" maxlength="2000" class="form-control" id="CDU_Servicios" type="text" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "readonly='readonly'";
-								} ?>><?php if (($type_llmd == 1) || ($sw_error == 1)) {
+								} ?>><?php if (($type_llmd == 1) || ($sw_error == 1 || ($dt_SLS == 1))) {
 									 echo $row['CDU_Servicios'];
 								 } ?></textarea>
 							</div>
@@ -2763,7 +2763,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<label class="control-label">Áreas</label>
 								<textarea name="CDU_Areas" rows="5" maxlength="2000" class="form-control" id="CDU_Areas" type="text" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "readonly='readonly'";
-								} ?>><?php if (($type_llmd == 1) || ($sw_error == 1)) {
+								} ?>><?php if (($type_llmd == 1) || ($sw_error == 1 || ($dt_SLS == 1))) {
 									 echo $row['CDU_Areas'];
 								 } ?></textarea>
 							</div>
@@ -2783,7 +2783,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<label class="control-label">Resolución de llamada</label>
 								<textarea name="ResolucionLlamada" rows="5" maxlength="3000" type="text" class="form-control" id="ResolucionLlamada" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "readonly='readonly'";
-								} ?>><?php if (($type_llmd == 1) || ($sw_error == 1)) {
+								} ?>><?php if (($type_llmd == 1) || ($sw_error == 1 || ($dt_SLS == 1))) {
 									 echo $row['ResolucionLlamada'];
 								 } ?></textarea>
 							</div>
@@ -2844,7 +2844,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 										<input type="hidden" id="CorreosContactosFirma" name="CorreosContactosFirma">
 
 										<div id="CorreosDestinatarios">
-											<?php if (($type_llmd == 1) || ($sw_error == 1)) { ?>
+											<?php if (($type_llmd == 1) || ($sw_error == 1 || ($dt_SLS == 1))) { ?>
 													<?php $CorreosContactosFirma = explode(";", $row['CorreoContactoFirma']); ?>
 													<?php foreach ($CorreosContactosFirma as &$Correo) { ?>
 															<?php if ($Correo != "") { ?>
@@ -2862,7 +2862,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 										<input type="hidden" id="TelefonosContactosFirma" name="TelefonosContactosFirma">
 
 										<div id="TelefonosDestinatarios">
-											<?php if (($type_llmd == 1) || ($sw_error == 1)) { ?>
+											<?php if (($type_llmd == 1) || ($sw_error == 1 || ($dt_SLS == 1))) { ?>
 													<?php $TelefonosContactosFirma = explode(";", $row['TelefonoContactoFirma']); ?>
 													<?php foreach ($TelefonosContactosFirma as &$Telefono) { ?>
 															<?php if ($Telefono != "") { ?>
@@ -2878,7 +2878,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 										<label class="control-label">Nombre del cliente <!-- span class="text-danger cierre-span">*</span --></label>
 										<input <?php if (!$testMode) {
 											echo "readonly";
-										} ?> autocomplete="off" name="NombreContactoFirma" type="text" class="form-control cierre-input" id="NombreContactoFirma" maxlength="100" value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {
+										} ?> autocomplete="off" name="NombreContactoFirma" type="text" class="form-control cierre-input" id="NombreContactoFirma" maxlength="100" value="<?php if (($type_llmd == 1) || ($sw_error == 1 || ($dt_SLS == 1))) {
 											  echo $row['NombreContactoFirma'] ?? "";
 										  } ?>">
 									</div>
@@ -2886,7 +2886,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 										<label class="control-label">Cédula del cliente <!-- span class="text-danger cierre-span">*</span --></label>
 										<input <?php if (!$testMode) {
 											echo "readonly";
-										} ?> autocomplete="off" name="CedulaContactoFirma" type="number" class="form-control cierre-input" id="CedulaContactoFirma" maxlength="15" value="<?php if (($type_llmd == 1) || ($sw_error == 1)) {
+										} ?> autocomplete="off" name="CedulaContactoFirma" type="number" class="form-control cierre-input" id="CedulaContactoFirma" maxlength="15" value="<?php if (($type_llmd == 1) || ($sw_error == 1 || ($dt_SLS == 1))) {
 											  echo $row['CedulaContactoFirma'] ?? "";
 										  } ?>">
 									</div>
@@ -2894,7 +2894,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 									<br><br>
 									<div class="form-group">
 										<label class="col-lg-2">Firma del cliente <!-- span class="text-danger cierre-span">*</span --></label>
-										<?php if (($sw_error == 1) || (($type_llmd == 1) && ($row['IdEstadoLlamada'] == '-1'))) { ?>
+										<?php if (($sw_error == 1 || ($dt_SLS == 1)) || (($type_llmd == 1) && ($row['IdEstadoLlamada'] == '-1'))) { ?>
 												<?php if (isset($row['FirmaContactoResponsable']) && ($row['FirmaContactoResponsable'] != "")) { ?>
 														<div class="col-lg-10">
 															<span class="badge badge-primary">Firmado</span>
@@ -2977,9 +2977,9 @@ function AgregarEsto(contenedorID, valorElemento) {
 						<input type="hidden" id="tl" name="tl" value="<?php echo $type_llmd; ?>" />
 						<input type="hidden" id="IdLlamadaPortal" name="IdLlamadaPortal" value="<?php if (($type_llmd == 1) && ($sw_error == 0)) {
 							echo base64_encode($row['IdLlamadaPortal']);
-						} elseif (($type_llmd == 1) && ($sw_error == 1)) {
+						} elseif (($type_llmd == 1) && ($sw_error == 1 || ($dt_SLS == 1))) {
 							echo base64_encode($row['ID_LlamadaServicio']);
-						} elseif (($type_llmd == 0) && ($sw_error == 1)) {
+						} elseif (($type_llmd == 0) && ($sw_error == 1 || ($dt_SLS == 1))) {
 							echo base64_encode($row['ID_LlamadaServicio']);
 						} ?>" />
 						<input type="hidden" id="DocEntry" name="DocEntry" value="<?php if ($type_llmd == 1) {
