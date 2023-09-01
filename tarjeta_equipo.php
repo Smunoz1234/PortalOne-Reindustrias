@@ -1510,7 +1510,7 @@ function ConsultarDocVentas(tipo){
 									</div>
 								</div>
 							</div>
-							<!-- End Table Campanas -->
+							<!-- End Table Formularios -->
 						</div>
 						<!-- End Formularios -->
 
