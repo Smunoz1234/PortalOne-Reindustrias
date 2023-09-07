@@ -19,6 +19,7 @@ $testMode = false; // SMM, 04/03/2022
 $ActivarCorreo = false; // SMM, 23/08/2023
 
 $dt_SLS = 0; // Para saber si viene de una Solicitud. 0 No viene. 1 Si viene.
+$SLS = ""; // ID del documento base
 
 // Inicio, copiar firma a la ruta log y main. SMM, 17/09/2022
 $FirmaContactoResponsable = "";
@@ -274,9 +275,13 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
 				} else {
 					$msg = base64_encode($Resultado->Mensaje); // SMM, 14/09/2022
 
-					//Consultar la llamada para recargarla nuevamente y poder mantenerla
+					// Consultar la llamada para recargarla nuevamente y poder mantenerla
 					$SQL_Llamada = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '[ID_LlamadaServicio]', "[IdLlamadaPortal]='" . $IdLlamada . "'");
 					$row_Llamada = sqlsrv_fetch_array($SQL_Llamada);
+					
+					// Actualizar la Solicitud de Llamada de Servicio. SMM, 04/09/2023
+
+
 					sqlsrv_close($conexion);
 					header("Location:llamada_servicio.php?msg=$msg&id=" . base64_encode($row_Llamada['ID_LlamadaServicio']) . '&tl=1&a=' . base64_encode("OK_LlamAdd"));
 				}
@@ -666,13 +671,14 @@ if ($sw_error == 1) {
 	$SQL_ListaMateriales = Seleccionar('uvw_Sap_tbl_ListaMateriales', '*', "CDU_IdMarca='$CDU_IdMarca_TarjetaEquipo' AND CDU_IdLinea='$CDU_IdLinea_TarjetaEquipo'");
 }
 
+
 // Inicio, verificar que viene de una Solicitud. SMM, 30/08/2023
 if (isset($_GET['dt_SLS']) && ($_GET['dt_SLS']) == 1) {
 	$dt_SLS = 1;
-	$ID_Documento = "'" . base64_decode($_GET['SLS']) . "'";
+	$SLS = "'" . base64_decode($_GET['SLS']) . "'";
 
 	$ParametrosCopiar = array(
-		$ID_Documento,
+		$SLS,
 		$_SESSION['CodUser'],
 		0, // CopiarAdjuntos
 	);
@@ -691,7 +697,7 @@ if (isset($_GET['dt_SLS']) && ($_GET['dt_SLS']) == 1) {
 	}
 
 	// Obtener la Llamada de servicio creada desde la Solicitud
-	$Cons = "SELECT * FROM uvw_tbl_LlamadasServicios WHERE [ID_SolicitudLlamadaServicio] = $ID_Documento";
+	$Cons = "SELECT * FROM uvw_tbl_LlamadasServicios WHERE [ID_SolicitudLlamadaServicio] = $SLS";
 	$SQL = sqlsrv_query($conexion, $Cons);
 
 	// $sw_error = 1; // Para probar
@@ -836,6 +842,14 @@ $TipoProblema = ObtenerValorDefecto(191, "IdTipoProblema", false);
 $VIN = $row['SerialFabricante'] ?? "";
 $SQL_Campanas = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_CampañaVehiculo', '*'); // , "VIN='$VIN'"
 $hasRowsCampanas = ($SQL_Campanas) ? sqlsrv_has_rows($SQL_Campanas) : false;
+
+// SMM, 07/09/2023
+$ids_campanas = array();
+$SQL_CampanasAsociadas = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_CampañaVehiculo', '*'); // , "VIN='$VIN'"
+
+//while ($row_GruposUsuario = sqlsrv_fetch_array($SQL_GruposUsuario)) {
+//	$ids_grupos[] = $row_GruposUsuario['IdCargo'];
+//}
 ?>
 
 <!DOCTYPE html>
@@ -1931,7 +1945,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								</div>
 								<div class="ibox-content">
 									<div class="form-group">
-										<div class="col-lg-6">
+										<div class="col-lg-4">
 											<?php if ($type_llmd == 1) { ?>
 												<div class="btn-group">
 													<button data-toggle="dropdown" class="btn btn-outline btn-success dropdown-toggle"><i class="fa fa-download"></i> Descargar formato <i class="fa fa-caret-down"></i></button>
@@ -1956,14 +1970,22 @@ function AgregarEsto(contenedorID, valorElemento) {
 												<a href="tarjeta_equipo.php" class="btn btn-outline btn-info" target="_blank"><i class="fa fa-plus-circle"></i> Crear nueva tarjeta de equipo</a>
 											<?php } ?>
 										</div>
-										<!-- /.col-lg-6 -->
+										<!-- /.col-lg-4 -->
 
-										<div class="col-lg-6">
-											<?php if ($hasRowsCampanas) { ?>
-												<button onclick="VerCampanas();" class="btn btn-outline btn-primary pull-right"><i class="fa fa-bell"></i> Ver Campañas Gestionadas</button>
-											<?php } ?>
+										<div class="col-lg-8">
+											<div class="btn-group pull-right">
+												<?php if ($type_llmd == 1) { ?>
+													<button onclick="VerTAB(1);" class="btn btn-outline btn-primary"><i class="fa fa-calendar"></i> Ver Actividades</button>
+													<button onclick="VerTAB(2);" class="btn btn-outline btn-primary"><i class="fa fa-tags"></i> Ver Documentos Relacionados</button>
+													<button onclick="VerTAB(3);" class="btn btn-outline btn-primary"><i class="fa fa-clipboard"></i> Ver Formatos Adicionales</button>
+												<?php } ?>
+
+												<?php if (($type_llmd == 1) && $hasRowsCampanas) { ?>
+													<button onclick="VerTAB(4);" class="btn btn-outline btn-primary"><i class="fa fa-bell"></i> Ver Campañas Gestionadas</button>
+												<?php } ?>	
+											</div>
 										</div>
-										<!-- /.col-lg-6 -->
+										<!-- /.col-lg-8 -->
 									</div>
 									<!-- /.form-group -->
 								</div>
@@ -2082,11 +2104,13 @@ function AgregarEsto(contenedorID, valorElemento) {
 								  } ?>">
 							</div>
 						</div>
+						
 						<div class="form-group">
 							<div class="col-lg-8 border-bottom">
 								<label class="control-label text-danger">Información del servicio</label>
 							</div>
 						</div>
+
 						<div class="form-group">
 							<div class="col-lg-8">
 								<label class="control-label"><i onClick="ConsultarArticulo();" title="Consultar ID Servicio" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> ID servicio <span class="text-danger">*</span></label>
@@ -2105,24 +2129,54 @@ function AgregarEsto(contenedorID, valorElemento) {
 									echo $row_Articulo['ItemCode'] . " - " . $row_Articulo['ItemName'];
 								} ?>">
 							</div>
-							<div class="col-lg-4">
-								<label class="control-label"><i onClick="ConsultarEquipo();" title="Consultar tarjeta de equipo" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Tarjeta de equipo</label>
+							
+							<div class="col-lg-3">
+								<label class="control-label">
+									<i onclick="ConsultarEquipo();" title="Consultar tarjeta de equipo" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Tarjeta de equipo
+								</label>
+								
 								<select name="NumeroSerie" class="form-control select2" id="NumeroSerie" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
-									echo "disabled='disabled'";
+									echo "disabled";
 								} ?>>
-										<option value="">Seleccione...</option>
+									<option value="">Seleccione...</option>
+									
 									<?php if (($type_llmd == 1) || ($sw_error == 1 || ($dt_SLS == 1))) {
 										while ($row_NumeroSerie = sqlsrv_fetch_array($SQL_NumeroSerie)) { ?>
-															<option value="<?php echo $row_NumeroSerie['SerialInterno']; ?>" data-id="<?php echo $row_NumeroSerie['IdTarjetaEquipo'] ?? ""; ?>" <?php if ((isset($row_NumeroSerie['SerialInterno'])) && (strcmp($row_NumeroSerie['SerialInterno'], $row['IdNumeroSerie']) == 0)) {
-																		echo "selected=\"selected\"";
-																	} elseif ((isset($_GET['Serial'])) && (strcmp(base64_decode($_GET['Serial']), $row_NumeroSerie['SerialInterno']) == 0)) {
-																		echo "selected=\"selected\"";
-																	} ?>><?php echo "SN Fabricante: " . $row_NumeroSerie['SerialFabricante'] . " - Núm. Serie: " . $row_NumeroSerie['SerialInterno']; ?></option>
-											<?php }
-									} ?>
+											<option value="<?php echo $row_NumeroSerie['SerialInterno']; ?>" data-id="<?php echo $row_NumeroSerie['IdTarjetaEquipo'] ?? ""; ?>" 
+												<?php if ((isset($row_NumeroSerie['SerialInterno'])) && (strcmp($row_NumeroSerie['SerialInterno'], $row['IdNumeroSerie']) == 0)) {
+													echo "selected";
+												} elseif ((isset($_GET['Serial'])) && (strcmp(base64_decode($_GET['Serial']), $row_NumeroSerie['SerialInterno']) == 0)) {
+													echo "selected";
+												} ?>>
+												
+												<?php echo "SN Fabricante: " . $row_NumeroSerie['SerialFabricante'] . " - Núm. Serie: " . $row_NumeroSerie['SerialInterno']; ?>
+											</option>
+											<?php } ?>
+									<?php } ?>
+								</select>
+							</div>
+							<!-- /#NumeroSerie -->
+
+							<br>
+							<button id="AddCampana" class="btn btn-sm btn-info btn-circle" title="Adicionar Campaña" disabled <?php if($type_llmd == 1) { echo "style='display: none;'";} ?>><i class="fa fa-bell"></i></button>
+						</div>
+
+						<div class="form-group" <?php if($type_llmd == 1) { echo "style='display: none;'";} ?>>
+							<div class="col-lg-8">
+								<label class="control-label">Campañas</label>
+
+								<select data-placeholder="Debe seleccionar las campañas que desea asociar con la Llamada de servicio." name="Campanas[]" class="form-control select2" id="Campanas" multiple>
+									<?php while ($row_Campanas = sqlsrv_fetch_array($SQL_CampanasAsociadas)) {?>
+										<option value="<?php echo $row_Campanas['id_campana']; ?>"
+										<?php if (in_array($row_Campanas['id_campana'], $ids_campanas)) {echo "selected";}?>>
+											<?php echo $row_Campanas['campana']; ?>
+										</option>
+									<?php }?>
 								</select>
 							</div>
 						</div>
+						<!-- /#CampanasAsociadas -->
+
 						<div class="form-group">
 							<div class="col-lg-4" <?php if (!$IncluirCamposAdicionales) { ?> style="display: none;" <?php } ?>>
 								<label class="control-label">Cantidad artículo</label>
@@ -2162,7 +2216,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 									} ?>
 								</select>
 							</div>
-							<div class="col-lg-4">
+							<div class="col-lg-3">
 								<label class="control-label">Tiempo tarea (Minutos) <span class="text-danger">*</span></label>
 								<input name="CDU_TiempoTarea" type="number" class="form-control" id="CDU_TiempoTarea" required="required" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "readonly='readonly'";
@@ -2410,7 +2464,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								</select>
 							</div>
 
-							<div class="col-lg-4" <?php if (!$IncluirCamposAdicionales) { ?> style="display: none;" <?php } ?>>
+							<div class="col-lg-4">
 								<label class="control-label">Contrato/Campaña</label>
 								<select name="CDU_Contrato" class="form-control select2" id="CDU_Contrato"
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
@@ -3343,91 +3397,63 @@ function AgregarEsto(contenedorID, valorElemento) {
 
 									<!-- Campanas -->
 									<div id="tab-4" class="tab-pane">
-										<!-- Table Campanas -->
-										<div class="row">
-											<div class="col-12 text-center">
-												<div class="ibox-content">
-													<?php if ($hasRowsCampanas) { ?>
-														<div class="table" style="max-height: 230px; overflow-y: auto;">
-															<table class="table table-striped table-bordered table-hover dataTables-example">
-																<thead>
-																	<tr>
-																		<th>ID Campaña</th> 
+										<div class="panel-body">
+											<div class="row">
+												<button type="button" onclick="AdicionarCampana()" class="alkin btn btn-primary btn-xs"><i class="fa fa-plus-circle"></i> Adicionar Campaña</button>
+											</div>
+											<br>
+											<!-- Table Campanas -->
+											<div class="row">
+												<div class="col-12 text-center">
+													<div class="ibox-content">
+														<?php if ($hasRowsCampanas) { ?>
+															<div class="table" style="max-height: 230px; overflow-y: auto;">
+																<table class="table table-striped table-bordered table-hover dataTables-example">
+																	<thead>
+																		<tr>
+																			<th>ID Campaña</th> 
 
-																		<th>Campaña</th> 
-																		<th>VIN</th>
+																			<th>Campaña</th> 
+																			<th>VIN</th>
 
-																		<th>Estado VIN Campaña</th>
-
-																		<th>Fecha Límite Vigencia</th>
-
-																		<th>ID Llamada Servicio</th>
-																		<th>Estado Llamada</th>
-
-																		<th>Origen</th>
-																		
-
-																		<th>Nombre Cliente</th>
-																		<th>Fecha Cierre</th>
-															
-																		<th>Acciones</th>
-																	</tr>
-																</thead>
-																<tbody>
-																	<?php while ($row_Campana = sqlsrv_fetch_array($SQL_Campanas)) { ?>
-																		<tr class="gradeX">
-																			<td>
-																				<a href="campanas_vehiculo.php?id=<?php echo $row_Campana['id_campana']; ?>&edit=1" class="btn btn-success btn-xs" target="_blank">
-																					<i class="fa fa-folder-open-o"></i> <?php echo $row_Campana['id_campana']; ?>
-																				</a>
-																			</td>
-
-																			<td><?php echo $row_Campana['campana']; ?></td>
-																			<td><?php echo $row_Campana['VIN']; ?></td>
-
-																			<td>
-																				<span class="label <?php echo ($row_Campana['estado_VIN_campaña'] == "P") ? "label-warning" : "label-info"; ?>">
-																					<?php echo $row_Campana['nombre_estado_VIN_campaña']; ?>
-																				</span>
-																			</td>
-
-																			<td><?php echo (isset($row_Campana["fecha_limite_vigencia"]) && $row_Campana["fecha_limite_vigencia"] != "") ? $row_Campana['fecha_limite_vigencia']->format("Y-m-d") : ""; ?></td>
-
-																			<td class="text-left">
-																				<?php if (isset($row_Campana['docnum_llamada_servicio']) && ($row_Campana['docnum_llamada_servicio'] != "")) { ?>
-																							<a href="llamada_servicio.php?id=<?php echo base64_encode($row_Campana['docentry_llamada_servicio']); ?>&tl=1&pag=<?php echo base64_encode('gestionar_llamadas_servicios.php'); ?>" class="alkin btn btn-success btn-xs">
-																								<i class="fa fa-folder-open-o"></i> <?php echo $row_Campana['docnum_llamada_servicio']; ?>
-																							</a>
-																				<?php } ?>
-																			</td>
-																			<td><?php echo $row_Campana['DeEstadoLlamada']; ?></td>
-														
-																			<td><?php echo $row_Campana['DeOrigenLlamada']; ?></td>
-
-																			<td><?php echo $row_Campana['socio_negocios'] ?? ""; ?></td>
-																			<td><?php echo (isset($row_Campana["FechaCierre"]) && $row_Campana["FechaCierre"] != "") ? $row_Campana['FechaCierre']->format("Y-m-d") : ""; ?></td>
-
-																			<td>
-																				<?php if (isset($row_Campana['docnum_llamada_servicio']) && ($row_Campana['docnum_llamada_servicio'] != "")) { ?>
-																							<a href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row_Campana['docnum_llamada_servicio']); ?>&ObType=<?php echo base64_encode('191'); ?>&IdFrm=<?php echo base64_encode($row_Formulario['IdSerieLlamada']); ?>"
-																								target="_blank" class="btn btn-warning btn-xs" title="Descargar Llamada">
-																								<i class="fa fa-download"></i> Descargar Llamada
-																							</a>
-																				<?php } ?>
-																			</td>
+																			<th>Acciones</th>
 																		</tr>
-																	<?php } ?>
-																</tbody>
-															</table>
-														</div>
-													<?php } else { ?>
-														<i class="fa fa-search" style="font-size: 18px; color: lightgray;"></i>
-														<span style="font-size: 13px; color: lightgray;">No hay registros de Campañas de Vehículo</span>
-													<?php } ?>
+																	</thead>
+																	<tbody>
+																		<?php while ($row_Campana = sqlsrv_fetch_array($SQL_Campanas)) { ?>
+																			<tr class="gradeX">
+																				<td>
+																					<a href="campanas_vehiculo.php?id=<?php echo $row_Campana['id_campana']; ?>&edit=1" class="btn btn-success btn-xs" target="_blank">
+																						<i class="fa fa-folder-open-o"></i> <?php echo $row_Campana['id_campana']; ?>
+																					</a>
+																				</td>
+
+																				<td><?php echo $row_Campana['campana']; ?></td>
+																				<td><?php echo $row_Campana['VIN']; ?></td>
+
+																				<td>
+																					<button type="button"
+																						id="btnDelete<?php echo $row_Detalle['id_campana_detalle']; ?>"
+																						class="btn btn-danger btn-xs"
+																						onclick="EliminarRegistro('<?php echo $row_Detalle['id_campana_detalle']; ?>');"><i
+																							class="fa fa-trash"></i>
+																						Eliminar</button>
+																				</td>
+																			</tr>
+																		<?php } ?>
+																	</tbody>
+																</table>
+															</div>
+														<?php } else { ?>
+															<i class="fa fa-search" style="font-size: 18px; color: lightgray;"></i>
+															<span style="font-size: 13px; color: lightgray;">No hay registros de Campañas de Vehículo</span>
+														<?php } ?>
+													</div>
 												</div>
 											</div>
+											<!-- End Table Campanas -->
 										</div>
-										<!-- End Table Campanas -->
+										<!-- /.panel-body -->
 									</div>
 									<!-- End Campanas -->	   
 								</div>
@@ -4073,7 +4099,7 @@ function CopiarFacturaSN(Cliente, Contacto, Sucursal, Direccion) {
 		}
 	}
 
-	function VerCampanas() {
+	function VerTAB(id) {
 		// Hacer scroll hasta el final de la página
 		window.scrollTo(0, document.body.scrollHeight);
 
@@ -4089,11 +4115,11 @@ function CopiarFacturaSN(Cliente, Contacto, Sucursal, Direccion) {
 			tab.classList.remove('active');
 		});
 
-		// Agregar la clase "active" a la pestaña tab-4 y su título
-		var tab4 = document.querySelector('.nav-tabs #nav4');
-		var tab4Contenido = document.querySelector('.tab-content #tab-4');
-		tab4.classList.add('active');
-		tab4Contenido.classList.add('active');
+		// Agregar la clase "active" a la pestaña tab-"id" y su título
+		let tab = document.querySelector(`.nav-tabs #nav${id}`);
+		let tabContenido = document.querySelector(`.tab-content #tab${id}`);
+		tab.classList.add('active');
+		tabContenido.classList.add('active');
 	}
 </script>
 <!-- InstanceEndEditable -->
