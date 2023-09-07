@@ -248,12 +248,12 @@ if (!isset($_COOKIE["banderaMenu"])) {
 			<li>
 				<a href="#"><i class="fa fa-tasks"></i> <span class="nav-label">Servicios</span><span class="fa arrow"></span></a>
 				<ul class="nav nav-second-level collapse">
-					<?php if (PermitirFuncion(312)) {?><li><a href="programacion_rutas.php" target="_blank">Programación de servicios</a></li><?php }?>
-					<?php if (PermitirFuncion(316)) {?><li><a href="despacho_rutas.php">Despacho de servicios</a></li><?php }?>
-					<?php if (true) {?><li><a class="alnk" href="gestionar_campanas_vehiculo.php">Campañas</a></li><?php }?>
+					<?php if (true) {?><li><a class="alnk" href="gestionar_solicitudes_llamadas.php">Solicitudes de llamadas (Agenda)</a></li><?php }?>
 					<?php if (PermitirFuncion(301)) {?><li><a class="alnk" href="gestionar_llamadas_servicios.php">Llamadas de servicio</a></li><?php }?>
 					<?php if (PermitirFuncion(303)) {?><li><a class="alnk" href="gestionar_actividades.php">Actividades</a></li><?php }?>
-					<?php if (true) {?><li><a class="alnk" href="gestionar_solicitudes_llamadas.php">Solicitudes de llamadas (Agenda)</a></li><?php }?>
+					<?php if (true) {?><li><a class="alnk" href="gestionar_campanas_vehiculo.php">Campañas</a></li><?php }?>
+					<?php if (PermitirFuncion(316)) {?><li><a href="despacho_rutas.php">Despacho de servicios</a></li><?php }?>
+					
 					<?php if (PermitirFuncion(305) || PermitirFuncion(306) || PermitirFuncion(307)) {?>
 						<li>
 							<a href="#">Calendarios <span class="fa arrow"></span></a>
@@ -265,6 +265,7 @@ if (!isset($_COOKIE["banderaMenu"])) {
 							</ul>
 						</li>
 					<?php }?>
+					
 					<?php if (PermitirFuncion(308)) {?>
 						<li>
 							<a href="#">Mapas <span class="fa arrow"></span></a>
@@ -273,6 +274,7 @@ if (!isset($_COOKIE["banderaMenu"])) {
 							</ul>
 						</li>
 					<?php }?>
+
 					<?php if (PermitirFuncion(310) || PermitirFuncion(311) || PermitirFuncion(317) || PermitirFuncion(318) || PermitirFuncion(319)) {?>
 						<li>
 							<a href="#">Asistentes <span class="fa arrow"></span></a>
@@ -285,6 +287,7 @@ if (!isset($_COOKIE["banderaMenu"])) {
 							</ul>
 						</li>
 					<?php }?>
+
 					<?php if (PermitirFuncion(314) || PermitirFuncion(315) || PermitirFuncion(414) || PermitirFuncion(320)) {?>
 						<li>
 							<a href="#">Informes <span class="fa arrow"></span></a>
@@ -294,6 +297,24 @@ if (!isset($_COOKIE["banderaMenu"])) {
 								<?php if (PermitirFuncion(315)) {?><li><a class="alnk" href="programacion_clientes.php">Programación de clientes</a></li><?php }?>
 								<?php if (PermitirFuncion(414)) {?><li><a class="alnk" href="impresion_orden_servicio.php">Impresión de OT</a></li><?php }?>
 								<?php if (PermitirFuncion(320)) {?><li><a class="alnk" href="consultar_operaciones_personalizado.php">Gestión de Operaciones Personalizado</a></li><?php }?>
+							</ul>
+						</li>
+					<?php }?>
+
+					<?php if (PermitirFuncion(312)) {?>
+						<li>
+							<a href="#">Seguimiento <span class="fa arrow"></span></a>
+							<ul class='nav nav-third-level'>
+								<?php if (false) {?><li><a class="alnk" href="maps_actividades_tecnicos.php">Mapa de técnicos</a></li><?php }?>
+							</ul>
+						</li>
+					<?php }?>
+
+					<?php if (PermitirFuncion(312)) {?>
+						<li>
+							<a href="#">Programación <span class="fa arrow"></span></a>
+							<ul class='nav nav-third-level'>
+								<?php if (PermitirFuncion(312)) {?><li><a href="programacion_rutas.php" target="_blank">Programación de servicios</a></li><?php }?>
 							</ul>
 						</li>
 					<?php }?>

@@ -1287,7 +1287,7 @@ function ConsultarDocVentas(tipo){
 					<ul class="nav nav-tabs">
 						<li class="active"><a data-toggle="tab" href="#tab-address"><i class="fa fa-address-book-o"></i> Dirección</a></li>
 						<li><a data-toggle="tab" href="#tab-service-calls"><i class="fa fa-table"></i> Llamadas de servicio</a></li>
-						<li><a data-toggle="tab" href="#tab-3"><i class="fa fa-table"></i> Formularios</a></li>
+						<li><a data-toggle="tab" href="#tab-3"><i class="fa fa-table"></i> Recepción / Entrega</a></li>
 						<li><a data-toggle="tab" href="#tab-4"><i class="fa fa-table"></i> Campañas</a></li>
 						<li><a data-toggle="tab" href="#tab-service-contracts"><i class="fa fa-table"></i> Contratos de servicio</a></li>
 						<li><a data-toggle="tab" href="#tab-sales-data"><i class="fa fa-table"></i> Datos de ventas</a></li>
