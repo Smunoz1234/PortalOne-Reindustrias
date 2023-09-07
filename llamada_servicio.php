@@ -19,6 +19,7 @@ $testMode = false; // SMM, 04/03/2022
 $ActivarCorreo = false; // SMM, 23/08/2023
 
 $dt_SLS = 0; // Para saber si viene de una Solicitud. 0 No viene. 1 Si viene.
+$SLS = ""; // ID del documento base
 
 // Inicio, copiar firma a la ruta log y main. SMM, 17/09/2022
 $FirmaContactoResponsable = "";
@@ -274,9 +275,13 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
 				} else {
 					$msg = base64_encode($Resultado->Mensaje); // SMM, 14/09/2022
 
-					//Consultar la llamada para recargarla nuevamente y poder mantenerla
+					// Consultar la llamada para recargarla nuevamente y poder mantenerla
 					$SQL_Llamada = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '[ID_LlamadaServicio]', "[IdLlamadaPortal]='" . $IdLlamada . "'");
 					$row_Llamada = sqlsrv_fetch_array($SQL_Llamada);
+					
+					// Actualizar la Solicitud de Llamada de Servicio. SMM, 04/09/2023
+
+
 					sqlsrv_close($conexion);
 					header("Location:llamada_servicio.php?msg=$msg&id=" . base64_encode($row_Llamada['ID_LlamadaServicio']) . '&tl=1&a=' . base64_encode("OK_LlamAdd"));
 				}
@@ -666,13 +671,14 @@ if ($sw_error == 1) {
 	$SQL_ListaMateriales = Seleccionar('uvw_Sap_tbl_ListaMateriales', '*', "CDU_IdMarca='$CDU_IdMarca_TarjetaEquipo' AND CDU_IdLinea='$CDU_IdLinea_TarjetaEquipo'");
 }
 
+
 // Inicio, verificar que viene de una Solicitud. SMM, 30/08/2023
 if (isset($_GET['dt_SLS']) && ($_GET['dt_SLS']) == 1) {
 	$dt_SLS = 1;
-	$ID_Documento = "'" . base64_decode($_GET['SLS']) . "'";
+	$SLS = "'" . base64_decode($_GET['SLS']) . "'";
 
 	$ParametrosCopiar = array(
-		$ID_Documento,
+		$SLS,
 		$_SESSION['CodUser'],
 		0, // CopiarAdjuntos
 	);
@@ -691,7 +697,7 @@ if (isset($_GET['dt_SLS']) && ($_GET['dt_SLS']) == 1) {
 	}
 
 	// Obtener la Llamada de servicio creada desde la Solicitud
-	$Cons = "SELECT * FROM uvw_tbl_LlamadasServicios WHERE [ID_SolicitudLlamadaServicio] = $ID_Documento";
+	$Cons = "SELECT * FROM uvw_tbl_LlamadasServicios WHERE [ID_SolicitudLlamadaServicio] = $SLS";
 	$SQL = sqlsrv_query($conexion, $Cons);
 
 	// $sw_error = 1; // Para probar
@@ -2410,7 +2416,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								</select>
 							</div>
 
-							<div class="col-lg-4" <?php if (!$IncluirCamposAdicionales) { ?> style="display: none;" <?php } ?>>
+							<div class="col-lg-4">
 								<label class="control-label">Contrato/Campaña</label>
 								<select name="CDU_Contrato" class="form-control select2" id="CDU_Contrato"
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
