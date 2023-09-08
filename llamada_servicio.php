@@ -21,6 +21,11 @@ $ActivarCorreo = false; // SMM, 23/08/2023
 $dt_SLS = 0; // Para saber si viene de una Solicitud. 0 No viene. 1 Si viene.
 $SLS = ""; // ID del documento base
 
+if (isset($_POST['dt_SLS']) && isset($_POST['SLS'])) {
+	$dt_SLS = $_POST["dt_SLS"];
+	$SLS = $_POST["SLS"];
+}
+
 // Inicio, copiar firma a la ruta log y main. SMM, 17/09/2022
 $FirmaContactoResponsable = "";
 if (isset($_POST['FirmaContactoResponsable']) && ($_POST['FirmaContactoResponsable'] != "") && isset($_POST['DocNum']) && ($_POST['DocNum'] != "")) {
@@ -210,9 +215,9 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
 			"'" . ($_POST['CedulaContactoFirma'] ?? "") . "'", // SMM, 18/10/2022
 			"'" . ($_POST['TelefonosContactosFirma'] ?? "") . "'", // SMM, 18/10/2022
 			"'" . ($_POST['CorreosContactosFirma'] ?? "") . "'", // SMM, 18/10/2022
-			"'" . $FirmaContactoResponsable . "'",
-			// SMM, 16/09/2022
+			"'$FirmaContactoResponsable'",
 			"0", // FormatoCierreLlamada, SMM 14/10/2022
+			"'$SLS'", // SMM, 08/09/2023
 		);
 		$SQL_InsLlamada = EjecutarSP('sp_tbl_LlamadaServicios', $ParamInsLlamada, 32);
 		if ($SQL_InsLlamada) {
@@ -269,21 +274,33 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
 					$sw_error = 1;
 					$msg_error = $Resultado->Mensaje;
 					if ($_POST['EstadoLlamada'] == '-1') {
-						$UpdEstado = "Update tbl_LlamadasServicios Set Cod_Estado='-3' Where ID_LlamadaServicio='" . $IdLlamada . "'";
+						$UpdEstado = "Update tbl_LlamadasServicios Set Cod_Estado='-3' Where ID_LlamadaServicio='$IdLlamada'";
 						$SQL_UpdEstado = sqlsrv_query($conexion, $UpdEstado);
 					}
 				} else {
-					$msg = base64_encode($Resultado->Mensaje); // SMM, 14/09/2022
+					$msg = $Resultado->Mensaje;
 
 					// Consultar la llamada para recargarla nuevamente y poder mantenerla
-					$SQL_Llamada = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '[ID_LlamadaServicio]', "[IdLlamadaPortal]='" . $IdLlamada . "'");
+					$SQL_Llamada = Seleccionar("uvw_Sap_tbl_LlamadasServicios", "*", "[IdLlamadaPortal]='$IdLlamada'");
 					$row_Llamada = sqlsrv_fetch_array($SQL_Llamada);
 					
-					// Actualizar la Solicitud de Llamada de Servicio. SMM, 04/09/2023
-
+					// Actualizar la Solicitud de Llamada de Servicio. 
+					if($dt_SLS == 1) {
+						$Param_CierreSolicitud = array(
+							"'" . ($row_Llamada["IdSolicitudLlamadaServicio"] ?? "") . "'", // @ID_SolicitudLlamadaServicio
+							"'" . ($row_Llamada["ID_LlamadaServicio"] ?? "") . "'", // @DocEntryLlamada_Destino
+							"'" . ($row_Llamada["DocNum"] ?? "") . "'", // @DocNumLlamada_Destino
+							"'" . ($row_Llamada["ID_Usuario"] ?? "") . "'", // @UsuarioCierre
+							"'" . $row_Llamada["FechaHoraCreacionLLamada"]->format("Y-m-d h:i:s") . "'", // @FechaCierreLlamada
+							"'" . $row_Llamada["FechaHoraCreacionLLamada"]->format("Y-m-d h:i:s") . "'", // @FechaActualizacion
+						);
+						$SQL_CierreSolicitud = EjecutarSP("sp_tbl_SolicitudLlamadaServicios_Cierre", $Param_CierreSolicitud);
+						$msg .= ($SQL_CierreSolicitud) ? " (Se cerró el documento base)" : " (NO se pudo cerrar el documento base)";	
+					}
+					// SMM, 08/09/2023
 
 					sqlsrv_close($conexion);
-					header("Location:llamada_servicio.php?msg=$msg&id=" . base64_encode($row_Llamada['ID_LlamadaServicio']) . '&tl=1&a=' . base64_encode("OK_LlamAdd"));
+					header("Location:llamada_servicio.php?msg=" . base64_encode($msg) . "&id=" . base64_encode($row_Llamada['ID_LlamadaServicio']) . "&tl=1&a=" . base64_encode("OK_LlamAdd"));
 				}
 			} catch (Exception $e) {
 				echo 'Excepcion capturada: ', $e->getMessage(), "\n";
@@ -411,6 +428,7 @@ if (isset($_POST['P']) && ($_POST['P'] == 33)) { //Actualizar llamada de servici
 			"'" . ($_POST['CorreosContactosFirma'] ?? "") . "'", // SMM, 18/10/2022
 			"'" . $FirmaContactoResponsable . "'", // SMM, 16/09/2022
 			(PermitirFuncion(325) && ($_POST['EstadoLlamada'] == -1)) ? "1" : "0", // FormatoCierreLlamada, SMM 14/10/2022
+			"'$SLS'", // SMM, 08/09/2023
 		);
 
 		// Actualizar la llamada de servicio.
@@ -675,10 +693,10 @@ if ($sw_error == 1) {
 // Inicio, verificar que viene de una Solicitud. SMM, 30/08/2023
 if (isset($_GET['dt_SLS']) && ($_GET['dt_SLS']) == 1) {
 	$dt_SLS = 1;
-	$SLS = "'" . base64_decode($_GET['SLS']) . "'";
+	$SLS = base64_decode($_GET['SLS']);
 
 	$ParametrosCopiar = array(
-		$SLS,
+		"'$SLS'",
 		$_SESSION['CodUser'],
 		0, // CopiarAdjuntos
 	);
@@ -697,7 +715,7 @@ if (isset($_GET['dt_SLS']) && ($_GET['dt_SLS']) == 1) {
 	}
 
 	// Obtener la Llamada de servicio creada desde la Solicitud
-	$Cons = "SELECT * FROM uvw_tbl_LlamadasServicios WHERE [ID_SolicitudLlamadaServicio] = $SLS";
+	$Cons = "SELECT * FROM uvw_tbl_LlamadasServicios WHERE [ID_SolicitudLlamadaServicio] = '$SLS'";
 	$SQL = sqlsrv_query($conexion, $Cons);
 
 	// $sw_error = 1; // Para probar
@@ -2123,9 +2141,9 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<!-- Descripción del Item -->
 								<input name="DeArticuloLlamada" type="text" required="required" class="form-control" id="DeArticuloLlamada" placeholder="Digite para buscar..."
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
-									echo "disabled='disabled'";
+									echo "disabled";
 								} ?>
-								value="<?php if (($type_llmd == 1 || $sw_error == 1 || $dt_LS == 1) && isset($row_Articulo['ItemCode'])) {
+								value="<?php if (($type_llmd == 1 || $sw_error == 1 || $dt_LS == 1 || $dt_SLS) && isset($row_Articulo['ItemCode'])) {
 									echo $row_Articulo['ItemCode'] . " - " . $row_Articulo['ItemName'];
 								} ?>">
 							</div>
@@ -3039,6 +3057,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 							$return = "gestionar_llamadas_servicios.php";
 						}
 						$return = QuitarParametrosURL($return, array("a")); ?>
+						
 						<input type="hidden" id="P" name="P" value="<?php if (($type_llmd == 0) && ($sw_error == 0)) {
 							echo "32";
 						} else {
@@ -3066,8 +3085,14 @@ function AgregarEsto(contenedorID, valorElemento) {
 						<input type="hidden" id="IdSucursalCliente" name="IdSucursalCliente" value="<?php if ($type_llmd == 1) {
 							echo $row['IdNombreSucursal'];
 						} ?>" />
+						
+						<!-- SMM, 08/09/2023 -->
+						<input type="hidden" id="dt_SLS" name="dt_SLS" value="<?php echo $dt_SLS; ?>">
+						<input type="hidden" id="SLS" name="SLS" value="<?php echo $SLS; ?>">
+
 					   </form>
-						<?php if (($type_llmd == 0) || (($type_llmd == 1) && ($row['IdEstadoLlamada'] != '-1'))) { ?>
+						
+					   <?php if (($type_llmd == 0) || (($type_llmd == 1) && ($row['IdEstadoLlamada'] != '-1'))) { ?>
 									<div class="row">
 										<form action="upload.php" class="dropzone" id="dropzoneForm" name="dropzoneForm">
 											<?php if ($sw_error == 0) {

@@ -1472,8 +1472,8 @@ function ConsultarDocVentas(tipo){
 
 																				<td><?php echo $row_Formulario["tipo_objeto"]; ?></td>
 																				<td><?php echo $row_Formulario['id_formulario']; ?></td>
-																				<td><?php echo (isset($row_Formulario["hora_creacion"]) && $row_Formulario["hora_creacion"] != "") ? $row_Formulario["hora_creacion"]->format("Y-m-d h:m:s") : ""; ?></td>
-																				<td><?php echo (isset($row_Formulario["fecha_recepcion_entrega"]) && $row_Formulario["fecha_recepcion_entrega"] != "") ? $row_Formulario['fecha_recepcion_entrega']->format("Y-m-d h:m:s") : ""; ?></td>
+																				<td><?php echo (isset($row_Formulario["hora_creacion"]) && $row_Formulario["hora_creacion"] != "") ? $row_Formulario["hora_creacion"]->format("Y-m-d h:i:s") : ""; ?></td>
+																				<td><?php echo (isset($row_Formulario["fecha_recepcion_entrega"]) && $row_Formulario["fecha_recepcion_entrega"] != "") ? $row_Formulario['fecha_recepcion_entrega']->format("Y-m-d h:i:s") : ""; ?></td>
 																				<td><?php echo $row_Formulario['observaciones']; ?></td>
 																				<td><?php echo $row_Formulario['empleado_tecnico']; ?></td>
 
