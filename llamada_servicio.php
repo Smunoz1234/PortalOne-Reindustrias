@@ -1723,6 +1723,16 @@ function AgregarEsto(contenedorID, valorElemento) {
 				</div>
 			</div>
 			<!-- Fin, myModal -->
+
+			<div class="modal inmodal fade" id="myModal2" tabindex="-1" role="dialog" aria-hidden="true">
+				<div class="modal-dialog modal-lg" style="width: 70% !important;">
+					<div class="modal-content" id="ContenidoModal2">
+						<!-- Contenido generado por JS -->
+					</div>
+				</div>
+			</div>
+			<!-- /#MyModal2 -->
+
 			<!-- Inicio, modalSN -->
 			<div class="modal inmodal fade" id="modalSN" tabindex="-1" role="dialog" aria-hidden="true">
 				<div class="modal-dialog modal-lg" style="width: 70% !important;">
@@ -2176,7 +2186,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 							<!-- /#NumeroSerie -->
 
 							<br>
-							<button id="AddCampana" class="btn btn-sm btn-info btn-circle" title="Adicionar Campaña" disabled <?php if($type_llmd == 1) { echo "style='display: none;'";} ?>><i class="fa fa-bell"></i></button>
+							<button type="button" id="AddCampana" class="btn btn-sm btn-info btn-circle" title="Adicionar Campaña" disabled <?php if($type_llmd == 1) { echo "style='display: none;'";} ?>><i class="fa fa-bell"></i></button>
 						</div>
 
 						<div class="form-group" <?php if($type_llmd == 1) { echo "style='display: none;'";} ?>>
@@ -3782,6 +3792,7 @@ function CambiarEstado(id,form,columID){
 		},
 		success: function(response){
 			$('.ibox-content').toggleClass('sk-loading',false);
+			
 			$('#ContenidoModal').html(response);
 			$('#myModal').modal("show");
 		}
@@ -4102,6 +4113,35 @@ function CopiarFacturaSN(Cliente, Contacto, Sucursal, Direccion) {
 				});
 			}
 		});
+
+		// Adicionar campanas.
+		$("#NumeroSerie").on("change", function() {
+			if($(this).val() != "") {
+				$('#AddCampana').prop('disabled', false);
+			} else {
+				$('#AddCampana').prop('disabled', true);
+			}
+		});
+
+		$("#AddCampana").on("click", function(){
+			$('.ibox-content').toggleClass('sk-loading', true);
+			let IdInterno_TarjetaEquipo = $("#NumeroSerie").find(':selected').data('id');
+
+			$.ajax({
+				type: "POST",
+				data: {
+					id_tarjeta_equipo: IdInterno_TarjetaEquipo
+				},
+				url: "md_adicionar_campanas.php",
+				success: function (response) {
+					$('.ibox-content').toggleClass('sk-loading', false);
+
+					$('#ContenidoModal2').html(response);
+					$('#myModal2').modal("show");
+				}
+			});
+		});
+		// SMM, 08/09/2023
 	});
 
 	function ConsultarDatosClienteSN(){

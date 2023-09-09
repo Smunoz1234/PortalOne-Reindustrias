@@ -11,7 +11,7 @@ $datetime_detalle = FormatoFecha(date('Y-m-d'), date('H:i:s'));
 $type_detalle = $_POST['type'] ?? 0;
 $ID_detalle = $_POST['ID'] ?? "";
 
-$id_campana_detalle = $_POST['id_campana_detalle'] ?? "NULL";
+$id_tarjeta_equipo = $_POST['id_tarjeta_equipo'] ?? "";
 $VIN_detalle = $_POST['VIN'] ?? "";
 
 $id_usuario_creacion_detalle = "'$coduser'";
@@ -79,42 +79,61 @@ if ($type_detalle != 0) {
 	// Mostrar mensajes AJAX.
 	exit();
 }
+
+// SMM, 08/09/2023
+$SQL_Campanas = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_CampañaVehiculo', '*', "IdInterno_TarjetaEquipo='$id_tarjeta_equipo'");
+$hasRowsCampanas = ($SQL_Campanas) ? sqlsrv_has_rows($SQL_Campanas) : false;
 ?>
 
+<script>
+	var json = [];
+	var cant = 0;
+	function SeleccionarCampana(DocNum) {
+		var btnAdicionar = document.getElementById('btnAdicionar');
+		var Check = document.getElementById(`chkSelOT${DocNum}`).checked;
+		var sw = -1;
+
+		json.forEach(function (element, index) {
+			if (json[index] == DocNum) {
+				sw = index;
+			}
+
+			// console.log(element,index);
+		});
+
+		if (sw >= 0) {
+			json.splice(sw, 1);
+			cant--;
+		} else if (Check) {
+			json.push(DocNum);
+			cant++;
+		}
+
+		if (cant > 0) {
+			$("#btnAdicionar").removeAttr("disabled");
+		} else {
+			$("#chkAll").prop("checked", false);
+			$("#btnAdicionar").attr("disabled", "disabled");
+		}
+
+		// console.log(json);
+	}
+
+	function SeleccionarTodos() {
+		var Check = document.getElementById('chkAll').checked;
+		if (Check == false) {
+			json = [];
+			cant = 0;
+			$("#btnAdicionar").attr("disabled", "disabled");
+		}
+		$(".chkSelOT").prop("checked", Check);
+		if (Check) {
+			$(".chkSelOT").trigger('change');
+		}
+	}
+</script>
+
 <style>
-	.select2-container {
-		z-index: 10000;
-	}
-
-	.select2-search--inline {
-		display: contents;
-	}
-
-	.select2-search__field:placeholder-shown {
-		width: 100% !important;
-	}
-
-	.panel-heading a:before {
-		font-family: 'Glyphicons Halflings';
-		content: "\e114";
-		float: right;
-		transition: all 0.5s;
-	}
-
-	.panel-heading.active a:before {
-		-webkit-transform: rotate(180deg);
-		-moz-transform: rotate(180deg);
-		transform: rotate(180deg);
-	}
-
-	.ibox-title a {
-		color: inherit !important;
-	}
-
-	.collapse-link:hover {
-		cursor: pointer;
-	}
-
 	.swal2-container {
 		z-index: 9000;
 	}
@@ -126,7 +145,7 @@ if ($type_detalle != 0) {
 
 <form id="frmCampanasDetalle" method="post" enctype="multipart/form-data">
 	<div class="modal-header">
-		<h4 class="modal-title">Crear VIN a Campaña</h4>
+		<h4 class="modal-title">Adicionar Campañas</h4>
 	</div>
 	<!-- /.modal-title -->
 
@@ -135,80 +154,83 @@ if ($type_detalle != 0) {
 			<div class="ibox-content">
 				<?php include "includes/spinner.php"; ?>
 
+				<!-- Table Campanas -->
 				<div class="row">
-					<div class="col-md-12">
-						<label class="control-label">Lista VIN</label>
-						<textarea name="ListaVIN" rows="5" maxlength="3000" class="form-control" id="ListaVIN"
-							type="text"></textarea>
-					</div>
-				</div>
-				<!-- /.row -->
+					<div class="col-12 text-center">
+						<div class="ibox-content">
+							<?php if ($hasRowsCampanas) { ?>
+								<div class="table" style="max-height: 230px; overflow-y: auto;">
+									<table class="table table-striped table-bordered table-hover dataTables-example">
+										<thead>
+											<tr>
+												<th>ID Campaña</th>
+												<th>Campaña</th>
+												<th>Descripción</th>
+												<th>Estado</th>
+												<th>Fecha Vigencia</th>
 
-				<div class="panel-body">
-					<div class="row">
-						<button type="button" onclick="AdicionarCampana()" class="alkin btn btn-primary btn-xs"><i
-								class="fa fa-plus-circle"></i> Adicionar Campaña</button>
-					</div>
-					<br>
-					<!-- Table Campanas -->
-					<div class="row">
-						<div class="col-12 text-center">
-							<div class="ibox-content">
-								<?php if ($hasRowsCampanas) { ?>
-									<div class="table" style="max-height: 230px; overflow-y: auto;">
-										<table class="table table-striped table-bordered table-hover dataTables-example">
-											<thead>
-												<tr>
-													<th>ID Campaña</th>
+												<th class="text-center">
+													<div class="checkbox checkbox-success">
+														<input type="checkbox" id="chkAll" value=""
+															onchange="SeleccionarTodos();"
+															title="Seleccionar todos"><label></label>
+													</div>
+												</th>
+											</tr>
+										</thead>
+										<tbody>
+											<?php while ($row_Campana = sqlsrv_fetch_array($SQL_Campanas)) { ?>
+												<tr class="gradeX">
+													<td>
+														<a href="campanas_vehiculo.php?id=<?php echo $row_Campana['id_campana']; ?>&edit=1"
+															class="btn btn-success btn-xs" target="_blank">
+															<i class="fa fa-folder-open-o"></i>
+															<?php echo $row_Campana['id_campana']; ?>
+														</a>
+													</td>
+													<td>
+														<?php echo $row_Campana['campana'] ?? ""; ?>
+													</td>
+													<td>
+														<?php echo $row_Campana['descripcion_campana'] ?? ""; ?>
+													</td>
+													<td>
+														<?php if ($row_Campana['estado_campana'] == 'Y') { ?>
+															<span class='label label-info'>Activa</span>
+														<?php } else { ?>
+															<span class='label label-danger'>Inactiva</span>
+														<?php } ?>
+													</td>
+													<td>
+														<?php echo (isset($row_Campana["fecha_limite_vigencia"]) && $row_Campana["fecha_limite_vigencia"] != "") ? $row_Campana['fecha_limite_vigencia']->format("Y-m-d") : ""; ?>
+													</td>
 
-													<th>Campaña</th>
-													<th>VIN</th>
-
-													<th>Acciones</th>
+													<td class="text-center">
+														<?php if ($row_Campana['estado_campana'] == 'Y') { ?>
+															<div class="checkbox checkbox-success"
+																id="dvChkSel<?php echo $row_Campana['id_recepcion_vehiculo']; ?>">
+																<input type="checkbox" class="chkSelOT"
+																	id="chkSelOT<?php echo $row_Campana['id_recepcion_vehiculo']; ?>"
+																	value=""
+																	onchange="SeleccionarCampana('<?php echo $row_Campana['id_campana']; ?>');"
+																	aria-label="Single checkbox One"><label></label>
+															</div>
+														<?php } ?>
+													</td>
 												</tr>
-											</thead>
-											<tbody>
-												<?php while ($row_Campana = sqlsrv_fetch_array($SQL_Campanas)) { ?>
-													<tr class="gradeX">
-														<td>
-															<a href="campanas_vehiculo.php?id=<?php echo $row_Campana['id_campana']; ?>&edit=1"
-																class="btn btn-success btn-xs" target="_blank">
-																<i class="fa fa-folder-open-o"></i>
-																<?php echo $row_Campana['id_campana']; ?>
-															</a>
-														</td>
-
-														<td>
-															<?php echo $row_Campana['campana']; ?>
-														</td>
-														<td>
-															<?php echo $row_Campana['VIN']; ?>
-														</td>
-
-														<td>
-															<button type="button"
-																id="btnDelete<?php echo $row_Detalle['id_campana_detalle']; ?>"
-																class="btn btn-danger btn-xs"
-																onclick="EliminarRegistro('<?php echo $row_Detalle['id_campana_detalle']; ?>');"><i
-																	class="fa fa-trash"></i>
-																Eliminar</button>
-														</td>
-													</tr>
-												<?php } ?>
-											</tbody>
-										</table>
-									</div>
-								<?php } else { ?>
-									<i class="fa fa-search" style="font-size: 18px; color: lightgray;"></i>
-									<span style="font-size: 13px; color: lightgray;">No hay registros de Campañas de
-										Vehículo</span>
-								<?php } ?>
-							</div>
+											<?php } ?>
+										</tbody>
+									</table>
+								</div>
+							<?php } else { ?>
+								<i class="fa fa-search" style="font-size: 18px; color: lightgray;"></i>
+								<span style="font-size: 13px; color: lightgray;">No hay registros de Campañas de
+									Vehículo</span>
+							<?php } ?>
 						</div>
 					</div>
-					<!-- End Table Campanas -->
 				</div>
-				<!-- /.panel-body -->
+				<!-- End Table Campanas -->
 			</div>
 			<!-- /.ibox-content -->
 		</div>
@@ -220,9 +242,6 @@ if ($type_detalle != 0) {
 		<button type="submit" class="btn btn-success m-t-md" id="btnAdicionar" disabled><i class="fa fa-check"></i>
 			Aceptar</button>
 
-		<button type="button" class="btn btn-info m-t-md pull-left" onclick="Validar();"><i class="fa fa-thumbs-up"></i>
-			Validar</button>
-
 		<button type="button" class="btn btn-danger m-t-md" data-dismiss="modal" id="btnCerrar"><i
 				class="fa fa-times"></i>
 			Cerrar</button>
@@ -232,18 +251,30 @@ if ($type_detalle != 0) {
 
 <script>
 	$(document).ready(function () {
-		// SMM, 19/08/2022
-		$('.panel-collapse').on('show.bs.collapse', function () {
-			$(this).siblings('.panel-heading').addClass('active');
-		});
-
-		$('.panel-collapse').on('hide.bs.collapse', function () {
-			$(this).siblings('.panel-heading').removeClass('active');
-		});
-		// Hasta aquí, 19/08/2022
-
 		$("#frmCampanasDetalle").validate({
 			submitHandler: function (form) {
+				/*
+				$('.ibox-content').toggleClass('sk-loading', true);
+
+				if (lote) {
+					id = json
+				}
+
+				$.ajax({
+					type: "POST",
+					url: "md_frm_cambiar_estados.php",
+					data: {
+						id: id,
+						frm: 'RecepcionVehiculos',
+						nomID: 'id_recepcion_vehiculo'
+					},
+					success: function (response) {
+						$('.ibox-content').toggleClass('sk-loading', false);
+						$('#ContenidoModal').html(response);
+						$('#myModal').modal("show");
+					}
+				});
+
 				// Obtén el valor del campo de entrada
 				let listaVINs = $("#ListaVIN").val();
 
@@ -318,75 +349,40 @@ if ($type_detalle != 0) {
 					});
 				});
 				// .forEach()
+				*/
 			}
 			// submitHandler
 		});
 
-		$('.chosen-select').chosen({ width: "100%" });
-		$(".select2").select2();
-
-		$("#ListaVIN").on("input", function () {
-			$("#btnAdicionar").prop("disabled", true);
-		});
-
-		$("#btnCerrar").on("click", function () {
-			// Obtén la URL actual
-			let currentUrl = new URL(window.location.href);
-
-			// Obtén los parámetros del query string
-			let searchParams = currentUrl.searchParams;
-
-			// Actualiza el valor del parámetro 'active' o agrega si no existe
-			searchParams.set('active', 1);
-
-			// Crea una nueva URL con los parámetros actualizados
-			let newUrl = currentUrl.origin + currentUrl.pathname + '?' + searchParams.toString();
-
-			// Recarga la página con la nueva URL
-			window.location.href = newUrl;
+		$(".dataTables-example").DataTable({
+			pageLength: 25,
+			dom: '<"html5buttons"B>lTfgitp',
+			language: {
+				"decimal": "",
+				"emptyTable": "No se encontraron resultados.",
+				"info": "Mostrando _START_ - _END_ de _TOTAL_ registros",
+				"infoEmpty": "Mostrando 0 - 0 de 0 registros",
+				"infoFiltered": "(filtrando de _MAX_ registros)",
+				"infoPostFix": "",
+				"thousands": ",",
+				"lengthMenu": "Mostrar _MENU_ registros",
+				"loadingRecords": "Cargando...",
+				"processing": "Procesando...",
+				"search": "Filtrar:",
+				"zeroRecords": "Ningún registro encontrado",
+				"paginate": {
+					"first": "Primero",
+					"last": "Último",
+					"next": "Siguiente",
+					"previous": "Anterior"
+				},
+				"aria": {
+					"sortAscending": ": Activar para ordenar la columna ascendente",
+					"sortDescending": ": Activar para ordenar la columna descendente"
+				}
+			},
+			buttons: [],
+			order: [[1, "desc"]]
 		});
 	});
-</script>
-
-<script>
-	function Validar() {
-		let listaVINs = $("#ListaVIN").val();
-
-		// Divide la lista en un arreglo usando el separador ";"
-		let arregloVINs = listaVINs.split(";");
-
-		// Limpia los espacios en blanco y elementos vacíos del arreglo
-		arregloVINs = arregloVINs.map(function (vin) {
-			return vin.trim();
-		}).filter(function (vin) {
-			return vin !== "";
-		});
-
-		// Realiza la validación
-		let formatoCorrecto = arregloVINs.every(function (vin) {
-			// Verificar si tiene entre 1 y 32 caracteres alfanuméricos.
-			return /^[a-zA-Z0-9]{1,32}$/.test(vin);
-		});
-
-		if (formatoCorrecto && (listaVINs != "")) {
-			Swal.fire({
-				title: '¡Listo!',
-				text: 'Puede continuar con el proceso dando clic en el botón Aceptar.',
-				icon: 'success'
-			}).then((result) => {
-				if (result.isConfirmed) {
-					$("#btnAdicionar").prop("disabled", false);
-				}
-			});
-
-			// Haz algo con los VINs válidos en arregloVINs
-			console.log("VINs válidos:", arregloVINs);
-		} else {
-			Swal.fire({
-				title: '¡Error!',
-				text: 'La estructura es incorrecta, por favor verifique.',
-				icon: 'warning'
-			});
-		}
-	}
 </script>
