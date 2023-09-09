@@ -81,8 +81,8 @@ if ($type_detalle != 0) {
 }
 
 // SMM, 08/09/2023
-$SQL_Campanas = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_CampañaVehiculo', '*', "IdInterno_TarjetaEquipo='$id_tarjeta_equipo'");
-$hasRowsCampanas = ($SQL_Campanas) ? sqlsrv_has_rows($SQL_Campanas) : false;
+$SQL_Campanas_Modal = Seleccionar("uvw_tbl_LlamadasServicios_Campanas_Asignacion", "*", "id_tarjeta_equipo='$id_tarjeta_equipo'");
+$hasRowsCampanas_Modal = ($SQL_Campanas_Modal) ? sqlsrv_has_rows($SQL_Campanas_Modal) : false;
 ?>
 
 <script>
@@ -158,15 +158,15 @@ $hasRowsCampanas = ($SQL_Campanas) ? sqlsrv_has_rows($SQL_Campanas) : false;
 				<div class="row">
 					<div class="col-12 text-center">
 						<div class="ibox-content">
-							<?php if ($hasRowsCampanas) { ?>
+							<?php if ($hasRowsCampanas_Modal) { ?>
 								<div class="table" style="max-height: 230px; overflow-y: auto;">
-									<table class="table table-striped table-bordered table-hover dataTables-example">
+									<table class="table table-striped table-bordered table-hover" id="dataTable_Campana">
 										<thead>
 											<tr>
 												<th>ID Campaña</th>
 												<th>Campaña</th>
 												<th>Descripción</th>
-												<th>Estado</th>
+												<th>Estado Campaña</th>
 												<th>Fecha Vigencia</th>
 
 												<th class="text-center">
@@ -179,40 +179,40 @@ $hasRowsCampanas = ($SQL_Campanas) ? sqlsrv_has_rows($SQL_Campanas) : false;
 											</tr>
 										</thead>
 										<tbody>
-											<?php while ($row_Campana = sqlsrv_fetch_array($SQL_Campanas)) { ?>
+											<?php while ($row_Campana_Modal = sqlsrv_fetch_array($SQL_Campanas_Modal)) { ?>
 												<tr class="gradeX">
 													<td>
-														<a href="campanas_vehiculo.php?id=<?php echo $row_Campana['id_campana']; ?>&edit=1"
+														<a href="campanas_vehiculo.php?id=<?php echo $row_Campana_Modal['id_campana']; ?>&edit=1"
 															class="btn btn-success btn-xs" target="_blank">
 															<i class="fa fa-folder-open-o"></i>
-															<?php echo $row_Campana['id_campana']; ?>
+															<?php echo $row_Campana_Modal['id_campana']; ?>
 														</a>
 													</td>
 													<td>
-														<?php echo $row_Campana['campana'] ?? ""; ?>
+														<?php echo $row_Campana_Modal['campana'] ?? ""; ?>
 													</td>
 													<td>
-														<?php echo $row_Campana['descripcion_campana'] ?? ""; ?>
+														<?php echo $row_Campana_Modal['descripcion_campana'] ?? ""; ?>
 													</td>
 													<td>
-														<?php if ($row_Campana['estado_campana'] == 'Y') { ?>
+														<?php if ($row_Campana_Modal['estado'] == 'Y') { ?>
 															<span class='label label-info'>Activa</span>
 														<?php } else { ?>
 															<span class='label label-danger'>Inactiva</span>
 														<?php } ?>
 													</td>
 													<td>
-														<?php echo (isset($row_Campana["fecha_limite_vigencia"]) && $row_Campana["fecha_limite_vigencia"] != "") ? $row_Campana['fecha_limite_vigencia']->format("Y-m-d") : ""; ?>
+														<?php echo (isset($row_Campana_Modal["fecha_limite_vigencia"]) && $row_Campana_Modal["fecha_limite_vigencia"] != "") ? $row_Campana_Modal['fecha_limite_vigencia']->format("Y-m-d") : ""; ?>
 													</td>
 
 													<td class="text-center">
-														<?php if ($row_Campana['estado_campana'] == 'Y') { ?>
+														<?php if ($row_Campana_Modal['estado'] == 'Y') { ?>
 															<div class="checkbox checkbox-success"
-																id="dvChkSel<?php echo $row_Campana['id_recepcion_vehiculo']; ?>">
+																id="dvChkSel<?php echo $row_Campana_Modal['id_recepcion_vehiculo']; ?>">
 																<input type="checkbox" class="chkSelOT"
-																	id="chkSelOT<?php echo $row_Campana['id_recepcion_vehiculo']; ?>"
+																	id="chkSelOT<?php echo $row_Campana_Modal['id_recepcion_vehiculo']; ?>"
 																	value=""
-																	onchange="SeleccionarCampana('<?php echo $row_Campana['id_campana']; ?>');"
+																	onchange="SeleccionarCampana('<?php echo $row_Campana_Modal['id_campana']; ?>');"
 																	aria-label="Single checkbox One"><label></label>
 															</div>
 														<?php } ?>
@@ -354,7 +354,7 @@ $hasRowsCampanas = ($SQL_Campanas) ? sqlsrv_has_rows($SQL_Campanas) : false;
 			// submitHandler
 		});
 
-		$(".dataTables-example").DataTable({
+		$("#dataTable_Campana").DataTable({
 			pageLength: 25,
 			dom: '<"html5buttons"B>lTfgitp',
 			language: {

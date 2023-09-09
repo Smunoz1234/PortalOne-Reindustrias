@@ -857,14 +857,12 @@ $TipoProblema = ObtenerValorDefecto(191, "IdTipoProblema", false);
 
 
 // SMM, 01/09/2023
-$VIN = $row['SerialFabricante'] ?? "";
-$SQL_Campanas = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_CampañaVehiculo', '*'); // , "VIN='$VIN'"
+$id_tarjeta_equipo = $row['IdTarjetaEquipo'] ?? "";
+$SQL_Campanas = Seleccionar("uvw_tbl_LlamadasServicios_Campanas_Asignacion", "*", "id_tarjeta_equipo='$id_tarjeta_equipo'"); 
+// echo "SELECT * FROM uvw_tbl_LlamadasServicios_Campanas_Asignacion WHERE id_tarjeta_equipo='$id_tarjeta_equipo'";
 $hasRowsCampanas = ($SQL_Campanas) ? sqlsrv_has_rows($SQL_Campanas) : false;
 
-// SMM, 07/09/2023
-$ids_campanas = array();
-$SQL_CampanasAsociadas = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_CampañaVehiculo', '*'); // , "VIN='$VIN'"
-
+// Adicionar Campana en la creación?
 //while ($row_GruposUsuario = sqlsrv_fetch_array($SQL_GruposUsuario)) {
 //	$ids_grupos[] = $row_GruposUsuario['IdCargo'];
 //}
@@ -2191,8 +2189,11 @@ function AgregarEsto(contenedorID, valorElemento) {
 
 						<div class="form-group" <?php if($type_llmd == 1) { echo "style='display: none;'";} ?>>
 							<div class="col-lg-8">
-								<label class="control-label">Campañas</label>
+								<label class="control-label">Campañas Asociadas</label>
 
+								<!-- No puedo asociar campanas a una llamada de servicio en la creación por que no tengo el ID -->
+								<!-- input autocomplete="off" name="CampanasAsociadas" type="text" required="required" class="form-control" id="CampanasAsociadas" value="" -->
+								
 								<select data-placeholder="Debe seleccionar las campañas que desea asociar con la Llamada de servicio." name="Campanas[]" class="form-control select2" id="Campanas" multiple>
 									<?php while ($row_Campanas = sqlsrv_fetch_array($SQL_CampanasAsociadas)) {?>
 										<option value="<?php echo $row_Campanas['id_campana']; ?>"
@@ -4124,25 +4125,29 @@ function CopiarFacturaSN(Cliente, Contacto, Sucursal, Direccion) {
 		});
 
 		$("#AddCampana").on("click", function(){
-			$('.ibox-content').toggleClass('sk-loading', true);
-			let IdInterno_TarjetaEquipo = $("#NumeroSerie").find(':selected').data('id');
-
-			$.ajax({
-				type: "POST",
-				data: {
-					id_tarjeta_equipo: IdInterno_TarjetaEquipo
-				},
-				url: "md_adicionar_campanas.php",
-				success: function (response) {
-					$('.ibox-content').toggleClass('sk-loading', false);
-
-					$('#ContenidoModal2').html(response);
-					$('#myModal2').modal("show");
-				}
-			});
+			AdicionarCampana();
 		});
 		// SMM, 08/09/2023
 	});
+
+	function AdicionarCampana() {
+		$('.ibox-content').toggleClass('sk-loading', true);
+		let IdInterno_TarjetaEquipo = $("#NumeroSerie").find(':selected').data('id');
+
+		$.ajax({
+			type: "POST",
+			data: {
+				id_tarjeta_equipo: IdInterno_TarjetaEquipo
+			},
+			url: "md_adicionar_campanas.php",
+			success: function (response) {
+				$('.ibox-content').toggleClass('sk-loading', false);
+
+				$('#ContenidoModal2').html(response);
+				$('#myModal2').modal("show");
+			}
+		});
+	}
 
 	function ConsultarDatosClienteSN(){
 		let ClienteSN=document.getElementById('ClienteSN');
