@@ -37,19 +37,6 @@ if ($type_detalle == 1) {
 		$hora_creacion_detalle,
 	);
 
-} elseif ($type_detalle == 2) {
-	$msg_error = "No se pudo actualizar el VIN.";
-
-	$parametros = array(
-		$type_detalle,
-		"'$ID_detalle'",
-		$id_campana_detalle,
-		"'$VIN_detalle'",
-		$id_usuario_actualizacion_detalle,
-		$fecha_actualizacion_detalle,
-		$hora_actualizacion_detalle,
-	);
-
 } elseif ($type_detalle == 3) {
 	$msg_error = "No se pudo eliminar el VIN.";
 
@@ -61,7 +48,7 @@ if ($type_detalle == 1) {
 }
 
 if ($type_detalle != 0) {
-	$SQL_Operacion = EjecutarSP('sp_tbl_CampanaVehiculosDetalle', $parametros);
+	$SQL_Operacion = EjecutarSP("sp_tbl_LlamadasServicios_Campanas", $parametros);
 
 	if (!$SQL_Operacion) {
 		echo $msg_error_detalle;

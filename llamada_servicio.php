@@ -858,8 +858,7 @@ $TipoProblema = ObtenerValorDefecto(191, "IdTipoProblema", false);
 
 // SMM, 01/09/2023
 $id_tarjeta_equipo = $row['IdTarjetaEquipo'] ?? "";
-$SQL_Campanas = Seleccionar("uvw_tbl_LlamadasServicios_Campanas_Asignacion", "*", "id_tarjeta_equipo='$id_tarjeta_equipo'"); 
-// echo "SELECT * FROM uvw_tbl_LlamadasServicios_Campanas_Asignacion WHERE id_tarjeta_equipo='$id_tarjeta_equipo'";
+$SQL_Campanas = Seleccionar("uvw_tbl_LlamadasServicios_Campanas", "*"); // , "id_llamada='$id_llamada'"
 $hasRowsCampanas = ($SQL_Campanas) ? sqlsrv_has_rows($SQL_Campanas) : false;
 
 // Adicionar Campana en la creación?
