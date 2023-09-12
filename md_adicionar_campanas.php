@@ -9,10 +9,11 @@ $coduser = $_SESSION['CodUser'];
 $datetime_detalle = FormatoFecha(date('Y-m-d'), date('H:i:s'));
 
 $type_detalle = $_POST['type'] ?? 0;
-$ID_detalle = $_POST['ID'] ?? "";
-
 $id_tarjeta_equipo = $_POST['id_tarjeta_equipo'] ?? "";
-$VIN_detalle = $_POST['VIN'] ?? "";
+
+$id_llamada_servicio_detalle = $_POST['id_llamada_servicio'] ?? "";
+$docentry_llamada_servicio = $_POST['docentry_llamada_servicio'] ?? "";
+$id_campana_detalle = $_POST['id_campana'] ?? "";
 
 $id_usuario_creacion_detalle = "'$coduser'";
 $fecha_creacion_detalle = "'$datetime_detalle'";
@@ -22,13 +23,16 @@ $fecha_actualizacion_detalle = "'$datetime_detalle'";
 $hora_actualizacion_detalle = "'$datetime_detalle'";
 
 if ($type_detalle == 1) {
-	$msg_error = "No se pudo crear el VIN.";
+	$msg_error = "No se pudo crear la Campana.";
 
 	$parametros = array(
 		$type_detalle,
-		"'$ID_detalle'",
-		$id_campana_detalle,
-		"'$VIN_detalle'",
+		$id_llamada_servicio_detalle,
+		// "DocNum"
+		$docentry_llamada_servicio,
+		"NULL",
+		// @linea
+		"'$id_campana_detalle'",
 		$id_usuario_actualizacion_detalle,
 		$fecha_actualizacion_detalle,
 		$hora_actualizacion_detalle,
@@ -38,12 +42,16 @@ if ($type_detalle == 1) {
 	);
 
 } elseif ($type_detalle == 3) {
-	$msg_error = "No se pudo eliminar el VIN.";
+	$msg_error = "No se pudo eliminar la Campana.";
 
 	$parametros = array(
 		$type_detalle,
-		"'$ID_detalle'",
-		$id_campana_detalle,
+		$id_llamada_servicio_detalle,
+		// "DocNum"
+		$docentry_llamada_servicio,
+		"NULL",
+		// @linea
+		"'$id_campana_detalle'",
 	);
 }
 
@@ -195,9 +203,9 @@ $hasRowsCampanas_Modal = ($SQL_Campanas_Modal) ? sqlsrv_has_rows($SQL_Campanas_M
 													<td class="text-center">
 														<?php if ($row_Campana_Modal['estado'] == 'Y') { ?>
 															<div class="checkbox checkbox-success"
-																id="dvChkSel<?php echo $row_Campana_Modal['id_recepcion_vehiculo']; ?>">
+																id="dvChkSel<?php echo $row_Campana_Modal['id_campana']; ?>">
 																<input type="checkbox" class="chkSelOT"
-																	id="chkSelOT<?php echo $row_Campana_Modal['id_recepcion_vehiculo']; ?>"
+																	id="chkSelOT<?php echo $row_Campana_Modal['id_campana']; ?>"
 																	value=""
 																	onchange="SeleccionarCampana('<?php echo $row_Campana_Modal['id_campana']; ?>');"
 																	aria-label="Single checkbox One"><label></label>
@@ -240,103 +248,19 @@ $hasRowsCampanas_Modal = ($SQL_Campanas_Modal) ? sqlsrv_has_rows($SQL_Campanas_M
 	$(document).ready(function () {
 		$("#frmCampanasDetalle").validate({
 			submitHandler: function (form) {
-				/*
-				$('.ibox-content').toggleClass('sk-loading', true);
+				console.log(json); // json, viene de las funciones "seleccionar".
 
-				if (lote) {
-					id = json
-				}
-
-				$.ajax({
-					type: "POST",
-					url: "md_frm_cambiar_estados.php",
-					data: {
-						id: id,
-						frm: 'RecepcionVehiculos',
-						nomID: 'id_recepcion_vehiculo'
-					},
-					success: function (response) {
-						$('.ibox-content').toggleClass('sk-loading', false);
-						$('#ContenidoModal').html(response);
-						$('#myModal').modal("show");
+				Swal.fire({
+					title: "¿Está seguro que desea continuar?",
+					icon: "question",
+					showCancelButton: true,
+					confirmButtonText: "Si, confirmo",
+					cancelButtonText: "No"
+				}).then((result) => {
+					if (result.isConfirmed) {
+						AdicionarCampanas();
 					}
 				});
-
-				// Obtén el valor del campo de entrada
-				let listaVINs = $("#ListaVIN").val();
-
-				// Divide la lista en un arreglo usando el separador ";"
-				let arregloVINs = listaVINs.split(";");
-
-				// Limpia los espacios en blanco y elementos vacíos del arreglo
-				arregloVINs = arregloVINs.map(function (vin) {
-					return vin.trim();
-				}).filter(function (vin) {
-					return vin !== "";
-				});
-
-				// Validación del ciclo
-				var validarAjax = true;
-				var contadorAjax = 0;
-
-				// Iterar sobre cada VIN y realizar una llamada AJAX por separado
-				arregloVINs.forEach(function (vin) {
-					$.ajax({
-						type: "POST",
-						url: "md_campanas_vehiculo.php",
-						data: {
-							type: 1,
-							ID: $("#id_campana").val(),
-							VIN: vin,  // Usar el VIN actual en esta iteración
-						},
-						success: function (response) {
-							console.log(response);
-
-							contadorAjax++;
-							if (response !== "OK") {
-								validarAjax = false;
-							}
-
-							// Verificar si todas las solicitudes AJAX han finalizado
-							if (contadorAjax === arregloVINs.length) {
-								Swal.fire({
-									icon: (validarAjax) ? "success" : "warning",
-									title: (validarAjax) ? "¡Listo!" : "¡Error!",
-									text: (validarAjax) ? "Todos los VINs se insertaron correctamente." : "No se pudieron insertar algunos VINs, por favor verifique."
-								}).then((result) => {
-									if (result.isConfirmed) {
-										// if(validarAjax) {
-
-										// Obtén la URL actual
-										let currentUrl = new URL(window.location.href);
-
-										// Obtén los parámetros del query string
-										let searchParams = currentUrl.searchParams;
-
-										// Actualiza el valor del parámetro 'active' o agrega si no existe
-										searchParams.set('active', 1);
-
-										// Crea una nueva URL con los parámetros actualizados
-										let newUrl = currentUrl.origin + currentUrl.pathname + '?' + searchParams.toString();
-
-										// Recarga la página con la nueva URL
-										window.location.href = newUrl;
-
-										// }
-									}
-								});
-								// Swal.fire
-							}
-						},
-						error: function (error) {
-							console.error("240->", error.responseText);
-
-							validarAjax = false;
-						}
-					});
-				});
-				// .forEach()
-				*/
 			}
 			// submitHandler
 		});
@@ -369,7 +293,71 @@ $hasRowsCampanas_Modal = ($SQL_Campanas_Modal) ? sqlsrv_has_rows($SQL_Campanas_M
 				}
 			},
 			buttons: [],
-			order: [[1, "desc"]]
+			order: [[0, "asc"]]
 		});
 	});
+
+	function AdicionarCampanas() {
+		var validarAjax = true;
+		var contadorAjax = 0;
+
+		// Iterar sobre cada ID y realizar una llamada AJAX por separado
+		json.forEach(function (id) {
+			$.ajax({
+				type: "POST",
+				url: "md_adicionar_campanas.php",
+				data: {
+					type: 1,
+					id_llamada_servicio: $("#Ticket").val(), // "DocNum"
+					docentry_llamada_servicio: $("#CallID").val(), // "DocNum"
+					id_campana: id,  // Usar el ID actual en esta iteración
+				},
+				success: function (response) {
+					console.log(response);
+
+					contadorAjax++;
+					if (response !== "OK") {
+						validarAjax = false;
+					}
+
+					// Verificar si todas las solicitudes AJAX han finalizado
+					if (contadorAjax === json.length) {
+						Swal.fire({
+							icon: (validarAjax) ? "success" : "warning",
+							title: (validarAjax) ? "¡Listo!" : "¡Error!",
+							text: (validarAjax) ? "Todos las Campanas se insertaron correctamente." : "No se pudieron insertar algunos Campanas, por favor verifique."
+						}).then((result) => {
+							if (result.isConfirmed) {
+								// if(validarAjax) {
+
+								// Obtén la URL actual
+								let currentUrl = new URL(window.location.href);
+
+								// Obtén los parámetros del query string
+								let searchParams = currentUrl.searchParams;
+
+								// Actualiza el valor del parámetro 'active' o agrega si no existe
+								searchParams.set('active', 1);
+
+								// Crea una nueva URL con los parámetros actualizados
+								let newUrl = currentUrl.origin + currentUrl.pathname + '?' + searchParams.toString();
+
+								// Recarga la página con la nueva URL
+								window.location.href = newUrl;
+
+								// }
+							}
+						});
+						// Swal.fire
+					}
+				},
+				error: function (error) {
+					console.error("240->", error.responseText);
+
+					validarAjax = false;
+				}
+			});
+		});
+		// .forEach()
+	}
 </script>

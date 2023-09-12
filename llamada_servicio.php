@@ -857,8 +857,8 @@ $TipoProblema = ObtenerValorDefecto(191, "IdTipoProblema", false);
 
 
 // SMM, 01/09/2023
-$id_tarjeta_equipo = $row['IdTarjetaEquipo'] ?? "";
-$SQL_Campanas = Seleccionar("uvw_tbl_LlamadasServicios_Campanas", "*"); // , "id_llamada='$id_llamada'"
+$id_ls = $row['DocNum'] ?? "";
+$SQL_Campanas = Seleccionar("uvw_tbl_LlamadasServicios_Campanas", "*", "[id_llamada_servicio]='$id_ls'"); 
 $hasRowsCampanas = ($SQL_Campanas) ? sqlsrv_has_rows($SQL_Campanas) : false;
 
 // Adicionar Campana en la creación?
@@ -2005,7 +2005,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 													<button onclick="VerTAB(3);" class="btn btn-outline btn-primary"><i class="fa fa-clipboard"></i> Ver Formatos Adicionales</button>
 												<?php } ?>
 
-												<?php if (($type_llmd == 1) && $hasRowsCampanas) { ?>
+												<?php if (($type_llmd == 1) || $hasRowsCampanas) { ?>
 													<button onclick="VerTAB(4);" class="btn btn-outline btn-primary"><i class="fa fa-bell"></i> Ver Campañas Gestionadas</button>
 												<?php } ?>	
 											</div>
@@ -3152,10 +3152,10 @@ function AgregarEsto(contenedorID, valorElemento) {
 						<div class="ibox-content">
 							<div class="tabs-container">
 								<ul class="nav nav-tabs">
-									<li class="active" id="nav1"><a data-toggle="tab" href="#tab-1"><i class="fa fa-calendar"></i> Actividades</a></li>
-									<li id="nav2"><a data-toggle="tab" href="#tab-2"><i class="fa fa-tags"></i> Documentos relacionados</a></li>
-									<li id="nav3"><a data-toggle="tab" href="#tab-3"><i class="fa fa-clipboard"></i> Formatos adicionales</a></li>
-									<li id="nav4"><a data-toggle="tab" href="#tab-4"><i class="fa fa-bell"></i> Campañas</a></li>
+									<li class="active" id="nav-1"><a data-toggle="tab" href="#tab-1"><i class="fa fa-calendar"></i> Actividades</a></li>
+									<li id="nav-2"><a data-toggle="tab" href="#tab-2"><i class="fa fa-tags"></i> Documentos relacionados</a></li>
+									<li id="nav-3"><a data-toggle="tab" href="#tab-3"><i class="fa fa-clipboard"></i> Formatos adicionales</a></li>
+									<li id="nav-4"><a data-toggle="tab" href="#tab-4"><i class="fa fa-bell"></i> Campañas</a></li>
 								</ul>
 
 								<div class="tab-content">
@@ -3468,9 +3468,9 @@ function AgregarEsto(contenedorID, valorElemento) {
 
 																				<td>
 																					<button type="button"
-																						id="btnDelete<?php echo $row_Detalle['id_campana_detalle']; ?>"
+																						id="btnDelete<?php echo $row_Campana['id_campana']; ?>"
 																						class="btn btn-danger btn-xs"
-																						onclick="EliminarRegistro('<?php echo $row_Detalle['id_campana_detalle']; ?>');"><i
+																						onclick="EliminarCampana('<?php echo $row_Campana['id_campana']; ?>');"><i
 																							class="fa fa-trash"></i>
 																						Eliminar</button>
 																				</td>
@@ -4185,10 +4185,61 @@ function CopiarFacturaSN(Cliente, Contacto, Sucursal, Direccion) {
 		});
 
 		// Agregar la clase "active" a la pestaña tab-"id" y su título
-		let tab = document.querySelector(`.nav-tabs #nav${id}`);
-		let tabContenido = document.querySelector(`.tab-content #tab${id}`);
+		let tab = document.querySelector(`.nav-tabs #nav-${id}`);
+		let tabContenido = document.querySelector(`.tab-content #tab-${id}`);
 		tab.classList.add('active');
 		tabContenido.classList.add('active');
+	}
+
+	function EliminarCampana(id) {
+		Swal.fire({
+			title: "¿Está seguro que desea eliminar esta Campaña?",
+			icon: "question",
+			showCancelButton: true,
+			confirmButtonText: "Si, confirmo",
+			cancelButtonText: "No"
+		}).then((result) => {
+			if (result.isConfirmed) {
+				$.ajax({
+					type: "POST",
+					url: "md_adicionar_campanas.php",
+					data: {
+						type: 3,
+						id_llamada_servicio: $("#Ticket").val(), // "DocNum"
+						docentry_llamada_servicio: $("#CallID").val(), // "DocNum"
+						id_campana: id,  // Usar el ID actual en esta iteración
+					},
+					success: function (response) {
+						Swal.fire({
+							icon: (response == "OK") ? "success" : "warning'",
+							title: (response == "OK") ? "¡Listo!" : "¡Error!",
+							text: (response == "OK") ? "Se elimino la Campaña correctamente." : response
+						}).then((result) => {
+							if (result.isConfirmed) {
+								// Obtén la URL actual
+								let currentUrl = new URL(window.location.href);
+
+								// Obtén los parámetros del query string
+								let searchParams = currentUrl.searchParams;
+
+								// Actualiza el valor del parámetro 'active' o agrega si no existe
+								searchParams.set('active', 1);
+
+								// Crea una nueva URL con los parámetros actualizados
+								let newUrl = currentUrl.origin + currentUrl.pathname + '?' + searchParams.toString();
+
+								// Recarga la página con la nueva URL
+								window.location.href = newUrl;
+							}
+						});
+					},
+					error: function (error) {
+						console.error("640->", error.responseText);
+					}
+				});
+				// $.ajax
+			}
+		});
 	}
 </script>
 <!-- InstanceEndEditable -->
