@@ -91,12 +91,14 @@ $hasRowsCampanas_Modal = ($SQL_Campanas_Modal) ? sqlsrv_has_rows($SQL_Campanas_M
 		var Check = document.getElementById(`chkSelOT${DocNum}`).checked;
 		var sw = -1;
 
+		// console.log(Check);
+
 		json.forEach(function (element, index) {
 			if (json[index] == DocNum) {
 				sw = index;
 			}
 
-			// console.log(element,index);
+			// console.log(element, index);
 		});
 
 		if (sw >= 0) {
@@ -249,6 +251,20 @@ $hasRowsCampanas_Modal = ($SQL_Campanas_Modal) ? sqlsrv_has_rows($SQL_Campanas_M
 
 <script>
 	$(document).ready(function () {
+		<?php if ($asincrono == 1) { ?>
+			// Obtener las opciones seleccionadas como objetos de opciones
+			let opcionesSeleccionadas = $("#Campanas option:selected");
+
+			// Recorrer las opciones seleccionadas con forEach
+			opcionesSeleccionadas.each(function () {
+				let opcion = $(this).val();
+
+				// Seleccionar el checkbox
+    			$(`#chkSelOT${opcion}`).prop("checked", true);
+				SeleccionarCampana(opcion);
+			});
+		<?php } ?>
+
 		$("#frmCampanasDetalle").validate({
 			submitHandler: function (form) {
 				console.log(json); // json, viene de las funciones "seleccionar".
@@ -261,8 +277,8 @@ $hasRowsCampanas_Modal = ($SQL_Campanas_Modal) ? sqlsrv_has_rows($SQL_Campanas_M
 					cancelButtonText: "No"
 				}).then((result) => {
 					if (result.isConfirmed) {
-						<?php if($asincrono == 1) { ?>
-							alert("Modo Asincrono");
+						<?php if ($asincrono == 1) { ?>
+							AdicionarCampanasAsincrono();
 						<?php } else { ?>
 							AdicionarCampanas();
 						<?php } ?>
@@ -366,5 +382,25 @@ $hasRowsCampanas_Modal = ($SQL_Campanas_Modal) ? sqlsrv_has_rows($SQL_Campanas_M
 			});
 		});
 		// .forEach()
+	}
+
+	function AdicionarCampanasAsincrono() {
+
+		// Deseleccionar todas las opciones
+		$("#Campanas option").prop("selected", false);
+
+		// Iterar sobre cada ID
+		json.forEach(function (id) {
+
+			// Seleccionar opciones específicas
+			$(`#Campanas option[value='${id}']`).prop("selected", true);
+		});
+		// .forEach()
+
+		// Disparar el evento "change"
+		$("#Campanas").trigger("change");
+
+		// Ocultar modal
+		$('#myModal2').modal("hide");
 	}
 </script>
