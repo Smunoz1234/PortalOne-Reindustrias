@@ -1,6 +1,9 @@
 <?php
 require_once "includes/conexion.php";
 
+// SMM, 13/09/2023
+$asincrono = $_POST['asincrono'] ?? "";
+
 // SMM, 25/02/2023
 $msg_error_detalle = "";
 $parametros_detalle = array();
@@ -258,7 +261,11 @@ $hasRowsCampanas_Modal = ($SQL_Campanas_Modal) ? sqlsrv_has_rows($SQL_Campanas_M
 					cancelButtonText: "No"
 				}).then((result) => {
 					if (result.isConfirmed) {
-						AdicionarCampanas();
+						<?php if($asincrono == 1) { ?>
+							alert("Modo Asincrono");
+						<?php } else { ?>
+							AdicionarCampanas();
+						<?php } ?>
 					}
 				});
 			}
@@ -337,7 +344,7 @@ $hasRowsCampanas_Modal = ($SQL_Campanas_Modal) ? sqlsrv_has_rows($SQL_Campanas_M
 								let searchParams = currentUrl.searchParams;
 
 								// Actualiza el valor del parámetro 'active' o agrega si no existe
-								searchParams.set('active', 1);
+								searchParams.set('active', 4);
 
 								// Crea una nueva URL con los parámetros actualizados
 								let newUrl = currentUrl.origin + currentUrl.pathname + '?' + searchParams.toString();

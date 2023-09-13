@@ -863,11 +863,6 @@ $TipoProblema = ObtenerValorDefecto(191, "IdTipoProblema", false);
 $id_ls = $row['DocNum'] ?? "";
 $SQL_Campanas = Seleccionar("uvw_tbl_LlamadasServicios_Campanas", "*", "[id_llamada_servicio]='$id_ls'");
 $hasRowsCampanas = ($SQL_Campanas) ? sqlsrv_has_rows($SQL_Campanas) : false;
-
-// Adicionar Campana en la creación?
-//while ($row_GruposUsuario = sqlsrv_fetch_array($SQL_GruposUsuario)) {
-//	$ids_grupos[] = $row_GruposUsuario['IdCargo'];
-//}
 ?>
 
 <!DOCTYPE html>
@@ -2198,18 +2193,8 @@ function AgregarEsto(contenedorID, valorElemento) {
 							<div class="col-lg-8">
 								<label class="control-label">Campañas Asociadas</label>
 
-								<!-- No puedo asociar campanas a una llamada de servicio en la creación por que no tengo el ID -->
-								<!-- input autocomplete="off" name="CampanasAsociadas" type="text" required="required" class="form-control" id="CampanasAsociadas" value="" -->
-								
-								<select data-placeholder="Debe seleccionar las campañas que desea asociar con la Llamada de servicio." name="Campanas[]" class="form-control select2" id="Campanas" multiple>
-									<?php while ($row_Campanas = sqlsrv_fetch_array($SQL_CampanasAsociadas)) { ?>
-											<option value="<?php echo $row_Campanas['id_campana']; ?>"
-											<?php if (in_array($row_Campanas['id_campana'], $ids_campanas)) {
-												echo "selected";
-											} ?>>
-												<?php echo $row_Campanas['campana']; ?>
-											</option>
-									<?php } ?>
+								<select name="Campanas[]" id="Campanas" class="form-control select2" data-placeholder="Debe seleccionar las campañas que desea asociar con la Llamada de servicio." multiple>
+									<!-- Generadas por JS -->
 								</select>
 							</div>
 						</div>
@@ -4129,22 +4114,42 @@ $(function () {
 		} else {
 			$('#AddCampana').prop('disabled', true);
 		}
+
+		let id_tarjeta_equipo = $(this).find(':selected').data('id');
+
+		$.ajax({
+			type: "POST",
+			url: `ajx_cbo_select.php?type=49&id=${id_tarjeta_equipo}`,
+			success: function (response) {
+				$("#Campanas").html(response).fadeIn();
+				$("#Campanas").trigger('change');
+			},
+			error: function(error) {
+				console.log("error (4128), ", error);
+			}
+		});
 	});
 
 	$("#AddCampana").on("click", function () {
-		AdicionarCampana();
+		AdicionarCampana(1);
 	});
 	// SMM, 08/09/2023
+
+	// SMM, 13/09/2023
+	<?php if(isset($_GET["active"])) { ?>
+		VerTAB(<?php echo $_GET["active"]; ?>);
+	<?php } ?>
 });
 
-function AdicionarCampana() {
+function AdicionarCampana(asinc = 0) {
 	$('.ibox-content').toggleClass('sk-loading', true);
 	let IdInterno_TarjetaEquipo = $("#NumeroSerie").find(':selected').data('id');
 
 	$.ajax({
 		type: "POST",
 		data: {
-			id_tarjeta_equipo: IdInterno_TarjetaEquipo
+			id_tarjeta_equipo: IdInterno_TarjetaEquipo,
+			asincrono: asinc
 		},
 		url: "md_adicionar_campanas.php",
 		success: function (response) {
@@ -4231,7 +4236,7 @@ function EliminarCampana(id) {
 							let searchParams = currentUrl.searchParams;
 
 							// Actualiza el valor del parámetro 'active' o agrega si no existe
-							searchParams.set('active', 1);
+							searchParams.set('active', 4);
 
 							// Crea una nueva URL con los parámetros actualizados
 							let newUrl = currentUrl.origin + currentUrl.pathname + '?' + searchParams.toString();

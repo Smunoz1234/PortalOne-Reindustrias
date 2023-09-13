@@ -1231,5 +1231,25 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
         }
     }
 
+    // SMM, 13/09/2023
+    elseif ($_GET['type'] == 49) { // Campanas, dependiendo de la Tarjeta de Equipo.
+        if (!isset($_GET['id']) || ($_GET['id'] == "")) {
+            echo "<option value=''>Seleccione...</option>";
+        } else {
+            $Id = "'" . $_GET['id'] . "'";
+            $SQL = Seleccionar("uvw_tbl_LlamadasServicios_Campanas_Asignacion", "*", "id_tarjeta_equipo = $Id");
+            
+            $Num = sqlsrv_num_rows($SQL);
+            if ($Num) {
+                while ($row = sqlsrv_fetch_array($SQL)) {
+                    $rowId = $row["id_campana"];
+                    $rowVal = $row["campana"];
+
+                    echo "<option value='$rowId'>$rowId - $rowVal</option>";
+                }
+            }
+        }
+    }
+
     sqlsrv_close($conexion);
 }
