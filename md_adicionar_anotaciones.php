@@ -75,9 +75,8 @@ if ($type_detalle != 0) {
 	exit();
 }
 
-// SMM, 08/09/2023
-$SQL_Campanas_Modal = Seleccionar("uvw_tbl_LlamadasServicios_Campanas_Asignacion", "*", "id_tarjeta_equipo='$id_tarjeta_equipo'");
-$hasRowsCampanas_Modal = ($SQL_Campanas_Modal) ? sqlsrv_has_rows($SQL_Campanas_Modal) : false;
+// SMM, 14/09/2023
+$SQL_Evento = Seleccionar("tbl_SolicitudLlamadasServicios_Anotaciones_Tipo", "*");
 ?>
 
 <style>
@@ -102,8 +101,34 @@ $hasRowsCampanas_Modal = ($SQL_Campanas_Modal) ? sqlsrv_has_rows($SQL_Campanas_M
 				<?php include "includes/spinner.php"; ?>
 
 				<div class="row">
+					<div class="col-lg-6">
+						<label class="control-label">Fecha <span class="text-danger">*</span></label>
+
+						<div class="input-group date">
+							<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input type="text" class="form-control" id="Fecha" name="Fecha" value="<?php echo date('Y-m-d'); ?>" required>
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<label class="control-label">Evento <span class="text-danger">*</span></label>
+						
+						<select name="Evento" class="form-control" id="Evento" required>
+							<option value="" disabled selected>Seleccione...</option>
+							
+							<?php while ($row_Evento = sqlsrv_fetch_array($SQL_Evento)) {?>
+								<option value="<?php echo $row_Evento["id_tipo_anotacion"]; ?>">
+									<?php echo $row_Evento["tipo_anotacion"]; ?>
+								</option>
+							<?php }?>
+						</select>
+					</div>
+				</div>
+				<!-- /.row -->
+
+				<br><br>
+				<div class="row">
 					<div class="col-md-12">
-						<label class="control-label">Comentarios</label>
+						<label class="control-label">Comentarios <span class="text-danger">*</span></label>
 						
 						<textarea name="Comentarios" rows="5" maxlength="3000" class="form-control" id="Comentarios"
 							type="text" required></textarea>
@@ -130,6 +155,16 @@ $hasRowsCampanas_Modal = ($SQL_Campanas_Modal) ? sqlsrv_has_rows($SQL_Campanas_M
 
 <script>
 	$(document).ready(function () {
+		$('.date').datepicker({
+			todayBtn: "linked",
+			keyboardNavigation: false,
+			forceParse: false,
+			calendarWeeks: true,
+			autoclose: true,
+			todayHighlight: true,
+			format: 'yyyy-mm-dd'
+		});
+		
 		$("#frmAnotaciones").validate({
 			submitHandler: function (form) {
 
