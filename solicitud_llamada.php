@@ -106,8 +106,7 @@ if ($edit == 0) {
 	// SMM, 12/02/2022
 }
 
-if (isset($_POST['P'])) { //Crear llamada de servicio
-	//Insertar llamada de servicio
+if (isset($_POST['P'])) { //Crear Solicitud de Llamada de servicio
 	try {
 		//*** Carpeta temporal ***
 		$i = 0; //Archivos
@@ -128,6 +127,10 @@ if (isset($_POST['P'])) { //Crear llamada de servicio
 		}
 		closedir($route);
 		$CantFiles = count($DocFiles);
+
+		// Campañas asociadas. SMM, 14/09/2023
+		$Campanas = implode(";", $_POST['Campanas']);
+        $Campanas = count($_POST['Campanas']) > 0 ? "'$Campanas'" : "''";
 
 		$Metodo = 2; //Actualizar en el web services
 		$Type = 2; //Ejecutar actualizar en el SP
@@ -487,6 +490,11 @@ $OrigenLlamada = ObtenerValorDefecto(191, "IdOrigenLlamada", false);
 $SubtipoProblema = ObtenerValorDefecto(191, "IdSubtipoProblema", false);
 $TipoLlamada = ObtenerValorDefecto(191, "IdTipoLlamada", false);
 $TipoProblema = ObtenerValorDefecto(191, "IdTipoProblema", false);
+
+// SMM, 14/09/2023
+$id_ls = $row['DocNum'] ?? "";
+$SQL_Campanas = Seleccionar("uvw_tbl_LlamadasServicios_Campanas", "*", "[id_llamada_servicio]='$id_ls'");
+$hasRowsCampanas = ($SQL_Campanas) ? sqlsrv_has_rows($SQL_Campanas) : false;
 ?>
 
 <!DOCTYPE html>
@@ -594,452 +602,454 @@ if (isset($sw_error) && ($sw_error == 1)) {
 
 <script type="text/javascript">
 	function ActualizarAsunto() {
-		let f333 = <?php echo PermitirFuncion(333) ? 'true' : 'false'; ?>;
-		if(f333) {	
-			let AsuntoLlamada = $('#AsuntoLlamada').val();	
-			AsuntoLlamada = AsuntoLlamada.replace(/\([^)]+\)|\(\s*\)/g, '').trim();
-		
-			let OrigenLlamada = ($("#OrigenLlamada").val() != "") ? trim($("#OrigenLlamada option:selected").text()) : "";
-			let TipoProblema = ($("#TipoProblema").val() != "") ? trim($("#TipoProblema option:selected").text()) : "";
+	let f333 = <?php echo PermitirFuncion(333) ? 'true' : 'false'; ?>;
+	if (f333) {
+		let AsuntoLlamada = $('#AsuntoLlamada').val();
+		AsuntoLlamada = AsuntoLlamada.replace(/\([^)]+\)|\(\s*\)/g, '').trim();
 
-			AsuntoLlamada = `${AsuntoLlamada} (${OrigenLlamada}) (${TipoProblema})`;
-			$('#AsuntoLlamada').val(AsuntoLlamada);	
-		}
+		let OrigenLlamada = ($("#OrigenLlamada").val() != "") ? trim($("#OrigenLlamada option:selected").text()) : "";
+		let TipoProblema = ($("#TipoProblema").val() != "") ? trim($("#TipoProblema option:selected").text()) : "";
+
+		AsuntoLlamada = `${AsuntoLlamada} (${OrigenLlamada}) (${TipoProblema})`;
+		$('#AsuntoLlamada').val(AsuntoLlamada);
 	}
-	
-	$(document).ready(function() {
-		$("#OrigenLlamada").change(function(){
-			$.ajax({
-				type: "POST",
-				url: `ajx_cbo_select.php?type=46&id=${$(this).val()}`,
-				success: function(response){
-					$('#TipoProblema').html(response).fadeIn();
-					$('#TipoProblema').trigger('change');
-				}
-			});
+}
 
-			// SMM, 21/07/2023
-			ActualizarAsunto();
+$(document).ready(function () {
+	$("#OrigenLlamada").change(function () {
+		$.ajax({
+			type: "POST",
+			url: `ajx_cbo_select.php?type=46&id=${$(this).val()}`,
+			success: function (response) {
+				$('#TipoProblema').html(response).fadeIn();
+				$('#TipoProblema').trigger('change');
+			}
 		});
 
-		// SMM, 12/07/2023
-		$("#TipoProblema").change(function(){
-				$('.ibox-content').toggleClass('sk-loading',true);
-				
-				$.ajax({
-					url: "ajx_buscar_datos_json.php",
-					data: {
-						type: 48,
-						id: $(this).val()
-					},
-					dataType: 'json',
-					success: function(data){
-						console.log(data);
+		// SMM, 21/07/2023
+		ActualizarAsunto();
+	});
 
-						$("#CDU_TiempoTarea").val(data.tiempoTarea || '""');
-						
-						$('.ibox-content').toggleClass('sk-loading',false);
-					},
-					error: function(error) {
-						console.log("AJAX error:", error.responseText);
-						
-						$('.ibox-content').toggleClass('sk-loading',false);
-					}
-				});
+	// SMM, 12/07/2023
+	$("#TipoProblema").change(function () {
+		$('.ibox-content').toggleClass('sk-loading', true);
 
-				// SMM, 13/07/2023
-				$.ajax({
-					type: "POST",
-					url: `ajx_cbo_select.php?type=47&id=${$(this).val()}`,
-					success: function(response){
-						$('#TipoLlamada').html(response).fadeIn();
-						$('#TipoLlamada').trigger('change');
-					}
-				});
+		$.ajax({
+			url: "ajx_buscar_datos_json.php",
+			data: {
+				type: 48,
+				id: $(this).val()
+			},
+			dataType: 'json',
+			success: function (data) {
+				console.log(data);
 
-				// SMM, 21/07/2023
-				ActualizarAsunto();
-			});
+				$("#CDU_TiempoTarea").val(data.tiempoTarea || '""');
 
+				$('.ibox-content').toggleClass('sk-loading', false);
+			},
+			error: function (error) {
+				console.log("AJAX error:", error.responseText);
 
-		var borrarNumeroSerie = true;
-		var borrarLineaModeloVehiculo = true;
-
-		//Cargar los combos dependiendo de otros
-		$("#ClienteLlamada").change(function(){
-			$('.ibox-content').toggleClass('sk-loading',true);
-			var Cliente=document.getElementById('ClienteLlamada').value;
-			$.ajax({
-				type: "POST",
-				url: "ajx_cbo_select.php?type=2&id="+Cliente,
-				success: function(response){
-					$('#ContactoCliente').html(response).fadeIn();
-					$('#ContactoCliente').trigger('change');
-					$('.ibox-content').toggleClass('sk-loading',false);
-				}
-			});
-			$.ajax({
-				type: "POST",
-				url: "ajx_cbo_select.php?type=3&id="+Cliente,
-				success: function(response){
-					$('#SucursalCliente').html(response).fadeIn();
-					$('#SucursalCliente').trigger('change');
-					$('.ibox-content').toggleClass('sk-loading',false);
-				}
-			});
-
-			<?php if ($IncluirCamposAdicionales) { ?>
-					$.ajax({
-						type: "POST",
-						url: "ajx_cbo_select.php?type=29&id="+Cliente,
-						success: function(response){
-							$('#ContratoServicio').html(response).fadeIn();
-							$('#ContratoServicio').trigger('change');
-							$('.ibox-content').toggleClass('sk-loading',false);
-						}
-					});
-
-					$.ajax({
-						type: "POST",
-						url: "ajx_cbo_select.php?type=30&id="+Cliente,
-						success: function(response){
-							$('#Proyecto').html(response).fadeIn();
-							$('#Proyecto').trigger('change');
-						
-							$('.ibox-content').toggleClass('sk-loading',false);
-						}
-					});
-			<?php } ?>
-
-			$.ajax({
-					type: "POST",
-					url: "ajx_cbo_select.php?type=28&id=&clt="+Cliente+"&<?php echo isset($_GET['Serial']) ? ("Serial=" . base64_decode($_GET['Serial'])) : ""; ?>&<?php echo isset($_GET['IdTE']) ? ("IdTE=" . base64_decode($_GET['IdTE'])) : ""; ?>",
-					success: function(response){
-						// console.log(response);
-
-						$('#NumeroSerie').html(response).fadeIn();
-						$('#NumeroSerie').trigger('change');
-
-						$('.ibox-content').toggleClass('sk-loading',false);
-					}
-				});
-		});
-		$("#SucursalCliente").change(function(){
-			$('.ibox-content').toggleClass('sk-loading',true);
-
-			var Cliente=document.getElementById('ClienteLlamada').value;
-			var Sucursal=document.getElementById('SucursalCliente').value;
-
-			if(Sucursal != -1 && Sucursal != '') {
-				$.ajax({
-					url:"ajx_buscar_datos_json.php",
-					data:{type:1,CardCode:Cliente,Sucursal:Sucursal},
-					dataType:'json',
-					success: function(data){
-						document.getElementById('DireccionLlamada').value=data.Direccion;
-						document.getElementById('BarrioDireccionLlamada').value=data.Barrio;
-						document.getElementById('CiudadLlamada').value=data.Ciudad;
-						document.getElementById('CDU_NombreContacto').value=data.NombreContacto;
-						document.getElementById('CDU_TelefonoContacto').value=data.TelefonoContacto;
-						document.getElementById('CDU_CargoContacto').value=data.CargoContacto;
-						document.getElementById('CDU_CorreoContacto').value=data.CorreoContacto;
-
-						// Stiven Muñoz Murillo, 22/01/2022
-						document.getElementById('TelefonoLlamada').value=data.TelefonoContacto;
-					},
-					error: function(error){
-						$('.ibox-content').toggleClass('sk-loading', false);
-						console.error("SucursalCliente", error.responseText);
-					}
-				});
-			} else {
 				$('.ibox-content').toggleClass('sk-loading', false);
 			}
-			// TODO, filtrar los resultados por cliente y sucursal
-			/*
-			$.ajax({
-				type: "POST",
-				url: "ajx_cbo_select.php?type=11&id="+Cliente+"&suc="+Sucursal,
-				success: function(response){
-					$('#ArticuloLlamada').html(response).fadeIn();
-					$('#ArticuloLlamada').trigger('change');
-					$('.ibox-content').toggleClass('sk-loading',false);
-				}
-			});
-			*/
-			// TODO, abajo en el buscar
-			$.ajax({
-				url:"ajx_buscar_datos_json.php",
-				data:{
-					type:39,
-					clt:Cliente,
-					suc:Sucursal},
-				dataType:'json',
-				success: function(data){
-					document.getElementById('IdSucursalCliente').value=data.IdSucursal;
-					$('.ibox-content').toggleClass('sk-loading',false);
-				}
-			});
-		});
-		$("#ContactoCliente").change(function(){
-			$('.ibox-content').toggleClass('sk-loading',true);
-			var Contacto=document.getElementById('ContactoCliente').value;
-			$.ajax({
-				url:"ajx_buscar_datos_json.php",
-				data:{type:5,Contacto:Contacto},
-				dataType:'json',
-				success: function(data){
-					document.getElementById('TelefonoLlamada').value=data.Telefono;
-					document.getElementById('CorreoLlamada').value=data.Correo;
-					$('.ibox-content').toggleClass('sk-loading',false);
-				}
-			});
 		});
 
-		// Stiven Muñoz Murillo, 24/01/2022
-		$("#IdArticuloLlamada").change(function(){
-			$('.ibox-content').toggleClass('sk-loading',true);
-			var ID=document.getElementById('IdArticuloLlamada').value;
-			var Cliente=document.getElementById('ClienteLlamada').value;
-			if(ID!=""){
-				$.ajax({
-					url:"ajx_buscar_datos_json.php",
-					data:{type:6,id:ID},
-					dataType:'json',
-					success: function(data){
-						document.getElementById('CDU_Servicios').value=data.Servicios;
-						document.getElementById('CDU_Areas').value=data.Areas;
-						$('.ibox-content').toggleClass('sk-loading',false);
-					}
-				});
+		// SMM, 13/07/2023
+		$.ajax({
+			type: "POST",
+			url: `ajx_cbo_select.php?type=47&id=${$(this).val()}`,
+			success: function (response) {
+				$('#TipoLlamada').html(response).fadeIn();
+				$('#TipoLlamada').trigger('change');
+			}
+		});
+
+		// SMM, 21/07/2023
+		ActualizarAsunto();
+	});
+
+
+	var borrarNumeroSerie = true;
+	var borrarLineaModeloVehiculo = true;
+
+	//Cargar los combos dependiendo de otros
+	$("#ClienteLlamada").change(function () {
+		$('.ibox-content').toggleClass('sk-loading', true);
+		var Cliente = document.getElementById('ClienteLlamada').value;
+		$.ajax({
+			type: "POST",
+			url: "ajx_cbo_select.php?type=2&id=" + Cliente,
+			success: function (response) {
+				$('#ContactoCliente').html(response).fadeIn();
+				$('#ContactoCliente').trigger('change');
+				$('.ibox-content').toggleClass('sk-loading', false);
+			}
+		});
+		$.ajax({
+			type: "POST",
+			url: "ajx_cbo_select.php?type=3&id=" + Cliente,
+			success: function (response) {
+				$('#SucursalCliente').html(response).fadeIn();
+				$('#SucursalCliente').trigger('change');
+				$('.ibox-content').toggleClass('sk-loading', false);
+			}
+		});
+
+		<?php if ($IncluirCamposAdicionales) { ?>
 				$.ajax({
 					type: "POST",
-					url: "ajx_cbo_select.php?type=28&id="+ID+"&clt="+Cliente,
-					success: function(response){
-						// console.log(response);
-
-						if(borrarNumeroSerie) {
-							$('#NumeroSerie').html(response).fadeIn();
-							$('#NumeroSerie').trigger('change');
-						} else {
-							borrarNumeroSerie = true;
-						}
-
-						$('.ibox-content').toggleClass('sk-loading',false);
-					}
-				});
-			}else{
-				document.getElementById('CDU_Servicios').value='';
-				document.getElementById('CDU_Areas').value='';
-				/*document.getElementById('CDU_NombreContacto').value='';
-				document.getElementById('CDU_TelefonoContacto').value='';
-				document.getElementById('CDU_CargoContacto').value='';
-				document.getElementById('CDU_CorreoContacto').value='';*/
-				$('.ibox-content').toggleClass('sk-loading',false);
-			}
-			$('.ibox-content').toggleClass('sk-loading',false);
-		});
-		$("#TipoTarea").change(function(){
-			$('.ibox-content').toggleClass('sk-loading',true);
-			var TipoTarea=document.getElementById('TipoTarea').value;
-			if(TipoTarea=="Interna"){
-				document.getElementById('ClienteLlamada').value='<?php echo NIT_EMPRESA; ?>';
-				document.getElementById('NombreClienteLlamada').value='<?php echo NOMBRE_EMPRESA; ?>';
-				document.getElementById('NombreClienteLlamada').readOnly=true;
-				$('#ClienteLlamada').trigger('change');
-				$('.ibox-content').toggleClass('sk-loading',false);
-				//HabilitarCampos(0);
-			}else{
-				document.getElementById('ClienteLlamada').value='';
-				document.getElementById('NombreClienteLlamada').value='';
-				document.getElementById('NombreClienteLlamada').readOnly=false;
-				$('#ClienteLlamada').trigger('change');
-				$('.ibox-content').toggleClass('sk-loading',false);
-				//HabilitarCampos(1);
-			}
-		});
-		<?php if ($edit == 0 && $sw_error == 0) { ?>
-				// SMM, 12/07/2023
-				$("#Series").change(function() {
-					$('.ibox-content').toggleClass('sk-loading', true);
-				
-					let Series = document.getElementById('Series').value;
-					if(Series !== ""){
-						$.ajax({
-							url: "ajx_buscar_datos_json.php",
-							data: {
-								type: 30,
-								id: Series
-							},
-							dataType: 'json',
-							success: function(data) {
-								console.log(data);
-
-								if(data.OrigenLlamada)
-								$('#OrigenLlamada').val(data.OrigenLlamada || '""');
-								$('#TipoLlamada').val(data.TipoLlamada || '""');
-								$('#TipoProblema').val(data.TipoProblemaLlamada || '""');
-
-								let AsuntoLlamada = (data.AsuntoLlamada || '""');
-								let f333 = <?php echo PermitirFuncion(333) ? 'true' : 'false'; ?>;
-								if(f333) {	
-									let OrigenLlamada = trim($("#OrigenLlamada option:selected").text());
-									let TipoProblema = trim($("#TipoProblema option:selected").text());
-
-									AsuntoLlamada = `${AsuntoLlamada} (${OrigenLlamada}) (${TipoProblema})`;
-								}
-
-								$('#AsuntoLlamada').val(AsuntoLlamada);							
-							
-								$('.ibox-content').toggleClass('sk-loading', false);
-							},
-							error: function(error) {
-								console.log("AJAX error:", error);
-
-								$('.ibox-content').toggleClass('sk-loading', false);
-							}
-						});
-					} else {
+					url: "ajx_cbo_select.php?type=29&id=" + Cliente,
+					success: function (response) {
+						$('#ContratoServicio').html(response).fadeIn();
+						$('#ContratoServicio').trigger('change');
 						$('.ibox-content').toggleClass('sk-loading', false);
 					}
 				});
 
-				// Stiven Muñoz Murillo, 07/02/2022
-				$("#CDU_ListaMateriales").change(function(){
-					$('.ibox-content').toggleClass('sk-loading',true);
-					let listaMaterial=document.getElementById('CDU_ListaMateriales').value;
+				$.ajax({
+					type: "POST",
+					url: "ajx_cbo_select.php?type=30&id=" + Cliente,
+					success: function (response) {
+						$('#Proyecto').html(response).fadeIn();
+						$('#Proyecto').trigger('change');
 
-					if(listaMaterial != "") {
-						$.ajax({
-							url: "ajx_buscar_datos_json.php",
-							data: {
-								type: 47,
-								id: listaMaterial
-							},
-							dataType: 'json',
-							success: function(data){
-								// console.log(data);
-
-								document.getElementById('CDU_TiempoTarea').value = data.tiempoTarea;
-								$('.ibox-content').toggleClass('sk-loading',false);
-							},
-							error: function(error) {
-								console.error(error.responseText);
-								$('.ibox-content').toggleClass('sk-loading',false);
-							}
-						});
+						$('.ibox-content').toggleClass('sk-loading', false);
 					}
 				});
-
-				// Stiven Muñoz Murillo, 20/12/2021
-				$("#CDU_Marca").change(function(){
-					$('.ibox-content').toggleClass('sk-loading',true);
-					var marcaVehiculo=document.getElementById('CDU_Marca').value;
-					$.ajax({
-						type: "POST",
-						url: "ajx_cbo_select.php?type=39&id="+marcaVehiculo,
-						success: function(response){
-							// console.log(response);
-
-							if(borrarLineaModeloVehiculo) {
-								$('#CDU_Linea').html(response).fadeIn();
-								$('#CDU_Linea').trigger('change');
-							} else {
-								borrarLineaModeloVehiculo = true;
-							}
-
-							$('.ibox-content').toggleClass('sk-loading',false);
-						}
-					});
-				});
-
-				// Stiven Muñoz Murillo, 22/12/2021
-				$("#NumeroSerie").change(function(){
-					$('.ibox-content').toggleClass('sk-loading', true);
-
-					var ID=document.getElementById('NumeroSerie').value;
-					var Cliente=document.getElementById('ClienteLlamada').value;
-
-					// SMM, 19/05/2022
-					let IdTarjetaEquipo = $("#NumeroSerie").find(':selected').data('id');
-
-					if(ID != "") {
-						$.ajax({
-							url:"ajx_buscar_datos_json.php",
-							data:{
-								type:44,
-								id:IdTarjetaEquipo, // Antes, ID.
-								clt:Cliente,
-								si:0 // SMM, 19/05/2022
-							},
-							dataType:'json',
-							success: function(data){
-								// console.log(data);
-
-								borrarNumeroSerie = false;
-								document.getElementById('IdArticuloLlamada').value = data.IdArticuloLlamada;
-								document.getElementById('DeArticuloLlamada').value = data.DeArticuloLlamada;
-								// $('#IdArticuloLlamada').trigger('change');
-
-								document.getElementById('CDU_Marca').value = data.CDU_IdMarca;
-								$('#CDU_Marca').trigger('change');
-
-								borrarLineaModeloVehiculo = false;
-								document.getElementById('CDU_Linea').value = data.CDU_IdLinea;
-								$('#CDU_Linea').trigger('change');
-
-								document.getElementById('CDU_Ano').value = data.CDU_Ano;
-								$('#CDU_Ano').trigger('change');
-
-								document.getElementById('CDU_Concesionario').value = data.CDU_Concesionario;
-								$('#CDU_Concesionario').trigger('change');
-
-								document.getElementById('CDU_TipoServicio').value = (data.CDU_TipoServicio != null) ? data.CDU_TipoServicio : "";
-								$('#CDU_TipoServicio').trigger('change');
-
-								$('.ibox-content').toggleClass('sk-loading',false);
-							},
-							error: function(data) {
-								console.error("Line 1133", data.responseText);
-							}
-						});
-						$.ajax({
-							type: "POST",
-							url: "ajx_cbo_select.php?type=40&id="+ID,
-							success: function(response){
-								// console.log(response);
-
-								$('#CDU_ListaMateriales').html(response).fadeIn();
-								$('#CDU_ListaMateriales').trigger('change');
-
-								$('.ibox-content').toggleClass('sk-loading',false);
-							}
-						});
-					}
-					$('.ibox-content').toggleClass('sk-loading',false);
-				});
-
-				$('#Series').trigger('change');
 		<?php } ?>
 
-		$("#EstadoLlamada").on("change", function() {
+			$.ajax({
+				type: "POST",
+				url: "ajx_cbo_select.php?type=28&id=&clt=" + Cliente + "&<?php echo isset($_GET['Serial']) ? ("Serial=" . base64_decode($_GET['Serial'])) : ""; ?>&<?php echo isset($_GET['IdTE']) ? ("IdTE = " . base64_decode($_GET['IdTE'])) : ""; ?>",
+				success: function (response) {
+					// console.log(response);
+
+					$('#NumeroSerie').html(response).fadeIn();
+					$('#NumeroSerie').trigger('change');
+
+					$('.ibox-content').toggleClass('sk-loading', false);
+				}
+			});
+	});
+	$("#SucursalCliente").change(function () {
+		$('.ibox-content').toggleClass('sk-loading', true);
+
+		var Cliente = document.getElementById('ClienteLlamada').value;
+		var Sucursal = document.getElementById('SucursalCliente').value;
+
+		if (Sucursal != -1 && Sucursal != '') {
+			$.ajax({
+				url: "ajx_buscar_datos_json.php",
+				data: { type: 1, CardCode: Cliente, Sucursal: Sucursal },
+				dataType: 'json',
+				success: function (data) {
+					document.getElementById('DireccionLlamada').value = data.Direccion;
+					document.getElementById('BarrioDireccionLlamada').value = data.Barrio;
+					document.getElementById('CiudadLlamada').value = data.Ciudad;
+					document.getElementById('CDU_NombreContacto').value = data.NombreContacto;
+					document.getElementById('CDU_TelefonoContacto').value = data.TelefonoContacto;
+					document.getElementById('CDU_CargoContacto').value = data.CargoContacto;
+					document.getElementById('CDU_CorreoContacto').value = data.CorreoContacto;
+
+					// Stiven Muñoz Murillo, 22/01/2022
+					document.getElementById('TelefonoLlamada').value = data.TelefonoContacto;
+				},
+				error: function (error) {
+					$('.ibox-content').toggleClass('sk-loading', false);
+					console.error("SucursalCliente", error.responseText);
+				}
+			});
+		} else {
+			$('.ibox-content').toggleClass('sk-loading', false);
+		}
+		// TODO, filtrar los resultados por cliente y sucursal
+		/*
+		$.ajax({
+			type: "POST",
+			url: "ajx_cbo_select.php?type=11&id="+Cliente+"&suc="+Sucursal,
+			success: function(response){
+				$('#ArticuloLlamada').html(response).fadeIn();
+				$('#ArticuloLlamada').trigger('change');
+				$('.ibox-content').toggleClass('sk-loading',false);
+			}
+		});
+		*/
+		// TODO, abajo en el buscar
+		$.ajax({
+			url: "ajx_buscar_datos_json.php",
+			data: {
+				type: 39,
+				clt: Cliente,
+				suc: Sucursal
+			},
+			dataType: 'json',
+			success: function (data) {
+				document.getElementById('IdSucursalCliente').value = data.IdSucursal;
+				$('.ibox-content').toggleClass('sk-loading', false);
+			}
+		});
+	});
+	$("#ContactoCliente").change(function () {
+		$('.ibox-content').toggleClass('sk-loading', true);
+		var Contacto = document.getElementById('ContactoCliente').value;
+		$.ajax({
+			url: "ajx_buscar_datos_json.php",
+			data: { type: 5, Contacto: Contacto },
+			dataType: 'json',
+			success: function (data) {
+				document.getElementById('TelefonoLlamada').value = data.Telefono;
+				document.getElementById('CorreoLlamada').value = data.Correo;
+				$('.ibox-content').toggleClass('sk-loading', false);
+			}
+		});
+	});
+
+	// Stiven Muñoz Murillo, 24/01/2022
+	$("#IdArticuloLlamada").change(function () {
+		$('.ibox-content').toggleClass('sk-loading', true);
+		var ID = document.getElementById('IdArticuloLlamada').value;
+		var Cliente = document.getElementById('ClienteLlamada').value;
+		if (ID != "") {
+			$.ajax({
+				url: "ajx_buscar_datos_json.php",
+				data: { type: 6, id: ID },
+				dataType: 'json',
+				success: function (data) {
+					document.getElementById('CDU_Servicios').value = data.Servicios;
+					document.getElementById('CDU_Areas').value = data.Areas;
+					$('.ibox-content').toggleClass('sk-loading', false);
+				}
+			});
+			$.ajax({
+				type: "POST",
+				url: "ajx_cbo_select.php?type=28&id=" + ID + "&clt=" + Cliente,
+				success: function (response) {
+					// console.log(response);
+
+					if (borrarNumeroSerie) {
+						$('#NumeroSerie').html(response).fadeIn();
+						$('#NumeroSerie').trigger('change');
+					} else {
+						borrarNumeroSerie = true;
+					}
+
+					$('.ibox-content').toggleClass('sk-loading', false);
+				}
+			});
+		} else {
+			document.getElementById('CDU_Servicios').value = '';
+			document.getElementById('CDU_Areas').value = '';
+			/*document.getElementById('CDU_NombreContacto').value='';
+			document.getElementById('CDU_TelefonoContacto').value='';
+			document.getElementById('CDU_CargoContacto').value='';
+			document.getElementById('CDU_CorreoContacto').value='';*/
+			$('.ibox-content').toggleClass('sk-loading', false);
+		}
+		$('.ibox-content').toggleClass('sk-loading', false);
+	});
+	$("#TipoTarea").change(function () {
+		$('.ibox-content').toggleClass('sk-loading', true);
+		var TipoTarea = document.getElementById('TipoTarea').value;
+		if (TipoTarea == "Interna") {
+			document.getElementById('ClienteLlamada').value = '<?php echo NIT_EMPRESA; ?>';
+			document.getElementById('NombreClienteLlamada').value = '<?php echo NOMBRE_EMPRESA; ?>';
+			document.getElementById('NombreClienteLlamada').readOnly = true;
+			$('#ClienteLlamada').trigger('change');
+			$('.ibox-content').toggleClass('sk-loading', false);
+			//HabilitarCampos(0);
+		} else {
+			document.getElementById('ClienteLlamada').value = '';
+			document.getElementById('NombreClienteLlamada').value = '';
+			document.getElementById('NombreClienteLlamada').readOnly = false;
+			$('#ClienteLlamada').trigger('change');
+			$('.ibox-content').toggleClass('sk-loading', false);
+			//HabilitarCampos(1);
+		}
+	});
+	<?php if ($edit == 0 && $sw_error == 0) { ?>
+			// SMM, 12/07/2023
+			$("#Series").change(function () {
+				$('.ibox-content').toggleClass('sk-loading', true);
+
+				let Series = document.getElementById('Series').value;
+				if (Series !== "") {
+					$.ajax({
+						url: "ajx_buscar_datos_json.php",
+						data: {
+							type: 30,
+							id: Series
+						},
+						dataType: 'json',
+						success: function (data) {
+							console.log(data);
+
+							if (data.OrigenLlamada)
+								$('#OrigenLlamada').val(data.OrigenLlamada || '""');
+							$('#TipoLlamada').val(data.TipoLlamada || '""');
+							$('#TipoProblema').val(data.TipoProblemaLlamada || '""');
+
+							let AsuntoLlamada = (data.AsuntoLlamada || '""');
+							let f333 = <?php echo PermitirFuncion(333) ? 'true' : 'false'; ?>;
+							if (f333) {
+								let OrigenLlamada = trim($("#OrigenLlamada option:selected").text());
+								let TipoProblema = trim($("#TipoProblema option:selected").text());
+
+								AsuntoLlamada = `${AsuntoLlamada} (${OrigenLlamada}) (${TipoProblema})`;
+							}
+
+							$('#AsuntoLlamada').val(AsuntoLlamada);
+
+							$('.ibox-content').toggleClass('sk-loading', false);
+						},
+						error: function (error) {
+							console.log("AJAX error:", error);
+
+							$('.ibox-content').toggleClass('sk-loading', false);
+						}
+					});
+				} else {
+					$('.ibox-content').toggleClass('sk-loading', false);
+				}
+			});
+
+			// Stiven Muñoz Murillo, 07/02/2022
+			$("#CDU_ListaMateriales").change(function () {
+				$('.ibox-content').toggleClass('sk-loading', true);
+				let listaMaterial = document.getElementById('CDU_ListaMateriales').value;
+
+				if (listaMaterial != "") {
+					$.ajax({
+						url: "ajx_buscar_datos_json.php",
+						data: {
+							type: 47,
+							id: listaMaterial
+						},
+						dataType: 'json',
+						success: function (data) {
+							// console.log(data);
+
+							document.getElementById('CDU_TiempoTarea').value = data.tiempoTarea;
+							$('.ibox-content').toggleClass('sk-loading', false);
+						},
+						error: function (error) {
+							console.error(error.responseText);
+							$('.ibox-content').toggleClass('sk-loading', false);
+						}
+					});
+				}
+			});
+
+			// Stiven Muñoz Murillo, 20/12/2021
+			$("#CDU_Marca").change(function () {
+				$('.ibox-content').toggleClass('sk-loading', true);
+				var marcaVehiculo = document.getElementById('CDU_Marca').value;
+				$.ajax({
+					type: "POST",
+					url: "ajx_cbo_select.php?type=39&id=" + marcaVehiculo,
+					success: function (response) {
+						// console.log(response);
+
+						if (borrarLineaModeloVehiculo) {
+							$('#CDU_Linea').html(response).fadeIn();
+							$('#CDU_Linea').trigger('change');
+						} else {
+							borrarLineaModeloVehiculo = true;
+						}
+
+						$('.ibox-content').toggleClass('sk-loading', false);
+					}
+				});
+			});
+
+			// Stiven Muñoz Murillo, 22/12/2021
+			$("#NumeroSerie").change(function () {
+				$('.ibox-content').toggleClass('sk-loading', true);
+
+				var ID = document.getElementById('NumeroSerie').value;
+				var Cliente = document.getElementById('ClienteLlamada').value;
+
+				// SMM, 19/05/2022
+				let IdTarjetaEquipo = $("#NumeroSerie").find(':selected').data('id');
+
+				if (ID != "") {
+					$.ajax({
+						url: "ajx_buscar_datos_json.php",
+						data: {
+							type: 44,
+							id: IdTarjetaEquipo, // Antes, ID.
+							clt: Cliente,
+							si: 0 // SMM, 19/05/2022
+						},
+						dataType: 'json',
+						success: function (data) {
+							// console.log(data);
+
+							borrarNumeroSerie = false;
+							document.getElementById('IdArticuloLlamada').value = data.IdArticuloLlamada;
+							document.getElementById('DeArticuloLlamada').value = data.DeArticuloLlamada;
+							// $('#IdArticuloLlamada').trigger('change');
+
+							document.getElementById('CDU_Marca').value = data.CDU_IdMarca;
+							$('#CDU_Marca').trigger('change');
+
+							borrarLineaModeloVehiculo = false;
+							document.getElementById('CDU_Linea').value = data.CDU_IdLinea;
+							$('#CDU_Linea').trigger('change');
+
+							document.getElementById('CDU_Ano').value = data.CDU_Ano;
+							$('#CDU_Ano').trigger('change');
+
+							document.getElementById('CDU_Concesionario').value = data.CDU_Concesionario;
+							$('#CDU_Concesionario').trigger('change');
+
+							document.getElementById('CDU_TipoServicio').value = (data.CDU_TipoServicio != null) ? data.CDU_TipoServicio : "";
+							$('#CDU_TipoServicio').trigger('change');
+
+							$('.ibox-content').toggleClass('sk-loading', false);
+						},
+						error: function (data) {
+							console.error("Line 1133", data.responseText);
+						}
+					});
+					$.ajax({
+						type: "POST",
+						url: "ajx_cbo_select.php?type=40&id=" + ID,
+						success: function (response) {
+							// console.log(response);
+
+							$('#CDU_ListaMateriales').html(response).fadeIn();
+							$('#CDU_ListaMateriales').trigger('change');
+
+							$('.ibox-content').toggleClass('sk-loading', false);
+						}
+					});
+				}
+				$('.ibox-content').toggleClass('sk-loading', false);
+			});
+
+			$('#Series').trigger('change');
+	<?php } ?>
+
+		$("#EstadoLlamada").on("change", function () {
 			let estado = $(this).val();
 
-			if(estado == "-1") {
+			if (estado == "-1") {
 				console.log("el estado de la llamada cambio a cerrado.");
 
 				$(".cierre-span").css("display", "initial");
 				$(".cierre-input").prop("readonly", false);
 				$(".cierre-input").prop("disabled", false);
 
-				// SMM, 14/10/2022
-				<?php if ($sw_error == 0) { ?>
-						$("#NombreContactoFirma").val($("#CDU_NombreContacto").val());
-						$("#CorreosDestinatarios").html("");
-						$("#TelefonosDestinatarios").html("");
-						AgregarEsto("CorreosDestinatarios", $("#CDU_CorreoContacto").val());
-						AgregarEsto("TelefonosDestinatarios", $("#CDU_TelefonoContacto").val());
-				<?php } ?>
+			// SMM, 14/10/2022
+			<?php if ($sw_error == 0) { ?>
+				$("#NombreContactoFirma").val($("#CDU_NombreContacto").val());
+				$("#CorreosDestinatarios").html("");
+				$("#TelefonosDestinatarios").html("");
+				
+				AgregarEsto("CorreosDestinatarios", $("#CDU_CorreoContacto").val());
+				AgregarEsto("TelefonosDestinatarios", $("#CDU_TelefonoContacto").val());
+			<?php } ?>
 
 				// SMM, 28/06/2023
 				$("#ContactoCierreContainer").removeClass('collapsed');
@@ -1054,80 +1064,80 @@ if (isset($sw_error) && ($sw_error == 1)) {
 				$("#ContactoCierreContainer").addClass('collapsed');
 			}
 		});
-	});
+});
 
-function HabilitarCampos(type=1){
-	if(type==0){//Deshabilitar
-		document.getElementById('DatosCliente').style.display='none';
-		document.getElementById('swTipo').value="1";
-	}else{//Habilitar
-		document.getElementById('DatosCliente').style.display='block';
-		document.getElementById('swTipo').value="0";
+function HabilitarCampos(type = 1) {
+	if (type == 0) {//Deshabilitar
+		document.getElementById('DatosCliente').style.display = 'none';
+		document.getElementById('swTipo').value = "1";
+	} else {//Habilitar
+		document.getElementById('DatosCliente').style.display = 'block';
+		document.getElementById('swTipo').value = "0";
 	}
 }
-function ConsultarDatosCliente(){
-	var Cliente=document.getElementById('ClienteLlamada');
-	if(Cliente.value!=""){
-		self.name='opener';
-	remote=open('socios_negocios.php?id='+Base64.encode(Cliente.value)+'&ext=1&tl=1','remote','location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
-	remote.focus();
-	}
-}
-function ConsultarArticulo(){
-	var Articulo=document.getElementById('IdArticuloLlamada');
-	console.log(Articulo.value);
-	if(Articulo.value!=""){
-		self.name='opener';
-		remote=open('articulos.php?id='+Base64.encode(Articulo.value)+'&ext=1&tl=1','remote','location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
+function ConsultarDatosCliente() {
+	var Cliente = document.getElementById('ClienteLlamada');
+	if (Cliente.value != "") {
+		self.name = 'opener';
+		remote = open('socios_negocios.php?id=' + Base64.encode(Cliente.value) + '&ext=1&tl=1', 'remote', 'location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
 		remote.focus();
 	}
 }
-function ConsultarEquipo(){
-	var numSerie=document.getElementById('NumeroSerie');
+function ConsultarArticulo() {
+	var Articulo = document.getElementById('IdArticuloLlamada');
+	console.log(Articulo.value);
+	if (Articulo.value != "") {
+		self.name = 'opener';
+		remote = open('articulos.php?id=' + Base64.encode(Articulo.value) + '&ext=1&tl=1', 'remote', 'location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
+		remote.focus();
+	}
+}
+function ConsultarEquipo() {
+	var numSerie = document.getElementById('NumeroSerie');
 
-	if(numSerie.value!=""){
-		self.name='opener';
+	if (numSerie.value != "") {
+		self.name = 'opener';
 
 		let parametros = "";
 		let IdTarjetaEquipo = $("#NumeroSerie").find(':selected').data('id');
-		if(((typeof IdTarjetaEquipo) !== 'undefined') && (IdTarjetaEquipo != null && IdTarjetaEquipo != "")) {
+		if (((typeof IdTarjetaEquipo) !== 'undefined') && (IdTarjetaEquipo != null && IdTarjetaEquipo != "")) {
 			parametros = `id='${Base64.encode(IdTarjetaEquipo + "")}'&ext=1&tl=1`;
 		} else {
 			parametros = `id='${Base64.encode(numSerie.value)}'&ext=1&tl=1&te=1`;
 		}
 
-		remote=open('tarjeta_equipo.php?'+parametros,'remote','location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
+		remote = open('tarjeta_equipo.php?' + parametros, 'remote', 'location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
 		remote.focus();
 	}
 }
 
 <?php if ($IncluirCamposAdicionales) { ?>
-		function ConsultarContrato(){
-			var Contrato=document.getElementById('ContratoServicio');
-			if(Contrato.value!=""){
-				self.name='opener';
-				remote=open('contratos.php?id='+btoa(Contrato.value)+'&ext=1&tl=1','remote','location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
+		function ConsultarContrato() {
+			var Contrato = document.getElementById('ContratoServicio');
+			if (Contrato.value != "") {
+				self.name = 'opener';
+				remote = open('contratos.php?id=' + btoa(Contrato.value) + '&ext=1&tl=1', 'remote', 'location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
 				remote.focus();
 			}
 		}
-<?php } ?>
+	<?php } ?>
 
-// Stiven Muñoz Murillo, 30/12/2021
-function ConsultarMateriales(){
-	var Materiales=document.getElementById('CDU_ListaMateriales');
-	if(Materiales.value!=""){
-		self.name='opener';
-		remote=open('lista_materiales.php?id='+Base64.encode(Materiales.value)+'&ext=1&tl=1','remote','location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
-		remote.focus();
-	}
-}
-function CrearLead(){
-	self.name='opener';
-	var altura=720;
-	var anchura=1240;
-	var posicion_y=parseInt((window.screen.height/2)-(altura/2));
-	var posicion_x=parseInt((window.screen.width/2)-(anchura/2));
-	remote=open('popup_crear_lead.php','remote','width='+anchura+',height='+altura+',location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=no,status=yes,left='+posicion_x+',top='+posicion_y);
+		// Stiven Muñoz Murillo, 30/12/2021
+		function ConsultarMateriales() {
+			var Materiales = document.getElementById('CDU_ListaMateriales');
+			if (Materiales.value != "") {
+				self.name = 'opener';
+				remote = open('lista_materiales.php?id=' + Base64.encode(Materiales.value) + '&ext=1&tl=1', 'remote', 'location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
+				remote.focus();
+			}
+		}
+function CrearLead() {
+	self.name = 'opener';
+	var altura = 720;
+	var anchura = 1240;
+	var posicion_y = parseInt((window.screen.height / 2) - (altura / 2));
+	var posicion_x = parseInt((window.screen.width / 2) - (anchura / 2));
+	remote = open('popup_crear_lead.php', 'remote', 'width=' + anchura + ',height=' + altura + ',location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=no,status=yes,left=' + posicion_x + ',top=' + posicion_y);
 	remote.focus();
 }
 
@@ -1138,7 +1148,7 @@ function ValidarCorreo(evento, entrada, contenedorID = "CorreosDestinatarios") {
 		let correo = entrada.value.trim();
 
 		entrada.value = "";
-		if(re.test(correo)) {
+		if (re.test(correo)) {
 			AgregarEsto(contenedorID, correo);
 		} else {
 			alert("El correo no paso la validación.");
@@ -1150,7 +1160,7 @@ function LlenarCorreos() {
 	let badges = document.getElementById("CorreosContactosFirma");
 	badges.value = "";
 
-	$("#CorreosDestinatarios .badge").each(function() {
+	$("#CorreosDestinatarios .badge").each(function () {
 		let badge = $(this).text().trim();
 		console.log(`|${badge}|`);
 
@@ -1164,7 +1174,7 @@ function ValidarTelefono(evento, entrada) {
 		let telefono = entrada.value.trim();
 
 		entrada.value = "";
-		if(re.test(telefono)) {
+		if (re.test(telefono)) {
 			AgregarEsto("TelefonosDestinatarios", telefono);
 		} else {
 			alert("El télefono no paso la validación.");
@@ -1176,7 +1186,7 @@ function LlenarTelefonos() {
 	let badges = document.getElementById("TelefonosContactosFirma");
 	badges.value = "";
 
-	$("#TelefonosDestinatarios .badge").each(function() {
+	$("#TelefonosDestinatarios .badge").each(function () {
 		let badge = $(this).text().trim();
 		console.log(`|${badge}|`);
 
@@ -1229,7 +1239,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 							<a href="#">Gestión de tareas</a>
 						</li>
 						<li>
-							<a href="gestionar_llamadas_servicios.php">Gestionar solicitudes de llamadas de servicios</a>
+							<a href="gestionar_llamadas_servicios.php">Gestionar Solicitudes de Llamadas de servicios</a>
 						</li>
 						<li class="active">
 							<strong><?php echo $Title; ?></strong>
@@ -1254,6 +1264,16 @@ function AgregarEsto(contenedorID, valorElemento) {
 				</div>
 			</div>
 			<!-- Fin, myModal -->
+
+			<div class="modal inmodal fade" id="myModal2" tabindex="-1" role="dialog" aria-hidden="true">
+				<div class="modal-dialog modal-lg" style="width: 70% !important;">
+					<div class="modal-content" id="ContenidoModal2">
+						<!-- Contenido generado por JS -->
+					</div>
+				</div>
+			</div>
+			<!-- /#MyModal2 -->
+
 			<!-- Inicio, modalSN -->
 			<div class="modal inmodal fade" id="modalSN" tabindex="-1" role="dialog" aria-hidden="true">
 				<div class="modal-dialog modal-lg" style="width: 70% !important;">
@@ -1365,96 +1385,104 @@ function AgregarEsto(contenedorID, valorElemento) {
 
 			<!-- Inicio, modalCorreo. SMM, 13/10/2022 -->
 			<?php if (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] == '-1')) { ?>
-					<div class="modal inmodal fade" id="modalCorreo" tabindex="-1" role="dialog" aria-hidden="true">
-						<div class="modal-dialog modal-lg" style="width: 70% !important;">
-							<div class="modal-content">
-								<div class="modal-header">
-									<h4 class="modal-title">Envío de llamada de servicio No.<?php echo $row['DocNum']; ?></h4>
+				<div class="modal inmodal fade" id="modalCorreo" tabindex="-1" role="dialog" aria-hidden="true">
+					<div class="modal-dialog modal-lg" style="width: 70% !important;">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h4 class="modal-title">Envío de llamada de servicio No.<?php echo $row['DocNum']; ?></h4>
+							</div>
+
+							<!-- form id="formCambiarSN" -->
+								<div class="modal-body">
+									<div class="row">
+										<div class="col-lg-1"></div>
+										<div class="col-lg-10">
+											<div class="form-group">
+												<label class="control-label">Para</label>
+												<input placeholder="Ingrese un nuevo correo y utilice la tecla [ESP] para agregar" onKeyUp="ValidarCorreo(event, this, 'CorreosPara')" autocomplete="off" name="EmailPara" type="text" class="form-control" id="EmailPara" maxlength="50" value="">
+												<input type="hidden" id="CorreosContactosFirma" name="CorreosContactosFirma">
+
+												<div id="CorreosPara"></div>
+											</div>
+										</div>
+										<div class="col-lg-1"></div>
+									</div>
+									<div class="row">
+										<div class="col-lg-1"></div>
+										<div class="col-lg-10">
+											<div class="form-group">
+												<label class="control-label">Con copia a</label>
+												<input placeholder="Ingrese un nuevo correo y utilice la tecla [ESP] para agregar" onKeyUp="ValidarCorreo(event, this, 'CorreosCC')" autocomplete="off" name="EmailCC" type="text" class="form-control" id="CorreoContactoFirma" maxlength="50" value="">
+												<input type="hidden" id="CorreosContactosFirma" name="CorreosContactosFirma">
+
+												<div id="CorreosCC"></div>
+											</div>
+										</div>
+										<div class="col-lg-1"></div>
+									</div>
 								</div>
 
-								<!-- form id="formCambiarSN" -->
-									<div class="modal-body">
-										<div class="row">
-											<div class="col-lg-1"></div>
-											<div class="col-lg-10">
-												<div class="form-group">
-													<label class="control-label">Para</label>
-													<input placeholder="Ingrese un nuevo correo y utilice la tecla [ESP] para agregar" onKeyUp="ValidarCorreo(event, this, 'CorreosPara')" autocomplete="off" name="EmailPara" type="text" class="form-control" id="EmailPara" maxlength="50" value="">
-													<input type="hidden" id="CorreosContactosFirma" name="CorreosContactosFirma">
-
-													<div id="CorreosPara"></div>
-												</div>
-											</div>
-											<div class="col-lg-1"></div>
-										</div>
-										<div class="row">
-											<div class="col-lg-1"></div>
-											<div class="col-lg-10">
-												<div class="form-group">
-													<label class="control-label">Con copia a</label>
-													<input placeholder="Ingrese un nuevo correo y utilice la tecla [ESP] para agregar" onKeyUp="ValidarCorreo(event, this, 'CorreosCC')" autocomplete="off" name="EmailCC" type="text" class="form-control" id="CorreoContactoFirma" maxlength="50" value="">
-													<input type="hidden" id="CorreosContactosFirma" name="CorreosContactosFirma">
-
-													<div id="CorreosCC"></div>
-												</div>
-											</div>
-											<div class="col-lg-1"></div>
-										</div>
-									</div>
-
-									<div class="modal-footer">
-										<button type="submit" class="btn btn-success m-t-md"><i class="fa fa-check"></i> Aceptar</button>
-										<button type="button" class="btn btn-secondary m-t-md CancelarSN" data-dismiss="modal"><i class="fa fa-times"></i> Cancelar</button>
-									</div>
-								<!-- /form -->
-							</div>
+								<div class="modal-footer">
+									<button type="submit" class="btn btn-success m-t-md"><i class="fa fa-check"></i> Aceptar</button>
+									<button type="button" class="btn btn-secondary m-t-md CancelarSN" data-dismiss="modal"><i class="fa fa-times"></i> Cancelar</button>
+								</div>
+							<!-- /form -->
 						</div>
 					</div>
+				</div>
 			<?php } ?>
 			<!-- Fin, modalCorreo -->
 
 			<?php if ($edit == 1) { ?>
-					<div class="row">
-						<div class="col-lg-4">
-							<div class="ibox ">
-								<div class="ibox-title">
-									<h5><span class="font-normal">ID Agenda</span></h5>
-								</div>
-								<div class="ibox-content">
-									<h3 class="no-margins"><?php echo $row['ID_SolicitudLlamadaServicio']; ?></h3>
-								</div>
+				<div class="row">
+					<div class="col-lg-4">
+						<div class="ibox ">
+							<div class="ibox-title">
+								<h5><span class="font-normal">ID Agenda</span></h5>
 							</div>
-						</div>
-						<div class="col-lg-4">
-							<div class="ibox ">
-								<div class="ibox-title">
-									<h5>
-										<span class="font-normal">Creada por: <b><?php echo $row['UsuarioCreacion'] ?? "&nbsp;"; ?></b></span>
-									</h5>
-								</div>
-								<div class="ibox-content">
-									<h3 class="no-margins">
-										<?php echo $row['FechaHoraCreacionLLamada']->format("Y-m-d H:i:s") ?? "&nbsp;"; ?>
-									</h3>
-								</div>
-							</div>
-						</div>
-						<div class="col-lg-4">
-							<div class="ibox ">
-								<div class="ibox-title">
-									<h5>
-										<span class="font-normal">Actualizado por: <b><?php echo $row['UsuarioActualizacion'] ?? "&nbsp;"; ?></b></span>
-									</h5>
-								</div>
-								<div class="ibox-content">
-									<h3 class="no-margins">
-										<?php echo (isset($row['FechaActualizacion']) && ($row['FechaActualizacion'] != "")) ? $row['FechaActualizacion']->format("Y-m-d H:i:s") : "&nbsp;"; ?>
-									</h3>
-								</div>
+							<div class="ibox-content">
+								<h3 class="no-margins"><?php echo $row['ID_SolicitudLlamadaServicio']; ?></h3>
 							</div>
 						</div>
 					</div>
+					<!-- col-lg-4 -->
+
+					<div class="col-lg-4">
+						<div class="ibox ">
+							<div class="ibox-title">
+								<h5>
+									<span class="font-normal">Creada por: <b><?php echo $row['UsuarioCreacion'] ?? "&nbsp;"; ?></b></span>
+								</h5>
+							</div>
+							<div class="ibox-content">
+								<h3 class="no-margins">
+									<?php echo $row['FechaHoraCreacionLLamada']->format("Y-m-d H:i:s") ?? "&nbsp;"; ?>
+								</h3>
+							</div>
+						</div>
+					</div>
+					<!-- col-lg-4 -->
+
+					<div class="col-lg-4">
+						<div class="ibox ">
+							<div class="ibox-title">
+								<h5>
+									<span class="font-normal">Actualizado por: <b><?php echo $row['UsuarioActualizacion'] ?? "&nbsp;"; ?></b></span>
+								</h5>
+							</div>
+							<div class="ibox-content">
+								<h3 class="no-margins">
+									<?php echo (isset($row['FechaActualizacion']) && ($row['FechaActualizacion'] != "")) ? $row['FechaActualizacion']->format("Y-m-d H:i:s") : "&nbsp;"; ?>
+								</h3>
+							</div>
+						</div>
+					</div>	
+					<!-- col-lg-4 -->
+
+				</div>
+				<!-- /.row -->
 			<?php } ?>
+
 				<div class="ibox-content">
 				<?php include "includes/spinner.php"; ?>
 					<div class="row">
@@ -1468,7 +1496,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								</div>
 								<div class="ibox-content">
 									<div class="form-group">
-										<div class="col-lg-6">
+									<div class="col-lg-6">
 											<?php if ($edit == 1) { ?>
 						
 												<div class="btn-group">
@@ -1505,9 +1533,11 @@ function AgregarEsto(contenedorID, valorElemento) {
 										</div>
 										<!-- /.col-lg-6 -->
 									</div>
+									<!-- /.form-group -->
 								</div>
+								<!-- /.ibox-content -->
 							</div>
-
+							<!-- /.ibox -->
 						</div>
 					</div>
 				</div>
@@ -1547,14 +1577,17 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<select name="ContactoCliente" class="form-control" id="ContactoCliente" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "disabled='disabled'";
 								} ?>>
-								  <?php if (($edit == 0) || ($sw_error == 1)) { ?><option value="">Seleccione...</option><?php } ?>
-								  <?php if (($edit == 1) || ($sw_error == 1)) {
-									  while ($row_ContactoCliente = sqlsrv_fetch_array($SQL_ContactoCliente)) { ?>
-												  <option value="<?php echo $row_ContactoCliente['CodigoContacto']; ?>" <?php if ((isset($row['IdContactoLLamada'])) && (strcmp($row_ContactoCliente['CodigoContacto'], $row['IdContactoLLamada']) == 0)) {
-														 echo "selected=\"selected\"";
-													 } ?>><?php echo $row_ContactoCliente['ID_Contacto']; ?></option>
-								  	<?php }
-								  } ?>
+								  	<?php if (($edit == 0) || ($sw_error == 1)) { ?>
+										<option value="">Seleccione...</option>
+									<?php } ?>
+								  	
+									<?php if (($edit == 1) || ($sw_error == 1)) { ?>
+									  	<?php while ($row_ContactoCliente = sqlsrv_fetch_array($SQL_ContactoCliente)) { ?>
+											<option value="<?php echo $row_ContactoCliente['CodigoContacto']; ?>" <?php if ((isset($row['IdContactoLLamada'])) && (strcmp($row_ContactoCliente['CodigoContacto'], $row['IdContactoLLamada']) == 0)) {
+													echo "selected";
+												} ?>><?php echo $row_ContactoCliente['ID_Contacto']; ?></option>
+										<?php } ?>
+								  	<?php } ?>
 								</select>
 							</div>
 							<div class="col-lg-4">
@@ -1562,17 +1595,18 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<select name="SucursalCliente" class="form-control select2" id="SucursalCliente" required="required" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "disabled='disabled'";
 								} ?>>
-								  <?php if (($edit == 0) || ($sw_error == 1)) { ?><option value="">Seleccione...</option><?php } ?>
-								  <?php if (($edit == 1) || ($sw_error == 1)) {
-									  while ($row_SucursalCliente = sqlsrv_fetch_array($SQL_SucursalCliente)) { ?>
-												  <option value="<?php echo $row_SucursalCliente['NombreSucursal']; ?>" <?php if (isset($row['NombreSucursal']) && (strcmp($row_SucursalCliente['NombreSucursal'], $row['NombreSucursal']) == 0)) {
-														 echo "selected=\"selected\"";
-													 } elseif (isset($row['NombreSucursal']) && (strcmp($row_SucursalCliente['NumeroLinea'], $row['IdNombreSucursal']) == 0)) {
-														 echo "selected=\"selected\"";
-														 $sw_valDir = 1;
-													 } ?>><?php echo $row_SucursalCliente['NombreSucursal']; ?></option>
-								  	<?php }
-								  } ?>
+								  	<?php if (($edit == 0) || ($sw_error == 1)) { ?><option value="">Seleccione...</option><?php } ?>
+								  	
+									<?php if (($edit == 1) || ($sw_error == 1)) { ?>
+									 	<?php while ($row_SucursalCliente = sqlsrv_fetch_array($SQL_SucursalCliente)) { ?>
+											<option value="<?php echo $row_SucursalCliente['NombreSucursal']; ?>" <?php if (isset($row['NombreSucursal']) && (strcmp($row_SucursalCliente['NombreSucursal'], $row['NombreSucursal']) == 0)) {
+													echo "selected";
+												} elseif (isset($row['NombreSucursal']) && (strcmp($row_SucursalCliente['NumeroLinea'], $row['IdNombreSucursal']) == 0)) {
+													echo "selected";
+													$sw_valDir = 1;
+												} ?>><?php echo $row_SucursalCliente['NombreSucursal']; ?></option>
+										<?php } ?>
+								  	<?php } ?>
 								</select>
 							</div>
 						</div>
@@ -1620,11 +1654,13 @@ function AgregarEsto(contenedorID, valorElemento) {
 								  } ?>">
 							</div>
 						</div>
+						
 						<div class="form-group">
 							<div class="col-lg-8 border-bottom">
 								<label class="control-label text-danger">Información del servicio</label>
 							</div>
 						</div>
+
 						<div class="form-group">
 							<div class="col-lg-8">
 								<label class="control-label"><i onClick="ConsultarArticulo();" title="Consultar ID Servicio" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> ID servicio <span class="text-danger">*</span></label>
@@ -1637,30 +1673,59 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<!-- Descripción del Item -->
 								<input name="DeArticuloLlamada" type="text" required="required" class="form-control" id="DeArticuloLlamada" placeholder="Digite para buscar..."
 								<?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
-									echo "disabled='disabled'";
+									echo "disabled";
 								} ?>
-								value="<?php if (($edit == 1 || $sw_error == 1 || $dt_LS == 1) && isset($row_Articulo['ItemCode'])) {
+								value="<?php if (($edit == 1 || $sw_error == 1 || $dt_LS == 1 || $dt_SLS) && isset($row_Articulo['ItemCode'])) {
 									echo $row_Articulo['ItemCode'] . " - " . $row_Articulo['ItemName'];
 								} ?>">
 							</div>
-							<div class="col-lg-4">
-								<label class="control-label"><i onClick="ConsultarEquipo();" title="Consultar tarjeta de equipo" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Tarjeta de equipo</label>
+							
+							<div class="col-lg-3">
+								<label class="control-label">
+									<i onclick="ConsultarEquipo();" title="Consultar tarjeta de equipo" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Tarjeta de equipo
+								</label>
+								
 								<select name="NumeroSerie" class="form-control select2" id="NumeroSerie" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
-									echo "disabled='disabled'";
+									echo "disabled";
 								} ?>>
-										<option value="">Seleccione...</option>
-									<?php if (($edit == 1) || ($sw_error == 1)) {
-										while ($row_NumeroSerie = sqlsrv_fetch_array($SQL_NumeroSerie)) { ?>
-													<option value="<?php echo $row_NumeroSerie['SerialInterno']; ?>" data-id="<?php echo $row_NumeroSerie['IdTarjetaEquipo'] ?? ""; ?>" <?php if ((isset($row_NumeroSerie['SerialInterno'])) && (strcmp($row_NumeroSerie['SerialInterno'], $row['IdNumeroSerie']) == 0)) {
-																echo "selected=\"selected\"";
-															} elseif ((isset($_GET['Serial'])) && (strcmp(base64_decode($_GET['Serial']), $row_NumeroSerie['SerialInterno']) == 0)) {
-																echo "selected=\"selected\"";
-															} ?>><?php echo "SN Fabricante: " . $row_NumeroSerie['SerialFabricante'] . " - Núm. Serie: " . $row_NumeroSerie['SerialInterno']; ?></option>
-										<?php }
-									} ?>
+									<option value="">Seleccione...</option>
+									
+									<?php if (($edit == 1) || ($sw_error == 1)) { ?>
+										<?php while ($row_NumeroSerie = sqlsrv_fetch_array($SQL_NumeroSerie)) { ?>
+											<option value="<?php echo $row_NumeroSerie['SerialInterno']; ?>" data-id="<?php echo $row_NumeroSerie['IdTarjetaEquipo'] ?? ""; ?>" 
+												<?php if ((isset($row_NumeroSerie['SerialInterno'])) && (strcmp($row_NumeroSerie['SerialInterno'], $row['IdNumeroSerie']) == 0)) {
+													echo "selected";
+												} elseif ((isset($_GET['Serial'])) && (strcmp(base64_decode($_GET['Serial']), $row_NumeroSerie['SerialInterno']) == 0)) {
+													echo "selected";
+												} ?>>
+										
+												<?php echo "SN Fabricante: " . $row_NumeroSerie['SerialFabricante'] . " - Núm. Serie: " . $row_NumeroSerie['SerialInterno']; ?>
+											</option>
+										<?php } ?>
+									<?php } ?>
+								</select>
+							</div>
+							<!-- /#NumeroSerie -->
+
+							<br>
+							<button type="button" id="AddCampana" class="btn btn-sm btn-info btn-circle" title="Adicionar Campaña" disabled <?php if ($edit == 1) {
+								echo "style='display: none;'";
+							} ?>><i class="fa fa-bell"></i></button>
+						</div>
+
+						<div class="form-group" <?php if ($edit == 1) {
+							echo "style='display: none;'";
+						} ?>>
+							<div class="col-lg-8">
+								<label class="control-label">Campañas Asociadas</label>
+
+								<select name="Campanas[]" id="Campanas" class="form-control select2" data-placeholder="Debe seleccionar las campañas que desea asociar con la Llamada de servicio." multiple>
+									<!-- Generadas por JS -->
 								</select>
 							</div>
 						</div>
+						<!-- /#CampanasAsociadas -->
+
 						<div class="form-group">
 							<div class="col-lg-4" <?php if (!$IncluirCamposAdicionales) { ?> style="display: none;" <?php } ?>>
 								<label class="control-label">Cantidad artículo</label>
@@ -1691,16 +1756,18 @@ function AgregarEsto(contenedorID, valorElemento) {
 									echo "disabled='disabled'";
 								} ?>>
 										<option value="">Seleccione...</option>
-									<?php if (($edit == 1) || ($sw_error == 1)) {
-										while ($row_ListaMateriales = sqlsrv_fetch_array($SQL_ListaMateriales)) { ?>
-													<option value="<?php echo $row_ListaMateriales['ItemCode']; ?>" <?php if ((isset($row['CDU_ListaMateriales'])) && (strcmp($row_ListaMateriales['ItemCode'], $row['CDU_ListaMateriales']) == 0)) {
-														   echo "selected=\"selected\"";
-													   } ?>><?php echo $row_ListaMateriales['ItemName']; ?></option>
-										<?php }
-									} ?>
+										
+										<?php if (($edit == 1) || ($sw_error == 1)) { ?>
+											<?php while ($row_ListaMateriales = sqlsrv_fetch_array($SQL_ListaMateriales)) { ?>
+												<option value="<?php echo $row_ListaMateriales['ItemCode']; ?>" <?php if ((isset($row['CDU_ListaMateriales'])) && (strcmp($row_ListaMateriales['ItemCode'], $row['CDU_ListaMateriales']) == 0)) {
+													echo "selected";
+												} ?>><?php echo $row_ListaMateriales['ItemName']; ?></option>
+											<?php } ?>
+										<?php } ?>
 								</select>
 							</div>
-							<div class="col-lg-4">
+
+							<div class="col-lg-3">
 								<label class="control-label">Tiempo tarea (Minutos) <span class="text-danger">*</span></label>
 								<input name="CDU_TiempoTarea" type="number" class="form-control" id="CDU_TiempoTarea" required="required" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "readonly='readonly'";
@@ -1734,17 +1801,18 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<select name="Series" class="form-control" required="required" id="Series" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "disabled";
 								} ?>>
-										<option value="">Seleccione...</option>
+									<option value="">Seleccione...</option>
+									
 									<?php while ($row_Series = sqlsrv_fetch_array($SQL_Series)) { ?>
-											<option value="<?php echo $row_Series['IdSeries']; ?>"
-											<?php if ((isset($row['Series'])) && (strcmp($row_Series['IdSeries'], $row['Series']) == 0)) {
-												echo "selected";
-											} elseif ((isset($row['IdSeries'])) && (strcmp($row_Series['IdSeries'], $row['IdSeries']) == 0)) {
-												echo "selected";
-											} ?>>
-												<?php echo $row_Series['DeSeries']; ?>
-											</option>
-									  <?php } ?>
+										<option value="<?php echo $row_Series['IdSeries']; ?>"
+										<?php if ((isset($row['Series'])) && (strcmp($row_Series['IdSeries'], $row['Series']) == 0)) {
+											echo "selected";
+										} elseif ((isset($row['IdSeries'])) && (strcmp($row_Series['IdSeries'], $row['IdSeries']) == 0)) {
+											echo "selected";
+										} ?>>
+											<?php echo $row_Series['DeSeries']; ?>
+										</option>
+									<?php } ?>
 								</select>
 							</div>
 							<div class="col-lg-2">
@@ -1798,39 +1866,41 @@ function AgregarEsto(contenedorID, valorElemento) {
 						<div class="form-group">
 							<div class="col-lg-4">
 								<label class="control-label">Origen <span class="text-danger">*</span></label>
+								
 								<select name="OrigenLlamada" class="form-control" required="required" id="OrigenLlamada" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "disabled";
 								} ?>>
 									<option value="">Seleccione...</option>
 									
 									<?php while ($row_OrigenLlamada = sqlsrv_fetch_array($SQL_OrigenLlamada)) { ?>
-											<option value="<?php echo $row_OrigenLlamada['IdOrigenLlamada']; ?>" <?php if ((isset($row['IdOrigenLlamada'])) && (strcmp($row_OrigenLlamada['IdOrigenLlamada'], $row['IdOrigenLlamada']) == 0)) {
-												   echo "selected";
-											   } elseif ($OrigenLlamada == $row_OrigenLlamada['IdOrigenLlamada']) {
-												   echo "selected";
-											   } ?>>
-												<?php echo $row_OrigenLlamada['DeOrigenLlamada']; ?>
-											</option>
-									  <?php } ?>
+										<option value="<?php echo $row_OrigenLlamada['IdOrigenLlamada']; ?>" <?php if ((isset($row['IdOrigenLlamada'])) && (strcmp($row_OrigenLlamada['IdOrigenLlamada'], $row['IdOrigenLlamada']) == 0)) {
+												echo "selected";
+											} elseif ($OrigenLlamada == $row_OrigenLlamada['IdOrigenLlamada']) {
+												echo "selected";
+											} ?>>
+											<?php echo $row_OrigenLlamada['DeOrigenLlamada']; ?>
+										</option>
+									<?php } ?>
 								</select>
 							</div>
 
 							<div class="col-lg-4">
 								<label class="control-label">Tipo llamada (Tipo Cliente) <span class="text-danger">*</span></label>
+								
 								<select name="TipoLlamada" class="form-control" required="required" id="TipoLlamada" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "disabled";
 								} ?>>
 									<option value="">Seleccione...</option>
 										  
 									<?php while ($row_TipoLlamadas = sqlsrv_fetch_array($SQL_TipoLlamadas)) { ?>
-											<option value="<?php echo $row_TipoLlamadas['IdTipoLlamada']; ?>" <?php if ((isset($row['IdTipoLlamada'])) && (strcmp($row_TipoLlamadas['IdTipoLlamada'], $row['IdTipoLlamada']) == 0)) {
-												   echo "selected";
-											   } elseif ($TipoLlamada == $row_TipoLlamadas['IdTipoLlamada']) {
-												   echo "selected";
-											   } ?>>
-												<?php echo $row_TipoLlamadas['DeTipoLlamada']; ?>
-											</option>
-									  <?php } ?>
+										<option value="<?php echo $row_TipoLlamadas['IdTipoLlamada']; ?>" <?php if ((isset($row['IdTipoLlamada'])) && (strcmp($row_TipoLlamadas['IdTipoLlamada'], $row['IdTipoLlamada']) == 0)) {
+												echo "selected";
+											} elseif ($TipoLlamada == $row_TipoLlamadas['IdTipoLlamada']) {
+												echo "selected";
+											} ?>>
+											<?php echo $row_TipoLlamadas['DeTipoLlamada']; ?>
+										</option>
+									<?php } ?>
 								</select>
 							</div>
 							<!-- SMM -->
@@ -1838,10 +1908,10 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<label class="control-label">Fecha Agenda <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?><span class="text-danger">*</span><?php } ?></label>
 								<div class="input-group date">
 									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input <?php if ($edit != 0) { ?> readonly <?php } ?> <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?> required <?php } ?> name="FechaAgenda" type="text" class="form-control" id="FechaAgenda" value="<?php if (($edit == 1) && ($row['FechaAgenda'] != "")) {
-														   echo is_string($row['FechaAgenda']) ? date("Y-m-d", strtotime($row['FechaAgenda'])) : $row['FechaAgenda']->format("Y-m-d");
-													   } else {
-														   echo date('Y-m-d');
-													   } ?>">
+											echo is_string($row['FechaAgenda']) ? date("Y-m-d", strtotime($row['FechaAgenda'])) : $row['FechaAgenda']->format("Y-m-d");
+										} else {
+											echo date('Y-m-d');
+										} ?>">
 								</div>
 							</div>
 							<!-- 01/06/2022 -->
@@ -1855,13 +1925,13 @@ function AgregarEsto(contenedorID, valorElemento) {
 									<option value="">Seleccione...</option>
 									  
 									<?php while ($row_TipoProblema = sqlsrv_fetch_array($SQL_TipoProblema)) { ?>
-											<option value="<?php echo $row_TipoProblema['IdTipoProblemaLlamada']; ?>" <?php if ((isset($row['IdTipoProblemaLlamada'])) && (strcmp($row_TipoProblema['IdTipoProblemaLlamada'], $row['IdTipoProblemaLlamada']) == 0)) {
-												   echo "selected";
-											   } elseif ($TipoProblema == $row_TipoProblema['IdTipoProblemaLlamada']) {
-												   echo "selected";
-											   } ?>>
-												<?php echo $row_TipoProblema['DeTipoProblemaLlamada']; ?>
-											</option>
+										<option value="<?php echo $row_TipoProblema['IdTipoProblemaLlamada']; ?>" <?php if ((isset($row['IdTipoProblemaLlamada'])) && (strcmp($row_TipoProblema['IdTipoProblemaLlamada'], $row['IdTipoProblemaLlamada']) == 0)) {
+												echo "selected";
+											} elseif ($TipoProblema == $row_TipoProblema['IdTipoProblemaLlamada']) {
+												echo "selected";
+											} ?>>
+											<?php echo $row_TipoProblema['DeTipoProblemaLlamada']; ?>
+										</option>
 									  <?php } ?>
 								</select>
 							</div>
@@ -1874,14 +1944,14 @@ function AgregarEsto(contenedorID, valorElemento) {
 									<option value="">Seleccione...</option>
 									  
 									<?php while ($row_SubTipoProblema = sqlsrv_fetch_array($SQL_SubTipoProblema)) { ?>
-											<option value="<?php echo $row_SubTipoProblema['IdSubTipoProblemaLlamada']; ?>" <?php if ((isset($row['IdSubTipoProblemaLlamada'])) && (strcmp($row_SubTipoProblema['IdSubTipoProblemaLlamada'], $row['IdSubTipoProblemaLlamada']) == 0)) {
-												   echo "selected";
-											   } elseif ($SubtipoProblema == $row_SubTipoProblema['IdSubTipoProblemaLlamada']) {
-												   echo "selected";
-											   } ?>>
-												<?php echo $row_SubTipoProblema['DeSubTipoProblemaLlamada']; ?>
-											</option>
-									  <?php } ?>
+										<option value="<?php echo $row_SubTipoProblema['IdSubTipoProblemaLlamada']; ?>" <?php if ((isset($row['IdSubTipoProblemaLlamada'])) && (strcmp($row_SubTipoProblema['IdSubTipoProblemaLlamada'], $row['IdSubTipoProblemaLlamada']) == 0)) {
+												echo "selected";
+											} elseif ($SubtipoProblema == $row_SubTipoProblema['IdSubTipoProblemaLlamada']) {
+												echo "selected";
+											} ?>>
+											<?php echo $row_SubTipoProblema['DeSubTipoProblemaLlamada']; ?>
+										</option>
+									<?php } ?>
 								</select>
 							</div>
 
@@ -1892,11 +1962,12 @@ function AgregarEsto(contenedorID, valorElemento) {
 									<span class="input-group-addon">
 										<span class="fa fa-clock-o"></span>
 									</span>
+									
 									<input <?php if ($edit != 0) { ?> readonly <?php } ?> <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?> required <?php } ?> name="HoraAgenda" id="HoraAgenda" type="text" class="form-control" value="<?php if (($edit == 1) && ($row['HoraAgenda'] != "")) {
-														  echo is_string($row['FechaAgenda']) ? date("H:i", strtotime($row['HoraAgenda'])) : $row['HoraAgenda']->format("H:i");
-													  } else {
-														  echo date('H:i');
-													  } ?>" required="required">
+											echo is_string($row['FechaAgenda']) ? date("H:i", strtotime($row['HoraAgenda'])) : $row['HoraAgenda']->format("H:i");
+										} else {
+											echo date('H:i');
+										} ?>" required="required">
 								</div>
 							</div>
 							<!-- 01/06/2022 -->
@@ -1908,14 +1979,15 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<select name="ContratoServicio" class="form-control" id="ContratoServicio" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "disabled";
 								} ?>>
-										<option value="">Seleccione...</option>
-									<?php if (($edit == 1) || ($sw_error == 1)) {
-										while ($row_Contrato = sqlsrv_fetch_array($SQL_Contrato)) { ?>
-													<option value="<?php echo $row_Contrato['ID_Contrato']; ?>" <?php if ((isset($row_Contrato['ID_Contrato'])) && (strcmp($row_Contrato['ID_Contrato'], $row['IdContratoServicio']) == 0)) {
-														   echo "selected";
-													   } ?>><?php echo $row_Contrato['ID_Contrato'] . " - " . $row_Contrato['DE_Contrato']; ?></option>
-										<?php }
-									} ?>
+									<option value="">Seleccione...</option>
+										
+									<?php if (($edit == 1) || ($sw_error == 1)) { ?>
+										<?php while ($row_Contrato = sqlsrv_fetch_array($SQL_Contrato)) { ?>
+											<option value="<?php echo $row_Contrato['ID_Contrato']; ?>" <?php if ((isset($row_Contrato['ID_Contrato'])) && (strcmp($row_Contrato['ID_Contrato'], $row['IdContratoServicio']) == 0)) {
+													echo "selected";
+												} ?>><?php echo $row_Contrato['ID_Contrato'] . " - " . $row_Contrato['DE_Contrato']; ?></option>
+										<?php } ?>
+									<?php } ?>
 								</select>
 							</div>
 
@@ -1932,37 +2004,41 @@ function AgregarEsto(contenedorID, valorElemento) {
 						<div class="form-group">
 							<div class="col-lg-4" <?php if (!$IncluirCamposAdicionales) { ?> style="display: none;" <?php } ?>>
 								<label class="control-label">Aseguradora</label>
+								
 								<select name="CDU_Aseguradora" class="form-control select2"id="CDU_Aseguradora"
 								<?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "disabled";
 								} ?>>
-										<option value="" disabled selected>Seleccione...</option>
-								  <?php while ($row_Aseguradora = sqlsrv_fetch_array($SQL_Aseguradora)) { ?>
-											<option value="<?php echo $row_Aseguradora['NombreAseguradora']; ?>"
-											<?php if ((isset($row['CDU_Aseguradora'])) && (strcmp($row_Aseguradora['NombreAseguradora'], $row['CDU_Aseguradora']) == 0)) {
-												echo "selected";
-											} ?>>
-												<?php echo $row_Aseguradora['NombreAseguradora']; ?>
-											</option>
-								  <?php } ?>
+									<option value="" disabled selected>Seleccione...</option>
+								  	
+									<?php while ($row_Aseguradora = sqlsrv_fetch_array($SQL_Aseguradora)) { ?>
+										<option value="<?php echo $row_Aseguradora['NombreAseguradora']; ?>"
+										<?php if ((isset($row['CDU_Aseguradora'])) && (strcmp($row_Aseguradora['NombreAseguradora'], $row['CDU_Aseguradora']) == 0)) {
+											echo "selected";
+										} ?>>
+											<?php echo $row_Aseguradora['NombreAseguradora']; ?>
+										</option>
+								  	<?php } ?>
 								</select>
 							</div>
 
 							<div class="col-lg-4" <?php if (!$IncluirCamposAdicionales) { ?> style="display: none;" <?php } ?>>
 								<label class="control-label">Contrato/Campaña</label>
+								
 								<select name="CDU_Contrato" class="form-control select2" id="CDU_Contrato"
 								<?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "disabled";
 								} ?>>
-										<option value="" disabled selected>Seleccione...</option>
-								  <?php while ($row_Contrato = sqlsrv_fetch_array($SQL_ContratosLlamada)) { ?>
-											<option value="<?php echo $row_Contrato['NombreContrato']; ?>"
-											<?php if ((isset($row['CDU_Contrato'])) && (strcmp($row_Contrato['NombreContrato'], $row['CDU_Contrato']) == 0)) {
-												echo "selected";
-											} ?>>
-												<?php echo $row_Contrato['NombreContrato']; ?>
-											</option>
-								  <?php } ?>
+									<option value="" disabled selected>Seleccione...</option>
+								  	
+									<?php while ($row_Contrato = sqlsrv_fetch_array($SQL_ContratosLlamada)) { ?>
+										<option value="<?php echo $row_Contrato['NombreContrato']; ?>"
+										<?php if ((isset($row['CDU_Contrato'])) && (strcmp($row_Contrato['NombreContrato'], $row['CDU_Contrato']) == 0)) {
+											echo "selected";
+										} ?>>
+											<?php echo $row_Contrato['NombreContrato']; ?>
+										</option>
+								  	<?php } ?>
 								</select>
 							</div>
 						</div>
@@ -1986,15 +2062,16 @@ function AgregarEsto(contenedorID, valorElemento) {
 									<option value="">Seleccione...</option>
 									  
 									<?php while ($row_Tecnicos = sqlsrv_fetch_array($SQL_Tecnicos)) { ?>
-											<?php if (in_array($row_Tecnicos['IdCargo'], $ids_grupos) || ($MostrarTodosRecursos || (count($ids_grupos) == 0))) { ?>
-													<option value="<?php echo $row_Tecnicos['ID_Empleado']; ?>" <?php if ((isset($row['IdTecnico'])) && (strcmp($row_Tecnicos['ID_Empleado'], $row['IdTecnico']) == 0)) {
-														   echo "selected";
-													   } ?> 		<?php if ((count($ids_grupos) > 0) && (!in_array($row_Tecnicos['IdCargo'], $ids_grupos))) {
-																	 echo "disabled";
-																 } ?>>
-													<?php echo $row_Tecnicos['NombreEmpleado'] . " (" . $row_Tecnicos['NombreCentroCosto2'] . " - " . $row_Tecnicos['DeCargo'] . ")"; ?>
-													</option>
-											<?php } ?>
+										<?php if (in_array($row_Tecnicos['IdCargo'], $ids_grupos) || ($MostrarTodosRecursos || (count($ids_grupos) == 0))) { ?>
+											<option value="<?php echo $row_Tecnicos['ID_Empleado']; ?>" <?php if ((isset($row['IdTecnico'])) && (strcmp($row_Tecnicos['ID_Empleado'], $row['IdTecnico']) == 0)) {
+												echo "selected";
+											} ?> 
+											<?php if ((count($ids_grupos) > 0) && (!in_array($row_Tecnicos['IdCargo'], $ids_grupos))) {
+												echo "disabled";
+											} ?>>
+												<?php echo $row_Tecnicos['NombreEmpleado'] . " (" . $row_Tecnicos['NombreCentroCosto2'] . " - " . $row_Tecnicos['DeCargo'] . ")"; ?>
+											</option>
+										<?php } ?>
 									  <?php } ?>
 								</select>
 							</div>
@@ -2008,16 +2085,17 @@ function AgregarEsto(contenedorID, valorElemento) {
 									<option value="">Seleccione...</option>
 								  
 									<?php while ($row_Tecnicos = sqlsrv_fetch_array($SQL_TecnicosAdicionales)) { ?>
-											<?php if (in_array($row_Tecnicos['IdCargo'], $ids_grupos) || ($MostrarTodosRecursos || (count($ids_grupos) == 0))) { ?>
-													<option value="<?php echo $row_Tecnicos['ID_Empleado']; ?>" <?php if ((isset($row['CDU_IdTecnicoAdicional'])) && (strcmp($row_Tecnicos['ID_Empleado'], $row['CDU_IdTecnicoAdicional']) == 0)) {
-														   echo "selected";
-													   } ?> 		<?php if ((count($ids_grupos) > 0) && (!in_array($row_Tecnicos['IdCargo'], $ids_grupos))) {
-																	 echo "disabled";
-																 } ?>>
-													<?php echo $row_Tecnicos['NombreEmpleado'] . " (" . $row_Tecnicos['NombreCentroCosto2'] . " - " . $row_Tecnicos['DeCargo'] . ")"; ?>
-													</option>
-											<?php } ?>
-									  <?php } ?>
+										<?php if (in_array($row_Tecnicos['IdCargo'], $ids_grupos) || ($MostrarTodosRecursos || (count($ids_grupos) == 0))) { ?>
+											<option value="<?php echo $row_Tecnicos['ID_Empleado']; ?>" <?php if ((isset($row['CDU_IdTecnicoAdicional'])) && (strcmp($row_Tecnicos['ID_Empleado'], $row['CDU_IdTecnicoAdicional']) == 0)) {
+													echo "selected";
+												} ?>	
+												<?php if ((count($ids_grupos) > 0) && (!in_array($row_Tecnicos['IdCargo'], $ids_grupos))) {
+													echo "disabled";
+												} ?>>
+												<?php echo $row_Tecnicos['NombreEmpleado'] . " (" . $row_Tecnicos['NombreCentroCosto2'] . " - " . $row_Tecnicos['DeCargo'] . ")"; ?>
+											</option>
+										<?php } ?>
+									<?php } ?>
 								</select>
 							</div>
 							
@@ -2027,9 +2105,9 @@ function AgregarEsto(contenedorID, valorElemento) {
 									echo "disabled";
 								} ?>>
 								  <?php while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) { ?>
-											<option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['IdEstadoLlamada'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['IdEstadoLlamada']) == 0)) {
-												   echo "selected";
-											   } ?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option>
+									<option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['IdEstadoLlamada'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['IdEstadoLlamada']) == 0)) {
+											echo "selected";
+										} ?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option>
 								  <?php } ?>
 								</select>
 							</div>
@@ -2044,15 +2122,15 @@ function AgregarEsto(contenedorID, valorElemento) {
 									<option value="">(Sin asignar)</option>
 									  
 									<?php if ($IncluirCamposAdicionales) { ?>
-											<?php while ($row_EmpleadoLlamada = sqlsrv_fetch_array($SQL_EmpleadoLlamada)) { ?>
-													<option value="<?php echo $row_EmpleadoLlamada['ID_Empleado']; ?>" <?php if ((isset($row['IdAsignadoA'])) && (strcmp($row_EmpleadoLlamada['ID_Empleado'], $row['IdAsignadoA']) == 0)) {
-														   echo "selected";
-													   } elseif (($edit == 0) && (isset($_SESSION['CodigoSAP'])) && (strcmp($row_EmpleadoLlamada['ID_Empleado'], $_SESSION['CodigoSAP']) == 0)) {
-														   echo "selected";
-													   } ?>>
-														<?php echo $row_EmpleadoLlamada['NombreEmpleado']; ?>
-													</option>
-										  	<?php } ?>
+										<?php while ($row_EmpleadoLlamada = sqlsrv_fetch_array($SQL_EmpleadoLlamada)) { ?>
+											<option value="<?php echo $row_EmpleadoLlamada['ID_Empleado']; ?>" <?php if ((isset($row['IdAsignadoA'])) && (strcmp($row_EmpleadoLlamada['ID_Empleado'], $row['IdAsignadoA']) == 0)) {
+													echo "selected";
+												} elseif (($edit == 0) && (isset($_SESSION['CodigoSAP'])) && (strcmp($row_EmpleadoLlamada['ID_Empleado'], $_SESSION['CodigoSAP']) == 0)) {
+													echo "selected";
+												} ?>>
+												<?php echo $row_EmpleadoLlamada['NombreEmpleado']; ?>
+											</option>
+										<?php } ?>
 									<?php } ?>
 								</select>
 							</div>
@@ -2066,14 +2144,14 @@ function AgregarEsto(contenedorID, valorElemento) {
 									<option value="">Seleccione...</option>
 
 									<?php if ($IncluirCamposAdicionales) { ?>
-											<?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) { ?>
-													<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if ((isset($row['IdProyecto'])) && (strcmp($row_Proyecto['IdProyecto'], $row['IdProyecto']) == 0)) {
-														   echo "selected";
-													   } ?>>
-														<?php echo $row_Proyecto['DeProyecto']; ?>
-													</option>
-										  	<?php } ?>
-									  <?php } ?>
+										<?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) { ?>
+											<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if ((isset($row['IdProyecto'])) && (strcmp($row_Proyecto['IdProyecto'], $row['IdProyecto']) == 0)) {
+													echo "selected";
+												} ?>>
+												<?php echo $row_Proyecto['DeProyecto']; ?>
+											</option>
+										<?php } ?>
+									<?php } ?>
 								</select>
 							</div>
 
@@ -2101,13 +2179,14 @@ function AgregarEsto(contenedorID, valorElemento) {
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">Cancelado por <span class="text-danger">*</span></label>
+
 								<select name="CDU_CanceladoPor" class="form-control" id="CDU_CanceladoPor" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "disabled='disabled'";
 								} ?> required>
 								  <?php while ($row_CanceladoPorLlamada = sqlsrv_fetch_array($SQL_CanceladoPorLlamada)) { ?>
-											<option value="<?php echo $row_CanceladoPorLlamada['IdCanceladoPor']; ?>" <?php if ((isset($row['CDU_CanceladoPor'])) && (strcmp($row_CanceladoPorLlamada['IdCanceladoPor'], $row['CDU_CanceladoPor']) == 0)) {
-												   echo "selected=\"selected\"";
-											   } ?>><?php echo $row_CanceladoPorLlamada['DeCanceladoPor']; ?></option>
+										<option value="<?php echo $row_CanceladoPorLlamada['IdCanceladoPor']; ?>" <?php if ((isset($row['CDU_CanceladoPor'])) && (strcmp($row_CanceladoPorLlamada['IdCanceladoPor'], $row['CDU_CanceladoPor']) == 0)) {
+												echo "selected";
+											} ?>><?php echo $row_CanceladoPorLlamada['DeCanceladoPor']; ?></option>
 								  <?php } ?>
 								</select>
 							</div>
@@ -2143,17 +2222,18 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<label class="control-label">Tipo preventivo <span class="text-danger">*</span></label>
 								<select name="CDU_TipoPreventivo" class="form-control select2" required="required" id="CDU_TipoPreventivo"
 								<?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
-									echo "disabled='disabled'";
+									echo "disabled";
 								} ?>>
-										<option value="" disabled selected>Seleccione...</option>
-								  <?php while ($row_TipoPreventivo = sqlsrv_fetch_array($SQL_TipoPreventivo)) { ?>
-											<option value="<?php echo $row_TipoPreventivo['CodigoTipoPreventivo']; ?>"
-											<?php if ((isset($row['CDU_TipoPreventivo'])) && (strcmp($row_TipoPreventivo['CodigoTipoPreventivo'], $row['CDU_TipoPreventivo']) == 0)) {
-												echo "selected=\"selected\"";
-											} ?>>
-												<?php echo $row_TipoPreventivo['TipoPreventivo']; ?>
-											</option>
-								  <?php } ?>
+									<option value="" disabled selected>Seleccione...</option>
+									
+									<?php while ($row_TipoPreventivo = sqlsrv_fetch_array($SQL_TipoPreventivo)) { ?>
+										<option value="<?php echo $row_TipoPreventivo['CodigoTipoPreventivo']; ?>"
+										<?php if ((isset($row['CDU_TipoPreventivo'])) && (strcmp($row_TipoPreventivo['CodigoTipoPreventivo'], $row['CDU_TipoPreventivo']) == 0)) {
+											echo "selected";
+										} ?>>
+											<?php echo $row_TipoPreventivo['TipoPreventivo']; ?>
+										</option>
+									<?php } ?>
 								</select>
 							</div>
 							<!-- Hasta aquí, 14/09/2022 -->
@@ -2163,91 +2243,100 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<label class="control-label">Marca del vehículo <span class="text-danger">*</span></label>
 								<select name="CDU_Marca" class="form-control select2" required="required" id="CDU_Marca"
 								<?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
-									echo "disabled='disabled'";
+									echo "disabled";
 								} ?>>
 									<option value="" disabled selected>Seleccione...</option>
-								  <?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) { ?>
-										  <option value="<?php echo $row_MarcaVehiculo['IdMarcaVehiculo']; ?>"
-									  	<?php if ((isset($row['CDU_IdMarca'])) && (strcmp($row_MarcaVehiculo['IdMarcaVehiculo'], $row['CDU_IdMarca']) == 0)) {
-											  echo "selected=\"selected\"";
-										  } elseif ((isset($row['CDU_Marca'])) && (strcmp($row_MarcaVehiculo['IdMarcaVehiculo'], $row['CDU_Marca']) == 0)) {
-											  echo "selected=\"selected\"";
-										  } ?>>
-										  	<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
-										  </option>
-								  <?php } ?>
+								  
+									<?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) { ?>
+										<option value="<?php echo $row_MarcaVehiculo['IdMarcaVehiculo']; ?>"
+											<?php if ((isset($row['CDU_IdMarca'])) && (strcmp($row_MarcaVehiculo['IdMarcaVehiculo'], $row['CDU_IdMarca']) == 0)) {
+													echo "selected";
+												} elseif ((isset($row['CDU_Marca'])) && (strcmp($row_MarcaVehiculo['IdMarcaVehiculo'], $row['CDU_Marca']) == 0)) {
+													echo "selected";
+												} ?>>
+											<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
+										</option>
+								  	<?php } ?>
 								</select>
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">Línea del vehículo <span class="text-danger">*</span></label>
+								
 								<select name="CDU_Linea" class="form-control select2" required="required" id="CDU_Linea"
 								<?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
-									echo "disabled='disabled'";
+									echo "disabled";
 								} ?>>
-										<option value="" disabled selected>Seleccione...</option>
-								  <?php while ($row_LineaVehiculo = sqlsrv_fetch_array($SQL_LineaVehiculo)) { ?>
-											<option value="<?php echo $row_LineaVehiculo['IdLineaModeloVehiculo']; ?>"
+									<option value="" disabled selected>Seleccione...</option>
+								  	
+									<?php while ($row_LineaVehiculo = sqlsrv_fetch_array($SQL_LineaVehiculo)) { ?>
+										<option value="<?php echo $row_LineaVehiculo['IdLineaModeloVehiculo']; ?>"
 											<?php if ((isset($row['CDU_IdLinea'])) && (strcmp($row_LineaVehiculo['IdLineaModeloVehiculo'], $row['CDU_IdLinea']) == 0)) {
-												echo "selected=\"selected\"";
+												echo "selected";
 											} elseif ((isset($row['CDU_Linea'])) && (strcmp($row_LineaVehiculo['IdLineaModeloVehiculo'], $row['CDU_Linea']) == 0)) {
-												echo "selected=\"selected\"";
+												echo "selected";
 											} ?>>
-												<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; ?>
-											</option>
-								  <?php } ?>
+											<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; ?>
+										</option>
+								  	<?php } ?>
 								</select>
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">Modelo del vehículo <span class="text-danger">*</span></label>
+								
 								<select name="CDU_Ano" class="form-control select2" required="required" id="CDU_Ano"
 								<?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
-									echo "disabled='disabled'";
+									echo "disabled";
 								} ?>>
-										<option value="" disabled selected>Seleccione...</option>
-								  <?php while ($row_ModeloVehiculo = sqlsrv_fetch_array($SQL_ModeloVehiculo)) { ?>
-											<option value="<?php echo $row_ModeloVehiculo['CodigoModeloVehiculo']; ?>"
+									<option value="" disabled selected>Seleccione...</option>
+								  	
+									<?php while ($row_ModeloVehiculo = sqlsrv_fetch_array($SQL_ModeloVehiculo)) { ?>
+										<option value="<?php echo $row_ModeloVehiculo['CodigoModeloVehiculo']; ?>"
 											<?php if ((isset($row['CDU_Ano'])) && ((strcmp($row_ModeloVehiculo['CodigoModeloVehiculo'], $row['CDU_Ano']) == 0) || (strcmp($row_ModeloVehiculo['AñoModeloVehiculo'], $row['CDU_Ano']) == 0))) {
-												echo "selected=\"selected\"";
+												echo "selected";
 											} ?>>
-												<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; ?>
-											</option>
-								  <?php } ?>
+											<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; ?>
+										</option>
+								  	<?php } ?>
 								</select>
 							</div>
 						</div>
 						<div class="form-group">
 							<div class="col-lg-4">
 								<label class="control-label">Concesionario <span class="text-danger">*</span></label>
+								
 								<select name="CDU_Concesionario" class="form-control select2" required="required" id="CDU_Concesionario"
 								<?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
-									echo "disabled='disabled'";
+									echo "disabled";
 								} ?>>
-										<option value="" disabled selected>Seleccione...</option>
-								  <?php while ($row_Concesionario = sqlsrv_fetch_array($SQL_Concesionario)) { ?>
-											<option value="<?php echo $row_Concesionario['NombreConcesionario']; ?>"
+									<option value="" disabled selected>Seleccione...</option>
+								  
+									<?php while ($row_Concesionario = sqlsrv_fetch_array($SQL_Concesionario)) { ?>
+										<option value="<?php echo $row_Concesionario['NombreConcesionario']; ?>"
 											<?php if ((isset($row['CDU_Concesionario'])) && (strcmp($row_Concesionario['NombreConcesionario'], $row['CDU_Concesionario']) == 0)) {
-												echo "selected=\"selected\"";
+												echo "selected";
 											} ?>>
-												<?php echo $row_Concesionario['NombreConcesionario']; ?>
-											</option>
-								  <?php } ?>
+											<?php echo $row_Concesionario['NombreConcesionario']; ?>
+										</option>
+								  	<?php } ?>
 								</select>
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">Tipo servicio <span class="text-danger">*</span></label>
+								
 								<select name="CDU_TipoServicio" class="form-control select2" required="required" id="CDU_TipoServicio"
 								<?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "disabled='disabled'";
 								} ?>>
 										<option value="" disabled selected>Seleccione...</option>
-								  <?php while ($row_TipoServicio = sqlsrv_fetch_array($SQL_TipoServicio)) { ?>
+								  
+										<?php while ($row_TipoServicio = sqlsrv_fetch_array($SQL_TipoServicio)) { ?>
 											<option value="<?php echo $row_TipoServicio['NombreTipoServicio']; ?>"
-											<?php if ((isset($row['CDU_TipoServicio'])) && (strcmp($row_TipoServicio['NombreTipoServicio'], $row['CDU_TipoServicio']) == 0)) {
-												echo "selected=\"selected\"";
-											} ?>>
+												<?php if ((isset($row['CDU_TipoServicio'])) && (strcmp($row_TipoServicio['NombreTipoServicio'], $row['CDU_TipoServicio']) == 0)) {
+													echo "selected";
+												} ?>>
 												<?php echo $row_TipoServicio['NombreTipoServicio']; ?>
 											</option>
-								  <?php } ?>
+								  		<?php } ?>
 								</select>
 							</div>
 						</div>
@@ -2335,12 +2424,12 @@ function AgregarEsto(contenedorID, valorElemento) {
 						</a>
 					</div>
 					<div class="ibox-content">
-						<?php if ($edit == 1) {
-							if ($row['IdAnexoLlamada'] != 0) { ?>
-										<div class="form-group">
-											<div class="col-xs-12">
-												<?php while ($row_AnexoLlamada = sqlsrv_fetch_array($SQL_AnexoLlamada)) {
-													$Icon = IconAttach($row_AnexoLlamada['FileExt']); ?>
+						<?php if ($edit == 1) { ?>
+							<?php if ($row['IdAnexoLlamada'] != 0) { ?>
+								<div class="form-group">
+									<div class="col-xs-12">
+										<?php while ($row_AnexoLlamada = sqlsrv_fetch_array($SQL_AnexoLlamada)) {
+											$Icon = IconAttach($row_AnexoLlamada['FileExt']); ?>
 														<div class="file-box">
 															<div class="file">
 																<a href="attachdownload.php?file=<?php echo base64_encode($row_AnexoLlamada['AbsEntry']); ?>&line=<?php echo base64_encode($row_AnexoLlamada['Line']); ?>" target="_blank">
@@ -2355,13 +2444,13 @@ function AgregarEsto(contenedorID, valorElemento) {
 																</a>
 															</div>
 														</div>
-												<?php } ?>
-											</div>
-										</div>
-							<?php } else {
-								echo "<p>Sin anexos.</p>";
-							}
-						} ?>
+										<?php } ?>
+									</div>
+								</div>
+							<?php } else { ?>
+								<p>Sin anexos.</p>
+							<?php } ?>
+						<?php } ?>
 						<?php
 						if (isset($_GET['return'])) {
 							$return = base64_decode($_GET['pag']) . "?" . $_GET['return'];
@@ -2369,6 +2458,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 							$return = "gestionar_llamadas_servicios.php";
 						}
 						$return = QuitarParametrosURL($return, array("a")); ?>
+						
 						<input type="hidden" id="P" name="P" value="<?php if (($edit == 0) && ($sw_error == 0)) {
 							echo "32";
 						} else {
@@ -2397,20 +2487,22 @@ function AgregarEsto(contenedorID, valorElemento) {
 							echo $row['IdNombreSucursal'];
 						} ?>" />
 					   </form>
-						<?php if (($edit == 0) || (($edit == 1) && ($row['IdEstadoLlamada'] != '-1'))) { ?>
-								<div class="row">
-									<form action="upload.php" class="dropzone" id="dropzoneForm" name="dropzoneForm">
-										<?php if ($sw_error == 0) {
-											LimpiarDirTemp();
-										} ?>
-										<div class="fallback">
-											<input name="File" id="File" type="file" form="dropzoneForm" />
-										</div>
-									 </form>
-								</div>
+						
+					   <?php if (($edit == 0) || (($edit == 1) && ($row['IdEstadoLlamada'] != '-1'))) { ?>
+							<div class="row">
+								<form action="upload.php" class="dropzone" id="dropzoneForm" name="dropzoneForm">
+									<?php if ($sw_error == 0) {
+										LimpiarDirTemp();
+									} ?>
+									<div class="fallback">
+										<input name="File" id="File" type="file" form="dropzoneForm" />
+									</div>
+									</form>
+							</div>
 						<?php } ?>
 					</div>
 				</div>
+
 				   <div class="form-group">
 						<br>
 						<div class="col-lg-8">
@@ -2435,281 +2527,366 @@ function AgregarEsto(contenedorID, valorElemento) {
 						</div>
 					</div>
 					  <br><br>
-			   <?php if ($edit == 1) { ?>
-					   <div class="ibox">
-						   <div class="ibox-title bg-success">
-							   <h5 class="collapse-link"><i class="fa fa-pencil-square-o"></i> Seguimiento de llamada</h5>
+				   <?php if ($edit == 1) { ?>
+						<div class="ibox">
+							<div class="ibox-title bg-success">
+								<h5 class="collapse-link"><i class="fa fa-pencil-square-o"></i> Seguimiento de llamada</h5>
 								<a class="collapse-link pull-right">
-								   <i class="fa fa-chevron-up"></i>
-							   </a>
-						   </div>
-						   <div class="ibox-content">
-							   <div class="tabs-container">
-								   <ul class="nav nav-tabs">
-									   <li class="active"><a data-toggle="tab" href="#tab-1"><i class="fa fa-calendar"></i> Actividades</a></li>
-									   <li><a data-toggle="tab" href="#tab-2"><i class="fa fa-tags"></i> Documentos relacionados</a></li>
-									   <li><a data-toggle="tab" href="#tab-3"><i class="fa fa-clipboard"></i> Formatos adicionales</a></li>
-								   </ul>
-								   <div class="tab-content">
-								   <div id="tab-1" class="tab-pane active">
-									   <div class="panel-body">
-										   <div class="row">
-									   	<?php if (PermitirFuncion(304) && (($row['IdEstadoLlamada'] == '-3') || ($row['IdEstadoLlamada'] == '-2'))) { ?>
-												   <button type="button" onClick="javascript:location.href='actividad.php?dt_LS=1&TTarea=<?php echo base64_encode($row['TipoTarea']); ?>&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&Ciudad=<?php echo base64_encode($row['CiudadLlamada']); ?>&Barrio=<?php echo base64_encode($row['BarrioDireccionLlamada']); ?>&Telefono=<?php echo base64_encode($row['TelefonoContactoLlamada']); ?>&Correo=<?php echo base64_encode($row['CorreoContactoLlamada']); ?>&LS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>'" class="alkin btn btn-primary btn-xs"><i class="fa fa-plus-circle"></i> Agregar actividad</button>
-									   	<?php } ?>
-										   </div>
-										   <br>
-										   <div class="table-responsive">
-											   <table class="table table-striped table-bordered table-hover dataTables-example" >
-												   <thead>
-												   <tr>
-													   <th>Número</th>
-													   <th>Asignado por</th>
-													   <th>Asignado a</th>
+									<i class="fa fa-chevron-up"></i>
+								</a>
+							</div>
 
-													   <th>Perfil</th> <!-- SMM, 14/09/2022 -->
+							<div class="ibox-content">
+								<div class="tabs-container">
+									<ul class="nav nav-tabs">
+										<li class="active" id="nav-1"><a data-toggle="tab" href="#tab-1"><i class="fa fa-calendar"></i> Actividades</a></li>
+										<li id="nav-2"><a data-toggle="tab" href="#tab-2"><i class="fa fa-tags"></i> Documentos relacionados</a></li>
+										<li id="nav-3"><a data-toggle="tab" href="#tab-3"><i class="fa fa-clipboard"></i> Formatos adicionales</a></li>
+										<li id="nav-4"><a data-toggle="tab" href="#tab-4"><i class="fa fa-bell"></i> Campañas</a></li>
+									</ul>
 
-													   <th>Titulo</th>
-													   <th>Fecha creación</th>
-													   <th>Fecha limite</th>
-													   <th>Dias venc.</th>
-													   <th>Estado</th>
-													   <th>Estado Servicio</th>
-													   <th>Acciones</th>
-												   </tr>
-												   </thead>
-												   <tbody>
-											   	<?php while ($row_Actividad = sqlsrv_fetch_array($SQL_Actividad)) {
-													   if ($row_Actividad['IdEstadoActividad'] == 'N') {
-														   $DVenc = DiasTranscurridos(date('Y-m-d'), $row_Actividad['FechaFinActividad']);
-													   } else {
-														   $DVenc = array('text-primary', 0);
-													   }
-													   ?>
-														   <tr class="gradeX">
-															  <td><?php echo $row_Actividad['ID_Actividad']; ?></td>
-															  <td><?php echo $row_Actividad['DeAsignadoPor']; ?></td>
-															  <td><?php if ($row_Actividad['NombreEmpleado'] != "") {
-																  echo $row_Actividad['NombreEmpleado'];
-															  } else {
-																  echo "(Sin asignar)";
-															  } ?></td>
+									<div class="tab-content">
+										<div id="tab-1" class="tab-pane active">
+											<div class="panel-body">
+												<div class="row">
+											<?php if (PermitirFuncion(304) && (($row['IdEstadoLlamada'] == '-3') || ($row['IdEstadoLlamada'] == '-2'))) { ?>
+																<button type="button" onClick="javascript:location.href='actividad.php?dt_LS=1&TTarea=<?php echo base64_encode($row['TipoTarea']); ?>&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&Ciudad=<?php echo base64_encode($row['CiudadLlamada']); ?>&Barrio=<?php echo base64_encode($row['BarrioDireccionLlamada']); ?>&Telefono=<?php echo base64_encode($row['TelefonoContactoLlamada']); ?>&Correo=<?php echo base64_encode($row['CorreoContactoLlamada']); ?>&LS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('llamada_servicio.php'); ?>'" class="alkin btn btn-primary btn-xs"><i class="fa fa-plus-circle"></i> Agregar actividad</button>
+											<?php } ?>
+												</div>
+												<br>
+												<div class="table-responsive">
+													<table class="table table-striped table-bordered table-hover dataTables-example" >
+														<thead>
+														<tr>
+															<th>Número</th>
+															<th>Asignado por</th>
+															<th>Asignado a</th>
 
-															  <td><?php echo $row_Actividad['CargoEmpleado']; ?></td>
+															<th>Perfil</th> <!-- SMM, 14/09/2022 -->
 
-															  <td><?php echo $row_Actividad['TituloActividad']; ?></td>
-															  <td><?php if ($row_Actividad['FechaHoraInicioActividad'] != "") {
-																  echo $row_Actividad['FechaHoraInicioActividad']->format('Y-m-d H:s');
-															  } else { ?><p class="text-muted">--</p><?php } ?></td>
-															  <td><?php if ($row_Actividad['FechaHoraFinActividad'] != "") {
-																  echo $row_Actividad['FechaHoraFinActividad']->format('Y-m-d H:s');
-															  } else { ?><p class="text-muted">--</p><?php } ?></td>
-															  <td><p class='<?php echo $DVenc[0]; ?>'><?php echo $DVenc[1]; ?></p></td>
-															  <td><span <?php if ($row_Actividad['IdEstadoActividad'] == 'N') {
-																  echo "class='label label-info'";
-															  } else {
-																  echo "class='label label-danger'";
-															  } ?>><?php echo $row_Actividad['DeEstadoActividad']; ?></span></td>
+															<th>Titulo</th>
+															<th>Fecha creación</th>
+															<th>Fecha limite</th>
+															<th>Dias venc.</th>
+															<th>Estado</th>
+															<th>Estado Servicio</th>
+															<th>Acciones</th>
+														</tr>
+														</thead>
+														<tbody>
+													<?php while ($row_Actividad = sqlsrv_fetch_array($SQL_Actividad)) {
+														if ($row_Actividad['IdEstadoActividad'] == 'N') {
+															$DVenc = DiasTranscurridos(date('Y-m-d'), $row_Actividad['FechaFinActividad']);
+														} else {
+															$DVenc = array('text-primary', 0);
+														}
+														?>
+																		<tr class="gradeX">
+																			<td><?php echo $row_Actividad['ID_Actividad']; ?></td>
+																			<td><?php echo $row_Actividad['DeAsignadoPor']; ?></td>
+																			<td><?php if ($row_Actividad['NombreEmpleado'] != "") {
+																				echo $row_Actividad['NombreEmpleado'];
+																			} else {
+																				echo "(Sin asignar)";
+																			} ?></td>
 
-															  <td>
-														  		<?php $SQL_TiposEstadoServ = Seleccionar("uvw_tbl_TipoEstadoServicio", "*"); ?>
-														  		<?php while ($row_TipoEstadoServ = sqlsrv_fetch_array($SQL_TiposEstadoServ)) { ?>
-															  			<?php if ($row_Actividad['IdTipoEstadoActividad'] == $row_TipoEstadoServ['ID_TipoEstadoServicio']) { ?>
-																				  <span class='label text-white' style="background-color: <?php echo $row_TipoEstadoServ['ColorEstadoServicio']; ?>;"><?php echo $row_Actividad['DeTipoEstadoActividad']; ?></span>
-																		<?php } ?>
-																<?php } ?>
-															  </td>
+																			<td><?php echo $row_Actividad['CargoEmpleado']; ?></td>
 
-															  <td>
-																  <a href="actividad.php?tl=1&id=<?php echo base64_encode($row_Actividad['ID_Actividad']); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i> Abrir</a>
+																			<td><?php echo $row_Actividad['TituloActividad']; ?></td>
+																			<td><?php if ($row_Actividad['FechaHoraInicioActividad'] != "") {
+																				echo $row_Actividad['FechaHoraInicioActividad']->format('Y-m-d H:s');
+																			} else { ?><p class="text-muted">--</p><?php } ?></td>
+																			<td><?php if ($row_Actividad['FechaHoraFinActividad'] != "") {
+																				echo $row_Actividad['FechaHoraFinActividad']->format('Y-m-d H:s');
+																			} else { ?><p class="text-muted">--</p><?php } ?></td>
+																			<td><p class='<?php echo $DVenc[0]; ?>'><?php echo $DVenc[1]; ?></p></td>
+																			<td><span <?php if ($row_Actividad['IdEstadoActividad'] == 'N') {
+																				echo "class='label label-info'";
+																			} else {
+																				echo "class='label label-danger'";
+																			} ?>><?php echo $row_Actividad['DeEstadoActividad']; ?></span></td>
 
-																  <!-- Botón de descarga -->
-																  <div class="btn-group">
-																	  <button data-toggle="dropdown" class="btn btn-xs btn-warning dropdown-toggle"><i class="fa fa-download"></i> Descargar formato <i class="fa fa-caret-down"></i></button>
-																	  <ul class="dropdown-menu">
-																  		<?php $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=66 and VerEnDocumento='Y'"); ?>
-																  		<?php while ($row_Formato = sqlsrv_fetch_array($SQL_Formato)) { ?>
-																				  <li>
-																					  <a class="dropdown-item" target="_blank" href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row_Actividad['ID_Actividad']); ?>&ObType=<?php echo base64_encode('66'); ?>&IdFrm=<?php echo base64_encode($row_Formato['IdFormato']); ?>&IdReg=<?php echo base64_encode($row_Formato['ID']); ?>"><?php echo $row_Formato['NombreVisualizar']; ?></a>
-																				  </li>
-																		<?php } ?>
-																	  </ul>
-																  </div>
-																  <!-- SMM, 25/07/2022 -->
-															  </td>
-														  </tr>
-												<?php } ?>
-												   </tbody>
-											   </table>
-										   </div>
-									   </div>
-								   </div>
-								   <div id="tab-2" class="tab-pane">
-									   <div class="panel-body">
-										   <!-- Agregar documento, Inicio -->
-										   <div class="row">
-											   <div class="col-lg-9">
+																			<td>
+																			<?php $SQL_TiposEstadoServ = Seleccionar("uvw_tbl_TipoEstadoServicio", "*"); ?>
+																			<?php while ($row_TipoEstadoServ = sqlsrv_fetch_array($SQL_TiposEstadoServ)) { ?>
+																							<?php if ($row_Actividad['IdTipoEstadoActividad'] == $row_TipoEstadoServ['ID_TipoEstadoServicio']) { ?>
+																												<span class='label text-white' style="background-color: <?php echo $row_TipoEstadoServ['ColorEstadoServicio']; ?>;"><?php echo $row_Actividad['DeTipoEstadoActividad']; ?></span>
+																							<?php } ?>
+																			<?php } ?>
+																			</td>
+
+																			<td>
+																				<a href="actividad.php?tl=1&id=<?php echo base64_encode($row_Actividad['ID_Actividad']); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('llamada_servicio.php'); ?>" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i> Abrir</a>
+
+																				<!-- Botón de descarga -->
+																				<div class="btn-group">
+																					<button data-toggle="dropdown" class="btn btn-xs btn-warning dropdown-toggle"><i class="fa fa-download"></i> Descargar formato <i class="fa fa-caret-down"></i></button>
+																					<ul class="dropdown-menu">
+																					<?php $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=66 and VerEnDocumento='Y'"); ?>
+																					<?php while ($row_Formato = sqlsrv_fetch_array($SQL_Formato)) { ?>
+																										<li>
+																											<a class="dropdown-item" target="_blank" href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row_Actividad['ID_Actividad']); ?>&ObType=<?php echo base64_encode('66'); ?>&IdFrm=<?php echo base64_encode($row_Formato['IdFormato']); ?>&IdReg=<?php echo base64_encode($row_Formato['ID']); ?>"><?php echo $row_Formato['NombreVisualizar']; ?></a>
+																										</li>
+																					<?php } ?>
+																					</ul>
+																				</div>
+																				<!-- SMM, 25/07/2022 -->
+																			</td>
+																		</tr>
+													<?php } ?>
+														</tbody>
+													</table>
+												</div>
+											</div>
+										</div>
+										<div id="tab-2" class="tab-pane">
+											<div class="panel-body">
+												<!-- Agregar documento, Inicio -->
+												<div class="row">
+													<div class="col-lg-9">
+														<!-- Gestionar Llamadas, NO Cerradas -->
 													<?php if (PermitirFuncion(302) && ($row['IdEstadoLlamada'] != '-1')) { ?>
-															<?php if (PermitirFuncion([401, 402, 404, 409])) { ?>
-																	<div class="btn-group">
-																		<button data-toggle="dropdown" class="btn btn-outline btn-success dropdown-toggle"><i class="fa fa-plus-circle"></i> Agregar documento <i class="fa fa-caret-down"></i></button>
-																		<ul class="dropdown-menu">
-																				<?php if (PermitirFuncion(401)) { ?>
-																					<li><a class="dropdown-item alkin d-venta" href="oferta_venta.php?dt_SLS=1&dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&SLS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>">Oferta de venta con LMT</a></li>
-																					<li><a class="dropdown-item alkin d-venta" href="oferta_venta.php?dt_SLS=1&dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&SLS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>&LMT=false">Oferta de venta sin LMT</a></li>
-																				<?php } ?>
-																		</ul>
-																	</div>
-															<?php } ?>
-													<?php } ?>
-											   </div>
-											   <div class="col-lg-3">
-												   <div class="row">
-													   <div class="col-lg-6">
-														   <button class="pull-right btn btn-primary" id="btnPreCostos" name="btnPreCostos" onClick="MostrarCostos('<?php echo $IdSolicitud; ?>');"><i class="fa fa-money"></i> Previsualizar Precios</button>
-													   </div>
-													   <div class="col-lg-6">
-														   <div class="btn-group pull-right">
-															   <button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i class="fa fa-mail-forward"></i> Liquidación <i class="fa fa-caret-down"></i></button>
-															   <ul class="dropdown-menu">
-																   <li><a class="alkin dropdown-item" href="#" onClick="CopiarToFactura(1);">Prefactura de venta</a></li>
-																   <!-- li><a class="alkin dropdown-item" href="#" onClick="CopiarToFactura(0);">Factura de venta (<strong>NO</strong> copiar adjuntos)</a></li -->
-																   <!--li class="dropdown-divider"></li>
-															<li><a class="alkin dropdown-item" href="#" onClick="CopiarToFactura(1,2);">Orden de venta (copiar adjuntos)</a></li>
-															<li><a class="alkin dropdown-item" href="#" onClick="CopiarToFactura(0,2);">Orden de venta (<strong>NO</strong> copiar adjuntos)</a></li-->
-															   </ul>
-														   </div>
-													   </div>
-												   </div>
-											   </div>
-										   </div>
-										   <br>
-										   <!-- Agregar documento, Fin -->
-										   <div class="table-responsive">
-											   <table class="table table-striped table-bordered table-hover dataTables-example" >
-												   <thead>
-												   <tr>
-													   <th>Nombre cliente</th>
-													   <th>Tipo de documento</th>
-													   <th>Número de documento</th>
-													   <th>Fecha de documento</th>
-													   <th>Autorización</th>
-													   <th>Estado de documento</th>
-													   <th>Creado por</th>
-													   <th>Artículos/Costos</th>
-													   <th>Acciones</th>
-												   </tr>
-												   </thead>
-												   <tbody>
-											   	<?php while ($row_DocRel = sqlsrv_fetch_array($SQL_DocRel)) { ?>
-														   <tr class="gradeX">
-															   <td><?php echo $row_DocRel['NombreCliente']; ?></td>
-															   <td><?php echo $row_DocRel['DeObjeto']; ?></td>
-															  <td><?php echo $row_DocRel['DocNum']; ?></td>
-															  <td><?php echo $row_DocRel['DocDate']; ?></td>
-															  <td><?php echo $row_DocRel['DeAuthPortal']; ?></td>
-															  <td><span <?php if ($row_DocRel['Cod_Estado'] == 'O') {
-																  echo "class='label label-info'";
-															  } else {
-																  echo "class='label label-danger'";
-															  } ?>><?php echo $row_DocRel['NombreEstado']; ?></span></td>
-															  <td><?php echo $row_DocRel['Usuario']; ?></td>
-															  <td>
-																  <a class="btn btn-primary btn-xs" id="btnPreCostos" name="btnPreCostos" onClick="MostrarCostos_Documentos('<?php echo $row_DocRel['DocNum']; ?>', '<?php echo $row_DocRel['IdObjeto']; ?>', '<?php echo $row_DocRel['DeObjeto']; ?>');"><i class="fa fa-money"></i> Previsualizar Precios</a>
-															  </td>
-															  <td>
-													  		<?php if ($row_DocRel['Link'] != "") { ?>
-																	  <a href="<?php echo $row_DocRel['Link']; ?>.php?id=<?php echo base64_encode($row_DocRel['DocEntry']); ?>&id_portal=<?php echo base64_encode($row_DocRel['IdPortal']); ?>&tl=1&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i> Abrir</a>
-															<?php } ?>
-													  		<?php if ($row_DocRel['Descargar'] != "") { ?>
-																	  <a href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row_DocRel['DocEntry']); ?>&ObType=<?php echo base64_encode($row_DocRel['IdObjeto']); ?>&IdFrm=<?php echo base64_encode($row_DocRel['IdSeries']); ?>" target="_blank" class="btn btn-warning btn-xs"><i class="fa fa-download"></i> Descargar</a>
-															<?php } ?>
-															  </td>
-														  </tr>
-												<?php } ?>
-												   </tbody>
-											   </table>
-										   </div>
-									   </div>
-								   </div>
-								   <div id="tab-3" class="tab-pane">
-									   <div class="panel-body">
-										   <!-- Agregar formato, Inicio -->
-										   <div class="row">
-										   	<?php if (PermitirFuncion(302) && ($row['IdEstadoLlamada'] != '-1')) {
-												   if (PermitirFuncion([1706])) { ?>
-															   <div class="btn-group">
-																   <button data-toggle="dropdown" class="btn btn-outline btn-success dropdown-toggle"><i class="fa fa-plus-circle"></i> Agregar formato <i class="fa fa-caret-down"></i></button>
-																   <ul class="dropdown-menu">
-																	   <li>
-																		   <a class="dropdown-item alkin" href="frm_recepcion_vehiculo.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&LS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>">Recepción vehículo</a>
-																	   </li>
-														
-																	<li>
-																		   <a class="dropdown-item alkin" href="frm_entrega_vehiculo.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&LS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>">Entrega vehículo</a>
-																	   </li>
-																   </ul>
-															   </div>
-													<?php }
-											   } ?>
-										   </div>
-										   <br>
-										   <!-- Agregar formato, Fin -->
-										   <div class="table-responsive">
-												   <table class="table table-striped table-bordered table-hover dataTables-example" >
-													   <thead>
-													   <tr>
-														   <th>Tipo de documento</th>
-														   <th>Número de documento</th>
-														   <th>Fecha de documento</th>
-														   <th>Observaciones</th>
-														   <th>Comentarios de cierre</th>
-														   <th>Fecha cierre</th>
-														   <th>Creado por</th>
-														   <th>Estado de documento</th>
-														   <th>Acciones</th>
-													   </tr>
-													   </thead>
-													   <tbody>
-												   	<?php while ($row_Formularios = sqlsrv_fetch_array($SQL_Formularios)) { ?>
-															   <tr class="gradeX">
-																   <td><?php echo $row_Formularios['tipo_objeto']; ?></td>
-																   <td><?php echo $row_Formularios['id_formulario']; ?></td>
-																   <td><?php echo isset($row_Formularios['hora_actualizacion']) ? $row_Formularios['hora_actualizacion']->format('Y-m-d H:i') : ""; ?></td>
-																   <td><?php echo SubComent($row_Formularios['observaciones'], 140); ?></td>
-																   <td id="comentCierre<?php echo $row_Formularios['id_formulario']; ?>"><?php echo SubComent($row_Formularios['comentarios_cierre'], 140); ?></td>
-																   <td><?php echo ($row_Formularios['fecha_cierre'] != "") ? $row_Formularios['fecha_cierre']->format('Y-m-d H:i') : ""; ?></td>
-																   <td><?php echo $row_Formularios['nombre_usuario_creacion']; ?></td>
-																   <td><span id="lblEstado<?php echo $row_Formularios['id_formulario']; ?>" <?php if ($row_Formularios['estado'] == 'O') {
-																		  echo "class='label label-info'";
-																	  } elseif ($row_Formularios['estado'] == 'A') {
-																		  echo "class='label label-danger'";
-																	  } else {
-																		  echo "class='label label-primary'";
-																	  } ?>><?php echo $row_Formularios['nombre_estado']; ?></span></td>
-																   <td class="text-center form-inline w-80">
-															   		<?php if ($row_Formularios['estado'] == 'O') { ?>
-																			   <button id="btnEstado<?php echo $row_Formularios['id_formulario']; ?>" class="btn btn-success btn-xs" onClick="CambiarEstado('<?php echo $row_Formularios['id_formulario']; ?>','<?php echo $row_Formularios['nombre_servicio']; ?>','<?php echo $row_Formularios['columna_id']; ?>');" title="Cambiar estado"><i class="fa fa-pencil"></i></button>
-																	<?php } ?>
-																	   <a href="filedownload.php?file=<?php echo base64_encode($row_Formularios['nombre_servicio'] . "/DescargarFormatos/" . $row_Formularios['id_formulario'] . "/" . $_SESSION['User']); ?>&api=1" target="_blank" class="btn btn-warning btn-xs" title="Descargar"><i class="fa fa-download"></i></a>
+																	<?php if (PermitirFuncion([401, 402, 404, 409])) { ?>
+																						<div class="btn-group">
+																							<button data-toggle="dropdown" class="btn btn-outline btn-success dropdown-toggle"><i class="fa fa-plus-circle"></i> Agregar documento <i class="fa fa-caret-down"></i></button>
+																							<ul class="dropdown-menu">
+																							<?php if (PermitirFuncion(401)) { ?>
+																												<li><a class="dropdown-item alkin d-venta" href="oferta_venta.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&LS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('llamada_servicio.php'); ?>">Oferta de venta con LMT</a></li>
+																												<li><a class="dropdown-item alkin d-venta" href="oferta_venta.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&LS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('llamada_servicio.php'); ?>&LMT=false">Oferta de venta sin LMT</a></li>
+																							<?php } ?>
 
-																	   <!-- SMM, 05/10/2022 -->
-															   		<?php if (isset($row_Formularios['nombre_servicio']) && ($row_Formularios['nombre_servicio'] == "RecepcionVehiculos")) { ?>
-																			   <a href="descargar_frm_recepcion_vehiculo.php?id=<?php echo $row_Formularios['id_formulario']; ?>" target="_blank" class="btn btn-danger btn-xs" title="Descargar Fotos"><i class="fa fa-file-image-o"></i></a>
-																	<?php } ?>
-																   </td>
-															   </tr>
+																							<?php if (PermitirFuncion(402)) { ?>
+																												<li><a class="dropdown-item alkin d-venta" href="orden_venta.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&LS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('llamada_servicio.php'); ?>">Orden de venta con LMT</a></li>
+																												<li><a class="dropdown-item alkin d-venta" href="orden_venta.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&LS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('llamada_servicio.php'); ?>&LMT=false">Orden de venta sin LMT</a></li>
+																							<?php } ?>
+
+																							<?php if (PermitirFuncion(404)) { ?>
+																												<li><a class="dropdown-item alkin d-venta" href="entrega_venta.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&LS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('llamada_servicio.php'); ?>">Entrega de venta con LMT</a></li>
+																												<li><a class="dropdown-item alkin d-venta" href="entrega_venta.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&LS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('llamada_servicio.php'); ?>&LMT=false">Entrega de venta sin LMT</a></li>
+																							<?php } ?>
+
+																							<?php if (PermitirFuncion(409)) { ?>
+																												<li><a class="dropdown-item alkin d-venta" href="devolucion_venta.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&LS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('llamada_servicio.php'); ?>">Devolución de venta con LMT</a></li>
+																												<li><a class="dropdown-item alkin d-venta" href="devolucion_venta.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&LS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('llamada_servicio.php'); ?>&LMT=false">Devolución de venta sin LMT</a></li>
+																							<?php } ?>
+																							</ul>
+																						</div>
+																<?php }
+													} ?>
+													</div>
+													<div class="col-lg-3">
+														<div class="row">
+															<div class="col-lg-6">
+																<button class="pull-right btn btn-primary" id="btnPreCostos" name="btnPreCostos" onClick="MostrarCostos('<?php echo $IdSolicitud; ?>');"><i class="fa fa-money"></i> Previsualizar Precios</button>
+															</div>
+															<div class="col-lg-6">
+																<div class="btn-group pull-right">
+																	<button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i class="fa fa-mail-forward"></i> Liquidación <i class="fa fa-caret-down"></i></button>
+																	<ul class="dropdown-menu">
+																		<li><a class="alkin dropdown-item" href="#" onClick="CopiarToFactura(1);">Prefactura de venta</a></li>
+																		<!-- li><a class="alkin dropdown-item" href="#" onClick="CopiarToFactura(0);">Factura de venta (<strong>NO</strong> copiar adjuntos)</a></li -->
+																		<!--li class="dropdown-divider"></li>
+														<li><a class="alkin dropdown-item" href="#" onClick="CopiarToFactura(1,2);">Orden de venta (copiar adjuntos)</a></li>
+														<li><a class="alkin dropdown-item" href="#" onClick="CopiarToFactura(0,2);">Orden de venta (<strong>NO</strong> copiar adjuntos)</a></li-->
+																	</ul>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+												<br>
+												<!-- Agregar documento, Fin -->
+												<div class="table-responsive">
+													<table class="table table-striped table-bordered table-hover dataTables-example" >
+														<thead>
+														<tr>
+															<th>Nombre cliente</th>
+															<th>Tipo de documento</th>
+															<th>Número de documento</th>
+															<th>Fecha de documento</th>
+															<th>Autorización</th>
+															<th>Estado de documento</th>
+															<th>Creado por</th>
+															<th>Artículos/Costos</th>
+															<th>Acciones</th>
+														</tr>
+														</thead>
+														<tbody>
+													<?php while ($row_DocRel = sqlsrv_fetch_array($SQL_DocRel)) { ?>
+																		<tr class="gradeX">
+																			<td><?php echo $row_DocRel['NombreCliente']; ?></td>
+																			<td><?php echo $row_DocRel['DeObjeto']; ?></td>
+																			<td><?php echo $row_DocRel['DocNum']; ?></td>
+																			<td><?php echo $row_DocRel['DocDate']; ?></td>
+																			<td><?php echo $row_DocRel['DeAuthPortal']; ?></td>
+																			<td><span <?php if ($row_DocRel['Cod_Estado'] == 'O') {
+																				echo "class='label label-info'";
+																			} else {
+																				echo "class='label label-danger'";
+																			} ?>><?php echo $row_DocRel['NombreEstado']; ?></span></td>
+																			<td><?php echo $row_DocRel['Usuario']; ?></td>
+																			<td>
+																				<a class="btn btn-primary btn-xs" id="btnPreCostos" name="btnPreCostos" onClick="MostrarCostos_Documentos('<?php echo $row_DocRel['DocNum']; ?>', '<?php echo $row_DocRel['IdObjeto']; ?>', '<?php echo $row_DocRel['DeObjeto']; ?>');"><i class="fa fa-money"></i> Previsualizar Precios</a>
+																			</td>
+																			<td>
+																		<?php if ($row_DocRel['Link'] != "") { ?>
+																							<a href="<?php echo $row_DocRel['Link']; ?>.php?id=<?php echo base64_encode($row_DocRel['DocEntry']); ?>&id_portal=<?php echo base64_encode($row_DocRel['IdPortal']); ?>&tl=1&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('llamada_servicio.php'); ?>" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i> Abrir</a>
+																		<?php } ?>
+																		<?php if ($row_DocRel['Descargar'] != "") { ?>
+																							<a href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row_DocRel['DocEntry']); ?>&ObType=<?php echo base64_encode($row_DocRel['IdObjeto']); ?>&IdFrm=<?php echo base64_encode($row_DocRel['IdSeries']); ?>" target="_blank" class="btn btn-warning btn-xs"><i class="fa fa-download"></i> Descargar</a>
+																		<?php } ?>
+																			</td>
+																		</tr>
 													<?php } ?>
-													   </tbody>
-												   </table>
-											   </div>
-										   </div>
-								   </div>
-							   </div>
-							   </div>
-						   </div>
-					   </div>
-			   <?php } ?>
+														</tbody>
+													</table>
+												</div>
+											</div>
+										</div>
+										<div id="tab-3" class="tab-pane">
+											<div class="panel-body">
+												<!-- Agregar formato, Inicio -->
+												<div class="row">
+												<?php if (PermitirFuncion(302) && ($row['IdEstadoLlamada'] != '-1')) {
+													if (PermitirFuncion([1706])) { ?>
+																					<div class="btn-group">
+																						<button data-toggle="dropdown" class="btn btn-outline btn-success dropdown-toggle"><i class="fa fa-plus-circle"></i> Agregar formato <i class="fa fa-caret-down"></i></button>
+																						<ul class="dropdown-menu">
+																							<li>
+																								<a class="dropdown-item alkin" href="frm_recepcion_vehiculo.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&LS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('llamada_servicio.php'); ?>">Recepción vehículo</a>
+																							</li>
+													
+																						<li>
+																								<a class="dropdown-item alkin" href="frm_entrega_vehiculo.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&LS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('llamada_servicio.php'); ?>">Entrega vehículo</a>
+																							</li>
+																						</ul>
+																					</div>
+																<?php }
+												} ?>
+												</div>
+												<br>
+												<!-- Agregar formato, Fin -->
+												<div class="table-responsive">
+														<table class="table table-striped table-bordered table-hover dataTables-example" >
+															<thead>
+															<tr>
+																<th>Tipo de documento</th>
+																<th>Número de documento</th>
+																<th>Fecha de documento</th>
+																<th>Observaciones</th>
+																<th>Comentarios de cierre</th>
+																<th>Fecha cierre</th>
+																<th>Creado por</th>
+																<th>Estado de documento</th>
+																<th>Acciones</th>
+															</tr>
+															</thead>
+															<tbody>
+														<?php while ($row_Formularios = sqlsrv_fetch_array($SQL_Formularios)) { ?>
+																			<tr class="gradeX">
+																				<td><?php echo $row_Formularios['tipo_objeto']; ?></td>
+																				<td><?php echo $row_Formularios['id_formulario']; ?></td>
+																				<td><?php echo isset($row_Formularios['hora_actualizacion']) ? $row_Formularios['hora_actualizacion']->format('Y-m-d H:i') : ""; ?></td>
+																				<td><?php echo SubComent($row_Formularios['observaciones'], 140); ?></td>
+																				<td id="comentCierre<?php echo $row_Formularios['id_formulario']; ?>"><?php echo SubComent($row_Formularios['comentarios_cierre'], 140); ?></td>
+																				<td><?php echo ($row_Formularios['fecha_cierre'] != "") ? $row_Formularios['fecha_cierre']->format('Y-m-d H:i') : ""; ?></td>
+																				<td><?php echo $row_Formularios['nombre_usuario_creacion']; ?></td>
+																				<td><span id="lblEstado<?php echo $row_Formularios['id_formulario']; ?>" <?php if ($row_Formularios['estado'] == 'O') {
+																					   echo "class='label label-info'";
+																				   } elseif ($row_Formularios['estado'] == 'A') {
+																					   echo "class='label label-danger'";
+																				   } else {
+																					   echo "class='label label-primary'";
+																				   } ?>><?php echo $row_Formularios['nombre_estado']; ?></span></td>
+																				<td class="text-center form-inline w-80">
+																				<?php if ($row_Formularios['estado'] == 'O') { ?>
+																									<button id="btnEstado<?php echo $row_Formularios['id_formulario']; ?>" class="btn btn-success btn-xs" onClick="CambiarEstado('<?php echo $row_Formularios['id_formulario']; ?>','<?php echo $row_Formularios['nombre_servicio']; ?>','<?php echo $row_Formularios['columna_id']; ?>');" title="Cambiar estado"><i class="fa fa-pencil"></i></button>
+																				<?php } ?>
+																					<a href="filedownload.php?file=<?php echo base64_encode($row_Formularios['nombre_servicio'] . "/DescargarFormatos/" . $row_Formularios['id_formulario'] . "/" . $_SESSION['User']); ?>&api=1" target="_blank" class="btn btn-warning btn-xs" title="Descargar"><i class="fa fa-download"></i></a>
+
+																					<!-- SMM, 05/10/2022 -->
+																				<?php if (isset($row_Formularios['nombre_servicio']) && ($row_Formularios['nombre_servicio'] == "RecepcionVehiculos")) { ?>
+																									<a href="descargar_frm_recepcion_vehiculo.php?id=<?php echo $row_Formularios['id_formulario']; ?>" target="_blank" class="btn btn-danger btn-xs" title="Descargar Fotos"><i class="fa fa-file-image-o"></i></a>
+																				<?php } ?>
+																				</td>
+																			</tr>
+														<?php } ?>
+															</tbody>
+														</table>
+													</div>
+												</div>
+										</div>
+
+										<!-- Campanas -->
+										<div id="tab-4" class="tab-pane">
+											<div class="panel-body">
+												<div class="row">
+													<button type="button" onclick="AdicionarCampana()" class="alkin btn btn-primary btn-xs"><i class="fa fa-plus-circle"></i> Adicionar Campaña</button>
+												</div>
+												<br>
+												<!-- Table Campanas -->
+												<div class="row">
+													<div class="col-12 text-center">
+														<div class="ibox-content">
+															<?php if ($hasRowsCampanas) { ?>
+																	<div class="table" style="max-height: 230px; overflow-y: auto;">
+																		<table class="table table-striped table-bordered table-hover dataTables-example">
+																			<thead>
+																				<tr>
+																					<th>ID Campaña</th> 
+
+																					<th>Campaña</th> 
+																					<th>VIN</th>
+
+																					<th>Acciones</th>
+																				</tr>
+																			</thead>
+																			<tbody>
+																				<?php while ($row_Campana = sqlsrv_fetch_array($SQL_Campanas)) { ?>
+																						<tr class="gradeX">
+																							<td>
+																								<a href="campanas_vehiculo.php?id=<?php echo $row_Campana['id_campana']; ?>&edit=1" class="btn btn-success btn-xs" target="_blank">
+																									<i class="fa fa-folder-open-o"></i> <?php echo $row_Campana['id_campana']; ?>
+																								</a>
+																							</td>
+
+																							<td><?php echo $row_Campana['campana']; ?></td>
+																							<td><?php echo $row_Campana['VIN']; ?></td>
+
+																							<td>
+																								<button type="button"
+																									id="btnDelete<?php echo $row_Campana['id_campana']; ?>"
+																									class="btn btn-danger btn-xs"
+																									onclick="EliminarCampana('<?php echo $row_Campana['id_campana']; ?>');"><i
+																										class="fa fa-trash"></i>
+																									Eliminar</button>
+																							</td>
+																						</tr>
+																				<?php } ?>
+																			</tbody>
+																		</table>
+																	</div>
+															<?php } else { ?>
+																	<i class="fa fa-search" style="font-size: 18px; color: lightgray;"></i>
+																	<span style="font-size: 13px; color: lightgray;">No hay registros de Campañas de Vehículo</span>
+															<?php } ?>
+														</div>
+													</div>
+												</div>
+												<!-- End Table Campanas -->
+											</div>
+											<!-- /.panel-body -->
+										</div>
+										<!-- End Campanas -->	   
+									</div>
+									<!-- /.tab-content -->
+								</div>
+								<!-- /.tabs-container -->
+							</div>
+							<!-- /.ibox-content -->
+						</div>
+						<!-- /.ibox -->
+				   <?php } ?>
 		   </div>
 			</div>
 		  </div>
@@ -2722,27 +2899,27 @@ function AgregarEsto(contenedorID, valorElemento) {
 <?php include "includes/pie.php"; ?>
 <!-- InstanceBeginEditable name="EditRegion4" -->
 <script>
-	 $(document).ready(function(){
-		// SMM, 11/05/2022
-		<?php if (isset($_GET['Serial'])) { ?>
-				// $('#NumeroSerie').trigger('change');
-		 <?php } ?>
+$(document).ready(function () {
+	// SMM, 11/05/2022
+	<?php if (isset($_GET['Serial'])) { ?>
+					// $('#NumeroSerie').trigger('change');
+	 <?php } ?>
 
 		$("#CrearLlamada").validate({
-			 submitHandler: function(form){
-				 if(Validar()){
-					 let vP=document.getElementById('P');
-					 let msg= (vP.value=='40') ? "¿Está seguro que desea reabrir la llamada?" : "¿Está seguro que desea guardar los datos?";
-					 let sw_ValDir=<?php echo $sw_valDir; ?>;
+			submitHandler: function (form) {
+				if (Validar()) {
+					let vP = document.getElementById('P');
+					let msg = (vP.value == '40') ? "¿Está seguro que desea reabrir la llamada?" : "¿Está seguro que desea guardar los datos?";
+					let sw_ValDir =<?php echo $sw_valDir; ?>;
 
-					if(sw_ValDir==1){
-						let dirAnterior='<?php echo isset($row['NombreSucursal']) ? $row['NombreSucursal'] : ""; ?>';
+					if (sw_ValDir == 1) {
+						let dirAnterior = '<?php echo isset($row['NombreSucursal']) ? $row['NombreSucursal'] : ""; ?>';
 						let combo = document.getElementById("SucursalCliente");
 						let dirActual = combo.options[combo.selectedIndex].text;
 
 						Swal.fire({
 							title: '¡Advertencia!',
-							html: 'La sucursal <strong>'+dirAnterior+'</strong> ha cambiado de nombre por <strong>'+dirActual+'</strong>. Se actualizará en la llamada de servicio.',
+							html: 'La sucursal <strong>' + dirAnterior + '</strong> ha cambiado de nombre por <strong>' + dirActual + '</strong>. Se actualizará en la llamada de servicio.',
 							icon: 'warning',
 							showCancelButton: true,
 							confirmButtonText: "Entendido",
@@ -2757,13 +2934,13 @@ function AgregarEsto(contenedorID, valorElemento) {
 									cancelButtonText: "No"
 								}).then((result) => {
 									if (result.isConfirmed) {
-										$('.ibox-content').toggleClass('sk-loading',true);
+										$('.ibox-content').toggleClass('sk-loading', true);
 										form.submit();
 									}
 								});
 							}
 						});
-					}else{
+					} else {
 						Swal.fire({
 							title: msg,
 							icon: "info",
@@ -2772,176 +2949,180 @@ function AgregarEsto(contenedorID, valorElemento) {
 							cancelButtonText: "No"
 						}).then((result) => {
 							if (result.isConfirmed) {
-								$('.ibox-content').toggleClass('sk-loading',true);
+								$('.ibox-content').toggleClass('sk-loading', true);
 								form.submit();
 							}
 						});
 					}
 
-				}else{
-					$('.ibox-content').toggleClass('sk-loading',false);
+				} else {
+					$('.ibox-content').toggleClass('sk-loading', false);
 				}
 			}
 		});
 
-		maxLength('ComentarioLlamada');
+	maxLength('ComentarioLlamada');
 
-		maxLength('CDU_Servicios'); // SMM, 02/03/2022
-		maxLength('CDU_Areas'); // SMM, 02/03/2022
+	maxLength('CDU_Servicios'); // SMM, 02/03/2022
+	maxLength('CDU_Areas'); // SMM, 02/03/2022
 
-		 <?php if (($edit == 0) || (($edit == 1) && (PermitirFuncion(302) && ($row['IdEstadoLlamada'] != '-1')))) { ?>
-				 $('#FechaCreacion, #FechaAgenda').datepicker({
-						todayBtn: "linked",
-						keyboardNavigation: false,
-						forceParse: false,
-						calendarWeeks: true,
-						autoclose: true,
-						format: 'yyyy-mm-dd',
-						 todayHighlight: true,
-						 //startDate: '<?php if ($edit == 1) {
-							 echo $row['FechaCreacionLLamada'];
-						 } else {
-							 echo date('Y-m-d');
-						 } ?>'
+	 <?php if (($edit == 0) || (($edit == 1) && (PermitirFuncion(302) && ($row['IdEstadoLlamada'] != '-1')))) { ?>
+			$('#FechaCreacion, #FechaAgenda').datepicker({
+				todayBtn: "linked",
+				keyboardNavigation: false,
+				forceParse: false,
+				calendarWeeks: true,
+				autoclose: true,
+				format: 'yyyy-mm-dd',
+				todayHighlight: true,
+				//startDate: '<?php if ($edit == 1) {
+					echo $row['FechaCreacionLLamada'];
+				} else {
+					echo date('Y-m-d');
+				} ?>'
 					});
-				 $('.clockpicker').clockpicker();
-		  <?php } ?>
-		 <?php if (($edit == 1) && (PermitirFuncion(302) && ($row['IdEstadoLlamada'] != '-1'))) { ?>
-				 $('#FechaCierre').datepicker({
-						todayBtn: "linked",
-						keyboardNavigation: false,
-						forceParse: false,
-						calendarWeeks: true,
-						autoclose: true,
-						format: 'yyyy-mm-dd',
-						 todayHighlight: true,
-						 startDate: '<?php echo $row['FechaCreacionLLamada']; ?>',
-						 endDate: '<?php echo date('Y-m-d'); ?>'
-					});
-		<?php } ?>
-		 $(".select2").select2();
-		 var options = {
-			url: function(phrase) {
-				return "ajx_buscar_datos_json.php?type=7&id="+phrase;
-			},
+		$('.clockpicker').clockpicker();
+	<?php } ?>
+	
+	<?php if (($edit == 1) && (PermitirFuncion(302) && ($row['IdEstadoLlamada'] != '-1'))) { ?>
+		$('#FechaCierre').datepicker({
+			todayBtn: "linked",
+			keyboardNavigation: false,
+			forceParse: false,
+			calendarWeeks: true,
+			autoclose: true,
+			format: 'yyyy-mm-dd',
+			todayHighlight: true,
+			startDate: '<?php echo $row['FechaCreacionLLamada']; ?>',
+			endDate: '<?php echo date('Y- m - d'); ?>'
+						});
+	<?php } ?>
 
-			getValue: "NombreBuscarCliente",
-			requestDelay: 400,
-			list: {
-				match: {
-					enabled: true
-				},
-				onClickEvent: function() {
-					var value = $("#NombreClienteLlamada").getSelectedItemData().CodigoCliente;
-					$("#ClienteLlamada").val(value).trigger("change");
-				}
-			}
-		};
-		 var options2 = {
-			url: function(phrase) {
-				return "ajx_buscar_datos_json.php?type=8&id="+phrase;
-			},
+	$(".select2").select2();
 
-			getValue: "Ciudad",
-			requestDelay: 400,
-			template: {
-				type: "description",
-				fields: {
-					description: "Codigo"
-				}
-			},
-			list: {
-				match: {
-					enabled: true
-				}
-			}
-		};
+var options = {
+	url: function (phrase) {
+		return "ajx_buscar_datos_json.php?type=7&id=" + phrase;
+	},
+
+	getValue: "NombreBuscarCliente",
+	requestDelay: 400,
+	list: {
+		match: {
+			enabled: true
+		},
+		onClickEvent: function () {
+			var value = $("#NombreClienteLlamada").getSelectedItemData().CodigoCliente;
+			$("#ClienteLlamada").val(value).trigger("change");
+		}
+	}
+};
+
+var options2 = {
+	url: function (phrase) {
+		return "ajx_buscar_datos_json.php?type=8&id=" + phrase;
+	},
+
+	getValue: "Ciudad",
+	requestDelay: 400,
+	template: {
+		type: "description",
+		fields: {
+			description: "Codigo"
+		}
+	},
+	list: {
+		match: {
+			enabled: true
+		}
+	}
+};
+
+// Stiven Muñoz Murillo, 24/01/2022
+var options3 = {
+	url: function (phrase) {
+		return "ajx_buscar_datos_json.php?type=46&id=" + phrase;
+	},
+	getValue: "DeArticuloLlamada",
+	requestDelay: 400,
+	list: {
+		match: {
+			enabled: true
+		},
+		onClickEvent: function () {
+			var value = $("#DeArticuloLlamada").getSelectedItemData().IdArticuloLlamada;
+			$("#IdArticuloLlamada").val(value).trigger("change");
+		}
+	}
+};
+
+	<?php if ($edit == 0) { ?>
+		$("#NombreClienteLlamada").easyAutocomplete(options);
+	<?php } ?>
+	
+	$("#CiudadLlamada").easyAutocomplete(options2);
+
+// Stiven Muñoz Murillo, 24/01/2022
+$("#DeArticuloLlamada").easyAutocomplete(options3);
+
+	<?php if ($dt_LS == 1) { ?>
+		$('#ClienteLlamada').trigger('change');
 
 		// Stiven Muñoz Murillo, 24/01/2022
-		var options3 = {
-			url: function(phrase) {
-				return "ajx_buscar_datos_json.php?type=46&id="+phrase;
+		$('#IdArticuloLlamada').trigger('change');
+	 <?php } ?>
+
+	<?php if ($edit == 1) { ?>
+		$('#Series option:not(:selected)').attr('disabled', true);
+	<?php } ?>
+
+	$('.dataTables-example').DataTable({
+		pageLength: 10,
+		dom: '<"html5buttons"B>lTfgitp',
+		language: {
+			"decimal": "",
+			"emptyTable": "No se encontraron resultados.",
+			"info": "Mostrando _START_ - _END_ de _TOTAL_ registros",
+			"infoEmpty": "Mostrando 0 - 0 de 0 registros",
+			"infoFiltered": "(filtrando de _MAX_ registros)",
+			"infoPostFix": "",
+			"thousands": ",",
+			"lengthMenu": "Mostrar _MENU_ registros",
+			"loadingRecords": "Cargando...",
+			"processing": "Procesando...",
+			"search": "Filtrar:",
+			"zeroRecords": "Ningún registro encontrado",
+			"paginate": {
+				"first": "Primero",
+				"last": "Último",
+				"next": "Siguiente",
+				"previous": "Anterior"
 			},
-			getValue: "DeArticuloLlamada",
-			requestDelay: 400,
-			list: {
-				match: {
-					enabled: true
-				},
-				onClickEvent: function() {
-					var value = $("#DeArticuloLlamada").getSelectedItemData().IdArticuloLlamada;
-					$("#IdArticuloLlamada").val(value).trigger("change");
-				}
+			"aria": {
+				"sortAscending": ": Activar para ordenar la columna ascendente",
+				"sortDescending": ": Activar para ordenar la columna descendente"
 			}
-		};
+		},
+		buttons: []
 
-		<?php
-		if ($edit == 0) { ?>
-				$("#NombreClienteLlamada").easyAutocomplete(options);
-		<?php } ?>
-		$("#CiudadLlamada").easyAutocomplete(options2);
-
-		// Stiven Muñoz Murillo, 24/01/2022
-		$("#DeArticuloLlamada").easyAutocomplete(options3);
-
-		<?php if ($dt_LS == 1) { ?>
-				$('#ClienteLlamada').trigger('change');
-
-				// Stiven Muñoz Murillo, 24/01/2022
-				$('#IdArticuloLlamada').trigger('change');
-		 <?php } ?>
-
-		<?php
-		if ($edit == 1) { ?>
-				$('#Series option:not(:selected)').attr('disabled',true);
-		<?php } ?>
-
-		$('.dataTables-example').DataTable({
-				pageLength: 10,
-				dom: '<"html5buttons"B>lTfgitp',
-				language: {
-					"decimal":        "",
-					"emptyTable":     "No se encontraron resultados.",
-					"info":           "Mostrando _START_ - _END_ de _TOTAL_ registros",
-					"infoEmpty":      "Mostrando 0 - 0 de 0 registros",
-					"infoFiltered":   "(filtrando de _MAX_ registros)",
-					"infoPostFix":    "",
-					"thousands":      ",",
-					"lengthMenu":     "Mostrar _MENU_ registros",
-					"loadingRecords": "Cargando...",
-					"processing":     "Procesando...",
-					"search":         "Filtrar:",
-					"zeroRecords":    "Ningún registro encontrado",
-					"paginate": {
-						"first":      "Primero",
-						"last":       "Último",
-						"next":       "Siguiente",
-						"previous":   "Anterior"
-					},
-					"aria": {
-						"sortAscending":  ": Activar para ordenar la columna ascendente",
-						"sortDescending": ": Activar para ordenar la columna descendente"
-					}
-				},
-				buttons: []
-
-			});
 	});
+});
 
 // Validación de la llamada de servicio, se ejecuta al momento de crear o actualizar.
-function Validar(){
-	let res=true;
+function Validar() {
+	let res = true;
 
-	let vP=document.getElementById('P');
-	let EstLlamada=document.getElementById('EstadoLlamada');
+	let vP = document.getElementById('P');
+	let EstLlamada = document.getElementById('EstadoLlamada');
+	let txtResol = document.getElementById('ResolucionLlamada');
 	let EstadoServicio = document.getElementById("CDU_EstadoServicio");
 	let CanceladoPor = document.getElementById("CDU_CanceladoPor");
 
 	// ($_POST['P'] == 40), Reabrir llamada de servicio
-	if(vP.value!=40) {
-		if(EstLlamada.value=='-1'){
-			if(EstadoServicio.value=='0'){
-				res=false;
+	if (vP.value != 40) {
+		if (EstLlamada.value == '-1') {
+			if (EstadoServicio.value == '0') {
+				res = false;
 				Swal.fire({
 					title: '¡Advertencia!',
 					text: 'Cuando está cerrando la llamada, el Estado de servicio debe ser diferente a NO EJECUTADO',
@@ -2950,9 +3131,9 @@ function Validar(){
 			}
 		}
 
-		if(EstadoServicio.value=='2'){
-			if (CanceladoPor.value=='' || CanceladoPor.value=='1.N/A'){
-				res=false;
+		if (EstadoServicio.value == '2') {
+			if (CanceladoPor.value == '' || CanceladoPor.value == '1.N/A') {
+				res = false;
 				Swal.fire({
 					title: '¡Advertencia!',
 					text: 'Debe seleccionar un valor en el campo Cancelado Por.',
@@ -2964,33 +3145,34 @@ function Validar(){
 	return res;
 }
 
-function EnviarFrm(P=33){
-	var vP=document.getElementById('P');
-//	vP.value=P;
-	var txtComentario=document.getElementById('ComentarioLlamada');
-	if(P==40){
-		vP.value=P;
+function EnviarFrm(P = 33) {
+	var vP = document.getElementById('P');
+	//	vP.value=P;
+	var txtComentario = document.getElementById('ComentarioLlamada');
+	if (P == 40) {
+		vP.value = P;
 		txtComentario.removeAttribute("required");
 		document.getElementById('DireccionLlamada').removeAttribute("required");
-	}else{
-		vP.value=P;
-		txtComentario.setAttribute("required","required");
+	} else {
+		vP.value = P;
+		txtComentario.setAttribute("required", "required");
 	}
 }
 
-function CambiarEstado(id,form,columID){
-	$('.ibox-content').toggleClass('sk-loading',true);
+function CambiarEstado(id, form, columID) {
+	$('.ibox-content').toggleClass('sk-loading', true);
 
 	$.ajax({
 		type: "POST",
 		url: "md_frm_cambiar_estados.php",
-		data:{
-			id:id,
+		data: {
+			id: id,
 			frm: form,
 			nomID: columID
 		},
-		success: function(response){
-			$('.ibox-content').toggleClass('sk-loading',false);
+		success: function (response) {
+			$('.ibox-content').toggleClass('sk-loading', false);
+
 			$('#ContenidoModal').html(response);
 			$('#myModal').modal("show");
 		}
@@ -2998,18 +3180,18 @@ function CambiarEstado(id,form,columID){
 }
 
 // SMM, 18/02/2022
-function MostrarCostos(id_llamada){
-	$('.ibox-content').toggleClass('sk-loading',true);
+function MostrarCostos(id_llamada) {
+	$('.ibox-content').toggleClass('sk-loading', true);
 	$.ajax({
 		type: "POST",
 		async: false,
 		url: "md_articulos_documentos.php",
-		data:{
-			pre:3,
-			DocEntry:id_llamada
+		data: {
+			pre: 3,
+			DocEntry: id_llamada
 		},
-		success: function(response){
-			$('.ibox-content').toggleClass('sk-loading',false);
+		success: function (response) {
+			$('.ibox-content').toggleClass('sk-loading', false);
 			$('#ContenidoModal').html(response);
 			$('#TituloModal').html('Precios IVA Incluido (Entregas (+) / Devoluciones (-))');
 			$('#myModal').modal("show");
@@ -3018,19 +3200,19 @@ function MostrarCostos(id_llamada){
 }
 
 // SMM, 26/07/2022
-function MostrarCostos_Documentos(docnum, id_objeto, de_objeto){
-	$('.ibox-content').toggleClass('sk-loading',true);
+function MostrarCostos_Documentos(docnum, id_objeto, de_objeto) {
+	$('.ibox-content').toggleClass('sk-loading', true);
 	$.ajax({
 		type: "POST",
 		async: false,
 		url: "md_articulos_documentos.php",
-		data:{
+		data: {
 			pre: 4,
 			DocNum: docnum,
 			IdObjeto: id_objeto
 		},
-		success: function(response){
-			$('.ibox-content').toggleClass('sk-loading',false);
+		success: function (response) {
+			$('.ibox-content').toggleClass('sk-loading', false);
 			$('#ContenidoModal').html(response);
 			$('#TituloModal').html(`Precios IVA Incluido (${de_objeto}: ${docnum})`);
 			$('#myModal').modal("show");
@@ -3039,11 +3221,11 @@ function MostrarCostos_Documentos(docnum, id_objeto, de_objeto){
 }
 
 // SMM 22/03/2022
-function CopiarToFactura(adj=1,dest=1){
-	var docDest="factura_venta.php";
-	if(dest==2)	docDest="orden_venta.php";
+function CopiarToFactura(adj = 1, dest = 1) {
+	var docDest = "factura_venta.php";
+	if (dest == 2) docDest = "orden_venta.php";
 
-	<?php if (PermitirFuncion(419)) { ?>
+<?php if (PermitirFuncion(419)) { ?>
 			Swal.fire({
 				title: "¿Desea cambiar de socio de negocio?",
 				icon: "question",
@@ -3055,7 +3237,7 @@ function CopiarToFactura(adj=1,dest=1){
 					$.ajax({
 						type: "POST",
 						url: "ajx_cbo_select.php?type=42&id=" + $('#CallID').val(),
-						success: function(response){
+						success: function (response) {
 							$('#ClienteFactSN').html(response).fadeIn();
 							$('#ClienteFactSN').trigger('change');
 						}
@@ -3065,17 +3247,17 @@ function CopiarToFactura(adj=1,dest=1){
 					CopiarFactura(adj, docDest);
 				}
 			});
-	<?php } else { ?>
+<?php } else { ?>
 			CopiarFactura(adj, docDest);
-	<?php } ?>
+<?php } ?>
 }
 
 // neduga, 18/02/2022
 function CopiarFactura(adj, docDest) {
 	let CodClienteFactura = document.getElementById('ClienteLlamada');
 
-	if(CodClienteFactura.value!="") {
-		window.location = docDest+`?dt_FC=2&Cardcode=${btoa(CodClienteFactura.value)}&adt=${btoa(adj)}&CodFactura=${btoa(CodClienteFactura.value)}&IdLlamada=${btoa($('#CallID').val())}&DocNum=${btoa($('#Ticket').val())}`;
+	if (CodClienteFactura.value != "") {
+		window.location = docDest + `?dt_FC=2&Cardcode=${btoa(CodClienteFactura.value)}&adt=${btoa(adj)}&CodFactura=${btoa(CodClienteFactura.value)}&IdLlamada=${btoa($('#CallID').val())}&DocNum=${btoa($('#Ticket').val())}`;
 	} else {
 		Swal.fire({
 			title: '¡Advertencia!',
@@ -3087,251 +3269,379 @@ function CopiarFactura(adj, docDest) {
 
 // SMM, 22/06/2022
 function CopiarFacturaSN(Cliente, Contacto, Sucursal, Direccion) {
-	if(Cliente != "") {
+	if (Cliente != "") {
 		adicionales = `Cardcode=${btoa(Cliente)}&CodFactura=${btoa(Cliente)}&Contacto=${btoa(Contacto)}&Sucursal=${btoa(Sucursal)}&Direccion=${btoa(Direccion)}`;
 		window.location = `factura_venta.php?dt_FC=2&${adicionales}&adt=${btoa(1)}&IdLlamada=${btoa($('#CallID').val())}&DocNum=${btoa($('#Ticket').val())}`;
 	} else {
 		console.log('Debe seleccionar un valor en el campo Cliente.');
 	}
 }
-
 </script>
 
 <script>
- Dropzone.options.dropzoneForm = {
-		paramName: "File", // The name that will be used to transfer the file
-		maxFilesize: "<?php echo ObtenerVariable("MaxSizeFile"); ?>", // MB
-		 maxFiles: "<?php echo ObtenerVariable("CantidadArchivos"); ?>",
-		uploadMultiple: true,
-		addRemoveLinks: true,
-		dictRemoveFile: "Quitar",
-		 acceptedFiles: "<?php echo ObtenerVariable("TiposArchivos"); ?>",
-		dictDefaultMessage: "<strong>Haga clic aqui para cargar anexos</strong><br>Tambien puede arrastrarlos hasta aqui<br><h4><small>(máximo <?php echo ObtenerVariable("CantidadArchivos"); ?> archivos a la vez)<small></h4>",
-		dictFallbackMessage: "Tu navegador no soporta cargue de archivos mediante arrastrar y soltar",
-		 removedfile: function(file) {
-		  $.get( "includes/procedimientos.php", {
+Dropzone.options.dropzoneForm = {
+	paramName: "File", // The name that will be used to transfer the file
+	maxFilesize: "<?php echo ObtenerVariable("MaxSizeFile"); ?>", // MB
+	maxFiles: "<?php echo ObtenerVariable("CantidadArchivos"); ?>",
+	uploadMultiple: true,
+	addRemoveLinks: true,
+	dictRemoveFile: "Quitar",
+	acceptedFiles: "<?php echo ObtenerVariable("TiposArchivos"); ?>",
+	dictDefaultMessage: "<strong>Haga clic aqui para cargar anexos</strong><br>Tambien puede arrastrarlos hasta aqui<br><h4><small>(máximo <?php echo ObtenerVariable("CantidadArchivos"); ?> archivos a la vez)<small></h4>",
+	dictFallbackMessage: "Tu navegador no soporta cargue de archivos mediante arrastrar y soltar",
+	removedfile: function (file) {
+		$.get("includes/procedimientos.php", {
 			type: "3",
-			  nombre: file.name
-		  }).done(function( data ) {
-			 var _ref;
-			  return (_ref = file.previewElement) !== null ? _ref.parentNode.removeChild(file.previewElement) : void 0;
-			 });
-		 }
-	};
+			nombre: file.name
+		}).done(function (data) {
+			var _ref;
+			return (_ref = file.previewElement) !== null ? _ref.parentNode.removeChild(file.previewElement) : void 0;
+		});
+	}
+};
 </script>
 
 <script>
-	$(function () {
-		var url = "";
-		var params = [];
+$(function () {
+	var url = "";
+	var params = [];
 
-		$(".alkin").on("click", function(event){
-			$('.ibox-content').toggleClass('sk-loading'); // Cargando...
-		});
+	$(".alkin").on("click", function (event) {
+		$('.ibox-content').toggleClass('sk-loading'); // Cargando...
+	});
 
-		$(".d-venta").on("click", function(event){
-			<?php if (PermitirFuncion(419)) { ?>
-					event.preventDefault(); // Evitar redirección del ancla
-					console.log(event);
+	$(".d-venta").on("click", function (event) {
+		<?php if (PermitirFuncion(419)) { ?>
+				event.preventDefault(); // Evitar redirección del ancla
+				console.log(event);
 
-					Swal.fire({
-						title: "¿Desea cambiar de socio de negocio?",
-						icon: "question",
-						showCancelButton: true,
-						confirmButtonText: "Si, confirmo",
-						cancelButtonText: "No"
-					}).then((result) => {
-						if (result.isConfirmed) {
-							let qs = "";
-							[url, qs] = $(this).attr('href').split('?');
-							params = Object.fromEntries(new URLSearchParams(qs));
+				Swal.fire({
+					title: "¿Desea cambiar de socio de negocio?",
+					icon: "question",
+					showCancelButton: true,
+					confirmButtonText: "Si, confirmo",
+					cancelButtonText: "No"
+				}).then((result) => {
+					if (result.isConfirmed) {
+						let qs = "";
+						[url, qs] = $(this).attr('href').split('?');
+						params = Object.fromEntries(new URLSearchParams(qs));
 
-							$('#modalSN').modal("show");
-						} else {
-							location.href = $(this).attr('href');
-						}
-					});
-			<?php } else { ?>
-					console.log("Permiso 419, no esta activo");
-			<?php } ?>
-		});
+						$('#modalSN').modal("show");
+					} else {
+						location.href = $(this).attr('href');
+					}
+				});
+		<?php } else { ?>
+				console.log("Permiso 419, no esta activo");
+		<?php } ?>
+	});
 
-		let options = {
-			url: function(phrase) {
-				return "ajx_buscar_datos_json.php?type=7&id="+phrase;
+	let options = {
+		url: function (phrase) {
+			return "ajx_buscar_datos_json.php?type=7&id=" + phrase;
+		},
+		adjustWidth: false,
+		getValue: "NombreBuscarCliente",
+		requestDelay: 400,
+		list: {
+			match: {
+				enabled: true
 			},
-			adjustWidth: false,
-			getValue: "NombreBuscarCliente",
-			requestDelay: 400,
-			list: {
-				match: {
-					enabled: true
-				},
-				onClickEvent: function() {
-					var value = $("#NombreClienteSN").getSelectedItemData().CodigoCliente;
-					$("#ClienteSN").val(value).trigger("change");
-				}
+			onClickEvent: function () {
+				var value = $("#NombreClienteSN").getSelectedItemData().CodigoCliente;
+				$("#ClienteSN").val(value).trigger("change");
 			}
-		};
+		}
+	};
 
-		$("#NombreClienteSN").easyAutocomplete(options);
+	$("#NombreClienteSN").easyAutocomplete(options);
 
-		$(".CancelarSN").on("click", function() {
-			$('.ibox-content').toggleClass('sk-loading', false);
-		});
+	$(".CancelarSN").on("click", function () {
+		$('.ibox-content').toggleClass('sk-loading', false);
+	});
 
-		$("#formCambiarSN").on("submit", function(event) {
-			event.preventDefault(); // Evitar redirección del formulario
+	$("#formCambiarSN").on("submit", function (event) {
+		event.preventDefault(); // Evitar redirección del formulario
 
-			let ClienteSN = document.getElementById('ClienteSN').value;
-			let ContactoSN = document.getElementById('ContactoSN').value;
-			let SucursalSN = document.getElementById('SucursalSN').value;
-			let DireccionSN = document.getElementById('DireccionSN').value;
+		let ClienteSN = document.getElementById('ClienteSN').value;
+		let ContactoSN = document.getElementById('ContactoSN').value;
+		let SucursalSN = document.getElementById('SucursalSN').value;
+		let DireccionSN = document.getElementById('DireccionSN').value;
 
-			params.Cardcode = Base64.encode(ClienteSN);
-			params.Contacto = Base64.encode(ContactoSN);
-			params.Sucursal = Base64.encode(SucursalSN);
-			params.Direccion = Base64.encode(DireccionSN);
+		params.Cardcode = Base64.encode(ClienteSN);
+		params.Contacto = Base64.encode(ContactoSN);
+		params.Sucursal = Base64.encode(SucursalSN);
+		params.Direccion = Base64.encode(DireccionSN);
 
-			let qs = new URLSearchParams(params).toString();
-			location.href = `${url}?${qs}`;
-		});
+		let qs = new URLSearchParams(params).toString();
+		location.href = `${url}?${qs}`;
+	});
 
-		$("#ClienteSN").change(function() {
-			let ClienteSN = document.getElementById('ClienteSN').value;
+	$("#ClienteSN").change(function () {
+		let ClienteSN = document.getElementById('ClienteSN').value;
 
-			$.ajax({
-				type: "POST",
-				url: "ajx_cbo_select.php?type=2&id="+ClienteSN,
-				success: function(response) {
-					$('#ContactoSN').html(response).fadeIn();
-					$('#ContactoSN').trigger('change');
-				},
-				error: function(error) {
-					console.error("ContactoSN", error.responseText);
-				}
-			});
-			$.ajax({
-				type: "POST",
-				url: "ajx_cbo_select.php?type=3&id="+ClienteSN,
-				success: function(response) {
-					console.log(response);
-
-					$('#SucursalSN').html(response).fadeIn();
-					$('#SucursalSN').trigger('change');
-				},
-				error: function(error) {
-					console.error("SucursalSN", error.responseText);
-				}
-			});
-		});
-
-		$("#SucursalSN").change(function() {
-			let ClienteSN = document.getElementById('ClienteSN').value;
-			let SucursalSN = document.getElementById('SucursalSN').value;
-
-			if (SucursalSN != -1 && SucursalSN != '') {
-				$.ajax({
-					url:"ajx_buscar_datos_json.php",
-					data: {
-						type: 1,
-						CardCode: ClienteSN,
-						Sucursal: SucursalSN
-					},
-					dataType:'json',
-					success: function(data) {
-						document.getElementById('DireccionSN').value=data.Direccion;
-					},
-					error: function(error) {
-						console.error("SucursalSN", error.responseText);
-					}
-				});
+		$.ajax({
+			type: "POST",
+			url: "ajx_cbo_select.php?type=2&id=" + ClienteSN,
+			success: function (response) {
+				$('#ContactoSN').html(response).fadeIn();
+				$('#ContactoSN').trigger('change');
+			},
+			error: function (error) {
+				console.error("ContactoSN", error.responseText);
 			}
 		});
+		$.ajax({
+			type: "POST",
+			url: "ajx_cbo_select.php?type=3&id=" + ClienteSN,
+			success: function (response) {
+				console.log(response);
 
-		$("#formCambiarFactSN").on("submit", function(event) {
-			event.preventDefault(); // Evitar redirección del formulario
-
-			let Cliente = document.getElementById('ClienteFactSN').value;
-			let Contacto = document.getElementById('ContactoFactSN').value;
-			let Sucursal = document.getElementById('SucursalFactSN').value;
-			let Direccion = document.getElementById('DireccionFactSN').value;
-
-			CopiarFacturaSN(Cliente, Contacto, Sucursal, Direccion);
-		});
-
-		$("#ClienteFactSN").change(function() {
-			let ClienteFactSN = document.getElementById('ClienteFactSN').value;
-
-			$.ajax({
-				type: "POST",
-				url: "ajx_cbo_select.php?type=2&id="+ClienteFactSN,
-				success: function(response) {
-					$('#ContactoFactSN').html(response).fadeIn();
-					$('#ContactoFactSN').trigger('change');
-				},
-				error: function(error) {
-					console.error("ContactoFactSN", error.responseText);
-				}
-			});
-			$.ajax({
-				type: "POST",
-				url: "ajx_cbo_select.php?type=3&id="+ClienteFactSN,
-				success: function(response) {
-					console.log(response);
-
-					$('#SucursalFactSN').html(response).fadeIn();
-					$('#SucursalFactSN').trigger('change');
-				},
-				error: function(error) {
-					console.error("SucursalFactSN", error.responseText);
-				}
-			});
-		});
-
-		$("#SucursalFactSN").change(function() {
-			let ClienteFactSN = document.getElementById('ClienteFactSN').value;
-			let SucursalFactSN = document.getElementById('SucursalFactSN').value;
-
-			if (SucursalFactSN != -1 && SucursalFactSN != '') {
-				$.ajax({
-					url:"ajx_buscar_datos_json.php",
-					data: {
-						type: 1,
-						CardCode: ClienteFactSN,
-						Sucursal: SucursalFactSN
-					},
-					dataType:'json',
-					success: function(data) {
-						document.getElementById('DireccionFactSN').value=data.Direccion;
-					},
-					error: function(error) {
-						console.error("SucursalFactSN", error.responseText);
-					}
-				});
+				$('#SucursalSN').html(response).fadeIn();
+				$('#SucursalSN').trigger('change');
+			},
+			error: function (error) {
+				console.error("SucursalSN", error.responseText);
 			}
 		});
 	});
 
-	function ConsultarDatosClienteSN(){
-		let ClienteSN=document.getElementById('ClienteSN');
+	$("#SucursalSN").change(function () {
+		let ClienteSN = document.getElementById('ClienteSN').value;
+		let SucursalSN = document.getElementById('SucursalSN').value;
 
-		if(ClienteSN.value!=""){
-			self.name='opener';
-			remote=open('socios_negocios.php?id='+Base64.encode(ClienteSN.value)+'&ext=1&tl=1','remote','location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
-			remote.focus();
+		if (SucursalSN != -1 && SucursalSN != '') {
+			$.ajax({
+				url: "ajx_buscar_datos_json.php",
+				data: {
+					type: 1,
+					CardCode: ClienteSN,
+					Sucursal: SucursalSN
+				},
+				dataType: 'json',
+				success: function (data) {
+					document.getElementById('DireccionSN').value = data.Direccion;
+				},
+				error: function (error) {
+					console.error("SucursalSN", error.responseText);
+				}
+			});
 		}
-	}
+	});
 
-	function ConsultarDatosFactSN(){
-		let ClienteFactSN=document.getElementById('ClienteFactSN');
+	$("#formCambiarFactSN").on("submit", function (event) {
+		event.preventDefault(); // Evitar redirección del formulario
 
-		if(ClienteFactSN.value!=""){
-			self.name='opener';
-			remote=open('socios_negocios.php?id='+Base64.encode(ClienteFactSN.value)+'&ext=1&tl=1','remote','location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
-			remote.focus();
+		let Cliente = document.getElementById('ClienteFactSN').value;
+		let Contacto = document.getElementById('ContactoFactSN').value;
+		let Sucursal = document.getElementById('SucursalFactSN').value;
+		let Direccion = document.getElementById('DireccionFactSN').value;
+
+		CopiarFacturaSN(Cliente, Contacto, Sucursal, Direccion);
+	});
+
+	$("#ClienteFactSN").change(function () {
+		let ClienteFactSN = document.getElementById('ClienteFactSN').value;
+
+		$.ajax({
+			type: "POST",
+			url: "ajx_cbo_select.php?type=2&id=" + ClienteFactSN,
+			success: function (response) {
+				$('#ContactoFactSN').html(response).fadeIn();
+				$('#ContactoFactSN').trigger('change');
+			},
+			error: function (error) {
+				console.error("ContactoFactSN", error.responseText);
+			}
+		});
+		$.ajax({
+			type: "POST",
+			url: "ajx_cbo_select.php?type=3&id=" + ClienteFactSN,
+			success: function (response) {
+				console.log(response);
+
+				$('#SucursalFactSN').html(response).fadeIn();
+				$('#SucursalFactSN').trigger('change');
+			},
+			error: function (error) {
+				console.error("SucursalFactSN", error.responseText);
+			}
+		});
+	});
+
+	$("#SucursalFactSN").change(function () {
+		let ClienteFactSN = document.getElementById('ClienteFactSN').value;
+		let SucursalFactSN = document.getElementById('SucursalFactSN').value;
+
+		if (SucursalFactSN != -1 && SucursalFactSN != '') {
+			$.ajax({
+				url: "ajx_buscar_datos_json.php",
+				data: {
+					type: 1,
+					CardCode: ClienteFactSN,
+					Sucursal: SucursalFactSN
+				},
+				dataType: 'json',
+				success: function (data) {
+					document.getElementById('DireccionFactSN').value = data.Direccion;
+				},
+				error: function (error) {
+					console.error("SucursalFactSN", error.responseText);
+				}
+			});
 		}
+	});
+
+	// Adicionar campanas.
+	$("#NumeroSerie").on("change", function () {
+		if ($(this).val() != "") {
+			$('#AddCampana').prop('disabled', false);
+		} else {
+			$('#AddCampana').prop('disabled', true);
+		}
+
+		let id_tarjeta_equipo = $(this).find(':selected').data('id');
+
+		$.ajax({
+			type: "POST",
+			url: `ajx_cbo_select.php?type=49&id=${id_tarjeta_equipo}`,
+			success: function (response) {
+				$("#Campanas").html(response).fadeIn();
+				$("#Campanas").trigger('change');
+			},
+			error: function(error) {
+				console.log("error (4128), ", error);
+			}
+		});
+	});
+
+	$("#AddCampana").on("click", function () {
+		AdicionarCampana(1);
+	});
+	// SMM, 08/09/2023
+
+	// SMM, 13/09/2023
+	<?php if(isset($_GET["active"])) { ?>
+		VerTAB(<?php echo $_GET["active"]; ?>);
+	<?php } ?>
+});
+
+function AdicionarCampana(asinc = 0) {
+	$('.ibox-content').toggleClass('sk-loading', true);
+	let IdInterno_TarjetaEquipo = $("#NumeroSerie").find(':selected').data('id');
+
+	$.ajax({
+		type: "POST",
+		data: {
+			id_tarjeta_equipo: IdInterno_TarjetaEquipo,
+			asincrono: asinc
+		},
+		url: "md_adicionar_campanas.php",
+		success: function (response) {
+			$('.ibox-content').toggleClass('sk-loading', false);
+
+			$('#ContenidoModal2').html(response);
+			$('#myModal2').modal("show");
+		}
+	});
+}
+
+function ConsultarDatosClienteSN() {
+	let ClienteSN = document.getElementById('ClienteSN');
+
+	if (ClienteSN.value != "") {
+		self.name = 'opener';
+		remote = open('socios_negocios.php?id=' + Base64.encode(ClienteSN.value) + '&ext=1&tl=1', 'remote', 'location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
+		remote.focus();
 	}
+}
+
+function ConsultarDatosFactSN() {
+	let ClienteFactSN = document.getElementById('ClienteFactSN');
+
+	if (ClienteFactSN.value != "") {
+		self.name = 'opener';
+		remote = open('socios_negocios.php?id=' + Base64.encode(ClienteFactSN.value) + '&ext=1&tl=1', 'remote', 'location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
+		remote.focus();
+	}
+}
+
+// SMM, 14/09/2023
+function VerTAB(id) {
+	// Hacer scroll hasta el final de la página
+	window.scrollTo(0, document.body.scrollHeight);
+
+	// Eliminar la clase "active" de todos los títulos dentro de nav-tabs
+	var tituloTabs = document.querySelectorAll('.nav-tabs li');
+	tituloTabs.forEach(function (titulo) {
+		titulo.classList.remove('active');
+	});
+
+	// Eliminar la clase "active" de todas las pestañas dentro de tab-content
+	var tabs = document.querySelectorAll('.tab-content .tab-pane');
+	tabs.forEach(function (tab) {
+		tab.classList.remove('active');
+	});
+
+	// Agregar la clase "active" a la pestaña tab-"id" y su título
+	let tab = document.querySelector(`.nav-tabs #nav-${id}`);
+	let tabContenido = document.querySelector(`.tab-content #tab-${id}`);
+	tab.classList.add('active');
+	tabContenido.classList.add('active');
+}
+
+// SMM, 14/09/2023
+function EliminarCampana(id) {
+	Swal.fire({
+		title: "¿Está seguro que desea eliminar esta Campaña?",
+		icon: "question",
+		showCancelButton: true,
+		confirmButtonText: "Si, confirmo",
+		cancelButtonText: "No"
+	}).then((result) => {
+		if (result.isConfirmed) {
+			$.ajax({
+				type: "POST",
+				url: "md_adicionar_campanas.php",
+				data: {
+					type: 3,
+					id_llamada_servicio: $("#Ticket").val(), // "DocNum"
+					docentry_llamada_servicio: $("#CallID").val(), // "DocNum"
+					id_campana: id,  // Usar el ID actual en esta iteración
+				},
+				success: function (response) {
+					Swal.fire({
+						icon: (response == "OK") ? "success" : "warning'",
+						title: (response == "OK") ? "¡Listo!" : "¡Error!",
+						text: (response == "OK") ? "Se elimino la Campaña correctamente." : response
+					}).then((result) => {
+						if (result.isConfirmed) {
+							// Obtén la URL actual
+							let currentUrl = new URL(window.location.href);
+
+							// Obtén los parámetros del query string
+							let searchParams = currentUrl.searchParams;
+
+							// Actualiza el valor del parámetro 'active' o agrega si no existe
+							searchParams.set('active', 4);
+
+							// Crea una nueva URL con los parámetros actualizados
+							let newUrl = currentUrl.origin + currentUrl.pathname + '?' + searchParams.toString();
+
+							// Recarga la página con la nueva URL
+							window.location.href = newUrl;
+						}
+					});
+				},
+				error: function (error) {
+					console.error("640->", error.responseText);
+				}
+			});
+			// $.ajax
+		}
+	});
+}
 </script>
 <!-- InstanceEndEditable -->
 </body>
