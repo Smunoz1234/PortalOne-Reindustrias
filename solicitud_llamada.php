@@ -341,9 +341,6 @@ if ($edit == 1 && $sw_error == 0) {
 	//Lista de materiales
 	$SQL_ListaMateriales = Seleccionar('uvw_Sap_tbl_ListaMateriales', '*', "CDU_IdMarca='" . $CDU_IdMarca_TarjetaEquipo . "' AND CDU_IdLinea='" . $CDU_IdLinea_TarjetaEquipo . "'");
 
-	//Activides relacionadas
-	$SQL_Actividad = Seleccionar('uvw_Sap_tbl_Actividades', '*', "ID_LlamadaServicio='$IdSolicitud'", 'ID_Actividad');
-
 	//Documentos relacionados
 	$SQL_DocRel = Seleccionar('uvw_Sap_tbl_LlamadasServiciosDocRelacionados', '*', "ID_LlamadaServicio='$IdSolicitud'");
 
@@ -382,9 +379,6 @@ if ($sw_error == 1) {
 
 	//Numero de series -> Tarjeta de equipo
 	$SQL_NumeroSerie = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', '*', "ItemCode='" . $row['IdArticuloLlamada'] . "'", 'SerialFabricante');
-
-	//Activides relacionadas
-	$SQL_Actividad = Seleccionar('uvw_Sap_tbl_Actividades', '*', "ID_LlamadaServicio='" . $row['DocEntry'] . "'", 'ID_Actividad');
 
 	//Documentos relacionados
 	$SQL_DocRel = Seleccionar('uvw_Sap_tbl_LlamadasServiciosDocRelacionados', '*', "ID_LlamadaServicio='" . $row['DocEntry'] . "'");
@@ -495,6 +489,11 @@ $TipoProblema = ObtenerValorDefecto(191, "IdTipoProblema", false);
 $id_ls = $row['DocNum'] ?? "";
 $SQL_Campanas = Seleccionar("uvw_tbl_LlamadasServicios_Campanas", "*", "[id_llamada_servicio]='$id_ls'");
 $hasRowsCampanas = ($SQL_Campanas) ? sqlsrv_has_rows($SQL_Campanas) : false;
+
+// SMM, 14/09/2023
+$id_sls = $row['DocNum'] ?? "";
+$SQL_Anotaciones = Seleccionar("tbl_SolicitudLlamadasServicios_Anotaciones", "*", "[id_solicitud_llamada_servicio]='$id_sls'");
+$hasRowsAnotaciones = ($SQL_Anotaciones) ? sqlsrv_has_rows($SQL_Anotaciones) : false;
 ?>
 
 <!DOCTYPE html>
@@ -2548,187 +2547,143 @@ function AgregarEsto(contenedorID, valorElemento) {
 										<div id="tab-1" class="tab-pane active">
 											<div class="panel-body">
 												<div class="row">
-											<?php if (PermitirFuncion(304) && (($row['IdEstadoLlamada'] == '-3') || ($row['IdEstadoLlamada'] == '-2'))) { ?>
-																<button type="button" onClick="javascript:location.href='actividad.php?dt_LS=1&TTarea=<?php echo base64_encode($row['TipoTarea']); ?>&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&Ciudad=<?php echo base64_encode($row['CiudadLlamada']); ?>&Barrio=<?php echo base64_encode($row['BarrioDireccionLlamada']); ?>&Telefono=<?php echo base64_encode($row['TelefonoContactoLlamada']); ?>&Correo=<?php echo base64_encode($row['CorreoContactoLlamada']); ?>&LS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('llamada_servicio.php'); ?>'" class="alkin btn btn-primary btn-xs"><i class="fa fa-plus-circle"></i> Agregar actividad</button>
-											<?php } ?>
+													<button type="button" onclick="AdicionarAnotacion()" class="alkin btn btn-primary btn-xs"><i class="fa fa-plus-circle"></i> Adicionar Anotación</button>
 												</div>
 												<br>
+												
+												<!-- Table Campanas -->
+												<div class="row">
+													<div class="col-12 text-center">
+														<div class="ibox-content">
+															<?php if ($hasRowsCampanas) { ?>
+																<div class="table" style="max-height: 230px; overflow-y: auto;">
+																	<table class="table table-striped table-bordered table-hover dataTables-example">
+																		<thead>
+																			<tr>
+																				<th>Número</th>
+																				<th>Fecha</th>
+																				<th>Evento</th>
+																				<th>Comentarios</th>
+																			</tr>
+																		</thead>
+																		<tbody>
+																			<?php while ($row_Anotaciones = sqlsrv_fetch_array($SQL_Anotaciones)) { ?>
+																				<tr class="gradeX">
+																					<td><?php echo $row_Anotaciones['Anotaciones']; ?></td>
+																					<td><?php echo $row_Anotaciones['Anotaciones']; ?></td>
+																					<td><?php echo $row_Anotaciones['VIN']; ?></td>
+																					
+																					<td>
+																						<?php if ($row_Anotaciones['FechaHoraInicioAnotaciones'] != "") {
+																							echo $row_Anotaciones['FechaHoraInicioAnotaciones']->format('Y-m-d H:s');
+																						} else { ?>
+																							<p class="text-muted">--</p>
+																						<?php } ?>
+																					</td>
+																				</tr>
+																			<?php } ?>
+																		</tbody>
+																	</table>
+																</div>
+															<?php } else { ?>
+																<i class="fa fa-search" style="font-size: 18px; color: lightgray;"></i>
+																<span style="font-size: 13px; color: lightgray;">No hay Anotaciones para mostrar</span>
+															<?php } ?>
+														</div>
+														<!-- /.ibox-content -->
+													</div>
+												</div>
+												<!-- End Table Campanas -->
+											</div>
+											<!-- /.panel-body -->
+										</div>
+										<!-- /#tab-1 -->
+
+										<div id="tab-2" class="tab-pane">
+											<div class="panel-body">
+												<!-- Agregar documento, Inicio -->
+												<div class="row">
+													<div class="col-lg-9">
+														<?php if (PermitirFuncion(302) && ($row['IdEstadoLlamada'] != '-1')) { ?>
+															<?php if (PermitirFuncion([401, 402, 404, 409])) { ?>
+																<div class="btn-group">
+																	<button data-toggle="dropdown" class="btn btn-outline btn-success dropdown-toggle"><i class="fa fa-plus-circle"></i> Agregar documento <i class="fa fa-caret-down"></i></button>
+																	<ul class="dropdown-menu">
+																		<?php if (PermitirFuncion(401)) { ?>
+																			<li><a class="dropdown-item alkin d-venta" href="oferta_venta.php?dt_SLS=1&dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&SLS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>">Oferta de venta con LMT</a></li>
+																			<li><a class="dropdown-item alkin d-venta" href="oferta_venta.php?dt_SLS=1&dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&SLS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>&LMT=false">Oferta de venta sin LMT</a></li>
+																		<?php } ?>
+																	</ul>
+																</div>
+															<?php } ?>
+														<?php } ?>
+													</div>
+													<div class="col-lg-3">
+														<div class="row">
+															<div class="col-lg-6">
+																<button class="pull-right btn btn-primary" id="btnPreCostos" name="btnPreCostos" onClick="MostrarCostos('<?php echo $IdSolicitud; ?>');"><i class="fa fa-money"></i> Previsualizar Precios</button>
+															</div>
+															<div class="col-lg-6">
+																<div class="btn-group pull-right">
+																	<button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i class="fa fa-mail-forward"></i> Liquidación <i class="fa fa-caret-down"></i></button>
+																	<ul class="dropdown-menu">
+																		<li><a class="alkin dropdown-item" href="#" onClick="CopiarToFactura(1);">Prefactura de venta</a></li>
+																	</ul>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+												<br>
+												<!-- Agregar documento, Fin -->
 												<div class="table-responsive">
 													<table class="table table-striped table-bordered table-hover dataTables-example" >
 														<thead>
 														<tr>
-															<th>Número</th>
-															<th>Asignado por</th>
-															<th>Asignado a</th>
-
-															<th>Perfil</th> <!-- SMM, 14/09/2022 -->
-
-															<th>Titulo</th>
-															<th>Fecha creación</th>
-															<th>Fecha limite</th>
-															<th>Dias venc.</th>
-															<th>Estado</th>
-															<th>Estado Servicio</th>
+															<th>Nombre cliente</th>
+															<th>Tipo de documento</th>
+															<th>Número de documento</th>
+															<th>Fecha de documento</th>
+															<th>Autorización</th>
+															<th>Estado de documento</th>
+															<th>Creado por</th>
+															<th>Artículos/Costos</th>
 															<th>Acciones</th>
 														</tr>
 														</thead>
 														<tbody>
-													<?php while ($row_Actividad = sqlsrv_fetch_array($SQL_Actividad)) {
-														if ($row_Actividad['IdEstadoActividad'] == 'N') {
-															$DVenc = DiasTranscurridos(date('Y-m-d'), $row_Actividad['FechaFinActividad']);
-														} else {
-															$DVenc = array('text-primary', 0);
-														}
-														?>
-																		<tr class="gradeX">
-																			<td><?php echo $row_Actividad['ID_Actividad']; ?></td>
-																			<td><?php echo $row_Actividad['DeAsignadoPor']; ?></td>
-																			<td><?php if ($row_Actividad['NombreEmpleado'] != "") {
-																				echo $row_Actividad['NombreEmpleado'];
-																			} else {
-																				echo "(Sin asignar)";
-																			} ?></td>
-
-																			<td><?php echo $row_Actividad['CargoEmpleado']; ?></td>
-
-																			<td><?php echo $row_Actividad['TituloActividad']; ?></td>
-																			<td><?php if ($row_Actividad['FechaHoraInicioActividad'] != "") {
-																				echo $row_Actividad['FechaHoraInicioActividad']->format('Y-m-d H:s');
-																			} else { ?><p class="text-muted">--</p><?php } ?></td>
-																			<td><?php if ($row_Actividad['FechaHoraFinActividad'] != "") {
-																				echo $row_Actividad['FechaHoraFinActividad']->format('Y-m-d H:s');
-																			} else { ?><p class="text-muted">--</p><?php } ?></td>
-																			<td><p class='<?php echo $DVenc[0]; ?>'><?php echo $DVenc[1]; ?></p></td>
-																			<td><span <?php if ($row_Actividad['IdEstadoActividad'] == 'N') {
-																				echo "class='label label-info'";
-																			} else {
-																				echo "class='label label-danger'";
-																			} ?>><?php echo $row_Actividad['DeEstadoActividad']; ?></span></td>
-
-																			<td>
-																			<?php $SQL_TiposEstadoServ = Seleccionar("uvw_tbl_TipoEstadoServicio", "*"); ?>
-																			<?php while ($row_TipoEstadoServ = sqlsrv_fetch_array($SQL_TiposEstadoServ)) { ?>
-																							<?php if ($row_Actividad['IdTipoEstadoActividad'] == $row_TipoEstadoServ['ID_TipoEstadoServicio']) { ?>
-																												<span class='label text-white' style="background-color: <?php echo $row_TipoEstadoServ['ColorEstadoServicio']; ?>;"><?php echo $row_Actividad['DeTipoEstadoActividad']; ?></span>
-																							<?php } ?>
-																			<?php } ?>
-																			</td>
-
-																			<td>
-																				<a href="actividad.php?tl=1&id=<?php echo base64_encode($row_Actividad['ID_Actividad']); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('llamada_servicio.php'); ?>" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i> Abrir</a>
-
-																				<!-- Botón de descarga -->
-																				<div class="btn-group">
-																					<button data-toggle="dropdown" class="btn btn-xs btn-warning dropdown-toggle"><i class="fa fa-download"></i> Descargar formato <i class="fa fa-caret-down"></i></button>
-																					<ul class="dropdown-menu">
-																					<?php $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=66 and VerEnDocumento='Y'"); ?>
-																					<?php while ($row_Formato = sqlsrv_fetch_array($SQL_Formato)) { ?>
-																										<li>
-																											<a class="dropdown-item" target="_blank" href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row_Actividad['ID_Actividad']); ?>&ObType=<?php echo base64_encode('66'); ?>&IdFrm=<?php echo base64_encode($row_Formato['IdFormato']); ?>&IdReg=<?php echo base64_encode($row_Formato['ID']); ?>"><?php echo $row_Formato['NombreVisualizar']; ?></a>
-																										</li>
-																					<?php } ?>
-																					</ul>
-																				</div>
-																				<!-- SMM, 25/07/2022 -->
-																			</td>
-																		</tr>
-													<?php } ?>
+														<?php while ($row_DocRel = sqlsrv_fetch_array($SQL_DocRel)) { ?>
+																<tr class="gradeX">
+																	<td><?php echo $row_DocRel['NombreCliente']; ?></td>
+																	<td><?php echo $row_DocRel['DeObjeto']; ?></td>
+																	<td><?php echo $row_DocRel['DocNum']; ?></td>
+																	<td><?php echo $row_DocRel['DocDate']; ?></td>
+																	<td><?php echo $row_DocRel['DeAuthPortal']; ?></td>
+																	<td><span <?php if ($row_DocRel['Cod_Estado'] == 'O') {
+																		echo "class='label label-info'";
+																	} else {
+																		echo "class='label label-danger'";
+																	} ?>><?php echo $row_DocRel['NombreEstado']; ?></span></td>
+																	<td><?php echo $row_DocRel['Usuario']; ?></td>
+																	<td>
+																		<a class="btn btn-primary btn-xs" id="btnPreCostos" name="btnPreCostos" onClick="MostrarCostos_Documentos('<?php echo $row_DocRel['DocNum']; ?>', '<?php echo $row_DocRel['IdObjeto']; ?>', '<?php echo $row_DocRel['DeObjeto']; ?>');"><i class="fa fa-money"></i> Previsualizar Precios</a>
+																	</td>
+																	<td>
+																	<?php if ($row_DocRel['Link'] != "") { ?>
+																			<a href="<?php echo $row_DocRel['Link']; ?>.php?id=<?php echo base64_encode($row_DocRel['DocEntry']); ?>&id_portal=<?php echo base64_encode($row_DocRel['IdPortal']); ?>&tl=1&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i> Abrir</a>
+																	<?php } ?>
+																	<?php if ($row_DocRel['Descargar'] != "") { ?>
+																			<a href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row_DocRel['DocEntry']); ?>&ObType=<?php echo base64_encode($row_DocRel['IdObjeto']); ?>&IdFrm=<?php echo base64_encode($row_DocRel['IdSeries']); ?>" target="_blank" class="btn btn-warning btn-xs"><i class="fa fa-download"></i> Descargar</a>
+																	<?php } ?>
+																	</td>
+																</tr>
+														<?php } ?>
 														</tbody>
 													</table>
 												</div>
 											</div>
 										</div>
-										<!-- /#tab-1 -->
-
-										<div id="tab-2" class="tab-pane">
-									   <div class="panel-body">
-										   <!-- Agregar documento, Inicio -->
-										   <div class="row">
-											   <div class="col-lg-9">
-													<?php if (PermitirFuncion(302) && ($row['IdEstadoLlamada'] != '-1')) { ?>
-															<?php if (PermitirFuncion([401, 402, 404, 409])) { ?>
-																	<div class="btn-group">
-																		<button data-toggle="dropdown" class="btn btn-outline btn-success dropdown-toggle"><i class="fa fa-plus-circle"></i> Agregar documento <i class="fa fa-caret-down"></i></button>
-																		<ul class="dropdown-menu">
-																				<?php if (PermitirFuncion(401)) { ?>
-																					<li><a class="dropdown-item alkin d-venta" href="oferta_venta.php?dt_SLS=1&dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&SLS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>">Oferta de venta con LMT</a></li>
-																					<li><a class="dropdown-item alkin d-venta" href="oferta_venta.php?dt_SLS=1&dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&SLS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>&LMT=false">Oferta de venta sin LMT</a></li>
-																				<?php } ?>
-																		</ul>
-																	</div>
-															<?php } ?>
-													<?php } ?>
-											   </div>
-											   <div class="col-lg-3">
-												   <div class="row">
-													   <div class="col-lg-6">
-														   <button class="pull-right btn btn-primary" id="btnPreCostos" name="btnPreCostos" onClick="MostrarCostos('<?php echo $IdSolicitud; ?>');"><i class="fa fa-money"></i> Previsualizar Precios</button>
-													   </div>
-													   <div class="col-lg-6">
-														   <div class="btn-group pull-right">
-															   <button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i class="fa fa-mail-forward"></i> Liquidación <i class="fa fa-caret-down"></i></button>
-															   <ul class="dropdown-menu">
-																   <li><a class="alkin dropdown-item" href="#" onClick="CopiarToFactura(1);">Prefactura de venta</a></li>
-																   <!-- li><a class="alkin dropdown-item" href="#" onClick="CopiarToFactura(0);">Factura de venta (<strong>NO</strong> copiar adjuntos)</a></li -->
-																   <!--li class="dropdown-divider"></li>
-															<li><a class="alkin dropdown-item" href="#" onClick="CopiarToFactura(1,2);">Orden de venta (copiar adjuntos)</a></li>
-															<li><a class="alkin dropdown-item" href="#" onClick="CopiarToFactura(0,2);">Orden de venta (<strong>NO</strong> copiar adjuntos)</a></li-->
-															   </ul>
-														   </div>
-													   </div>
-												   </div>
-											   </div>
-										   </div>
-										   <br>
-										   <!-- Agregar documento, Fin -->
-										   <div class="table-responsive">
-											   <table class="table table-striped table-bordered table-hover dataTables-example" >
-												   <thead>
-												   <tr>
-													   <th>Nombre cliente</th>
-													   <th>Tipo de documento</th>
-													   <th>Número de documento</th>
-													   <th>Fecha de documento</th>
-													   <th>Autorización</th>
-													   <th>Estado de documento</th>
-													   <th>Creado por</th>
-													   <th>Artículos/Costos</th>
-													   <th>Acciones</th>
-												   </tr>
-												   </thead>
-												   <tbody>
-											   	<?php while ($row_DocRel = sqlsrv_fetch_array($SQL_DocRel)) { ?>
-														   <tr class="gradeX">
-															   <td><?php echo $row_DocRel['NombreCliente']; ?></td>
-															   <td><?php echo $row_DocRel['DeObjeto']; ?></td>
-															  <td><?php echo $row_DocRel['DocNum']; ?></td>
-															  <td><?php echo $row_DocRel['DocDate']; ?></td>
-															  <td><?php echo $row_DocRel['DeAuthPortal']; ?></td>
-															  <td><span <?php if ($row_DocRel['Cod_Estado'] == 'O') {
-																  echo "class='label label-info'";
-															  } else {
-																  echo "class='label label-danger'";
-															  } ?>><?php echo $row_DocRel['NombreEstado']; ?></span></td>
-															  <td><?php echo $row_DocRel['Usuario']; ?></td>
-															  <td>
-																  <a class="btn btn-primary btn-xs" id="btnPreCostos" name="btnPreCostos" onClick="MostrarCostos_Documentos('<?php echo $row_DocRel['DocNum']; ?>', '<?php echo $row_DocRel['IdObjeto']; ?>', '<?php echo $row_DocRel['DeObjeto']; ?>');"><i class="fa fa-money"></i> Previsualizar Precios</a>
-															  </td>
-															  <td>
-													  		<?php if ($row_DocRel['Link'] != "") { ?>
-																	  <a href="<?php echo $row_DocRel['Link']; ?>.php?id=<?php echo base64_encode($row_DocRel['DocEntry']); ?>&id_portal=<?php echo base64_encode($row_DocRel['IdPortal']); ?>&tl=1&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i> Abrir</a>
-															<?php } ?>
-													  		<?php if ($row_DocRel['Descargar'] != "") { ?>
-																	  <a href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row_DocRel['DocEntry']); ?>&ObType=<?php echo base64_encode($row_DocRel['IdObjeto']); ?>&IdFrm=<?php echo base64_encode($row_DocRel['IdSeries']); ?>" target="_blank" class="btn btn-warning btn-xs"><i class="fa fa-download"></i> Descargar</a>
-															<?php } ?>
-															  </td>
-														  </tr>
-												<?php } ?>
-												   </tbody>
-											   </table>
-										   </div>
-									   </div>
-								   </div>
-									<!-- /#tab-2 -->
+										<!-- /#tab-2 -->
 									
 										<!-- Campanas -->
 										<div id="tab-4" class="tab-pane">
@@ -2741,49 +2696,48 @@ function AgregarEsto(contenedorID, valorElemento) {
 												<div class="row">
 													<div class="col-12 text-center">
 														<div class="ibox-content">
-															<?php if ($hasRowsCampanas) { ?>
-																	<div class="table" style="max-height: 230px; overflow-y: auto;">
-																		<table class="table table-striped table-bordered table-hover dataTables-example">
-																			<thead>
-																				<tr>
-																					<th>ID Campaña</th> 
+															<?php if ($hasRowsAnotaciones) { ?>
+																<div class="table" style="max-height: 230px; overflow-y: auto;">
+																	<table class="table table-striped table-bordered table-hover dataTables-example">
+																		<thead>
+																			<tr>
+																				<th>ID Campaña</th> 
+																				<th>Campaña</th> 
+																				<th>VIN</th>
+																				<th>Acciones</th>
+																			</tr>
+																		</thead>
+																		<tbody>
+																			<?php while ($row_Campana = sqlsrv_fetch_array($SQL_Campanas)) { ?>
+																				<tr class="gradeX">
+																					<td>
+																						<a href="campanas_vehiculo.php?id=<?php echo $row_Campana['id_campana']; ?>&edit=1" class="btn btn-success btn-xs" target="_blank">
+																							<i class="fa fa-folder-open-o"></i> <?php echo $row_Campana['id_campana']; ?>
+																						</a>
+																					</td>
 
-																					<th>Campaña</th> 
-																					<th>VIN</th>
+																					<td><?php echo $row_Campana['campana']; ?></td>
+																					<td><?php echo $row_Campana['VIN']; ?></td>
 
-																					<th>Acciones</th>
+																					<td>
+																						<button type="button"
+																							id="btnDelete<?php echo $row_Campana['id_campana']; ?>"
+																							class="btn btn-danger btn-xs"
+																							onclick="EliminarCampana('<?php echo $row_Campana['id_campana']; ?>');"><i
+																								class="fa fa-trash"></i>
+																							Eliminar</button>
+																					</td>
 																				</tr>
-																			</thead>
-																			<tbody>
-																				<?php while ($row_Campana = sqlsrv_fetch_array($SQL_Campanas)) { ?>
-																						<tr class="gradeX">
-																							<td>
-																								<a href="campanas_vehiculo.php?id=<?php echo $row_Campana['id_campana']; ?>&edit=1" class="btn btn-success btn-xs" target="_blank">
-																									<i class="fa fa-folder-open-o"></i> <?php echo $row_Campana['id_campana']; ?>
-																								</a>
-																							</td>
-
-																							<td><?php echo $row_Campana['campana']; ?></td>
-																							<td><?php echo $row_Campana['VIN']; ?></td>
-
-																							<td>
-																								<button type="button"
-																									id="btnDelete<?php echo $row_Campana['id_campana']; ?>"
-																									class="btn btn-danger btn-xs"
-																									onclick="EliminarCampana('<?php echo $row_Campana['id_campana']; ?>');"><i
-																										class="fa fa-trash"></i>
-																									Eliminar</button>
-																							</td>
-																						</tr>
-																				<?php } ?>
-																			</tbody>
-																		</table>
-																	</div>
+																			<?php } ?>
+																		</tbody>
+																	</table>
+																</div>
 															<?php } else { ?>
-																	<i class="fa fa-search" style="font-size: 18px; color: lightgray;"></i>
-																	<span style="font-size: 13px; color: lightgray;">No hay registros de Campañas de Vehículo</span>
+																<i class="fa fa-search" style="font-size: 18px; color: lightgray;"></i>
+																<span style="font-size: 13px; color: lightgray;">No hay registros de Campañas de Vehículo</span>
 															<?php } ?>
 														</div>
+														<!-- /.ibox-content -->
 													</div>
 												</div>
 												<!-- End Table Campanas -->
