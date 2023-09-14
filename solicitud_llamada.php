@@ -3509,6 +3509,22 @@ function EliminarCampana(id) {
 		}
 	});
 }
+
+// SMM, 14/09/2023
+function AdicionarAnotacion() {
+	$('.ibox-content').toggleClass('sk-loading', true);
+	
+	$.ajax({
+		type: "POST",
+		url: "md_adicionar_anotaciones.php",
+		success: function (response) {
+			$('.ibox-content').toggleClass('sk-loading', false);
+
+			$('#ContenidoModal2').html(response);
+			$('#myModal2').modal("show");
+		}
+	});
+}
 </script>
 <!-- InstanceEndEditable -->
 </body>

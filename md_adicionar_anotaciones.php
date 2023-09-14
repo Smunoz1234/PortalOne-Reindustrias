@@ -80,56 +80,6 @@ $SQL_Campanas_Modal = Seleccionar("uvw_tbl_LlamadasServicios_Campanas_Asignacion
 $hasRowsCampanas_Modal = ($SQL_Campanas_Modal) ? sqlsrv_has_rows($SQL_Campanas_Modal) : false;
 ?>
 
-<script>
-	var json = [];
-	var cant = 0;
-	function SeleccionarCampana(DocNum) {
-		var btnAdicionar = document.getElementById('btnAdicionar');
-		var Check = document.getElementById(`chkSelOT${DocNum}`).checked;
-		var sw = -1;
-
-		// console.log(Check);
-
-		json.forEach(function (element, index) {
-			if (json[index] == DocNum) {
-				sw = index;
-			}
-
-			// console.log(element, index);
-		});
-
-		if (sw >= 0) {
-			json.splice(sw, 1);
-			cant--;
-		} else if (Check) {
-			json.push(DocNum);
-			cant++;
-		}
-
-		if (cant > 0) {
-			$("#btnAdicionar").removeAttr("disabled");
-		} else {
-			$("#chkAll").prop("checked", false);
-			$("#btnAdicionar").attr("disabled", "disabled");
-		}
-
-		// console.log(json);
-	}
-
-	function SeleccionarTodos() {
-		var Check = document.getElementById('chkAll').checked;
-		if (Check == false) {
-			json = [];
-			cant = 0;
-			$("#btnAdicionar").attr("disabled", "disabled");
-		}
-		$(".chkSelOT").prop("checked", Check);
-		if (Check) {
-			$(".chkSelOT").trigger('change');
-		}
-	}
-</script>
-
 <style>
 	.swal2-container {
 		z-index: 9000;
@@ -140,9 +90,9 @@ $hasRowsCampanas_Modal = ($SQL_Campanas_Modal) ? sqlsrv_has_rows($SQL_Campanas_M
 	}
 </style>
 
-<form id="frmCampanasDetalle" method="post" enctype="multipart/form-data">
+<form id="frmAnotaciones" method="post" enctype="multipart/form-data">
 	<div class="modal-header">
-		<h4 class="modal-title">Adicionar Campañas</h4>
+		<h4 class="modal-title">Adicionar Anotaciones</h4>
 	</div>
 	<!-- /.modal-title -->
 
@@ -154,8 +104,9 @@ $hasRowsCampanas_Modal = ($SQL_Campanas_Modal) ? sqlsrv_has_rows($SQL_Campanas_M
 				<div class="row">
 					<div class="col-md-12">
 						<label class="control-label">Comentarios</label>
+						
 						<textarea name="Comentarios" rows="5" maxlength="3000" class="form-control" id="Comentarios"
-							type="text"></textarea>
+							type="text" required></textarea>
 					</div>
 				</div>
 				<!-- /.row -->
@@ -167,7 +118,7 @@ $hasRowsCampanas_Modal = ($SQL_Campanas_Modal) ? sqlsrv_has_rows($SQL_Campanas_M
 	<!-- /.modal-body -->
 
 	<div class="modal-footer">
-		<button type="submit" class="btn btn-success m-t-md" id="btnAdicionar" disabled><i class="fa fa-check"></i>
+		<button type="submit" class="btn btn-success m-t-md" id="btnAdicionar"><i class="fa fa-check"></i>
 			Aceptar</button>
 
 		<button type="button" class="btn btn-danger m-t-md" data-dismiss="modal" id="btnCerrar"><i
@@ -179,23 +130,11 @@ $hasRowsCampanas_Modal = ($SQL_Campanas_Modal) ? sqlsrv_has_rows($SQL_Campanas_M
 
 <script>
 	$(document).ready(function () {
-		<?php if ($asincrono == 1) { ?>
-			// Obtener las opciones seleccionadas como objetos de opciones
-			let opcionesSeleccionadas = $("#Campanas option:selected");
-
-			// Recorrer las opciones seleccionadas con forEach
-			opcionesSeleccionadas.each(function () {
-				let opcion = $(this).val();
-
-				// Seleccionar el checkbox
-    			$(`#chkSelOT${opcion}`).prop("checked", true);
-				SeleccionarCampana(opcion);
-			});
-		<?php } ?>
-
-		$("#frmCampanasDetalle").validate({
+		$("#frmAnotaciones").validate({
 			submitHandler: function (form) {
-				console.log(json); // json, viene de las funciones "seleccionar".
+
+				let formData = new FormData(form);
+				let json = Object.fromEntries(formData);
 
 				Swal.fire({
 					title: "¿Está seguro que desea continuar?",
@@ -205,11 +144,7 @@ $hasRowsCampanas_Modal = ($SQL_Campanas_Modal) ? sqlsrv_has_rows($SQL_Campanas_M
 					cancelButtonText: "No"
 				}).then((result) => {
 					if (result.isConfirmed) {
-						<?php if ($asincrono == 1) { ?>
-							AdicionarCampanasAsincrono();
-						<?php } else { ?>
-							AdicionarCampanas();
-						<?php } ?>
+						console.log(json);
 					}
 				});
 			}
@@ -310,25 +245,5 @@ $hasRowsCampanas_Modal = ($SQL_Campanas_Modal) ? sqlsrv_has_rows($SQL_Campanas_M
 			});
 		});
 		// .forEach()
-	}
-
-	function AdicionarCampanasAsincrono() {
-
-		// Deseleccionar todas las opciones
-		$("#Campanas option").prop("selected", false);
-
-		// Iterar sobre cada ID
-		json.forEach(function (id) {
-
-			// Seleccionar opciones específicas
-			$(`#Campanas option[value='${id}']`).prop("selected", true);
-		});
-		// .forEach()
-
-		// Disparar el evento "change"
-		$("#Campanas").trigger("change");
-
-		// Ocultar modal
-		$('#myModal2').modal("hide");
 	}
 </script>
