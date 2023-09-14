@@ -30,12 +30,11 @@ if ($type_detalle == 1) {
 
 	$parametros = array(
 		$type_detalle,
-		$id_llamada_servicio_detalle,
-		// "DocNum"
+		$id_llamada_servicio_detalle, // "DocNum"
 		$docentry_llamada_servicio,
-		"NULL",
-		// @linea
+		"NULL", // @linea
 		"'$id_campana_detalle'",
+		"NULL", // @ids_campanas
 		$id_usuario_actualizacion_detalle,
 		$fecha_actualizacion_detalle,
 		$hora_actualizacion_detalle,
@@ -49,11 +48,9 @@ if ($type_detalle == 1) {
 
 	$parametros = array(
 		$type_detalle,
-		$id_llamada_servicio_detalle,
-		// "DocNum"
+		$id_llamada_servicio_detalle, // "DocNum"
 		$docentry_llamada_servicio,
-		"NULL",
-		// @linea
+		"NULL", // @linea
 		"'$id_campana_detalle'",
 	);
 }
@@ -331,8 +328,8 @@ $hasRowsCampanas_Modal = ($SQL_Campanas_Modal) ? sqlsrv_has_rows($SQL_Campanas_M
 				url: "md_adicionar_campanas.php",
 				data: {
 					type: 1,
-					id_llamada_servicio: $("#Ticket").val(), // "DocNum"
-					docentry_llamada_servicio: $("#CallID").val(), // "DocNum"
+					id_llamada_servicio: $("#Ticket").val(),
+					docentry_llamada_servicio: $("#CallID").val(),
 					id_campana: id,  // Usar el ID actual en esta iteración
 				},
 				success: function (response) {

@@ -304,7 +304,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
                     if ($_POST['Cliente'][$i] != "") {
 
                         //Consultar si ya existe el cliente
-                        $SQL_ConsCliente = Seleccionar('uvw_tbl_ClienteUsuario', 'CodigoCliente', "ID_Usuario='" . $ID . "' and CodigoCliente='" . $_POST['Cliente'][$i] . "'");
+                        $SQL_ConsCliente = Seleccionar('uvw_tbl_ClienteUsuario', 'CodigoCliente', "ID_Usuario='$ID' AND CodigoCliente='" . $_POST['Cliente'][$i] . "'");
                         $row_ConsCliente = sqlsrv_fetch_array($SQL_ConsCliente);
 
                         //Insertar el cliente

@@ -138,6 +138,10 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
 		closedir($route);
 		$CantFiles = count($DocFiles);
 
+		// Campañas asociadas. SMM, 12/09/2023
+		$Campanas = implode(";", $_POST['Campanas']);
+        $Campanas = count($_POST['Campanas']) > 0 ? "'$Campanas'" : "''";
+
 		$ParamInsLlamada = array(
 			"NULL",
 			"NULL",
@@ -218,13 +222,13 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
 			// SMM, 18/10/2022
 			"'$FirmaContactoResponsable'",
 			"0",
-			// FormatoCierreLlamada, SMM 14/10/2022
 			"'$SLS'", // SMM, 08/09/2023
+			$Campanas, // SMM, 13/09/2023
 		);
 		$SQL_InsLlamada = EjecutarSP('sp_tbl_LlamadaServicios', $ParamInsLlamada, 32);
 		if ($SQL_InsLlamada) {
 			$row_NewIdLlamada = sqlsrv_fetch_array($SQL_InsLlamada);
-			$IdLlamada = $row_NewIdLlamada[0];
+			$IdLlamada = $row_NewIdLlamada[0]; // IdLlamadaPortal
 
 			try {
 				//Mover los anexos a la carpeta de archivos de SAP
@@ -300,6 +304,32 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
 						$msg .= ($SQL_CierreSolicitud) ? " (Se cerró el documento base)" : " (NO se pudo cerrar el documento base)";
 					}
 					// SMM, 08/09/2023
+
+					// Insertar las Campañas Asociadas. 
+					if (isset($_POST["Campanas"]) && ($Campanas != "''")) {
+						$CodUser = $_SESSION['CodUser'];
+						$DateTime = FormatoFecha(date('Y-m-d'), date('H:i:s'));
+						$CodUser = "'$CodUser'";
+						$DateTime = "'$DateTime'";
+
+						$Param_LoteCampanas = array(
+							2, // Insertar en Lote
+							$row_Llamada["DocNum"], // @id_llamada_servicio "Ticket"
+							$row_Llamada["ID_LlamadaServicio"], // @docentry_llamada_servicio "CallID"
+							"NULL", // @linea
+							"NULL", // @id_campana
+							$Campanas,
+							$CodUser, // "actualizacion"
+							$DateTime,
+							$DateTime,
+							$CodUser, // "creacion"
+							$DateTime,
+							$DateTime,
+						);
+						$SQL_LoteCampanas = EjecutarSP("sp_tbl_LlamadasServicios_Campanas", $Param_LoteCampanas);
+						$msg .= ($SQL_LoteCampanas) ? " (Se insertaron las campañas)" : " (NO se insertaron las campañas)";
+					}
+					// SMM, 13/09/2023
 
 					sqlsrv_close($conexion);
 					header("Location:llamada_servicio.php?msg=" . base64_encode($msg) . "&id=" . base64_encode($row_Llamada['ID_LlamadaServicio']) . "&tl=1&a=" . base64_encode("OK_LlamAdd"));
@@ -432,6 +462,7 @@ if (isset($_POST['P']) && ($_POST['P'] == 33)) { //Actualizar llamada de servici
 			(PermitirFuncion(325) && ($_POST['EstadoLlamada'] == -1)) ? "1" : "0",
 			// FormatoCierreLlamada, SMM 14/10/2022
 			"'$SLS'", // SMM, 08/09/2023
+			"''", // @CampanasAsociadas
 		);
 
 		// Actualizar la llamada de servicio.
@@ -690,6 +721,9 @@ if ($sw_error == 1) {
 
 	// Lista de materiales
 	$SQL_ListaMateriales = Seleccionar('uvw_Sap_tbl_ListaMateriales', '*', "CDU_IdMarca='$CDU_IdMarca_TarjetaEquipo' AND CDU_IdLinea='$CDU_IdLinea_TarjetaEquipo'");
+
+	// SMM, 13/09/2023
+	// Falta incluir el sw_error de Campanas, para eso se podria tomar cada id_campana y verificar si esta dentro de la cadena $row["CampanasAsociadas"] ?? ""
 }
 
 
