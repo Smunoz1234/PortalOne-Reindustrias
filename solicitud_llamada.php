@@ -490,7 +490,7 @@ $SQL_Campanas = Seleccionar("uvw_tbl_LlamadasServicios_Campanas", "*", "[id_llam
 $hasRowsCampanas = ($SQL_Campanas) ? sqlsrv_has_rows($SQL_Campanas) : false;
 
 // SMM, 14/09/2023
-$SQL_Anotaciones = Seleccionar("tbl_SolicitudLlamadasServicios_Anotaciones", "*", "[id_solicitud_llamada_servicio]='$IdSolicitud'");
+$SQL_Anotaciones = Seleccionar("uvw_tbl_SolicitudLlamadasServicios_Anotaciones", "*", "[id_solicitud_llamada_servicio]='$IdSolicitud'");
 $hasRowsAnotaciones = ($SQL_Anotaciones) ? sqlsrv_has_rows($SQL_Anotaciones) : false;
 ?>
 
@@ -2553,7 +2553,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 												<div class="row">
 													<div class="col-12 text-center">
 														<div class="ibox-content">
-															<?php if ($hasRowsCampanas) { ?>
+															<?php if ($hasRowsAnotaciones) { ?>
 																<div class="table" style="max-height: 230px; overflow-y: auto;">
 																	<table class="table table-striped table-bordered table-hover dataTables-example">
 																		<thead>
@@ -2567,17 +2567,19 @@ function AgregarEsto(contenedorID, valorElemento) {
 																		<tbody>
 																			<?php while ($row_Anotaciones = sqlsrv_fetch_array($SQL_Anotaciones)) { ?>
 																				<tr class="gradeX">
-																					<td><?php echo $row_Anotaciones['Anotaciones']; ?></td>
-																					<td><?php echo $row_Anotaciones['Anotaciones']; ?></td>
-																					<td><?php echo $row_Anotaciones['VIN']; ?></td>
+																					<td><?php echo $row_Anotaciones['linea']; ?></td>
 																					
 																					<td>
-																						<?php if ($row_Anotaciones['FechaHoraInicioAnotaciones'] != "") {
-																							echo $row_Anotaciones['FechaHoraInicioAnotaciones']->format('Y-m-d H:s');
+																						<?php if ($row_Anotaciones['fecha_anotacion'] != "") {
+																							// H:i:s
+																							echo $row_Anotaciones['fecha_anotacion']->format('Y-m-d');
 																						} else { ?>
 																							<p class="text-muted">--</p>
 																						<?php } ?>
 																					</td>
+
+																					<td><?php echo $row_Anotaciones['tipo_anotacion']; ?></td>
+																					<td><?php echo $row_Anotaciones['comentarios_anotacion']; ?></td>
 																				</tr>
 																			<?php } ?>
 																		</tbody>

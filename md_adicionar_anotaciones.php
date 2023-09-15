@@ -34,7 +34,7 @@ if ($type_anotacion == 1) {
 		$type_anotacion,
 		$id_solicitud_llamada_servicio,
 		$docentry_solicitud_llamada_servicio,
-		$linea,
+		$linea_anotacion,
 		"'$id_tipo_anotacion'",
 		$fecha_anotacion,
 		$hora_anotacion,
@@ -54,12 +54,12 @@ if ($type_anotacion == 1) {
 		$type_anotacion,
 		$id_solicitud_llamada_servicio,
 		$docentry_solicitud_llamada_servicio,
-		$linea,
+		$linea_anotacion,
 	);
 }
 
 if ($type_anotacion != 0) {
-	$SQL_Operacion = EjecutarSP("sp_tbl_LlamadasServicios_Campanas", $parametros);
+	$SQL_Operacion = EjecutarSP("sp_tbl_SolicitudLlamadasServicios_Anotaciones", $parametros);
 
 	if (!$SQL_Operacion) {
 		echo $msg_error_anotacion;
@@ -205,33 +205,30 @@ $SQL_Evento = Seleccionar("tbl_SolicitudLlamadasServicios_Anotaciones_Tipo", "*"
 									validarAjax = false;
 								}
 
-								// Verificar si todas las solicitudes AJAX han finalizado
-								if (contadorAjax === json.length) {
-									Swal.fire({
-										icon: (validarAjax) ? "success" : "warning",
-										title: (validarAjax) ? "¡Listo!" : "¡Error!",
-										text: (validarAjax) ? "La anotación se agrego correctamente." : "No se pudo agregar la anotación."
-									}).then((result) => {
-										if (result.isConfirmed) {
+								Swal.fire({
+									icon: (validarAjax) ? "success" : "warning",
+									title: (validarAjax) ? "¡Listo!" : "¡Error!",
+									text: (validarAjax) ? "La anotación se agrego correctamente." : "No se pudo agregar la anotación."
+								}).then((result) => {
+									if (result.isConfirmed) {
 
-											// Obtén la URL actual
-											let currentUrl = new URL(window.location.href);
+										// Obtén la URL actual
+										let currentUrl = new URL(window.location.href);
 
-											// Obtén los parámetros del query string
-											let searchParams = currentUrl.searchParams;
+										// Obtén los parámetros del query string
+										let searchParams = currentUrl.searchParams;
 
-											// Actualiza el valor del parámetro 'active' o agrega si no existe
-											searchParams.set('active', 1);
+										// Actualiza el valor del parámetro 'active' o agrega si no existe
+										searchParams.set('active', 1);
 
-											// Crea una nueva URL con los parámetros actualizados
-											let newUrl = currentUrl.origin + currentUrl.pathname + '?' + searchParams.toString();
+										// Crea una nueva URL con los parámetros actualizados
+										let newUrl = currentUrl.origin + currentUrl.pathname + '?' + searchParams.toString();
 
-											// Recarga la página con la nueva URL
-											window.location.href = newUrl;
-										}
-									});
-									// Swal.fire
-								}
+										// Recarga la página con la nueva URL
+										window.location.href = newUrl;
+									}
+								});
+								// Swal.fire		
 							},
 							error: function (error) {
 								alert("Ocurrio un error inesperado");
