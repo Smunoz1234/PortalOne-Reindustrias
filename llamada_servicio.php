@@ -4157,6 +4157,22 @@ $(function () {
 			success: function (response) {
 				$("#Campanas").html(response).fadeIn();
 				$("#Campanas").trigger('change');
+
+				// SMM, 15/09/2023
+				let campanas = "<?php echo $row["CampanasAsociadas"] ?? ""; ?>";
+				let ids = campanas.split(";"); // Dividimos la cadena en un arreglo
+				console.log("ids campanas", ids);
+
+				// Iterar sobre cada ID
+				ids.forEach(function (id) {
+
+					// Seleccionar opciones específicas
+					$(`#Campanas option[value='${id}']`).prop("selected", true);
+				});
+				// .forEach()
+
+				// Cargar de nuevo con los ids seleccionados.
+				$("#Campanas").trigger('change');
 			},
 			error: function(error) {
 				console.log("error (4128), ", error);
@@ -4172,6 +4188,11 @@ $(function () {
 	// SMM, 13/09/2023
 	<?php if(isset($_GET["active"])) { ?>
 		VerTAB(<?php echo $_GET["active"]; ?>);
+	<?php } ?>
+
+	// SMM, 15/09/2023
+	<?php if ((($sw_error == 1) || ($dt_SLS == 1)) && (isset($row['IdNumeroSerie']) && ($row['IdNumeroSerie'] != ""))) { ?>
+		$('#NumeroSerie').trigger('change');		
 	<?php } ?>
 });
 
