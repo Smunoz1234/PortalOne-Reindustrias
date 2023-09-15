@@ -491,6 +491,7 @@ $TipoProblema = ObtenerValorDefecto(191, "IdTipoProblema", false);
 
 // SMM, 14/09/2023
 $SQL_Campanas = Seleccionar("uvw_tbl_SolicitudLlamadasServicios_Campanas", "*", "[id_solicitud_llamada_servicio]='$IdSolicitud'");
+// echo "SELECT * FROM uvw_tbl_SolicitudLlamadasServicios_Campanas WHERE [id_solicitud_llamada_servicio]='$IdSolicitud'";
 $hasRowsCampanas = ($SQL_Campanas) ? sqlsrv_has_rows($SQL_Campanas) : false;
 
 // SMM, 14/09/2023
@@ -2700,7 +2701,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 												<div class="row">
 													<div class="col-12 text-center">
 														<div class="ibox-content">
-															<?php if ($hasRowsAnotaciones) { ?>
+															<?php if ($hasRowsCampanas) { ?>
 																<div class="table" style="max-height: 230px; overflow-y: auto;">
 																	<table class="table table-striped table-bordered table-hover dataTables-example">
 																		<thead>
