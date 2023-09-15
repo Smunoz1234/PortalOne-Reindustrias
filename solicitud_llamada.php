@@ -128,9 +128,12 @@ if (isset($_POST['P'])) { //Crear Solicitud de Llamada de servicio
 		closedir($route);
 		$CantFiles = count($DocFiles);
 
-		// Campañas asociadas. SMM, 14/09/2023
-		$Campanas = implode(";", $_POST['Campanas']);
-        $Campanas = count($_POST['Campanas']) > 0 ? "'$Campanas'" : "''";
+		// Campañas asociadas. SMM, 15/09/2023
+		$Campanas = "''";
+		if(isset($_POST['Campanas'])) {
+			$Campanas = implode(";", $_POST['Campanas']);
+        	$Campanas = count($_POST['Campanas']) > 0 ? "'$Campanas'" : "''";
+		}
 
 		$Metodo = 2; //Actualizar en el web services
 		$Type = 2; //Ejecutar actualizar en el SP
@@ -219,6 +222,7 @@ if (isset($_POST['P'])) { //Crear Solicitud de Llamada de servicio
 			"'" . ($_POST['CorreosContactosFirma'] ?? "") . "'",
 			"'$FirmaContactoResponsable'",
 			"0", // FormatoCierreLlamada
+			$Campanas, // SMM, 15/09/2023
 		);
 
 		$SQL_Llamada = EjecutarSP('sp_tbl_SolicitudLlamadaServicios', $ParamLlamada, $_POST['P']);
