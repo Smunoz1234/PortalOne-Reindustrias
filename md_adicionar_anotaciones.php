@@ -17,8 +17,9 @@ $comentarios_anotacion = $_POST["comentarios_anotacion"] ?? "";
 
 $linea_anotacion = "NULL";
 
-$fecha_anotacion = "'$datetime_anotacion'";
-$hora_anotacion = "'$datetime_anotacion'";
+// Por el momento no estoy trabajando la hora, ($_POST['fecha_anotacion'], $_POST['hora_anotacion'])
+$fecha_anotacion = isset($_POST['fecha_anotacion']) ? FormatoFechaToSAP($_POST['fecha_anotacion']) : "";
+$hora_anotacion = "'$fecha_anotacion'";
 
 $id_usuario_creacion_anotacion = "'$coduser'";
 $fecha_creacion_anotacion = "'$datetime_anotacion'";
@@ -36,7 +37,7 @@ if ($type_anotacion == 1) {
 		$docentry_solicitud_llamada_servicio,
 		$linea_anotacion,
 		"'$id_tipo_anotacion'",
-		$fecha_anotacion,
+		$hora_anotacion,
 		$hora_anotacion,
 		"'$comentarios_anotacion'",
 		$id_usuario_actualizacion_anotacion,

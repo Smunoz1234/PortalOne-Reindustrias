@@ -2527,7 +2527,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 				   <?php if ($edit == 1) { ?>
 						<div class="ibox">
 							<div class="ibox-title bg-success">
-								<h5 class="collapse-link"><i class="fa fa-pencil-square-o"></i> Seguimiento de llamada</h5>
+								<h5 class="collapse-link"><i class="fa fa-pencil-square-o"></i> Seguimiento de la Solicitud de Llamada</h5>
 								<a class="collapse-link pull-right">
 									<i class="fa fa-chevron-up"></i>
 								</a>
