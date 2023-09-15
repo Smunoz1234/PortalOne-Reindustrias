@@ -486,13 +486,11 @@ $TipoLlamada = ObtenerValorDefecto(191, "IdTipoLlamada", false);
 $TipoProblema = ObtenerValorDefecto(191, "IdTipoProblema", false);
 
 // SMM, 14/09/2023
-$id_ls = $row['DocNum'] ?? "";
-$SQL_Campanas = Seleccionar("uvw_tbl_LlamadasServicios_Campanas", "*", "[id_llamada_servicio]='$id_ls'");
+$SQL_Campanas = Seleccionar("uvw_tbl_LlamadasServicios_Campanas", "*", "[id_llamada_servicio]='$IdSolicitud'");
 $hasRowsCampanas = ($SQL_Campanas) ? sqlsrv_has_rows($SQL_Campanas) : false;
 
 // SMM, 14/09/2023
-$id_sls = $row['DocNum'] ?? "";
-$SQL_Anotaciones = Seleccionar("tbl_SolicitudLlamadasServicios_Anotaciones", "*", "[id_solicitud_llamada_servicio]='$id_sls'");
+$SQL_Anotaciones = Seleccionar("tbl_SolicitudLlamadasServicios_Anotaciones", "*", "[id_solicitud_llamada_servicio]='$IdSolicitud'");
 $hasRowsAnotaciones = ($SQL_Anotaciones) ? sqlsrv_has_rows($SQL_Anotaciones) : false;
 ?>
 
