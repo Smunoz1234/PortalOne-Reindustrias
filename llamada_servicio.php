@@ -4165,7 +4165,7 @@ $(function () {
 	});
 
 	$("#AddCampana").on("click", function () {
-		AdicionarCampana(1);
+		AdicionarCampanaAsincrono();
 	});
 	// SMM, 08/09/2023
 
@@ -4175,7 +4175,7 @@ $(function () {
 	<?php } ?>
 });
 
-function AdicionarCampana(asinc = 0) {
+function AdicionarCampana() {
 	$('.ibox-content').toggleClass('sk-loading', true);
 	let IdInterno_TarjetaEquipo = $("#NumeroSerie").find(':selected').data('id');
 
@@ -4183,7 +4183,28 @@ function AdicionarCampana(asinc = 0) {
 		type: "POST",
 		data: {
 			id_tarjeta_equipo: IdInterno_TarjetaEquipo,
-			asincrono: asinc
+			id_llamada_servicio: $("#Ticket").val(),
+			docentry_llamada_servicio: $("#CallID").val()
+		},
+		url: "md_adicionar_campanas.php",
+		success: function (response) {
+			$('.ibox-content').toggleClass('sk-loading', false);
+
+			$('#ContenidoModal2').html(response);
+			$('#myModal2').modal("show");
+		}
+	});
+}
+
+function AdicionarCampanaAsincrono() {
+	$('.ibox-content').toggleClass('sk-loading', true);
+	let IdInterno_TarjetaEquipo = $("#NumeroSerie").find(':selected').data('id');
+
+	$.ajax({
+		type: "POST",
+		data: {
+			id_tarjeta_equipo: IdInterno_TarjetaEquipo,
+			asincrono: 1 // Asincrono - En la creación.
 		},
 		url: "md_adicionar_campanas.php",
 		success: function (response) {

@@ -82,8 +82,17 @@ if ($type_detalle != 0) {
 	exit();
 }
 
+$Where_Upd = "";
+if($id_llamada_servicio_detalle != "") {
+	$ID = ($Solicitud == "") ? "id_llamada_servicio" : "id_solicitud_llamada_servicio";
+	$Where_Upd = "AND ($ID <> $id_llamada_servicio_detalle OR $ID IS NULL)";
+
+	// Si no es una relación uno a uno.
+	// $Where_Upd = "AND ($ID = '' OR $ID IS NULL)";
+}
+
 // SMM, 08/09/2023
-$SQL_Campanas_Modal = Seleccionar("uvw_tbl_$Solicitud" . "LlamadasServicios_Campanas_Asignacion", "*", "id_tarjeta_equipo='$id_tarjeta_equipo'");
+$SQL_Campanas_Modal = Seleccionar("uvw_tbl_$Solicitud" . "LlamadasServicios_Campanas_Asignacion", "*", "id_tarjeta_equipo='$id_tarjeta_equipo' $Where_Upd");
 $hasRowsCampanas_Modal = ($SQL_Campanas_Modal) ? sqlsrv_has_rows($SQL_Campanas_Modal) : false;
 ?>
 
@@ -338,7 +347,7 @@ $hasRowsCampanas_Modal = ($SQL_Campanas_Modal) ? sqlsrv_has_rows($SQL_Campanas_M
 					id_llamada_servicio: $("#Ticket").val(),
 					docentry_llamada_servicio: $("#CallID").val(),
 					id_campana: id,  // Usar el ID actual en esta iteración
-					solicitud: "Solicitud"
+					solicitud: "<?php echo $Solicitud; ?>"
 				},
 				success: function (response) {
 					console.log(response);
