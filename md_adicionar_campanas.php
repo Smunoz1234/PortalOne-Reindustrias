@@ -1,6 +1,9 @@
 <?php
 require_once "includes/conexion.php";
 
+// SMM, 15/09/2023
+$Solicitud = $_POST['solicitud'] ?? "";
+
 // SMM, 13/09/2023
 $asincrono = $_POST['asincrono'] ?? "";
 
@@ -15,6 +18,10 @@ $type_detalle = $_POST['type'] ?? 0;
 $id_tarjeta_equipo = $_POST['id_tarjeta_equipo'] ?? "";
 
 $id_llamada_servicio_detalle = $_POST['id_llamada_servicio'] ?? "";
+if($id_llamada_servicio_detalle == "") {
+	$id_llamada_servicio_detalle = $_POST['docentry_llamada_servicio'] ?? "";
+}
+
 $docentry_llamada_servicio = $_POST['docentry_llamada_servicio'] ?? "";
 $id_campana_detalle = $_POST['id_campana'] ?? "";
 
@@ -56,7 +63,7 @@ if ($type_detalle == 1) {
 }
 
 if ($type_detalle != 0) {
-	$SQL_Operacion = EjecutarSP("sp_tbl_LlamadasServicios_Campanas", $parametros);
+	$SQL_Operacion = EjecutarSP("sp_tbl_$Solicitud" . "LlamadasServicios_Campanas", $parametros);
 
 	if (!$SQL_Operacion) {
 		echo $msg_error_detalle;
@@ -76,7 +83,7 @@ if ($type_detalle != 0) {
 }
 
 // SMM, 08/09/2023
-$SQL_Campanas_Modal = Seleccionar("uvw_tbl_LlamadasServicios_Campanas_Asignacion", "*", "id_tarjeta_equipo='$id_tarjeta_equipo'");
+$SQL_Campanas_Modal = Seleccionar("uvw_tbl_$Solicitud" . "LlamadasServicios_Campanas_Asignacion", "*", "id_tarjeta_equipo='$id_tarjeta_equipo'");
 $hasRowsCampanas_Modal = ($SQL_Campanas_Modal) ? sqlsrv_has_rows($SQL_Campanas_Modal) : false;
 ?>
 
@@ -331,6 +338,7 @@ $hasRowsCampanas_Modal = ($SQL_Campanas_Modal) ? sqlsrv_has_rows($SQL_Campanas_M
 					id_llamada_servicio: $("#Ticket").val(),
 					docentry_llamada_servicio: $("#CallID").val(),
 					id_campana: id,  // Usar el ID actual en esta iteración
+					solicitud: "Solicitud"
 				},
 				success: function (response) {
 					console.log(response);

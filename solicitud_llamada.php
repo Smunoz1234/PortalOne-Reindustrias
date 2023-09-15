@@ -486,7 +486,7 @@ $TipoLlamada = ObtenerValorDefecto(191, "IdTipoLlamada", false);
 $TipoProblema = ObtenerValorDefecto(191, "IdTipoProblema", false);
 
 // SMM, 14/09/2023
-$SQL_Campanas = Seleccionar("uvw_tbl_LlamadasServicios_Campanas", "*", "[id_llamada_servicio]='$IdSolicitud'");
+$SQL_Campanas = Seleccionar("uvw_tbl_SolicitudLlamadasServicios_Campanas", "*", "[id_solicitud_llamada_servicio]='$IdSolicitud'");
 $hasRowsCampanas = ($SQL_Campanas) ? sqlsrv_has_rows($SQL_Campanas) : false;
 
 // SMM, 14/09/2023
@@ -3402,7 +3402,8 @@ function AdicionarCampana(asinc = 0) {
 		type: "POST",
 		data: {
 			id_tarjeta_equipo: IdInterno_TarjetaEquipo,
-			asincrono: asinc
+			asincrono: asinc,
+			solicitud: "Solicitud"
 		},
 		url: "md_adicionar_campanas.php",
 		success: function (response) {
@@ -3476,6 +3477,7 @@ function EliminarCampana(id) {
 					id_llamada_servicio: $("#Ticket").val(), // "DocNum"
 					docentry_llamada_servicio: $("#CallID").val(), // "DocNum"
 					id_campana: id,  // Usar el ID actual en esta iteración
+					solicitud: "Solicitud"
 				},
 				success: function (response) {
 					Swal.fire({
