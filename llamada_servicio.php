@@ -319,6 +319,7 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
 							"NULL", // @linea
 							"NULL", // @id_campana
 							$Campanas,
+							$row_Llamada["IdTarjetaEquipo"], // SMM, 19/09/2023
 							$CodUser, // "actualizacion"
 							$DateTime,
 							$DateTime,
