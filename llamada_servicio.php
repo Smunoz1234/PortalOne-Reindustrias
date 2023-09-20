@@ -3471,7 +3471,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 													<div class="col-12 text-center">
 														<div class="ibox-content">
 															<?php if ($hasRowsCampanas) { ?>
-																	<div class="table" style="max-height: 230px; overflow-y: auto;">
+																	<div class="table-responsive">
 																		<table class="table table-striped table-bordered table-hover dataTables-example">
 																			<thead>
 																				<tr>

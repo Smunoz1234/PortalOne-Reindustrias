@@ -2559,7 +2559,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 													<div class="col-12 text-center">
 														<div class="ibox-content">
 															<?php if ($hasRowsAnotaciones) { ?>
-																<div class="table" style="max-height: 230px; overflow-y: auto;">
+																<div class="table-responsive">
 																	<table class="table table-striped table-bordered table-hover dataTables-example">
 																		<thead>
 																			<tr>
@@ -2567,6 +2567,8 @@ function AgregarEsto(contenedorID, valorElemento) {
 																				<th>Fecha</th>
 																				<th>Evento</th>
 																				<th>Comentarios</th>
+																				<th>Usuario Actualización</th>
+																				<th>Fecha Actualización</th>
 																			</tr>
 																		</thead>
 																		<tbody>
@@ -2576,8 +2578,17 @@ function AgregarEsto(contenedorID, valorElemento) {
 																					
 																					<td>
 																						<?php if ($row_Anotaciones['fecha_anotacion'] != "") {
-																							// H:i:s
 																							echo $row_Anotaciones['fecha_anotacion']->format('Y-m-d');
+																						} else { ?>
+																							<p class="text-muted">--</p>
+																						<?php } ?>
+																					</td>
+
+																					<td><?php echo $row_Anotaciones['usuario_actualizacion']; ?></td>
+
+																					<td>
+																						<?php if ($row_Anotaciones['fecha_actualizacion'] != "") {
+																							echo $row_Anotaciones['fecha_actualizacion']->format('Y-m-d H:i:s');
 																						} else { ?>
 																							<p class="text-muted">--</p>
 																						<?php } ?>
@@ -2702,7 +2713,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 													<div class="col-12 text-center">
 														<div class="ibox-content">
 															<?php if ($hasRowsCampanas) { ?>
-																<div class="table" style="max-height: 230px; overflow-y: auto;">
+																<div class="table-responsive">
 																	<table class="table table-striped table-bordered table-hover dataTables-example">
 																		<thead>
 																			<tr>

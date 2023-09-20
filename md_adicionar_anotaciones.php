@@ -108,7 +108,7 @@ $SQL_Evento = Seleccionar("tbl_SolicitudLlamadasServicios_Anotaciones_Tipo", "*"
 					<div class="col-lg-6">
 						<label class="control-label">Fecha <span class="text-danger">*</span></label>
 
-						<div class="input-group date">
+						<div class="input-group date" id="NoteDate">
 							<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input type="text"
 								class="form-control" id="fecha_anotacion" name="fecha_anotacion"
 								value="<?php echo date('Y-m-d'); ?>" required>
@@ -161,14 +161,44 @@ $SQL_Evento = Seleccionar("tbl_SolicitudLlamadasServicios_Anotaciones_Tipo", "*"
 
 <script>
 	$(document).ready(function () {
-		$('.date').datepicker({
+		$("#NoteDate").datepicker({
 			todayBtn: "linked",
 			keyboardNavigation: false,
 			forceParse: false,
 			calendarWeeks: true,
 			autoclose: true,
 			todayHighlight: true,
-			format: 'yyyy-mm-dd'
+			format: 'yyyy-mm-dd',
+			startDate: new Date() // Fecha actual
+		});
+
+		var bandera_fechas = false; 
+		$('#frmAnotaciones').on('submit', function (event) {
+			event.preventDefault();
+
+			let fechaStr = `${$('#fecha_anotacion').val()}`;
+
+			// Divide la cadena en año, mes y día
+			const partesFecha = fechaStr.split("-");
+			
+			const year = parseInt(partesFecha[0], 10);
+			const day = parseInt(partesFecha[2], 10);
+
+			// Restamos 1 porque los meses en JavaScript son 0-indexados (0 = enero, 1 = febrero, etc.)
+			const month = parseInt(partesFecha[1], 10) - 1; 
+			
+			let d1 = new Date(year, month, day);
+			let d2 = new Date();
+
+			// Establece la hora actual a medianoche (00:00:00)
+			d2.setHours(0, 0, 0, 0);
+
+			console.log(fechaStr);
+			
+			console.log(d1);
+			console.log(d2);
+
+			bandera_fechas = (d1 < d2) ? true:false;
 		});
 
 		$("#frmAnotaciones").validate({
@@ -176,73 +206,82 @@ $SQL_Evento = Seleccionar("tbl_SolicitudLlamadasServicios_Anotaciones_Tipo", "*"
 				let formData = new FormData(form);
 				let json = Object.fromEntries(formData);
 
-				Swal.fire({
-					title: "¿Está seguro que desea continuar?",
-					icon: "question",
-					showCancelButton: true,
-					confirmButtonText: "Si, confirmo",
-					cancelButtonText: "No"
-				}).then((result) => {
-					if (result.isConfirmed) {
-						console.log(json);
+				if(bandera_fechas) {
+					Swal.fire({
+						"title": "¡Ha ocurrido un error!",
+						"text": "La fecha de la anotación no puede ser menor a la fecha actual.",
+						"icon": "warning"
+					});
+				} else {
+					Swal.fire({
+						title: "¿Está seguro que desea continuar?",
+						icon: "question",
+						showCancelButton: true,
+						confirmButtonText: "Si, confirmo",
+						cancelButtonText: "No"
+					}).then((result) => {
+						if (result.isConfirmed) {
+							console.log(json);
 
-						$.ajax({
-							type: "POST",
-							url: "md_adicionar_anotaciones.php",
-							data: {
-								type: 1,
-								id_solicitud_llamada_servicio: $("#CallID").val(), // $IdSolicitud
-								docentry_solicitud_llamada_servicio: $("#CallID").val(), // $IdSolicitud
-								id_tipo_anotacion: json.id_tipo_anotacion,
-								fecha_anotacion: json.fecha_anotacion,
-								hora_anotacion: json.fecha_anotacion,
-								comentarios_anotacion: json.comentarios_anotacion,
-							},
-							success: function (response) {
-								console.log(response);
+							$.ajax({
+								type: "POST",
+								url: "md_adicionar_anotaciones.php",
+								data: {
+									type: 1,
+									id_solicitud_llamada_servicio: $("#CallID").val(), // $IdSolicitud
+									docentry_solicitud_llamada_servicio: $("#CallID").val(), // $IdSolicitud
+									id_tipo_anotacion: json.id_tipo_anotacion,
+									fecha_anotacion: json.fecha_anotacion,
+									hora_anotacion: json.fecha_anotacion,
+									comentarios_anotacion: json.comentarios_anotacion,
+								},
+								success: function (response) {
+									console.log(response);
 
-								let validarAjax = true;
-								if (response !== "OK") {
-									validarAjax = false;
-								}
-
-								Swal.fire({
-									icon: (validarAjax) ? "success" : "warning",
-									title: (validarAjax) ? "¡Listo!" : "¡Error!",
-									text: (validarAjax) ? "La anotación se agrego correctamente." : "No se pudo agregar la anotación."
-								}).then((result) => {
-									if (result.isConfirmed) {
-
-										// Obtén la URL actual
-										let currentUrl = new URL(window.location.href);
-
-										// Obtén los parámetros del query string
-										let searchParams = currentUrl.searchParams;
-
-										// Actualiza el valor del parámetro 'active' o agrega si no existe
-										searchParams.set('active', 1);
-
-										// Crea una nueva URL con los parámetros actualizados
-										let newUrl = currentUrl.origin + currentUrl.pathname + '?' + searchParams.toString();
-
-										// Recarga la página con la nueva URL
-										window.location.href = newUrl;
+									let validarAjax = true;
+									if (response !== "OK") {
+										validarAjax = false;
 									}
-								});
-								// Swal.fire		
-							},
-							error: function (error) {
-								alert("Ocurrio un error inesperado");
-								console.error("240->", error.responseText);
 
-								// Ocultar modal
-								$('#myModal2').modal("hide");
-							}
-						});
-					}
-				});
+									Swal.fire({
+										icon: (validarAjax) ? "success" : "warning",
+										title: (validarAjax) ? "¡Listo!" : "¡Error!",
+										text: (validarAjax) ? "La anotación se agrego correctamente." : "No se pudo agregar la anotación."
+									}).then((result) => {
+										if (result.isConfirmed) {
+
+											// Obtén la URL actual
+											let currentUrl = new URL(window.location.href);
+
+											// Obtén los parámetros del query string
+											let searchParams = currentUrl.searchParams;
+
+											// Actualiza el valor del parámetro 'active' o agrega si no existe
+											searchParams.set('active', 1);
+
+											// Crea una nueva URL con los parámetros actualizados
+											let newUrl = currentUrl.origin + currentUrl.pathname + '?' + searchParams.toString();
+
+											// Recarga la página con la nueva URL
+											window.location.href = newUrl;
+										}
+									});
+									// Swal.fire		
+								},
+								error: function (error) {
+									alert("Ocurrio un error inesperado");
+									console.error("240->", error.responseText);
+
+									// Ocultar modal
+									$('#myModal2').modal("hide");
+								}
+							});
+						}
+					});
+					// Swal.fire()
+				}
 			}
-			// submitHandler
+			// submitHandler()
 		});
 
 		$("#dataTable_Campana").DataTable({
