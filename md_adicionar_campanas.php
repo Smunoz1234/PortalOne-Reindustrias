@@ -83,14 +83,8 @@ if ($type_detalle != 0) {
 	exit();
 }
 
-$Where_Upd = "";
-if($id_llamada_servicio_detalle != "") {
-	$ID = ($Solicitud == "") ? "id_llamada_servicio" : "id_solicitud_llamada_servicio";
-	$Where_Upd = "AND ($ID <> $id_llamada_servicio_detalle OR $ID IS NULL)";
-
-	// Si no es una relación uno a uno.
-	// $Where_Upd = "AND ($ID = '' OR $ID IS NULL)";
-}
+// SMM, 19/09/2023
+$Where_Upd = "id_tarjeta_equipo='$id_tarjeta_equipo' AND [asignado_a_id] = 'NO'";
 
 // SMM, 19/09/2023
 $Where_Upd = "id_tarjeta_equipo='$id_tarjeta_equipo' AND [asignado_a_id] = 'NO'";
