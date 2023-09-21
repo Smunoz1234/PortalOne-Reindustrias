@@ -230,10 +230,14 @@ if ($type_detalle != 0) {
 						},
 						success: function (response) {
 							console.log(response);
-
 							contadorAjax++;
+
+							let msg_error = "";
 							if (response !== "OK") {
+								console.log(response);
+
 								validarAjax = false;
+								msg_error = response;
 							}
 
 							// Verificar si todas las solicitudes AJAX han finalizado
@@ -241,7 +245,7 @@ if ($type_detalle != 0) {
 								Swal.fire({
 									icon: (validarAjax) ? "success" : "warning",
 									title: (validarAjax) ? "¡Listo!" : "¡Error!",
-									text: (validarAjax) ? "Todos los VINs se insertaron correctamente." : "No se pudieron insertar algunos VINs, por favor verifique."
+									text: (validarAjax) ? "Todos los VINs se insertaron correctamente." : `No se pudieron insertar algunos VINs. ${msg_error}`
 								}).then((result) => {
 									if (result.isConfirmed) {
 										// if(validarAjax) {

@@ -21,38 +21,40 @@ if (isset($_GET['tl']) && ($_GET['tl'] != "")) { //0 Creando una actividad. 1 Ed
 
 if (isset($_REQUEST['dt_LS']) && ($_REQUEST['dt_LS']) == 1) { //Verificar que viene de una Llamada de servicio
     $dt_LS = 1;
+	$LS = isset($_GET['LS']) ? base64_decode($_GET['LS']) : "";
+	$CardCode = isset($_GET['Cardcode']) ? base64_decode($_GET['Cardcode']) : "";
 
     //Clientes
-    $SQL_Cliente = Seleccionar('uvw_Sap_tbl_Clientes', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreCliente');
+    $SQL_Cliente = Seleccionar('uvw_Sap_tbl_Clientes', '*', "CodigoCliente='$CardCode'", 'NombreCliente');
     $row_Cliente = sqlsrv_fetch_array($SQL_Cliente);
 
     //Contacto cliente
-    $SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreContacto');
+    $SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', '*', "CodigoCliente='$CardCode'", 'NombreContacto');
 
     //Sucursal cliente
-    $SQL_SucursalCliente = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "' and TipoDireccion='S'", 'NombreSucursal');
+    $SQL_SucursalCliente = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', '*', "CodigoCliente='$CardCode' and TipoDireccion='S'", 'NombreSucursal');
 
     //Orden de servicio
-    $SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . base64_decode($_GET['LS']) . "'");
+    $SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='$LS'");
 }
 
 if (isset($_REQUEST['dt_DM']) && ($_REQUEST['dt_DM']) == 1) { //Verificar que viene de un documento de marketing
     $dt_DM = 1;
 
     //Clientes
-    $SQL_Cliente = Seleccionar('uvw_Sap_tbl_Clientes', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreCliente');
+    $SQL_Cliente = Seleccionar('uvw_Sap_tbl_Clientes', '*', "CodigoCliente='$CardCode'", 'NombreCliente');
     $row_Cliente = sqlsrv_fetch_array($SQL_Cliente);
 
     //Contacto cliente
-    $SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreContacto');
+    $SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', '*', "CodigoCliente='$CardCode'", 'NombreContacto');
 
     //Sucursal cliente
-    $SQL_SucursalCliente = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "' and TipoDireccion='S'", 'NombreSucursal');
+    $SQL_SucursalCliente = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', '*', "CodigoCliente='$CardCode' and TipoDireccion='S'", 'NombreSucursal');
 
     //Documentos asociados
     $ParametrosDoc = array(
         "'" . base64_decode($_GET['DM_type']) . "'",
-        "'" . base64_decode($_GET['Cardcode']) . "'",
+        "'$CardCode'",
         "'" . base64_decode($_GET['DM']) . "'",
     );
     $SQL_DocMarketing = EjecutarSP('sp_ConsultarDocMarketing', $ParametrosDoc);
@@ -135,7 +137,7 @@ if (isset($_POST['P']) && ($_POST['P'] == 27)) { //Insertar nueva actividad
             "'" . $_POST['TipoAsignado'] . "'",
             "'" . $_POST['EmpleadoActividad'] . "'",
             "'" . $_POST['EnRuta'] . "'",
-            "'" . $_POST['MotivoCierre'] . "'",
+            "'" . ($_POST['MotivoCierre'] ?? "") . "'",
             "'" . $_POST['ClienteActividad'] . "'",
             "'" . $_POST['ContactoCliente'] . "'",
             "'" . $_POST['TelefonoActividad'] . "'",

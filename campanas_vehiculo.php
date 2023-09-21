@@ -632,9 +632,11 @@ if ($type != 0) {
 
 			$("#formEncabezado").validate({
 				submitHandler: function (form) {
-					$('.ibox-content').toggleClass('sk-loading');
-
-					form.submit();
+					if($("#tiempo_campana_meses").val() > 0) {
+						form.submit();
+					} else {
+						alert("La cantidad de meses de la campaña debe ser mayor a cero.");
+					}
 				}
 			});
 
