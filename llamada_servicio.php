@@ -1379,7 +1379,7 @@ $(document).ready(function () {
 						},
 						dataType: 'json',
 						success: function (data) {
-							console.log(data);
+							console.log("ajx_buscar_datos_json(30)", data);
 
 							if (data.OrigenLlamada)
 								$('#OrigenLlamada').val(data.OrigenLlamada || '""');
@@ -1440,6 +1440,7 @@ $(document).ready(function () {
 			// Stiven Muñoz Murillo, 20/12/2021
 			$("#CDU_Marca").change(function () {
 				$('.ibox-content').toggleClass('sk-loading', true);
+				
 				var marcaVehiculo = document.getElementById('CDU_Marca').value;
 				$.ajax({
 					type: "POST",
@@ -1480,7 +1481,7 @@ $(document).ready(function () {
 						},
 						dataType: 'json',
 						success: function (data) {
-							// console.log(data);
+							console.log("ajx_buscar_datos_json(44)", data);
 
 							borrarNumeroSerie = false;
 							document.getElementById('IdArticuloLlamada').value = data.IdArticuloLlamada;
@@ -2798,26 +2799,28 @@ function AgregarEsto(contenedorID, valorElemento) {
 						<div class="form-group">
 							<div class="col-lg-4">
 								<label class="control-label">Concesionario <span class="text-danger">*</span></label>
+								
 								<select name="CDU_Concesionario" class="form-control select2" required="required" id="CDU_Concesionario"
-								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
-									echo "disabled='disabled'";
-								} ?>>
-										<option value="" disabled selected>Seleccione...</option>
-								  <?php while ($row_Concesionario = sqlsrv_fetch_array($SQL_Concesionario)) { ?>
-													<option value="<?php echo $row_Concesionario['NombreConcesionario']; ?>"
-													<?php if ((isset($row['CDU_Concesionario'])) && (strcmp($row_Concesionario['NombreConcesionario'], $row['CDU_Concesionario']) == 0)) {
-														echo "selected=\"selected\"";
-													} ?>>
-														<?php echo $row_Concesionario['NombreConcesionario']; ?>
-													</option>
-								  <?php } ?>
+									<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
+										echo "disabled";
+									} ?>>
+									<option value="" disabled selected>Seleccione...</option>
+								  	
+									<?php while ($row_Concesionario = sqlsrv_fetch_array($SQL_Concesionario)) { ?>
+										<option value="<?php echo $row_Concesionario['NombreConcesionario']; ?>"
+										<?php if ((isset($row['CDU_Concesionario'])) && (strcmp($row_Concesionario['NombreConcesionario'], $row['CDU_Concesionario']) == 0)) {
+											echo "selected";
+										} ?>>
+											<?php echo $row_Concesionario['NombreConcesionario']; ?>
+										</option>
+								  	<?php } ?>
 								</select>
 							</div>
 							<div class="col-lg-4">
 								<label class="control-label">Tipo servicio <span class="text-danger">*</span></label>
 								<select name="CDU_TipoServicio" class="form-control select2" required="required" id="CDU_TipoServicio"
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
-									echo "disabled='disabled'";
+									echo "disabled";
 								} ?>>
 										<option value="" disabled selected>Seleccione...</option>
 								  <?php while ($row_TipoServicio = sqlsrv_fetch_array($SQL_TipoServicio)) { ?>
@@ -4155,6 +4158,8 @@ $(function () {
 
 	// Adicionar campanas.
 	$("#NumeroSerie").on("change", function () {
+		$('.ibox-content').toggleClass('sk-loading', true);
+
 		if ($(this).val() != "") {
 			$('#AddCampana').prop('disabled', false);
 		} else {
@@ -4185,9 +4190,13 @@ $(function () {
 
 				// Cargar de nuevo con los ids seleccionados.
 				$("#Campanas").trigger('change');
+
+				$('.ibox-content').toggleClass('sk-loading', false);
 			},
 			error: function(error) {
 				console.log("error (4128), ", error);
+
+				$('.ibox-content').toggleClass('sk-loading', false);
 			}
 		});
 	});
