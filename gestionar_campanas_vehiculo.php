@@ -31,7 +31,7 @@ $Sucursal = $_GET['Sucursal'] ?? "";
 $BuscarDato = $_GET['BuscarDato'] ?? "";
 
 if ($sw == 1) {
-	$Filtro = "(fecha_limite_vigencia BETWEEN '" . FormatoFecha($FI_FechaVigencia) . "' AND '" . FormatoFecha($FI_FechaVigencia) . "')";
+	$Filtro = "(fecha_limite_vigencia BETWEEN '" . FormatoFecha($FI_FechaVigencia) . "' AND '" . FormatoFecha($FF_FechaVigencia) . "')";
 
 	$Filtro .= ($Estado == "") ? "" : "AND estado = '$Estado'";
 	$Filtro .= ($Campana == "") ? "" : "AND id_campana = '$Campana'";
@@ -47,6 +47,7 @@ if ($sw == 1) {
 
 	$Cons = "SELECT * FROM tbl_CampanaVehiculos WHERE $Filtro";
 	$Cons = "SELECT * FROM tbl_CampanaVehiculos";
+	// echo $Cons;
 	$SQL = sqlsrv_query($conexion, $Cons);
 
 	if (!$SQL) {

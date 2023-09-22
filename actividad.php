@@ -331,7 +331,7 @@ if (isset($_POST['P']) && ($_POST['P'] == 29)) { //Actualizar actividad
             "'" . $_POST['TipoAsignado'] . "'",
             "'" . $_POST['EmpleadoActividad'] . "'",
             "'" . $_POST['EnRuta'] . "'",
-            "'" . $_POST['MotivoCierre'] . "'",
+            "'" . ($_POST['MotivoCierre'] ?? "") . "'",
             "'" . $_POST['ClienteActividad'] . "'",
             "'" . $_POST['ContactoCliente'] . "'",
             "'" . $_POST['TelefonoActividad'] . "'",

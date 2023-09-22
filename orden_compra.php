@@ -1453,7 +1453,7 @@ include_once 'md_frm_campos_adicionales.php';
 						<div class="col-lg-9">
 							<input name="CardCode" type="hidden" id="CardCode" value="<?php if (($edit == 1) || ($sw_error == 1)) {echo $row['CardCode'];} elseif ($dt_LS == 1 || $dt_OF == 1) {echo $row_Cliente['CodigoCliente'];}?>">
 
-							<input name="CardName" type="text" required="required" class="form-control" id="CardName" placeholder="Digite para buscar..." value="<?php if (($edit == 1) || ($sw_error == 1)) {echo $row['NombreCliente'];} elseif ($dt_LS == 1 || $dt_OF == 1) {echo $row_Cliente['NombreCliente'];}?>"
+							<input name="CardName" type="text" required="required" class="form-control" id="CardName" placeholder="Digite para buscar..." value="<?php if (($edit == 1) || ($sw_error == 1)) {echo $row['NombreCliente'] ?? "";} elseif ($dt_LS == 1 || $dt_OF == 1) {echo $row_Cliente['NombreCliente'] ?? "";}?>"
 							<?php if ($dt_LS == 1 || $dt_OF == 1 || $edit == 1) {echo "readonly";}?>>
 						</div>
 						<div class="col-lg-2">

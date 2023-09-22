@@ -23,7 +23,7 @@ $Proveedor = $row_Encabezado['id_socio_negocio'] ?? "";
 $NombreProveedor = $row_Encabezado['socio_negocio'] ?? "";
 $Sucursal = $row_Encabezado['id_consecutivo_direccion'] ?? "";
 
-$Cons_Detalle = "SELECT * FROM tbl_CampanaVehiculosDetalle WHERE id_campana = '$ID'";
+$Cons_Detalle = "SELECT * FROM uvw_tbl_CampanaVehiculosDetalle WHERE id_campana = '$ID'";
 $SQL_Detalle = sqlsrv_query($conexion, $Cons_Detalle);
 
 $Cons_Articulos = "SELECT * FROM uvw_tbl_CampanaVehiculosDetalle_Articulos WHERE id_campana = '$ID'";
@@ -387,8 +387,8 @@ if ($type != 0) {
 										Tiempo meses <span class="text-danger">*</span>
 									</label>
 									<div class="col-lg-3">
-										<input name="tiempo_campana_meses" type="number" class="form-control" id="tiempo_campana_meses"
-											value="<?php echo $TiempoMeses; ?>" required>
+										<input name="tiempo_campana_meses" type="number" class="form-control"
+											id="tiempo_campana_meses" value="<?php echo $TiempoMeses; ?>" required>
 									</div>
 
 									<div class="col-lg-4">
@@ -426,15 +426,15 @@ if ($type != 0) {
 							<div class="ibox-content">
 								<div class="col-lg-12">
 									<div class="btn-group pull-right">
-										<button type="button" class="btn btn-outline btn-primary"
-											style="margin-left: 10px;" <?php if ($Edit == 0) {
+										<button type="button" class="btn btn-outline btn-primary" style="margin-left: 10px;"
+											<?php if ($Edit == 0) {
 												echo "disabled";
 											} ?> onclick="CrearRegistro();">
 											<i class="fa fa-plus"></i> Adicionar VIN
 										</button>
 
-										<button type="button" class="btn btn-outline btn-info"
-											style="margin-left: 10px;" <?php if ($Edit == 0) {
+										<button type="button" class="btn btn-outline btn-info" style="margin-left: 10px;"
+											<?php if ($Edit == 0) {
 												echo "disabled";
 											} ?> onclick="AgregarArticulos();">
 											<i class="fa fa-shopping-cart"></i> Adicionar Articulo
@@ -445,18 +445,25 @@ if ($type != 0) {
 
 								<div class="tabs-container">
 									<ul class="nav nav-tabs">
-										<li class="<?php if($Active == 1) { echo "active"; } ?>">
+										<li class="<?php if ($Active == 1) {
+											echo "active";
+										} ?>">
 											<a data-toggle="tab" href="#tab-1"><i class="fa fa-table"></i>Lista de VINs</a>
 										</li>
-										<li class="<?php if($Active == 2) { echo "active"; } ?>">
-											<a data-toggle="tab" href="#tab-2"><i class="fa fa-table"></i> Lista de Articulos</a>
+										<li class="<?php if ($Active == 2) {
+											echo "active";
+										} ?>">
+											<a data-toggle="tab" href="#tab-2"><i class="fa fa-table"></i> Lista de
+												Articulos</a>
 										</li>
 									</ul>
 									<!-- /.nav-tabs -->
 
 									<div class="tab-content">
-										
-										<div id="tab-1" class="tab-pane <?php if($Active == 1) { echo "active"; } ?>">
+
+										<div id="tab-1" class="tab-pane <?php if ($Active == 1) {
+											echo "active";
+										} ?>">
 											<div class="row">
 												<div class="ibox-content">
 													<div class="table-responsive">
@@ -535,7 +542,9 @@ if ($type != 0) {
 										</div>
 										<!-- /#tab-1 -->
 
-										<div id="tab-2" class="tab-pane <?php if($Active == 2) { echo "active"; } ?>">
+										<div id="tab-2" class="tab-pane <?php if ($Active == 2) {
+											echo "active";
+										} ?>">
 											<div class="row">
 												<div class="ibox-content">
 													<div class="table-responsive">
@@ -571,7 +580,8 @@ if ($type != 0) {
 																			<button type="button" class="btn btn-success btn-xs"
 																				onClick="ConsultarArticulo('<?php echo base64_encode($row_Articulos['id_articulo']); ?>');"
 																				title="Consultar Articulo">
-																				<i class="fa fa-search"></i> <?php echo $row_Articulos['id_articulo']; ?>
+																				<i class="fa fa-search"></i>
+																				<?php echo $row_Articulos['id_articulo']; ?>
 																			</button>
 																		</td>
 																		<td>
@@ -632,7 +642,7 @@ if ($type != 0) {
 
 			$("#formEncabezado").validate({
 				submitHandler: function (form) {
-					if($("#tiempo_campana_meses").val() > 0) {
+					if ($("#tiempo_campana_meses").val() > 0) {
 						form.submit();
 					} else {
 						alert("La cantidad de meses de la campaña debe ser mayor a cero.");
@@ -716,36 +726,52 @@ if ($type != 0) {
 
 	<script>
 		function CrearRegistro() {
-			$('.ibox-content').toggleClass('sk-loading', true);
+			if ($("#estado").val() == "Y") {
+				$('.ibox-content').toggleClass('sk-loading', true);
 
-			$.ajax({
-				type: "POST",
-				url: "md_campanas_vehiculo.php",
-				success: function (response) {
-					$('.ibox-content').toggleClass('sk-loading', false);
+				$.ajax({
+					type: "POST",
+					url: "md_campanas_vehiculo.php",
+					success: function (response) {
+						$('.ibox-content').toggleClass('sk-loading', false);
 
-					$('#ContenidoModal').html(response);
-					$('#myModal').modal("show");
-				}
-			});
+						$('#ContenidoModal').html(response);
+						$('#myModal').modal("show");
+					}
+				});
+			} else {
+				Swal.fire({
+					title: "¡Ha ocurrido un error!",
+					text: "No puede insertar VIN's en una Campaña Inactiva.",
+					icon: "warning"
+				});
+			}
 		}
 
 		function AgregarArticulos() {
-			$('.ibox-content').toggleClass('sk-loading', true);
+			if ($("#estado").val() == "Y") {
+				$('.ibox-content').toggleClass('sk-loading', true);
 
-			$.ajax({
-				type: "POST",
-				data: {
-					id_campana: $("#id_campana").val()
-				},
-				url: "md_campanas_articulos.php",
-				success: function (response) {
-					$('.ibox-content').toggleClass('sk-loading', false);
+				$.ajax({
+					type: "POST",
+					data: {
+						id_campana: $("#id_campana").val()
+					},
+					url: "md_campanas_articulos.php",
+					success: function (response) {
+						$('.ibox-content').toggleClass('sk-loading', false);
 
-					$('#ContenidoModal').html(response);
-					$('#myModal').modal("show");
-				}
-			});
+						$('#ContenidoModal').html(response);
+						$('#myModal').modal("show");
+					}
+				});
+			} else {
+				Swal.fire({
+					title: "¡Ha ocurrido un error!",
+					text: "No puede insertar Articulos en una Campaña Inactiva.",
+					icon: "warning"
+				});
+			}
 		}
 
 		function EliminarRegistro(id) {

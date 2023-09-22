@@ -83,7 +83,11 @@ if ($sw == 1) {
 
     $SQL_LMT = Seleccionar("uvw_Sap_tbl_ArticulosLlamadas", "*", "(CodigoCliente='" . $_GET['Cliente'] . "' and Estado='Y') OR IdTipoListaArticulo='2'", "IdTipoListaArticulo, ItemCode");
 }
+
+// SMM, 21/09/2023
+$SQL_Periodos = Seleccionar("tbl_Periodos", "*", "Estado = 'Y'", "Periodo"); 
 ?>
+
 <!DOCTYPE html>
 <html><!-- InstanceBegin template="/Templates/PlantillaPrincipal.dwt.php" codeOutsideHTMLIsLocked="false" -->
 
@@ -305,16 +309,18 @@ function ConsultarCant(){
 								<input name="Cliente" type="hidden" id="Cliente" value="<?php if (isset($_GET['Cliente']) && ($_GET['Cliente'] != "")) {echo $_GET['Cliente'];}?>">
 								<input name="NombreCliente" type="text" class="form-control" id="NombreCliente" placeholder="Para TODOS, dejar vacio..." value="<?php if (isset($_GET['NombreCliente']) && ($_GET['NombreCliente'] != "")) {echo $_GET['NombreCliente'];}?>">
 							</div>
+							
 							<label class="col-lg-1 control-label">Año <span class="text-danger">*</span></label>
 							<div class="col-lg-2">
 								<select name="Anno" required class="form-control" id="Anno">
-									<option value="2019" <?php if ((isset($Anno)) && (strcmp(2019, $Anno) == 0)) {echo "selected=\"selected\"";}?>>2019</option>
-									<option value="2020" <?php if ((isset($Anno)) && (strcmp(2020, $Anno) == 0)) {echo "selected=\"selected\"";}?>>2020</option>
-									<option value="2021" <?php if ((isset($Anno)) && (strcmp(2021, $Anno) == 0)) {echo "selected=\"selected\"";}?>>2021</option>
-									<option value="2022" <?php if ((isset($Anno)) && (strcmp(2022, $Anno) == 0)) {echo "selected=\"selected\"";}?>>2022</option>
+									<?php while ($row_Periodo = sqlsrv_fetch_array($SQL_Periodos)) {?>
+										<option value="<?php echo $row_Periodo['Periodo']; ?>" <?php if ((isset($Anno)) && (strcmp($row_Periodo['Periodo'], $Anno) == 0)) {echo "selected";}?>><?php echo $row_Periodo['Periodo']; ?></option>
+									<?php }?>
 								</select>
 							</div>
+							<!-- /#Anno -->
 						</div>
+						
 					 	<div class="form-group">
 							<label class="col-lg-1 control-label">Sede <span class="text-danger">*</span></label>
 							<div class="col-lg-3">

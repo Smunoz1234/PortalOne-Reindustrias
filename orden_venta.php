@@ -677,6 +677,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 					url: "ajx_cbo_select.php?type=2&id=" + carcode,
 					success: function (response) {
 						$('#ContactoCliente').html(response).fadeIn();
+						$('#ContactoCliente').change();
 					},
 					error: function (error) {
 						console.log("Linea 641", error.responseText);

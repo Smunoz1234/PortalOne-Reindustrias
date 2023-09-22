@@ -1237,7 +1237,7 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
             echo "<option value=''>Seleccione...</option>";
         } else {
             $Id = "'" . $_GET['id'] . "'";
-            $SQL = Seleccionar("uvw_tbl_LlamadasServicios_Campanas_Asignacion", "*", "id_tarjeta_equipo = $Id");
+            $SQL = Seleccionar("uvw_tbl_LlamadasServicios_Campanas_Asignacion", "*", "id_tarjeta_equipo = $Id AND [asignado_a_id] = 'NO'");
             
             $Num = sqlsrv_num_rows($SQL);
             if ($Num) {

@@ -30,7 +30,7 @@ $ID_CodigoCliente = "";
 if (($edit == 1) || ($sw_error == 1)) {
     $ID_CodigoCliente = $row['CardCode'];
 } elseif ((isset($dt_LS) && ($dt_LS == 1)) || (isset($dt_OV) && ($dt_OV == 1)) || (isset($dt_ET) && ($dt_ET == 1))) {
-    $ID_CodigoCliente = $row_Cliente['CodigoCliente'];
+    $ID_CodigoCliente = $row_Cliente['CodigoCliente'] ?? "";
 }
 
 if ($ID_CodigoCliente != "") {
