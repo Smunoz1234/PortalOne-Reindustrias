@@ -18,7 +18,7 @@ $type_detalle = $_POST['type'] ?? 0;
 $id_tarjeta_equipo = $_POST['id_tarjeta_equipo'] ?? "";
 
 $id_llamada_servicio_detalle = $_POST['id_llamada_servicio'] ?? "";
-if($id_llamada_servicio_detalle == "") {
+if ($id_llamada_servicio_detalle == "") {
 	$id_llamada_servicio_detalle = $_POST['docentry_llamada_servicio'] ?? "";
 }
 
@@ -37,12 +37,16 @@ if ($type_detalle == 1) {
 
 	$parametros = array(
 		$type_detalle,
-		$id_llamada_servicio_detalle, // "DocNum"
+		$id_llamada_servicio_detalle,
+		// "DocNum"
 		$docentry_llamada_servicio,
-		"NULL", // @linea
+		"NULL",
+		// @linea
 		"'$id_campana_detalle'",
-		"NULL", // @ids_campanas
-		$id_tarjeta_equipo, // SMM, 19/09/2023
+		"NULL",
+		// @ids_campanas
+		$id_tarjeta_equipo,
+		// SMM, 19/09/2023
 		$id_usuario_actualizacion_detalle,
 		$fecha_actualizacion_detalle,
 		$hora_actualizacion_detalle,
@@ -56,9 +60,11 @@ if ($type_detalle == 1) {
 
 	$parametros = array(
 		$type_detalle,
-		$id_llamada_servicio_detalle, // "DocNum"
+		$id_llamada_servicio_detalle,
+		// "DocNum"
 		$docentry_llamada_servicio,
-		"NULL", // @linea
+		"NULL",
+		// @linea
 		"'$id_campana_detalle'",
 	);
 }
@@ -85,7 +91,7 @@ if ($type_detalle != 0) {
 
 // SMM, 19/09/2023
 $Where_Upd = "id_tarjeta_equipo='$id_tarjeta_equipo' AND [asignado_a_id] = 'NO'";
-if($id_llamada_servicio_detalle != "") {
+if ($id_llamada_servicio_detalle != "") {
 	$ID = ($Solicitud == "") ? "id_llamada_servicio" : "id_solicitud_llamada_servicio";
 	$Where_Upd .= " AND ($ID <> $id_llamada_servicio_detalle OR $ID IS NULL)";
 }
@@ -215,11 +221,14 @@ $hasRowsCampanas_Modal = ($SQL_Campanas_Modal) ? sqlsrv_has_rows($SQL_Campanas_M
 														<?php } ?>
 													</td>
 													<td>
-														<?php echo (isset($row_Campana_Modal["fecha_limite_vigencia"]) && $row_Campana_Modal["fecha_limite_vigencia"] != "") ? $row_Campana_Modal['fecha_limite_vigencia']->format("Y-m-d") : ""; ?>
+														<?php echo (isset($row_Campana_Modal["fecha_limite_vigencia"]) && ($row_Campana_Modal["fecha_limite_vigencia"] != "")) ? $row_Campana_Modal['fecha_limite_vigencia']->format("Y-m-d") : ""; ?>
 													</td>
 
 													<td class="text-center">
-														<?php if ($row_Campana_Modal['estado'] == 'Y') { ?>
+														<?php $limiteVigencia = (isset($row_Campana_Modal["fecha_limite_vigencia"]) && ($row_Campana_Modal["fecha_limite_vigencia"] != "")) ? $row_Campana_Modal['fecha_limite_vigencia'] : null; ?>
+														<?php $fechaActual = new DateTime(); ?>
+
+														<?php if (($row_Campana_Modal['estado'] == 'Y') && ($limiteVigencia !== null) && ($limiteVigencia >= $fechaActual)) { ?>
 															<div class="checkbox checkbox-success"
 																id="dvChkSel<?php echo $row_Campana_Modal['id_campana']; ?>">
 																<input type="checkbox" class="chkSelOT"
@@ -228,6 +237,8 @@ $hasRowsCampanas_Modal = ($SQL_Campanas_Modal) ? sqlsrv_has_rows($SQL_Campanas_M
 																	onchange="SeleccionarCampana('<?php echo $row_Campana_Modal['id_campana']; ?>');"
 																	aria-label="Single checkbox One"><label></label>
 															</div>
+														<?php } else { ?>
+															<i class="fa fa-ban" aria-hidden="true"></i>
 														<?php } ?>
 													</td>
 												</tr>
@@ -273,7 +284,7 @@ $hasRowsCampanas_Modal = ($SQL_Campanas_Modal) ? sqlsrv_has_rows($SQL_Campanas_M
 				let opcion = $(this).val();
 
 				// Seleccionar el checkbox
-    			$(`#chkSelOT${opcion}`).prop("checked", true);
+				$(`#chkSelOT${opcion}`).prop("checked", true);
 				SeleccionarCampana(opcion);
 			});
 		<?php } ?>
