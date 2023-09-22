@@ -17,33 +17,6 @@ $TituloLlamada = ""; //Titulo por defecto cuando se está creando la llamada de 
 
 $testMode = false; // SMM, 04/03/2022
 
-// Inicio, copiar firma a la ruta log y main. SMM, 17/09/2022
-$FirmaContactoResponsable = "";
-if (isset($_POST['FirmaContactoResponsable']) && ($_POST['FirmaContactoResponsable'] != "") && isset($_POST['DocNum']) && ($_POST['DocNum'] != "")) {
-	$dir_name = "llamadas_servicios";
-	$FirmaContactoResponsable = base64_decode($_POST['FirmaContactoResponsable']);
-
-	$dir_log = CrearObtenerDirRuta(ObtenerVariable("RutaAnexosPortalOne") . "/" . $_SESSION['User'] . "/" . $dir_name . "/");
-	$dir_main = CrearObtenerDirRuta(ObtenerVariable("RutaAnexosLlamadaServicio"));
-	$source = CrearObtenerDirTempFirma() . $FirmaContactoResponsable;
-
-	if ($testMode) {
-		echo "<script> console.log('dir_log, " . str_replace("\\", "/", $dir_log) . "'); </script>";
-		echo "<script> console.log('dir_main, " . str_replace("\\", "/", $dir_main) . "'); </script>";
-		echo "<script> console.log('source, " . str_replace("\\", "/", $source) . "'); </script>";
-	}
-
-	// NuevoNombreArchivoFirma
-	$FirmaContactoResponsable = ObtenerVariable("PrefijoFormatoLlamadaServicioPortalOne") . base64_decode($_POST['DocNum']) . "Firma.jpg";
-
-	$dest = $dir_log . $FirmaContactoResponsable;
-	copy($source, $dest);
-
-	$dest = $dir_main . $FirmaContactoResponsable;
-	copy($source, $dest);
-}
-// Fin, copiar firma a la ruta log y main. SMM, 17/09/2022
-
 if (isset($_GET['id']) && ($_GET['id'] != "")) {
 	$IdSolicitud = base64_decode($_GET['id']);
 }
@@ -178,7 +151,7 @@ if (isset($_POST['P'])) { //Crear Solicitud de Llamada de servicio
 			"'" . FormatoFecha($_POST['FechaCreacion'], $_POST['HoraCreacion']) . "'",
 			"'" . FormatoFecha(date('Y-m-d'), date('H:i')) . "'", // FechaActualizacion
 			"'" . FormatoFecha(date('Y-m-d'), date('H:i:s')) . "'", // FechaCierreLlamada
-			"'" . $_POST['IdAnexos'] . "'",
+			"'" . ($_POST['IdAnexos'] ?? "") . "'",
 			($_POST['P'] == 32) ? "1" : "$Metodo",
 			"'" . $_SESSION['CodUser'] . "'",
 			"'" . $_SESSION['CodUser'] . "'",
@@ -235,61 +208,6 @@ if (isset($_POST['P'])) { //Crear Solicitud de Llamada de servicio
 			}
 
 			try {
-				//Mover los anexos a la carpeta de archivos de SAP
-				$j = 0;
-
-				// Esto viene del P33 de la llamada
-				if ($sw_error == 1) { //Si hay un error, limpiar los anexos ya cargados, para volverlos a cargar a la tabla
-					//Registrar archivo en la BD
-					$ParamDelAnex = array(
-						"'191'",
-						"'$IdSolicitud'",
-						"NULL",
-						"NULL",
-						"NULL",
-						"'" . $_SESSION['CodUser'] . "'",
-						"2",
-					);
-					$SQL_DelAnex = EjecutarSP('sp_tbl_DocumentosSAP_Anexos', $ParamDelAnex, 33);
-				}
-				// Hasta aquí. SMM, 15/08/2023 
-
-				while ($j < $CantFiles) {
-					$Archivo = FormatoNombreAnexo($DocFiles[$j], false);
-					$NuevoNombre = $Archivo[0];
-					$OnlyName = $Archivo[1];
-					$Ext = $Archivo[2];
-
-					if (file_exists($dir_new)) {
-						copy($dir . $DocFiles[$j], $dir_new . $NuevoNombre);
-						//move_uploaded_file($_FILES['FileArchivo']['tmp_name'],$dir_new.$NuevoNombre);
-						copy($dir_new . $NuevoNombre, $RutaAttachSAP[0] . $NuevoNombre);
-
-						//Registrar archivo en la BD
-						$ParamAnex = array(
-							"'191'",
-							"'$IdSolicitud'",
-							"'" . $OnlyName . "'",
-							"'" . $Ext . "'",
-							"1",
-							"'" . $_SESSION['CodUser'] . "'",
-							"1",
-						);
-						$SQL_Anex = EjecutarSP('sp_tbl_DocumentosSAP_Anexos', $ParamAnex, $_POST['P']);
-						if (!$SQL_Anex) {
-							$sw_error = 1;
-							
-							$tipo = ($_POST['P'] == 32) ? "Inserción" : "Actualización";
-							$msg_error = "Error en la $tipo de los Anexos";
-							
-							// throw new Exception('Error al insertar los anexos.');
-							// sqlsrv_close($conexion);
-						}
-					}
-					$j++;
-				}
-
-				// SMM, 15/08/2023
 				if ($_POST['P'] == 32) { // Creando 
 					sqlsrv_close($conexion);
 					header('Location:gestionar_solicitudes_llamadas.php?a=' . base64_encode("OK_OTSolAdd"));
@@ -323,9 +241,6 @@ if ($edit == 1 && $sw_error == 0) {
 
 	//Sucursales
 	$SQL_SucursalCliente = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', 'NombreSucursal, NumeroLinea, TipoDireccion', "CodigoCliente='" . $row['ID_CodigoCliente'] . "' and TipoDireccion='S'", 'TipoDireccion, NombreSucursal');
-
-	//Anexos
-	$SQL_AnexoLlamada = Seleccionar('uvw_Sap_tbl_DocumentosSAP_Anexos', '*', "AbsEntry='" . $row['IdAnexoLlamada'] . "'");
 
 	//Articulos del cliente (ID servicio)
 	$ParamArt = array(
@@ -2419,40 +2334,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 				</div>
 
 				<div class="ibox">
-					<div class="ibox-title bg-success">
-						<h5 class="collapse-link"><i class="fa fa-paperclip"></i> Anexos</h5>
-						 <a class="collapse-link pull-right">
-							<i class="fa fa-chevron-up"></i>
-						</a>
-					</div>
 					<div class="ibox-content">
-						<?php if ($edit == 1) { ?>
-							<?php if ($row['IdAnexoLlamada'] != 0) { ?>
-								<div class="form-group">
-									<div class="col-xs-12">
-										<?php while ($row_AnexoLlamada = sqlsrv_fetch_array($SQL_AnexoLlamada)) {
-											$Icon = IconAttach($row_AnexoLlamada['FileExt']); ?>
-														<div class="file-box">
-															<div class="file">
-																<a href="attachdownload.php?file=<?php echo base64_encode($row_AnexoLlamada['AbsEntry']); ?>&line=<?php echo base64_encode($row_AnexoLlamada['Line']); ?>" target="_blank">
-																	<div class="icon">
-																		<i class="<?php echo $Icon; ?>"></i>
-																	</div>
-																	<div class="file-name">
-																		<?php echo $row_AnexoLlamada['NombreArchivo']; ?>
-																		<br/>
-																		<small><?php echo $row_AnexoLlamada['Fecha']; ?></small>
-																	</div>
-																</a>
-															</div>
-														</div>
-										<?php } ?>
-									</div>
-								</div>
-							<?php } else { ?>
-								<p>Sin anexos.</p>
-							<?php } ?>
-						<?php } ?>
 						<?php
 						if (isset($_GET['return'])) {
 							$return = base64_decode($_GET['pag']) . "?" . $_GET['return'];
@@ -2466,6 +2348,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 						} else {
 							echo "33";
 						} ?>" />
+						
 						<input type="hidden" id="swTipo" name="swTipo" value="0" />
 						<input type="hidden" id="swError" name="swError" value="<?php echo $sw_error; ?>" />
 						<input type="hidden" id="tl" name="tl" value="<?php echo $edit; ?>" />
@@ -2482,26 +2365,10 @@ function AgregarEsto(contenedorID, valorElemento) {
 							echo base64_encode($row['ID_SolicitudLlamadaServicio']);
 						} ?>" />
 
-						<input type="hidden" id="IdAnexos" name="IdAnexos" value="<?php if ($edit == 1) {
-							echo $row['IdAnexoLlamada'];
-						} ?>" />
 						<input type="hidden" id="IdSucursalCliente" name="IdSucursalCliente" value="<?php if ($edit == 1) {
 							echo $row['IdNombreSucursal'];
 						} ?>" />
 					   </form>
-						
-					   <?php if (($edit == 0) || (($edit == 1) && ($row['IdEstadoLlamada'] != '-1'))) { ?>
-							<div class="row">
-								<form action="upload.php" class="dropzone" id="dropzoneForm" name="dropzoneForm">
-									<?php if ($sw_error == 0) {
-										LimpiarDirTemp();
-									} ?>
-									<div class="fallback">
-										<input name="File" id="File" type="file" form="dropzoneForm" />
-									</div>
-									</form>
-							</div>
-						<?php } ?>
 					</div>
 				</div>
 
@@ -2528,8 +2395,9 @@ function AgregarEsto(contenedorID, valorElemento) {
 							<a href="<?php echo $return; ?>" class="alkin btn btn-outline btn-default pull-right"><i class="fa fa-arrow-circle-o-left"></i> Regresar</a>
 						</div>
 					</div>
-					  <br><br>
-				   <?php if ($edit == 1) { ?>
+					
+					<br><br><br>
+				   	<?php if ($edit == 1) { ?>
 						<div class="ibox">
 							<div class="ibox-title bg-success">
 								<h5 class="collapse-link"><i class="fa fa-pencil-square-o"></i> Seguimiento de la Solicitud de Llamada</h5>
@@ -3159,29 +3027,6 @@ function CopiarFacturaSN(Cliente, Contacto, Sucursal, Direccion) {
 		console.log('Debe seleccionar un valor en el campo Cliente.');
 	}
 }
-</script>
-
-<script>
-Dropzone.options.dropzoneForm = {
-	paramName: "File", // The name that will be used to transfer the file
-	maxFilesize: "<?php echo ObtenerVariable("MaxSizeFile"); ?>", // MB
-	maxFiles: "<?php echo ObtenerVariable("CantidadArchivos"); ?>",
-	uploadMultiple: true,
-	addRemoveLinks: true,
-	dictRemoveFile: "Quitar",
-	acceptedFiles: "<?php echo ObtenerVariable("TiposArchivos"); ?>",
-	dictDefaultMessage: "<strong>Haga clic aqui para cargar anexos</strong><br>Tambien puede arrastrarlos hasta aqui<br><h4><small>(máximo <?php echo ObtenerVariable("CantidadArchivos"); ?> archivos a la vez)<small></h4>",
-	dictFallbackMessage: "Tu navegador no soporta cargue de archivos mediante arrastrar y soltar",
-	removedfile: function (file) {
-		$.get("includes/procedimientos.php", {
-			type: "3",
-			nombre: file.name
-		}).done(function (data) {
-			var _ref;
-			return (_ref = file.previewElement) !== null ? _ref.parentNode.removeChild(file.previewElement) : void 0;
-		});
-	}
-};
 </script>
 
 <script>
