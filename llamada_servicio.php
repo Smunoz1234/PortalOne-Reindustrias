@@ -730,6 +730,7 @@ if ($sw_error == 1) {
 
 
 // Inicio, verificar que viene de una Solicitud. SMM, 30/08/2023
+$Error_Solicitud = false;
 if (isset($_GET['dt_SLS']) && ($_GET['dt_SLS']) == 1) {
 	$dt_SLS = 1;
 	$SLS = base64_decode($_GET['SLS']);
@@ -742,15 +743,7 @@ if (isset($_GET['dt_SLS']) && ($_GET['dt_SLS']) == 1) {
 
 	$SQL_Copiar = EjecutarSP("sp_tbl_SolicitudLlamadaServicios_To_LlamadaServicios", $ParametrosCopiar);
 	if (!$SQL_Copiar) {
-		echo "<script>
-		$(document).ready(function() {
-			Swal.fire({
-				title: '¡Ha ocurrido un error!',
-				text: 'No se pudo copiar la Solicitud en la Llamada de servicio.',
-				icon: 'error'
-			});
-		});
-		</script>";
+		$Error_Solicitud = true;
 	}
 
 	// Obtener la Llamada de servicio creada desde la Solicitud
@@ -911,6 +904,18 @@ $hasRowsCampanas = ($SQL_Campanas) ? sqlsrv_has_rows($SQL_Campanas) : false;
 <!-- InstanceEndEditable -->
 <!-- InstanceBeginEditable name="head" -->
 <?php
+if ($Error_Solicitud) {
+	echo "<script>
+	$(document).ready(function() {
+		Swal.fire({
+			title: '¡Ha ocurrido un error!',
+			text: 'No se pudo copiar la Solicitud en la Llamada de servicio.',
+			icon: 'error'
+		});
+	});
+	</script>";
+}
+
 if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_LlamAdd"))) {
 	echo "<script>
 		$(document).ready(function() {
