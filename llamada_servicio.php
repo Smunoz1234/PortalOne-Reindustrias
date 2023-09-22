@@ -1364,7 +1364,9 @@ $(document).ready(function () {
 			//HabilitarCampos(1);
 		}
 	});
-	<?php if ($type_llmd == 0 && $sw_error == 0) { ?>
+
+	// Para impedir que se borre la información que esta en el $row. SMM, 22/09/2023
+	<?php if (($type_llmd == 0) && ($sw_error == 0) && ($dt_SLS == 0)) { ?>
 			// SMM, 12/07/2023
 			$("#Series").change(function () {
 				$('.ibox-content').toggleClass('sk-loading', true);
@@ -1381,8 +1383,7 @@ $(document).ready(function () {
 						success: function (data) {
 							console.log("ajx_buscar_datos_json(30)", data);
 
-							if (data.OrigenLlamada)
-								$('#OrigenLlamada').val(data.OrigenLlamada || '""');
+							$('#OrigenLlamada').val(data.OrigenLlamada || '""');
 							$('#TipoLlamada').val(data.TipoLlamada || '""');
 							$('#TipoProblema').val(data.TipoProblemaLlamada || '""');
 
