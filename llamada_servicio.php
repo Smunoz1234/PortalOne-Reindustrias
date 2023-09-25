@@ -1954,7 +1954,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 										</div>
 										<div class="ibox-content">
 										<h3 class="no-margins"><?php if ($row['FechaCreacion'] != "") {
-											echo $row['FechaCreacion'] . " " . $row['HoraCreacion'];
+											echo ($row['FechaCreacion'] ?? "") . " " . ($row['HoraCreacion'] ?? "");
 										} else {
 											echo "&nbsp;";
 										} ?></h3>

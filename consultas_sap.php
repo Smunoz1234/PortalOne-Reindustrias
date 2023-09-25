@@ -316,34 +316,40 @@ if (isset($_GET['type'])) {
 			</div> <!-- row -->
 
 			<?php if (isset($_GET['type']) && ($_GET['type'] == "1") && ($testMode == false)) { ?>
-
-				<!-- Inicio, obtener TitulosConsulta -->
-				<?php $SQL_TablaConsulta = EjecutarSP($ProcedimientoConsulta, $ProcedimientoEntradas); ?>
-
-				<?php $row_Consulta = array();
-
-				if ($SQL_TablaConsulta && sqlsrv_has_rows($SQL_TablaConsulta)) {
-					$row_Consulta = sqlsrv_fetch_array($SQL_TablaConsulta);
-				} else {
-					echo "EXEC $ProcedimientoConsulta " . implode(',', $ProcedimientoEntradas);
-
-					if (!$SQL_TablaConsulta) {
-						echo "<br><br>Hubo un error al ejecutar la consulta.";
-					} else {
-						echo "<br><br>El procedimiento se ejecutó sin problemas, pero no se encontraron resultados.";
-					}
-				} ?>
-
-				<?php $TitulosConsulta = array(); ?>
-				<?php foreach ($row_Consulta as $key => $value) { ?>
-					<?php (is_numeric($key)) ? null : array_push($TitulosConsulta, $key); ?>
-				<?php } ?>
-				<!-- Fin, obtener TitulosConsulta -->
-
 				<div class="row">
 					<div class="col-lg-12">
 						<div class="ibox-content">
 							<?php include "includes/spinner.php"; ?>
+
+							<!-- Inicio, obtener TitulosConsulta -->
+							<?php
+							$SQL_TablaConsulta = EjecutarSP($ProcedimientoConsulta, $ProcedimientoEntradas);
+							$row_Consulta = array();
+
+							if ($SQL_TablaConsulta && sqlsrv_has_rows($SQL_TablaConsulta)) {
+								$row_Consulta = sqlsrv_fetch_array($SQL_TablaConsulta);
+							} else {
+								$msg_error_procedimiento = "EXEC $ProcedimientoConsulta " . implode(',', $ProcedimientoEntradas);
+
+								$msg_error_procedimiento .= "<br><br>";
+								if (!$SQL_TablaConsulta) {
+									$msg_error_procedimiento .= "Hubo un error al ejecutar la consulta a el procedimiento.";
+								} else {
+									$msg_error_procedimiento .= "El procedimiento se ejecutó sin problemas, pero no se encontraron resultados.";
+								}
+							}
+
+							$TitulosConsulta = array();
+							foreach ($row_Consulta as $key => $value) {
+								(is_numeric($key)) ? null : array_push($TitulosConsulta, $key);
+							}
+							?>
+
+							<i class="fa fa-search" style="font-size: 18px; color: darkgray;"></i>
+							<span style="font-size: 13px; color: darkgray;">
+								<?php echo $msg_error_procedimiento; ?>
+							</span>
+							<!-- Fin, obtener TitulosConsulta -->
 
 							<div class="table-responsive">
 								<table class="table table-striped table-bordered table-hover dataTables-example"
