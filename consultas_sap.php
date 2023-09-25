@@ -34,7 +34,7 @@ if (isset($_GET['type'])) {
 		$ParametroEntrada = $row_ProcedimientoEntrada['ParametroEntrada'];
 		$ParametroEntrada = $_GET[$ParametroEntrada] ?? "";
 		$ParametroEntrada = is_array($ParametroEntrada) ? implode(",", $ParametroEntrada) : $ParametroEntrada;
-		
+
 		// SMM, 20/09/2023
 		$ParametroEntrada = ($row_ProcedimientoEntrada['TipoCampo'] == "Fecha") ? FormatoFecha($ParametroEntrada) : $ParametroEntrada;
 		$ParametroEntrada = "'" . $ParametroEntrada . "'";
@@ -132,8 +132,8 @@ if (isset($_GET['type'])) {
 											<label class="control-label">
 												<?php echo $row_Entrada['EtiquetaEntrada']; ?>
 												<?php if ($row_Entrada['Obligatorio'] == "Y") { ?><span
-													class="text-danger">*</span>
-											<?php } ?>
+														class="text-danger">*</span>
+												<?php } ?>
 											</label>
 
 											<input name="<?php echo $row_Entrada['ParametroEntrada']; ?>"
@@ -146,8 +146,8 @@ if (isset($_GET['type'])) {
 											<label class="control-label">
 												<?php echo $row_Entrada['EtiquetaEntrada']; ?>
 												<?php if ($row_Entrada['Obligatorio'] == "Y") { ?><span
-													class="text-danger">*</span>
-											<?php } ?>
+														class="text-danger">*</span>
+												<?php } ?>
 											</label>
 
 											<textarea class="form-control" type="text" rows="5"
@@ -155,17 +155,17 @@ if (isset($_GET['type'])) {
 												id="<?php echo $row_Entrada['ParametroEntrada']; ?>" <?php if ($row_Entrada['Obligatorio'] == "Y") { ?>required="required" <?php } ?>><?php echo $_GET[$row_Entrada['ParametroEntrada']] ?? ""; ?></textarea>
 										</div>
 									<?php } elseif ($row_Entrada['TipoCampo'] == "Fecha") { ?>
-										<div class="col-lg-4 input-group date">
+										<div class="col-lg-4 input-group">
 											<label class="control-label">
 												<?php echo $row_Entrada['EtiquetaEntrada']; ?>
 												<?php if ($row_Entrada['Obligatorio'] == "Y") { ?><span
-													class="text-danger">*</span>
-											<?php } ?>
+														class="text-danger">*</span>
+												<?php } ?>
 											</label>
 
-											<div class="input-group date">
+											<div class="input-group">
 												<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input
-													autocomplete="off" type="text" class="form-control"
+													autocomplete="off" type="text" class="form-control date"
 													id="<?php echo $row_Entrada['ParametroEntrada']; ?>"
 													name="<?php echo $row_Entrada['ParametroEntrada']; ?>" <?php if ($row_Entrada['Obligatorio'] == "Y") { ?>required="required" <?php } ?>
 													value="<?php echo isset($_GET[$row_Entrada['ParametroEntrada']]) ? $_GET[$row_Entrada['ParametroEntrada']] : date('Y-m-d'); ?>">
@@ -179,8 +179,8 @@ if (isset($_GET['type'])) {
 													class="btn-xs btn-success fa fa-search"></i>
 												<?php echo $row_Entrada['EtiquetaEntrada']; ?>
 												<?php if ($row_Entrada['Obligatorio'] == "Y") { ?><span
-													class="text-danger">*</span>
-											<?php } ?>
+														class="text-danger">*</span>
+												<?php } ?>
 											</label>
 
 											<input type="hidden" name="<?php echo $row_Entrada['ParametroEntrada']; ?>"
@@ -196,8 +196,8 @@ if (isset($_GET['type'])) {
 											<label class="control-label">
 												<?php echo $row_Entrada['EtiquetaEntrada']; ?>
 												<?php if ($row_Entrada['Obligatorio'] == "Y") { ?><span
-													class="text-danger">*</span>
-											<?php } ?>
+														class="text-danger">*</span>
+												<?php } ?>
 											</label>
 
 											<select
@@ -206,7 +206,8 @@ if (isset($_GET['type'])) {
 												name="<?php echo $row_Entrada['ParametroEntrada'] . (($row_Entrada['Multiple'] == "Y") ? "[]" : ""); ?>"
 												<?php if ($row_Entrada['Multiple'] == "Y") { ?>multiple="multiple"
 													data-placeholder="Seleccione..." <?php } ?> 		<?php if ($row_Entrada['Obligatorio'] == "Y") { ?>required="required" <?php } ?>>
-												<?php if ($row_Entrada['Multiple'] == "N") { ?><option value="">(Todos)</option>
+												<?php if ($row_Entrada['Multiple'] == "N") { ?>
+													<option value="">(Todos)</option>
 												<?php } ?>
 											</select>
 										</div>
@@ -215,8 +216,8 @@ if (isset($_GET['type'])) {
 											<label class="control-label">
 												<?php echo $row_Entrada['EtiquetaEntrada']; ?>
 												<?php if ($row_Entrada['Obligatorio'] == "Y") { ?><span
-													class="text-danger">*</span>
-											<?php } ?>
+														class="text-danger">*</span>
+												<?php } ?>
 											</label>
 
 											<select class="form-control" id="<?php echo $row_Entrada['ParametroEntrada']; ?>"
@@ -240,19 +241,16 @@ if (isset($_GET['type'])) {
 											<label class="control-label">
 												<?php echo $row_Entrada['EtiquetaEntrada']; ?>
 												<?php if ($row_Entrada['Obligatorio'] == "Y") { ?><span
-													class="text-danger">*</span>
-											<?php } ?>
+														class="text-danger">*</span>
+												<?php } ?>
 											</label>
 
 											<select class="form-control select2" <?php if ($row_Entrada['Multiple'] == "Y") { ?>data-placeholder="Seleccione..." <?php } ?>
-												id="<?php echo $row_Entrada['ParametroEntrada']; ?>"
-												name="<?php if ($row_Entrada['Multiple'] == "Y") {
-													echo $row_Entrada['ParametroEntrada'] . "[]";
-												} else {
-													echo $row_Entrada['ParametroEntrada'];
-												} ?>"
-												<?php if ($row_Entrada['Obligatorio'] == "Y") { ?>required="required" <?php } ?>
-												<?php if ($row_Entrada['Multiple'] == "Y") { ?>multiple="multiple" <?php } ?>>
+												id="<?php echo $row_Entrada['ParametroEntrada']; ?>" name="<?php if ($row_Entrada['Multiple'] == "Y") {
+													   echo $row_Entrada['ParametroEntrada'] . "[]";
+												   } else {
+													   echo $row_Entrada['ParametroEntrada'];
+												   } ?>" <?php if ($row_Entrada['Obligatorio'] == "Y") { ?>required="required" <?php } ?> 		<?php if ($row_Entrada['Multiple'] == "Y") { ?>multiple="multiple" <?php } ?>>
 												<?php if ($row_Entrada['Multiple'] == "N") { ?>
 													<?php if ($row_Entrada['PermitirTodos'] == "Y") { ?>
 														<option value="Todos">(Todos)</option>
@@ -262,7 +260,9 @@ if (isset($_GET['type'])) {
 												<?php } ?>
 
 												<?php while ($row_Lista = sqlsrv_fetch_array($SQL_Lista)) { ?>
-													<option value="<?php echo $row_Lista[$row_Entrada['ValorLista']]; ?>"><?php echo $row_Lista[$row_Entrada['EtiquetaLista']]; ?></option>
+													<option value="<?php echo $row_Lista[$row_Entrada['ValorLista']]; ?>">
+														<?php echo $row_Lista[$row_Entrada['EtiquetaLista']]; ?>
+													</option>
 												<?php } ?>
 											</select>
 										</div>
@@ -271,8 +271,8 @@ if (isset($_GET['type'])) {
 											<label class="control-label">
 												<?php echo $row_Entrada['EtiquetaEntrada']; ?>
 												<?php if ($row_Entrada['Obligatorio'] == "Y") { ?><span
-													class="text-danger">*</span>
-											<?php } ?>
+														class="text-danger">*</span>
+												<?php } ?>
 											</label>
 
 											<input name="<?php echo $row_Entrada['ParametroEntrada']; ?>"
@@ -319,14 +319,19 @@ if (isset($_GET['type'])) {
 
 				<!-- Inicio, obtener TitulosConsulta -->
 				<?php $SQL_TablaConsulta = EjecutarSP($ProcedimientoConsulta, $ProcedimientoEntradas); ?>
-				
+
 				<?php $row_Consulta = array();
-				
-				if($SQL_TablaConsulta) {
+
+				if ($SQL_TablaConsulta && sqlsrv_has_rows($SQL_TablaConsulta)) {
 					$row_Consulta = sqlsrv_fetch_array($SQL_TablaConsulta);
 				} else {
-					echo "$ProcedimientoConsulta<br>";
-					echo print_r($ProcedimientoEntradas, true);
+					echo "EXEC $ProcedimientoConsulta " . implode(',', $ProcedimientoEntradas);
+
+					if (!$SQL_TablaConsulta) {
+						echo "<br><br>Hubo un error al ejecutar la consulta.";
+					} else {
+						echo "<br><br>El procedimiento se ejecutó sin problemas, pero no se encontraron resultados.";
+					}
 				} ?>
 
 				<?php $TitulosConsulta = array(); ?>
@@ -414,12 +419,12 @@ if (isset($_GET['type'])) {
 				descargarExcel();
 			<?php } ?>
 
-				$("#btn_excel").on("click", function () {
+			$("#btn_excel").on("click", function () {
 				<?php if (isset($_GET['type']) && ($_GET['type'] == "1")) { ?>
-						descargarExcel();
+					descargarExcel();
 				<?php } else { ?>
-						$("#type").val("2");
-						$("#submit").click();
+					$("#type").val("2");
+					$("#submit").click();
 				<?php } ?>
 			});
 
