@@ -326,6 +326,7 @@ if (isset($_GET['type'])) {
 							$SQL_TablaConsulta = EjecutarSP($ProcedimientoConsulta, $ProcedimientoEntradas);
 							$row_Consulta = array();
 
+							$msg_error_procedimiento = "";
 							if ($SQL_TablaConsulta && sqlsrv_has_rows($SQL_TablaConsulta)) {
 								$row_Consulta = sqlsrv_fetch_array($SQL_TablaConsulta);
 							} else {
@@ -333,7 +334,7 @@ if (isset($_GET['type'])) {
 
 								$msg_error_procedimiento .= "<br><br>";
 								if (!$SQL_TablaConsulta) {
-									$msg_error_procedimiento .= "Hubo un error al ejecutar la consulta a el procedimiento.";
+									$msg_error_procedimiento .= "Hubo un error al ejecutar la consulta al procedimiento.";
 								} else {
 									$msg_error_procedimiento .= "El procedimiento se ejecutó sin problemas, pero no se encontraron resultados.";
 								}
@@ -345,10 +346,12 @@ if (isset($_GET['type'])) {
 							}
 							?>
 
-							<i class="fa fa-search" style="font-size: 18px; color: darkgray;"></i>
-							<span style="font-size: 13px; color: darkgray;">
-								<?php echo $msg_error_procedimiento; ?>
-							</span>
+							<?php if($msg_error_procedimiento != "") { ?>
+								<i class="fa fa-search" style="font-size: 18px; color: darkgray;"></i>
+								<span style="font-size: 13px; color: darkgray;">
+									<?php echo $msg_error_procedimiento; ?>
+								</span>
+							<?php } ?>
 							<!-- Fin, obtener TitulosConsulta -->
 
 							<div class="table-responsive">
