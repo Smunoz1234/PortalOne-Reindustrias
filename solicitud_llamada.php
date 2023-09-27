@@ -2452,6 +2452,9 @@ function AgregarEsto(contenedorID, valorElemento) {
 																						<?php } ?>
 																					</td>
 
+																					<td><?php echo $row_Anotaciones['tipo_anotacion']; ?></td>
+																					<td><?php echo $row_Anotaciones['comentarios_anotacion']; ?></td>
+
 																					<td><?php echo $row_Anotaciones['usuario_actualizacion']; ?></td>
 
 																					<td>
@@ -2461,9 +2464,6 @@ function AgregarEsto(contenedorID, valorElemento) {
 																							<p class="text-muted">--</p>
 																						<?php } ?>
 																					</td>
-
-																					<td><?php echo $row_Anotaciones['tipo_anotacion']; ?></td>
-																					<td><?php echo $row_Anotaciones['comentarios_anotacion']; ?></td>
 																				</tr>
 																			<?php } ?>
 																		</tbody>
