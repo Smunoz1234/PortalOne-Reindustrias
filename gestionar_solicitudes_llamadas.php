@@ -201,7 +201,7 @@ if ($sw == 1) {
     $SQL = sqlsrv_query($conexion, $Cons);
     // echo "sw == 1";
 } else {
-    $Cons = "SELECT TOP 10 * FROM [uvw_tbl_SolicitudLlamadasServicios] WHERE (FechaCreacionLLamada BETWEEN '$FechaInicial' AND '$FechaFinal') $Filtro";
+    $Cons = "";
     $SQL = sqlsrv_query($conexion, $Cons);
     // echo "sw != 1";
 }

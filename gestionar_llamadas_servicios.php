@@ -227,12 +227,9 @@ if ($sw == 1) {
     //echo $Cons;
     // echo "<br>sw==1";
 } else {
-    $Where = "([FechaCreacionLLamada] Between '$FechaInicial' and '$FechaFinal') $Filtro";
-    $SQL = Seleccionar('uvw_Sap_tbl_LlamadasServicios', 'TOP 10 *', $Where);
-    //$Cons="Select TOP 100 * From uvw_Sap_tbl_LlamadasServicios ";
-    //$Cons="";
-
-    //echo "sw!=1";
+    $Cons = "";
+    $SQL = sqlsrv_query($conexion, $Cons);
+    // echo "sw != 1";
 }
 
 if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
@@ -550,7 +547,7 @@ if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <?php while ($row = sql_fetch_array($SQL)) { ?>
+                                        <?php while ($row = sqlsrv_fetch_array($SQL)) { ?>
                                             <tr class="gradeX">
                                                 <td>
                                                     <?php echo $row['DocNum']; ?>
