@@ -1148,7 +1148,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 												name="Desc_SolicitudLlamadaCliente" id="Desc_SolicitudLlamadaCliente"
 												placeholder="Haga clic en el botón"
 												value="<?php if (isset($row_SolicitudLlamada['ID_SolicitudLlamadaServicio']) && ($row_SolicitudLlamada['ID_SolicitudLlamadaServicio'] != 0)) {
-													echo $row_SolicitudLlamada['DocNum'] . " - " . $row_SolicitudLlamada['AsuntoLlamada'] . " (" . $row_SolicitudLlamada['DeTipoLlamada'] . ")";
+													echo $row_SolicitudLlamada['ID_SolicitudLlamadaServicio'] . " - " . $row_SolicitudLlamada['AsuntoLlamada'] . " (" . $row_SolicitudLlamada['DeTipoLlamada'] . ")";
 												} ?>">
 										</div>
 										<div class="col-lg-4">
