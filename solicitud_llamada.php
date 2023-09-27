@@ -2504,17 +2504,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 													</div>
 													<div class="col-lg-3">
 														<div class="row">
-															<div class="col-lg-6">
-																<button class="pull-right btn btn-primary" id="btnPreCostos" name="btnPreCostos" onClick="MostrarCostos('<?php echo $IdSolicitud; ?>');"><i class="fa fa-money"></i> Previsualizar Precios</button>
-															</div>
-															<div class="col-lg-6">
-																<div class="btn-group pull-right">
-																	<button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i class="fa fa-mail-forward"></i> Liquidación <i class="fa fa-caret-down"></i></button>
-																	<ul class="dropdown-menu">
-																		<li><a class="alkin dropdown-item" href="#" onClick="CopiarToFactura(1);">Prefactura de venta</a></li>
-																	</ul>
-																</div>
-															</div>
+															<!-- Espacio para botones -->
 														</div>
 													</div>
 												</div>

@@ -2018,7 +2018,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								</div>
 								<div class="ibox-content">
 									<div class="form-group">
-										<div class="col-lg-4">
+										<div class="col-lg-6">
 											<?php if ($type_llmd == 1) { ?>
 													<div class="btn-group">
 														<button data-toggle="dropdown" class="btn btn-outline btn-success dropdown-toggle"><i class="fa fa-download"></i> Descargar formato <i class="fa fa-caret-down"></i></button>
@@ -2031,21 +2031,28 @@ function AgregarEsto(contenedorID, valorElemento) {
 																			</li>
 														<?php } ?>
 														</ul>
+
+														<a href="#" class="btn btn-outline btn-info" onClick="VerMapaRel('<?php echo base64_encode($row['ID_LlamadaServicio']); ?>','<?php echo base64_encode('191'); ?>');"><i class="fa fa-sitemap"></i> Mapa de relaciones</a>
+
+														<?php if (isset($row['IdSolicitudLlamadaServicio']) && $row['IdSolicitudLlamadaServicio'] != "") { ?>
+															<a href="solicitud_llamada.php?id=<?php echo base64_encode($row['IdSolicitudLlamadaServicio']); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('gestionar_solicitudes_llamadas.php'); ?>&tl=1"
+																target="_blank" class="btn btn-outline btn-primary">
+																Ir a documento base <i class="fa fa-external-link"></i>
+															</a>
+														<?php } ?>
 													</div>
 
 													<?php if (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] == '-1') && $ActivarCorreo) { ?>
-																	<a href="#" class="btn btn-outline btn-primary" onClick="$('#modalCorreo').modal('show');"><i class="fa fa-envelope"></i> Enviar correo</a>
+														<a href="#" class="btn btn-outline btn-primary" onClick="$('#modalCorreo').modal('show');"><i class="fa fa-envelope"></i> Enviar correo</a>
 													<?php } ?>
-
-													<a href="#" class="btn btn-outline btn-info" onClick="VerMapaRel('<?php echo base64_encode($row['ID_LlamadaServicio']); ?>','<?php echo base64_encode('191'); ?>');"><i class="fa fa-sitemap"></i> Mapa de relaciones</a>
 											<?php } else if (PermitirFuncion(508)) { ?>
 														<button onclick="CrearLead();" class="btn btn-outline btn-primary"><i class="fa fa-user-circle"></i> Crear Prospecto</button>
 														<a href="tarjeta_equipo.php" class="btn btn-outline btn-info" target="_blank"><i class="fa fa-plus-circle"></i> Crear nueva tarjeta de equipo</a>
 											<?php } ?>
 										</div>
-										<!-- /.col-lg-4 -->
+										<!-- /.col-lg-6 -->
 
-										<div class="col-lg-8">
+										<div class="col-lg-6">
 											<div class="btn-group pull-right">
 												<?php if ($type_llmd == 1) { ?>
 														<button onclick="VerTAB(1);" class="btn btn-outline btn-primary"><i class="fa fa-calendar"></i> Ver Actividades</button>
@@ -2058,7 +2065,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 												<?php } ?>	
 											</div>
 										</div>
-										<!-- /.col-lg-8 -->
+										<!-- /.col-lg-6 -->
 									</div>
 									<!-- /.form-group -->
 								</div>
@@ -3350,10 +3357,6 @@ function AgregarEsto(contenedorID, valorElemento) {
 																	<button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i class="fa fa-mail-forward"></i> Liquidación <i class="fa fa-caret-down"></i></button>
 																	<ul class="dropdown-menu">
 																		<li><a class="alkin dropdown-item" href="#" onClick="CopiarToFactura(1);">Prefactura de venta</a></li>
-																		<!-- li><a class="alkin dropdown-item" href="#" onClick="CopiarToFactura(0);">Factura de venta (<strong>NO</strong> copiar adjuntos)</a></li -->
-																		<!--li class="dropdown-divider"></li>
-														<li><a class="alkin dropdown-item" href="#" onClick="CopiarToFactura(1,2);">Orden de venta (copiar adjuntos)</a></li>
-														<li><a class="alkin dropdown-item" href="#" onClick="CopiarToFactura(0,2);">Orden de venta (<strong>NO</strong> copiar adjuntos)</a></li-->
 																	</ul>
 																</div>
 															</div>

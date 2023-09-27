@@ -515,10 +515,10 @@ if ($type != 0) {
 																			<?php echo $row_Detalle['DeEstadoLlamada'] ?? ""; ?>
 																		</td>
 																		<td>
-																			<?php echo $row_Detalle['socio_negocios'] ?? ""; ?>
+																			<?php echo $row_Detalle['NombreClienteLlamada'] ?? ""; ?>
 																		</td>
 																		<td>
-																			<?php echo (isset($row_Detalle["FechaCierre"]) && $row_Detalle["FechaCierre"] != "") ? $row_Detalle['FechaCierre']->format("Y-m-d") : ""; ?>
+																			<?php echo (isset($row_Detalle["FechaCierreLlamada"]) && $row_Detalle["FechaCierreLlamada"] != "") ? $row_Detalle['FechaCierreLlamada']->format("Y-m-d") : ""; ?>
 																		</td>
 
 																		<td>
