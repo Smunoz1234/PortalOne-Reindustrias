@@ -138,9 +138,12 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
 		closedir($route);
 		$CantFiles = count($DocFiles);
 
-		// Campañas asociadas. SMM, 12/09/2023
-		$Campanas = implode(";", $_POST['Campanas']);
-        $Campanas = count($_POST['Campanas']) > 0 ? "'$Campanas'" : "''";
+		// Campañas asociadas. SMM, 25/09/2023
+		$Campanas = "''";
+		if(isset($_POST['Campanas'])) {
+			$Campanas = implode(";", $_POST['Campanas']);
+        	$Campanas = count($_POST['Campanas']) > 0 ? "'$Campanas'" : "''";
+		}
 
 		$ParamInsLlamada = array(
 			"NULL",
@@ -279,9 +282,12 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
 				if ($Resultado->Success == 0 || $testMode) {
 					$sw_error = 1;
 					$msg_error = $Resultado->Mensaje;
+
 					if ($_POST['EstadoLlamada'] == '-1') {
-						$UpdEstado = "Update tbl_LlamadasServicios Set Cod_Estado='-3' Where ID_LlamadaServicio='$IdLlamada'";
+						$UpdEstado = "UPDATE tbl_LlamadasServicios SET Cod_Estado='-3' WHERE ID_LlamadaServicio='$IdLlamada'";
 						$SQL_UpdEstado = sqlsrv_query($conexion, $UpdEstado);
+
+						$msg_error .= " (Se regreso el estado de la llamada a Abierto)";
 					}
 				} else {
 					$msg = $Resultado->Mensaje;
@@ -297,8 +303,8 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
 							"'" . ($row_Llamada["ID_LlamadaServicio"] ?? "") . "'", // @DocEntryLlamada_Destino
 							"'" . ($row_Llamada["DocNum"] ?? "") . "'", // @DocNumLlamada_Destino
 							"'" . ($row_Llamada["ID_Usuario"] ?? "") . "'", // @UsuarioCierre
-							"'" . $row_Llamada["FechaHoraCreacionLLamada"]->format("Y-m-d h:i:s") . "'", // @FechaCierreLlamada
-							"'" . $row_Llamada["FechaHoraCreacionLLamada"]->format("Y-m-d h:i:s") . "'", // @FechaActualizacion
+							"'" . FormatoFecha($_POST['FechaCreacion'], $_POST['HoraCreacion']) . "'", // @FechaCierreLlamada
+							"'" . FormatoFecha($_POST['FechaCreacion'], $_POST['HoraCreacion']) . "'", // @FechaActualizacion
 						);
 						$SQL_CierreSolicitud = EjecutarSP("sp_tbl_SolicitudLlamadaServicios_Cierre", $Param_CierreSolicitud);
 						$msg .= ($SQL_CierreSolicitud) ? " (Se cerró el documento base)" : " (NO se pudo cerrar el documento base)";
@@ -705,16 +711,16 @@ if ($sw_error == 1) {
 	// Articulos del cliente (ID servicio)
 	$ParamArt = array(
 		"'$ID_CodigoCliente'",
-		"'" . $row['NombreSucursal'] . "'",
+		"'" . ($row['NombreSucursal'] ?? "") . "'",
 		"'0'",
 	);
 	$SQL_Articulos = EjecutarSP('sp_ConsultarArticulosLlamadas', $ParamArt);
 
 	// Numero de series -> Tarjeta de equipo
-	$SQL_NumeroSerie = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', '*', "ItemCode='" . $row['IdArticuloLlamada'] . "'", 'SerialFabricante');
+	$SQL_NumeroSerie = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', '*', "ItemCode='" . ($row['IdArticuloLlamada'] ?? "") . "'", 'SerialFabricante');
 
 	// Articulos
-	$SQL_Articulo = Seleccionar('uvw_Sap_tbl_ArticulosLlamadas', '*', "ItemCode='" . $row['IdArticuloLlamada'] . "'");
+	$SQL_Articulo = Seleccionar('uvw_Sap_tbl_ArticulosLlamadas', '*', "ItemCode='" . ($row['IdArticuloLlamada'] ?? "") . "'");
 	$row_Articulo = sqlsrv_fetch_array($SQL_Articulo);
 
 	// Variables LMT
@@ -1953,7 +1959,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 											} ?></b></span></h5>
 										</div>
 										<div class="ibox-content">
-										<h3 class="no-margins"><?php if ($row['FechaCreacion'] != "") {
+										<h3 class="no-margins"><?php if (isset($row['FechaCreacion']) && ($row['FechaCreacion'] != "")) {
 											echo ($row['FechaCreacion'] ?? "") . " " . ($row['HoraCreacion'] ?? "");
 										} else {
 											echo "&nbsp;";
@@ -3073,33 +3079,35 @@ function AgregarEsto(contenedorID, valorElemento) {
 						</a>
 					</div>
 					<div class="ibox-content">
-						<?php if ($type_llmd == 1) {
-							if ($row['IdAnexoLlamada'] != 0) { ?>
-														<div class="form-group">
-															<div class="col-xs-12">
-																<?php while ($row_AnexoLlamada = sqlsrv_fetch_array($SQL_AnexoLlamada)) {
-																	$Icon = IconAttach($row_AnexoLlamada['FileExt']); ?>
-																				<div class="file-box">
-																					<div class="file">
-																						<a href="attachdownload.php?file=<?php echo base64_encode($row_AnexoLlamada['AbsEntry']); ?>&line=<?php echo base64_encode($row_AnexoLlamada['Line']); ?>" target="_blank">
-																							<div class="icon">
-																								<i class="<?php echo $Icon; ?>"></i>
-																							</div>
-																							<div class="file-name">
-																								<?php echo $row_AnexoLlamada['NombreArchivo']; ?>
-																								<br/>
-																								<small><?php echo $row_AnexoLlamada['Fecha']; ?></small>
-																							</div>
-																						</a>
-																					</div>
-																				</div>
-																<?php } ?>
-															</div>
+						<?php if ($type_llmd == 1) { ?>
+							<?php if (isset($row['IdAnexoLlamada']) && ($row['IdAnexoLlamada'] != 0) && $SQL_AnexoLlamada && sqlsrv_has_rows($SQL_AnexoLlamada)) { ?>
+								<div class="form-group">
+									<div class="col-xs-12">
+										<?php while ($row_AnexoLlamada = sqlsrv_fetch_array($SQL_AnexoLlamada)) { ?>
+											<?php $Icon = IconAttach($row_AnexoLlamada['FileExt']); ?>
+
+											<div class="file-box">
+												<div class="file">
+													<a href="attachdownload.php?file=<?php echo base64_encode($row_AnexoLlamada['AbsEntry']); ?>&line=<?php echo base64_encode($row_AnexoLlamada['Line']); ?>" target="_blank">
+														<div class="icon">
+															<i class="<?php echo $Icon; ?>"></i>
 														</div>
-									<?php } else {
-								echo "<p>Sin anexos.</p>";
-							}
-						} ?>
+														<div class="file-name">
+															<?php echo $row_AnexoLlamada['NombreArchivo']; ?>
+															<br/>
+															<small><?php echo $row_AnexoLlamada['Fecha']; ?></small>
+														</div>
+													</a>
+												</div>
+											</div>
+										<?php } ?>
+									</div>
+								</div>
+							<?php } else { ?>
+								<p>Sin anexos.</p>
+							<?php } ?>
+						<?php } ?>
+
 						<?php
 						if (isset($_GET['return'])) {
 							$return = base64_decode($_GET['pag']) . "?" . $_GET['return'];

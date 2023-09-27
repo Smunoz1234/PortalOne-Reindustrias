@@ -1263,13 +1263,13 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 									<label class="col-lg-1 control-label">Autorización</label>
 									<div class="col-lg-3">
 										<select name="Autorizacion" class="form-control" id="Autorizacion" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
-											echo "disabled='disabled'";
+											echo "disabled";
 										} ?>>
 											<?php while ($row_EstadoAuth = sqlsrv_fetch_array($SQL_EstadoAuth)) { ?>
 												<option value="<?php echo $row_EstadoAuth['IdAuth']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['AuthPortal'])) && (strcmp($row_EstadoAuth['IdAuth'], $row['AuthPortal']) == 0)) {
-													   echo "selected=\"selected\"";
+													   echo "selected";
 												   } elseif (($edit == 0 && $sw_error == 0) && ($row_EstadoAuth['IdAuth'] == 'N')) {
-													   echo "selected=\"selected\"";
+													   echo "selected";
 												   } ?>>
 													<?php echo $row_EstadoAuth['DeAuth']; ?></option>
 											<?php } ?>
@@ -1282,14 +1282,14 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 									<div class="col-lg-3">
 										<select id="PrjCode" name="PrjCode" class="form-control select2"
 											required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
-												echo "disabled='disabled'";
+												echo "disabled";
 											} ?>>
 											<option value="">(NINGUNO)</option>
 											<?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) { ?>
 												<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if ((isset($row['PrjCode'])) && (strcmp($row_Proyecto['IdProyecto'], $row['PrjCode']) == 0)) {
-													   echo "selected=\"selected\"";
+													   echo "selected";
 												   } elseif ((isset($_GET['Proyecto'])) && (strcmp($row_Proyecto['IdProyecto'], base64_decode($_GET['Proyecto'])) == 0)) {
-													   echo "selected=\"selected\"";
+													   echo "selected";
 												   } ?>>
 													<?php echo $row_Proyecto['DeProyecto']; ?>
 												</option>
@@ -1621,10 +1621,6 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 						<input type="hidden" form="CrearOfertaVenta" id="tl" name="tl" value="<?php echo $edit; ?>" />
 						<input type="hidden" form="CrearOfertaVenta" id="return" name="return"
 							value="<?php echo base64_encode($return); ?>" />
-						<input type="hidden" form="CrearOfertaVenta" id="PrjCode" name="PrjCode"
-							value="<?php if ($edit == 1) {
-								echo $row['PrjCode'];
-							} ?>" />
 					</form>
 				</div>
 			</div>

@@ -46,7 +46,7 @@ if ($sw == 1) {
 	)";
 
 	$Cons = "SELECT * FROM tbl_CampanaVehiculos WHERE $Filtro";
-	$Cons = "SELECT * FROM tbl_CampanaVehiculos";
+	// $Cons = "SELECT * FROM tbl_CampanaVehiculos";
 	// echo $Cons;
 	$SQL = sqlsrv_query($conexion, $Cons);
 
