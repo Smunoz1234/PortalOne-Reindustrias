@@ -260,8 +260,8 @@ if ($edit == 1 && $sw_error == 0) {
 	//Lista de materiales
 	$SQL_ListaMateriales = Seleccionar('uvw_Sap_tbl_ListaMateriales', '*', "CDU_IdMarca='" . $CDU_IdMarca_TarjetaEquipo . "' AND CDU_IdLinea='" . $CDU_IdLinea_TarjetaEquipo . "'");
 
-	//Documentos relacionados
-	$SQL_DocRel = Seleccionar('uvw_Sap_tbl_LlamadasServiciosDocRelacionados', '*', "ID_LlamadaServicio='$IdSolicitud'");
+	// Documentos relacionados. SMM, 27/09/2023
+	$SQL_DocRel = Seleccionar('uvw_tbl_SolicitudLlamadasServiciosDocRelacionados', '*', "ID_SolicitudLlamadaServicio='$IdSolicitud'");
 
 	//Formularios de llamadas de servicios
 	$SQL_Formularios = Seleccionar('uvw_tbl_LlamadasServicios_Formularios', '*', "docentry_llamada_servicio='$IdSolicitud'");
@@ -299,8 +299,8 @@ if ($sw_error == 1) {
 	//Numero de series -> Tarjeta de equipo
 	$SQL_NumeroSerie = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', '*', "ItemCode='" . $row['IdArticuloLlamada'] . "'", 'SerialFabricante');
 
-	//Documentos relacionados
-	$SQL_DocRel = Seleccionar('uvw_Sap_tbl_LlamadasServiciosDocRelacionados', '*', "ID_LlamadaServicio='" . $row['DocEntry'] . "'");
+	// Documentos relacionados. SMM, 27/09/2023
+	$SQL_DocRel = Seleccionar('uvw_tbl_SolicitudLlamadasServiciosDocRelacionados', '*', "ID_SolicitudLlamadaServicio='$IdSolicitud'");
 
 	//Formularios de llamadas de servicios
 	$SQL_Formularios = Seleccionar('uvw_tbl_LlamadasServicios_Formularios', '*', "docentry_llamada_servicio='" . $row['DocEntry'] . "'");
