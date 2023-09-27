@@ -387,8 +387,8 @@ if ($sw == 1) {
 						"sortDescending": ": Activar para ordenar la columna descendente"
 					}
 				},
-                buttons: []
-
+                buttons: [],
+				order: [[ 0, "desc" ]]
             });
 
         });
