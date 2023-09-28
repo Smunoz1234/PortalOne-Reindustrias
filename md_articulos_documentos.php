@@ -76,6 +76,10 @@ elseif ($preCostos == 5) {
 						<th>Total</th>
 						<th>Clase de artículo</th>
 						<th>Grupo de artículo</th>
+
+						<?php if ($preCostos == 5) { ?>
+							<th>Causal no aprobación</th>
+						<?php } ?>
 					</tr>
 				</thead>
 				<tbody>
@@ -93,7 +97,7 @@ elseif ($preCostos == 5) {
 						if ((($SubGrupo != $row['DE_ItemType']) && $i > 1) || ($i == 1)) {
 							if ($i > 1) { ?>
 								<tr>
-									<td colspan="<?php echo ($preCostos == 3) ? '8' : '6'; ?>" class="text-success font-bold"><span
+									<td colspan="<?php echo ($preCostos == 3) ? '8' : ($preCostos==5?'9':'6'); ?>" class="text-success font-bold"><span
 											class="pull-right">SubTotal
 											<?php echo $SubGrupo; ?>
 										</span></td>
@@ -108,7 +112,7 @@ elseif ($preCostos == 5) {
 							$SubTotal = 0; ?>
 
 							<tr>
-								<td colspan="<?php echo ($preCostos == 3) ? '11' : '9'; ?>"
+								<td colspan="<?php echo ($preCostos == 3) ? '11' : ($preCostos==5?'12':'9'); ?>"
 									class="bg-muted text-success font-bold">
 									<?php echo $row['DE_ItemType']; ?>
 								</td>
@@ -164,6 +168,12 @@ elseif ($preCostos == 5) {
 							<td>
 								<?php echo $row['ItmsGrpNam']; ?>
 							</td>
+
+							<?php if ($preCostos == 5) { ?>
+								<td>
+									<?php echo $row['AprobacionArticuloCausal']; ?>
+								</td>
+							<?php } ?>
 						</tr>
 							
 						<?php $i++;
@@ -182,7 +192,7 @@ elseif ($preCostos == 5) {
 						<td class="text-success font-bold">
 							<?php echo "$" . number_format($SubTotal, 2); ?>
 						</td>
-						<td colspan="2" class="text-success font-bold">&nbsp;</td>
+						<td colspan="<?php echo ($preCostos == 5) ? '3' : '2'; ?>" class="text-success font-bold">&nbsp;</td>
 					</tr>
 					<tr>
 						<td colspan="<?php echo (($preCostos == 3) || ($preCostos == 5)) ? '8' : '6'; ?>" class="text-danger font-bold"><span
@@ -190,7 +200,7 @@ elseif ($preCostos == 5) {
 						<td class="text-danger font-bold">
 							<?php echo "$" . number_format($Total, 2); ?>
 						</td>
-						<td colspan="2" class="text-danger font-bold">&nbsp;</td>
+						<td colspan="<?php echo ($preCostos == 5) ? '3' : '2'; ?>" class="text-danger font-bold">&nbsp;</td>
 					</tr>
 					<!-- Hasta aqui, filas del total -->
 				</tbody>
