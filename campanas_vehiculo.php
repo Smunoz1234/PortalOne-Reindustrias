@@ -35,13 +35,25 @@ if (!$SQL_Encabezado || !$SQL_Detalle || !$SQL_Articulos) {
 	echo "<br>$Cons_Articulos";
 }
 
+// Validación de campañas aplicadas. SMM, 20/01/2023
+$SQL_Aplicado = sqlsrv_query($conexion, $Cons_Detalle);
+
+$CampanasAplicadas = false;
+while ($row_Aplicado = sqlsrv_fetch_array($SQL_Aplicado)) {
+	if ($row_Aplicado["estado_VIN"] == "A") {
+		$CampanasAplicadas = true;
+	}
+}
+
 // Desde ajx_cbo_select(3)
 if ($Proveedor != "") {
 	$Parametros = array(
 		"'$Proveedor'",
-		"'S'", // Destino (S) / Facturacion (B)
+		"'S'",
+		// Destino (S) / Facturacion (B)
 		"'" . $_SESSION['CodUser'] . "'",
-		1, // Proveedor (1) / Cliente (0)
+		1,
+		// Proveedor (1) / Cliente (0)
 	);
 
 	$SQL_Sucursal = EjecutarSP('sp_ConsultarSucursalesClientes', $Parametros);
@@ -314,7 +326,9 @@ if ($type != 0) {
 									</label>
 									<div class="col-lg-3">
 										<input name="campana" type="text" class="form-control" id="campana"
-											maxlength="100" value="<?php echo $Campana; ?>">
+											maxlength="100" value="<?php echo $Campana; ?>" <?php if ($CampanasAplicadas == true) {
+												   echo "readonly";
+											   } ?>>
 									</div>
 
 									<label class="col-lg-1 control-label">
@@ -340,7 +354,9 @@ if ($type != 0) {
 										<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input
 											required autocomplete="off" name="fecha_limite_vigencia"
 											id="fecha_limite_vigencia" type="text" class="form-control fecha"
-											placeholder="AAAA-MM-DD" value="<?php echo $FechaVigencia; ?>">
+											placeholder="AAAA-MM-DD" value="<?php echo $FechaVigencia; ?>" <?php if ($CampanasAplicadas == true) {
+												   echo "readonly";
+											   } ?>>
 									</div>
 
 									<label class="col-lg-1 control-label">Proveedor <span
@@ -350,20 +366,28 @@ if ($type != 0) {
 											value="<?php echo $Proveedor; ?>">
 										<input name="socio_negocio" type="text" class="form-control" required
 											id="socio_negocio" placeholder="Para TODOS, dejar vacio..."
-											value="<?php echo $NombreProveedor; ?>">
+											value="<?php echo $NombreProveedor; ?>" <?php if ($CampanasAplicadas == true) {
+												   echo "readonly";
+											   } ?>>
 									</div>
 
 									<label class="col-lg-1 control-label">Sucursal Proveedor <span
 											class="text-danger">*</span></label>
 									<div class="col-lg-3">
 										<select id="id_consecutivo_direccion" name="id_consecutivo_direccion"
-											class="form-control" required>
-											<option value="">Seleccione...</option>
+											class="form-control" required <?php if ($CampanasAplicadas == true) {
+												echo "readonly";
+											} ?>>
+											<option value="" <?php if ($Sucursal != "") {
+												echo "disabled";
+											} ?>>Seleccione...</option>
 
 											<?php if ($Proveedor != "") { ?>
 												<?php while ($row_Sucursal = sqlsrv_fetch_array($SQL_Sucursal)) { ?>
 													<option value="<?php echo $row_Sucursal['NumeroLinea']; ?>" <?php if (strcmp($row_Sucursal['NumeroLinea'], $Sucursal) == 0) {
 														   echo "selected";
+													   } elseif ($CampanasAplicadas == true) {
+														   echo "disabled";
 													   } ?>>
 														<?php echo $row_Sucursal['NombreSucursal']; ?>
 													</option>
@@ -388,7 +412,9 @@ if ($type != 0) {
 									</label>
 									<div class="col-lg-3">
 										<input name="tiempo_campana_meses" type="number" class="form-control"
-											id="tiempo_campana_meses" value="<?php echo $TiempoMeses; ?>" required>
+											id="tiempo_campana_meses" value="<?php echo $TiempoMeses; ?>" required <?php if ($CampanasAplicadas == true) {
+												   echo "readonly";
+											   } ?>>
 									</div>
 
 									<div class="col-lg-4">
@@ -522,12 +548,14 @@ if ($type != 0) {
 																		</td>
 
 																		<td>
-																			<button type="button"
-																				id="btnDelete<?php echo $row_Detalle['id_campana_detalle']; ?>"
-																				class="btn btn-danger btn-xs"
-																				onclick="EliminarRegistro('<?php echo $row_Detalle['id_campana_detalle']; ?>');"><i
-																					class="fa fa-trash"></i>
-																				Eliminar</button>
+																			<?php if ($row_Detalle['estado_VIN'] == "P") { ?>
+																				<button type="button"
+																					id="btnDelete<?php echo $row_Detalle['id_campana_detalle']; ?>"
+																					class="btn btn-danger btn-xs"
+																					onclick="EliminarRegistro('<?php echo $row_Detalle['id_campana_detalle']; ?>');"><i
+																						class="fa fa-trash"></i>
+																					Eliminar</button>
+																			<?php } ?>
 																		</td>
 																	</tr>
 																<?php } ?>
@@ -654,16 +682,18 @@ if ($type != 0) {
 				$('.ibox-content').toggleClass('sk-loading');
 			});
 
-			// SMM, 25/08/2022
-			$('.fecha').datepicker({
-				todayBtn: "linked",
-				keyboardNavigation: false,
-				forceParse: false,
-				calendarWeeks: true,
-				autoclose: true,
-				todayHighlight: true,
-				format: 'yyyy-mm-dd'
-			});
+			// SMM, 28/09/2023
+			<?php if ($CampanasAplicadas == false) { ?>
+				$('.fecha').datepicker({
+					todayBtn: "linked",
+					keyboardNavigation: false,
+					forceParse: false,
+					calendarWeeks: true,
+					autoclose: true,
+					todayHighlight: true,
+					format: 'yyyy-mm-dd'
+				});
+			<?php } ?>
 
 			$('.chosen-select').chosen({ width: "100%" });
 
