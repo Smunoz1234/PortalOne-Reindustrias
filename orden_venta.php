@@ -238,21 +238,23 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Orden de venta
 							header('Location:orden_venta.php?a=' . base64_encode("OK_BorradorAdd"));
 						} else {
 							if ($_POST['P'] == 37) { //Creando orden
-								//Consultar ID creado para cargar el documento
+								// Consultar ID creado para cargar el documento
 								if ($_POST['tl'] == 0 || $_POST['d_LS'] == 0) {
-									$SQL_ConsID = Seleccionar('uvw_Sap_tbl_OrdenesVentas', 'ID_OrdenVenta', "IdDocPortal='" . $IdOrdenVenta . "'");
+									$SQL_ConsID = Seleccionar('uvw_Sap_tbl_OrdenesVentas', 'ID_OrdenVenta', "IdDocPortal='$IdOrdenVenta'");
 									$row_ConsID = sqlsrv_fetch_array($SQL_ConsID);
+									
 									sqlsrv_close($conexion);
 									header('Location:orden_venta.php?id=' . base64_encode($row_ConsID['ID_OrdenVenta']) . '&id_portal=' . base64_encode($IdOrdenVenta) . '&tl=1&a=' . base64_encode("OK_OVenAdd"));
 								} else {
 									header('Location:orden_venta.php?a=' . base64_encode("OK_OVenAdd"));
 								}
-							} else { //Actualizando orden
-								$SQL_ConsID = Seleccionar('uvw_Sap_tbl_OrdenesVentas', 'ID_OrdenVenta', "IdDocPortal='" . $IdOrdenVenta . "'");
+							} else { // Actualizando orden
+								$SQL_ConsID = Seleccionar('uvw_Sap_tbl_OrdenesVentas', 'ID_OrdenVenta', "IdDocPortal='$IdOrdenVenta'");
 								$row_ConsID = sqlsrv_fetch_array($SQL_ConsID);
+								
 								sqlsrv_close($conexion);
 								header('Location:orden_venta.php?id=' . base64_encode($row_ConsID['ID_OrdenVenta']) . '&id_portal=' . base64_encode($row_ConsID['ID_OrdenVenta']) . '&tl=1&a=' . base64_encode("OK_OVenUpd"));
-								//header('Location:'.base64_decode($_POST['return']).'&a='.base64_encode("OK_OVenUpd"));
+								// header('Location:'.base64_decode($_POST['return']).'&a='.base64_encode("OK_OVenUpd"));
 							}
 						}
 					}

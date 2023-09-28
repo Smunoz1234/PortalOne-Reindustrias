@@ -169,14 +169,19 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Oferta de venta
 					$msg_error = $Resultado->Mensaje;
 				} else {
 					if ($_POST['P'] == 46) { //Creando oferta
-						//Consultar ID creado para cargar el documento
-						$SQL_ConsID = Seleccionar('uvw_Sap_tbl_OfertasVentas', 'ID_OfertaVenta', "IdDocPortal='" . $IdOfertaVenta . "'");
+						// Consultar ID creado para cargar el documento
+						$SQL_ConsID = Seleccionar('uvw_Sap_tbl_OfertasVentas', 'ID_OfertaVenta', "IdDocPortal='$IdOfertaVenta'");
 						$row_ConsID = sqlsrv_fetch_array($SQL_ConsID);
+						
 						sqlsrv_close($conexion);
 						header('Location:oferta_venta.php?id=' . base64_encode($row_ConsID['ID_OfertaVenta']) . '&id_portal=' . base64_encode($IdOfertaVenta) . '&tl=1&a=' . base64_encode("OK_OFertAdd"));
-					} else { //Actualizando oferta
+					} else { // Actualizando oferta
+						$SQL_ConsID = Seleccionar('uvw_Sap_tbl_OfertasVentas', 'ID_OfertaVenta', "IdDocPortal='$IdOfertaVenta'");
+						$row_ConsID = sqlsrv_fetch_array($SQL_ConsID);
+						
 						sqlsrv_close($conexion);
-						header('Location:' . base64_decode($_POST['return']) . '&a=' . base64_encode("OK_OFertUpd"));
+						header('Location:oferta_venta.php?id=' . base64_encode($row_ConsID['ID_OfertaVenta']) . '&id_portal=' . base64_encode($row_ConsID['ID_OfertaVenta']) . '&tl=1&a=' . base64_encode("OK_OFertUpd"));
+						// header('Location:' . base64_decode($_POST['return']) . '&a=' . base64_encode("OK_OFertUpd"));
 					}
 				}
 			} catch (Exception $e) {
