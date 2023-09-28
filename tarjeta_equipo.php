@@ -613,6 +613,26 @@ function MostrarCostos(id_llamada){
 	});
 }
 
+// SMM, 28/09/2022
+function MostrarAutorizados(id_llamada){
+	$('.ibox-content').toggleClass('sk-loading',true);
+	$.ajax({
+		type: "POST",
+		async: false,
+		url: "md_articulos_documentos.php",
+		data:{
+			pre:5,
+			DocEntry:id_llamada
+		},
+		success: function(response){
+			$('.ibox-content').toggleClass('sk-loading',false);
+			$('#ContenidoModal').html(response);
+			$('#TituloModal').html('Articulos No Autorizados');
+			$('#myModal').modal("show");
+		}
+	});
+}
+
 // SMM, 15/09/2022
 function ConsultarDocVentas(tipo){
 	let palabra = ""
@@ -1405,7 +1425,8 @@ function ConsultarDocVentas(tipo){
 																				</td>
 
 																				<td>
-																					<a class="btn btn-primary btn-xs" id="btnPreCostos" name="btnPreCostos" onClick="MostrarCostos('<?php echo $row_LlamadaServicio['ID_LlamadaServicio']; ?>');"><i class="fa fa-money"></i> Previsualizar Precios</a>
+																					<a class="btn btn-primary btn-xs" id="btnPreCostos" name="btnPreCostos" onClick="MostrarCostos('<?php echo $row_LlamadaServicio['ID_LlamadaServicio']; ?>');"><i class="fa fa-money"></i> Precios</a>
+																					<a style="margin: 5px;" class="btn btn-success btn-xs" id="btnPreAutorizados" name="btnPreAutorizados" onClick="MostrarAutorizados('<?php echo $row_LlamadaServicio['ID_LlamadaServicio']; ?>');"><i class="fa fa-wrench"></i> Autorizaciones</a>
 																				</td>
 																				<td><?php echo $row_LlamadaServicio['FechaHoraCreacionLLamada']->format('Y-m-d h:m:i'); ?></td>
 
