@@ -2191,8 +2191,8 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 			$('#Serie').trigger('change'); // SMM, 01/05/2022
 			$('#CardCode').trigger('change'); // SMM, 24/02/2022
 
-			// SMM, 11/05/2022
-			<?php if (isset($_GET['SucursalFact'])) { ?>
+			// SMM, 29/09/2023
+			<?php if (isset($_GET['SucursalFact']) || ($BillToDef != "")) { ?>
 				$('#SucursalFacturacion').trigger('change');
 			<?php } ?>
 		});
