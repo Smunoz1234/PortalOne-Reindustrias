@@ -9,6 +9,9 @@ $IdDevolucion = 0;
 $IdPortal = 0; //Id del portal para las devoluciones que fueron creadas en el portal, para eliminar el registro antes de cargar al editar
 $NameFirma = "";
 
+$BillToDef = ""; // Sucursal de Facturación por Defecto.
+$ShipToDef = ""; // Sucursal de Destino por Defecto.
+
 if (isset($_GET['id']) && ($_GET['id'] != "")) { //ID de la Devolucion de venta (DocEntry)
 	$IdDevolucion = base64_decode($_GET['id']);
 }
@@ -233,9 +236,13 @@ if (isset($_GET['dt_ET']) && ($_GET['dt_ET']) == 1) {
 		</script>";
 	}
 
-	//Clientes
+	// Clientes
 	$SQL_Cliente = Seleccionar('uvw_Sap_tbl_Clientes', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreCliente');
 	$row_Cliente = sqlsrv_fetch_array($SQL_Cliente);
+
+	// SMM, 29/09/2023
+	$BillToDef = $row_Cliente["BillToDef"];
+	$ShipToDef = $row_Cliente["ShipToDef"];
 
 	//Contacto cliente
 	$SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreContacto');
@@ -275,9 +282,13 @@ if (isset($_GET['dt_DV']) && ($_GET['dt_DV']) == 1) { // Verificar que viene de 
 		</script>";
 	}
 
-	//Clientes
+	// Clientes
 	$SQL_Cliente = Seleccionar('uvw_Sap_tbl_Clientes', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreCliente');
 	$row_Cliente = sqlsrv_fetch_array($SQL_Cliente);
+
+	// SMM, 29/09/2023
+	$BillToDef = $row_Cliente["BillToDef"];
+	$ShipToDef = $row_Cliente["ShipToDef"];
 
 	//Contacto cliente
 	$SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreContacto');
@@ -314,9 +325,13 @@ if (isset($_GET['dt_LS']) && ($_GET['dt_LS']) == 1) {
 		}
 	}
 
-	//Clientes
+	// Clientes
 	$SQL_Cliente = Seleccionar('uvw_Sap_tbl_Clientes', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreCliente');
 	$row_Cliente = sqlsrv_fetch_array($SQL_Cliente);
+
+	// SMM, 29/09/2023
+	$BillToDef = $row_Cliente["BillToDef"];
+	$ShipToDef = $row_Cliente["ShipToDef"];
 
 	//Contacto cliente
 	$SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreContacto');
@@ -992,7 +1007,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 										<div class="col-lg-5">
 											<select name="SucursalDestino" class="form-control"
 												id="SucursalDestino" required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
-													echo "disabled='disabled'";
+													echo "disabled";
 												} ?>>
 												<option value="">Seleccione...</option>
 												<?php if ($edit == 1 || $sw_error == 1 || $dt_LS == 1 || $dt_ET == 1) { ?>
@@ -1000,12 +1015,16 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 													<?php while ($row_SucursalDestino = sqlsrv_fetch_array($SQL_SucursalDestino)) { ?>
 														<option value="<?php echo $row_SucursalDestino['NombreSucursal']; ?>"
 															<?php if ((isset($row['SucursalDestino'])) && (strcmp($row_SucursalDestino['NombreSucursal'], $row['SucursalDestino']) == 0)) {
-																echo "selected=\"selected\"";
+																echo "selected";
 															} elseif (isset($_GET['Sucursal']) && (strcmp($row_SucursalDestino['NombreSucursal'], base64_decode($_GET['Sucursal'])) == 0)) {
-																echo "selected=\"selected\"";
+																echo "selected";
 															} elseif (isset($_GET['Sucursal']) && (strcmp(LSiqmlObs($row_SucursalDestino['NombreSucursal']), base64_decode($_GET['Sucursal'])) == 0)) {
-																echo "selected=\"selected\"";
-															} ?>><?php echo $row_SucursalDestino['NombreSucursal']; ?></option>
+																echo "selected";
+															} elseif ($ShipToDef == $row_SucursalDestino['NombreSucursal']) {
+																echo "selected";
+															} ?>>
+																<?php echo $row_SucursalDestino['NombreSucursal']; ?>
+															</option>
 													<?php } ?>
 												<?php } ?>
 											</select>
@@ -1015,7 +1034,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 										<div class="col-lg-5">
 											<select name="SucursalFacturacion" class="form-control"
 												id="SucursalFacturacion" required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
-													echo "disabled='disabled'";
+													echo "disabled";
 												} ?>>
 												<option value="">Seleccione...</option>
 												<?php if ($edit == 1 || $sw_error == 1 || $dt_LS == 1 || $dt_ET == 1) { ?>
@@ -1024,12 +1043,16 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 														<option
 															value="<?php echo $row_SucursalFacturacion['NombreSucursal']; ?>"
 															<?php if ((isset($row['SucursalFacturacion'])) && (strcmp($row_SucursalFacturacion['NombreSucursal'], $row['SucursalFacturacion']) == 0)) {
-																echo "selected=\"selected\"";
+																echo "selected";
 															} elseif (isset($_GET['SucursalFact']) && (strcmp($row_SucursalFacturacion['NombreSucursal'], base64_decode($_GET['SucursalFact'])) == 0)) {
-																echo "selected=\"selected\"";
+																echo "selected";
 															} elseif (isset($_GET['SucursalFact']) && (strcmp(LSiqmlObs($row_SucursalFacturacion['NombreSucursal']), base64_decode($_GET['SucursalFact'])) == 0)) {
-																echo "selected=\"selected\"";
-															} ?>><?php echo $row_SucursalFacturacion['NombreSucursal']; ?></option>
+																echo "selected";
+															} elseif ($BillToDef == $row_SucursalFacturacion['NombreSucursal']) {
+																echo "selected";
+															} ?>>
+																<?php echo $row_SucursalFacturacion['NombreSucursal']; ?>
+															</option>
 													<?php } ?>
 												<?php } ?>
 											</select>

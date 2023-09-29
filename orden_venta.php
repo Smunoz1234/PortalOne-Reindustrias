@@ -16,6 +16,9 @@ $msg_error = ""; //Mensaje del error
 $IdOrden = 0;
 $IdPortal = 0; //Id del portal para las ordenes que fueron creadas en el portal, para eliminar el registro antes de cargar al editar
 
+$BillToDef = ""; // Sucursal de Facturación por Defecto.
+$ShipToDef = ""; // Sucursal de Destino por Defecto.
+
 // Procesos de autorización, SMM 19/08/2022
 $SQL_Procesos = Seleccionar("uvw_tbl_Autorizaciones_Procesos", "*", "Estado = 'Y' AND IdTipoDocumento = 17");
 
@@ -298,9 +301,13 @@ if (isset($_GET['dt_LS']) && ($_GET['dt_LS']) == 1) { //Verificar que viene de u
 		Eliminar('tbl_OrdenVentaDetalleCarrito', "Usuario='" . $_SESSION['CodUser'] . "' AND CardCode='" . base64_decode($_GET['Cardcode']) . "'");
 	}
 
-	//Clientes
+	// Clientes
 	$SQL_Cliente = Seleccionar('uvw_Sap_tbl_Clientes', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreCliente');
 	$row_Cliente = sqlsrv_fetch_array($SQL_Cliente);
+
+	// SMM, 29/09/2023
+	$BillToDef = $row_Cliente["BillToDef"];
+	$ShipToDef = $row_Cliente["ShipToDef"];
 
 	//Contacto cliente
 	$SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreContacto');
@@ -348,9 +355,13 @@ if (isset($_GET['dt_OV']) && ($_GET['dt_OV']) == 1) { // Verificar que viene de 
 		</script>";
 	}
 
-	//Clientes
+	// Clientes
 	$SQL_Cliente = Seleccionar('uvw_Sap_tbl_Clientes', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreCliente');
 	$row_Cliente = sqlsrv_fetch_array($SQL_Cliente);
+
+	// SMM, 29/09/2023
+	$BillToDef = $row_Cliente["BillToDef"];
+	$ShipToDef = $row_Cliente["ShipToDef"];
 
 	//Contacto cliente
 	$SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreContacto');
@@ -394,9 +405,13 @@ if (isset($_GET['dt_OF']) && ($_GET['dt_OF']) == 1) { //Verificar que viene de u
 		</script>";
 	}
 
-	//Clientes
+	// Clientes
 	$SQL_Cliente = Seleccionar('uvw_Sap_tbl_Clientes', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreCliente');
 	$row_Cliente = sqlsrv_fetch_array($SQL_Cliente);
+
+	// SMM, 29/09/2023
+	$BillToDef = $row_Cliente["BillToDef"];
+	$ShipToDef = $row_Cliente["ShipToDef"];
 
 	//Contacto cliente
 	$SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreContacto');
@@ -426,9 +441,13 @@ if (isset($_GET['dt_FC']) && ($_GET['dt_FC']) == 1) { //Verificar que viene de u
 		$_GET['Cardcode'] = $_GET['CodFactura'];
 	}
 
-	//Clientes
+	// Clientes
 	$SQL_Cliente = Seleccionar('uvw_Sap_tbl_Clientes', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreCliente');
 	$row_Cliente = sqlsrv_fetch_array($SQL_Cliente);
+
+	// SMM, 29/09/2023
+	$BillToDef = $row_Cliente["BillToDef"];
+	$ShipToDef = $row_Cliente["ShipToDef"];
 
 	if (!$SQL_CopiarFactToOrden) {
 		echo "<script>
@@ -1293,7 +1312,11 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 																echo "selected";
 															} elseif (isset($_GET['Sucursal']) && (strcmp(LSiqmlObs($row_SucursalDestino['NombreSucursal']), base64_decode($_GET['Sucursal'])) == 0)) {
 																echo "selected";
-															} ?>><?php echo $row_SucursalDestino['NombreSucursal']; ?></option>
+															} elseif ($ShipToDef == $row_SucursalDestino['NombreSucursal']) {
+																echo "selected";
+															} ?>>
+																<?php echo $row_SucursalDestino['NombreSucursal']; ?>
+															</option>
 													<?php } ?>
 												<?php } ?>
 											</select>
@@ -1317,7 +1340,11 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 																echo "selected";
 															} elseif (isset($_GET['SucursalFact']) && (strcmp(LSiqmlObs($row_SucursalFacturacion['NombreSucursal']), base64_decode($_GET['SucursalFact'])) == 0)) {
 																echo "selected";
-															} ?>><?php echo $row_SucursalFacturacion['NombreSucursal']; ?></option>
+															} elseif ($BillToDef == $row_SucursalFacturacion['NombreSucursal']) {
+																echo "selected";
+															} ?>>
+																<?php echo $row_SucursalFacturacion['NombreSucursal']; ?>
+															</option>
 													<?php } ?>
 												<?php } ?>
 											</select>
