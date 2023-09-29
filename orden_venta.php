@@ -123,7 +123,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Orden de venta
 			"'" . ($_POST['IdMotivoAutorizacion'] ?? "") . "'",
 			"'" . ($_POST['ComentariosAutor'] ?? "") . "'",
 			"'" . ($_POST['MensajeProceso'] ?? "") . "'",
-			"'" . ($_POST['Aprobados'] ?? "0") . "'",, // BasadoOfertaAprobados
+			"'" . ($_POST['Aprobados'] ?? "0") . "'", // BasadoOfertaAprobados
 		);
 
 		$SQL_CabeceraOrdenVenta = EjecutarSP('sp_tbl_OrdenVenta', $ParametrosCabOrdenVenta, $_POST['P']);
