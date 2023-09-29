@@ -3,6 +3,7 @@ PermitirAcceso(406);
 
 $dt_LS = 0; //sw para saber si vienen datos de la llamada de servicio. 0 no vienen. 1 si vienen.
 $dt_OF = 0; //sw para saber si vienen datos de una Oferta de venta.
+$Aprobados = 0; // sw para saber si vienen datos con Articulos Aprobados.
 
 $IdMotivo = "";
 $motivoAutorizacion = "";
@@ -122,6 +123,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Orden de venta
 			"'" . ($_POST['IdMotivoAutorizacion'] ?? "") . "'",
 			"'" . ($_POST['ComentariosAutor'] ?? "") . "'",
 			"'" . ($_POST['MensajeProceso'] ?? "") . "'",
+			"'" . ($_POST['Aprobados'] ?? "0") . "'",, // BasadoOfertaAprobados
 		);
 
 		$SQL_CabeceraOrdenVenta = EjecutarSP('sp_tbl_OrdenVenta', $ParametrosCabOrdenVenta, $_POST['P']);
@@ -376,6 +378,7 @@ if (isset($_GET['dt_OF']) && ($_GET['dt_OF']) == 1) { //Verificar que viene de u
 		"'" . $_SESSION['CodUser'] . "'",
 	);
 
+	$Aprobados = isset($_GET['Aprobados']) ? 1 : 0;
 	$SP_Aprobados = isset($_GET['Aprobados']) ? 'sp_tbl_OfertaVentaDet_Aprobados_To_OrdenVentaDet' : 'sp_tbl_OfertaVentaDet_To_OrdenVentaDet';
 
 	$SQL_CopiarOfertaToOrden = EjecutarSP($SP_Aprobados, $ParametrosCopiarOfertaToOrden);
@@ -1856,22 +1859,32 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 								</div>
 							<?php } ?>
 						</div>
+						
 						<input type="hidden" form="CrearOrdenVenta" id="P" name="P" value="<?php if ($edit == 0) {
 							echo "37";
 						} else {
 							echo "39";
 						} ?>" />
+
 						<input type="hidden" form="CrearOrdenVenta" id="IdOrdenVenta" name="IdOrdenVenta" value="<?php if ($edit == 1) {
 							echo base64_encode($row['ID_OrdenVenta']);
 						} ?>" />
+						
 						<input type="hidden" form="CrearOrdenVenta" id="IdEvento" name="IdEvento" value="<?php if ($edit == 1) {
 							echo base64_encode($IdEvento);
 						} ?>" />
+						
 						<input type="hidden" form="CrearOrdenVenta" id="d_LS" name="d_LS"
 							value="<?php echo $dt_LS; ?>" />
+
+						<input type="hidden" form="CrearOrdenVenta" id="Aprobados" name="Aprobados"
+							value="<?php echo $Aprobados; ?>" />
+						
 						<input type="hidden" form="CrearOrdenVenta" id="tl" name="tl" value="<?php echo $edit; ?>" />
+						
 						<input type="hidden" form="CrearOrdenVenta" id="swError" name="swError"
 							value="<?php echo $sw_error; ?>" />
+						
 						<input type="hidden" form="CrearOrdenVenta" id="return" name="return"
 							value="<?php echo base64_encode($return); ?>" />
 					</form>
