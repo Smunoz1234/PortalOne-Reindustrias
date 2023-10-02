@@ -1002,29 +1002,6 @@ if (isset($_GET['return'])) {
 					</a>
 				</div>
 				<div class="ibox-content">
-					<?php if ( /*$row['IdAnexoLlamada'] != 0*/false) {?>
-						<div class="form-group">
-							<div class="col-xs-12">
-								<?php while ($row_AnexoLlamada = sqlsrv_fetch_array($SQL_AnexoLlamada)) {?>
-									<?php $Icon = IconAttach($row_AnexoLlamada['FileExt']);?>
-									<div class="file-box">
-										<div class="file">
-											<a href="attachdownload.php?file=<?php echo base64_encode($row_AnexoLlamada['AbsEntry']); ?>&line=<?php echo base64_encode($row_AnexoLlamada['Line']); ?>" target="_blank">
-												<div class="icon">
-													<i class="<?php echo $Icon; ?>"></i>
-												</div>
-												<div class="file-name">
-													<?php echo $row_AnexoLlamada['NombreArchivo']; ?>
-													<br/>
-													<small><?php echo $row_AnexoLlamada['Fecha']; ?></small>
-												</div>
-											</a>
-										</div>
-									</div>
-								<?php }?>
-							</div>
-						</div>
-					<?php } else {echo "<!--p>Sin anexos.</p-->";}?>
 					<div class="row">
 						<form action="upload.php?persistent=recepcion_vehiculos" class="dropzone" id="dropzoneForm" name="dropzoneForm">
 							<?php //if ($sw_error == 0) {LimpiarDirTemp();}?>

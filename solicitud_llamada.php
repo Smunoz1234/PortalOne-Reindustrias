@@ -15,7 +15,12 @@ $dt_LS = 0; //sw para saber si vienen datos del SN. 0 no vienen. 1 si vienen.
 $sw_valDir = 0; //Validar si el nombre de la direccion cambio
 $TituloLlamada = ""; //Titulo por defecto cuando se está creando la llamada de servicio
 
-$testMode = false; // SMM, 04/03/2022
+// SMM, 02/10/2023
+$testMode = false;
+
+// Inicio, copiar firma a la ruta log y main.
+$FirmaContactoResponsable = ""; // Eliminado. SMM, 02/10/2023
+// Fin, copiar firma a la ruta log y main.
 
 if (isset($_GET['id']) && ($_GET['id'] != "")) {
 	$IdSolicitud = base64_decode($_GET['id']);
@@ -79,27 +84,22 @@ if ($edit == 0) {
 	// SMM, 12/02/2022
 }
 
-if (isset($_POST['P'])) { //Crear Solicitud de Llamada de servicio
+if (isset($_POST['P'])) { // Crear Solicitud de Llamada de servicio
 	try {
-		//*** Carpeta temporal ***
-		$i = 0; //Archivos
+		// Inicio, carpeta temporal anexos. SMM, 02/10/2023
 		$RutaAttachSAP = ObtenerDirAttach();
 		$dir = CrearObtenerDirTemp();
-		$dir_new = CrearObtenerDirAnx("llamadas");
-		$route = opendir($dir);
+		$dir_new = CrearObtenerDirAnx("solicitudes_llamadas");
 		$DocFiles = array();
-		while ($archivo = readdir($route)) { //obtenemos un archivo y luego otro sucesivamente
-			if (($archivo == ".") || ($archivo == "..")) {
-				continue;
-			}
 
-			if (!is_dir($archivo)) { //verificamos si es o no un directorio
-				$DocFiles[$i] = $archivo;
-				$i++;
+		foreach (glob($dir . "/*") as $archivo) {
+			if (is_file($archivo)) {
+				$DocFiles[] = $archivo;
 			}
 		}
-		closedir($route);
+
 		$CantFiles = count($DocFiles);
+		// Fin, carpeta temporal anexos.
 
 		// Campañas asociadas. SMM, 15/09/2023
 		$Campanas = "''";
@@ -134,12 +134,12 @@ if (isset($_POST['P'])) { //Crear Solicitud de Llamada de servicio
 			"'" . ($_POST['ContratoServicio'] ?? "") . "'",
 			"'" . $_POST['Tecnico'] . "'",
 			"'" . $_POST['ClienteLlamada'] . "'",
-			"'" . $_POST['ContactoCliente'] . "'",
+			"'" . ($_POST['ContactoCliente'] ?? "") . "'",
 			"'" . $_POST['TelefonoLlamada'] . "'",
 			"'" . $_POST['CorreoLlamada'] . "'",
 			"'" . $_POST['IdArticuloLlamada'] . "'",
 			"'" . $_POST['NumeroSerie'] . "'",
-			"'" . $_POST['SucursalCliente'] . "'",
+			"'" . ($_POST['SucursalCliente'] ?? "") . "'",
 			"'" . $_POST['IdSucursalCliente'] . "'",
 			"'" . $_POST['DireccionLlamada'] . "'",
 			"'" . $_POST['CiudadLlamada'] . "'",
@@ -172,13 +172,13 @@ if (isset($_POST['P'])) { //Crear Solicitud de Llamada de servicio
 			(isset($_POST['CantArticulo']) && ($_POST['CantArticulo'] != "")) ? LSiqmlValorDecimal($_POST['CantArticulo']) : 0,
 			(isset($_POST['PrecioArticulo']) && ($_POST['PrecioArticulo'] != "")) ? LSiqmlValorDecimal($_POST['PrecioArticulo']) : 0,
 			($_POST['P'] == 32) ? "1" : "$Type", // Tipo de SP
-			"'" . $_POST['CDU_Marca'] . "'",
-			"'" . $_POST['CDU_Linea'] . "'",
-			"'" . $_POST['CDU_Ano'] . "'",
-			"'" . $_POST['CDU_Concesionario'] . "'",
+			"'" . ($_POST['CDU_Marca'] ?? "") . "'",
+			"'" . ($_POST['CDU_Linea'] ?? "") . "'",
+			"'" . ($_POST['CDU_Ano'] ?? "") . "'",
+			"'" . ($_POST['CDU_Concesionario'] ?? "") . "'",
 			"'" . ($_POST['CDU_Aseguradora'] ?? "") . "'",
-			"'" . $_POST['CDU_TipoPreventivo'] . "'",
-			"'" . $_POST['CDU_TipoServicio'] . "'",
+			"'" . ($_POST['CDU_TipoPreventivo'] ?? "") . "'",
+			"'" . ($_POST['CDU_TipoServicio'] ?? "") . "'",
 			isset($_POST['CDU_Kilometros']) ? $_POST['CDU_Kilometros'] : 0, // int
 			"'" . ($_POST['CDU_Contrato'] ?? "") . "'",
 			"NULL", // CDU_Asesor
@@ -207,6 +207,68 @@ if (isset($_POST['P'])) { //Crear Solicitud de Llamada de servicio
 				$IdSolicitud = base64_decode($_POST['IdLlamadaPortal']);
 			}
 
+			// Copiar anexos a la ruta correspondiente. SMM, 02/10/2023
+			try {
+				// Limpiar los anexos ya cargados en caso de error, para volverlos a cargar la tabla.
+				if ($sw_error == 1) { 
+					//Registrar archivo en la BD
+					$ParamDelAnex = array(
+						"'191'",
+						"'$IdSolicitud'",
+						"NULL",
+						"NULL",
+						"NULL",
+						"'" . $_SESSION['CodUser'] . "'",
+						"2",
+					);
+					$SQL_DelAnex = EjecutarSP('sp_tbl_DocumentosSAP_Anexos', $ParamDelAnex, $_POST['P']);
+
+					if (!$SQL_DelAnex) {
+						$sw_error = 1;
+						$msg_error = "Error en los anexos de la Solicitud de Llamada de servicio";
+					}
+				}
+
+				// Mover los anexos a la carpeta de archivos de SAP
+				for ($j = 0; $j < $CantFiles; $j++) {
+					$ArchivoInfo = FormatoNombreAnexo($DocFiles[$j], false);
+					$NuevoNombre = $ArchivoInfo[0];
+					$OnlyName = $ArchivoInfo[1];
+					$Ext = $ArchivoInfo[2];
+			
+					if (file_exists($dir_new)) {
+						$origenArchivo = $dir . $DocFiles[$j];
+						$nuevoArchivo = $dir_new . $NuevoNombre;
+						$rutaDestinoSAP = $RutaAttachSAP[0] . $NuevoNombre;
+			
+						copy($origenArchivo, $nuevoArchivo);
+						copy($nuevoArchivo, $rutaDestinoSAP);
+			
+						// Registrar archivo en la base de datos
+						$parametrosAnexo = array(
+							"'191'",
+							"'$IdSolicitud'",
+							"'$OnlyName'",
+							"'$Ext'",
+							"1",
+							"'" . $_SESSION['CodUser'] . "'",
+							"1",
+						);
+						$resultado = EjecutarSP('sp_tbl_DocumentosSAP_Anexos', $parametrosAnexo, $_POST['P']);
+			
+						if (!$resultado) {
+							$sw_error = 1;
+							$msg_error = "Error en los anexos de la Solicitud de Llamada de servicio";
+						}
+					}
+				}
+			} catch (Exception $e) {
+				// Manejar excepciones si es necesario
+				$sw_error = 1;
+				$msg_error = $e->getMessage();
+			}
+			// Fin, copiar anexos a la ruta correspondiente.	
+
 			try {
 				if ($_POST['P'] == 32) { // Creando 
 					sqlsrv_close($conexion);
@@ -233,25 +295,33 @@ if ($edit == 1 && $sw_error == 0) {
 	$SQL = Seleccionar('uvw_tbl_SolicitudLlamadasServicios', '*', "ID_SolicitudLlamadaServicio='$IdSolicitud'");
 	$row = sqlsrv_fetch_array($SQL);
 
+	// SMM, 02/10/2023
+	$ID_CodigoCliente = $row['ID_CodigoCliente'] ?? "";
+
+	// Anexos. SMM, 02/10/2023
+	$IdAnexoLlamada = ($row['IdAnexoLlamada'] ?? "");
+	echo "SELECT * FROM uvw_Sap_tbl_DocumentosSAP_Anexos WHERE AbsEntry = '$IdAnexoLlamada'";
+	$SQL_AnexoLlamada = Seleccionar('uvw_Sap_tbl_DocumentosSAP_Anexos', '*', "AbsEntry = '$IdAnexoLlamada'");
+
 	//Clientes
-	$SQL_Cliente = Seleccionar("uvw_Sap_tbl_Clientes", "CodigoCliente, NombreCliente", "CodigoCliente='" . $row['ID_CodigoCliente'] . "'", 'NombreCliente');
+	$SQL_Cliente = Seleccionar("uvw_Sap_tbl_Clientes", "CodigoCliente, NombreCliente", "CodigoCliente='$ID_CodigoCliente'", 'NombreCliente');
 
 	//Contactos clientes
-	$SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', 'CodigoContacto, ID_Contacto', "CodigoCliente='" . $row['ID_CodigoCliente'] . "'", 'NombreContacto');
+	$SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', 'CodigoContacto, ID_Contacto', "CodigoCliente='$ID_CodigoCliente'", 'NombreContacto');
 
 	//Sucursales
-	$SQL_SucursalCliente = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', 'NombreSucursal, NumeroLinea, TipoDireccion', "CodigoCliente='" . $row['ID_CodigoCliente'] . "' and TipoDireccion='S'", 'TipoDireccion, NombreSucursal');
+	$SQL_SucursalCliente = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', 'NombreSucursal, NumeroLinea, TipoDireccion', "CodigoCliente='$ID_CodigoCliente' and TipoDireccion='S'", 'TipoDireccion, NombreSucursal');
 
 	//Articulos del cliente (ID servicio)
 	$ParamArt = array(
-		"'" . $row['ID_CodigoCliente'] . "'",
+		"'$ID_CodigoCliente'",
 		"'" . $row['NombreSucursal'] . "'",
 		"'0'",
 	);
 	$SQL_Articulos = EjecutarSP('sp_ConsultarArticulosLlamadas', $ParamArt);
 
 	//Numero de series -> Tarjeta de equipo
-	$SQL_NumeroSerie = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', '*', "ItemCode='" . $row['IdArticuloLlamada'] . "' AND CardCode='" . $row['ID_CodigoCliente'] . "'", 'SerialFabricante');
+	$SQL_NumeroSerie = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', '*', "ItemCode='" . $row['IdArticuloLlamada'] . "' AND CardCode='$ID_CodigoCliente'", 'SerialFabricante');
 
 	// SMM, 01/03/2022
 	$CDU_IdMarca_TarjetaEquipo = $row['CDU_IdMarca_TarjetaEquipo'] ?? '';
@@ -267,7 +337,7 @@ if ($edit == 1 && $sw_error == 0) {
 	$SQL_Formularios = Seleccionar('uvw_tbl_LlamadasServicios_Formularios', '*', "docentry_llamada_servicio='$IdSolicitud'");
 
 	//Contratos de servicio
-	$SQL_Contrato = Seleccionar('uvw_Sap_tbl_Contratos', '*', "CodigoCliente='" . $row['ID_CodigoCliente'] . "'", 'ID_Contrato');
+	$SQL_Contrato = Seleccionar('uvw_Sap_tbl_Contratos', '*', "CodigoCliente='$ID_CodigoCliente'", 'ID_Contrato');
 
 	// Stiven Muñoz Murillo, 24/01/2022
 	$SQL_Articulo = Seleccionar('uvw_Sap_tbl_ArticulosLlamadas', '*', "ItemCode='" . $row['IdArticuloLlamada'] . "'");
@@ -279,34 +349,37 @@ if ($sw_error == 1) {
 	$SQL = Seleccionar('uvw_tbl_SolicitudLlamadasServicios', '*', "ID_SolicitudLlamadaServicio='$IdSolicitud'");
 	$row = sqlsrv_fetch_array($SQL);
 
+	// SMM, 02/10/2023
+	$ID_CodigoCliente = $row['ID_CodigoCliente'] ?? "";
+
 	//Clientes
-	$SQL_Cliente = Seleccionar("uvw_Sap_tbl_Clientes", "CodigoCliente, NombreCliente", "CodigoCliente='" . $row['ID_CodigoCliente'] . "'", 'NombreCliente');
+	$SQL_Cliente = Seleccionar("uvw_Sap_tbl_Clientes", "CodigoCliente, NombreCliente", "CodigoCliente='$ID_CodigoCliente'", 'NombreCliente');
 
 	//Contactos clientes
-	$SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', 'CodigoContacto, ID_Contacto', "CodigoCliente='" . $row['ID_CodigoCliente'] . "'", 'NombreContacto');
+	$SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', 'CodigoContacto, ID_Contacto', "CodigoCliente='$ID_CodigoCliente'", 'NombreContacto');
 
 	//Sucursales
-	$SQL_SucursalCliente = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', 'NombreSucursal, NumeroLinea, TipoDireccion', "CodigoCliente='" . $row['ID_CodigoCliente'] . "' and TipoDireccion='S'", 'TipoDireccion, NombreSucursal');
+	$SQL_SucursalCliente = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', 'NombreSucursal, NumeroLinea, TipoDireccion', "CodigoCliente='$ID_CodigoCliente' and TipoDireccion='S'", 'TipoDireccion, NombreSucursal');
 
 	//Articulos del cliente (ID servicio)
 	$ParamArt = array(
-		"'" . $row['ID_CodigoCliente'] . "'",
-		"'" . $row['NombreSucursal'] . "'",
+		"'$ID_CodigoCliente'",
+		"'" . ($row['NombreSucursal'] ?? "") . "'",
 		"'0'",
 	);
 	$SQL_Articulos = EjecutarSP('sp_ConsultarArticulosLlamadas', $ParamArt);
 
 	//Numero de series -> Tarjeta de equipo
-	$SQL_NumeroSerie = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', '*', "ItemCode='" . $row['IdArticuloLlamada'] . "'", 'SerialFabricante');
+	$SQL_NumeroSerie = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', '*', "ItemCode='" . ($row['IdArticuloLlamada'] ?? "") . "'", 'SerialFabricante');
 
 	// Documentos relacionados. SMM, 27/09/2023
 	$SQL_DocRel = Seleccionar('uvw_tbl_SolicitudLlamadasServiciosDocRelacionados', '*', "ID_SolicitudLlamadaServicio='$IdSolicitud'");
 
 	//Formularios de llamadas de servicios
-	$SQL_Formularios = Seleccionar('uvw_tbl_LlamadasServicios_Formularios', '*', "docentry_llamada_servicio='" . $row['DocEntry'] . "'");
+	$SQL_Formularios = Seleccionar('uvw_tbl_LlamadasServicios_Formularios', '*', "docentry_llamada_servicio='" . ($row['DocEntry'] ?? "") . "'");
 
 	//Contratos de servicio
-	$SQL_Contrato = Seleccionar('uvw_Sap_tbl_Contratos', '*', "CodigoCliente='" . $row['ID_CodigoCliente'] . "'", 'ID_Contrato');
+	$SQL_Contrato = Seleccionar('uvw_Sap_tbl_Contratos', '*', "CodigoCliente='$ID_CodigoCliente'", 'ID_Contrato');
 
 	// SMM, 01/03/2022
 	$CDU_IdMarca_TarjetaEquipo = $row['CDU_IdMarca_TarjetaEquipo'] ?? '';
@@ -316,7 +389,7 @@ if ($sw_error == 1) {
 	$SQL_ListaMateriales = Seleccionar('uvw_Sap_tbl_ListaMateriales', '*', "CDU_IdMarca='$CDU_IdMarca_TarjetaEquipo' AND CDU_IdLinea='$CDU_IdLinea_TarjetaEquipo'");
 
 	// Stiven Muñoz Murillo, 02/06/2022
-	$SQL_Articulo = Seleccionar('uvw_Sap_tbl_ArticulosLlamadas', '*', "ItemCode='" . $row['IdArticuloLlamada'] . "'");
+	$SQL_Articulo = Seleccionar('uvw_Sap_tbl_ArticulosLlamadas', '*', "ItemCode='" . ($row['IdArticuloLlamada'] ?? "") . "'");
 	$row_Articulo = sqlsrv_fetch_array($SQL_Articulo);
 }
 
@@ -2696,10 +2769,18 @@ function AgregarEsto(contenedorID, valorElemento) {
 <!-- InstanceBeginEditable name="EditRegion4" -->
 <script>
 $(document).ready(function () {
+	// SMM, 02/10/2023
+	<?php if ($testMode) { ?>
+		// Selecciona todos los elementos con el atributo 'required' dentro del formulario
+		$('form [required]').removeAttr('required');
+	<?php } ?>
+	
+	
 	// SMM, 11/05/2022
 	<?php if (isset($_GET['Serial'])) { ?>
-					// $('#NumeroSerie').trigger('change');
-	 <?php } ?>
+		// $('#NumeroSerie').trigger('change');
+	<?php } ?>
+
 
 		$("#CrearLlamada").validate({
 			submitHandler: function (form) {
