@@ -313,7 +313,7 @@ if ($sw_error == 1) {
 	$CDU_IdLinea_TarjetaEquipo = $row['CDU_IdLinea_TarjetaEquipo'] ?? '';
 
 	// Lista de materiales
-	$SQL_ListaMateriales = Seleccionar('uvw_Sap_tbl_ListaMateriales', '*', "CDU_IdMarca='" . $CDU_IdMarca_TarjetaEquipo . "' AND CDU_IdLinea='" . $CDU_IdLinea_TarjetaEquipo . "'");
+	$SQL_ListaMateriales = Seleccionar('uvw_Sap_tbl_ListaMateriales', '*', "CDU_IdMarca='$CDU_IdMarca_TarjetaEquipo' AND CDU_IdLinea='$CDU_IdLinea_TarjetaEquipo'");
 
 	// Stiven Muñoz Murillo, 02/06/2022
 	$SQL_Articulo = Seleccionar('uvw_Sap_tbl_ArticulosLlamadas', '*', "ItemCode='" . $row['IdArticuloLlamada'] . "'");
@@ -2262,6 +2262,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 				</div>
 				<!-- FIN, información del vehículo y de la cita -->
 
+				<!-- Inicio, información adicional -->
 				<div class="ibox">
 					<div class="ibox-title bg-success">
 						<h5 class="collapse-link"><i class="fa fa-edit"></i> Información adicional</h5>
@@ -2332,43 +2333,97 @@ function AgregarEsto(contenedorID, valorElemento) {
 						</div>
 					</div>
 				</div>
+				<!-- Fin, información adicional -->
 
 				<div class="ibox">
+					<div class="ibox-title bg-success">
+						<h5 class="collapse-link"><i class="fa fa-paperclip"></i> Anexos</h5>
+						 <a class="collapse-link pull-right">
+							<i class="fa fa-chevron-up"></i>
+						</a>
+					</div>
 					<div class="ibox-content">
+						<!-- Inicio, cargar anexos -->
+						<?php if ($edit == 1) { ?>
+							<?php if (isset($row['IdAnexoLlamada']) && ($row['IdAnexoLlamada'] != 0) && $SQL_AnexoLlamada && sqlsrv_has_rows($SQL_AnexoLlamada)) { ?>
+								<div class="form-group">
+									<div class="col-xs-12">
+										<?php while ($row_AnexoLlamada = sqlsrv_fetch_array($SQL_AnexoLlamada)) { ?>
+											<?php $Icon = IconAttach($row_AnexoLlamada['FileExt']); ?>
+
+											<div class="file-box">
+												<div class="file">
+													<a href="attachdownload.php?file=<?php echo base64_encode($row_AnexoLlamada['AbsEntry']); ?>&line=<?php echo base64_encode($row_AnexoLlamada['Line']); ?>" target="_blank">
+														<div class="icon">
+															<i class="<?php echo $Icon; ?>"></i>
+														</div>
+														<div class="file-name">
+															<?php echo $row_AnexoLlamada['NombreArchivo']; ?>
+															<br/>
+															<small><?php echo $row_AnexoLlamada['Fecha']; ?></small>
+														</div>
+													</a>
+												</div>
+											</div>
+										<?php } ?>
+									</div>
+								</div>
+							<?php } else { ?>
+								<p>Sin anexos.</p>
+							<?php } ?>
+						<?php } ?>
+						<!-- Fin, cargar anexos -->
+
 						<?php
 						if (isset($_GET['return'])) {
 							$return = base64_decode($_GET['pag']) . "?" . $_GET['return'];
 						} else {
 							$return = "gestionar_llamadas_servicios.php";
 						}
-						$return = QuitarParametrosURL($return, array("a")); ?>
+						$return = QuitarParametrosURL($return, array("a")); 
+						?>
 						
 						<input type="hidden" id="P" name="P" value="<?php if (($edit == 0) && ($sw_error == 0)) {
 							echo "32";
 						} else {
 							echo "33";
-						} ?>" />
+						} ?>">
 						
-						<input type="hidden" id="swTipo" name="swTipo" value="0" />
-						<input type="hidden" id="swError" name="swError" value="<?php echo $sw_error; ?>" />
-						<input type="hidden" id="tl" name="tl" value="<?php echo $edit; ?>" />
+						<input type="hidden" id="swTipo" name="swTipo" value="0">
+						<input type="hidden" id="swError" name="swError" value="<?php echo $sw_error; ?>">
+						<input type="hidden" id="tl" name="tl" value="<?php echo $edit; ?>">
 						
 						<input type="hidden" id="IdLlamadaPortal" name="IdLlamadaPortal" value="<?php if (isset($row['ID_SolicitudLlamadaServicio'])) {
 							echo base64_encode($row['ID_SolicitudLlamadaServicio']);
-						} ?>" />
+						} ?>">
 						
 						<input type="hidden" id="DocEntry" name="DocEntry" value="<?php if (isset($row['ID_SolicitudLlamadaServicio'])) {
 							echo base64_encode($row['ID_SolicitudLlamadaServicio']);
-						} ?>" />
+						} ?>">
 						
 						<input type="hidden" id="DocNum" name="DocNum" value="<?php if (isset($row['ID_SolicitudLlamadaServicio'])) {
 							echo base64_encode($row['ID_SolicitudLlamadaServicio']);
-						} ?>" />
+						} ?>">
 
 						<input type="hidden" id="IdSucursalCliente" name="IdSucursalCliente" value="<?php if ($edit == 1) {
 							echo $row['IdNombreSucursal'];
-						} ?>" />
-					   </form>
+						} ?>">
+						</form>
+
+						<!-- Inicio, agregar anexos -->
+						<?php if (($edit == 0) || (($edit == 1) && ($row['IdEstadoLlamada'] != '-1'))) { ?>
+							<div class="row">
+								<form action="upload.php" class="dropzone" id="dropzoneForm" name="dropzoneForm">
+									<?php if ($sw_error == 0) {
+										LimpiarDirTemp();
+									} ?>
+									<div class="fallback">
+										<input name="File" id="File" type="file" form="dropzoneForm" />
+									</div>
+								</form>
+							</div>
+						<?php } ?>
+						<!-- Fin, agregar anexos -->
 					</div>
 				</div>
 
@@ -3422,6 +3477,30 @@ function AdicionarAnotacion() {
 	});
 }
 </script>
+
+<script>
+Dropzone.options.dropzoneForm = {
+	paramName: "File", // The name that will be used to transfer the file
+	maxFilesize: "<?php echo ObtenerVariable("MaxSizeFile"); ?>", // MB
+	maxFiles: "<?php echo ObtenerVariable("CantidadArchivos"); ?>",
+	uploadMultiple: true,
+	addRemoveLinks: true,
+	dictRemoveFile: "Quitar",
+	acceptedFiles: "<?php echo ObtenerVariable("TiposArchivos"); ?>",
+	dictDefaultMessage: "<strong>Haga clic aqui para cargar anexos</strong><br>Tambien puede arrastrarlos hasta aqui<br><h4><small>(máximo <?php echo ObtenerVariable("CantidadArchivos"); ?> archivos a la vez)<small></h4>",
+	dictFallbackMessage: "Tu navegador no soporta cargue de archivos mediante arrastrar y soltar",
+	removedfile: function (file) {
+		$.get("includes/procedimientos.php", {
+			type: "3",
+			nombre: file.name
+		}).done(function (data) {
+			var _ref;
+			return (_ref = file.previewElement) !== null ? _ref.parentNode.removeChild(file.previewElement) : void 0;
+		});
+	}
+};
+</script>
+
 <!-- InstanceEndEditable -->
 </body>
 
