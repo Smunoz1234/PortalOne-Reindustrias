@@ -87,18 +87,26 @@ if ($edit == 0) {
 if (isset($_POST['P'])) { // Crear Solicitud de Llamada de servicio
 	try {
 		// Inicio, carpeta temporal anexos. SMM, 02/10/2023
-		$RutaAttachSAP = ObtenerDirAttach();
 		$dir = CrearObtenerDirTemp();
 		$dir_new = CrearObtenerDirAnx("solicitudes_llamadas");
 		$DocFiles = array();
 
 		foreach (glob($dir . "/*") as $archivo) {
 			if (is_file($archivo)) {
-				$DocFiles[] = $archivo;
+				$DocFiles[] = basename($archivo);
+
+				// Ruta completa del archivo.
+				// $DocFiles[] = $archivo;
 			}
 		}
 
 		$CantFiles = count($DocFiles);
+
+		// Anexos en SAP.
+		$RutaAttachSAP = ObtenerDirAttach();
+		
+		// print_r($DocFiles);
+		// exit();
 		// Fin, carpeta temporal anexos.
 
 		// Campañas asociadas. SMM, 15/09/2023
@@ -199,19 +207,23 @@ if (isset($_POST['P'])) { // Crear Solicitud de Llamada de servicio
 		);
 
 		$SQL_Llamada = EjecutarSP('sp_tbl_SolicitudLlamadaServicios', $ParamLlamada, $_POST['P']);
-		if ($SQL_Llamada) {
+		if ($SQL_Llamada || $testMode) {
 			if (base64_decode($_POST['IdLlamadaPortal']) == "") {
-				$row_NewIdLlamada = sqlsrv_fetch_array($SQL_Llamada);
-				$IdSolicitud = $row_NewIdLlamada[0];
+				$row_NewIdLlamada = ($SQL_Llamada) ? sqlsrv_fetch_array($SQL_Llamada) : [];
+				$IdSolicitud = ($row_NewIdLlamada[0] ?? "");
 			} else {
 				$IdSolicitud = base64_decode($_POST['IdLlamadaPortal']);
 			}
 
 			// Copiar anexos a la ruta correspondiente. SMM, 02/10/2023
 			try {
-				// Limpiar los anexos ya cargados en caso de error, para volverlos a cargar la tabla.
+				// Limpiar los anexos ya cargados en caso de error.
 				if ($sw_error == 1) { 
-					//Registrar archivo en la BD
+					// Esto es opcional.
+					// LimpiarDirTemp();
+
+					// Limpiar anexos en SAP.
+					/*
 					$ParamDelAnex = array(
 						"'191'",
 						"'$IdSolicitud'",
@@ -221,15 +233,15 @@ if (isset($_POST['P'])) { // Crear Solicitud de Llamada de servicio
 						"'" . $_SESSION['CodUser'] . "'",
 						"2",
 					);
-					$SQL_DelAnex = EjecutarSP('sp_tbl_DocumentosSAP_Anexos', $ParamDelAnex, $_POST['P']);
 
-					if (!$SQL_DelAnex) {
-						$sw_error = 1;
-						$msg_error = "Error en los anexos de la Solicitud de Llamada de servicio";
-					}
+					$SQL_DelAnex = EjecutarSP('sp_tbl_DocumentosSAP_Anexos', $ParamDelAnex, $_POST['P']);
+					*/
 				}
 
 				// Mover los anexos a la carpeta de archivos de SAP
+				// echo $CantFiles;
+				// echo exit();
+
 				for ($j = 0; $j < $CantFiles; $j++) {
 					$ArchivoInfo = FormatoNombreAnexo($DocFiles[$j], false);
 					$NuevoNombre = $ArchivoInfo[0];
@@ -239,13 +251,18 @@ if (isset($_POST['P'])) { // Crear Solicitud de Llamada de servicio
 					if (file_exists($dir_new)) {
 						$origenArchivo = $dir . $DocFiles[$j];
 						$nuevoArchivo = $dir_new . $NuevoNombre;
-						$rutaDestinoSAP = $RutaAttachSAP[0] . $NuevoNombre;
-			
+						
+						// echo "$origenArchivo<br>";
+						// echo "$nuevoArchivo<br>";
+						// exit();
+
 						copy($origenArchivo, $nuevoArchivo);
+
+						// Registrar archivos en SAP.
+						$rutaDestinoSAP = $RutaAttachSAP[0] . $NuevoNombre;
 						copy($nuevoArchivo, $rutaDestinoSAP);
-			
-						// Registrar archivo en la base de datos
-						$parametrosAnexo = array(
+
+						$ParamInsAnex = array(
 							"'191'",
 							"'$IdSolicitud'",
 							"'$OnlyName'",
@@ -254,12 +271,8 @@ if (isset($_POST['P'])) { // Crear Solicitud de Llamada de servicio
 							"'" . $_SESSION['CodUser'] . "'",
 							"1",
 						);
-						$resultado = EjecutarSP('sp_tbl_DocumentosSAP_Anexos', $parametrosAnexo, $_POST['P']);
-			
-						if (!$resultado) {
-							$sw_error = 1;
-							$msg_error = "Error en los anexos de la Solicitud de Llamada de servicio";
-						}
+						
+						$SQL_InsAnex = EjecutarSP('sp_tbl_DocumentosSAP_Anexos', $ParamInsAnex, $_POST['P']);
 					}
 				}
 			} catch (Exception $e) {
@@ -2481,6 +2494,10 @@ function AgregarEsto(contenedorID, valorElemento) {
 						<input type="hidden" id="IdSucursalCliente" name="IdSucursalCliente" value="<?php if ($edit == 1) {
 							echo $row['IdNombreSucursal'];
 						} ?>">
+
+						<input type="hidden" id="IdAnexos" name="IdAnexos" value="<?php if ($type_llmd == 1) {
+							echo $row['IdAnexoLlamada'];
+						} ?>" />
 						</form>
 
 						<!-- Inicio, agregar anexos -->
