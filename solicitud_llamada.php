@@ -84,11 +84,15 @@ if ($edit == 0) {
 	// SMM, 12/02/2022
 }
 
-if (isset($_POST['P'])) { // Crear Solicitud de Llamada de servicio
+
+// Variables de anexos. SMM, 03/10/2023
+$dir = CrearObtenerDirTemp();
+$dir_new = CrearObtenerDirAnx("solicitudes_llamadas");
+
+// Crear o Actualizar una Solicitud de Llamada de servicio.
+if (isset($_POST['P'])) { 
 	try {
 		// Inicio, carpeta temporal anexos. SMM, 02/10/2023
-		$dir = CrearObtenerDirTemp();
-		$dir_new = CrearObtenerDirAnx("solicitudes_llamadas");
 		$DocFiles = array();
 
 		foreach (glob($dir . "/*") as $archivo) {
@@ -103,7 +107,7 @@ if (isset($_POST['P'])) { // Crear Solicitud de Llamada de servicio
 		$CantFiles = count($DocFiles);
 
 		// Anexos en SAP.
-		$RutaAttachSAP = ObtenerDirAttach();
+		// $RutaAttachSAP = ObtenerDirAttach();
 		
 		// print_r($DocFiles);
 		// exit();
@@ -219,23 +223,19 @@ if (isset($_POST['P'])) { // Crear Solicitud de Llamada de servicio
 			try {
 				// Limpiar los anexos ya cargados en caso de error.
 				if ($sw_error == 1) { 
-					// Esto es opcional.
-					// LimpiarDirTemp();
+					// SMM, 03/10/2023.
+					LimpiarDirTemp();
 
 					// Limpiar anexos en SAP.
-					/*
 					$ParamDelAnex = array(
-						"'191'",
 						"'$IdSolicitud'",
 						"NULL",
 						"NULL",
 						"NULL",
-						"'" . $_SESSION['CodUser'] . "'",
+						"'" . ($_SESSION['CodUser'] ?? "") . "'",
 						"2",
 					);
-
-					$SQL_DelAnex = EjecutarSP('sp_tbl_DocumentosSAP_Anexos', $ParamDelAnex, $_POST['P']);
-					*/
+					$SQL_DelAnex = EjecutarSP("sp_tbl_SolicitudLlamadasServicios_Anexos", $ParamDelAnex, $_POST['P']);
 				}
 
 				// Mover los anexos a la carpeta de archivos de SAP
@@ -243,7 +243,9 @@ if (isset($_POST['P'])) { // Crear Solicitud de Llamada de servicio
 				// echo exit();
 
 				for ($j = 0; $j < $CantFiles; $j++) {
+					// Normaliza el nombre, el 2do parámetro agrega o no la fecha.
 					$ArchivoInfo = FormatoNombreAnexo($DocFiles[$j], false);
+					
 					$NuevoNombre = $ArchivoInfo[0];
 					$OnlyName = $ArchivoInfo[1];
 					$Ext = $ArchivoInfo[2];
@@ -259,20 +261,24 @@ if (isset($_POST['P'])) { // Crear Solicitud de Llamada de servicio
 						copy($origenArchivo, $nuevoArchivo);
 
 						// Registrar archivos en SAP.
-						$rutaDestinoSAP = $RutaAttachSAP[0] . $NuevoNombre;
-						copy($nuevoArchivo, $rutaDestinoSAP);
+						// $rutaDestinoSAP = $RutaAttachSAP[0] . $NuevoNombre;
+						// copy($nuevoArchivo, $rutaDestinoSAP);
 
+						// Registrar archivos en la BD.
 						$ParamInsAnex = array(
-							"'191'",
 							"'$IdSolicitud'",
 							"'$OnlyName'",
 							"'$Ext'",
 							"1",
-							"'" . $_SESSION['CodUser'] . "'",
+							"'" . ($_SESSION['CodUser'] ?? "") . "'",
 							"1",
-						);
-						
-						$SQL_InsAnex = EjecutarSP('sp_tbl_DocumentosSAP_Anexos', $ParamInsAnex, $_POST['P']);
+						);						
+						$SQL_InsAnex = EjecutarSP("sp_tbl_SolicitudLlamadasServicios_Anexos", $ParamInsAnex, $_POST['P']);
+
+						if(!$SQL_InsAnex) {
+							$sw_error = 1;
+							$msg_error = "Error al insertar los anexos";
+						}
 					}
 				}
 			} catch (Exception $e) {
@@ -312,9 +318,11 @@ if ($edit == 1 && $sw_error == 0) {
 	$ID_CodigoCliente = $row['ID_CodigoCliente'] ?? "";
 
 	// Anexos. SMM, 02/10/2023
-	$IdAnexoLlamada = ($row['IdAnexoLlamada'] ?? "");
-	echo "SELECT * FROM uvw_Sap_tbl_DocumentosSAP_Anexos WHERE AbsEntry = '$IdAnexoLlamada'";
-	$SQL_AnexoLlamada = Seleccionar('uvw_Sap_tbl_DocumentosSAP_Anexos', '*', "AbsEntry = '$IdAnexoLlamada'");
+	// $IdAnexoLlamada = ($row['IdAnexoLlamada'] ?? "");
+	// echo "SELECT * FROM uvw_Sap_tbl_DocumentosSAP_Anexos WHERE AbsEntry = '$IdAnexoLlamada'";
+
+	// echo "SELECT * FROM tbl_SolicitudLlamadasServicios_Anexos WHERE ID_SolicitudLlamadaServicio='$IdSolicitud'";
+	$SQL_AnexoLlamada = Seleccionar("tbl_SolicitudLlamadasServicios_Anexos", '*', "ID_SolicitudLlamadaServicio='$IdSolicitud'");
 
 	//Clientes
 	$SQL_Cliente = Seleccionar("uvw_Sap_tbl_Clientes", "CodigoCliente, NombreCliente", "CodigoCliente='$ID_CodigoCliente'", 'NombreCliente');
@@ -2431,22 +2439,22 @@ function AgregarEsto(contenedorID, valorElemento) {
 					<div class="ibox-content">
 						<!-- Inicio, cargar anexos -->
 						<?php if ($edit == 1) { ?>
-							<?php if (isset($row['IdAnexoLlamada']) && ($row['IdAnexoLlamada'] != 0) && $SQL_AnexoLlamada && sqlsrv_has_rows($SQL_AnexoLlamada)) { ?>
+							<?php if ($SQL_AnexoLlamada && sqlsrv_has_rows($SQL_AnexoLlamada)) { ?>
 								<div class="form-group">
 									<div class="col-xs-12">
 										<?php while ($row_AnexoLlamada = sqlsrv_fetch_array($SQL_AnexoLlamada)) { ?>
 											<?php $Icon = IconAttach($row_AnexoLlamada['FileExt']); ?>
 
 											<div class="file-box">
-												<div class="file">
-													<a href="attachdownload.php?file=<?php echo base64_encode($row_AnexoLlamada['AbsEntry']); ?>&line=<?php echo base64_encode($row_AnexoLlamada['Line']); ?>" target="_blank">
+												<div class="file">	
+													<a href="filedownload.php?file=<?php echo base64_encode($row_AnexoLlamada['FileName'] . "." . $row_AnexoLlamada['FileExt']);?>&dir=<?php echo base64_encode($dir_new);?>" target="_blank" title="Descargar archivo">
 														<div class="icon">
 															<i class="<?php echo $Icon; ?>"></i>
 														</div>
 														<div class="file-name">
-															<?php echo $row_AnexoLlamada['NombreArchivo']; ?>
+															<?php echo $row_AnexoLlamada['FileName']; ?>
 															<br/>
-															<small><?php echo $row_AnexoLlamada['Fecha']; ?></small>
+															<small><?php echo $row_AnexoLlamada['Fecha']->format("Y-m-d h:i:s"); ?></small>
 														</div>
 													</a>
 												</div>
