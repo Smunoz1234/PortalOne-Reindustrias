@@ -322,7 +322,7 @@ if ($edit == 1 && $sw_error == 0) {
 	// echo "SELECT * FROM uvw_Sap_tbl_DocumentosSAP_Anexos WHERE AbsEntry = '$IdAnexoLlamada'";
 
 	// echo "SELECT * FROM tbl_SolicitudLlamadasServicios_Anexos WHERE ID_SolicitudLlamadaServicio='$IdSolicitud'";
-	$SQL_AnexoLlamada = Seleccionar("tbl_SolicitudLlamadasServicios_Anexos", '*', "ID_SolicitudLlamadaServicio='$IdSolicitud'");
+	$SQL_AnexoSolicitudLlamada = Seleccionar("tbl_SolicitudLlamadasServicios_Anexos", '*', "ID_SolicitudLlamadaServicio='$IdSolicitud'");
 
 	//Clientes
 	$SQL_Cliente = Seleccionar("uvw_Sap_tbl_Clientes", "CodigoCliente, NombreCliente", "CodigoCliente='$ID_CodigoCliente'", 'NombreCliente');
@@ -2439,22 +2439,22 @@ function AgregarEsto(contenedorID, valorElemento) {
 					<div class="ibox-content">
 						<!-- Inicio, cargar anexos -->
 						<?php if ($edit == 1) { ?>
-							<?php if ($SQL_AnexoLlamada && sqlsrv_has_rows($SQL_AnexoLlamada)) { ?>
+							<?php if ($SQL_AnexoSolicitudLlamada && sqlsrv_has_rows($SQL_AnexoSolicitudLlamada)) { ?>
 								<div class="form-group">
 									<div class="col-xs-12">
-										<?php while ($row_AnexoLlamada = sqlsrv_fetch_array($SQL_AnexoLlamada)) { ?>
-											<?php $Icon = IconAttach($row_AnexoLlamada['FileExt']); ?>
+										<?php while ($row_Anexo = sqlsrv_fetch_array($SQL_AnexoSolicitudLlamada)) { ?>
+											<?php $Icon = IconAttach($row_Anexo['FileExt']); ?>
 
 											<div class="file-box">
 												<div class="file">	
-													<a href="filedownload.php?file=<?php echo base64_encode($row_AnexoLlamada['FileName'] . "." . $row_AnexoLlamada['FileExt']);?>&dir=<?php echo base64_encode($dir_new);?>" target="_blank" title="Descargar archivo">
+													<a href="filedownload.php?file=<?php echo base64_encode($row_Anexo['FileName'] . "." . $row_Anexo['FileExt']);?>&dir=<?php echo base64_encode($dir_new);?>" target="_blank" title="Descargar archivo">
 														<div class="icon">
 															<i class="<?php echo $Icon; ?>"></i>
 														</div>
 														<div class="file-name">
-															<?php echo $row_AnexoLlamada['FileName']; ?>
+															<?php echo $row_Anexo['FileName']; ?>
 															<br/>
-															<small><?php echo $row_AnexoLlamada['Fecha']->format("Y-m-d h:i:s"); ?></small>
+															<small><?php echo $row_Anexo['Fecha']->format("Y-m-d h:i:s"); ?></small>
 														</div>
 													</a>
 												</div>

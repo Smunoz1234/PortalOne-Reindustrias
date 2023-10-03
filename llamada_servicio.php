@@ -752,13 +752,35 @@ if (isset($_GET['dt_SLS']) && ($_GET['dt_SLS']) == 1) {
 		$Error_Solicitud = true;
 	}
 
-	// Obtener la Llamada de servicio creada desde la Solicitud
+	// Obtener la Llamada de servicio creada desde la Solicitud-
 	$Cons = "SELECT * FROM uvw_tbl_LlamadasServicios WHERE [ID_SolicitudLlamadaServicio] = '$SLS'";
 	$SQL = sqlsrv_query($conexion, $Cons);
 
 	// $sw_error = 1; // Para probar
 	$row = sqlsrv_fetch_array($SQL);
 	$ID_CodigoCliente = $row['ID_CodigoCliente'] ?? "";
+
+	// Copiar Adjuntos, mediante la carpeta temporal. SMM, 03/10/2023
+	$dir_temp = CrearObtenerDirTemp();
+	$dir_solicitud = CrearObtenerDirAnx("solicitudes_llamadas");
+	$SQL_AnexoSolicitud = Seleccionar("tbl_SolicitudLlamadasServicios_Anexos", '*', "ID_SolicitudLlamadaServicio='$SLS'");
+
+	$anexos_solicitud = array();
+	if ($SQL_AnexoSolicitud && sqlsrv_has_rows($SQL_AnexoSolicitud)) {
+		while ($row_Anexo = sqlsrv_fetch_array($SQL_AnexoSolicitud)) {
+			$nombreArchivo = $row_Anexo['FileName'] . "." . $row_Anexo['FileExt'];
+			
+			$rutaOrigen = $dir_solicitud . $nombreArchivo;
+			$rutaTemporal = $dir_temp . $nombreArchivo;
+						
+			// echo "$rutaOrigen<br>";
+			// echo "$rutaTemporal<br>";
+			// exit();
+
+			copy($rutaOrigen, $rutaTemporal);
+			$anexos_solicitud[] = $nombreArchivo;
+		}
+	}
 
 	// Clientes
 	$SQL_Cliente = Seleccionar("uvw_Sap_tbl_Clientes", "CodigoCliente, NombreCliente", "CodigoCliente='$ID_CodigoCliente'", 'NombreCliente');
@@ -3086,7 +3108,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 						</a>
 					</div>
 					<div class="ibox-content">
-						<?php if ($type_llmd == 1) { ?>
+						<?php if (($type_llmd == 1) || ($dt_SLS == 1)) { ?>
 							<?php if (isset($row['IdAnexoLlamada']) && ($row['IdAnexoLlamada'] != 0) && $SQL_AnexoLlamada && sqlsrv_has_rows($SQL_AnexoLlamada)) { ?>
 								<div class="form-group">
 									<div class="col-xs-12">
@@ -3109,6 +3131,18 @@ function AgregarEsto(contenedorID, valorElemento) {
 											</div>
 										<?php } ?>
 									</div>
+								</div>
+							<?php } elseif(count($anexos_solicitud) > 0) { ?>
+								<!-- SMM, 03/10/2023 -->
+								<div class="form-group">
+									<?php foreach ($anexos_solicitud as $archivo) { ?>
+										<div class="col-md-2">
+											<a href="filedownload.php?file=<?php echo base64_encode($archivo); ?>&dir=<?php echo base64_encode($dir_solicitud); ?>" target="_blank" title="Descargar archivo">
+												<i class="fa fa-download"></i>
+												<span class="file-text"><?php echo $archivo; ?></span>
+											</a>
+										</div>
+									<?php } ?>
 								</div>
 							<?php } else { ?>
 								<p>Sin anexos.</p>
@@ -3158,16 +3192,16 @@ function AgregarEsto(contenedorID, valorElemento) {
 					   </form>
 						
 					   <?php if (($type_llmd == 0) || (($type_llmd == 1) && ($row['IdEstadoLlamada'] != '-1'))) { ?>
-										<div class="row">
-											<form action="upload.php" class="dropzone" id="dropzoneForm" name="dropzoneForm">
-												<?php if ($sw_error == 0) {
-													LimpiarDirTemp();
-												} ?>
-												<div class="fallback">
-													<input name="File" id="File" type="file" form="dropzoneForm" />
-												</div>
-											 </form>
-										</div>
+							<div class="row">
+								<form action="upload.php" class="dropzone" id="dropzoneForm" name="dropzoneForm">
+									<?php if (($sw_error == 0) && ($dt_SLS == 0)) {
+										LimpiarDirTemp();
+									} ?>
+									<div class="fallback">
+										<input name="File" id="File" type="file" form="dropzoneForm" />
+									</div>
+									</form>
+							</div>
 						<?php } ?>
 					</div>
 				</div>
