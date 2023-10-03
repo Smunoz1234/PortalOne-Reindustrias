@@ -2495,7 +2495,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 							echo $row['IdNombreSucursal'];
 						} ?>">
 
-						<input type="hidden" id="IdAnexos" name="IdAnexos" value="<?php if ($type_llmd == 1) {
+						<input type="hidden" id="IdAnexos" name="IdAnexos" value="<?php if ($edit == 1) {
 							echo $row['IdAnexoLlamada'];
 						} ?>" />
 						</form>
