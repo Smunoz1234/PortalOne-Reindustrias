@@ -1,5 +1,5 @@
 <?php require_once "includes/conexion.php";
-PermitirAcceso(312);
+// PermitirAcceso(312);
 $sw = 0;
 
 $ParamSucursal = array(
@@ -159,7 +159,7 @@ if ($sw == 1) {
 
 <head>
 <?php include "includes/cabecera_new.php";?>
-<title>Programación de servicios | <?php echo NOMBRE_PORTAL; ?></title>
+<title>Programación de solicitudes | <?php echo NOMBRE_PORTAL; ?></title>
 <style>
 	body, html{
 		font-size: 13px;
@@ -271,7 +271,7 @@ if ($sw == 1) {
 				</div>
 				<div id="accordionTitle-1" class="collapse show" data-parent="#accordionTitle">
 					<!-- Inicio del Formulario -->
-					<form action="programacion_rutas.php" method="get" class="form-horizontal" id="frmProgramacion">
+					<form action="programacion_solicitudes.php" method="get" class="form-horizontal" id="frmProgramacion">
 						<div class="form-row">
 							<div class="form-group col-lg-3">
 								<label class="form-label">Fechas</label>
@@ -634,7 +634,7 @@ $j = 0;
 						<button id="btnExpandir" type="button" class="btn icon-btn btn-sm btn-success fa-pull-right" title="Expandir calendario" onClick="Expandir();"><span id="iconBtnExpandir" class="fas fa-expand-arrows-alt"></span></button>
 					</div>
 				</div>
-				<div id="dv_calendar"><?php require_once "programacion_rutas_calendario.php";?></div>
+				<div id="dv_calendar"><?php require_once "programacion_solicitudes_calendario.php";?></div>
 			</div>
 		</div>
     </div>
@@ -791,7 +791,7 @@ function RefresarCalendario(){
 
 	$.ajax({
 		type: "POST",
-		url: "programacion_rutas_calendario.php?type=1&pSede=<?php echo $Sede; ?>&pGrupo="+Grupo+"&pTecnicos="+Tecnicos+"&pIdEvento=<?php if ($sw == 1) {echo $row_Evento['IdEvento'];}?>&sw=<?php echo $sw; ?>&fchinicial=<?php echo $FechaInicial; ?>",
+		url: "programacion_solicitudes_calendario.php?type=1&pSede=<?php echo $Sede; ?>&pGrupo="+Grupo+"&pTecnicos="+Tecnicos+"&pIdEvento=<?php if ($sw == 1) {echo $row_Evento['IdEvento'];}?>&sw=<?php echo $sw; ?>&fchinicial=<?php echo $FechaInicial; ?>",
 		success: function(response){
 			$('#dv_calendar').html(response);
 			blockUI(false);
@@ -822,9 +822,6 @@ function EjecutarProceso(){
 		data:{type:5,IdEvento:Evento},
 		dataType:'json',
 		success: function(data){
-//			if(data.Estado==1){
-//
-//			}
 			blockUI(false);
 			if(data.Estado==1){
 				$("#btnGuardar").prop('disabled', true);
@@ -832,30 +829,17 @@ function EjecutarProceso(){
 			}
 			$.ajax({
 				type: "POST",
-//				async: false,
 				data:{
 					idEvento:Base64.encode(Evento),
 					msg:data.Mensaje,
 					estado:data.Estado
 				},
-				url: "programacion_rutas_result.php",
+				url: "programacion_solicitudes_result.php",
 				success: function(response){
 					$('#ContenidoModal').html(response);
 					$('#ModalAct').modal("show");
 				}
 			});
-//			$.ajax({
-//				type: "POST",
-////				async: false,
-//				data:{
-//					idEvento:
-//				},
-//				url: "programacion_rutas_result.php?idEvento="+Base64.encode(Evento)+"&msg="+data.Mensaje+"&estado="+data.Estado,
-//				success: function(response){
-//					$('#ContenidoModal').html(response);
-//					$('#ModalAct').modal("show");
-//				}
-//			});
 		},
 		// Stiven Muñoz Murillo, 01/02/2022
 		error: function(error) {
@@ -873,7 +857,7 @@ function VerificarPendientes(){
 		data:{
 			idEvento:Base64.encode(Evento)
 		},
-		url: "programacion_rutas_result.php",
+		url: "programacion_solicitudes_result.php",
 		success: function(response){
 			$('#ContenidoModal').html(response);
 			blockUI(false);
@@ -901,7 +885,7 @@ function FiltrarOT(){
 
 	$.ajax({
 		type: "POST",
-		url: "programacion_rutas_OT.php?idEvento="+Evento+"&DocNum="+LlamadaServicio+"&Placa="+Placa+"&Series="+Series+"&SucursalCliente="+btoa(SucursalCliente)+"&Servicios="+Servicios+"&Areas="+Areas+"&Articulo="+ArticuloLlamada+"&TipoLlamada="+TipoLlamada+"&Ciudad="+Ciudad+"&FechaInicio="+FechaInicioOT+"&FechaFinal="+FechaFinalOT+"&Cliente="+Cliente,
+		url: "programacion_solicitudes_OT.php?idEvento="+Evento+"&DocNum="+LlamadaServicio+"&Placa="+Placa+"&Series="+Series+"&SucursalCliente="+btoa(SucursalCliente)+"&Servicios="+Servicios+"&Areas="+Areas+"&Articulo="+ArticuloLlamada+"&TipoLlamada="+TipoLlamada+"&Ciudad="+Ciudad+"&FechaInicio="+FechaInicioOT+"&FechaFinal="+FechaFinalOT+"&Cliente="+Cliente,
 		success: function(response){
 			$('#dvResult').html(response);
 			$("#dvOT").scrollTop(0);
@@ -919,7 +903,7 @@ function AbrirActLote(){
 		data:{
 			idEvento:Base64.encode(Evento)
 		},
-		url: "programacion_rutas_actividad_lote.php",
+		url: "programacion_solicitudes_actividad_lote.php",
 		success: function(response){
 			$('#ContenidoModal').html(response);
 			blockUI(false);
@@ -936,7 +920,7 @@ function MoverActLote(){
 		data:{
 			idEvento:Base64.encode(Evento)
 		},
-		url: "programacion_rutas_actividad_mover_lote.php",
+		url: "programacion_solicitudes_actividad_mover_lote.php",
 		success: function(response){
 			$('#ContenidoModal').html(response);
 			blockUI(false);
