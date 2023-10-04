@@ -40,7 +40,7 @@ if (isset($_GET['pGrupo'])) {
 
 // Stiven Muñoz Murillo, 14/02/2022
 $cadena = $Recurso ?? "";
-// echo "<script> console.log('programacion_rutas_calendario.php 37', '$cadena'); </script>";
+// echo "<script> console.log('programacion_solicitudes_calendario.php 37', '$cadena'); </script>";
 
 if ($type == 1) { //Si estoy refrescando datos ya cargados
 
@@ -657,7 +657,7 @@ if ($sw == 1) {
 						$.ajax({
 							type: "POST",
 							async: false,
-							url: "programacion_rutas_actividad.php?id="+btoa(info.event.id)+"&idEvento="+btoa($("#IdEvento").val())+"&tl="+tl,
+							url: "programacion_solicitudes_actividad.php?id="+btoa(info.event.id)+"&idEvento="+btoa($("#IdEvento").val())+"&tl="+tl,
 							success: function(response){
 								$('#ContenidoModal').html(response);
 								$('#ModalAct').modal("show");
