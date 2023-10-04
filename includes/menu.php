@@ -314,6 +314,7 @@ if (!isset($_COOKIE["banderaMenu"])) {
 						<li>
 							<a href="#">Programación <span class="fa arrow"></span></a>
 							<ul class='nav nav-third-level'>
+								<?php if (true) {?><li><a href="programacion_solicitudes.php" target="_blank">Programación de solicitudes</a></li><?php }?>	
 								<?php if (PermitirFuncion(312)) {?><li><a href="programacion_rutas.php" target="_blank">Programación de servicios</a></li><?php }?>
 							</ul>
 						</li>
@@ -514,7 +515,7 @@ if (!isset($_COOKIE["banderaMenu"])) {
 			<?php }?>
 
 			<li>
-				<a href="#"><i class="fa fa-gears"></i> <span class="nav-label">Administraci&oacute;n</span><span class="fa arrow"></span></a>
+				<a href="#"><i class="fa fa-gears"></i> <span class="nav-label">Administración</span><span class="fa arrow"></span></a>
 				<ul class="nav nav-second-level">
 					<li><a href="cambiar_clave.php">Cambiar contrase&ntilde;a</a></li>
 					<?php if (PermitirFuncion(222)) {?><li><a class="alnk" href="cambiar_firma.php">Actualizar mi firma</a></li><?php }?>
