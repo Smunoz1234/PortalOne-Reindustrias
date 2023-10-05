@@ -1,7 +1,8 @@
 <?php
 require_once "includes/conexion.php";
-PermitirAcceso(312);
-//require_once("includes/conexion_hn.php");
+// PermitirAcceso(312);
+
+// Actividades.
 if (isset($_GET['id']) && $_GET['id'] != "") {
 	$id = base64_decode($_GET['id']);
 	$idEvento = base64_decode($_GET['idEvento']);
@@ -18,26 +19,13 @@ if ($type_act == 1) {
 	$Where = "ID_Actividad='" . $id . "' and IdEvento='" . $idEvento . "'";
 }
 
-//Actividades
 $SQL_Actividades = Seleccionar('uvw_tbl_Actividades_Rutas', '*', $Where);
 $row = sql_fetch_array($SQL_Actividades);
 
-//Asunto actividad
-$SQL_AsuntoActividad = Seleccionar('uvw_Sap_tbl_AsuntosActividad', '*', "Id_TipoActividad=2", 'DE_AsuntoActividad');
+// Empleados.
+$SQL_Tecnicos = Seleccionar('uvw_Sap_tbl_Recursos', '*', '', 'NombreEmpleado');
 
-//Empleados
-$SQL_EmpleadoActividad = Seleccionar('uvw_Sap_tbl_Empleados', '*', "IdUsuarioSAP=0", 'NombreEmpleado');
-
-//Turno técnico
-$SQL_TurnoTecnicos = Seleccionar('uvw_Sap_tbl_TurnoTecnicos', '*');
-
-//Tipos de Estado actividad
-$SQL_TiposEstadoActividad = Seleccionar('uvw_tbl_TipoEstadoServicio', '*');
-
-//Estado actividad
-$SQL_EstadoActividad = Seleccionar('uvw_tbl_EstadoActividad', '*');
-
-// Grupos de Empleados, SMM 19/05/2022
+// Grupos de Empleados.
 $SQL_GruposUsuario = Seleccionar("uvw_tbl_UsuariosGruposEmpleados", "*", "[ID_Usuario]='" . $_SESSION['CodUser'] . "'", 'DeCargo');
 
 $ids_grupos = array();
@@ -45,18 +33,7 @@ while ($row_GruposUsuario = sqlsrv_fetch_array($SQL_GruposUsuario)) {
 	$ids_grupos[] = $row_GruposUsuario['IdCargo'];
 }
 
-$disabled = "";
-if (isset($row['ID_EmpleadoActividad']) && (count($ids_grupos) > 0)) {
-	$ID_Empleado = "'" . $row['ID_EmpleadoActividad'] . "'";
-	$SQL_Empleado = Seleccionar('uvw_Sap_tbl_Empleados', '*', "ID_Empleado = $ID_Empleado");
-	$row_Empleado = sql_fetch_array($SQL_Empleado);
-
-	if (isset($row_Empleado['IdCargo']) && (!in_array($row_Empleado['IdCargo'], $ids_grupos))) {
-		$disabled = "disabled";
-	}
-}
-
-// Serie de Llamada. SMM, 07/03/2023
+// Serie de Llamada.
 $ParamSerie = array(
 	"'" . $_SESSION['CodUser'] . "'",
 	"'191'", // @IdTipoDocumento
@@ -95,7 +72,7 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 		<div class="modal-body">
 			<div class="form-group row">
 				<div class="col-lg-6">
-					<label for="FechaInicio" class="control-label">Fecha Inicio <span class="text-danger">*</span></label>
+					<label for="FechaInicio" class="control-label">Fecha inicio <span class="text-danger">*</span></label>
 					
 					<div class="row">
 						<div class="col-lg-6">
@@ -115,7 +92,7 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 				<!-- /.col-lg-6 -->
 
 				<div class="col-lg-6">
-					<label for="FechaFin" class="control-label">Fecha Fin <span class="text-danger">*</span></label>
+					<label for="FechaFin" class="control-label">Fecha fin <span class="text-danger">*</span></label>
 					
 					<div class="row">
 						<div class="col-lg-6">
@@ -140,7 +117,7 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 				<div class="col-lg-4">
 					<label class="control-label">Serie <span class="text-danger">*</span></label>
 				
-					<select required name="Series" id="Series" class="form-control" <?php if (($type_act == 1)) {
+					<select required name="Series" id="Series" class="form-control select2" <?php if (($type_act == 1)) {
 							echo "disabled";
 						} ?>>
 						<option value="" disabled <?php if (($type_act == 0)) {
@@ -148,7 +125,7 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 						} ?>>Seleccione...</option>
 
 						<?php while ($row_Series = sqlsrv_fetch_array($SQL_Series)) { ?>
-							<option value="<?php echo $row_Series['IdSeries']; ?>" <?php if ((isset($row['Series'])) && ($row_Series['IdSeries'] == $row['Series'])) {
+							<option value="<?php echo $row_Series['IdSeries']; ?>" <?php if (isset($row['Series']) && ($row_Series['IdSeries'] == $row['Series'])) {
 								   echo "selected";
 							   } ?>>
 								<?php echo $row_Series['DeSeries']; ?>
@@ -171,7 +148,7 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 				<div class="col-lg-4">
 					<label class="control-label">Sucursal <span class="text-danger">*</span></label>
 				
-					<select required name="SucursalCliente" id="SucursalCliente" class="form-control">
+					<select required name="SucursalCliente" id="SucursalCliente" class="form-control select2">
 						<option value="">Seleccione...</option>
 
 						<!-- La sucursal depende del cliente. -->
@@ -183,10 +160,10 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 			<div class="form-group row">
 				<div class="col-lg-4">
 					<label class="control-label">
-						<i onclick="ConsultarEquipo();" title="Consultar equipo" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Tarjeta de Equipo
+						<i onclick="ConsultarEquipo();" title="Consultar equipo" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Tarjeta de equipo
 					</label>
 				
-					<select name="NumeroSerie" id="NumeroSerie" class="form-control">
+					<select name="NumeroSerie" id="NumeroSerie" class="form-control select2">
 						<option value="">Seleccione...</option>
 
 						<!-- La TE depende del cliente. -->
@@ -210,47 +187,50 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 				</div>
 			</div>
 			<!-- /.form-group -->
-
-			<div class="form-group row">
-				
-			</div>
 			
 			<div class="form-group row">
-				<label class="col-lg-2 col-form-label">Asignado a <span class="text-danger">*</span></label>
 				<div class="col-lg-4">
-					<select <?php echo $disabled ?> name="EmpleadoActividad" class="form-control select2"
-						style="width: 100%" required id="EmpleadoActividad" <?php if (($type_act == 1)) {
+					<label class="control-label">Asignado a <span class="text-danger">*</span></label>
+
+					<select required name="Tecnico" id="Tecnico" class="form-control select2" <?php if (($type_act == 1)) {
 							echo "disabled";
 						} ?>>
-						<option value="">(Sin asignar)</option>
-						<?php while ($row_EmpleadoActividad = sqlsrv_fetch_array($SQL_EmpleadoActividad)) { ?>
-							<option value="<?php echo $row_EmpleadoActividad['ID_Empleado']; ?>" <?php if ((isset($row['ID_EmpleadoActividad'])) && (strcmp($row_EmpleadoActividad['ID_Empleado'], $row['ID_EmpleadoActividad']) == 0)) {
-								   echo "selected";
-							   } ?>>
-								<?php echo $row_EmpleadoActividad['NombreEmpleado']; ?>
-							</option>
+						<option value="" disabled <?php if (($type_act == 0)) {
+							echo "selected";
+						} ?>>Seleccione...</option>
+							
+						<?php while ($row_Tecnicos = sqlsrv_fetch_array($SQL_Tecnicos)) { ?>
+							<?php if (in_array($row_Tecnicos['IdCargo'], $ids_grupos) || ($MostrarTodosRecursos || (count($ids_grupos) == 0))) { ?>
+								<option value="<?php echo $row_Tecnicos['ID_Empleado']; ?>" <?php if (isset($row['IdTecnico']) && ($row_Tecnicos['ID_Empleado'] == $row['IdTecnico'])) {
+									echo "selected";
+								} ?> 
+								<?php if ((count($ids_grupos) > 0) && (!in_array($row_Tecnicos['IdCargo'], $ids_grupos))) {
+									echo "disabled";
+								} ?>>
+									<?php echo $row_Tecnicos['NombreEmpleado'] . " (" . $row_Tecnicos['NombreCentroCosto2'] . " - " . $row_Tecnicos['DeCargo'] . ")"; ?>
+								</option>
+							<?php } ?>
 						<?php } ?>
 					</select>
 				</div>
-			</div>
-			<div class="form-group row">
-				<label class="col-lg-2 col-form-label">Comentario</label>
-				<div class="col-lg-4">
-					<select <?php echo $disabled ?> name="TurnoTecnico" class="form-control" id="TurnoTecnico" <?php if (($type_act == 1)) {
+				<!-- /.col-lg-4 -->
+				
+				<div class="col-lg-2">
+
+				</div>
+
+				<div class="col-lg-6">
+					<label class="control-label">Comentario <span class="text-danger">*</span></label>
+
+					<textarea required name="Comentario" rows="2" maxlength="3000" type="text" class="form-control" <?php if (($type_act == 1)) {
 							echo "disabled";
-						} ?>>
-						<option value="">Seleccione...</option>
-						<?php while ($row_TurnoTecnicos = sqlsrv_fetch_array($SQL_TurnoTecnicos)) { ?>
-							<option value="<?php echo $row_TurnoTecnicos['CodigoTurno']; ?>" <?php if ((isset($row['CDU_IdTurnoTecnico'])) && (strcmp($row_TurnoTecnicos['CodigoTurno'], $row['CDU_IdTurnoTecnico']) == 0)) {
-								   echo "selected";
-							   } ?>>
-								<?php echo $row_TurnoTecnicos['NombreTurno']; ?>
-							</option>
-						<?php } ?>
-					</select>
+						} ?>><?php echo $row['ComentarioLlamada'] ?? ""; ?></textarea>
 				</div>
 			</div>
+			<!-- /.form-group -->
 		</div>
+		<!-- /.modal-body -->
+
 		<div class="modal-footer">
 			<button type="button" class="btn btn-secondary md-btn-flat" data-dismiss="modal">Cerrar</button>
 			<?php if (true) { ?><button type="submit" class="btn btn-primary md-btn-flat"><i
