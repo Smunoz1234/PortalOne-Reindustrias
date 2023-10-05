@@ -56,6 +56,11 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 		display: block !important;
 		width: 100% !important;
 	}
+
+	.easy-autocomplete {
+		display: block !important;
+		width: 100% !important;
+	}
 </style>
 
 <form id="frmActividad" method="post">
@@ -78,13 +83,13 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 						<div class="col-lg-6">
 							<div class="input-group">
 								<span class="input-group-text"><i class="fa fa-calendar"></i></span>
-								<input required type="text" name="FechaInicio" id="FechaInicio" class="form-control" value="<?php echo $row['FechaInicioActividad'] ?? date("Y-m-d"); ?>" <?php if ($type_act == 1) { echo "readonly"; } ?>>
+								<input required type="text" name="FechaInicio" id="FechaInicio" class="form-control fecha" value="<?php echo $row['FechaInicioActividad'] ?? date("Y-m-d"); ?>" <?php if ($type_act == 1) { echo "readonly"; } ?>>
 							</div>
 						</div>
 						<div class="col-lg-6">
 							<div class="input-group">
 								<span class="input-group-text"><i class="fa fa-clock"></i></span>
-								<input required type="text" name="HoraInicio" id="HoraInicio" class="form-control" value="<?php echo $row['HoraInicioActividad'] ?? date("H:i"); ?>" onchange="ValidarHoras();" <?php if ($type_act == 1) { echo "readonly"; } ?>>
+								<input required type="text" name="HoraInicio" id="HoraInicio" class="form-control hora" value="<?php echo $row['HoraInicioActividad'] ?? date("H:i"); ?>" onchange="ValidarHoras();" <?php if ($type_act == 1) { echo "readonly"; } ?>>
 							</div>
 						</div>
 					</div>
@@ -98,13 +103,13 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 						<div class="col-lg-6">
 							<div class="input-group">
 								<span class="input-group-text"><i class="fa fa-calendar"></i></span>
-								<input required type="text" name="FechaFin" id="FechaFin" class="form-control" value="<?php echo $row['FechaFinActividad'] ?? date("Y-m-d"); ?>" <?php if ($type_act == 1) { echo "readonly"; } ?>>
+								<input required type="text" name="FechaFin" id="FechaFin" class="form-control fecha" value="<?php echo $row['FechaFinActividad'] ?? date("Y-m-d"); ?>" <?php if ($type_act == 1) { echo "readonly"; } ?>>
 							</div>
 						</div>
 						<div class="col-lg-6">
 							<div class="input-group">
 								<span class="input-group-text"><i class="fa fa-clock"></i></span>
-								<input required type="text" name="HoraFin" id="HoraFin" class="form-control" value="<?php echo $row['HoraFinActividad'] ?? date("H:i"); ?>" onchange="ValidarHoras();" <?php if ($type_act == 1) { echo "readonly"; } ?>>
+								<input required type="text" name="HoraFin" id="HoraFin" class="form-control hora" value="<?php echo $row['HoraFinActividad'] ?? date("H:i"); ?>" onchange="ValidarHoras();" <?php if ($type_act == 1) { echo "readonly"; } ?>>
 							</div>
 						</div>
 					</div>
@@ -136,7 +141,7 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 
 				<div class="col-lg-4">
 					<label class="control-label">
-						<i onClick="ConsultarDatosCliente();" title="Consultar cliente" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Cliente <span class="text-danger">*</span>
+						<i onclick="ConsultarCliente();" title="Consultar cliente" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Cliente <span class="text-danger">*</span>
 					</label>
 					
 					<input type="hidden" name="Cliente" id="Cliente" value="<?php echo $row['ID_CodigoCliente'] ?? ""; ?>">
@@ -241,6 +246,44 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 </form>
 <script>
 	$(document).ready(function () {
+		let options = {
+			url: function (phrase) {
+				return `ajx_buscar_datos_json.php?type=7&id=${phrase}`;
+			},
+			getValue: "NombreBuscarCliente",
+			requestDelay: 400,
+			list: {
+				match: {
+					enabled: true
+				},
+				onClickEvent: function () {
+					let value = $("#NombreCliente").getSelectedItemData().CodigoCliente;
+					$("#Cliente").val(value).trigger("change");
+				}
+			}
+		};
+		$("#NombreCliente").easyAutocomplete(options);
+
+		$("#Cliente").on("change", function() {
+			$.ajax({
+				type: "POST",
+				url: `ajx_cbo_select.php?type=3&id=${$(this).val()}`,
+				success: function (response) {
+					$('#SucursalCliente').html(response).fadeIn();
+					$('#SucursalCliente').trigger('change');
+				}
+			});
+
+			$.ajax({
+				type: "POST",
+				url: `ajx_cbo_select.php?type=28&id=&clt=${$(this).val()}`,
+				success: function (response) {
+					$('#NumeroSerie').html(response).fadeIn();
+					$('#NumeroSerie').trigger('change');
+				}
+			});
+		});
+
 		$(".select2").select2({
 			dropdownParent: $('#ModalAct')
 		});
@@ -283,12 +326,13 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 		});
 
 		<?php if (true) { ?>
-			$('#FechaInicio').flatpickr({
+			$(".fecha").flatpickr({
 				dateFormat: "Y-m-d",
 				static: true,
 				allowInput: true
 			});
-			$('#HoraInicio').flatpickr({
+
+			$(".hora").flatpickr({
 				enableTime: true,
 				noCalendar: true,
 				dateFormat: "H:i",
@@ -296,22 +340,11 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 				static: true,
 				allowInput: true
 			});
-
-			$('#FechaFin').flatpickr({
-				dateFormat: "Y-m-d",
-				static: true,
-				allowInput: true
-			});
-			$('#HoraFin').flatpickr({
-				enableTime: true,
-				noCalendar: true,
-				dateFormat: "H:i",
-				time_24hr: true,
-				static: true,
-				allowInput: true
-			});
-
 		<?php } ?>
+
+		// maxLength("Comentario");
+		
+		
 	});
 
 	function ValidarHoras() {
@@ -325,6 +358,22 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 				icon: 'warning',
 			});
 			return false;
+		}
+	}
+
+	function ConsultarCliente() {
+		let Cliente = document.getElementById("Cliente");
+		
+		if (Cliente.value != "") {
+			window.open(`socios_negocios.php?id=${Base64.encode(Cliente.value)}&tl=1`, "_blank");
+		}
+	}
+
+	function ConsultarEquipo() {
+		let Equipo = document.getElementById("NumeroSerie");
+		
+		if (Equipo.value != "") {
+			window.open(`tarjeta_equipo.php?id=${Base64.encode(Equipo.value)}&tl=1&te=1`, "_blank");
 		}
 	}
 </script>
