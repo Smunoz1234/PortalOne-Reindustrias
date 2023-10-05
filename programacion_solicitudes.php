@@ -262,7 +262,7 @@ if ($sw == 1) {
 <body>
 	<div class="container-fluid">
 		<!-- Event modal -->
-		<div class="modal modal-top fade" id="ModalAct" data-backdrop="static" data-keyboard="false">
+		<div class="modal inmodal fade" id="ModalAct" data-backdrop="static" data-keyboard="false">
 			<div id="ContenidoModal" class="modal-dialog modal-xl">
 
 			</div>

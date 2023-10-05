@@ -236,6 +236,20 @@ $ids_recursos = array();
 			resourceOrder: 'title',
 			// Evento de CLICK en una fecha con la tecla ALT. SMM, 14/05/2022
 			dateClick: function (info) {
+				console.log("Se ejecuto el evento dateClick");
+
+				blockUI();
+					$.ajax({
+						type: "POST",
+						async: false,
+						url: "programacion_solicitudes_actividad.php",
+						success: function (response) {
+							$('#ContenidoModal').html(response);
+							$('#ModalAct').modal("show");
+							blockUI(false);
+						}
+					});
+
 				if (info.jsEvent.altKey && (info.view.type === "dayGridMonth")) {
 					calendar.changeView('resourceTimeGridDay', info.dateStr);
 				} else {

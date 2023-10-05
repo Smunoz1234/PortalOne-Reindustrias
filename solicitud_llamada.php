@@ -414,7 +414,7 @@ if ($sw_error == 1) {
 	$row_Articulo = sqlsrv_fetch_array($SQL_Articulo);
 }
 
-//Serie de llamada
+// Serie de Llamada
 $ParamSerie = array(
 	"'" . $_SESSION['CodUser'] . "'",
 	"'191'",
