@@ -264,10 +264,19 @@ if ($sw == 1) {
 		<!-- Event modal -->
 		<div class="modal inmodal fade" id="ModalAct" data-backdrop="static" data-keyboard="false">
 			<div id="ContenidoModal" class="modal-dialog modal-xl">
-
+				<!-- Contenido generado por JS -->
 			</div>
 		</div>
 		<!-- / Event modal -->
+
+		<div class="modal inmodal fade" id="myModal2" tabindex="-1" role="dialog" aria-hidden="true">
+			<div class="modal-dialog modal-lg" style="width: 70% !important;">
+				<div class="modal-content" id="ContenidoModal2">
+					<!-- Contenido generado por JS -->
+				</div>
+			</div>
+		</div>
+		<!-- /#MyModal2 -->
 
 		<div id="dvHead" class="row mb-md-3 mt-md-4">
 			<div id="accordionTitle" class="card col-lg-12 p-md-4">

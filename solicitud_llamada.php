@@ -3355,6 +3355,9 @@ function AdicionarCampanaAsincrono() {
 
 			$('#ContenidoModal2').html(response);
 			$('#myModal2').modal("show");
+		},
+		error: function (error) {
+			console.log("error (3360), ", error);
 		}
 	});
 }

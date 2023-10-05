@@ -36,8 +36,10 @@ while ($row_GruposUsuario = sqlsrv_fetch_array($SQL_GruposUsuario)) {
 // Serie de Llamada.
 $ParamSerie = array(
 	"'" . $_SESSION['CodUser'] . "'",
-	"'191'", // @IdTipoDocumento
-	2, // @TipoAccion
+	"'191'",
+	// @IdTipoDocumento
+	2,
+	// @TipoAccion
 );
 $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 ?>
@@ -69,7 +71,7 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 			<h4 class="modal-title">
 				<?php echo $row['EtiquetaActividad'] ?? "Nueva Solicitud de Llamada de servicio"; ?>
 			</h4>
-			
+
 			<button type="button" class="close" data-dismiss="modal" aria-label="Close">X</button>
 		</div>
 		<!-- /.modal-header -->
@@ -77,19 +79,28 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 		<div class="modal-body">
 			<div class="form-group row">
 				<div class="col-lg-6">
-					<label for="FechaInicio" class="control-label">Fecha inicio <span class="text-danger">*</span></label>
-					
+					<label for="FechaInicio" class="control-label">Fecha inicio <span
+							class="text-danger">*</span></label>
+
 					<div class="row">
 						<div class="col-lg-6">
 							<div class="input-group">
 								<span class="input-group-text"><i class="fa fa-calendar"></i></span>
-								<input required type="text" name="FechaInicio" id="FechaInicio" class="form-control fecha" value="<?php echo $row['FechaInicioActividad'] ?? date("Y-m-d"); ?>" <?php if ($type_act == 1) { echo "readonly"; } ?>>
+								<input required type="text" name="FechaInicio" id="FechaInicio"
+									class="form-control fecha"
+									value="<?php echo $row['FechaInicioActividad'] ?? date("Y-m-d"); ?>" <?php if ($type_act == 1) {
+											 echo "readonly";
+										 } ?>>
 							</div>
 						</div>
 						<div class="col-lg-6">
 							<div class="input-group">
 								<span class="input-group-text"><i class="fa fa-clock"></i></span>
-								<input required type="text" name="HoraInicio" id="HoraInicio" class="form-control hora" value="<?php echo $row['HoraInicioActividad'] ?? date("H:i"); ?>" onchange="ValidarHoras();" <?php if ($type_act == 1) { echo "readonly"; } ?>>
+								<input required type="text" name="HoraInicio" id="HoraInicio" class="form-control hora"
+									value="<?php echo $row['HoraInicioActividad'] ?? date("H:i"); ?>"
+									onchange="ValidarHoras();" <?php if ($type_act == 1) {
+										echo "readonly";
+									} ?>>
 							</div>
 						</div>
 					</div>
@@ -98,18 +109,25 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 
 				<div class="col-lg-6">
 					<label for="FechaFin" class="control-label">Fecha fin <span class="text-danger">*</span></label>
-					
+
 					<div class="row">
 						<div class="col-lg-6">
 							<div class="input-group">
 								<span class="input-group-text"><i class="fa fa-calendar"></i></span>
-								<input required type="text" name="FechaFin" id="FechaFin" class="form-control fecha" value="<?php echo $row['FechaFinActividad'] ?? date("Y-m-d"); ?>" <?php if ($type_act == 1) { echo "readonly"; } ?>>
+								<input required type="text" name="FechaFin" id="FechaFin" class="form-control fecha"
+									value="<?php echo $row['FechaFinActividad'] ?? date("Y-m-d"); ?>" <?php if ($type_act == 1) {
+											 echo "readonly";
+										 } ?>>
 							</div>
 						</div>
 						<div class="col-lg-6">
 							<div class="input-group">
 								<span class="input-group-text"><i class="fa fa-clock"></i></span>
-								<input required type="text" name="HoraFin" id="HoraFin" class="form-control hora" value="<?php echo $row['HoraFinActividad'] ?? date("H:i"); ?>" onchange="ValidarHoras();" <?php if ($type_act == 1) { echo "readonly"; } ?>>
+								<input required type="text" name="HoraFin" id="HoraFin" class="form-control hora"
+									value="<?php echo $row['HoraFinActividad'] ?? date("H:i"); ?>"
+									onchange="ValidarHoras();" <?php if ($type_act == 1) {
+										echo "readonly";
+									} ?>>
 							</div>
 						</div>
 					</div>
@@ -121,13 +139,14 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 			<div class="form-group row">
 				<div class="col-lg-4">
 					<label class="control-label">Serie <span class="text-danger">*</span></label>
-				
+
 					<select required name="Series" id="Series" class="form-control select2" <?php if (($type_act == 1)) {
-							echo "disabled";
-						} ?>>
+						echo "disabled";
+					} ?>>
 						<option value="" disabled <?php if (($type_act == 0)) {
 							echo "selected";
-						} ?>>Seleccione...</option>
+						} ?>>Seleccione...
+						</option>
 
 						<?php while ($row_Series = sqlsrv_fetch_array($SQL_Series)) { ?>
 							<option value="<?php echo $row_Series['IdSeries']; ?>" <?php if (isset($row['Series']) && ($row_Series['IdSeries'] == $row['Series'])) {
@@ -141,18 +160,21 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 
 				<div class="col-lg-4">
 					<label class="control-label">
-						<i onclick="ConsultarCliente();" title="Consultar cliente" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Cliente <span class="text-danger">*</span>
+						<i onclick="ConsultarCliente();" title="Consultar cliente" style="cursor: pointer"
+							class="btn-xs btn-success fa fa-search"></i> Cliente <span class="text-danger">*</span>
 					</label>
-					
-					<input type="hidden" name="Cliente" id="Cliente" value="<?php echo $row['ID_CodigoCliente'] ?? ""; ?>">
-					<input required type="text" name="NombreCliente" id="NombreCliente" class="form-control" placeholder="Digite para buscar..." <?php if (($type_act == 1)) {
+
+					<input type="hidden" name="Cliente" id="Cliente"
+						value="<?php echo $row['ID_CodigoCliente'] ?? ""; ?>">
+					<input required type="text" name="NombreCliente" id="NombreCliente" class="form-control"
+						placeholder="Digite para buscar..." <?php if (($type_act == 1)) {
 							echo "disabled";
 						} ?> value="<?php echo $row['NombreClienteLlamada'] ?? ""; ?>">
 				</div>
 
 				<div class="col-lg-4">
 					<label class="control-label">Sucursal <span class="text-danger">*</span></label>
-				
+
 					<select required name="SucursalCliente" id="SucursalCliente" class="form-control select2">
 						<option value="">Seleccione...</option>
 
@@ -165,9 +187,10 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 			<div class="form-group row">
 				<div class="col-lg-4">
 					<label class="control-label">
-						<i onclick="ConsultarEquipo();" title="Consultar equipo" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Tarjeta de equipo
+						<i onclick="ConsultarEquipo();" title="Consultar equipo" style="cursor: pointer"
+							class="btn-xs btn-success fa fa-search"></i> Tarjeta de equipo
 					</label>
-				
+
 					<select name="NumeroSerie" id="NumeroSerie" class="form-control select2">
 						<option value="">Seleccione...</option>
 
@@ -178,37 +201,41 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 				<div class="col-lg-2">
 					<br>
 					<div class="btn-group">
-						<button type="button" id="AddEquipo" class="btn btn-primary" title="Adicionar Equipo"><i class="fa fa-plus"></i></button>
-						<button type="button" id="AddCampana" class="btn btn-info" title="Adicionar Campaña" disabled><i class="fa fa-bell"></i></button>
+						<button type="button" id="AddEquipo" class="btn btn-primary" title="Adicionar Equipo"><i
+								class="fa fa-plus"></i></button>
+						<button type="button" id="AddCampana" class="btn btn-info" title="Adicionar Campaña" disabled><i
+								class="fa fa-bell"></i></button>
 					</div>
 				</div>
 
 				<div class="col-lg-6">
 					<label class="control-label">Campañas</label>
 
-					<select multiple name="Campanas[]" id="Campanas" class="form-control select2" data-placeholder="Debe seleccionar las campañas que desea asociar con la Solicitud de Llamada de servicio.">
+					<select multiple name="Campanas[]" id="Campanas" class="form-control select2"
+						data-placeholder="Debe seleccionar las campañas que desea asociar con la Solicitud de Llamada de servicio.">
 						<!-- Las campañas dependen de la TE. -->
 					</select>
 				</div>
 			</div>
 			<!-- /.form-group -->
-			
+
 			<div class="form-group row">
 				<div class="col-lg-4">
 					<label class="control-label">Asignado a <span class="text-danger">*</span></label>
 
 					<select required name="Tecnico" id="Tecnico" class="form-control select2" <?php if (($type_act == 1)) {
-							echo "disabled";
-						} ?>>
+						echo "disabled";
+					} ?>>
 						<option value="" disabled <?php if (($type_act == 0)) {
 							echo "selected";
-						} ?>>Seleccione...</option>
-							
+						} ?>>Seleccione...
+						</option>
+
 						<?php while ($row_Tecnicos = sqlsrv_fetch_array($SQL_Tecnicos)) { ?>
 							<?php if (in_array($row_Tecnicos['IdCargo'], $ids_grupos) || ($MostrarTodosRecursos || (count($ids_grupos) == 0))) { ?>
 								<option value="<?php echo $row_Tecnicos['ID_Empleado']; ?>" <?php if (isset($row['IdTecnico']) && ($row_Tecnicos['ID_Empleado'] == $row['IdTecnico'])) {
-									echo "selected";
-								} ?> 
+									   echo "selected";
+								   } ?> 		
 								<?php if ((count($ids_grupos) > 0) && (!in_array($row_Tecnicos['IdCargo'], $ids_grupos))) {
 									echo "disabled";
 								} ?>>
@@ -219,7 +246,7 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 					</select>
 				</div>
 				<!-- /.col-lg-4 -->
-				
+
 				<div class="col-lg-2">
 
 				</div>
@@ -227,7 +254,8 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 				<div class="col-lg-6">
 					<label class="control-label">Comentario <span class="text-danger">*</span></label>
 
-					<textarea required name="Comentario" rows="2" maxlength="3000" type="text" class="form-control" <?php if (($type_act == 1)) {
+					<textarea required name="Comentario" rows="2" maxlength="3000" type="text" class="form-control"
+						<?php if (($type_act == 1)) {
 							echo "disabled";
 						} ?>><?php echo $row['ComentarioLlamada'] ?? ""; ?></textarea>
 				</div>
@@ -238,8 +266,8 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 
 		<div class="modal-footer">
 			<button type="button" class="btn btn-secondary md-btn-flat" data-dismiss="modal">Cerrar</button>
-			<?php if (true) { ?><button type="submit" class="btn btn-primary md-btn-flat"><i
-						class="fas fa-save"></i> Guardar</button>
+			<?php if (true) { ?><button type="submit" class="btn btn-primary md-btn-flat"><i class="fas fa-save"></i>
+					Guardar</button>
 			<?php } ?>
 		</div>
 	</div>
@@ -264,7 +292,7 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 		};
 		$("#NombreCliente").easyAutocomplete(options);
 
-		$("#Cliente").on("change", function() {
+		$("#Cliente").on("change", function () {
 			$.ajax({
 				type: "POST",
 				url: `ajx_cbo_select.php?type=3&id=${$(this).val()}`,
@@ -343,9 +371,65 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 		<?php } ?>
 
 		// maxLength("Comentario");
-		
-		
+
+		// SMM, 05/10/2023
+		$("#NumeroSerie").on("change", function () {
+			if ($(this).val() != "") {
+				$('#AddCampana').prop('disabled', false);
+			} else {
+				$('#AddCampana').prop('disabled', true);
+			}
+
+			let id_tarjeta_equipo = $(this).find(':selected').data('id');
+
+			$.ajax({
+				type: "POST",
+				url: `ajx_cbo_select.php?type=49&id=${id_tarjeta_equipo}`,
+				success: function (response) {
+					$("#Campanas").html(response).fadeIn();
+					$("#Campanas").trigger('change');
+				},
+				error: function (error) {
+					console.log("error (410), ", error);
+				}
+			});
+		});
+
+		$("#AddCampana").on("click", function () {
+			AdicionarCampanaAsincrono();
+		});
+
+		// Función para oscurecer el primer modal cuando se abre el segundo
+		$('#myModal2').on('show.bs.modal', function () {
+			$('#ModalAct').addClass('modal-backdrop');
+		});
+
+		// Función para eliminar el oscurecimiento cuando se cierra el segundo modal
+		$('#myModal2').on('hidden.bs.modal', function () {
+			$('#ModalAct').removeClass('modal-backdrop');
+		});
 	});
+
+	function AdicionarCampanaAsincrono() {
+		let IdInterno_TarjetaEquipo = $("#NumeroSerie").find(':selected').data('id');
+
+		$.ajax({
+			type: "POST",
+			data: {
+				id_tarjeta_equipo: IdInterno_TarjetaEquipo,
+				asincrono: 1, // Asincrono - En la creación.
+				solicitud: "Solicitud"
+			},
+			url: "md_adicionar_campanas.php",
+			success: function (response) {
+				$('#ContenidoModal2').html(response);
+				$('#myModal2').modal("show");
+			},
+			error: function (error) {
+				console.log("error (435), ", error);
+			}
+		});
+	}
 
 	function ValidarHoras() {
 		var HInicio = document.getElementById("HoraInicio").value;
@@ -363,7 +447,7 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 
 	function ConsultarCliente() {
 		let Cliente = document.getElementById("Cliente");
-		
+
 		if (Cliente.value != "") {
 			window.open(`socios_negocios.php?id=${Base64.encode(Cliente.value)}&tl=1`, "_blank");
 		}
@@ -371,7 +455,7 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 
 	function ConsultarEquipo() {
 		let Equipo = document.getElementById("NumeroSerie");
-		
+
 		if (Equipo.value != "") {
 			window.open(`tarjeta_equipo.php?id=${Base64.encode(Equipo.value)}&tl=1&te=1`, "_blank");
 		}
