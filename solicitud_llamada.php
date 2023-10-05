@@ -1730,7 +1730,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 							<div class="col-lg-8">
 								<label class="control-label">Campañas Asociadas</label>
 
-								<select name="Campanas[]" id="Campanas" class="form-control select2" data-placeholder="Debe seleccionar las campañas que desea asociar con la Llamada de servicio." multiple>
+								<select name="Campanas[]" id="Campanas" class="form-control select2" data-placeholder="Debe seleccionar las campañas que desea asociar con la Solicitud de Llamada de servicio." multiple>
 									<!-- Generadas por JS -->
 								</select>
 							</div>
@@ -3047,60 +3047,6 @@ function Validar() {
 	return res;
 }
 
-function EnviarFrm(P = 33) {
-	var vP = document.getElementById('P');
-	//	vP.value=P;
-	var txtComentario = document.getElementById('ComentarioLlamada');
-	if (P == 40) {
-		vP.value = P;
-		txtComentario.removeAttribute("required");
-		document.getElementById('DireccionLlamada').removeAttribute("required");
-	} else {
-		vP.value = P;
-		txtComentario.setAttribute("required", "required");
-	}
-}
-
-function CambiarEstado(id, form, columID) {
-	$('.ibox-content').toggleClass('sk-loading', true);
-
-	$.ajax({
-		type: "POST",
-		url: "md_frm_cambiar_estados.php",
-		data: {
-			id: id,
-			frm: form,
-			nomID: columID
-		},
-		success: function (response) {
-			$('.ibox-content').toggleClass('sk-loading', false);
-
-			$('#ContenidoModal').html(response);
-			$('#myModal').modal("show");
-		}
-	});
-}
-
-// SMM, 18/02/2022
-function MostrarCostos(id_llamada) {
-	$('.ibox-content').toggleClass('sk-loading', true);
-	$.ajax({
-		type: "POST",
-		async: false,
-		url: "md_articulos_documentos.php",
-		data: {
-			pre: 3,
-			DocEntry: id_llamada
-		},
-		success: function (response) {
-			$('.ibox-content').toggleClass('sk-loading', false);
-			$('#ContenidoModal').html(response);
-			$('#TituloModal').html('Precios IVA Incluido (Entregas (+) / Devoluciones (-))');
-			$('#myModal').modal("show");
-		}
-	});
-}
-
 // SMM, 26/07/2022
 function MostrarCostos_Documentos(docnum, id_objeto, de_objeto) {
 	$('.ibox-content').toggleClass('sk-loading', true);
@@ -3120,63 +3066,6 @@ function MostrarCostos_Documentos(docnum, id_objeto, de_objeto) {
 			$('#myModal').modal("show");
 		}
 	});
-}
-
-// SMM 22/03/2022
-function CopiarToFactura(adj = 1, dest = 1) {
-	var docDest = "factura_venta.php";
-	if (dest == 2) docDest = "orden_venta.php";
-
-<?php if (PermitirFuncion(419)) { ?>
-			Swal.fire({
-				title: "¿Desea cambiar de socio de negocio?",
-				icon: "question",
-				showCancelButton: true,
-				confirmButtonText: "Si, confirmo",
-				cancelButtonText: "No"
-			}).then((result) => {
-				if (result.isConfirmed) {
-					$.ajax({
-						type: "POST",
-						url: "ajx_cbo_select.php?type=42&id=" + $('#CallID').val(),
-						success: function (response) {
-							$('#ClienteFactSN').html(response).fadeIn();
-							$('#ClienteFactSN').trigger('change');
-						}
-					});
-					$('#modalFactSN').modal("show");
-				} else {
-					CopiarFactura(adj, docDest);
-				}
-			});
-<?php } else { ?>
-			CopiarFactura(adj, docDest);
-<?php } ?>
-}
-
-// neduga, 18/02/2022
-function CopiarFactura(adj, docDest) {
-	let CodClienteFactura = document.getElementById('ClienteLlamada');
-
-	if (CodClienteFactura.value != "") {
-		window.location = docDest + `?dt_FC=2&Cardcode=${btoa(CodClienteFactura.value)}&adt=${btoa(adj)}&CodFactura=${btoa(CodClienteFactura.value)}&IdLlamada=${btoa($('#CallID').val())}&DocNum=${btoa($('#Ticket').val())}`;
-	} else {
-		Swal.fire({
-			title: '¡Advertencia!',
-			text: 'Debe seleccionar un valor en el campo Cliente.',
-			icon: 'warning'
-		});
-	}
-}
-
-// SMM, 22/06/2022
-function CopiarFacturaSN(Cliente, Contacto, Sucursal, Direccion) {
-	if (Cliente != "") {
-		adicionales = `Cardcode=${btoa(Cliente)}&CodFactura=${btoa(Cliente)}&Contacto=${btoa(Contacto)}&Sucursal=${btoa(Sucursal)}&Direccion=${btoa(Direccion)}`;
-		window.location = `factura_venta.php?dt_FC=2&${adicionales}&adt=${btoa(1)}&IdLlamada=${btoa($('#CallID').val())}&DocNum=${btoa($('#Ticket').val())}`;
-	} else {
-		console.log('Debe seleccionar un valor en el campo Cliente.');
-	}
 }
 </script>
 
