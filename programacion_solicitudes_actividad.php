@@ -408,6 +408,10 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 		$('#myModal2').on('hidden.bs.modal', function () {
 			$('#ModalAct').removeClass('modal-backdrop');
 		});
+
+		$("#AddEquipo").on("click", function () {
+			AdicionarEquipo();
+		});
 	});
 
 	function AdicionarCampanaAsincrono() {
@@ -429,6 +433,10 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 				console.log("error (435), ", error);
 			}
 		});
+	}
+
+	function AdicionarEquipo() {
+		window.open(`tarjeta_equipo.php`, "_blank");
 	}
 
 	function ValidarHoras() {
