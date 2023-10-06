@@ -777,6 +777,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 						url: "ajx_cbo_select.php?type=7&id=" + carcode,
 						success: function (response) {
 							$('#CondicionPago').html(response).fadeIn();
+							$('#CondicionPago').trigger("change");
 						},
 						error: function (error) {
 							console.log(error.responseText);
@@ -1526,7 +1527,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 								<div class="form-group">
 									<label class="col-lg-1 control-label">Almacén</label>
 									<div class="col-lg-3">
-										<select class="form-control select2" name="Almacen" id="Almacen" readonly>
+										<select class="form-control" name="Almacen" id="Almacen" readonly>
 											<option value="">Seleccione...</option>
 										</select>
 									</div>

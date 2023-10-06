@@ -736,7 +736,8 @@ if ($sw_error == 1) {
 
 
 // Inicio, verificar que viene de una Solicitud. SMM, 30/08/2023
-$Error_Solicitud = false;
+$error_solicitud = false;
+$anexos_solicitud = array();
 if (isset($_GET['dt_SLS']) && ($_GET['dt_SLS']) == 1) {
 	$dt_SLS = 1;
 	$SLS = base64_decode($_GET['SLS']);
@@ -749,7 +750,7 @@ if (isset($_GET['dt_SLS']) && ($_GET['dt_SLS']) == 1) {
 
 	$SQL_Copiar = EjecutarSP("sp_tbl_SolicitudLlamadaServicios_To_LlamadaServicios", $ParametrosCopiar);
 	if (!$SQL_Copiar) {
-		$Error_Solicitud = true;
+		$error_solicitud = true;
 	}
 
 	// Obtener la Llamada de servicio creada desde la Solicitud-
@@ -765,7 +766,6 @@ if (isset($_GET['dt_SLS']) && ($_GET['dt_SLS']) == 1) {
 	$dir_solicitud = CrearObtenerDirAnx("solicitudes_llamadas");
 	$SQL_AnexoSolicitud = Seleccionar("tbl_SolicitudLlamadasServicios_Anexos", '*', "ID_SolicitudLlamadaServicio='$SLS'");
 
-	$anexos_solicitud = array();
 	if ($SQL_AnexoSolicitud && sqlsrv_has_rows($SQL_AnexoSolicitud)) {
 		while ($row_Anexo = sqlsrv_fetch_array($SQL_AnexoSolicitud)) {
 			$nombreArchivo = $row_Anexo['FileName'] . "." . $row_Anexo['FileExt'];
@@ -932,7 +932,7 @@ $hasRowsCampanas = ($SQL_Campanas) ? sqlsrv_has_rows($SQL_Campanas) : false;
 <!-- InstanceEndEditable -->
 <!-- InstanceBeginEditable name="head" -->
 <?php
-if ($Error_Solicitud) {
+if ($error_solicitud) {
 	echo "<script>
 	$(document).ready(function() {
 		Swal.fire({

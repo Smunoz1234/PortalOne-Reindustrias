@@ -7,8 +7,7 @@ $ParamSucursal = array(
 );
 $SQL_Suc = EjecutarSP('sp_ConsultarSucursalesUsuario', $ParamSucursal);
 
-$SQL_TiposEstadoServ = Seleccionar("uvw_tbl_TipoEstadoServicio", "*");
-$Num_TiposEstadoServ = sqlsrv_num_rows($SQL_TiposEstadoServ);
+$SQL_EstadoServicios = Seleccionar("tbl_SolicitudLlamadasServiciosEstadoServicios", "*");
 
 //$i=0;
 $FilRec = "";
@@ -132,6 +131,50 @@ if ($sw == 1) {
 		.swal2-container {
 			z-index: 9000;
 		}
+
+		.custom-card {
+            color: white;
+			text-align: center;
+        }
+
+        .custom-card-header {
+            font-weight: bold;
+			border-bottom: 2px solid white;
+        }
+
+		.collapse-icon {
+			border: 1px solid gray;
+			padding: 10px;
+			border-radius: 5px;
+		}
+
+		.datepicker-switch {
+			background-color: lightgray;
+			text-align: center;
+		}
+
+		#small-calendar .table-condensed {
+			width: 100%;
+			border: 1px solid black;
+		}
+
+		#small-calendar .day,
+		#small-calendar .prev,
+		#small-calendar .next  {
+			cursor: pointer;
+		}
+
+		#small-calendar .today,
+		#small-calendar .prev,
+		#small-calendar .next {
+			background-color: #007bff !important;
+			color: #fff !important;
+		}
+
+		#small-calendar .prev:hover,
+		#small-calendar .next:hover {
+			background-color: #0056b3 !important;
+		}
 	</style>
 
 	<script type="text/javascript">
@@ -198,6 +241,36 @@ if ($sw == 1) {
 			});
 		});
 	</script>
+
+<script>
+// Configura el idioma de Bootstrap Datepicker a español
+$.fn.datepicker.dates['es'] = {
+	days: ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
+	daysShort: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
+	daysMin: ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sá"],
+	months: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+	monthsShort: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
+	today: "Hoy",
+	clear: "Borrar",
+	format: "yyyy-mm-dd",
+	titleFormat: "MM yyyy",
+	weekStart: 0
+};
+
+// Inicializa el DatePicker
+$(function () {
+	$("#small-calendar").datepicker({
+		language: "es",
+		todayHighlight: true,
+		keyboardNavigation: false
+	});
+
+	$(".datepicker-switch").on("click", function() { 
+		return false; 
+	});
+});
+</script>
+					
 
 </head>
 
@@ -352,70 +425,6 @@ if ($sw == 1) {
 										class="fas fa-filter"></i> Filtrar datos</button>
 							</div>
 						</div>
-						<div class="form-row">
-							<div class="form-group col-lg-8">
-								<label class="form-label">Visualización</label>
-								<div class="row">
-									<div class="col-lg-4">
-										<div class="input-group">
-											<label class="switcher">
-												<input type="checkbox" class="switcher-input"
-													id="chkDatesAboveResources" checked="checked">
-												<span class="switcher-indicator">
-													<span class="switcher-yes"></span>
-													<span class="switcher-no"></span>
-												</span>
-												<span class="switcher-label">Mostrar fechas arriba de los
-													técnicos</span>
-											</label>
-										</div>
-									</div>
-
-									<!-- div class="col-lg-4">
-										<div class="input-group">
-											<label class="switcher">
-												<input type="checkbox" class="switcher-input"
-													id="chkFiltrarActividades">
-												<span class="switcher-indicator">
-													<span class="switcher-yes"></span>
-													<span class="switcher-no"></span>
-												</span>
-												<span class="switcher-label">Listar OTs programadas</span>
-											</label>
-
-											<button type="button" class="btn btn-sm btn-info btn-circle"
-												data-toggle="tooltip" data-html="true" title="Si esta opción se encuentra seleccionada se mostrarán solamente las ordenes
-											que están programadas con al menos una actividad asignada."><i class="fa fa-info"></i></button>
-										</div>
-									</div -->
-								</div>
-							</div>
-						</div>
-						<div class="form-row">
-							<div class="form-group col-lg-6">
-								<label class="form-label">Referencia de colores</label>
-								<div class="input-group">
-									<?php
-									while ($row_TiposEstadoServ = sqlsrv_fetch_array($SQL_TiposEstadoServ)) { ?>
-										<div class="d-inline"><i class="fas fa-square-full mr-2 ml-2"
-												style="color: <?php echo $row_TiposEstadoServ['ColorEstadoServicio']; ?>;"></i>
-											<?php echo $row_TiposEstadoServ['DE_TipoEstadoServicio']; ?>
-										</div>
-									<?php } ?>
-								</div>
-							</div>
-							<div class="form-group col-lg-6">
-								<!-- button id="btnGuardar" type="button" class="btn btn-danger load pull-right mt-4"
-									disabled onClick="Validar();"><i class="fas fa-save"></i> Guardar todo</button>
-								<button id="btnPendientes" type="button" class="btn btn-warning pull-right mr-2 mt-4"
-									disabled onClick="VerificarPendientes();"><i class="fas fa-tags"></i> Pendientes por
-									enviar</button -->
-							</div>
-						</div>
-						<input type="hidden" id="IdEvento" name="IdEvento"
-							value="<?php if ($sw == 1) {
-								echo $row_Evento['IdEvento'];
-							} ?>" />
 					</form>
 					<!-- Fin del Formulario -->
 				</div>
@@ -423,94 +432,58 @@ if ($sw == 1) {
 		</div>
 		<div class="row">
 			<div id="dvOT" class="card col-lg-2" style="max-height: 1110px; min-height: auto;">
-				<div class="alert alert-primary mt-lg-3 text-center" role="alert">
-					<strong>Titulo</strong>
-				</div>
-				<?php if ($sw == 1) { ?>
-					<div id="small-calendar"></div>
-
-					<style>
-						.datepicker-switch {
-							background-color: lightgray;
-							text-align: center;
-						}
-
-						#small-calendar .table-condensed {
-							width: 100%;
-							border: 1px solid black;
-							margin-top: 5px;
-							margin-bottom: 5px;
-						}
-
-						#small-calendar .day,
-						#small-calendar .prev,
-						#small-calendar .next  {
-							cursor: pointer;
-						}
-
-						#small-calendar .today,
-						#small-calendar .prev,
-						#small-calendar .next {
-							background-color: #007bff !important;
-							color: #fff !important;
-						}
-
-						#small-calendar .prev:hover,
-						#small-calendar .next:hover {
-							background-color: #0056b3 !important;
-						}
-					</style>
-
-					<script>
-						// Configura el idioma de Bootstrap Datepicker a español
-						$.fn.datepicker.dates['es'] = {
-							days: ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
-							daysShort: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
-							daysMin: ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sá"],
-							months: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
-							monthsShort: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
-							today: "Hoy",
-							clear: "Borrar",
-							format: "yyyy-mm-dd",
-							titleFormat: "MM yyyy",
-							weekStart: 0
-						};
-
-						// Inicializa el DatePicker
-						$(function () {
-							$("#small-calendar").datepicker({
-								language: "es",
-								todayHighlight: true,
-								keyboardNavigation: false
-							});
-
-							$(".datepicker-switch").on("click", function() { 
-								return false; 
-							});
-						});
-					</script>
-					
-					<div id="accordion1" class="sticky-top mt-2">
-						<div class="card mb-2">
-							<div class="card-header bg-primary text-white">
-								<a class="d-flex justify-content-between text-white" data-toggle="collapse"
-									aria-expanded="false" href="#accordion1-1">
-									<span class='pr-2'><i class="fas fa-filter"></i> Referencia de colores</span>
-									<div class="collapse-icon"></div>
-								</a>
-							</div>
-							<div id="accordion1-1" class="collapse" data-parent="#accordion1">
-								<div class="card-body">
-									<!-- Cards  -->
-								</div>
-							</div>
+				<div class="card mt-lg-3">
+					<div class="card-header bg-primary text-white text-center">
+						<strong>Visualización</strong>
+					</div>
+					<div class="card-body">
+						<div class="input-group">
+							<label class="switcher">
+								<input type="checkbox" class="switcher-input"
+									id="chkDatesAboveResources" checked="checked">
+								<span class="switcher-indicator">
+									<span class="switcher-yes"></span>
+									<span class="switcher-no"></span>
+								</span>
+								<span class="switcher-label">Mostrar fechas arriba de los técnicos</span>
+							</label>
 						</div>
 					</div>
-				<?php } ?>
-				<div id="dvResult">
-					<!-- Espacio para más cosas -->
 				</div>
+
+				<div class="card mt-lg-4">
+					<div class="card-header bg-primary text-white text-center">
+						<strong>Calendario</strong>
+					</div>
+					<div id="small-calendar"></div>
+				</div>
+				
+				<div id="accordion1" class="sticky-top mt-lg-4">
+					<div class="card mb-2">
+						<div class="card-header bg-primary text-white">
+							<a class="d-flex justify-content-between text-white" data-toggle="collapse"
+								aria-expanded="false" href="#accordion1-1">
+								<b class='pr-2'><i class="fas fa-tint"></i> Referencia de colores</b>
+								<div class="collapse-icon"></div>
+							</a>
+						</div>
+						<div id="accordion1-1" class="collapse" data-parent="#accordion1">
+							<div class="card-body">
+								<?php while ($row_EstadoServicio = sqlsrv_fetch_array($SQL_EstadoServicios)) { ?>
+									<div class="card custom-card" style="background-color: <?php echo $row_EstadoServicio["color_estado_servicio_llamada"] ?? ""; ?>;">
+										<div class="card-header custom-card-header"><?php echo $row_EstadoServicio["tipo_estado_servicio_sol_llamada"] ?? ""; ?></div>
+										<div class="card-body"><?php echo $row_EstadoServicio["descripcion_estado_servicio_llamada"] ?? ""; ?></div>
+									</div>
+									<br>
+								<?php } ?>
+							</div>
+						</div>
+						<!-- /#accordion1-1 -->
+					</div>
+				</div>
+				<!-- /#accordion1 -->
 			</div>
+
 			<div id="dvCal" class="card card-body col-lg-10">
 				<div class="row">
 					<div class="form-group col-lg-12">
