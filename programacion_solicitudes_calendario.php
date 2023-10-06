@@ -104,7 +104,9 @@ $ids_recursos = array();
 		var vistaActual = window.sessionStorage.getItem('CurrentViewCalendar')
 
 		if (!vistaActual) {
-			vistaActual = 'resourceTimeGridWeek'
+			vistaActual = "dayGridMonth"
+		} else {
+			console.log(vistaActual);
 		}
 
 		var visualizarFechasActual = true

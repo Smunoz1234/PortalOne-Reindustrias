@@ -1496,7 +1496,7 @@ if (isset($_GET['return'])) {
 			 	todayHighlight: true,
 				format: 'yyyy-mm-dd'
             });
-		 $('#FechaFin').datepicker({
+		 $('#FechaFin').ker({
                 todayBtn: "linked",
                 keyboardNavigation: false,
                 forceParse: false,

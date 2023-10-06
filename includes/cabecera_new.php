@@ -79,3 +79,6 @@
 
 <!-- EasyAutocomplete -->
 <script src="js/plugins/easyautocomplete/jquery.easy-autocomplete.min.js"></script>
+
+<!-- Data picker -->
+<script src="js/plugins/datapicker/bootstrap-datepicker.js"></script>
