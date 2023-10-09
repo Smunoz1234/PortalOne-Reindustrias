@@ -191,8 +191,8 @@ if (isset($_GET['EstadoServicio']) && $_GET['EstadoServicio'] != "") {
 
 if (isset($_GET['BuscarDato']) && $_GET['BuscarDato'] != "") {
     // Stiven Muñoz Murillo, 26/01/2022
-    // ."%' OR [IdNumeroSerie] LIKE '%".$_GET['BuscarDato']
-    $Filtro .= " and ([DocNum] LIKE '%" . $_GET['BuscarDato'] . "%' OR [IdNumeroSerie] LIKE '%" . $_GET['BuscarDato'] . "%' OR [NombreContactoLlamada] LIKE '%" . $_GET['BuscarDato'] . "%' OR [TelefonoContactoLlamada] LIKE '%" . $_GET['BuscarDato'] . "%' OR [CorreoContactoLlamada] LIKE '%" . $_GET['BuscarDato'] . "%' OR [AsuntoLlamada] LIKE '%" . $_GET['BuscarDato'] . "%' OR [ComentarioLlamada] LIKE '%" . $_GET['BuscarDato'] . "%' OR [ResolucionLlamada] LIKE '%" . $_GET['BuscarDato'] . "%' OR [DeTipoLlamada] LIKE '%" . $_GET['BuscarDato'] . "%' OR [NombreClienteLlamada] LIKE '%" . $_GET['BuscarDato'] . "%')";
+    $BuscarDato = $_GET['BuscarDato'];
+    $Filtro .= " AND ([DocNum] LIKE '%$BuscarDato%' OR [IdNumeroSerie] LIKE '%$BuscarDato%' OR [TelefonoContactoLlamada] LIKE '%$BuscarDato%' OR [CorreoContactoLlamada] LIKE '%$BuscarDato%' OR [AsuntoLlamada] LIKE '%$BuscarDato%' OR [ComentarioLlamada] LIKE '%$BuscarDato%' OR [ResolucionLlamada] LIKE '%$BuscarDato%' OR [DeTipoLlamada] LIKE '%$BuscarDato%' OR [NombreClienteLlamada] LIKE '%$BuscarDato%')";
     $sw = 1;
 }
 
@@ -209,7 +209,6 @@ if ($sw == 1) {
 // SMM, 08/08/2023
 // echo "<br>$Cons";
 
-
 if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
     $Where = "ID_SolicitudLlamadaServicio LIKE '%" . trim($_GET['IDTicket']) . "%'";
 
@@ -223,7 +222,7 @@ if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
         }
         $i++;
     }
-    $Where .= " and [Series] IN (" . $FilSerie . ")";
+    $Where .= " AND [IdSeries] IN ($FilSerie)";
     $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 
     $SQL = Seleccionar('uvw_tbl_SolicitudLlamadasServicios', '*', $Where);

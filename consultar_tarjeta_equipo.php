@@ -109,7 +109,8 @@ if (isset($_GET['ClienteEquipo'])) {
 }
 
 if (isset($_GET['BuscarDato']) && $_GET['BuscarDato'] != "") {
-    $Filtro .= " and (Calle LIKE '%" . $_GET['BuscarDato'] . "%' OR CodigoPostal LIKE '%" . $_GET['BuscarDato'] . "%' OR Barrio LIKE '%" . $_GET['BuscarDato'] . "%' OR Ciudad LIKE '%" . $_GET['BuscarDato'] . "%' OR Distrito LIKE '%" . $_GET['BuscarDato'] . "%')";
+    $BuscarDato = $_GET['BuscarDato'];
+    $Filtro .= " and (Calle LIKE '%$BuscarDato%' OR CodigoPostal LIKE '%$BuscarDato%' OR Barrio LIKE '%$BuscarDato%' OR Ciudad LIKE '%$BuscarDato%' OR Distrito LIKE '%$BuscarDato%' OR SerialFabricante LIKE '%$BuscarDato%' OR SerialInterno LIKE '%$BuscarDato%' OR IdTarjetaEquipo LIKE '%$BuscarDato%')";
     $sw = 1;
 }
 
