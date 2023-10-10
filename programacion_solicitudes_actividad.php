@@ -139,14 +139,14 @@ if ($Type != 0) {
 								<span class="input-group-text"><i class="fa fa-calendar"></i></span>
 								<input required type="text" name="FechaInicio" id="FechaInicio"
 									class="form-control fecha"
-									value="<?php echo $row['FechaInicioActividad'] ?? date("Y-m-d"); ?>">
+									value="<?php echo $row['FechaInicio'] ?? date("Y-m-d"); ?>">
 							</div>
 						</div>
 						<div class="col-lg-6">
 							<div class="input-group">
 								<span class="input-group-text"><i class="fa fa-clock"></i></span>
 								<input required type="text" name="HoraInicio" id="HoraInicio" class="form-control hora"
-									value="<?php echo $row['HoraInicioActividad'] ?? date("H:i"); ?>"
+									value="<?php echo $row['HoraInicio'] ?? date("H:i"); ?>"
 									onchange="ValidarHoras();">
 							</div>
 						</div>
@@ -162,14 +162,14 @@ if ($Type != 0) {
 							<div class="input-group">
 								<span class="input-group-text"><i class="fa fa-calendar"></i></span>
 								<input required type="text" name="FechaFin" id="FechaFin" class="form-control fecha"
-									value="<?php echo $row['FechaFinActividad'] ?? date("Y-m-d"); ?>">
+									value="<?php echo $row['FechaFin'] ?? date("Y-m-d"); ?>">
 							</div>
 						</div>
 						<div class="col-lg-6">
 							<div class="input-group">
 								<span class="input-group-text"><i class="fa fa-clock"></i></span>
 								<input required type="text" name="HoraFin" id="HoraFin" class="form-control hora"
-									value="<?php echo $row['HoraFinActividad'] ?? date("H:i"); ?>"
+									value="<?php echo $row['HoraFin'] ?? date("H:i"); ?>"
 									onchange="ValidarHoras();">
 							</div>
 						</div>
