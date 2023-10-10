@@ -253,8 +253,7 @@ $.fn.datepicker.dates['es'] = {
 	today: "Hoy",
 	clear: "Borrar",
 	format: "yyyy-mm-dd",
-	titleFormat: "MM yyyy",
-	weekStart: 0
+	titleFormat: "MM yyyy"
 };
 
 // Inicializa el DatePicker
@@ -267,6 +266,24 @@ $(function () {
 
 	$(".datepicker-switch").on("click", function() { 
 		return false; 
+	});
+
+	$("#small-calendar").datepicker("update", "<?php echo $_GET['FechaInicial'] ?? ""; ?>");
+
+	$("#small-calendar .prev").on("click", function() {
+		$(".fc-dayGridMonth-button").trigger("click");
+
+		setTimeout(() => {
+			$(".fc-prev-button").trigger("click");	
+		}, 250);
+	});
+
+	$("#small-calendar .next").on("click", function() {
+		$(".fc-dayGridMonth-button").trigger("click");
+
+		setTimeout(() => {
+			$(".fc-next-button").trigger("click");
+		}, 250);
 	});
 });
 </script>
@@ -488,7 +505,7 @@ $(function () {
 				<div class="row">
 					<div class="form-group col-lg-12">
 						<button type="button" class="btn icon-btn btn-sm btn-success"
-							title="Mostrar/ocultar lista de OTs" onClick="ExpandirListaOT();"><span
+							title="Mostrar/ocultar lista de OTs" onClick="ExpandirPanelLateral();"><span
 								class="fa fa-bars"></span></button>
 						<button id="btnExpandir" type="button" class="btn icon-btn btn-sm btn-success fa-pull-right"
 							title="Expandir calendario" onClick="Expandir();"><span id="iconBtnExpandir"
@@ -506,14 +523,6 @@ $(function () {
 		var calendar;
 
 		$(document).ready(function () {
-			// SMM, 20/09/2022
-			$('[data-toggle="tooltip"]').tooltip();
-
-			// SMM, 21/09/2022
-			<?php if ($sw == 0) { ?>
-				ExpandirListaOT();
-			<?php } ?>
-
 			$("#frmProgramacion").validate({
 				submitHandler: function (form) {
 					$.ajax({
@@ -666,7 +675,7 @@ $(function () {
 		}
 
 		// SMM, 21/09/2022
-		function ExpandirListaOT() {
+		function ExpandirPanelLateral() {
 			$('#dvOT').toggle();
 			$('#dvCal').toggleClass('col-lg-10 col-lg-12');
 		}

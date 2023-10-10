@@ -166,14 +166,13 @@ $ids_recursos = array();
 			headerToolbar: {
 				left: 'prev,next today',
 				center: 'title',
-				right: 'dayGridMonth,resourceTimeGridWeek,resourceTimeGridDay,resourceTimeGridFourDay,listWeek'
+				right: 'dayGridMonth,resourceTimeGridWeek,resourceTimeGridDay'
 			},
 			buttonText: {
 				today: 'Hoy',
 				month: 'Mes',
 				week: 'Semana',
-				day: 'Día',
-				list: 'Agenda'
+				day: 'Día'
 			},
 			initialView: vistaActual,
 			initialDate: fechaActual,
@@ -203,12 +202,6 @@ $ids_recursos = array();
 			//					console.log(info)
 			//				},
 			views: {
-				resourceTimeGridFourDay: {
-					type: 'resourceTimeGrid',
-					duration: { days: 4 },
-					buttonText: '4 dias'
-				},
-				// SMM, 14/05/2022
 				dayGridMonth: {
 					selectable: true
 				}
@@ -280,7 +273,7 @@ $ids_recursos = array();
 					, placement: "right"
 				});
 
-				if (info.view.type != 'dayGridMonth' && info.view.type != 'listWeek') {
+				if (info.view.type != 'dayGridMonth') {
 					let cont = info.el.getElementsByClassName('fc-event-time')//fc-event-title-container
 
 					// console.log(info.event.extendedProps.estadoLlamadaServ);

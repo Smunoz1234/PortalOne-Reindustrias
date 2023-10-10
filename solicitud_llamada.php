@@ -1839,7 +1839,8 @@ function AgregarEsto(contenedorID, valorElemento) {
 								} ?>">
 							</div>
 							<div class="col-lg-4">
-								<label class="control-label">Fecha de creación <span class="text-danger">*</span></label>
+								<!-- Fecha de creación -->
+								<label class="control-label">Fecha Inicio <span class="text-danger">*</span></label>
 								<div class="input-group date">
 									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaCreacion" type="text" required="required" class="form-control" id="FechaCreacion" value="<?php if (($edit == 1) && ($row['FechaCreacionLLamada']) != "") {
 										 echo $row['FechaCreacionLLamada'];
@@ -1861,7 +1862,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								  } ?>">
 							</div>
 							<div class="col-lg-4">
-								<label class="control-label">Hora de creación <span class="text-danger">*</span></label>
+								<label class="control-label">Hora Inicio <span class="text-danger">*</span></label>
 								<div class="input-group clockpicker" data-autoclose="true">
 									<span class="input-group-addon">
 										<span class="fa fa-clock-o"></span>
@@ -1916,7 +1917,8 @@ function AgregarEsto(contenedorID, valorElemento) {
 							</div>
 							<!-- SMM -->
 							<div class="col-lg-4">
-								<label class="control-label">Fecha Agenda <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?><span class="text-danger">*</span><?php } ?></label>
+								<!-- Fecha de agenda -->
+								<label class="control-label">Fecha Fin <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?><span class="text-danger">*</span><?php } ?></label>
 								<div class="input-group date">
 									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input <?php if ($edit != 0) { ?> readonly <?php } ?> <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?> required <?php } ?> name="FechaAgenda" type="text" class="form-control" id="FechaAgenda" value="<?php if (($edit == 1) && ($row['FechaAgenda'] != "")) {
 											echo is_string($row['FechaAgenda']) ? date("Y-m-d", strtotime($row['FechaAgenda'])) : $row['FechaAgenda']->format("Y-m-d");
@@ -1968,7 +1970,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 
 							<!-- SMM -->
 							<div class="col-lg-4">
-								<label class="control-label">Hora Agenda <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?><span class="text-danger">*</span><?php } ?></label>
+								<label class="control-label">Hora Fin <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?><span class="text-danger">*</span><?php } ?></label>
 								<div class="input-group clockpicker" data-autoclose="true">
 									<span class="input-group-addon">
 										<span class="fa fa-clock-o"></span>
