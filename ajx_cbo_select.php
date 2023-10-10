@@ -52,7 +52,7 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
                 echo "<option value=''>Seleccione...</option>";
             }
         }
-    } elseif ($_GET['type'] == 3) { //Sucursal cliente, dependiendo del cliente
+    } elseif ($_GET['type'] == 3) { // Sucursal cliente, dependiendo del cliente
         if (!isset($_GET['id']) || ($_GET['id'] == "")) {
             echo "<option value=''>Seleccione...</option>";
         } else {
@@ -696,7 +696,7 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
                 echo "<option value=''>(Todos)</option>";
             }
         }
-    } elseif ($_GET['type'] == 28) { //Numeros de series dependiendo del Articulo de la llamada
+    } elseif ($_GET['type'] == 28) { // Numeros de series dependiendo del Articulo de la llamada
         if (!isset($_GET['id'])) {
             echo "<option value=''>Seleccione...</option>";
         } else {

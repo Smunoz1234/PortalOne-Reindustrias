@@ -34,64 +34,51 @@ $parametros = array();
 $coduser = $_SESSION['CodUser'];
 $datetime = FormatoFecha(date('Y-m-d'), date('H:i:s'));
 
-$type = $_POST['type'] ?? 0;
-$id_campana = $_POST['id_campana'] ?? "";
-$campana = $_POST['campana'] ?? "";
-$descripcion_campana = $_POST['descripcion_campana'] ?? "";
-$id_socio_negocio = $_POST['id_socio_negocio'] ?? "";
-$socio_negocio = $_POST['socio_negocio'] ?? "";
-$id_consecutivo_direccion = isset($_POST['id_consecutivo_direccion']) && ($_POST['id_consecutivo_direccion'] != "") ? $_POST['id_consecutivo_direccion'] : "NULL";
-$id_direccion_destino = $_POST['id_direccion_destino'] ?? "";
-$direccion_destino = $_POST['direccion_destino'] ?? "";
-$tiempo_campana_meses = $_POST['tiempo_campana_meses'] ?? "NULL";
-$fecha_limite_vigencia = isset($_POST['fecha_limite_vigencia']) ? FormatoFecha($_POST['fecha_limite_vigencia']) : "";
-$estado = $_POST['estado'] ?? "";
-$id_usuario_creacion = "'$coduser'";
-$fecha_creacion = "'$datetime'";
-$hora_creacion = "'$datetime'";
-$id_usuario_actualizacion = "'$coduser'";
-$fecha_actualizacion = "'$datetime'";
-$hora_actualizacion = "'$datetime'";
+$Cliente = $_POST["Cliente"] ?? "";
+$Comentario = $_POST["Comentario"] ?? "";
+$FechaHoraFin = isset($_POST["FechaFin"]) ? FormatoFecha($_POST["FechaFin"], $_POST["HoraFin"]) : "";
+$FechaHoraInicio = isset($_POST["FechaInicio"]) ? FormatoFecha($_POST["FechaInicio"], $_POST["HoraInicio"]) : "";
+$NumeroSerie = $_POST["NumeroSerie"] ?? ""; // TE
+$Series = $_POST["Series"] ?? "NULL";
+$SucursalCliente = $_POST["SucursalCliente"] ?? "NULL"; // NumeroLinea
+$Type = $_POST["Type"] ?? 0;
+$Tecnico = $_POST["Tecnico"] ?? "NULL"; // AsignadoA
+$Usuario = "'$coduser'";
 
-if ($type == 1) {
+
+if ($Type == 1) {
 	$msg_error = "No se pudo crear la Agenda.";
 
 	$parametros = array(
-		$type,
-		"'$id_campana'",
-		"'$campana'",
-		"'$descripcion_campana'",
-		"'$id_socio_negocio'",
-		"'$socio_negocio'",
-		$id_consecutivo_direccion,
-		"'$id_direccion_destino'",
-		"'$direccion_destino'",
-		$tiempo_campana_meses,
-		"'$fecha_limite_vigencia'",
-		"'$estado'",
-		$id_usuario_actualizacion,
-		$fecha_actualizacion,
-		$hora_actualizacion,
-		$id_usuario_creacion,
-		$fecha_creacion,
-		$hora_creacion,
+		$Type,
+		$Series,
+		$Tecnico,
+		"'$Cliente'",
+		"'$NumeroSerie'",
+		$SucursalCliente,
+		"'$Comentario'",
+		"'$FechaHoraInicio'",
+		$Usuario,
+		"'$FechaHoraFin'",
+		"'$FechaHoraFin'",
+		"''" // Campanas
 	);
 } 
 
-$sw_OK = 0;
-$sw_error = 0;
-if ($type != 0) {
+if ($Type != 0) {
 	$SQL_Operacion = EjecutarSP("sp_tbl_SolicitudLlamadaServicios_Calendario", $parametros);
 
 	if (!$SQL_Operacion) {
-		$sw_error = 1;
+		echo $msg_error;
+		exit();
 	} else {
 		$row = sqlsrv_fetch_array($SQL_Operacion);
 
 		if (isset($row['Error']) && ($row['Error'] != "")) {
-			$sw_error = 1;
-
 			$msg_error .= " (" . $row['Error'] . ")";
+
+			echo $msg_error;
+			exit();
 		} else {
 			
 			/*
@@ -335,7 +322,7 @@ if ($type != 0) {
 		$("#Cliente").on("change", function () {
 			$.ajax({
 				type: "POST",
-				url: `ajx_cbo_select.php?type=3&id=${$(this).val()}`,
+				url: `ajx_cbo_select.php?type=3&id=${$(this).val()}&sucline=1`,
 				success: function (response) {
 					$('#SucursalCliente').html(response).fadeIn();
 					$('#SucursalCliente').trigger('change');
@@ -358,37 +345,56 @@ if ($type != 0) {
 
 		$("#frmActividad").validate({
 			submitHandler: function (form, event) {
-				event.preventDefault();
-				blockUI();
+				event.preventDefault(); // Prevenir redirrección.
+				blockUI(); // Carga iniciada.
 
 				let formData = new FormData(form);
-				let json = Object.fromEntries(formData);
-				console.log("Line 366", json);
+				let jsonForm = Object.fromEntries(formData);
+				console.log("Line 366", jsonForm);
 				
 				$.ajax({
 					type: "POST",
 					data: {
-						type: 5,
-						id_campana: $("#id_campana").val()
+						Cliente: jsonForm.Cliente,
+						Comentario: jsonForm.Comentario,
+						FechaFin: jsonForm.FechaFin,
+						FechaInicio: jsonForm.FechaInicio,
+						HoraFin: jsonForm.HoraFin,
+						HoraInicio: jsonForm.HoraInicio,
+						NumeroSerie: jsonForm.NumeroSerie,
+						Series: jsonForm.Series,
+						SucursalCliente: jsonForm.SucursalCliente,
+						Tecnico: jsonForm.Tecnico,
+						Type: 1
 					},
-					url: "md_campanas_articulos.php",
+					url: "programacion_solicitudes_actividad.php",
 					success: function (response) {
 						if (response == "OK") {
+							Swal.fire({
+								title: "¡Listo!",
+								text: "La solicitud se creo correctamente.",
+								icon: 'success',
+							});
+
 							$('#ModalAct').modal("hide");
-							blockUI(false);
-							
 						} else {
 							Swal.fire({
-								title: '¡Advertencia!',
-								text: 'No se pudo insertar la actividad en la ruta',
-								icon: 'warning',
+								title: "¡Advertencia!",
+								text: response,
+								icon: "warning",
 							});
-							console.log("Error:", response)
 						}
+
+						blockUI(false); // Carga terminada.
 					},
 					error: function (error) {
-						console.error(error.responseText);
+						Swal.fire({
+							title: "¡Advertencia!",
+							text: "Ocurrio un error inesperado.",
+							icon: "warning",
+						});
 
+						console.log("Error:", error.responseText);
 						blockUI(false); // Carga terminada.
 					}
 				});
