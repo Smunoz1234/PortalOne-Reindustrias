@@ -2,23 +2,7 @@
 require_once "includes/conexion.php";
 // PermitirAcceso(312);
 
-// Actividades.
-if (isset($_GET['id']) && $_GET['id'] != "") {
-	$id = base64_decode($_GET['id']);
-	$idEvento = base64_decode($_GET['idEvento']);
-} else {
-	$id = "";
-	$idEvento = "";
-}
-
-$type_act = isset($_GET['tl']) ? $_GET['tl'] : 0;
-
-if ($type_act == 1) {
-	$Where = "DocEntry='" . $id . "' and IdEvento='" . $idEvento . "'";
-} else {
-	$Where = "ID_Actividad='" . $id . "' and IdEvento='" . $idEvento . "'";
-}
-
+$Where = "";
 $SQL_Actividades = Seleccionar('uvw_tbl_Actividades_Rutas', '*', $Where);
 $row = sql_fetch_array($SQL_Actividades);
 
@@ -68,10 +52,7 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 <form id="frmActividad" method="post">
 	<div class="modal-content">
 		<div class="modal-header">
-			<h4 class="modal-title">
-				<?php echo $row['EtiquetaActividad'] ?? "Nueva Solicitud de Llamada de servicio"; ?>
-			</h4>
-
+			<h4 class="modal-title">Nueva Solicitud de Llamada de servicio</h4>
 			<button type="button" class="close" data-dismiss="modal" aria-label="Close">X</button>
 		</div>
 		<!-- /.modal-header -->
@@ -88,9 +69,7 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 								<span class="input-group-text"><i class="fa fa-calendar"></i></span>
 								<input required type="text" name="FechaInicio" id="FechaInicio"
 									class="form-control fecha"
-									value="<?php echo $row['FechaInicioActividad'] ?? date("Y-m-d"); ?>" <?php if ($type_act == 1) {
-											 echo "readonly";
-										 } ?>>
+									value="<?php echo $row['FechaInicioActividad'] ?? date("Y-m-d"); ?>">
 							</div>
 						</div>
 						<div class="col-lg-6">
@@ -98,9 +77,7 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 								<span class="input-group-text"><i class="fa fa-clock"></i></span>
 								<input required type="text" name="HoraInicio" id="HoraInicio" class="form-control hora"
 									value="<?php echo $row['HoraInicioActividad'] ?? date("H:i"); ?>"
-									onchange="ValidarHoras();" <?php if ($type_act == 1) {
-										echo "readonly";
-									} ?>>
+									onchange="ValidarHoras();">
 							</div>
 						</div>
 					</div>
@@ -115,9 +92,7 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 							<div class="input-group">
 								<span class="input-group-text"><i class="fa fa-calendar"></i></span>
 								<input required type="text" name="FechaFin" id="FechaFin" class="form-control fecha"
-									value="<?php echo $row['FechaFinActividad'] ?? date("Y-m-d"); ?>" <?php if ($type_act == 1) {
-											 echo "readonly";
-										 } ?>>
+									value="<?php echo $row['FechaFinActividad'] ?? date("Y-m-d"); ?>">
 							</div>
 						</div>
 						<div class="col-lg-6">
@@ -125,9 +100,7 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 								<span class="input-group-text"><i class="fa fa-clock"></i></span>
 								<input required type="text" name="HoraFin" id="HoraFin" class="form-control hora"
 									value="<?php echo $row['HoraFinActividad'] ?? date("H:i"); ?>"
-									onchange="ValidarHoras();" <?php if ($type_act == 1) {
-										echo "readonly";
-									} ?>>
+									onchange="ValidarHoras();">
 							</div>
 						</div>
 					</div>
@@ -140,18 +113,11 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 				<div class="col-lg-4">
 					<label class="control-label">Serie <span class="text-danger">*</span></label>
 
-					<select required name="Series" id="Series" class="form-control select2" <?php if (($type_act == 1)) {
-						echo "disabled";
-					} ?>>
-						<option value="" disabled <?php if (($type_act == 0)) {
-							echo "selected";
-						} ?>>Seleccione...
-						</option>
+					<select required name="Series" id="Series" class="form-control select2">
+						<option value="" disabled selected>Seleccione...</option>
 
 						<?php while ($row_Series = sqlsrv_fetch_array($SQL_Series)) { ?>
-							<option value="<?php echo $row_Series['IdSeries']; ?>" <?php if (isset($row['Series']) && ($row_Series['IdSeries'] == $row['Series'])) {
-								   echo "selected";
-							   } ?>>
+							<option value="<?php echo $row_Series['IdSeries']; ?>">
 								<?php echo $row_Series['DeSeries']; ?>
 							</option>
 						<?php } ?>
@@ -167,9 +133,7 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 					<input type="hidden" name="Cliente" id="Cliente"
 						value="<?php echo $row['ID_CodigoCliente'] ?? ""; ?>">
 					<input required type="text" name="NombreCliente" id="NombreCliente" class="form-control"
-						placeholder="Digite para buscar..." <?php if (($type_act == 1)) {
-							echo "disabled";
-						} ?> value="<?php echo $row['NombreClienteLlamada'] ?? ""; ?>">
+						placeholder="Digite para buscar..." value="<?php echo $row['NombreClienteLlamada'] ?? ""; ?>">
 				</div>
 
 				<div class="col-lg-4">
@@ -223,12 +187,8 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 				<div class="col-lg-4">
 					<label class="control-label">Asignado a <span class="text-danger">*</span></label>
 
-					<select required name="Tecnico" id="Tecnico" class="form-control select2" <?php if (($type_act == 1)) {
-						echo "disabled";
-					} ?>>
-						<option value="" disabled <?php if (($type_act == 0)) {
-							echo "selected";
-						} ?>>Seleccione...
+					<select required name="Tecnico" id="Tecnico" class="form-control select2">
+						<option value="" disabled selected>Seleccione...
 						</option>
 
 						<?php while ($row_Tecnicos = sqlsrv_fetch_array($SQL_Tecnicos)) { ?>
@@ -254,10 +214,7 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 				<div class="col-lg-6">
 					<label class="control-label">Comentario <span class="text-danger">*</span></label>
 
-					<textarea required name="Comentario" rows="2" maxlength="3000" type="text" class="form-control"
-						<?php if (($type_act == 1)) {
-							echo "disabled";
-						} ?>><?php echo $row['ComentarioLlamada'] ?? ""; ?></textarea>
+					<textarea required name="Comentario" rows="2" maxlength="3000" type="text" class="form-control"><?php echo $row['ComentarioLlamada'] ?? ""; ?></textarea>
 				</div>
 			</div>
 			<!-- /.form-group -->
@@ -266,12 +223,12 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 
 		<div class="modal-footer">
 			<button type="button" class="btn btn-secondary md-btn-flat" data-dismiss="modal">Cerrar</button>
-			<?php if (true) { ?><button type="submit" class="btn btn-primary md-btn-flat"><i class="fas fa-save"></i>
-					Guardar</button>
-			<?php } ?>
+			<button type="submit" class="btn btn-primary md-btn-flat"><i class="fas fa-save"></i> Guardar</button>
 		</div>
+		<!-- /modal-footer -->
 	</div>
 </form>
+
 <script>
 	$(document).ready(function () {
 		let options = {
