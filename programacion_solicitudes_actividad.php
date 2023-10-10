@@ -26,6 +26,89 @@ $ParamSerie = array(
 	// @TipoAccion
 );
 $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
+
+// Llamar a SP de forma asincrona. SMM, 10/10/2023
+$msg_error = "";
+$parametros = array();
+
+$coduser = $_SESSION['CodUser'];
+$datetime = FormatoFecha(date('Y-m-d'), date('H:i:s'));
+
+$type = $_POST['type'] ?? 0;
+$id_campana = $_POST['id_campana'] ?? "";
+$campana = $_POST['campana'] ?? "";
+$descripcion_campana = $_POST['descripcion_campana'] ?? "";
+$id_socio_negocio = $_POST['id_socio_negocio'] ?? "";
+$socio_negocio = $_POST['socio_negocio'] ?? "";
+$id_consecutivo_direccion = isset($_POST['id_consecutivo_direccion']) && ($_POST['id_consecutivo_direccion'] != "") ? $_POST['id_consecutivo_direccion'] : "NULL";
+$id_direccion_destino = $_POST['id_direccion_destino'] ?? "";
+$direccion_destino = $_POST['direccion_destino'] ?? "";
+$tiempo_campana_meses = $_POST['tiempo_campana_meses'] ?? "NULL";
+$fecha_limite_vigencia = isset($_POST['fecha_limite_vigencia']) ? FormatoFecha($_POST['fecha_limite_vigencia']) : "";
+$estado = $_POST['estado'] ?? "";
+$id_usuario_creacion = "'$coduser'";
+$fecha_creacion = "'$datetime'";
+$hora_creacion = "'$datetime'";
+$id_usuario_actualizacion = "'$coduser'";
+$fecha_actualizacion = "'$datetime'";
+$hora_actualizacion = "'$datetime'";
+
+if ($type == 1) {
+	$msg_error = "No se pudo crear la Agenda.";
+
+	$parametros = array(
+		$type,
+		"'$id_campana'",
+		"'$campana'",
+		"'$descripcion_campana'",
+		"'$id_socio_negocio'",
+		"'$socio_negocio'",
+		$id_consecutivo_direccion,
+		"'$id_direccion_destino'",
+		"'$direccion_destino'",
+		$tiempo_campana_meses,
+		"'$fecha_limite_vigencia'",
+		"'$estado'",
+		$id_usuario_actualizacion,
+		$fecha_actualizacion,
+		$hora_actualizacion,
+		$id_usuario_creacion,
+		$fecha_creacion,
+		$hora_creacion,
+	);
+} 
+
+$sw_OK = 0;
+$sw_error = 0;
+if ($type != 0) {
+	$SQL_Operacion = EjecutarSP("sp_tbl_SolicitudLlamadaServicios_Calendario", $parametros);
+
+	if (!$SQL_Operacion) {
+		$sw_error = 1;
+	} else {
+		$row = sqlsrv_fetch_array($SQL_Operacion);
+
+		if (isset($row['Error']) && ($row['Error'] != "")) {
+			$sw_error = 1;
+
+			$msg_error .= " (" . $row['Error'] . ")";
+		} else {
+			
+			/*
+			$SQL_Corregir = EjecutarSP("sp_tbl_SolicitudLlamadaServicios_Calendario", [2]); // @Type = 2 -- Corregir
+
+			if (!$SQL_Corregir) {
+				$sw_error = 1;
+			} else {
+				$sw_OK = 1;
+			}
+			*/
+
+			echo "OK";
+			exit();
+		}
+	}
+}
 ?>
 
 <style>
@@ -152,10 +235,10 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 				<div class="col-lg-4">
 					<label class="control-label">
 						<i onclick="ConsultarEquipo();" title="Consultar equipo" style="cursor: pointer"
-							class="btn-xs btn-success fa fa-search"></i> Tarjeta de equipo
+							class="btn-xs btn-success fa fa-search"></i> Tarjeta de equipo <span class="text-danger">*</span>
 					</label>
 
-					<select name="NumeroSerie" id="NumeroSerie" class="form-control select2">
+					<select name="NumeroSerie" id="NumeroSerie" class="form-control select2" required>
 						<option value="">Seleccione...</option>
 
 						<!-- La TE depende del cliente. -->
@@ -214,7 +297,7 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 				<div class="col-lg-6">
 					<label class="control-label">Comentario <span class="text-danger">*</span></label>
 
-					<textarea required name="Comentario" rows="2" maxlength="3000" type="text" class="form-control"><?php echo $row['ComentarioLlamada'] ?? ""; ?></textarea>
+					<textarea required name="Comentario" rows="2" maxlength="3000" type="text" class="form-control"><?php echo $row['ComentarioSolicitud'] ?? ""; ?></textarea>
 				</div>
 			</div>
 			<!-- /.form-group -->
@@ -275,28 +358,25 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 
 		$("#frmActividad").validate({
 			submitHandler: function (form, event) {
-				event.preventDefault()
+				event.preventDefault();
 				blockUI();
+
+				let formData = new FormData(form);
+				let json = Object.fromEntries(formData);
+				console.log("Line 366", json);
+				
 				$.ajax({
-					type: "GET",
-					url: "includes/procedimientos.php?type=31&id_actividad=<?php echo $row['ID_Actividad'] ?? ""; ?>&id_evento=<?php echo $row['IdEvento'] ?? ""; ?>&docentry=<?php echo $row['DocEntry'] ?? ""; ?>&id_asuntoactividad=" + $("#AsuntoActividad").val() + "&titulo_actividad=" + $("#TituloActividad").val() + "&id_empleadoactividad=" + $("#EmpleadoActividad").val() + "&fechainicio=" + $("#FechaInicio").val() + "&horainicio=" + $("#HoraInicio").val() + "&fechafin=" + $("#FechaFin").val() + "&horafin=" + $("#HoraFin").val() + "&comentarios_actividad=" + $("#Comentarios").val() + "&estado=" + $("#EstadoActividad").val() + "&id_tipoestadoact=" + $("#TipoEstadoActividad").val() + "&llamada_servicio=<?php echo $row['ID_LlamadaServicio'] ?? ""; ?>&metodo=2&fechainicio_ejecucion=" + $("#FechaInicioEjecucion").val() + "&horainicio_ejecucion=" + $("#HoraInicioEjecucion").val() + "&fechafin_ejecucion=" + $("#FechaFinEjecucion").val() + "&horafin_ejecucion=" + $("#HoraFinEjecucion").val() + "&turno_tecnico=" + $("#TurnoTecnico").val() + "&sptype=2",
+					type: "POST",
+					data: {
+						type: 5,
+						id_campana: $("#id_campana").val()
+					},
+					url: "md_campanas_articulos.php",
 					success: function (response) {
 						if (response == "OK") {
-							$("#btnGuardar").prop('disabled', false);
-							$("#btnPendientes").prop('disabled', false);
-							var event = calendar.getEventById('<?php echo $id; ?>')
-							event.setExtendedProp('manualChange', '1')
-							event.setProp('backgroundColor', $("#TipoEstadoActividad").find(':selected').data('color'))
-							event.setProp('borderColor', $("#TipoEstadoActividad").find(':selected').data('color'))
-							event.setDates($("#FechaInicio").val() + ' ' + $("#HoraInicio").val(), $("#FechaFin").val() + ' ' + $("#HoraFin").val())
-							event.setResources([$("#EmpleadoActividad").val()])
-							if ($("#EstadoActividad").val() == 'Y') {
-								event.setProp('classNames', ['event-striped'])
-							}
 							$('#ModalAct').modal("hide");
-							event.setExtendedProp('manualChange', '0')
 							blockUI(false);
-							mostrarNotify('Se ha editado una actividad')
+							
 						} else {
 							Swal.fire({
 								title: '¡Advertencia!',
@@ -305,6 +385,11 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 							});
 							console.log("Error:", response)
 						}
+					},
+					error: function (error) {
+						console.error(error.responseText);
+
+						blockUI(false); // Carga terminada.
 					}
 				});
 			}
