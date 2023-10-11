@@ -897,21 +897,20 @@ $(document).ready(function () {
 
 							if (data.OrigenLlamada)
 								$('#OrigenLlamada').val(data.OrigenLlamada || '""');
-							$('#TipoLlamada').val(data.TipoLlamada || '""');
-							$('#TipoProblema').val(data.TipoProblemaLlamada || '""');
+								$('#TipoLlamada').val(data.TipoLlamada || '""');
+								$('#TipoProblema').val(data.TipoProblemaLlamada || '""');
 
-							let AsuntoLlamada = (data.AsuntoLlamada || '""');
-							let f333 = <?php echo PermitirFuncion(333) ? 'true' : 'false'; ?>;
-							if (f333) {
-								let OrigenLlamada = trim($("#OrigenLlamada option:selected").text());
-								let TipoProblema = trim($("#TipoProblema option:selected").text());
+								let AsuntoLlamada = (data.AsuntoLlamada || '""');
+								let f333 = <?php echo PermitirFuncion(333) ? 'true' : 'false'; ?>;
+								if (f333) {
+									let OrigenLlamada = trim($("#OrigenLlamada option:selected").text());
+									let TipoProblema = trim($("#TipoProblema option:selected").text());
 
-								AsuntoLlamada = `${AsuntoLlamada} (${OrigenLlamada}) (${TipoProblema})`;
-							}
-
-							$('#AsuntoLlamada').val(AsuntoLlamada);
-
-							$('.ibox-content').toggleClass('sk-loading', false);
+									AsuntoLlamada = `${AsuntoLlamada} (${OrigenLlamada}) (${TipoProblema})`;
+								}
+								$('#AsuntoLlamada').val(AsuntoLlamada);
+								
+								$('.ibox-content').toggleClass('sk-loading', false);
 						},
 						error: function (error) {
 							console.log("AJAX error:", error);

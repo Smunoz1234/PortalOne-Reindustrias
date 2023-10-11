@@ -42,7 +42,7 @@ $NumeroSerie = $_POST["NumeroSerie"] ?? ""; // TE
 $Series = $_POST["Series"] ?? "NULL";
 $SucursalCliente = $_POST["SucursalCliente"] ?? "NULL"; // NumeroLinea
 $Type = $_POST["Type"] ?? 0;
-$Tecnico = $_POST["Tecnico"] ?? "NULL"; // AsignadoA
+$Tecnico = $_POST["Tecnico"] ?? "NULL"; // AsignadoA? -> EmpleadoLlamada
 $Usuario = "'$coduser'";
 
 
@@ -51,6 +51,7 @@ if ($Type == 1) {
 
 	$parametros = array(
 		$Type,
+		"NULL", // ID_SolicitudLlamadaServicio
 		$Series,
 		$Tecnico,
 		"'$Cliente'",
@@ -61,7 +62,7 @@ if ($Type == 1) {
 		$Usuario,
 		"'$FechaHoraFin'",
 		"'$FechaHoraFin'",
-		"''" // Campanas
+		"''" // CampanasAsociadas
 	);
 } 
 
@@ -72,24 +73,18 @@ if ($Type != 0) {
 		echo $msg_error;
 		exit();
 	} else {
-		$row = sqlsrv_fetch_array($SQL_Operacion);
+		$row_Operacion = sqlsrv_fetch_array($SQL_Operacion);
 
-		if (isset($row['Error']) && ($row['Error'] != "")) {
-			$msg_error .= " (" . $row['Error'] . ")";
+		if (isset($row_Operacion['Error']) && ($row_Operacion['Error'] != "")) {
+			$msg_error .= " (" . $row_Operacion['Error'] . ")";
 
 			echo $msg_error;
 			exit();
 		} else {
-			
-			/*
-			$SQL_Corregir = EjecutarSP("sp_tbl_SolicitudLlamadaServicios_Calendario", [2]); // @Type = 2 -- Corregir
+			$IdSolicitud = ($row_Operacion[0] ?? "NULL");
 
-			if (!$SQL_Corregir) {
-				$sw_error = 1;
-			} else {
-				$sw_OK = 1;
-			}
-			*/
+			// Corregir Campos. Type = 2, ID_SolicitudLlamadaServicio = $IdSolicitud.
+			EjecutarSP("sp_tbl_SolicitudLlamadaServicios_Calendario", [2, $IdSolicitud]); 
 
 			echo "OK";
 			exit();
@@ -255,7 +250,7 @@ if ($Type != 0) {
 
 			<div class="form-group row">
 				<div class="col-lg-4">
-					<label class="control-label">Asignado a <span class="text-danger">*</span></label>
+					<label class="control-label">Técnico/Asesor <span class="text-danger">*</span></label>
 
 					<select required name="Tecnico" id="Tecnico" class="form-control select2">
 						<option value="" disabled selected>Seleccione...
