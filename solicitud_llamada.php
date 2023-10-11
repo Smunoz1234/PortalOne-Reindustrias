@@ -1249,7 +1249,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 							<a href="#">Gestión de tareas</a>
 						</li>
 						<li>
-							<a href="gestionar_llamadas_servicios.php">Gestionar Solicitudes de Llamadas de servicios</a>
+							<a href="gestionar_solicitudes_llamadas.php">Gestionar Solicitudes de Llamadas de servicios</a>
 						</li>
 						<li class="active">
 							<strong><?php echo $Title; ?></strong>
@@ -2473,7 +2473,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 						if (isset($_GET['return'])) {
 							$return = base64_decode($_GET['pag']) . "?" . $_GET['return'];
 						} else {
-							$return = "gestionar_llamadas_servicios.php";
+							$return = "gestionar_solicitudes_llamadas.php";
 						}
 						$return = QuitarParametrosURL($return, array("a")); 
 						?>

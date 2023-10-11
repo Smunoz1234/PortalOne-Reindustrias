@@ -42,7 +42,7 @@ if (isset($_GET['pGrupo'])) {
 $cadena = $Recurso ?? "";
 // echo "<script> console.log('programacion_solicitudes_calendario.php 37', '$cadena'); </script>";
 
-if ($type == 1) { //Si estoy refrescando datos ya cargados
+if (true) { //Si estoy refrescando datos ya cargados
 
 	//Tecnicos para seleccionar
 	$ParamRec = array(
@@ -58,17 +58,12 @@ if ($type == 1) { //Si estoy refrescando datos ya cargados
 	$ParamCons = array(
 		"'" . $Recurso . "'",
 		"'" . $Grupo . "'",
-		"'" . $IdEvento . "'",
+		"'" . ($IdEvento ?? "") . "'",
 		"'" . $_SESSION['CodUser'] . "'",
 	);
 
-	$SQL_Actividad = EjecutarSP("sp_ConsultarDatosCalendarioRutasRecargar", $ParamCons);
-} elseif ($type == 0 && $sw == 1) {
-	array_push($ParamRec, "'" . $FilRec . "'");
-	$SQL_Recursos = EjecutarSP("sp_ConsultarTecnicos", $ParamRec);
-
-	// Descomentar, para válidar los parámetros del SP.
-	// var_dump($ParamRec);
+	$Cons = "SELECT * FROM [uvw_tbl_SolicitudLlamadasServicios_Calendario]";
+    $SQL_Actividad = sqlsrv_query($conexion, $Cons);
 }
 
 // Grupos de Empleados, SMM 16/05/2022
@@ -233,19 +228,21 @@ $ids_recursos = array();
 			dateClick: function (info) {
 				console.log("Se ejecuto el evento dateClick");
 
+				// Agregar nueva Solicitud.
 				blockUI();
-					$.ajax({
-						type: "POST",
-						async: false,
-						url: "programacion_solicitudes_actividad.php",
-						success: function (response) {
-							$('#ContenidoModal').html(response);
-							$('#ModalAct').modal("show");
-							blockUI(false);
-						}
-					});
+				$.ajax({
+					type: "POST",
+					async: false,
+					url: "programacion_solicitudes_actividad.php",
+					success: function (response) {
+						$('#ContenidoModal').html(response);
+						$('#ModalAct').modal("show");
+						blockUI(false);
+					}
+				});
 
 				if (info.jsEvent.altKey && (info.view.type === "dayGridMonth")) {
+					// Ir a vista dia con ALT.
 					calendar.changeView('resourceTimeGridDay', info.dateStr);
 				} else {
 					console.log("info.view.type", info.view.type);
@@ -308,6 +305,7 @@ $ids_recursos = array();
 				<?php
 				if ($sw == 1) {
 					while ($row_Actividad = sqlsrv_fetch_array($SQL_Actividad)) {
+						/*
 						$classAdd = "";
 						if ($row_Actividad['IdEstadoActividad'] == 'Y') {
 							$classAdd = "'event-striped'";
@@ -315,12 +313,14 @@ $ids_recursos = array();
 						if ($row_Actividad['IdEstadoLlamada'] == '-2') { //Llamada pendiente
 							$classAdd .= ",'event-pend'";
 						}
+						*/
 						?>
 							{
-							id: '<?php echo $row_Actividad['ID_Actividad']; ?>',
-							title: '<?php echo $row_Actividad['EtiquetaActividad']; ?>',
-							start: '<?php echo $row_Actividad['FechaHoraInicioActividad']->format('Y-m-d H:i'); ?>',
-							end: '<?php echo $row_Actividad['FechaHoraFinActividad']->format('Y-m-d H:i'); ?>',
+							id: '<?php echo $row_Actividad['ID_SolicitudLlamadaServicio']; ?>',
+							title: '<?php echo $row_Actividad['EtiquetaActividad'] ?? "Solicitud sin etiquetar"; ?>',
+							start: '<?php echo $row_Actividad['FechaHoraCreacionLLamada']->format('Y-m-d H:i'); ?>',
+							end: '<?php echo $row_Actividad['FechaAgenda']->format('Y-m-d H:i'); ?>',
+							/*
 							resourceId: '<?php echo $row_Actividad['ID_EmpleadoActividad']; ?>',
 							textColor: '#fff',
 							backgroundColor: '<?php echo $row_Actividad['ColorEstadoServicio']; ?>',
@@ -335,12 +335,13 @@ $ids_recursos = array();
 							manualChange: '0',
 							// SMM, 18/05/2022
 							<?php if (!in_array($row_Actividad['ID_EmpleadoActividad'], $ids_recursos)) { ?>
-										startEditable: false,
+								startEditable: false,
 								durationEditable: false,
 								resourceEditable: false,
 							<?php } ?>
-								borderColor: '<?php echo in_array($row_Actividad['ID_EmpleadoActividad'], $ids_recursos) ? $row_Actividad['ColorEstadoServicio'] : 'red'; ?>'
-						},
+							borderColor: '<?php echo in_array($row_Actividad['ID_EmpleadoActividad'], $ids_recursos) ? $row_Actividad['ColorEstadoServicio'] : 'red'; ?>'
+							*/
+							},
 					<?php }
 				} ?>
 			],
@@ -594,7 +595,7 @@ $ids_recursos = array();
 				console.log('Se ejecuto eventClick en el calendario');
 				// console.log(info.event.title)
 
-				if (info.jsEvent.ctrlKey) {
+				if (info.jsEvent.ctrlKey && false) {
 					console.log("Duplicando con CTRL + Click");
 
 					// Fragmento de código copiado desde "Click + CTRL". SMM, 10/11/2022
@@ -654,29 +655,11 @@ $ids_recursos = array();
 
 					// Copiado hasta aquí. SMM, 10/11/2022
 				} else {
-					// var ID;
-					var tl;
-					if ((!info.event.extendedProps.tl) || (info.event.extendedProps.tl == 0)) {
-						// ID=info.event.extendedProps.id
-						tl = 0 // Es nuevo
-					} else {
-						// ID=info.event.id
-						tl = info.event.extendedProps.tl //Ya existe
-					}
-					// console.log('ID',ID)
-					// console.log('tl',tl)
-					// console.log('tl:',info.event.extendedProps.tl)
-					blockUI();
-					$.ajax({
-						type: "POST",
-						async: false,
-						url: "programacion_solicitudes_actividad.php?id=" + btoa(info.event.id) + "&idEvento=" + btoa($("#IdEvento").val()) + "&tl=" + tl,
-						success: function (response) {
-							$('#ContenidoModal').html(response);
-							$('#ModalAct').modal("show");
-							blockUI(false);
-						}
-					});
+					console.log('ID',btoa(info.event.id));
+					console.log('info',info);
+					console.log('eP:',info.event.extendedProps);
+
+					window.open(`solicitud_llamada.php?id=${btoa(info.event.id)}&tl=1`, "_blank");
 				}
 			},
 			height: 'auto', // will activate stickyHeaderDates automatically!

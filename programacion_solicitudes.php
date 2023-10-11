@@ -70,42 +70,15 @@ if ($sw == 1) {
 	$resource = implode(',', $all_resources);
 	// Sin uso actualmente, contiene todos los técnicos.
 	// Stiven Muñoz Murillo
-
-	$ParamEvento = array(
-		"'" . $Sede . "'",
-		// "'".$Recurso."'",
-		"'" . $Cliente . "'",
-		"'" . $NomSucursal . "'",
-		"'" . FormatoFecha($FechaInicial) . "'",
-		"'" . FormatoFecha($FechaFinal) . "'",
-		"'" . $_SESSION['CodUser'] . "'",
-	);
-
-	$SQL_Evento = EjecutarSP("sp_ConsultarDatosCalendarioRutas", $ParamEvento);
-
-	//Obtengo el IdEvento
-	$row_Evento = sqlsrv_fetch_array($SQL_Evento);
-
-	$ParamCons = array(
-		"'" . $Recurso . "'",
-		// SMM, 14/02/2022
-		"'" . $Grupo . "'",
-		"'" . $row_Evento['IdEvento'] . "'",
-		"'" . $_SESSION['CodUser'] . "'",
-	);
-
-	$SQL_Actividad = EjecutarSP("sp_ConsultarDatosCalendarioRutasRecargar", $ParamCons);
 }
-
 ?>
+
 <!DOCTYPE html>
 <html class="light-style">
 
 <head>
 	<?php include "includes/cabecera_new.php"; ?>
-	<title>Programación de solicitudes |
-		<?php echo NOMBRE_PORTAL; ?>
-	</title>
+	<title>Programación de solicitudes</title>
 	<style>
 		body,
 		html {
@@ -645,9 +618,7 @@ $(function () {
 
 			$.ajax({
 				type: "POST",
-				url: "programacion_solicitudes_calendario.php?type=1&pSede=<?php echo $Sede; ?>&pGrupo=" + Grupo + "&pTecnicos=" + Tecnicos + "&pIdEvento=<?php if ($sw == 1) {
-					   echo $row_Evento['IdEvento'];
-				   } ?>&sw=<?php echo $sw; ?>&fchinicial=<?php echo $FechaInicial; ?>",
+				url: `programacion_solicitudes_calendario.php?type=1&pSede=<?php echo $Sede; ?>&pGrupo=${Grupo}&pTecnicos=${Tecnicos}&sw=<?php echo $sw; ?>&fchinicial=<?php echo $FechaInicial; ?>`,
 				success: function (response) {
 					$('#dv_calendar').html(response);
 					blockUI(false);
