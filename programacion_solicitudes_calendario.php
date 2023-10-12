@@ -228,24 +228,27 @@ $ids_recursos = array();
 			dateClick: function (info) {
 				console.log("Se ejecuto el evento dateClick");
 
-				// Agregar nueva Solicitud.
-				blockUI();
-				$.ajax({
-					type: "POST",
-					async: false,
-					url: "programacion_solicitudes_actividad.php",
-					success: function (response) {
-						$('#ContenidoModal').html(response);
-						$('#ModalAct').modal("show");
-						blockUI(false);
-					}
-				});
+				// Vista mes.
+				if (info.view.type === "dayGridMonth") {
+					// Ir a vista día.
+					calendar.changeView("resourceTimeGridDay", info.dateStr);
+				} else if (info.view.type === "resourceTimeGridDay") {
+					// Cargando.
+					blockUI();
 
-				if (info.jsEvent.altKey && (info.view.type === "dayGridMonth")) {
-					// Ir a vista dia con ALT.
-					calendar.changeView('resourceTimeGridDay', info.dateStr);
-				} else {
-					console.log("info.view.type", info.view.type);
+					// Agregar nueva Solicitud.
+					$.ajax({
+						type: "POST",
+						async: false,
+						url: "programacion_solicitudes_actividad.php",
+						success: function (response) {
+							$('#ContenidoModal').html(response);
+							$('#ModalAct').modal("show");
+							
+							// Quitar cargando.
+							blockUI(false);
+						}
+					});
 				}
 			},
 			// Seleccionar solamente un día del mes. SMM, 14/05/2022
@@ -602,74 +605,13 @@ $ids_recursos = array();
 			},
 			eventClick: function (info) {
 				console.log('Se ejecuto eventClick en el calendario');
+				
 				// console.log(info.event.title)
+				// console.log('ID',btoa(info.event.id));
+				// console.log('info',info);
+				// console.log('eP:',info.event.extendedProps);
 
-				if (info.jsEvent.ctrlKey && false) {
-					console.log("Duplicando con CTRL + Click");
-
-					// Fragmento de código copiado desde "Click + CTRL". SMM, 10/11/2022
-
-					copiado = true;
-					var new_id = 0;
-					$.ajax({
-						url: "ajx_buscar_datos_json.php",
-						data: { type: 26 },
-						dataType: 'json',
-						async: false,
-						success: function (data) {
-							new_id = data.NewID;
-						}
-					});
-					var data = {
-						id: new_id,
-						title: info.event.title,
-						start: info.event.start,
-						end: info.event.end,
-						resourceId: info.event.getResources()[0].id,
-						textColor: '#fff',
-						backgroundColor: "#3788D8", // [uvw_tbl_TipoEstadoServicio].[ColorEstadoServicio] "PROGRAMADA"
-						borderColor: info.event.borderColor,
-						extendedProps: {}
-					}
-					$.ajax({
-						type: "GET",
-						url: "includes/procedimientos.php?type=31&id_actividad=" + new_id + "&id_evento=" + $("#IdEvento").val() + "&llamada_servicio=" + info.event.extendedProps.llamadaServicio + "&id_empleadoactividad=" + info.event.getResources()[0].id + "&fechainicio=" + info.event.startStr.substring(0, 10) + "&horainicio=" + info.event.startStr.substring(11, 16) + "&fechafin=" + info.event.endStr.substring(0, 10) + "&horafin=" + info.event.endStr.substring(11, 16) + "&sptype=1&metodo=1&docentry=&comentarios_actividad=&estado=&id_tipoestadoact=&fechainicio_ejecucion=&horainicio_ejecucion=&fechafin_ejecucion=&horafin_ejecucion=&turno_tecnico=&id_asuntoactividad=&titulo_actividad=",
-						async: false,
-						success: function (response) {
-							if (isNaN(response)) {
-								Swal.fire({
-									title: '¡Advertencia!',
-									text: 'No se pudo insertar la actividad en la ruta',
-									icon: 'warning',
-								});
-							} else {
-								$("#btnGuardar").prop('disabled', false);
-								$("#btnPendientes").prop('disabled', false);
-								// data.extendedProps.id = response;
-								data.estado = 'N';
-								data.llamadaServicio = info.event.extendedProps.llamadaServicio;
-								data.manualChange = '0'
-								calendar.addEvent(data);
-								// var dev = calendar.addEvent(data);
-								// console.log("Dev: ",dev)
-								info.revert()
-								// console.log("newEvent: ",info.event)
-								console.log("Se ejecuto eventDrop duplicando.")
-								mostrarNotify('Se ha duplicado una actividad')
-							}
-							copiado = false;
-							// console.log(response)
-						}
-					});
-
-					// Copiado hasta aquí. SMM, 10/11/2022
-				} else {
-					console.log('ID',btoa(info.event.id));
-					console.log('info',info);
-					console.log('eP:',info.event.extendedProps);
-
-					window.open(`solicitud_llamada.php?id=${btoa(info.event.id)}&tl=1`, "_blank");
-				}
+				window.open(`solicitud_llamada.php?id=${btoa(info.event.id)}&tl=1`, "_blank");
 			},
 			height: 'auto', // will activate stickyHeaderDates automatically!
 			contentHeight: 'auto',
