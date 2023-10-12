@@ -621,39 +621,43 @@ if ($type_llmd == 1 && $sw_error == 0) {
 	$Cons = "SELECT * FROM uvw_Sap_tbl_LlamadasServicios WHERE ID_LlamadaServicio = '$IdLlamada'";
 
 	$row = sqlsrv_fetch_array($SQL);
+	$ID_CodigoCliente = $row['ID_CodigoCliente'] ?? "";
 
 	//Clientes
-	$SQL_Cliente = Seleccionar("uvw_Sap_tbl_Clientes", "CodigoCliente, NombreCliente", "CodigoCliente='" . $row['ID_CodigoCliente'] . "'", 'NombreCliente');
+	$SQL_Cliente = Seleccionar("uvw_Sap_tbl_Clientes", "CodigoCliente, NombreCliente", "CodigoCliente='$ID_CodigoCliente'", 'NombreCliente');
 
 	//Contactos clientes
-	$SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', 'CodigoContacto, ID_Contacto', "CodigoCliente='" . $row['ID_CodigoCliente'] . "'", 'NombreContacto');
+	$SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', 'CodigoContacto, ID_Contacto', "CodigoCliente='$ID_CodigoCliente'", 'NombreContacto');
 
 	//Sucursales
-	$SQL_SucursalCliente = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', 'NombreSucursal, NumeroLinea, TipoDireccion', "CodigoCliente='" . $row['ID_CodigoCliente'] . "' and TipoDireccion='S'", 'TipoDireccion, NombreSucursal');
+	$SQL_SucursalCliente = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', 'NombreSucursal, NumeroLinea, TipoDireccion', "CodigoCliente='$ID_CodigoCliente' AND TipoDireccion='S'", 'TipoDireccion, NombreSucursal');
 
 	//Anexos
 	$SQL_AnexoLlamada = Seleccionar('uvw_Sap_tbl_DocumentosSAP_Anexos', '*', "AbsEntry='" . $row['IdAnexoLlamada'] . "'");
 
 	//Articulos del cliente (ID servicio)
 	$ParamArt = array(
-		"'" . $row['ID_CodigoCliente'] . "'",
+		"'$ID_CodigoCliente'",
 		"'" . $row['NombreSucursal'] . "'",
 		"'0'",
 	);
 	$SQL_Articulos = EjecutarSP('sp_ConsultarArticulosLlamadas', $ParamArt);
 
+	$IdArticuloLlamada = $row["IdArticuloLlamada"] ?? "";
+	// echo "SELECT * FROM uvw_Sap_tbl_TarjetasEquipos WHERE ItemCode='$IdArticuloLlamada' AND CardCode='$ID_CodigoCliente' ORDER BY SerialFabricante";
+
 	//Numero de series -> Tarjeta de equipo
-	$SQL_NumeroSerie = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', '*', "ItemCode='" . $row['IdArticuloLlamada'] . "' AND CardCode='" . $row['ID_CodigoCliente'] . "'", 'SerialFabricante');
+	$SQL_NumeroSerie = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', '*', "ItemCode='$IdArticuloLlamada' AND CardCode='$ID_CodigoCliente'", 'SerialFabricante');
 
 	// SMM, 01/03/2022
 	$CDU_IdMarca_TarjetaEquipo = $row['CDU_IdMarca_TarjetaEquipo'] ?? '';
 	$CDU_IdLinea_TarjetaEquipo = $row['CDU_IdLinea_TarjetaEquipo'] ?? '';
 
 	//Lista de materiales
-	$SQL_ListaMateriales = Seleccionar('uvw_Sap_tbl_ListaMateriales', '*', "CDU_IdMarca='" . $CDU_IdMarca_TarjetaEquipo . "' AND CDU_IdLinea='" . $CDU_IdLinea_TarjetaEquipo . "'");
+	$SQL_ListaMateriales = Seleccionar('uvw_Sap_tbl_ListaMateriales', '*', "CDU_IdMarca='$CDU_IdMarca_TarjetaEquipo' AND CDU_IdLinea='$CDU_IdLinea_TarjetaEquipo'");
 
 	//Activides relacionadas
-	$SQL_Actividad = Seleccionar('uvw_Sap_tbl_Actividades', '*', "ID_LlamadaServicio='" . $IdLlamada . "'", 'ID_Actividad');
+	$SQL_Actividad = Seleccionar('uvw_Sap_tbl_Actividades', '*', "ID_LlamadaServicio='$IdLlamada'", 'ID_Actividad');
 
 	//Documentos relacionados
 	$SQL_DocRel = Seleccionar('uvw_Sap_tbl_LlamadasServiciosDocRelacionados', '*', "ID_LlamadaServicio='$IdLlamada'");
@@ -664,10 +668,10 @@ if ($type_llmd == 1 && $sw_error == 0) {
 	$SQL_Formularios = Seleccionar('uvw_tbl_LlamadasServicios_Formularios', '*', "docentry_llamada_servicio='$IdLlamada'");
 
 	//Contratos de servicio
-	$SQL_Contrato = Seleccionar('uvw_Sap_tbl_Contratos', '*', "CodigoCliente='" . $row['ID_CodigoCliente'] . "'", 'ID_Contrato');
+	$SQL_Contrato = Seleccionar('uvw_Sap_tbl_Contratos', '*', "CodigoCliente='$ID_CodigoCliente'", 'ID_Contrato');
 
 	// Stiven Muñoz Murillo, 24/01/2022
-	$SQL_Articulo = Seleccionar('uvw_Sap_tbl_ArticulosLlamadas', '*', "ItemCode='" . $row['IdArticuloLlamada'] . "'");
+	$SQL_Articulo = Seleccionar('uvw_Sap_tbl_ArticulosLlamadas', '*', "ItemCode='$IdArticuloLlamada'");
 	$row_Articulo = sqlsrv_fetch_array($SQL_Articulo);
 }
 
@@ -716,11 +720,14 @@ if ($sw_error == 1) {
 	);
 	$SQL_Articulos = EjecutarSP('sp_ConsultarArticulosLlamadas', $ParamArt);
 
+	$IdArticuloLlamada = $row["IdArticuloLlamada"] ?? "";
+	// echo "SELECT * FROM uvw_Sap_tbl_TarjetasEquipos WHERE ItemCode='$IdArticuloLlamada' AND CardCode='$ID_CodigoCliente' ORDER BY SerialFabricante";
+
 	// Numero de series -> Tarjeta de equipo
-	$SQL_NumeroSerie = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', '*', "ItemCode='" . ($row['IdArticuloLlamada'] ?? "") . "'", 'SerialFabricante');
+	$SQL_NumeroSerie = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', '*', "ItemCode='$IdArticuloLlamada'", 'SerialFabricante');
 
 	// Articulos
-	$SQL_Articulo = Seleccionar('uvw_Sap_tbl_ArticulosLlamadas', '*', "ItemCode='" . ($row['IdArticuloLlamada'] ?? "") . "'");
+	$SQL_Articulo = Seleccionar('uvw_Sap_tbl_ArticulosLlamadas', '*', "ItemCode='$IdArticuloLlamada'");
 	$row_Articulo = sqlsrv_fetch_array($SQL_Articulo);
 
 	// Variables LMT
@@ -814,11 +821,14 @@ if (isset($_GET['dt_SLS']) && ($_GET['dt_SLS']) == 1) {
 	);
 	$SQL_Articulos = EjecutarSP('sp_ConsultarArticulosLlamadas', $ParamArt);
 
+	$IdArticuloLlamada = $row["IdArticuloLlamada"] ?? "";
+	// echo "SELECT * FROM uvw_Sap_tbl_TarjetasEquipos WHERE ItemCode='$IdArticuloLlamada' AND CardCode='$ID_CodigoCliente' ORDER BY SerialFabricante";
+
 	// Numero de series -> Tarjeta de equipo
-	$SQL_NumeroSerie = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', '*', "ItemCode='" . $row['IdArticuloLlamada'] . "'", 'SerialFabricante');
+	$SQL_NumeroSerie = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', '*', "ItemCode='$IdArticuloLlamada' AND CardCode='$ID_CodigoCliente'", 'SerialFabricante');
 
 	// Articulos
-	$SQL_Articulo = Seleccionar('uvw_Sap_tbl_ArticulosLlamadas', '*', "ItemCode='" . $row['IdArticuloLlamada'] . "'");
+	$SQL_Articulo = Seleccionar('uvw_Sap_tbl_ArticulosLlamadas', '*', "ItemCode='$IdArticuloLlamada'");
 	$row_Articulo = sqlsrv_fetch_array($SQL_Articulo);
 
 	// Variables LMT
