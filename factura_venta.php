@@ -647,6 +647,8 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 					data: { type: 3, CardCode: Cliente, Sucursal: Sucursal },
 					dataType: 'json',
 					success: function (data) {
+						console.log("DireccionDestino", data.Direccion);
+
 						document.getElementById('DireccionDestino').value = data.Direccion;
 						$('.ibox-content').toggleClass('sk-loading', false);
 					},
@@ -1656,6 +1658,9 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 			<?php if (isset($_GET['SucursalFact']) || ($BillToDef != "")) { ?>
 				$('#SucursalFacturacion').trigger('change');
 			<?php } ?>
+
+			// SMM, 12/10/2023
+			$('#SucursalDestino').trigger('change');
 		});
 	</script>
 	<script>

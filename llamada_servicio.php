@@ -1154,7 +1154,7 @@ $(document).ready(function () {
 	$("#OrigenLlamada").change(function () {
 		$.ajax({
 			type: "POST",
-			url: `ajx_cbo_select.php?type=46&id=${$(this).val()}`,
+			url: `ajx_cbo_select.php?type=46&id=${$(this).val()}&serie=${$("#Series").val()}`,
 			success: function (response) {
 				$('#TipoProblema').html(response).fadeIn();
 				$('#TipoProblema').trigger('change');
@@ -1178,7 +1178,6 @@ $(document).ready(function () {
 			dataType: 'json',
 			success: function (data) {
 				console.log(data);
-
 				$("#CDU_TiempoTarea").val(data.tiempoTarea || '""');
 
 				$('.ibox-content').toggleClass('sk-loading', false);
@@ -1193,7 +1192,7 @@ $(document).ready(function () {
 		// SMM, 13/07/2023
 		$.ajax({
 			type: "POST",
-			url: `ajx_cbo_select.php?type=47&id=${$(this).val()}`,
+			url: `ajx_cbo_select.php?type=47&id=${$(this).val()}&serie=${$("#Series").val()}`,
 			success: function (response) {
 				$('#TipoLlamada').html(response).fadeIn();
 				$('#TipoLlamada').trigger('change');
@@ -1422,9 +1421,14 @@ $(document).ready(function () {
 							console.log("ajx_buscar_datos_json(30)", data);
 
 							$('#OrigenLlamada').val(data.OrigenLlamada || '""');
-							$('#TipoLlamada').val(data.TipoLlamada || '""');
-							$('#TipoProblema').val(data.TipoProblemaLlamada || '""');
+							$('#OrigenLlamada').trigger('change');
 
+							$('#TipoProblema').val(data.TipoProblemaLlamada || '""');
+							$('#TipoProblema').trigger('change');
+							
+							$('#TipoLlamada').val(data.TipoLlamada || '""');
+							$('#TipoLlamada').trigger('change');
+							
 							let AsuntoLlamada = (data.AsuntoLlamada || '""');
 							let f333 = <?php echo PermitirFuncion(333) ? 'true' : 'false'; ?>;
 							if (f333) {
@@ -1433,9 +1437,8 @@ $(document).ready(function () {
 
 								AsuntoLlamada = `${AsuntoLlamada} (${OrigenLlamada}) (${TipoProblema})`;
 							}
-
 							$('#AsuntoLlamada').val(AsuntoLlamada);
-
+			
 							$('.ibox-content').toggleClass('sk-loading', false);
 						},
 						error: function (error) {

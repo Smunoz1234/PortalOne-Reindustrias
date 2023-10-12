@@ -1525,9 +1525,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 														<?php } ?>
 													</ul>
 												</div>
-
-												<a href="#" class="btn btn-outline btn-info" onClick="VerMapaRel('<?php echo base64_encode($row['ID_SolicitudLlamadaServicio']); ?>','<?php echo base64_encode('191'); ?>');"><i class="fa fa-sitemap"></i> Mapa de relaciones</a>	
-
+												
 											<?php } elseif (PermitirFuncion(508)) { ?>
 												
 												<button onClick="CrearLead();" class="btn btn-outline btn-primary"><i class="fa fa-user-circle"></i> Crear Prospecto</button>
