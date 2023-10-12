@@ -237,6 +237,7 @@ $ids_recursos = array();
 					blockUI();
 
 					// Agregar nueva Solicitud.
+					/*
 					$.ajax({
 						type: "POST",
 						async: false,
@@ -249,6 +250,7 @@ $ids_recursos = array();
 							blockUI(false);
 						}
 					});
+					*/
 				}
 			},
 			// Seleccionar solamente un día del mes. SMM, 14/05/2022

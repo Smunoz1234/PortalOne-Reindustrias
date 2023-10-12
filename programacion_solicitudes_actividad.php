@@ -192,6 +192,21 @@ if ($Type != 0) {
 				<div class="col-lg-2"></div>
 
 				<div class="col-lg-4">
+					<label class="control-label">
+						<i onclick="ConsultarCliente();" title="Consultar cliente" style="cursor: pointer"
+							class="btn-xs btn-success fa fa-search"></i> Cliente <span class="text-danger">*</span>
+					</label>
+
+					<input type="hidden" name="Cliente" id="Cliente"
+						value="<?php echo $row['ID_CodigoCliente'] ?? ""; ?>">
+					<input required type="text" name="NombreCliente" id="NombreCliente" class="form-control"
+						placeholder="Digite para buscar..." value="<?php echo $row['NombreClienteLlamada'] ?? ""; ?>">
+				</div>
+			</div>
+			<!-- /.form-group -->
+
+			<div class="form-group row">
+				<div class="col-lg-4">
 					<label class="control-label">Técnico/Asesor <span class="text-danger">*</span></label>
 
 					<select required name="Tecnico" id="Tecnico" class="form-control select2">
@@ -211,24 +226,9 @@ if ($Type != 0) {
 						<?php } ?>
 					</select>
 				</div>
-			</div>
-			<!-- /.form-group -->
-
-			<div class="form-group row">
-				<div class="col-lg-4">
-					<label class="control-label">
-						<i onclick="ConsultarCliente();" title="Consultar cliente" style="cursor: pointer"
-							class="btn-xs btn-success fa fa-search"></i> Cliente <span class="text-danger">*</span>
-					</label>
-
-					<input type="hidden" name="Cliente" id="Cliente"
-						value="<?php echo $row['ID_CodigoCliente'] ?? ""; ?>">
-					<input required type="text" name="NombreCliente" id="NombreCliente" class="form-control"
-						placeholder="Digite para buscar..." value="<?php echo $row['NombreClienteLlamada'] ?? ""; ?>">
-				</div>
 
 				<div class="col-lg-2"></div>
-
+								
 				<div class="col-lg-4">
 					<label class="control-label">Sucursal <span class="text-danger">*</span></label>
 
