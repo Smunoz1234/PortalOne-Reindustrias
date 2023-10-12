@@ -2576,7 +2576,9 @@ function AgregarEsto(contenedorID, valorElemento) {
 										<div id="tab-1" class="tab-pane active">
 											<div class="panel-body">
 												<div class="row">
-													<button type="button" onclick="AdicionarAnotacion()" class="alkin btn btn-primary btn-xs"><i class="fa fa-plus-circle"></i> Adicionar Anotación</button>
+													<?php if (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] != "-1")) { ?>
+														<button type="button" onclick="AdicionarAnotacion()" class="alkin btn btn-primary btn-xs"><i class="fa fa-plus-circle"></i> Adicionar Anotación</button>
+													<?php } ?>
 												</div>
 												<br>
 												
@@ -2721,7 +2723,9 @@ function AgregarEsto(contenedorID, valorElemento) {
 										<div id="tab-4" class="tab-pane">
 											<div class="panel-body">
 												<div class="row">
-													<button type="button" onclick="AdicionarCampana()" class="alkin btn btn-primary btn-xs"><i class="fa fa-plus-circle"></i> Adicionar Campaña</button>
+													<?php if (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] != "-1")) { ?>
+														<button type="button" onclick="AdicionarCampana()" class="alkin btn btn-primary btn-xs"><i class="fa fa-plus-circle"></i> Adicionar Campaña</button>
+													<?php } ?>
 												</div>
 												<br>
 												<!-- Table Campanas -->
@@ -2752,12 +2756,15 @@ function AgregarEsto(contenedorID, valorElemento) {
 																					<td><?php echo $row_Campana['VIN']; ?></td>
 
 																					<td>
-																						<button type="button"
-																							id="btnDelete<?php echo $row_Campana['id_campana']; ?>"
-																							class="btn btn-danger btn-xs"
-																							onclick="EliminarCampana('<?php echo $row_Campana['id_campana']; ?>');"><i
-																								class="fa fa-trash"></i>
-																							Eliminar</button>
+																						<?php if (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] != "-1")) { ?>
+																							<button type="button"
+																								id="btnDelete<?php echo $row_Campana['id_campana']; ?>"
+																								class="btn btn-danger btn-xs"
+																								onclick="EliminarCampana('<?php echo $row_Campana['id_campana']; ?>');"><i
+																									class="fa fa-trash"></i>
+																								Eliminar
+																							</button>
+																						<?php } ?>
 																					</td>
 																				</tr>
 																			<?php } ?>
