@@ -2379,7 +2379,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 							<div class="col-lg-4">
 								<label class="control-label">Fecha de creación <span class="text-danger">*</span></label>
 								<div class="input-group date">
-									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaCreacion" type="text" required="required" class="form-control" id="FechaCreacion" value="<?php if (($type_llmd == 1) && ($row['FechaCreacionLLamada']) != "") {
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaCreacion" type="text" required class="form-control" id="FechaCreacion" value="<?php if (($type_llmd == 1 || ($dt_SLS == 1)) && ($row['FechaCreacionLLamada']) != "") {
 										 echo $row['FechaCreacionLLamada'];
 									 } else {
 										 echo date('Y-m-d');
@@ -2404,11 +2404,11 @@ function AgregarEsto(contenedorID, valorElemento) {
 									<span class="input-group-addon">
 										<span class="fa fa-clock-o"></span>
 									</span>
-									<input name="HoraCreacion" id="HoraCreacion" type="text" class="form-control" value="<?php if ($type_llmd == 1) {
+									<input name="HoraCreacion" id="HoraCreacion" type="text" class="form-control" value="<?php if ($type_llmd == 1 || ($dt_SLS == 1)) {
 										echo $row['FechaHoraCreacionLLamada']->format('H:i');
 									} else {
 										echo date('H:i');
-									} ?>" required="required" readonly='readonly'>
+									} ?>" required readonly='readonly'>
 								</div>
 							</div>
 						</div>
@@ -2454,7 +2454,8 @@ function AgregarEsto(contenedorID, valorElemento) {
 							<div class="col-lg-4">
 								<label class="control-label">Fecha Agenda <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?><span class="text-danger">*</span><?php } ?></label>
 								<div class="input-group date">
-									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input <?php if ($type_llmd != 0) { ?> readonly <?php } ?> <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?> required <?php } ?> name="FechaAgenda" type="text" class="form-control" id="FechaAgenda" value="<?php if (($type_llmd == 1) && ($row['FechaAgenda'] != "")) {
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input <?php if ($type_llmd != 0) { ?> readonly <?php } ?> <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?> required <?php } ?> 
+									 name="FechaAgenda" type="text" class="form-control" id="FechaAgenda" value="<?php if (($type_llmd == 1 || ($dt_SLS == 1)) && ($row['FechaAgenda'] != "")) {
 														   echo is_string($row['FechaAgenda']) ? date("Y-m-d", strtotime($row['FechaAgenda'])) : $row['FechaAgenda']->format("Y-m-d");
 													   } else {
 														   echo date('Y-m-d');
@@ -2509,7 +2510,8 @@ function AgregarEsto(contenedorID, valorElemento) {
 									<span class="input-group-addon">
 										<span class="fa fa-clock-o"></span>
 									</span>
-									<input <?php if ($type_llmd != 0) { ?> readonly <?php } ?> <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?> required <?php } ?> name="HoraAgenda" id="HoraAgenda" type="text" class="form-control" value="<?php if (($type_llmd == 1) && ($row['HoraAgenda'] != "")) {
+									<input <?php if ($type_llmd != 0) { ?> readonly <?php } ?> <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?> required <?php } ?> 
+									name="HoraAgenda" id="HoraAgenda" type="text" class="form-control" value="<?php if (($type_llmd == 1 || ($dt_SLS == 1)) && ($row['HoraAgenda'] != "")) {
 														  echo is_string($row['FechaAgenda']) ? date("H:i", strtotime($row['HoraAgenda'])) : $row['HoraAgenda']->format("H:i");
 													  } else {
 														  echo date('H:i');

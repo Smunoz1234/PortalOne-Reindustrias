@@ -452,12 +452,12 @@ $(function () {
 					<div class="card mb-2">
 						<div class="card-header bg-primary text-white">
 							<a class="d-flex justify-content-between text-white" data-toggle="collapse"
-								aria-expanded="false" href="#accordion1-1">
+								aria-expanded="true" href="#accordion1-1">
 								<b class='pr-2'><i class="fas fa-tint"></i> Referencia de colores</b>
 								<div class="collapse-icon"></div>
 							</a>
 						</div>
-						<div id="accordion1-1" class="collapse" data-parent="#accordion1">
+						<div id="accordion1-1" class="collapse show" data-parent="#accordion1">
 							<div class="card-body">
 								<?php while ($row_EstadoServicio = sqlsrv_fetch_array($SQL_EstadoServicios)) { ?>
 									<div class="card custom-card" style="background-color: <?php echo $row_EstadoServicio["color_estado_servicio_llamada"] ?? ""; ?>;">

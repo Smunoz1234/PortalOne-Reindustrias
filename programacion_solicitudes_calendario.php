@@ -314,23 +314,32 @@ $ids_recursos = array();
 							$classAdd .= ",'event-pend'";
 						}
 						*/
+
+						$Cliente = $row_Actividad["NombreClienteLlamada"] ?? "";
+						$Sucursal = $row_Actividad["NombreSucursal"] ?? "";
+						$SI_TE = $row_Actividad["IdNumeroSerie"] ?? "";
+						$Marca = $row_Actividad["DeMarcaVehiculo"] ?? "";
+						$Linea = $row_Actividad["DeLineaModeloVehiculo"] ?? "";
+						$ID_Agenda = $row_Actividad["ID_SolicitudLlamadaServicio"] ?? "";
+
+						$EtiquetaActividad = "#$ID_Agenda ($Cliente - $Sucursal) ($SI_TE - $Marca, $Linea)";
 						?>
 							{
 							id: '<?php echo $row_Actividad['ID_SolicitudLlamadaServicio']; ?>',
-							title: '<?php echo $row_Actividad['EtiquetaActividad'] ?? "Solicitud sin etiquetar"; ?>',
+							title: '<?php echo $EtiquetaActividad; ?>',
+							comentario: '<?php echo preg_replace('([^A-Za-z0-9 ])', '', $row_Actividad['ComentarioLlamada']); ?>',
 							start: '<?php echo $row_Actividad['FechaHoraCreacionLLamada']->format('Y-m-d H:i'); ?>',
 							end: '<?php echo $row_Actividad['FechaAgenda']->format('Y-m-d H:i'); ?>',
+							resourceId: '<?php echo $row_Actividad['IdTecnico']; ?>',
+							textColor: '#FFF',
+							backgroundColor: '<?php echo $row_Actividad['ColorEstadoServicioLlamada']; ?>',
 							/*
-							resourceId: '<?php echo $row_Actividad['ID_EmpleadoActividad']; ?>',
-							textColor: '#fff',
-							backgroundColor: '<?php echo $row_Actividad['ColorEstadoServicio']; ?>',
 							classNames: [<?php echo $classAdd; ?>],
 							tl: '<?php echo ($row_Actividad['IdActividadPortal'] == 0) ? 1 : 0; ?>',
 							estado: '<?php echo $row_Actividad['IdEstadoActividad']; ?>',
 							tipoEstado: '<?php echo $row_Actividad['DeTipoEstadoActividad'] ?? ""; ?>', // SMM, 07/03/2023
 							llamadaServicio: '<?php echo $row_Actividad['ID_LlamadaServicio']; ?>',
 							estadoLlamadaServ: '<?php echo $row_Actividad['IdEstadoLlamada']; ?>',
-							comentario: '<?php echo preg_replace('([^A-Za-z0-9 ])', '', $row_Actividad['ComentarioLlamada']); ?>', // SMM, 03/05/2022
 							informacionAdicional: '<?php echo $row_Actividad['InformacionAdicional']; ?>',
 							manualChange: '0',
 							// SMM, 18/05/2022

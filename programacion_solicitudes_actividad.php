@@ -189,6 +189,32 @@ if ($Type != 0) {
 					</select>
 				</div>
 
+				<div class="col-lg-2"></div>
+
+				<div class="col-lg-4">
+					<label class="control-label">Técnico/Asesor <span class="text-danger">*</span></label>
+
+					<select required name="Tecnico" id="Tecnico" class="form-control select2">
+						<option value="" disabled selected>Seleccione...</option>
+
+						<?php while ($row_Tecnicos = sqlsrv_fetch_array($SQL_Tecnicos)) { ?>
+							<?php if (in_array($row_Tecnicos['IdCargo'], $ids_grupos) || ($MostrarTodosRecursos || (count($ids_grupos) == 0))) { ?>
+								<option value="<?php echo $row_Tecnicos['ID_Empleado']; ?>" <?php if (isset($row['IdTecnico']) && ($row_Tecnicos['ID_Empleado'] == $row['IdTecnico'])) {
+									   echo "selected";
+								   } ?> 		
+								<?php if ((count($ids_grupos) > 0) && (!in_array($row_Tecnicos['IdCargo'], $ids_grupos))) {
+									echo "disabled";
+								} ?>>
+									<?php echo $row_Tecnicos['NombreEmpleado'] . " (" . $row_Tecnicos['NombreCentroCosto2'] . " - " . $row_Tecnicos['DeCargo'] . ")"; ?>
+								</option>
+							<?php } ?>
+						<?php } ?>
+					</select>
+				</div>
+			</div>
+			<!-- /.form-group -->
+
+			<div class="form-group row">
 				<div class="col-lg-4">
 					<label class="control-label">
 						<i onclick="ConsultarCliente();" title="Consultar cliente" style="cursor: pointer"
@@ -200,6 +226,8 @@ if ($Type != 0) {
 					<input required type="text" name="NombreCliente" id="NombreCliente" class="form-control"
 						placeholder="Digite para buscar..." value="<?php echo $row['NombreClienteLlamada'] ?? ""; ?>">
 				</div>
+
+				<div class="col-lg-2"></div>
 
 				<div class="col-lg-4">
 					<label class="control-label">Sucursal <span class="text-danger">*</span></label>
@@ -237,11 +265,11 @@ if ($Type != 0) {
 					</div>
 				</div>
 
-				<div class="col-lg-6">
+				<div class="col-lg-4">
 					<label class="control-label">Campañas</label>
 
 					<select multiple name="Campanas[]" id="Campanas" class="form-control select2"
-						data-placeholder="Debe seleccionar las campañas que desea asociar con la Solicitud de Llamada de servicio.">
+						data-placeholder="Debe seleccionar las campañas que desea asociar.">
 						<!-- Las campañas dependen de la TE. -->
 					</select>
 				</div>
@@ -249,37 +277,10 @@ if ($Type != 0) {
 			<!-- /.form-group -->
 
 			<div class="form-group row">
-				<div class="col-lg-4">
-					<label class="control-label">Técnico/Asesor <span class="text-danger">*</span></label>
-
-					<select required name="Tecnico" id="Tecnico" class="form-control select2">
-						<option value="" disabled selected>Seleccione...
-						</option>
-
-						<?php while ($row_Tecnicos = sqlsrv_fetch_array($SQL_Tecnicos)) { ?>
-							<?php if (in_array($row_Tecnicos['IdCargo'], $ids_grupos) || ($MostrarTodosRecursos || (count($ids_grupos) == 0))) { ?>
-								<option value="<?php echo $row_Tecnicos['ID_Empleado']; ?>" <?php if (isset($row['IdTecnico']) && ($row_Tecnicos['ID_Empleado'] == $row['IdTecnico'])) {
-									   echo "selected";
-								   } ?> 		
-								<?php if ((count($ids_grupos) > 0) && (!in_array($row_Tecnicos['IdCargo'], $ids_grupos))) {
-									echo "disabled";
-								} ?>>
-									<?php echo $row_Tecnicos['NombreEmpleado'] . " (" . $row_Tecnicos['NombreCentroCosto2'] . " - " . $row_Tecnicos['DeCargo'] . ")"; ?>
-								</option>
-							<?php } ?>
-						<?php } ?>
-					</select>
-				</div>
-				<!-- /.col-lg-4 -->
-
-				<div class="col-lg-2">
-
-				</div>
-
-				<div class="col-lg-6">
+				<div class="col-lg-12">
 					<label class="control-label">Comentario <span class="text-danger">*</span></label>
 
-					<textarea required name="Comentario" rows="2" maxlength="3000" type="text" class="form-control"><?php echo $row['ComentarioSolicitud'] ?? ""; ?></textarea>
+					<textarea required name="Comentario" rows="3" maxlength="3000" type="text" class="form-control"><?php echo $row['ComentarioSolicitud'] ?? ""; ?></textarea>
 				</div>
 			</div>
 			<!-- /.form-group -->
