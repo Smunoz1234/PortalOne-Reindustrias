@@ -234,7 +234,7 @@ $ids_recursos = array();
 					calendar.changeView("resourceTimeGridDay", info.dateStr);
 				} else if (info.view.type === "resourceTimeGridDay") {
 					// Cargando.
-					blockUI();
+					// blockUI();
 
 					// Agregar nueva Solicitud.
 					/*
