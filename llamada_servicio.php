@@ -1813,6 +1813,9 @@ function AgregarEsto(contenedorID, valorElemento) {
 			</div>
 			<!-- /#MyModal2 -->
 
+			<!-- SMM, 13/10/2023 -->
+			<?php include_once 'md_consultar_tarjetas_equipos.php'; ?>
+
 			<!-- Inicio, modalSN -->
 			<div class="modal inmodal fade" id="modalSN" tabindex="-1" role="dialog" aria-hidden="true">
 				<div class="modal-dialog modal-lg" style="width: 70% !important;">
@@ -2244,7 +2247,41 @@ function AgregarEsto(contenedorID, valorElemento) {
 									echo $row_Articulo['ItemCode'] . " - " . $row_Articulo['ItemName'];
 								} ?>">
 							</div>
-							
+
+							<div class="col-lg-3">
+								<label class="control-label">
+									<i onclick="ConsultarEquipo();" title="Consultar tarjeta de equipo" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Tarjeta de equipo
+								</label>
+								
+								<input type="hidden" class="form-control" name="OrdenServicioCliente"
+									id="OrdenServicioCliente" value="<?php if (isset($row_OrdenServicioCliente['ID_LlamadaServicio']) && ($row_OrdenServicioCliente['ID_LlamadaServicio'] != 0)) {
+										echo $row_OrdenServicioCliente['ID_LlamadaServicio'];
+									} ?>">
+								<input readonly type="text" class="form-control"
+									name="Desc_OrdenServicioCliente" id="Desc_OrdenServicioCliente"
+									placeholder="Haga clic en el botón" value="<?php if (isset($row_OrdenServicioCliente['ID_LlamadaServicio']) && ($row_OrdenServicioCliente['ID_LlamadaServicio'] != 0)) {
+										echo $row_OrdenServicioCliente['DocNum'] . " - " . $row_OrdenServicioCliente['AsuntoLlamada'] . " (" . $row_OrdenServicioCliente['DeTipoLlamada'] . ")";
+									} ?>">
+							</div>
+
+							<div class="col-lg-1">
+								<button class="btn btn-success" type="button"
+									onClick="$('#mdOT').modal('show');"><i class="fa fa-refresh"></i>
+									Cambiar orden servicio</button>
+							</div>
+						</div>
+
+						<div class="form-group" <?php if ($type_llmd == 1) {
+							echo "style='display: none;'";
+						} ?>>
+							<div class="col-lg-8">
+								<label class="control-label">Campañas Asociadas</label>
+
+								<select name="Campanas[]" id="Campanas" class="form-control select2" data-placeholder="Debe seleccionar las campañas que desea asociar con la Llamada de servicio." multiple>
+									<!-- Generadas por JS -->
+								</select>
+							</div>
+
 							<div class="col-lg-3">
 								<label class="control-label">
 									<i onclick="ConsultarEquipo();" title="Consultar tarjeta de equipo" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Tarjeta de equipo
@@ -2272,22 +2309,13 @@ function AgregarEsto(contenedorID, valorElemento) {
 							</div>
 							<!-- /#NumeroSerie -->
 
+							<div class="col-lg-1">
 							<br>
 							<button type="button" id="AddCampana" class="btn btn-sm btn-info btn-circle" title="Adicionar Campaña" disabled <?php if ($type_llmd == 1) {
 								echo "style='display: none;'";
 							} ?>><i class="fa fa-bell"></i></button>
-						</div>
-
-						<div class="form-group" <?php if ($type_llmd == 1) {
-							echo "style='display: none;'";
-						} ?>>
-							<div class="col-lg-8">
-								<label class="control-label">Campañas Asociadas</label>
-
-								<select name="Campanas[]" id="Campanas" class="form-control select2" data-placeholder="Debe seleccionar las campañas que desea asociar con la Llamada de servicio." multiple>
-									<!-- Generadas por JS -->
-								</select>
 							</div>
+							
 						</div>
 						<!-- /#CampanasAsociadas -->
 
