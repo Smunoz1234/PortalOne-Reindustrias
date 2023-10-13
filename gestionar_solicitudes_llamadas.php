@@ -5,9 +5,6 @@ $sw = 0;
 // Estado llamada
 $SQL_EstadoLlamada = Seleccionar('uvw_tbl_EstadoLlamada', '*');
 
-// Asignado por
-$SQL_AsignadoPor = Seleccionar('uvw_tbl_SolicitudLlamadasServicios', 'DISTINCT IdAsignadoPor, DeAsignadoPor', '', 'DeAsignadoPor');
-
 // Estado servicio de la Solicitud de Llamada de servicio. SMM, 29/08/2023
 $SQL_EstServLlamada = Seleccionar('tbl_SolicitudLlamadasServiciosEstadoServicios', '*');
 
@@ -162,26 +159,10 @@ if (isset($_GET['TipoProblema']) && $_GET['TipoProblema'] != "") {
     $sw = 1;
 }
 
-if (isset($_GET['AsignadoPor']) && $_GET['AsignadoPor'] != "") {
-    $FilAsigPor = "";
-    if ($_GET['AsignadoPor'] == "") {
-        $_GET['AsignadoPor'] = $_SESSION['CodUser'];
-    }
-    for ($i = 0; $i < count($_GET['AsignadoPor']); $i++) {
-        if ($i == 0) {
-            $FilAsigPor .= "'" . $_GET['AsignadoPor'][$i] . "'";
-        } else {
-            $FilAsigPor .= ",'" . $_GET['AsignadoPor'][$i] . "'";
-        }
-    }
-    $Filtro .= " AND [ID_Usuario] IN ($FilAsigPor)";
+// SMM, 13/10/2023
+if (isset($_GET['Tecnico']) && $_GET['Tecnico'] != "") {
+    $Filtro .= " AND [IdTecnico]='" . $_GET['Tecnico'] . "'";
     $sw = 1;
-} elseif (!isset($_GET['AsignadoPor']) && (!isset($_GET['FechaInicial']))) {
-    $_GET['AsignadoPor'][0] = $_SESSION['CodUser'];
-    $FilAsigPor = "";
-    $FilAsigPor .= "'" . $_GET['AsignadoPor'][0] . "'";
-    $Filtro .= " and [ID_Usuario] IN ($FilAsigPor)";
-    // $sw=1;
 }
 
 if (isset($_GET['EstadoServicio']) && $_GET['EstadoServicio'] != "") {
@@ -384,6 +365,7 @@ if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
                                                 echo $_GET['NombreCliente'];
                                             } ?>">
                                     </div>
+
                                     <label class="col-lg-1 control-label">Sucursal</label>
                                     <div class="col-lg-3">
                                         <select id="Sucursal" name="Sucursal" class="form-control">
@@ -409,6 +391,7 @@ if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
                                             } ?>
                                         </select>
                                     </div>
+
                                     <label class="col-lg-1 control-label">Buscar dato</label>
                                     <div class="col-lg-3">
                                         <input name="BuscarDato" type="text" class="form-control" id="BuscarDato"
@@ -417,20 +400,15 @@ if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
                                             } ?>">
                                     </div>
                                 </div>
+
                                 <div class="form-group">
-                                    <label class="col-lg-1 control-label">Asignado por</label>
+                                    <label class="col-lg-1 control-label">Técnico/Asesor</label>
                                     <div class="col-lg-3">
-                                        <select data-placeholder="(Todos)" name="AsignadoPor[]"
-                                            class="form-control chosen-select" multiple id="AsignadoPor">
-                                            <?php $j = 0;
-                                            while ($row_AsignadoPor = sqlsrv_fetch_array($SQL_AsignadoPor)) { ?>
-                                                <option value="<?php echo $row_AsignadoPor['IdAsignadoPor']; ?>" <?php if ((isset($_GET['AsignadoPor'][$j]) && ($_GET['AsignadoPor'][$j]) != "") && (strcmp($row_AsignadoPor['IdAsignadoPor'], $_GET['AsignadoPor'][$j]) == 0)) {
-                                                       echo "selected=\"selected\"";
-                                                       $j++;
-                                                   } ?>><?php echo $row_AsignadoPor['DeAsignadoPor']; ?></option>
-                                            <?php } ?>
-                                        </select>
-                                    </div>
+                                        <input name="Tecnico" type="hidden" id="Tecnico" value="<?php echo $_GET['Tecnico'] ?? ""; ?>">
+                                        <input name="NombreTecnico" type="text" class="form-control" id="NombreTecnico"
+                                            placeholder="Para TODOS, dejar vacio..." value="<?php echo $_GET['NombreTecnico'] ?? ""; ?>">
+                                    </div>                                    
+
                                     <label class="col-lg-1 control-label">Estado servicio</label>
                                     <div class="col-lg-3">
                                         <select name="EstadoServicio" class="form-control" id="EstadoServicio">
@@ -442,6 +420,7 @@ if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
                                             <?php } ?>
                                         </select>
                                     </div>
+
                                     <label class="col-lg-1 control-label">ID Agenda</label>
                                     <div class="col-lg-2">
                                         <input name="IDTicket" type="text" class="form-control" id="IDTicket"
@@ -450,6 +429,7 @@ if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
                                                 echo $_GET['IDTicket'];
                                             } ?>">
                                     </div>
+
                                     <div class="col-lg-1 pull-right">
                                         <button type="submit" class="btn btn-outline btn-success pull-right"><i
                                                 class="fa fa-search"></i> Buscar</button>
@@ -622,11 +602,10 @@ if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
 
             $('.chosen-select').chosen({ width: "100%" });
 
-            var options = {
+            let options = {
                 url: function (phrase) {
-                    return "ajx_buscar_datos_json.php?type=7&id=" + phrase;
+                    return `ajx_buscar_datos_json.php?type=7&id=${phrase}`;
                 },
-
                 getValue: "NombreBuscarCliente",
                 requestDelay: 400,
                 list: {
@@ -634,13 +613,30 @@ if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
                         enabled: true
                     },
                     onClickEvent: function () {
-                        var value = $("#NombreCliente").getSelectedItemData().CodigoCliente;
+                        let value = $("#NombreCliente").getSelectedItemData().CodigoCliente;
                         $("#Cliente").val(value).trigger("change");
                     }
                 }
             };
-
             $("#NombreCliente").easyAutocomplete(options);
+
+            let options2 = {
+                url: function (phrase) {
+                    return `ajx_buscar_datos_json.php?type=49&id=${phrase}`;
+                },
+                getValue: "NombreBuscarEmpleado",
+                requestDelay: 400,
+                list: {
+                    match: {
+                        enabled: true
+                    },
+                    onClickEvent: function () {
+                        let value = $("#NombreTecnico").getSelectedItemData().ID_Empleado;
+                        $("#Tecnico").val(value).trigger("change");
+                    }
+                }
+            };
+            $("#NombreTecnico").easyAutocomplete(options2);
 
             $('.dataTables-example').DataTable({
                 pageLength: 25,

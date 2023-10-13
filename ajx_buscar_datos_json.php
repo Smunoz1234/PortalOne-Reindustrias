@@ -769,6 +769,32 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
         echo json_encode($records);
     }
 
+    // Consultar Técnicos/Asesores para el componente de búsqueda. Basado en 7. SMM, 13/10/2023
+    elseif ($type == 49) {
+        $ID = "'%" . ($_GET['id'] ?? "") . "%'";
+        $Where = "NombreEmpleado LIKE $ID OR DeCargo LIKE $ID";
+        $SQL = Seleccionar("uvw_Sap_tbl_Recursos", "*", $Where, "NombreEmpleado");
+        $row = sqlsrv_fetch_array($SQL);
+
+        $records = array();
+        $j = 0;
+        while ($row = sqlsrv_fetch_array($SQL)) {
+            $ID_Empleado = $row["ID_Empleado"] ?? "";
+            $NombreEmpleado = $row['NombreEmpleado'] ?? "";
+
+            $DeCargo = $row['DeCargo'] ?? "";
+            $NombreBuscarEmpleado = "$NombreEmpleado - $DeCargo";
+
+            $records[$j] = array(
+                "ID_Empleado" => $ID_Empleado,
+                "NombreEmpleado" => $NombreEmpleado,
+                "NombreBuscarEmpleado" => $NombreBuscarEmpleado,
+            );
+            $j++;
+        }
+        echo json_encode($records);
+    }
+
     // Después de los condicionales
     // Se cierra la conexión a la BD
     sqlsrv_close($conexion);
