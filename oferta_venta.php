@@ -1981,6 +1981,9 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 			let probarModal = false;
 			let ordenServicio = $("#OrdenServicioCliente").val();
 
+			// SMM, 14/10/2023
+			let solicitudLlamada = $("#SolicitudLlamadaCliente").val();
+
 			let serie = $("#Serie").val();
 			let proyecto = $("#PrjCode").val();
 			let cardCode = $("#CardCode").val();
@@ -1994,6 +1997,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 					data: {
 						ObjType: 23,
 						OT: ordenServicio,
+						Solicitud: solicitudLlamada,
 						Edit: <?php echo $edit; ?>,
 						DocType: "<?php echo ($edit == 0) ? 3 : 4; ?>",
 						DocId: "<?php echo $row['ID_OfertaVenta'] ?? 0; ?>",

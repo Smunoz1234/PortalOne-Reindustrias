@@ -27,6 +27,9 @@ $Proyecto = $_POST['IdProyecto'];
 $IdEmpleado = $_POST['IdEmpleado'];
 $ListaPrecio = $_POST['ListaPrecio'];
 
+// SMM, 14/10/2023
+$Solicitud = $_POST['Solicitud'] ?? "";
+
 // Valores predeterminados en los campos de documentos del usuario según el tipo.
 $OrigenLlamada = ObtenerValorDefecto($ObjType, "OrigenLlamada", false);
 $SedeEmpresa = ObtenerValorDefecto($ObjType, "SedeEmpresa", false);
@@ -35,8 +38,16 @@ $TipoProblemaLlamada = ObtenerValorDefecto($ObjType, "TipoProblemaLlamada", fals
 $TipoLlamada = ObtenerValorDefecto($ObjType, "TipoLlamada", false);
 
 // Orden de trabajo (Llamada de servicio). SMM, 28/06/2023
-$SQL_OT = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='$OT'");
-$row_OT = sqlsrv_fetch_array($SQL_OT);
+$SQL_OT = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "[ID_LlamadaServicio]='$OT'");
+
+$row_OT = array();
+if(sqlsrv_has_rows($SQL_OT)) {
+	$row_OT = sqlsrv_fetch_array($SQL_OT);
+} else {
+	// Buscar parámetros en la solicitud. SMM, 14/10/2023
+	$SQL_OT = Seleccionar('uvw_tbl_SolicitudLlamadasServicios', '*', "[ID_SolicitudLlamadaServicio]='$Solicitud'");
+	$row_OT = sqlsrv_fetch_array($SQL_OT);
+}
 
 if (isset($row_OT["IdOrigenLlamada"]) && ($row_OT["IdOrigenLlamada"] != "")) {
 	$IdOrigenLlamada = $row_OT["IdOrigenLlamada"];
