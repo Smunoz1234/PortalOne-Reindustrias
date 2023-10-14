@@ -538,6 +538,34 @@ if ($sw_error == 1) {
 	$SQL_Anexo = Seleccionar('uvw_Sap_tbl_DocumentosSAP_Anexos', '*', "AbsEntry='" . $row['IdAnexo'] . "'");
 }
 
+// SMM, 14/10/2023
+$FiltroPrj = "";
+$FiltrarDest = 0;
+$FiltrarFact = 0;
+if($edit == 0) {
+	// Filtrar proyectos asignados
+	$Where_Proyectos = "ID_Usuario='" . $_SESSION['CodUser'] . "'";
+	$SQL_Proyectos = Seleccionar('uvw_tbl_UsuariosProyectos', '*', $Where_Proyectos);
+
+	$Proyectos = array();
+	while ($Proyecto = sqlsrv_fetch_array($SQL_Proyectos)) {
+		$Proyectos[] = $Proyecto['IdProyecto'];
+	}
+
+	if (count($Proyectos) == 1) {
+		$FiltroPrj = $Proyectos[0];
+	}
+
+	// Filtrar sucursales
+	if(isset($SQL_SucursalDestino) && (sqlsrv_num_rows($SQL_SucursalDestino) == 1)) {
+		$FiltrarDest = 1;
+	}
+
+	if(isset($SQL_SucursalFacturacion) && (sqlsrv_num_rows($SQL_SucursalFacturacion) == 1)) {
+		$FiltrarFact = 1;
+	}
+}
+
 //Condiciones de pago
 $SQL_CondicionPago = Seleccionar('uvw_Sap_tbl_CondicionPago', '*', '', 'IdCondicionPago');
 
@@ -1303,6 +1331,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 													echo "disabled";
 												} ?>>
 												<option value="">Seleccione...</option>
+												
 												<?php if ($edit == 1 || $sw_error == 1 || $dt_LS == 1 || $dt_OF == 1) { ?>
 													<optgroup label='Dirección de destino'></optgroup>
 													<?php while ($row_SucursalDestino = sqlsrv_fetch_array($SQL_SucursalDestino)) { ?>
@@ -1315,6 +1344,8 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 																echo "selected";
 															} elseif ($ShipToDef == $row_SucursalDestino['NombreSucursal']) {
 																echo "selected";
+															} elseif ($FiltrarDest == 1) { 
+																echo "selected"; 
 															} ?>>
 																<?php echo $row_SucursalDestino['NombreSucursal']; ?>
 															</option>
@@ -1330,6 +1361,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 													echo "disabled";
 												} ?>>
 												<option value="">Seleccione...</option>
+												
 												<?php if ($edit == 1 || $sw_error == 1 || $dt_LS == 1 || $dt_OF == 1) { ?>
 													<optgroup label='Dirección de facturas'></optgroup>
 													<?php while ($row_SucursalFacturacion = sqlsrv_fetch_array($SQL_SucursalFacturacion)) { ?>
@@ -1343,6 +1375,8 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 																echo "selected";
 															} elseif ($BillToDef == $row_SucursalFacturacion['NombreSucursal']) {
 																echo "selected";
+															} elseif ($FiltrarFact == 1) { 
+																echo "selected"; 
 															} ?>>
 																<?php echo $row_SucursalFacturacion['NombreSucursal']; ?>
 															</option>
@@ -1565,15 +1599,18 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 									<div class="col-lg-3">
 										<select class="form-control select2" id="PrjCode" name="PrjCode" required
 											form="CrearOrdenVenta" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
-												echo "disabled='disabled'";
+												echo "disabled";
 											} ?>>
 											<option value="">(NINGUNO)</option>
+											
 											<?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) { ?>
 												<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if ((isset($row['PrjCode'])) && (strcmp($row_Proyecto['IdProyecto'], $row['PrjCode']) == 0)) {
-													   echo "selected";
-												   } elseif ((isset($_GET['Proyecto'])) && (strcmp($row_Proyecto['IdProyecto'], base64_decode($_GET['Proyecto'])) == 0)) {
-													   echo "selected";
-												   } ?>>
+													   	echo "selected";
+												   	} elseif ((isset($_GET['Proyecto'])) && (strcmp($row_Proyecto['IdProyecto'], base64_decode($_GET['Proyecto'])) == 0)) {
+													   	echo "selected";
+												   	} elseif($FiltroPrj == $row_Proyecto['IdProyecto']) { 
+														echo "selected"; 
+													} ?>>
 													<?php echo $row_Proyecto['DeProyecto']; ?>
 												</option>
 											<?php } ?>
