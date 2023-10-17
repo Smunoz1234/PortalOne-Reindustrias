@@ -1,5 +1,5 @@
 <?php require_once "includes/conexion.php";
-// PermitirAcceso(312);
+PermitirAcceso(336);
 $sw = 0;
 
 $ParamSucursal = array(

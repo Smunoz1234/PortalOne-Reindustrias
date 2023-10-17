@@ -1,5 +1,5 @@
 <?php require_once "includes/conexion.php";
-// PermitirAcceso(301);
+PermitirAcceso(334);
 $sw = 0;
 
 // Estado llamada
@@ -295,8 +295,8 @@ if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
                         </li>
                     </ol>
                 </div>
-                <!-- PermitirFuncion(302) -->
-                <?php if (true) { ?>
+                
+                <?php if (PermitirFuncion(335)) { ?>
                     <div class="col-sm-4">
                         <div class="title-action">
                             <a href="solicitud_llamada.php" class="alkin btn btn-primary"><i class="fa fa-plus-circle"></i>
