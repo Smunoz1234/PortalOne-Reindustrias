@@ -58,12 +58,12 @@ $Where = "Metodo = 0 AND ([FechaCreacionLLamada] BETWEEN '$FechaInicial' AND '$F
 $SQL_Llamadas = Seleccionar('uvw_Sap_tbl_LlamadasServicios', 'TOP 100 *', $Where);
 ?>
 
-<div class="modal inmodal fade" id="mdOT" tabindex="1" role="dialog" aria-hidden="true">
+<div class="modal inmodal fade" id="mdTE" tabindex="1" role="dialog" aria-hidden="true">
 	<div class="modal-dialog modal-lg" style="width: 60% !important;">
 		<div class="modal-content">
 			<div class="modal-header">
 				<h4 class="modal-title">
-					Consultar llamadas de servicio
+					Consultar tarjetas de equipo
 				</h4>
 			</div>
 			<div class="modal-body">
@@ -202,7 +202,7 @@ $SQL_Llamadas = Seleccionar('uvw_Sap_tbl_LlamadasServicios', 'TOP 100 *', $Where
 function cambiarOT(orden_trabajo, descripcion_ot){
 	$("#OrdenServicioCliente").val(orden_trabajo);
 	$("#Desc_OrdenServicioCliente").val(descripcion_ot);
-	$('#mdOT').modal('hide');
+	$('#mdTE').modal('hide');
 }
 
 

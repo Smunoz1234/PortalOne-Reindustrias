@@ -1,6 +1,6 @@
 <?php
 require_once "includes/conexion.php";
-// PermitirAcceso(312);
+PermitirAcceso(336);
 
 $Where = "";
 $SQL_Actividades = Seleccionar('uvw_tbl_Actividades_Rutas', '*', $Where);

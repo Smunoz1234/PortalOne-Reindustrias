@@ -1,6 +1,6 @@
 <?php
 require_once "includes/conexion.php";
-PermitirAcceso(1707);
+PermitirAcceso(1710);
 
 $sw = 0;
 //Fechas
@@ -175,7 +175,7 @@ $SQL_Supervisor = Seleccionar('uvw_tbl_EntregaVehiculos', 'DISTINCT id_empleado_
 						</li>
 					</ol>
 				</div>
-				<?php if (PermitirFuncion(1706)) { ?>
+				<?php if (PermitirFuncion(1709)) { ?>
 					<div class="col-sm-4">
 						<div class="title-action">
 							<a href="frm_entrega_vehiculo.php" class="alkin btn btn-primary"><i

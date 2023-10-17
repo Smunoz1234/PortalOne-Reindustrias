@@ -1,6 +1,6 @@
 <?php require_once "includes/conexion.php";
+PermitirAcceso(338);
 
-// PermitirAcceso(1605);
 $ID = $_GET['id'] ?? ($_POST['id'] ?? "");
 $Edit = $_GET['edit'] ?? ($_POST['edit'] ?? 0);
 $Active = $_GET['active'] ?? 1; // Tag active -> (1) VINs & (2) Articulos

@@ -182,7 +182,7 @@ if (isset($_POST['User']) || isset($_POST['Password'])) {
             <div class="form-group">
 				<label class="form-label">Base de datos</label>
 				<select name="BaseDatos" id="BaseDatos" class="form-control">
-					<option value="<?php echo BDPRO; ?>">Pruebas</option>
+					<option value="<?php echo BDPRO; ?>">Productiva</option>
 					<?php if (BDPRUEBAS != "") {?>
 					<option value="<?php echo BDPRUEBAS; ?>"><?php echo BDPRUEBAS; ?></option>
 					<?php }?>

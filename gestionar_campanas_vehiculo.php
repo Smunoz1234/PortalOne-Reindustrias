@@ -1,6 +1,6 @@
 <?php require_once "includes/conexion.php";
 
-// PermitirAcceso(1605);
+PermitirAcceso(337);
 $sw = 0;
 
 // Fechas
