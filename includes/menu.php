@@ -180,7 +180,7 @@ if (!isset($_COOKIE["banderaMenu"])) {
 					<?php if (PermitirFuncion(1704)) {?><li><a class="alnk" href="consultar_frm_eval_tecnico.php">Evaluación de técnicos</a></li><?php }?>
 					<?php if (PermitirFuncion([1706, 1707])) {?><li><a class="alnk" href="consultar_frm_recepcion_vehiculo.php">Recepción de vehículos</a></li> <?php }?>
 					
-					<?php if (true) {?><li><a class="alnk" href="consultar_frm_entrega_vehiculo.php">Entrega de vehículos</a></li> <?php }?>
+					<?php if (PermitirFuncion(1710)) {?><li><a class="alnk" href="consultar_frm_entrega_vehiculo.php">Entrega de vehículos</a></li> <?php }?>
 					
 					<?php if (PermitirFuncion(1702)) {?>
 					<li>
@@ -248,10 +248,13 @@ if (!isset($_COOKIE["banderaMenu"])) {
 			<li>
 				<a href="#"><i class="fa fa-tasks"></i> <span class="nav-label">Servicios</span><span class="fa arrow"></span></a>
 				<ul class="nav nav-second-level collapse">
-					<?php if (true) {?><li><a class="alnk" href="gestionar_solicitudes_llamadas.php">Solicitudes de llamadas (Agenda)</a></li><?php }?>
+					<?php if (PermitirFuncion(334)) {?><li><a class="alnk" href="gestionar_solicitudes_llamadas.php">Solicitudes de llamadas (Agenda)</a></li><?php }?>
+					
 					<?php if (PermitirFuncion(301)) {?><li><a class="alnk" href="gestionar_llamadas_servicios.php">Llamadas de servicio</a></li><?php }?>
 					<?php if (PermitirFuncion(303)) {?><li><a class="alnk" href="gestionar_actividades.php">Actividades</a></li><?php }?>
-					<?php if (true) {?><li><a class="alnk" href="gestionar_campanas_vehiculo.php">Campañas</a></li><?php }?>
+					
+					<?php if (PermitirFuncion(337)) {?><li><a class="alnk" href="gestionar_campanas_vehiculo.php">Campañas</a></li><?php }?>
+					
 					<?php if (PermitirFuncion(316)) {?><li><a href="despacho_rutas.php">Despacho de servicios</a></li><?php }?>
 					
 					<?php if (PermitirFuncion(305) || PermitirFuncion(306) || PermitirFuncion(307)) {?>
@@ -305,7 +308,8 @@ if (!isset($_COOKIE["banderaMenu"])) {
 						<li>
 							<a href="#">Seguimiento <span class="fa arrow"></span></a>
 							<ul class='nav nav-third-level'>
-								<?php if (false) {?><li><a class="alnk" href="maps_actividades_tecnicos.php">Mapa de técnicos</a></li><?php }?>
+								<?php $VerMapa = false; ?>
+								<?php if ($VerMapa) {?><li><a class="alnk" href="maps_actividades_tecnicos.php">Mapa de técnicos</a></li><?php }?>
 							</ul>
 						</li>
 					<?php }?>
@@ -314,7 +318,8 @@ if (!isset($_COOKIE["banderaMenu"])) {
 						<li>
 							<a href="#">Programación <span class="fa arrow"></span></a>
 							<ul class='nav nav-third-level'>
-								<?php if (true) {?><li><a href="programacion_solicitudes.php" target="_blank">Programación de solicitudes</a></li><?php }?>	
+								<?php if (PermitirFuncion(336)) {?><li><a href="programacion_solicitudes.php" target="_blank">Programación de solicitudes</a></li><?php }?>	
+								
 								<?php if (PermitirFuncion(312)) {?><li><a href="programacion_rutas.php" target="_blank">Programación de servicios</a></li><?php }?>
 							</ul>
 						</li>
@@ -531,7 +536,9 @@ if (!isset($_COOKIE["banderaMenu"])) {
 							<?php if (PermitirFuncion(211)) {?><li><a class="alnk" href="informes_sap_parametrizar.php">Parametrizar Informes SAP B1</a></li><?php }?>
 							<?php if (PermitirFuncion(1501)) {?><li><a class="alnk" href="parametros_fe.php">Parámetros Facturación Electrónica</a></li><?php }?>
 							<?php if (PermitirFuncion(215)) {?><li><a class="alnk" href="parametros_asistentes.php">Parámetros asistentes</a></li><?php }?>
+							
 							<?php if (true) {?><li><a class="alnk" href="parametros_asistente_socios_negocio.php">Parámetros asistente de socios de negocio</a></li><?php }?>
+							
 							<?php if (PermitirFuncion(803)) {?><li><a class="alnk" href="parametros_gestion_cartera.php">Parámetros de Gestión cartera</a></li><?php }?>
 							<?php if (PermitirFuncion(216)) {?><li><a class="alnk" href="parametros_frm_personalizados.php">Parámetros de formularios personalizados</a></li><?php }?>
 							<?php if (PermitirFuncion(217)) {?><li><a class="alnk" href="parametros_campos_adicionales.php">Campos adicionales en documentos</a></li><?php }?>
@@ -539,6 +546,7 @@ if (!isset($_COOKIE["banderaMenu"])) {
 							<?php if (PermitirFuncion(219)) {?><li><a class="alnk" href="parametros_formatos_impresion.php">Parámetros formatos de impresión</a></li><?php }?>
 							<?php if (PermitirFuncion(223)) {?><li><a class="alnk" href="parametros_autorizaciones_documentos.php">Parámetros autorizaciones documentos</a></li><?php }?>
 							<?php if (PermitirFuncion(224)) {?><li><a class="alnk" href="parametros_consultas_sap.php">Parámetros Consultas SAP B1</a></li><?php }?>
+							
 							<?php if (true) {?><li><a class="alnk" href="parametros_conceptos_salida.php">Parámetros de Conceptos de salida de inventario</a></li><?php }?>
 						</ul>
 					</li>
@@ -565,7 +573,9 @@ if (!isset($_COOKIE["banderaMenu"])) {
 			<li>
 				<a href="#"><i class="fa fa-suitcase"></i> <span class="nav-label">Utilidades PortalOne</span><span class="fa arrow"></span></a>
 				<ul class="nav nav-second-level">
-					<?php if (false) {?><li><a class="alnk" href="utilidad_redimensionar_imagenes.php">Redimensionar imágenes</a></li><?php }?>
+					<?php $VerImg = false; ?>
+					<?php if ($VerImg) {?><li><a class="alnk" href="utilidad_redimensionar_imagenes.php">Redimensionar imágenes</a></li><?php }?>
+					
 					<?php if (PermitirFuncion(1801)) {?><li><a class="alnk" href="utilidad_redimensionar_directorio.php">Redimensionar imágenes desde directorio</a></li><?php }?>
 				</ul>
 			</li>

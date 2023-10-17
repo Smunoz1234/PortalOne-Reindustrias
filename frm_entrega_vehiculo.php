@@ -1,5 +1,5 @@
 <?php require_once "includes/conexion.php";
-PermitirAcceso(1706);
+PermitirAcceso(1709);
 
 $IdFrm = "";
 $msg_error = ""; //Mensaje del error

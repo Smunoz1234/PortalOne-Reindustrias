@@ -956,9 +956,9 @@ if ($edit == 1 && $Num_SeriesUsuario > 0) {
 									 <label class="col-lg-1 control-label">Permiso</label>
 									 <div class="col-lg-2">
 										<select name="PermisoSerie[]" class="form-control" id="PermisoSerie<?php echo $Cont; ?>">
-											<option value="1" <?php if ($row_SeriesUsuario['Permiso'] == 1) {echo "selected=\"selected\"";}?>>Solo consulta</option>
-											<option value="2" <?php if ($row_SeriesUsuario['Permiso'] == 2) {echo "selected=\"selected\"";}?>>Solo creación</option>
-											<option value="3" <?php if ($row_SeriesUsuario['Permiso'] == 3) {echo "selected=\"selected\"";}?>>Creación y consulta</option>
+											<option value="1" <?php if ($row_SeriesUsuario['Permiso'] == 1) {echo "selected";}?>>Solo consulta</option>
+											<option value="2" <?php if ($row_SeriesUsuario['Permiso'] == 2) {echo "selected";}?>>Solo creación</option>
+											<option value="3" <?php if ($row_SeriesUsuario['Permiso'] == 3) {echo "selected";}?>>Creación y consulta</option>
 										</select>
 									 </div>
 									 <div class="col-lg-2">

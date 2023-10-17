@@ -119,7 +119,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Orden de venta
 			"'" . $_POST['CondicionPago'] . "'",
 			"'" . $_POST['PrjCode'] . "'",
 			"'" . $_POST['Autorizacion'] . "'",
-			"'" . $_POST['Almacen'] . "'",
+			"'" . ($_POST['Almacen'] ?? "") . "'",
 			"'" . $_SESSION['CodUser'] . "'",
 			"'" . $_SESSION['CodUser'] . "'",
 			"$Type",
@@ -337,7 +337,7 @@ if (isset($_GET['dt_OV']) && ($_GET['dt_OV']) == 1) { // Verificar que viene de 
 	$ParametrosCopiarOrdenToOrden = array(
 		$ID_Documento, // SMM, 30/09/2022
 		"'" . base64_decode($_GET['Evento']) . "'",
-		"'" . base64_decode($_GET['Almacen']) . "'",
+		"'" . base64_decode(($_GET['Almacen'] ?? "")) . "'",
 		"'" . base64_decode($_GET['Cardcode']) . "'",
 		"'" . $_SESSION['CodUser'] . "'",
 	);
@@ -384,7 +384,7 @@ if (isset($_GET['dt_OF']) && ($_GET['dt_OF']) == 1) { //Verificar que viene de u
 	$ParametrosCopiarOfertaToOrden = array(
 		"'" . base64_decode($_GET['OF']) . "'",
 		"'" . base64_decode($_GET['Evento']) . "'",
-		"'" . base64_decode($_GET['Almacen']) . "'",
+		"'" . base64_decode(($_GET['Almacen'] ?? "")) . "'",
 		"'" . base64_decode($_GET['Cardcode']) . "'",
 		"'" . $_SESSION['CodUser'] . "'",
 	);
@@ -503,9 +503,6 @@ if ($edit == 1 && $sw_error == 0) {
 	$SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . $row['ID_LlamadaServicio'] . "'");
 	$row_OrdenServicioCliente = sqlsrv_fetch_array($SQL_OrdenServicioCliente);
 
-	//Sucursal
-	$SQL_Sucursal = Seleccionar('uvw_tbl_SeriesSucursalesAlmacenes', 'IdSucursal, DeSucursal', "IdSeries='" . $row['IdSeries'] . "'");
-
 	//Anexos
 	$SQL_Anexo = Seleccionar('uvw_Sap_tbl_DocumentosSAP_Anexos', '*', "AbsEntry='" . $row['IdAnexo'] . "'");
 }
@@ -530,9 +527,6 @@ if ($sw_error == 1) {
 	//Orden de servicio, SMM 05/08/2022
 	$SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . $row['ID_LlamadaServicio'] . "'");
 	$row_OrdenServicioCliente = sqlsrv_fetch_array($SQL_OrdenServicioCliente);
-
-	//Sucursal
-	$SQL_Sucursal = Seleccionar('uvw_tbl_SeriesSucursalesAlmacenes', 'IdSucursal, DeSucursal', "IdSeries='" . $row['IdSeries'] . "'");
 
 	//Anexos
 	$SQL_Anexo = Seleccionar('uvw_Sap_tbl_DocumentosSAP_Anexos', '*', "AbsEntry='" . $row['IdAnexo'] . "'");
@@ -721,7 +715,6 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 
 				var frame = document.getElementById('DataGrid');
 				var carcode = document.getElementById('CardCode').value;
-				var almacen = document.getElementById('Almacen').value;
 
 				// Cargar contactos del cliente.
 				$.ajax({
@@ -1559,13 +1552,6 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 								</div>
 
 								<div class="form-group">
-									<label class="col-lg-1 control-label">Almacén</label>
-									<div class="col-lg-3">
-										<select class="form-control" name="Almacen" id="Almacen" readonly>
-											<option value="">Seleccione...</option>
-										</select>
-									</div>
-
 									<label class="col-lg-1 control-label">
 										Autorización
 										<?php if ((isset($row_Autorizaciones['IdEstadoAutorizacion']) && ($edit == 1)) || ($success == 0) || ($sw_error == 1) || $debug_Condiciones) { ?>
@@ -2194,9 +2180,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 
 			<?php
 			if ($edit == 1) { ?>
-				//		 $('#Serie option:not(:selected)').attr('disabled',true);
-				//		 $('#Sucursal option:not(:selected)').attr('disabled',true);
-				//		 $('#Almacen option:not(:selected)').attr('disabled',true);
+				// $('#Serie option:not(:selected)').attr('disabled',true);
 			<?php } ?>
 
 			<?php if (!PermitirFuncion(403) || true) { ?>
@@ -2225,7 +2209,6 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 			<?php } ?>
 			<?php if ($dt_LS == 1 || $dt_OF == 1) { ?>
 				$('#CardCode').trigger('change');
-				//$('#Almacen').trigger('change');
 			<?php } ?>
 
 			<?php if ($edit == 0) { ?>
