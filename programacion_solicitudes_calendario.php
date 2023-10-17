@@ -5,69 +5,46 @@
 	}
 </style>
 
-<?php
-require_once "includes/conexion.php";
+<?php require_once "includes/conexion.php";
 
-$type = 0;
+$type = $_GET['type'] ?? 0;
+// $sw = $_GET['sw'] ?? 0;
 
-if (isset($_GET['type'])) {
-	$type = $_GET['type'];
-}
+$Usuario = $_SESSION['CodUser'] ?? "";
 
-if (isset($_GET['sw'])) {
-	$sw = $_GET['sw'];
-}
+$FechaInicial = $_GET['FechaInicial'] ?? date('Y-m-d');
+$FechaFinal = $_GET['FechaFinal'] ?? date('Y-m-d');
 
-if (isset($_GET['fchinicial'])) {
-	$FechaInicial = $_GET['fchinicial'];
-}
+$Sede = $_GET['Sede'] ?? "";
+$Cliente = $_GET['Cliente'] ?? "";
 
-if (isset($_GET['pTecnicos'])) {
-	$Recurso = $_GET['pTecnicos'];
-}
+$Sucursal = $_GET['Sucursal'] ?? ""; // Nombre Sucursal
 
-if (isset($_GET['pIdEvento'])) {
-	$IdEvento = $_GET['pIdEvento'];
-}
+$Grupo = $_GET['Grupo'] ?? "";
+$Sede = $_GET['Sede'] ?? "";
 
-if (isset($_GET['pSede'])) {
-	$Sede = $_GET['pSede'];
-}
+// SMM, 17/10/2023
+$Recursos = isset($_GET['Recursos']) ? implode(',', $_GET['Recursos']) : "";
+// echo "<script> console.log('programacion_solicitudes_calendario.php 25', '$Recursos'); </script>";
 
-if (isset($_GET['pGrupo'])) {
-	$Grupo = $_GET['pGrupo'];
-}
+if (true) { // Si estoy refrescando datos ya cargados
 
-// Stiven Muñoz Murillo, 14/02/2022
-$cadena = $Recurso ?? "";
-// echo "<script> console.log('programacion_solicitudes_calendario.php 37', '$cadena'); </script>";
-
-if (true) { //Si estoy refrescando datos ya cargados
-
-	//Tecnicos para seleccionar
+	// Tecnicos para seleccionar
 	$ParamRec = array(
-		"'" . $_SESSION['CodUser'] . "'",
-		"'" . $Sede . "'",
-		"'" . $Grupo . "'",
-		"'" . $Recurso . "'",
+		"'$Usuario'",
+		"'$Sede'",
+		"'$Grupo'",
+		"'$Recursos'",
 	);
-
 	$SQL_Recursos = EjecutarSP("sp_ConsultarTecnicos", $ParamRec);
 
-	//Datos de las actividades para mostrar
-	$ParamCons = array(
-		"'" . $Recurso . "'",
-		"'" . $Grupo . "'",
-		"'" . ($IdEvento ?? "") . "'",
-		"'" . $_SESSION['CodUser'] . "'",
-	);
-
+	// SMM, 17/10/2023
 	$Cons = "SELECT * FROM [uvw_tbl_SolicitudLlamadasServicios_Calendario]";
     $SQL_Actividad = sqlsrv_query($conexion, $Cons);
 }
 
 // Grupos de Empleados, SMM 16/05/2022
-$SQL_GruposUsuario = Seleccionar("uvw_tbl_UsuariosGruposEmpleados", "*", "[ID_Usuario]='" . $_SESSION['CodUser'] . "'", 'DeCargo');
+$SQL_GruposUsuario = Seleccionar("uvw_tbl_UsuariosGruposEmpleados", "*", "[ID_Usuario]='$Usuario'", 'DeCargo');
 
 $ids_grupos = array();
 while ($row_GruposUsuario = sqlsrv_fetch_array($SQL_GruposUsuario)) {

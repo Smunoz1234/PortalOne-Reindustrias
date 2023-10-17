@@ -22,9 +22,6 @@ if (!isset($_SESSION)) {
 }
 
 define("VERSION", "2.1.0");
-define("BDPRO","PortalOneReindustrias_Pruebas");
+define("BDPRO","PortalOneReindustrias_Pruebas"); // Live?
 define("BDPRUEBAS","");
-
-
-
 ?>
