@@ -1,19 +1,16 @@
 <?php require_once "includes/conexion.php";
 PermitirAcceso(336);
 $sw = 0;
+$Usuario = $_SESSION['CodUser'] ?? "";
 
-$ParamSucursal = array(
-	"'" . $_SESSION['CodUser'] . "'",
+$ParamSede = array(
+	"'$Usuario'",
 );
-$SQL_Suc = EjecutarSP('sp_ConsultarSucursalesUsuario', $ParamSucursal);
+$SQL_Sede = EjecutarSP('sp_ConsultarSucursalesUsuario', $ParamSede);
 
 $SQL_EstadoServicios = Seleccionar("tbl_SolicitudLlamadasServiciosEstadoServicios", "*");
 
-//$i=0;
-$FilRec = "";
-//$Filtro="";
-
-//Fechas
+// Fechas
 if (isset($_GET['FechaInicial']) && $_GET['FechaInicial'] != "") {
 	$FechaInicial = $_GET['FechaInicial'];
 	$sw = 1;
@@ -35,42 +32,23 @@ if (isset($_GET['FechaFinal']) && $_GET['FechaFinal'] != "") {
 	$FechaFinal = $nuevafecha;
 }
 
-$Sede = isset($_GET['Sede']) ? $_GET['Sede'] : "";
-$Grupo = isset($_GET['Grupo']) ? $_GET['Grupo'] : "";
-$Recurso = isset($_GET['Recursos']) ? implode(',', $_GET['Recursos']) : ""; // SMM
+$Grupo = $_GET['Grupo'] ?? "";
+$Sede = $_GET['Sede'] ?? "";
 
-$Cliente = isset($_GET['Cliente']) ? $_GET['Cliente'] : "";
-$NomSucursal = isset($_GET['Sucursal']) ? $_GET['Sucursal'] : "";
+// SMM, 17/10/2023
+$Recurso = isset($_GET['Recursos']) ? implode(',', $_GET['Recursos']) : "";
+// echo "<script> console.log('programacion_solicitudes_calendario.php 40', '$Recurso'); </script>";
 
-//Lista de cargos de recursos (Tecnicos)
-$SQL_CargosRecursos = Seleccionar('uvw_Sap_tbl_Recursos', 'DISTINCT IdCargo, DeCargo', "CentroCosto2='" . $Sede . "'");
+// Lista de cargos de recursos (Tecnicos)
+$SQL_CargosRecursos = Seleccionar('uvw_Sap_tbl_Recursos', 'DISTINCT IdCargo, DeCargo', "CentroCosto2='$Sede'");
 
 //Lista de recursos (Tecnicos)
 $ParamRec = array(
-	"'" . $_SESSION['CodUser'] . "'",
-	"'" . $Sede . "'",
-	"'" . $Grupo . "'",
+	"'$Usuario'",
+	"'$Sede'",
+	"'$Grupo'",
 );
-
 $SQL_Recursos = EjecutarSP("sp_ConsultarTecnicos", $ParamRec);
-
-if (isset($_GET['Recursos']) && $_GET['Recursos'] != "") {
-	$FilRec = implode(',', $_GET['Recursos']);
-	$sw = 1;
-}
-
-//Consultar actividades
-if ($sw == 1) {
-	// Recursos, 22/01/2022
-	$all_resources = array();
-	$sql_resources = EjecutarSP("sp_ConsultarTecnicos", $ParamRec);
-	while ($row_resources = sqlsrv_fetch_array($sql_resources)) {
-		array_push($all_resources, $row_resources['ID_Empleado']);
-	}
-	$resource = implode(',', $all_resources);
-	// Sin uso actualmente, contiene todos los técnicos.
-	// Stiven Muñoz Murillo
-}
 ?>
 
 <!DOCTYPE html>
@@ -314,11 +292,11 @@ $(function () {
 									<select name="Sede" id="Sede" class="select2 form-control">
 										<option value="">(TODOS)</option>
 										<?php
-										while ($row_Suc = sqlsrv_fetch_array($SQL_Suc)) { ?>
-											<option value="<?php echo $row_Suc['IdSucursal']; ?>" <?php if ((isset($_GET['Sede']) && ($_GET['Sede'] != "")) && (strcmp($row_Suc['IdSucursal'], $_GET['Sede']) == 0)) {
-												   echo "selected=\"selected\"";
+										while ($row_Sede = sqlsrv_fetch_array($SQL_Sede)) { ?>
+											<option value="<?php echo $row_Sede['IdSucursal']; ?>" <?php if ((isset($_GET['Sede']) && ($_GET['Sede'] != "")) && (strcmp($row_Sede['IdSucursal'], $_GET['Sede']) == 0)) {
+												   echo "selected";
 											   } ?>>
-												<?php echo $row_Suc['DeSucursal']; ?>
+												<?php echo $row_Sede['DeSucursal']; ?>
 											</option>
 										<?php } ?>
 									</select>
@@ -352,7 +330,7 @@ $(function () {
 											}
 											while ($row_Sucursal = sqlsrv_fetch_array($SQL_Sucursal)) { ?>
 												<option value="<?php echo $row_Sucursal['NombreSucursal']; ?>" <?php if (strcmp($row_Sucursal['NombreSucursal'], $_GET['Sucursal']) == 0) {
-													   echo "selected=\"selected\"";
+													   echo "selected";
 												   } ?>>
 													<?php echo $row_Sucursal['NombreSucursal']; ?>
 												</option>
@@ -372,7 +350,7 @@ $(function () {
 										if ($Sede != "") {
 											while ($row_CargosRecursos = sqlsrv_fetch_array($SQL_CargosRecursos)) { ?>
 												<option value="<?php echo $row_CargosRecursos['IdCargo']; ?>" <?php if ((isset($_GET['Grupo']) && ($_GET['Grupo'] != "")) && (strcmp($row_CargosRecursos['IdCargo'], $_GET['Grupo']) == 0)) {
-													   echo "selected=\"selected\"";
+													   echo "selected";
 												   } ?>>
 													<?php echo $row_CargosRecursos['DeCargo']; ?>
 												</option>
@@ -391,7 +369,7 @@ $(function () {
 											$j = 0;
 											while ($row_Recursos = sqlsrv_fetch_array($SQL_Recursos)) { ?>
 												<option value="<?php echo $row_Recursos['ID_Empleado']; ?>" <?php if ((isset($_GET['Recursos'][$j]) && ($_GET['Recursos'][$j] != "")) && (strcmp($row_Recursos['ID_Empleado'], $_GET['Recursos'][$j]) == 0)) {
-													   echo "selected=\"selected\"";
+													   echo "selected";
 													   $j++;
 												   } ?>>
 													<?php echo $row_Recursos['NombreEmpleado']; ?>
