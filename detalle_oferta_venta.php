@@ -122,8 +122,8 @@ $SQL_OT_TipoLlamada = Seleccionar('uvw_Sap_tbl_OT_TipoLlamada', 'IdOT_TipoLlamad
 $SQL_OT_TIPOPROBLEMA = Seleccionar('uvw_Sap_tbl_OT_TipoProblema', 'IdOT_TipoProblema "IdTipoProblema", OT_TipoProblema "TipoProblema"', '', 'IdOT_TipoProblema');
 $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPreventivo "IdTipoPreventivo", OT_TipoPreventivo "TipoPreventivo"', '', 'IdOT_TipoPreventivo');
 
-// SMM, 09/08/2023
-$SQL_CausaAprobacion = Seleccionar("uvw_Sap_tbl_OfertasVentasDetalle_Causa_Aprobacion", "*", "", "CausaAprobacion");
+// SMM, 17/10/2023
+$SQL_CausaAprobacion = Seleccionar("uvw_Sap_tbl_OfertasVentasDetalle_Causa_Aprobacion", "*", "", "IdCausaAprobacion");
 ?>
 
 <!doctype html>
