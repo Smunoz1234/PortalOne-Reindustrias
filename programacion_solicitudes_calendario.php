@@ -52,7 +52,7 @@ if ($sw == 1) { // Si estoy refrescando datos ya cargados
     $SQL_Actividad = sqlsrv_query($conexion, $Cons);
 
 	// SMM, 18/10/2023 
-	echo $Cons;
+	// echo $Cons;
 	// echo $Recursos;
 }
 
