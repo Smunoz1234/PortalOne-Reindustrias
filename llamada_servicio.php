@@ -2499,7 +2499,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 
 							<div class="col-lg-4">
 								<label class="control-label">SubTipo problema (Subtipo Servicio) <span class="text-danger">*</span></label>
-								<select name="SubTipoProblema" class="form-control" required id="SubTipoProblema" <?php if (!$IncluirCamposAdicionales || (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1')))) {
+								<select name="SubTipoProblema" class="form-control" id="SubTipoProblema" <?php if (!$IncluirCamposAdicionales || (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1')))) {
 									echo "readonly";
 								} ?>>
 									<option value="">Seleccione...</option>

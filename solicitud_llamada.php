@@ -1955,8 +1955,8 @@ function AgregarEsto(contenedorID, valorElemento) {
 
 							<div class="col-lg-4">
 								<label class="control-label">SubTipo problema (Subtipo Servicio) <span class="text-danger">*</span></label>
-								<select name="SubTipoProblema" class="form-control" required id="SubTipoProblema" <?php if (!$IncluirCamposAdicionales || (($edit == 1) && (!$CrearSolicitud || ($row['IdEstadoLlamada'] == '-1')))) {
-									echo "disabled";
+								<select name="SubTipoProblema" class="form-control" id="SubTipoProblema" <?php if (!$IncluirCamposAdicionales || (($edit == 1) && (!$CrearSolicitud || ($row['IdEstadoLlamada'] == '-1')))) {
+									echo "readonly";
 								} ?>>
 									<option value="">Seleccione...</option>
 									  
@@ -3019,8 +3019,10 @@ $("#DeArticuloLlamada").easyAutocomplete(options3);
 			}
 		},
 		buttons: []
-
 	});
+
+	// SMM, 18/10/2023
+	$('#SubTipoProblema[readonly] option:not(:selected)').attr('disabled', true);
 });
 
 // Validación de la llamada de servicio, se ejecuta al momento de crear o actualizar.
