@@ -33,6 +33,9 @@ $Filtro .= ($Sede == "") ? "" : " AND CentroCosto$DimSeries='$Sede'";
 $Recursos = isset($_GET['Recursos']) ? implode(',', $_GET['Recursos']) : "";
 // echo "<script> console.log('programacion_solicitudes_calendario.php 25', '$Recursos'); </script>";
 
+// SMM, 18/10/2023 
+$Filtro .= ($Recursos == "") ? "" : " AND IdTecnico IN ($Recursos)";
+
 if ($sw == 1) { // Si estoy refrescando datos ya cargados
 
 	// Tecnicos para seleccionar
@@ -44,11 +47,13 @@ if ($sw == 1) { // Si estoy refrescando datos ya cargados
 	);
 	$SQL_Recursos = EjecutarSP("sp_ConsultarTecnicos", $ParamRec);
 
-	// SMM, 18/10/2023
+	// SMM, 17/10/2023
 	$Cons = "SELECT * FROM [uvw_tbl_SolicitudLlamadasServicios_Calendario] WHERE (FechaCreacionLLamada BETWEEN '$FechaInicial' AND '$FechaFinal') $Filtro";
     $SQL_Actividad = sqlsrv_query($conexion, $Cons);
-	
-	// echo $Cons;
+
+	// SMM, 18/10/2023 
+	echo $Cons;
+	// echo $Recursos;
 }
 
 // Grupos de Empleados, SMM 16/05/2022

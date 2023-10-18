@@ -37,7 +37,7 @@ $Sede = $_GET['Sede'] ?? "";
 
 // SMM, 17/10/2023
 $Recurso = isset($_GET['Recursos']) ? implode(',', $_GET['Recursos']) : "";
-// echo "<script> console.log('programacion_solicitudes_calendario.php 40', '$Recurso'); </script>";
+// echo "<script> console.log('programacion_solicitudes.php 40', '$Recurso'); </script>";
 
 // Lista de cargos de recursos (Tecnicos)
 $SQL_CargosRecursos = Seleccionar('uvw_Sap_tbl_Recursos', 'DISTINCT IdCargo, DeCargo', "CentroCosto2='$Sede'");
@@ -381,16 +381,16 @@ $(function () {
 							</div>
 							<div class="form-group col-lg-3">
 								<label class="form-label">&nbsp;</label>
-								<button id="btnRefrescar" type="button" onClick="RefresarCalendario();"
-									class="btn btn-info mt-4" <?php if ($sw == 0) {
-										echo "disabled";
-									} ?>><i
-										class="fas fa-sync"></i> Refrescar</button>
+								<button id="btnRefrescar" type="button" onclick="RefresarCalendario();"
+									class="btn btn-info mt-4">
+									<i class="fas fa-sync"></i> Refrescar
+								</button>
 							</div>
 							<div class="form-group col-lg-3">
 								<label class="form-label">&nbsp;</label>
-								<button id="btnFiltrar" type="submit" class="btn btn-success load mt-4 pull-right"><i
-										class="fas fa-filter"></i> Filtrar datos</button>
+								<button id="btnFiltrar" type="submit" class="btn btn-success load mt-4 pull-right">
+									<i class="fas fa-filter"></i> Filtrar datos
+								</button>
 							</div>
 						</div>
 					</form>
@@ -596,7 +596,7 @@ $(function () {
 
 			$.ajax({
 				type: "POST",
-				url: `programacion_solicitudes_calendario.php?type=1&pSede=<?php echo $Sede; ?>&pGrupo=${Grupo}&pTecnicos=${Tecnicos}&sw=<?php echo $sw; ?>&fchinicial=<?php echo $FechaInicial; ?>`,
+				url: `programacion_solicitudes_calendario.php?sw=1`,
 				success: function (response) {
 					$('#dv_calendar').html(response);
 					blockUI(false);

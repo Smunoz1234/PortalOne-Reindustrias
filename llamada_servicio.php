@@ -2500,7 +2500,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 							<div class="col-lg-4">
 								<label class="control-label">SubTipo problema (Subtipo Servicio) <span class="text-danger">*</span></label>
 								<select name="SubTipoProblema" class="form-control" required id="SubTipoProblema" <?php if (!$IncluirCamposAdicionales || (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1')))) {
-									echo "disabled";
+									echo "readonly";
 								} ?>>
 									<option value="">Seleccione...</option>
 									  
@@ -4276,6 +4276,9 @@ $(function () {
 	<?php if ((($sw_error == 1) || ($dt_SLS == 1)) && (isset($row['IdNumeroSerie']) && ($row['IdNumeroSerie'] != ""))) { ?>
 		$('#NumeroSerie').trigger('change');		
 	<?php } ?>
+
+	// SMM, 18/10/2023
+	$('#SubTipoProblema[readonly] option:not(:selected)').attr('disabled', true);
 });
 
 function AdicionarCampana() {
