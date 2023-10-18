@@ -7,27 +7,33 @@
 
 <?php require_once "includes/conexion.php";
 
-$type = $_GET['type'] ?? 0;
-// $sw = $_GET['sw'] ?? 0;
+$sw = $_GET['sw'] ?? 0; // Asincrono (Refrescar)
+$sw = isset($_GET['FechaInicial']) ? 1 : 0; // Sincrono (Filtrar datos)
 
+$Filtro = "";
 $Usuario = $_SESSION['CodUser'] ?? "";
 
 $FechaInicial = $_GET['FechaInicial'] ?? date('Y-m-d');
 $FechaFinal = $_GET['FechaFinal'] ?? date('Y-m-d');
 
-$Sede = $_GET['Sede'] ?? "";
 $Cliente = $_GET['Cliente'] ?? "";
+$Filtro .= ($Cliente == "") ? "" : " AND ID_CodigoCliente='$Cliente'";
 
 $Sucursal = $_GET['Sucursal'] ?? ""; // Nombre Sucursal
+$Filtro .= ($Sucursal == "") ? "" : " AND NombreSucursal='$Sucursal'";
 
 $Grupo = $_GET['Grupo'] ?? "";
+$Filtro .= ($Grupo == "") ? "" : " AND IdCargo='$Grupo'";
+
 $Sede = $_GET['Sede'] ?? "";
+$DimSeries = intval(ObtenerVariable("DimensionSeries"));
+$Filtro .= ($Sede == "") ? "" : " AND CentroCosto$DimSeries='$Sede'";
 
 // SMM, 17/10/2023
 $Recursos = isset($_GET['Recursos']) ? implode(',', $_GET['Recursos']) : "";
 // echo "<script> console.log('programacion_solicitudes_calendario.php 25', '$Recursos'); </script>";
 
-if (true) { // Si estoy refrescando datos ya cargados
+if ($sw == 1) { // Si estoy refrescando datos ya cargados
 
 	// Tecnicos para seleccionar
 	$ParamRec = array(
@@ -38,9 +44,11 @@ if (true) { // Si estoy refrescando datos ya cargados
 	);
 	$SQL_Recursos = EjecutarSP("sp_ConsultarTecnicos", $ParamRec);
 
-	// SMM, 17/10/2023
-	$Cons = "SELECT * FROM [uvw_tbl_SolicitudLlamadasServicios_Calendario]";
+	// SMM, 18/10/2023
+	$Cons = "SELECT * FROM [uvw_tbl_SolicitudLlamadasServicios_Calendario] WHERE (FechaCreacionLLamada BETWEEN '$FechaInicial' AND '$FechaFinal') $Filtro";
     $SQL_Actividad = sqlsrv_query($conexion, $Cons);
+	
+	// echo $Cons;
 }
 
 // Grupos de Empleados, SMM 16/05/2022
@@ -67,32 +75,20 @@ $ids_recursos = array();
 		var containerEl = document.getElementById('dvOT');
 		var calendarEl = document.getElementById('calendario');
 
-		var fechaActual = '<?php if ($sw == 1) {
-			echo $FechaInicial;
-		} else {
-			echo date('Y-m-d');
-		} ?>'
+		var fechaActual = "<?php echo $FechaInicial; ?>";
+		// isset($_GET['reload']) -> fechaActual = window.sessionStorage.getItem('CurrentDateCalendar');
 
-		var vistaActual = window.sessionStorage.getItem('CurrentViewCalendar')
-
+		var vistaActual = window.sessionStorage.getItem('CurrentViewCalendar');
 		if (!vistaActual) {
 			vistaActual = "dayGridMonth"
 		} else {
 			console.log(vistaActual);
 		}
 
-		var visualizarFechasActual = true
-
+		var visualizarFechasActual = true;
 		if (window.sessionStorage.getItem('DateAboveResources') === "false") {
 			visualizarFechasActual = false
 		}
-
-		<?php if (isset($_GET['reload']) || $type == 1) { ?>
-			fechaActual = window.sessionStorage.getItem('CurrentDateCalendar')
-			if (!fechaActual) {
-				fechaActual = '<?php echo $FechaInicial; ?>'
-			}
-		<?php } ?>
 
 		// initialize the external events
 		// -----------------------------------------------------------------
@@ -179,22 +175,21 @@ $ids_recursos = array();
 				}
 			},
 			resources: [
-				<?php if ($sw == 1) { ?>
-							<?php while ($row_Recursos = sqlsrv_fetch_array($SQL_Recursos)) { ?>
-									<?php if ((count($ids_grupos) == 0) || in_array($row_Recursos['IdCargo'], $ids_grupos)) { ?>
-											<?php $ids_recursos[] = $row_Recursos['ID_Empleado']; ?>
-											{
-								id: '<?php echo $row_Recursos['ID_Empleado']; ?>',
-								title: '<?php echo $row_Recursos['NombreEmpleado'] . ' (' . $row_Recursos['DeCargo'] . ')'; ?>'
-							},
-						<?php } elseif (PermitirFuncion(321)) { ?>
-											{
-								id: '<?php echo $row_Recursos['ID_Empleado']; ?>',
-								title: '<?php echo $row_Recursos['NombreEmpleado'] . ' [BLOQUEADO]'; ?>'
-							},
-						<?php } ?>
-							<?php } ?>
+				<?php while ($row_Recursos = sqlsrv_fetch_array($SQL_Recursos)) { ?>
+					<?php if ((count($ids_grupos) == 0) || in_array($row_Recursos['IdCargo'], $ids_grupos)) { ?>
+						<?php $ids_recursos[] = $row_Recursos['ID_Empleado']; ?>
+						
+						{
+							id: '<?php echo $row_Recursos['ID_Empleado']; ?>',
+							title: '<?php echo $row_Recursos['NombreEmpleado'] . ' (' . $row_Recursos['DeCargo'] . ')'; ?>'
+						},
+					<?php } elseif (PermitirFuncion(321)) { ?>
+						{
+							id: '<?php echo $row_Recursos['ID_Empleado']; ?>',
+							title: '<?php echo $row_Recursos['NombreEmpleado'] . ' [BLOQUEADO]'; ?>'
+						},
 					<?php } ?>
+				<?php } ?>	
 			],
 			// SMM, 17/05/2022
 			eventConstraint: {
@@ -284,9 +279,8 @@ $ids_recursos = array();
 				}
 			},
 			events: [
-				<?php
-				if ($sw == 1) {
-					while ($row_Actividad = sqlsrv_fetch_array($SQL_Actividad)) {
+				<?php if($sw == 1) { ?>
+					<?php while ($row_Actividad = sqlsrv_fetch_array($SQL_Actividad)) {
 						/*
 						$classAdd = "";
 						if ($row_Actividad['IdEstadoActividad'] == 'Y') {
@@ -306,7 +300,8 @@ $ids_recursos = array();
 
 						$EtiquetaActividad = "#$ID_Agenda ($Cliente - $Sucursal) ($SI_TE - $Marca, $Linea)";
 						?>
-							{
+						
+						{
 							id: '<?php echo $row_Actividad['ID_SolicitudLlamadaServicio']; ?>',
 							title: '<?php echo $EtiquetaActividad; ?>',
 							comentario: '<?php echo preg_replace('([^A-Za-z0-9 ])', '', $row_Actividad['ComentarioLlamada']); ?>',
@@ -332,9 +327,9 @@ $ids_recursos = array();
 							<?php } ?>
 							borderColor: '<?php echo in_array($row_Actividad['ID_EmpleadoActividad'], $ids_recursos) ? $row_Actividad['ColorEstadoServicio'] : 'red'; ?>'
 							*/
-							},
-					<?php }
-				} ?>
+						},
+					<?php } ?>
+				<?php } ?>
 			],
 			eventDrop: function (info) {
 				console.log('Se ejecuto eventDrop en el calendario');
