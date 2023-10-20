@@ -392,8 +392,8 @@ if (isset($sw_error) && ($sw_error == 1)) {
 																	</span>
 																</td>
 																<td>
-																	<span class="label <?php echo ($row_Motivo['AutorizacionSAP'] == "Y") ? "label-info" : "label-danger"; ?>">
-																		<?php echo ($row_Proceso['AutorizacionSAP'] == "Y") ? "SI" : "NO"; ?>
+																	<span class="label <?php echo (isset($row_Motivo['AutorizacionSAP']) && ($row_Motivo['AutorizacionSAP'] == "Y")) ? "label-info" : "label-danger"; ?>">
+																		<?php echo (isset($row_Motivo['AutorizacionSAP']) && ($row_Motivo['AutorizacionSAP'] == "Y")) ? "SI" : "NO"; ?>
 																	</span>
 																</td>
 
