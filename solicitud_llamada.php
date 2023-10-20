@@ -1473,7 +1473,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 							</div>
 							<div class="ibox-content">
 								<h3 class="no-margins">
-									<?php echo $row['FechaHoraCreacionLLamada']->format("Y-m-d H:i:s") ?? "&nbsp;"; ?>
+									<?php echo $row['FechaRegistro']->format("Y-m-d H:i:s") ?? "&nbsp;"; ?>
 								</h3>
 							</div>
 						</div>
