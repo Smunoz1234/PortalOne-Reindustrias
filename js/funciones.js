@@ -66,7 +66,7 @@ function justNumbers(e, cad) {//Permitir solo numeros y puntos
 var textoAnterior = '';
 function cumpleReglas(simpleTexto, round = 2) {
 	//la pasamos por una poderosa expresión regular
-	var expresion = new RegExp(`^(|([0-9]{1,8}(\\.([0-9]{1,${round}})?)?))$`);
+	var expresion = new RegExp(`^(|([0-9]{1,12}(\\.([0-9]{1,${round}})?)?))$`);
 
 	//si pasa la prueba, es válida
 	if (expresion.test(simpleTexto))
