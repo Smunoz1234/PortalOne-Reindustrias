@@ -229,9 +229,11 @@ if ($sw == 1) {
 							<label class="col-lg-1 control-label">Filtro operacion</label>
 							<div class="col-lg-3">
 								<select name="FiltroOperacion" class="form-control" id="FiltroOperacion">
-									<option value="1" <?php if (isset($_GET['FiltroOperacion']) && ($_GET['FiltroOperacion'] == "1")) {echo "selected=\"selected\"";}?>>Actividades</option>
-									<option value="2" <?php if (isset($_GET['FiltroOperacion']) && ($_GET['FiltroOperacion'] == "2")) {echo "selected=\"selected\"";}?>>Llamadas Servicios</option>
-									<option value="3" <?php if (isset($_GET['FiltroOperacion']) && ($_GET['FiltroOperacion'] == "3")) {echo "selected=\"selected\"";}?>>Recepcion Vehiculo</option>
+									<option value="1" <?php if (isset($_GET['FiltroOperacion']) && ($_GET['FiltroOperacion'] == "1")) {echo "selected";}?>>Actividades</option>
+									<option value="2" <?php if (isset($_GET['FiltroOperacion']) && ($_GET['FiltroOperacion'] == "2")) {echo "selected";}?>>Llamadas Servicios</option>
+									<option value="3" <?php if (isset($_GET['FiltroOperacion']) && ($_GET['FiltroOperacion'] == "3")) {echo "selected";}?>>Recepción Vehiculo</option>
+									<option value="4" <?php if (isset($_GET['FiltroOperacion']) && ($_GET['FiltroOperacion'] == "4")) {echo "selected";}?>>Solicitudes Llamadas</option>
+									<option value="5" <?php if (isset($_GET['FiltroOperacion']) && ($_GET['FiltroOperacion'] == "5")) {echo "selected";}?>>Entrega Vehiculo</option>
 								</select>
 							</div>
 							<label class="col-lg-1 control-label">Fechas</label>
