@@ -188,7 +188,7 @@ if ($sw == 1) {
 			<!-- InstanceBeginEditable name="Contenido" -->
 			<div class="row wrapper border-bottom white-bg page-heading">
 				<div class="col-sm-8">
-					<h2>Gestión de operaciones - Personalizado</h2>
+					<h2>Gestión de operaciones - Solicitud Llamada (Agenda)</h2>
 					<ol class="breadcrumb">
 						<li>
 							<a href="index1.php">Inicio</a>
@@ -200,7 +200,7 @@ if ($sw == 1) {
 							<a href="#">Asistentes</a>
 						</li>
 						<li class="active">
-							<strong>Gestión de operaciones - Personalizado</strong>
+							<strong>Gestión de operaciones - Solicitud Llamada (Agenda)</strong>
 						</li>
 					</ol>
 				</div>

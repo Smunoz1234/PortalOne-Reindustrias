@@ -299,6 +299,7 @@ if (!isset($_COOKIE["banderaMenu"])) {
 								<?php if (PermitirFuncion(314)) {?><li><a class="alnk" href="consultar_operaciones.php">Gestión de operaciones</a></li><?php }?>
 								<?php if (PermitirFuncion(315)) {?><li><a class="alnk" href="programacion_clientes.php">Programación de clientes</a></li><?php }?>
 								<?php if (PermitirFuncion(414)) {?><li><a class="alnk" href="impresion_orden_servicio.php">Impresión de OT</a></li><?php }?>
+								<?php if (PermitirFuncion(339)) {?><li><a class="alnk" href="consultar_operaciones_agenda.php">Gestión de Operaciones Solicitud Llamada (Agenda)</a></li><?php }?>
 								<?php if (PermitirFuncion(320)) {?><li><a class="alnk" href="consultar_operaciones_personalizado.php">Gestión de Operaciones Personalizado</a></li><?php }?>
 							</ul>
 						</li>
