@@ -239,19 +239,7 @@ if ($sw == 1) {
 										<select name="FiltroOperacion" class="form-control" id="FiltroOperacion">
 											<option value="1" <?php if (isset($_GET['FiltroOperacion']) && ($_GET['FiltroOperacion'] == "1")) {
 												echo "selected";
-											} ?>>Actividades
-											</option>
-											<option value="2" <?php if (isset($_GET['FiltroOperacion']) && ($_GET['FiltroOperacion'] == "2")) {
-												echo "selected";
-											} ?>>Llamadas Servicios
-											</option>
-											<option value="3" <?php if (isset($_GET['FiltroOperacion']) && ($_GET['FiltroOperacion'] == "3")) {
-												echo "selected";
-											} ?>>Recepción Vehiculo
-											</option>
-											<option value="4" <?php if (isset($_GET['FiltroOperacion']) && ($_GET['FiltroOperacion'] == "4")) {
-												echo "selected";
-											} ?>>Entrega Vehiculo
+											} ?>>Solicitud Llamada (Agenda)
 											</option>
 										</select>
 									</div>
