@@ -6,8 +6,9 @@ $Where = "";
 $SQL_Actividades = Seleccionar('uvw_tbl_Actividades_Rutas', '*', $Where);
 $row = sql_fetch_array($SQL_Actividades);
 
-// Empleados.
+// Empleados. SMM, 25/10/2023
 $SQL_Tecnicos = Seleccionar('uvw_Sap_tbl_Recursos', '*', '', 'NombreEmpleado');
+$SQL_TecnicosAdicionales = Seleccionar('uvw_Sap_tbl_Recursos', '*', '', 'NombreEmpleado');
 
 // Grupos de Empleados.
 $SQL_GruposUsuario = Seleccionar("uvw_tbl_UsuariosGruposEmpleados", "*", "[ID_Usuario]='" . $_SESSION['CodUser'] . "'", 'DeCargo');
@@ -102,7 +103,7 @@ if ($Type != 0) {
 			$IdSolicitud = ($row_Operacion[0] ?? "NULL");
 
 			// Corregir Campos. Type = 2, ID_SolicitudLlamadaServicio = $IdSolicitud.
-			EjecutarSP("sp_tbl_SolicitudLlamadaServicios_Calendario", [2, $IdSolicitud]); 
+			// EjecutarSP("sp_tbl_SolicitudLlamadaServicios_Calendario", [2, $IdSolicitud]); 
 
 			echo "OK";
 			exit();
@@ -135,7 +136,7 @@ if ($Type != 0) {
 <form id="frmActividad" method="post">
 	<div class="modal-content">
 		<div class="modal-header">
-			<h4 class="modal-title">Nueva Solicitud de Llamada de servicio (Agenda)</h4>
+			<h4 class="modal-title">Solicitud de Llamada de servicio (Agenda)</h4>
 			<button type="button" class="close" data-dismiss="modal" aria-label="Close">X</button>
 		</div>
 		<!-- /.modal-header -->
@@ -169,7 +170,7 @@ if ($Type != 0) {
 				<div class="col-lg-4">
 					<label class="control-label">Serie <span class="text-danger">*</span></label>
 
-					<select required name="Series" id="Series" class="form-control select2">
+					<select required name="Series" id="Series" class="form-control">
 						<option value="">Seleccione...</option>
 
 						<?php while ($row_Series = sqlsrv_fetch_array($SQL_Series)) { ?>
@@ -403,10 +404,10 @@ if ($Type != 0) {
 				<div class="col-lg-4">
 					<label class="control-label">Técnico/Asesor Adicional</label>
 
-					<select name="Tecnico" id="Tecnico" class="form-control select2">
+					<select name="TecnicoAdicional" id="TecnicoAdicional" class="form-control select2">
 						<option value="" disabled selected>Seleccione...</option>
 
-						<?php while ($row_Tecnicos = sqlsrv_fetch_array($SQL_Tecnicos)) { ?>
+						<?php while ($row_Tecnicos = sqlsrv_fetch_array($SQL_TecnicosAdicionales)) { ?>
 							<?php if (in_array($row_Tecnicos['IdCargo'], $ids_grupos) || ($MostrarTodosRecursos || (count($ids_grupos) == 0))) { ?>
 								<option value="<?php echo $row_Tecnicos['ID_Empleado']; ?>" <?php if (isset($row['IdTecnico']) && ($row_Tecnicos['ID_Empleado'] == $row['IdTecnico'])) {
 									   echo "selected";
@@ -441,7 +442,7 @@ if ($Type != 0) {
 				<div class="col-lg-4">
 					<label class="control-label">Sucursal <span class="text-danger">*</span></label>
 
-					<select required name="SucursalCliente" id="SucursalCliente" class="form-control select2">
+					<select required name="SucursalCliente" id="SucursalCliente" class="form-control">
 						<option value="">Seleccione...</option>
 
 						<!-- La sucursal depende del cliente. -->
@@ -457,7 +458,7 @@ if ($Type != 0) {
 							class="btn-xs btn-success fa fa-search"></i> Tarjeta de equipo <span class="text-danger">*</span>
 					</label>
 
-					<select name="NumeroSerie" id="NumeroSerie" class="form-control select2" required>
+					<select name="NumeroSerie" id="NumeroSerie" class="form-control" required>
 						<option value="">Seleccione...</option>
 
 						<!-- La TE depende del cliente. -->
@@ -502,7 +503,7 @@ if ($Type != 0) {
 						Tipo preventivo <span class="text-danger">*</span>
 					</label>
 					
-					<select required name="CDU_TipoPreventivo" id="CDU_TipoPreventivo" class="form-control select2">
+					<select required name="CDU_TipoPreventivo" id="CDU_TipoPreventivo" class="form-control">
 						<?php while ($row_TipoPreventivo = sqlsrv_fetch_array($SQL_TipoPreventivo)) { ?>
 							<option value="<?php echo $row_TipoPreventivo['CodigoTipoPreventivo']; ?>"
 							<?php if ((isset($row['CDU_TipoPreventivo'])) && (strcmp($row_TipoPreventivo['CodigoTipoPreventivo'], $row['CDU_TipoPreventivo']) == 0)) {
