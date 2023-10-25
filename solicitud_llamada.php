@@ -1889,9 +1889,9 @@ function AgregarEsto(contenedorID, valorElemento) {
 									<option value="">Seleccione...</option>
 									
 									<?php while ($row_OrigenLlamada = sqlsrv_fetch_array($SQL_OrigenLlamada)) { ?>
-										<option value="<?php echo $row_OrigenLlamada['IdOrigenLlamada']; ?>" <?php if ((isset($row['IdOrigenLlamada'])) && (strcmp($row_OrigenLlamada['IdOrigenLlamada'], $row['IdOrigenLlamada']) == 0)) {
+										<option value="<?php echo $row_OrigenLlamada['IdOrigenLlamada']; ?>" <?php if (isset($row['IdOrigenLlamada']) && ($row_OrigenLlamada['IdOrigenLlamada'] == $row['IdOrigenLlamada'])) {
 												echo "selected";
-											} elseif ($OrigenLlamada == $row_OrigenLlamada['IdOrigenLlamada']) {
+											} elseif ((!isset($row['IdOrigenLlamada'])) && ($OrigenLlamada == $row_OrigenLlamada['IdOrigenLlamada'])) {
 												echo "selected";
 											} ?>>
 											<?php echo $row_OrigenLlamada['DeOrigenLlamada']; ?>
@@ -1911,7 +1911,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 									<?php while ($row_TipoLlamadas = sqlsrv_fetch_array($SQL_TipoLlamadas)) { ?>
 										<option value="<?php echo $row_TipoLlamadas['IdTipoLlamada']; ?>" <?php if ((isset($row['IdTipoLlamada'])) && (strcmp($row_TipoLlamadas['IdTipoLlamada'], $row['IdTipoLlamada']) == 0)) {
 												echo "selected";
-											} elseif ($TipoLlamada == $row_TipoLlamadas['IdTipoLlamada']) {
+											} elseif ((!isset($row['IdTipoLlamada'])) && ($TipoLlamada == $row_TipoLlamadas['IdTipoLlamada'])) {
 												echo "selected";
 											} ?>>
 											<?php echo $row_TipoLlamadas['DeTipoLlamada']; ?>
@@ -1944,7 +1944,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 									<?php while ($row_TipoProblema = sqlsrv_fetch_array($SQL_TipoProblema)) { ?>
 										<option value="<?php echo $row_TipoProblema['IdTipoProblemaLlamada']; ?>" <?php if ((isset($row['IdTipoProblemaLlamada'])) && (strcmp($row_TipoProblema['IdTipoProblemaLlamada'], $row['IdTipoProblemaLlamada']) == 0)) {
 												echo "selected";
-											} elseif ($TipoProblema == $row_TipoProblema['IdTipoProblemaLlamada']) {
+											} elseif ((!isset($row['IdTipoProblemaLlamada'])) && ($TipoProblema == $row_TipoProblema['IdTipoProblemaLlamada'])) {
 												echo "selected";
 											} ?>>
 											<?php echo $row_TipoProblema['DeTipoProblemaLlamada']; ?>
@@ -1963,7 +1963,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 									<?php while ($row_SubTipoProblema = sqlsrv_fetch_array($SQL_SubTipoProblema)) { ?>
 										<option value="<?php echo $row_SubTipoProblema['IdSubTipoProblemaLlamada']; ?>" <?php if ((isset($row['IdSubTipoProblemaLlamada'])) && (strcmp($row_SubTipoProblema['IdSubTipoProblemaLlamada'], $row['IdSubTipoProblemaLlamada']) == 0)) {
 												echo "selected";
-											} elseif ($SubtipoProblema == $row_SubTipoProblema['IdSubTipoProblemaLlamada']) {
+											} elseif ((!isset($row['IdSubTipoProblemaLlamada'])) && ($SubtipoProblema == $row_SubTipoProblema['IdSubTipoProblemaLlamada'])) {
 												echo "selected";
 											} ?>>
 											<?php echo $row_SubTipoProblema['DeSubTipoProblemaLlamada']; ?>
