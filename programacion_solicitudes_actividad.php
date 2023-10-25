@@ -27,6 +27,9 @@ $ParamSerie = array(
 );
 $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 
+// Estado servicio de la Solicitud de Llamada de servicio. SMM, 24/10/2023
+$SQL_EstServLlamada = Seleccionar('tbl_SolicitudLlamadasServiciosEstadoServicios', '*');
+
 // Llamar a SP de forma asincrona. SMM, 10/10/2023
 $msg_error = "";
 $parametros = array();
@@ -117,16 +120,56 @@ if ($Type != 0) {
 <form id="frmActividad" method="post">
 	<div class="modal-content">
 		<div class="modal-header">
-			<h4 class="modal-title">Nueva Solicitud de Llamada de servicio</h4>
+			<h4 class="modal-title">Nueva Solicitud de Llamada de servicio (Agenda)</h4>
 			<button type="button" class="close" data-dismiss="modal" aria-label="Close">X</button>
 		</div>
 		<!-- /.modal-header -->
 
 		<div class="modal-body">
 			<div class="form-group row">
+				<div class="col-lg-4">
+					<label class="control-label">
+						<i onclick="ConsultarAgenda();" title="Consultar Agenda" style="cursor: pointer"
+							class="btn-xs btn-success fa fa-search"></i> ID Solicitud (Agenda)
+					</label>
+
+					<input type="text" name="NombreCliente" id="NombreCliente" class="form-control"
+					value="<?php echo $row['NombreClienteLlamada'] ?? ""; ?>" readonly>
+				</div>
+
+				<div class="col-lg-4">
+					<label class="control-label">Estado servicio</label>
+
+					<select name="EstadoServicio" class="form-control" id="EstadoServicio" disabled>
+						<?php while ($row_EstServLlamada = sqlsrv_fetch_array($SQL_EstServLlamada)) { ?>
+							<option value="<?php echo $row_EstServLlamada['id_tipo_estado_servicio_sol_llamada']; ?>" <?php if ((isset($_GET['EstadoServicio'])) && (strcmp($row_EstServLlamada['id_tipo_estado_servicio_sol_llamada'], $_GET['EstadoServicio']) == 0)) {
+									echo "selected";
+								} ?>><?php echo $row_EstServLlamada['tipo_estado_servicio_sol_llamada']; ?></option>
+						<?php } ?>
+					</select>
+				</div>
+
+				<div class="col-lg-4">
+					<label class="control-label">Serie <span class="text-danger">*</span></label>
+
+					<select required name="Series" id="Series" class="form-control select2">
+						<option value="" disabled selected>Seleccione...</option>
+
+						<?php while ($row_Series = sqlsrv_fetch_array($SQL_Series)) { ?>
+							<option value="<?php echo $row_Series['IdSeries']; ?>">
+								<?php echo $row_Series['DeSeries']; ?>
+							</option>
+						<?php } ?>
+					</select>
+				</div>
+			</div>
+			<!-- /.form-group -->
+
+			<div class="form-group row">
 				<div class="col-lg-6">
-					<label for="FechaInicio" class="control-label">Fecha inicio <span
-							class="text-danger">*</span></label>
+					<label for="FechaInicio" class="control-label">
+						Fecha Inicio Solicitud <span class="text-danger">*</span>
+					</label>
 
 					<div class="row">
 						<div class="col-lg-6">
@@ -150,7 +193,63 @@ if ($Type != 0) {
 				<!-- /.col-lg-6 -->
 
 				<div class="col-lg-6">
-					<label for="FechaFin" class="control-label">Fecha fin <span class="text-danger">*</span></label>
+					<label for="FechaInicio" class="control-label">
+						Fecha Inicio Agenda <span class="text-danger">*</span>
+					</label>
+
+					<div class="row">
+						<div class="col-lg-6">
+							<div class="input-group">
+								<span class="input-group-text"><i class="fa fa-calendar"></i></span>
+								<input required type="text" name="FechaInicio" id="FechaInicio"
+									class="form-control fecha"
+									value="<?php echo $row['FechaInicio'] ?? date("Y-m-d"); ?>">
+							</div>
+						</div>
+						<div class="col-lg-6">
+							<div class="input-group">
+								<span class="input-group-text"><i class="fa fa-clock"></i></span>
+								<input required type="text" name="HoraInicio" id="HoraInicio" class="form-control hora"
+									value="<?php echo $row['HoraInicio'] ?? date("H:i"); ?>"
+									onchange="ValidarHoras();">
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- /.col-lg-6 -->
+			</div>
+			<!-- /.form-group -->
+
+			<div class="form-group row">
+				<div class="col-lg-6">
+					<label for="FechaFin" class="control-label">
+						Fecha Fin Solicitud <span class="text-danger">*</span>
+					</label>
+
+					<div class="row">
+						<div class="col-lg-6">
+							<div class="input-group">
+								<span class="input-group-text"><i class="fa fa-calendar"></i></span>
+								<input required type="text" name="FechaFin" id="FechaFin" class="form-control fecha"
+									value="<?php echo $row['FechaFin'] ?? date("Y-m-d"); ?>">
+							</div>
+						</div>
+						<div class="col-lg-6">
+							<div class="input-group">
+								<span class="input-group-text"><i class="fa fa-clock"></i></span>
+								<input required type="text" name="HoraFin" id="HoraFin" class="form-control hora"
+									value="<?php echo $row['HoraFin'] ?? date("H:i"); ?>"
+									onchange="ValidarHoras();">
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- /.col-lg-6 -->
+
+				<div class="col-lg-6">
+					<label for="FechaFin" class="control-label">
+						Fecha Fin Agenda <span class="text-danger">*</span>
+					</label>
 
 					<div class="row">
 						<div class="col-lg-6">
@@ -176,36 +275,28 @@ if ($Type != 0) {
 
 			<div class="form-group row">
 				<div class="col-lg-4">
-					<label class="control-label">Serie <span class="text-danger">*</span></label>
+					<label class="control-label">Técnico/Asesor <span class="text-danger">*</span></label>
 
-					<select required name="Series" id="Series" class="form-control select2">
+					<select required name="Tecnico" id="Tecnico" class="form-control select2">
 						<option value="" disabled selected>Seleccione...</option>
 
-						<?php while ($row_Series = sqlsrv_fetch_array($SQL_Series)) { ?>
-							<option value="<?php echo $row_Series['IdSeries']; ?>">
-								<?php echo $row_Series['DeSeries']; ?>
-							</option>
+						<?php while ($row_Tecnicos = sqlsrv_fetch_array($SQL_Tecnicos)) { ?>
+							<?php if (in_array($row_Tecnicos['IdCargo'], $ids_grupos) || ($MostrarTodosRecursos || (count($ids_grupos) == 0))) { ?>
+								<option value="<?php echo $row_Tecnicos['ID_Empleado']; ?>" <?php if (isset($row['IdTecnico']) && ($row_Tecnicos['ID_Empleado'] == $row['IdTecnico'])) {
+									   echo "selected";
+								   } ?> 		
+								<?php if ((count($ids_grupos) > 0) && (!in_array($row_Tecnicos['IdCargo'], $ids_grupos))) {
+									echo "disabled";
+								} ?>>
+									<?php echo $row_Tecnicos['NombreEmpleado'] . " (" . $row_Tecnicos['NombreCentroCosto2'] . " - " . $row_Tecnicos['DeCargo'] . ")"; ?>
+								</option>
+							<?php } ?>
 						<?php } ?>
 					</select>
 				</div>
 
 				<div class="col-lg-2"></div>
-
-				<div class="col-lg-4">
-					<label class="control-label">
-						<i onclick="ConsultarCliente();" title="Consultar cliente" style="cursor: pointer"
-							class="btn-xs btn-success fa fa-search"></i> Cliente <span class="text-danger">*</span>
-					</label>
-
-					<input type="hidden" name="Cliente" id="Cliente"
-						value="<?php echo $row['ID_CodigoCliente'] ?? ""; ?>">
-					<input required type="text" name="NombreCliente" id="NombreCliente" class="form-control"
-						placeholder="Digite para buscar..." value="<?php echo $row['NombreClienteLlamada'] ?? ""; ?>">
-				</div>
-			</div>
-			<!-- /.form-group -->
-
-			<div class="form-group row">
+								
 				<div class="col-lg-4">
 					<label class="control-label">Técnico/Asesor <span class="text-danger">*</span></label>
 
@@ -225,6 +316,21 @@ if ($Type != 0) {
 							<?php } ?>
 						<?php } ?>
 					</select>
+				</div>
+			</div>
+			<!-- /.form-group -->
+
+			<div class="form-group row">
+				<div class="col-lg-4">
+					<label class="control-label">
+						<i onclick="ConsultarCliente();" title="Consultar cliente" style="cursor: pointer"
+							class="btn-xs btn-success fa fa-search"></i> Cliente <span class="text-danger">*</span>
+					</label>
+
+					<input type="hidden" name="Cliente" id="Cliente"
+						value="<?php echo $row['ID_CodigoCliente'] ?? ""; ?>">
+					<input required type="text" name="NombreCliente" id="NombreCliente" class="form-control"
+						placeholder="Digite para buscar..." value="<?php echo $row['NombreClienteLlamada'] ?? ""; ?>">
 				</div>
 
 				<div class="col-lg-2"></div>
@@ -271,6 +377,30 @@ if ($Type != 0) {
 					<select multiple name="Campanas[]" id="Campanas" class="form-control select2"
 						data-placeholder="Debe seleccionar las campañas que desea asociar.">
 						<!-- Las campañas dependen de la TE. -->
+					</select>
+				</div>
+			</div>
+			<!-- /.form-group -->
+
+			<div class="form-group row">
+				<div class="col-lg-4">
+					<label class="control-label">
+						Kilometros <span class="text-danger">*</span>
+					</label>
+
+					<input required type="text" name="NombreCliente" id="NombreCliente" class="form-control"
+						value="<?php echo $row['NombreClienteLlamada'] ?? ""; ?>">
+				</div>
+
+				<div class="col-lg-2"></div>
+								
+				<div class="col-lg-4">
+					<label class="control-label">Tipo preventivo <span class="text-danger">*</span></label>
+
+					<select required name="SucursalCliente" id="SucursalCliente" class="form-control select2">
+						<option value="">Seleccione...</option>
+
+						<!-- La sucursal depende del cliente. -->
 					</select>
 				</div>
 			</div>

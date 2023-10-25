@@ -211,10 +211,9 @@ $ids_recursos = array();
 					calendar.changeView("resourceTimeGridDay", info.dateStr);
 				} else if (info.view.type === "resourceTimeGridDay") {
 					// Cargando.
-					// blockUI();
+					blockUI();
 
 					// Agregar nueva Solicitud.
-					/*
 					$.ajax({
 						type: "POST",
 						async: false,
@@ -227,7 +226,6 @@ $ids_recursos = array();
 							blockUI(false);
 						}
 					});
-					*/
 				}
 			},
 			// Seleccionar solamente un día del mes. SMM, 14/05/2022
@@ -333,6 +331,20 @@ $ids_recursos = array();
 							borderColor: '<?php echo in_array($row_Actividad['ID_EmpleadoActividad'], $ids_recursos) ? $row_Actividad['ColorEstadoServicio'] : 'red'; ?>'
 							*/
 						},
+
+						// SMM, 23/10/2023
+						<?php if(isset($row_Actividad['CDU_IdTecnicoAdicional']) && ($row_Actividad['CDU_IdTecnicoAdicional'] != "")) { ?>
+							{
+								id: '<?php echo $row_Actividad['ID_SolicitudLlamadaServicio']; ?>',
+								title: '<?php echo $EtiquetaActividad; ?>',
+								comentario: '<?php echo preg_replace('([^A-Za-z0-9 ])', '', $row_Actividad['ComentarioLlamada']); ?>',
+								start: '<?php echo $row_Actividad['FechaHoraCreacionLLamada']->format('Y-m-d H:i'); ?>',
+								end: '<?php echo $row_Actividad['FechaAgenda']->format('Y-m-d H:i'); ?>',
+								resourceId: '<?php echo $row_Actividad['CDU_IdTecnicoAdicional']; ?>',
+								textColor: '#FFF',
+								backgroundColor: '<?php echo $row_Actividad['ColorEstadoServicioLlamada']; ?>'
+							},
+						<?php } ?>
 					<?php } ?>
 				<?php } ?>
 			],
