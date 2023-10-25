@@ -700,7 +700,6 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
         if (!isset($_GET['id'])) {
             echo "<option value=''>Seleccione...</option>";
         } else {
-            //$SQL = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', '*', "ItemCode='" . $_GET['id'] . "'", 'SerialFabricante');
             $codigoArticulo = "'" . $_GET['id'] . "'";
             $cliente = "'" . $_GET['clt'] . "'";
 
@@ -709,22 +708,28 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
             } else {
                 $Consulta = "SELECT SerialInterno, SerialFabricante, IdTarjetaEquipo, ItemCode FROM uvw_Sap_tbl_TarjetasEquipos WHERE ItemCode=$codigoArticulo AND CardCode=$cliente AND CodEstado = 'A'";
             }
-            //echo $Consulta;
+
+            // echo $Consulta;
             $SQL = sqlsrv_query($conexion, $Consulta, array(), array("Scrollable" => 'Static'));
             $Num = sqlsrv_num_rows($SQL);
             if ($Num) {
                 echo "<option value=''>Seleccione...</option>";
                 while ($row = sqlsrv_fetch_array($SQL)) {
-                    // SMM, 19/05/2022
+                    // SMM, 25/10/2022
                     $IdTarjetaEquipo = $row['IdTarjetaEquipo'] ?? '';
                     $ItemCode = $row['ItemCode'] ?? '';
+                    $SerialInterno = $row['SerialInterno'] ?? '';
+                    $SerialFabricante = $row['SerialFabricante'] ?? '';
 
-                    if (isset($_GET['Serial']) && ($_GET['Serial'] == $row['SerialInterno'])) {
+                    if (isset($_GET['Serial']) && ($_GET['Serial'] == $SerialInterno)) {
                         if ((!isset($_GET['IdTE'])) || (isset($_GET['IdTE']) && ($_GET['IdTE'] == $IdTarjetaEquipo))) { // SMM, 23/05/2022
-                            echo "<option value=\"" . $row['SerialInterno'] . "\" selected=\"selected\" data-id='$IdTarjetaEquipo' data-itemcode='$ItemCode'>SN Fabricante: " . $row['SerialFabricante'] . " - Núm. Serie: " . $row['SerialInterno'] . "</option>";
+                            echo "<option value='$SerialInterno' selected data-id='$IdTarjetaEquipo' data-itemcode='$ItemCode'>SN Fabricante: $SerialFabricante - Núm. Serie: $SerialInterno</option>";
                         }
+                    } elseif(!isset($_GET['IdTE'])) {
+                        echo "<option value='$SerialInterno' data-id='$IdTarjetaEquipo' data-itemcode='$ItemCode'>SN Fabricante: $SerialFabricante - Núm. Serie: $SerialInterno</option>";
                     } else {
-                        echo "<option value=\"" . $row['SerialInterno'] . "\" data-id='$IdTarjetaEquipo' data-itemcode='$ItemCode'>SN Fabricante: " . $row['SerialFabricante'] . " - Núm. Serie: " . $row['SerialInterno'] . "</option>";
+                        // SMM, 25/10/2023
+                        echo "<option value='$IdTarjetaEquipo' data-itemcode='$ItemCode'>SN Fabricante: $SerialFabricante - Núm. Serie: $SerialInterno</option>";
                     }
 
                 }

@@ -57,7 +57,7 @@ $Cliente = $_POST["Cliente"] ?? "";
 $Comentario = $_POST["Comentario"] ?? "";
 $FechaHoraFin = isset($_POST["FechaFin"]) ? FormatoFecha($_POST["FechaFin"], $_POST["HoraFin"]) : "";
 $FechaHoraInicio = isset($_POST["FechaInicio"]) ? FormatoFecha($_POST["FechaInicio"], $_POST["HoraInicio"]) : "";
-$NumeroSerie = $_POST["NumeroSerie"] ?? ""; // TE
+$IdTarjetaEquipo = $_POST["IdTarjetaEquipo"] ?? "";
 $Series = $_POST["Series"] ?? "NULL";
 $SucursalCliente = $_POST["SucursalCliente"] ?? "NULL"; // NumeroLinea
 $Type = $_POST["Type"] ?? 0;
@@ -74,7 +74,7 @@ if ($Type == 1) {
 		$Series,
 		$Tecnico,
 		"'$Cliente'",
-		"'$NumeroSerie'",
+		"'$IdTarjetaEquipo'",
 		$SucursalCliente,
 		"'$Comentario'",
 		"'$FechaHoraInicio'",
@@ -387,11 +387,11 @@ if ($Type != 0) {
 						<?php while ($row_Tecnicos = sqlsrv_fetch_array($SQL_Tecnicos)) { ?>
 							<?php if (in_array($row_Tecnicos['IdCargo'], $ids_grupos) || ($MostrarTodosRecursos || (count($ids_grupos) == 0))) { ?>
 								<option value="<?php echo $row_Tecnicos['ID_Empleado']; ?>" <?php if (isset($row['IdTecnico']) && ($row_Tecnicos['ID_Empleado'] == $row['IdTecnico'])) {
-									   echo "selected";
-								   } ?> 		
-								<?php if ((count($ids_grupos) > 0) && (!in_array($row_Tecnicos['IdCargo'], $ids_grupos))) {
-									echo "disabled";
-								} ?>>
+											echo "selected";
+								   		} ?> 		
+										<?php if ((count($ids_grupos) > 0) && (!in_array($row_Tecnicos['IdCargo'], $ids_grupos))) {
+											echo "disabled";
+										} ?>>
 									<?php echo $row_Tecnicos['NombreEmpleado'] . " (" . $row_Tecnicos['NombreCentroCosto2'] . " - " . $row_Tecnicos['DeCargo'] . ")"; ?>
 								</option>
 							<?php } ?>
@@ -410,11 +410,11 @@ if ($Type != 0) {
 						<?php while ($row_Tecnicos = sqlsrv_fetch_array($SQL_TecnicosAdicionales)) { ?>
 							<?php if (in_array($row_Tecnicos['IdCargo'], $ids_grupos) || ($MostrarTodosRecursos || (count($ids_grupos) == 0))) { ?>
 								<option value="<?php echo $row_Tecnicos['ID_Empleado']; ?>" <?php if (isset($row['IdTecnico']) && ($row_Tecnicos['ID_Empleado'] == $row['IdTecnico'])) {
-									   echo "selected";
-								   } ?> 		
-								<?php if ((count($ids_grupos) > 0) && (!in_array($row_Tecnicos['IdCargo'], $ids_grupos))) {
-									echo "disabled";
-								} ?>>
+									   		echo "selected";
+								   		} ?> 		
+										<?php if ((count($ids_grupos) > 0) && (!in_array($row_Tecnicos['IdCargo'], $ids_grupos))) {
+											echo "disabled";
+										} ?>>
 									<?php echo $row_Tecnicos['NombreEmpleado'] . " (" . $row_Tecnicos['NombreCentroCosto2'] . " - " . $row_Tecnicos['DeCargo'] . ")"; ?>
 								</option>
 							<?php } ?>
@@ -458,7 +458,7 @@ if ($Type != 0) {
 							class="btn-xs btn-success fa fa-search"></i> Tarjeta de equipo <span class="text-danger">*</span>
 					</label>
 
-					<select name="NumeroSerie" id="NumeroSerie" class="form-control" required>
+					<select required name="IdTarjetaEquipo" id="IdTarjetaEquipo" class="form-control">
 						<option value="">Seleccione...</option>
 
 						<!-- La TE depende del cliente. -->
@@ -468,10 +468,12 @@ if ($Type != 0) {
 				<div class="col-lg-2">
 					<br>
 					<div class="btn-group">
-						<button type="button" id="AddEquipo" class="btn btn-primary" title="Adicionar Equipo"><i
-								class="fa fa-plus"></i></button>
-						<button type="button" id="AddCampana" class="btn btn-info" title="Adicionar Campaña" disabled><i
-								class="fa fa-bell"></i></button>
+						<button type="button" id="AddEquipo" class="btn btn-primary" title="Adicionar Equipo">
+							<i class="fa fa-plus"></i>
+						</button>
+						<button disabled type="button" id="AddCampana" class="btn btn-info" title="Adicionar Campaña">
+							<i class="fa fa-bell"></i>
+						</button>
 					</div>
 				</div>
 
@@ -480,6 +482,7 @@ if ($Type != 0) {
 
 					<select multiple name="Campanas[]" id="Campanas" class="form-control select2"
 						data-placeholder="Debe seleccionar las campañas que desea asociar.">
+						
 						<!-- Las campañas dependen de la TE. -->
 					</select>
 				</div>
@@ -492,8 +495,8 @@ if ($Type != 0) {
 						Kilometros <span class="text-danger">*</span>
 					</label>
 
-					<input required type="text" name="NombreCliente" id="NombreCliente" class="form-control"
-						value="<?php echo $row['NombreClienteLlamada'] ?? ""; ?>">
+					<input required type="text" name="CDU_Kilometros" id="CDU_Kilometros" class="form-control"
+						value="<?php echo $row["CDU_Kilometros"] ?? ""; ?>">
 				</div>
 
 				<div class="col-lg-2"></div>
@@ -505,10 +508,9 @@ if ($Type != 0) {
 					
 					<select required name="CDU_TipoPreventivo" id="CDU_TipoPreventivo" class="form-control">
 						<?php while ($row_TipoPreventivo = sqlsrv_fetch_array($SQL_TipoPreventivo)) { ?>
-							<option value="<?php echo $row_TipoPreventivo['CodigoTipoPreventivo']; ?>"
-							<?php if ((isset($row['CDU_TipoPreventivo'])) && (strcmp($row_TipoPreventivo['CodigoTipoPreventivo'], $row['CDU_TipoPreventivo']) == 0)) {
-								echo "selected";
-							} ?>>
+							<option value="<?php echo $row_TipoPreventivo['CodigoTipoPreventivo']; ?>" <?php if (isset($row['CDU_TipoPreventivo']) && ($row_TipoPreventivo['CodigoTipoPreventivo'] == $row['CDU_TipoPreventivo'])) {
+										echo "selected";
+									} ?>>
 								<?php echo $row_TipoPreventivo['TipoPreventivo']; ?>
 							</option>
 						<?php } ?>
@@ -519,9 +521,11 @@ if ($Type != 0) {
 
 			<div class="form-group row">
 				<div class="col-lg-12">
-					<label class="control-label">Comentario <span class="text-danger">*</span></label>
+					<label class="control-label">
+						Comentario <span class="text-danger">*</span>
+					</label>
 
-					<textarea required name="Comentario" rows="3" maxlength="3000" type="text" class="form-control"><?php echo $row['ComentarioSolicitud'] ?? ""; ?></textarea>
+					<textarea required type="text" name="Comentario" id="Comentario" rows="3" maxlength="3000" class="form-control"><?php echo $row['ComentarioSolicitud'] ?? ""; ?></textarea>
 				</div>
 			</div>
 			<!-- /.form-group -->
@@ -568,10 +572,10 @@ if ($Type != 0) {
 
 			$.ajax({
 				type: "POST",
-				url: `ajx_cbo_select.php?type=28&id=&clt=${$(this).val()}`,
+				url: `ajx_cbo_select.php?type=28&id=&clt=${$(this).val()}&IdTE=`,
 				success: function (response) {
-					$('#NumeroSerie').html(response).fadeIn();
-					$('#NumeroSerie').trigger('change');
+					$('#IdTarjetaEquipo').html(response).fadeIn();
+					$('#IdTarjetaEquipo').trigger('change');
 				}
 			});
 		});
@@ -598,7 +602,7 @@ if ($Type != 0) {
 						FechaInicio: jsonForm.FechaInicio,
 						HoraFin: jsonForm.HoraFin,
 						HoraInicio: jsonForm.HoraInicio,
-						NumeroSerie: jsonForm.NumeroSerie,
+						IdTarjetaEquipo: jsonForm.IdTarjetaEquipo,
 						Series: jsonForm.Series,
 						SucursalCliente: jsonForm.SucursalCliente,
 						Tecnico: jsonForm.Tecnico,
@@ -658,14 +662,15 @@ if ($Type != 0) {
 		// maxLength("Comentario");
 
 		// SMM, 05/10/2023
-		$("#NumeroSerie").on("change", function () {
+		$("#IdTarjetaEquipo").on("change", function () {
 			if ($(this).val() != "") {
 				$('#AddCampana').prop('disabled', false);
 			} else {
 				$('#AddCampana').prop('disabled', true);
 			}
 
-			let id_tarjeta_equipo = $(this).find(':selected').data('id');
+			// SMM, 25/10/2023
+			let id_tarjeta_equipo = $(this).val();
 
 			$.ajax({
 				type: "POST",
@@ -700,12 +705,12 @@ if ($Type != 0) {
 	});
 
 	function AdicionarCampanaAsincrono() {
-		let IdInterno_TarjetaEquipo = $("#NumeroSerie").find(':selected').data('id');
+		let id_tarjeta_equipo = $(this).val();
 
 		$.ajax({
 			type: "POST",
 			data: {
-				id_tarjeta_equipo: IdInterno_TarjetaEquipo,
+				id_tarjeta_equipo: id_tarjeta_equipo,
 				asincrono: 1, // Asincrono - En la creación.
 				solicitud: "Solicitud"
 			},
@@ -769,10 +774,10 @@ if ($Type != 0) {
 	}
 
 	function ConsultarEquipo() {
-		let Equipo = document.getElementById("NumeroSerie");
+		let Equipo = document.getElementById("IdTarjetaEquipo");
 
 		if (Equipo.value != "") {
-			window.open(`tarjeta_equipo.php?id=${Base64.encode(Equipo.value)}&tl=1&te=1`, "_blank");
+			window.open(`tarjeta_equipo.php?id=${Base64.encode(Equipo.value)}&tl=1`, "_blank");
 		}
 	}
 </script>
