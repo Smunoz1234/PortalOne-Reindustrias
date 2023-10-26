@@ -2,9 +2,16 @@
 require_once "includes/conexion.php";
 PermitirAcceso(336);
 
-$Where = "";
-$SQL_Actividades = Seleccionar('uvw_tbl_Actividades_Rutas', '*', $Where);
-$row = sql_fetch_array($SQL_Actividades);
+$ID = $_GET["id"] ?? "";
+$Where = "ID_SolicitudLlamadaServicio = $ID";
+$SQL_Actividad = Seleccionar("uvw_tbl_SolicitudLlamadasServicios_Calendario", "*", $Where);
+$row = sql_fetch_array($SQL_Actividad);
+
+// SMM, 26/10/2023
+if(isset($row["ID_CodigoCliente"])) {
+	$ID_CodigoCliente = $row["ID_CodigoCliente"];
+	$SQL_SucursalCliente = Seleccionar("uvw_Sap_tbl_Clientes_Sucursales", "*", "CodigoCliente='$ID_CodigoCliente' AND TipoDireccion='S'", "NombreSucursal");
+}
 
 // Empleados. SMM, 25/10/2023
 $SQL_Tecnicos = Seleccionar('uvw_Sap_tbl_Recursos', '*', '', 'NombreEmpleado');
@@ -305,14 +312,14 @@ if ($Type != 0) {
 								<span class="input-group-text"><i class="fa fa-calendar"></i></span>
 								<input required type="text" name="FechaCreacion" id="FechaCreacion"
 									class="form-control fecha"
-									value="<?php echo $row['FechaCreacion'] ?? date("Y-m-d"); ?>">
+									value="<?php echo ($row["FechaCreacion"] instanceof DateTime) ? $row["FechaCreacion"]->format("Y-m-d") : date("Y-m-d"); ?>">
 							</div>
 						</div>
 						<div class="col-lg-6">
 							<div class="input-group">
 								<span class="input-group-text"><i class="fa fa-clock"></i></span>
 								<input required type="text" name="HoraCreacion" id="HoraCreacion" class="form-control hora"
-									value="<?php echo $row['HoraCreacion'] ?? date("H:i"); ?>"
+									value="<?php echo ($row["FechaCreacion"] instanceof DateTime) ? $row["FechaCreacion"]->format("Y-m-d") : date("Y-m-d"); ?>"
 									onchange="ValidarHoras();">
 							</div>
 						</div>
@@ -331,14 +338,14 @@ if ($Type != 0) {
 								<span class="input-group-text"><i class="fa fa-calendar"></i></span>
 								<input required type="text" name="FechaAgenda" id="FechaAgenda"
 									class="form-control fecha"
-									value="<?php echo $row['FechaAgenda'] ?? date("Y-m-d"); ?>">
+									value="<?php echo ($row["FechaAgenda"] instanceof DateTime) ? $row["FechaAgenda"]->format("Y-m-d") : date("Y-m-d"); ?>">
 							</div>
 						</div>
 						<div class="col-lg-6">
 							<div class="input-group">
 								<span class="input-group-text"><i class="fa fa-clock"></i></span>
 								<input required type="text" name="HoraAgenda" id="HoraAgenda" class="form-control hora"
-									value="<?php echo $row['HoraAgenda'] ?? date("H:i"); ?>"
+									value="<?php echo ($row["FechaAgenda"] instanceof DateTime) ? $row["FechaAgenda"]->format("Y-m-d") : date("Y-m-d"); ?>"
 									onchange="ValidarHorasAgenda();">
 							</div>
 						</div>
@@ -359,14 +366,14 @@ if ($Type != 0) {
 							<div class="input-group">
 								<span class="input-group-text"><i class="fa fa-calendar"></i></span>
 								<input required type="text" name="FechaFinCreacion" id="FechaFinCreacion" class="form-control fecha"
-									value="<?php echo $row['FechaFinCreacion'] ?? date("Y-m-d"); ?>">
+									value="<?php echo ($row["FechaFinCreacion"] instanceof DateTime) ? $row["FechaFinCreacion"]->format("Y-m-d") : date("Y-m-d"); ?>">
 							</div>
 						</div>
 						<div class="col-lg-6">
 							<div class="input-group">
 								<span class="input-group-text"><i class="fa fa-clock"></i></span>
 								<input required type="text" name="HoraFinCreacion" id="HoraFinCreacion" class="form-control hora"
-									value="<?php echo $row['HoraFinCreacion'] ?? date("H:i"); ?>"
+									value="<?php echo ($row["FechaFinCreacion"] instanceof DateTime) ? $row["FechaFinCreacion"]->format("Y-m-d") : date("Y-m-d"); ?>"
 									onchange="ValidarHoras();">
 							</div>
 						</div>
@@ -384,14 +391,14 @@ if ($Type != 0) {
 							<div class="input-group">
 								<span class="input-group-text"><i class="fa fa-calendar"></i></span>
 								<input required type="text" name="FechaFinAgenda" id="FechaFinAgenda" class="form-control fecha"
-									value="<?php echo $row['FechaFinAgenda'] ?? date("Y-m-d"); ?>">
+									value="<?php echo ($row["FechaFinAgenda"] instanceof DateTime) ? $row["FechaFinAgenda"]->format("Y-m-d") : date("Y-m-d"); ?>">
 							</div>
 						</div>
 						<div class="col-lg-6">
 							<div class="input-group">
 								<span class="input-group-text"><i class="fa fa-clock"></i></span>
 								<input required type="text" name="HoraFinAgenda" id="HoraFinAgenda" class="form-control hora"
-									value="<?php echo $row['HoraFinAgenda'] ?? date("H:i"); ?>"
+									value="<?php echo ($row["FechaFinAgenda"] instanceof DateTime) ? $row["FechaFinAgenda"]->format("Y-m-d") : date("Y-m-d"); ?>"
 									onchange="ValidarHorasAgenda();">
 							</div>
 						</div>
@@ -469,7 +476,13 @@ if ($Type != 0) {
 					<select required name="SucursalCliente" id="SucursalCliente" class="form-control">
 						<option value="">Seleccione...</option>
 
-						<!-- La sucursal depende del cliente. -->
+						<?php while ($row_SucursalCliente = sqlsrv_fetch_array($SQL_SucursalCliente)) { ?>
+							<option value="<?php echo $row_SucursalCliente['IdNombreSucursal']; ?>" <?php if (isset($row['NombreSucursal']) && (strcmp($row_SucursalCliente['NumeroLinea'], $row['IdNombreSucursal']) == 0)) {
+										echo "selected";
+									} ?>>
+								<?php echo $row_SucursalCliente['NombreSucursal']; ?>
+							</option>
+						<?php } ?>
 					</select>
 				</div>
 			</div>
@@ -795,6 +808,9 @@ if ($Type != 0) {
 		$("#AddEquipo").on("click", function () {
 			AdicionarEquipo();
 		});
+
+		// SMM, 26/10/2023
+		$("#Cliente").change();
 	});
 
 	function AdicionarCampanaAsincrono() {

@@ -49,7 +49,7 @@ if ($sw == 1) { // Si estoy refrescando datos ya cargados
 
 	// SMM, 17/10/2023
 	$Cons = "SELECT * FROM [uvw_tbl_SolicitudLlamadasServicios_Calendario] WHERE (FechaCreacionLLamada BETWEEN '$FechaInicial' AND '$FechaFinal') $Filtro";
-    $SQL_Actividad = sqlsrv_query($conexion, $Cons);
+    $SQL_Actividades = sqlsrv_query($conexion, $Cons);
 
 	// SMM, 18/10/2023 
 	// echo $Cons;
@@ -67,9 +67,19 @@ while ($row_GruposUsuario = sqlsrv_fetch_array($SQL_GruposUsuario)) {
 $ids_recursos = array();
 ?>
 
-<div id="calendario"></div>
-<script>
+<style>
+	.fc-view-harness > div:not(.fc-view) {
+    	/* 
+		Estilos para el hijo que no tiene la clase "fc-view" dentro del contenedor con la clase "fc-view-harness" 
+		Nota: También conocido como el botón que no tengo idea de donde salió.
+		*/
+		display: none;
+	}
+</style>
 
+<div id="calendario"></div>
+
+<script>
 	$(document).ready(function () {
 
 		/* initialize the calendar
@@ -216,12 +226,17 @@ $ids_recursos = array();
 					// Agregar nueva Solicitud.
 					$.ajax({
 						type: "POST",
-						async: false,
 						url: "programacion_solicitudes_actividad.php",
 						success: function (response) {
 							$('#ContenidoModal').html(response);
 							$('#ModalAct').modal("show");
 							
+							// Quitar cargando.
+							blockUI(false);
+						},
+						error: function (error) {
+							console.log("error (230), ", error);
+
 							// Quitar cargando.
 							blockUI(false);
 						}
@@ -283,7 +298,7 @@ $ids_recursos = array();
 			},
 			events: [
 				<?php if($sw == 1) { ?>
-					<?php while ($row_Actividad = sqlsrv_fetch_array($SQL_Actividad)) {
+					<?php while ($row_Actividad = sqlsrv_fetch_array($SQL_Actividades)) {
 						/*
 						$classAdd = "";
 						if ($row_Actividad['IdEstadoActividad'] == 'Y') {
@@ -602,7 +617,29 @@ $ids_recursos = array();
 				// console.log('info',info);
 				// console.log('eP:',info.event.extendedProps);
 
-				window.open(`solicitud_llamada.php?id=${btoa(info.event.id)}&tl=1`, "_blank");
+				// window.open(`solicitud_llamada.php?id=${btoa(info.event.id)}&tl=1`, "_blank");
+
+				// Cargando.
+				blockUI();
+
+				// Agregar nueva Solicitud.
+				$.ajax({
+					type: "GET",
+					url: `programacion_solicitudes_actividad.php?id=${info.event.id}`,
+					success: function (response) {
+						$('#ContenidoModal').html(response);
+						$('#ModalAct').modal("show");
+						
+						// Quitar cargando.
+						blockUI(false);
+					},
+					error: function (error) {
+						console.log("error (230), ", error);
+
+						// Quitar cargando.
+						blockUI(false);
+					}
+				});
 			},
 			height: 'auto', // will activate stickyHeaderDates automatically!
 			contentHeight: 'auto',
