@@ -682,7 +682,6 @@ $(document).ready(function () {
 		ActualizarAsunto();
 	});
 
-
 	var borrarNumeroSerie = true;
 	var borrarLineaModeloVehiculo = true;
 
@@ -897,27 +896,26 @@ $(document).ready(function () {
 						success: function (data) {
 							console.log(data);
 
-							if (data.OrigenLlamada)
-								$('#OrigenLlamada').val(data.OrigenLlamada || '""');
-								$('#OrigenLlamada').trigger('change');
+							$('#OrigenLlamada').val(data.OrigenLlamada || '""');
+							$('#OrigenLlamada').trigger('change');
 
-								$('#TipoProblema').val(data.TipoProblemaLlamada || '""');
-								$('#TipoProblema').trigger('change');
+							$('#TipoProblema').val(data.TipoProblemaLlamada || '""');
+							$('#TipoProblema').trigger('change');
+							
+							$('#TipoLlamada').val(data.TipoLlamada || '""');
+							$('#TipoLlamada').trigger('change');
+
+							let AsuntoLlamada = (data.AsuntoLlamada || '""');
+							let f333 = <?php echo PermitirFuncion(333) ? 'true' : 'false'; ?>;
+							if (f333) {
+								let OrigenLlamada = trim($("#OrigenLlamada option:selected").text());
+								let TipoProblema = trim($("#TipoProblema option:selected").text());
+
+								AsuntoLlamada = `${AsuntoLlamada} (${OrigenLlamada}) (${TipoProblema})`;
+							}
+							$('#AsuntoLlamada').val(AsuntoLlamada);
 								
-								$('#TipoLlamada').val(data.TipoLlamada || '""');
-								$('#TipoLlamada').trigger('change');
-
-								let AsuntoLlamada = (data.AsuntoLlamada || '""');
-								let f333 = <?php echo PermitirFuncion(333) ? 'true' : 'false'; ?>;
-								if (f333) {
-									let OrigenLlamada = trim($("#OrigenLlamada option:selected").text());
-									let TipoProblema = trim($("#TipoProblema option:selected").text());
-
-									AsuntoLlamada = `${AsuntoLlamada} (${OrigenLlamada}) (${TipoProblema})`;
-								}
-								$('#AsuntoLlamada').val(AsuntoLlamada);
-								
-								$('.ibox-content').toggleClass('sk-loading', false);
+							$('.ibox-content').toggleClass('sk-loading', false);
 						},
 						error: function (error) {
 							console.log("AJAX error:", error);

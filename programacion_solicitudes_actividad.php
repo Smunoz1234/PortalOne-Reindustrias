@@ -580,6 +580,36 @@ if ($Type != 0) {
 			});
 		});
 
+		// SMM, 25/10/2023
+		$("#Series").change(function () {
+				let Series = document.getElementById('Series').value;
+				if (Series !== "") {
+					$.ajax({
+						url: "ajx_buscar_datos_json.php",
+						data: {
+							type: 30,
+							id: Series
+						},
+						dataType: 'json',
+						success: function (data) {
+							console.log(data);
+
+							$('#OrigenLlamada').val(data.OrigenLlamada || '""');
+							$('#OrigenLlamada').trigger('change');
+							$('#TipoProblema').val(data.TipoProblemaLlamada || '""');
+							$('#TipoProblema').trigger('change');
+							$('#TipoLlamada').val(data.TipoLlamada || '""');
+							$('#TipoLlamada').trigger('change');
+						},
+						error: function (error) {
+							console.log("AJAX error:", error);
+						}
+					});
+				} else {
+					$('.ibox-content').toggleClass('sk-loading', false);
+				}
+			});
+
 		$(".select2").select2({
 			dropdownParent: $('#ModalAct')
 		});
@@ -598,14 +628,15 @@ if ($Type != 0) {
 					data: {
 						Cliente: jsonForm.Cliente,
 						Comentario: jsonForm.Comentario,
-						FechaFin: jsonForm.FechaFin,
-						FechaInicio: jsonForm.FechaInicio,
-						HoraFin: jsonForm.HoraFin,
-						HoraInicio: jsonForm.HoraInicio,
+						FechaCreacion: jsonForm.FechaCreacion,
+						FechaFinCreacion: jsonForm.FechaFinCreacion,
+						FechaAgenda: jsonForm.FechaAgenda,
+						FechaFinAgenda: jsonForm.FechaFinAgenda,
 						IdTarjetaEquipo: jsonForm.IdTarjetaEquipo,
 						Series: jsonForm.Series,
 						SucursalCliente: jsonForm.SucursalCliente,
 						Tecnico: jsonForm.Tecnico,
+						TecnicoAdicional: jsonForm.TecnicoAdicional,
 						Type: 1
 					},
 					url: "programacion_solicitudes_actividad.php",
