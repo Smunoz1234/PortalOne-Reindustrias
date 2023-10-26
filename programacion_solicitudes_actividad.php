@@ -55,16 +55,31 @@ $datetime = FormatoFecha(date('Y-m-d'), date('H:i:s'));
 
 $Cliente = $_POST["Cliente"] ?? "";
 $Comentario = $_POST["Comentario"] ?? "";
-$FechaHoraFin = isset($_POST["FechaFin"]) ? FormatoFecha($_POST["FechaFin"], $_POST["HoraFin"]) : "";
-$FechaHoraInicio = isset($_POST["FechaInicio"]) ? FormatoFecha($_POST["FechaInicio"], $_POST["HoraInicio"]) : "";
-$IdTarjetaEquipo = $_POST["IdTarjetaEquipo"] ?? "";
+$IdTarjetaEquipo = $_POST["IdTarjetaEquipo"] ?? ""; // useless
 $NumeroSerie = $_POST["NumeroSerie"] ?? ""; // TE
 $Series = $_POST["Series"] ?? "NULL";
 $SucursalCliente = $_POST["SucursalCliente"] ?? "NULL"; // NumeroLinea
 $Type = $_POST["Type"] ?? 0;
-$Tecnico = $_POST["Tecnico"] ?? "NULL"; // AsignadoA? -> EmpleadoLlamada
 $Usuario = "'$coduser'";
 
+// SMM, 25/10/2023
+$ID_SolicitudLlamadaServicio = $_POST["ID_SolicitudLlamadaServicio"] ?? "NULL";
+
+$OrigenLlamada = $_POST["OrigenLlamada"] ?? "NULL";
+$TipoLlamada = $_POST["TipoLlamada"] ?? "NULL";
+$TipoProblema = $_POST["TipoProblema"] ?? "NULL";
+$SubTipoProblema = $_POST["SubTipoProblema"] ?? "NULL";
+
+$FechaCreacion = isset($_POST["FechaCreacion"]) ? FormatoFecha($_POST["FechaCreacion"], $_POST["HoraCreacion"]) : "";
+$FechaFinCreacion = isset($_POST["FechaFinCreacion"]) ? FormatoFecha($_POST["FechaFinCreacion"], $_POST["HoraFinCreacion"]) : "";
+$FechaAgenda = isset($_POST["FechaAgenda"]) ? FormatoFecha($_POST["FechaAgenda"], $_POST["HoraAgenda"]) : "";
+$FechaFinAgenda = isset($_POST["FechaFinAgenda"]) ? FormatoFecha($_POST["FechaFinAgenda"], $_POST["HoraFinAgenda"]) : "";
+
+$Tecnico = $_POST["Tecnico"] ?? "NULL";
+$TecnicoAdicional = $_POST["TecnicoAdicional"] ?? "NULL";
+
+$CDU_Kilometros = $_POST["CDU_Kilometros"] ?? "NULL";
+$CDU_TipoPreventivo = $_POST["CDU_TipoPreventivo"] ?? "";
 
 if ($Type == 1) {
 	$msg_error = "No se pudo crear la Agenda.";
@@ -73,15 +88,23 @@ if ($Type == 1) {
 		$Type,
 		"NULL", // ID_SolicitudLlamadaServicio
 		$Series,
+		$OrigenLlamada,
+		$TipoLlamada,
+		$TipoProblema,
+		$SubTipoProblema,
 		$Tecnico,
+		$TecnicoAdicional,
 		"'$Cliente'",
-		"'$IdTarjetaEquipo'",
+		"'$NumeroSerie'",
+		$CDU_Kilometros,
+		"'$CDU_TipoPreventivo'",
 		$SucursalCliente,
 		"'$Comentario'",
-		"'$FechaHoraInicio'",
+		"'$FechaCreacion'",
+		"'$FechaFinCreacion'",
 		$Usuario,
-		"'$FechaHoraFin'",
-		"'$FechaHoraFin'",
+		"'$FechaAgenda'",
+		"'$FechaFinAgenda'",
 		"''" // CampanasAsociadas
 	);
 } 
@@ -575,41 +598,66 @@ if ($Type != 0) {
 				type: "POST",
 				url: `ajx_cbo_select.php?type=28&id=&clt=${$(this).val()}`, // &IdTE=
 				success: function (response) {
-					$('#IdTarjetaEquipo').html(response).fadeIn();
-					$('#IdTarjetaEquipo').trigger('change');
+					// IdTarjetaEquipo
+					$("#NumeroSerie").html(response).fadeIn();
+					$("#NumeroSerie").trigger('change');
 				}
 			});
 		});
 
 		// SMM, 25/10/2023
 		$("#Series").change(function () {
-				let Series = document.getElementById('Series').value;
-				if (Series !== "") {
-					$.ajax({
-						url: "ajx_buscar_datos_json.php",
-						data: {
-							type: 30,
-							id: Series
-						},
-						dataType: 'json',
-						success: function (data) {
-							console.log(data);
+			let Series = document.getElementById('Series').value;
+			if (Series !== "") {
+				$.ajax({
+					url: "ajx_buscar_datos_json.php",
+					data: {
+						type: 30,
+						id: Series
+					},
+					dataType: 'json',
+					success: function (data) {
+						console.log(data);
 
-							$('#OrigenLlamada').val(data.OrigenLlamada || '""');
-							$('#OrigenLlamada').trigger('change');
-							$('#TipoProblema').val(data.TipoProblemaLlamada || '""');
-							$('#TipoProblema').trigger('change');
-							$('#TipoLlamada').val(data.TipoLlamada || '""');
-							$('#TipoLlamada').trigger('change');
-						},
-						error: function (error) {
-							console.log("AJAX error:", error);
-						}
-					});
-				} else {
-					$('.ibox-content').toggleClass('sk-loading', false);
+						$('#OrigenLlamada').val(data.OrigenLlamada || '""');
+						$('#OrigenLlamada').trigger('change');
+						$('#TipoProblema').val(data.TipoProblemaLlamada || '""');
+						$('#TipoProblema').trigger('change');
+						$('#TipoLlamada').val(data.TipoLlamada || '""');
+						$('#TipoLlamada').trigger('change');
+					},
+					error: function (error) {
+						console.log("AJAX error:", error);
+					}
+				});
+			} else {
+				$('.ibox-content').toggleClass('sk-loading', false);
+			}
+		});
+
+		// SMM, 25/10/2023
+		$("#OrigenLlamada").change(function () {
+			$.ajax({
+				type: "POST",
+				url: `ajx_cbo_select.php?type=46&id=${$(this).val()}&serie=${$("#Series").val()}`,
+				success: function (response) {
+					$('#TipoProblema').html(response).fadeIn();
+					$('#TipoProblema').trigger('change');
 				}
 			});
+		});
+
+		// SMM, 25/10/2023
+		$("#TipoProblema").change(function () {
+			$.ajax({
+				type: "POST",
+				url: `ajx_cbo_select.php?type=47&id=${$(this).val()}&serie=${$("#Series").val()}`,
+				success: function (response) {
+					$('#TipoLlamada').html(response).fadeIn();
+					$('#TipoLlamada').trigger('change');
+				}
+			});
+		});
 
 		$(".select2").select2({
 			dropdownParent: $('#ModalAct')
@@ -625,21 +673,31 @@ if ($Type != 0) {
 				console.log("Line 366", jsonForm);
 				
 				// IdTarjetaEquipo: jsonForm.IdTarjetaEquipo,
-
 				$.ajax({
 					type: "POST",
 					data: {
-						Cliente: jsonForm.Cliente,
-						Comentario: jsonForm.Comentario,
+						ID_SolicitudLlamadaServicio: jsonForm.ID_SolicitudLlamadaServicio,
+						Series: jsonForm.Series,
+						OrigenLlamada: jsonForm.OrigenLlamada,
+						TipoLlamada: jsonForm.TipoLlamada,
+						TipoProblema: jsonForm.TipoProblema,
+						SubTipoProblema: jsonForm.SubTipoProblema,
 						FechaCreacion: jsonForm.FechaCreacion,
 						FechaFinCreacion: jsonForm.FechaFinCreacion,
 						FechaAgenda: jsonForm.FechaAgenda,
 						FechaFinAgenda: jsonForm.FechaFinAgenda,
-						NumeroSerie: jsonForm.NumeroSerie,
-						Series: jsonForm.Series,
-						SucursalCliente: jsonForm.SucursalCliente,
+						HoraCreacion: jsonForm.HoraCreacion,
+						HoraFinCreacion: jsonForm.HoraFinCreacion,
+						HoraAgenda: jsonForm.HoraAgenda,
+						HoraFinAgenda: jsonForm.HoraFinAgenda,
 						Tecnico: jsonForm.Tecnico,
 						TecnicoAdicional: jsonForm.TecnicoAdicional,
+						Cliente: jsonForm.Cliente,
+						SucursalCliente: jsonForm.SucursalCliente,
+						NumeroSerie: jsonForm.NumeroSerie,
+						CDU_Kilometros: jsonForm.CDU_Kilometros,
+						CDU_TipoPreventivo: jsonForm.CDU_TipoPreventivo,
+						Comentario: jsonForm.Comentario,
 						Type: 1
 					},
 					url: "programacion_solicitudes_actividad.php",
@@ -696,7 +754,7 @@ if ($Type != 0) {
 		// maxLength("Comentario");
 
 		// SMM, 05/10/2023
-		$("#IdTarjetaEquipo").on("change", function () {
+		$("#NumeroSerie").on("change", function () {
 			if ($(this).val() != "") {
 				$('#AddCampana').prop('disabled', false);
 			} else {
