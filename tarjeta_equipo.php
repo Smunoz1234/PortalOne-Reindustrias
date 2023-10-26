@@ -319,7 +319,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
 
 }
 
-if ($edit == 1 && $sw_error == 0) { //Editando la tarjeta de equipo
+if ($edit == 1 && $sw_error == 0) { // Editando la tarjeta de equipo
 	if (isset($_GET['te']) && ($_GET['te'] == 1)) {
 		$SQL = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', '*', "SerialInterno='" . $IdTarjetaEquipo . "'");
 	} else {
