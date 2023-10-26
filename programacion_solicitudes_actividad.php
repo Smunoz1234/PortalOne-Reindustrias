@@ -75,7 +75,7 @@ if ($Type == 1) {
 		$Series,
 		$Tecnico,
 		"'$Cliente'",
-		"'$NumeroSerie'",
+		"'$IdTarjetaEquipo'",
 		$SucursalCliente,
 		"'$Comentario'",
 		"'$FechaHoraInicio'",
@@ -575,8 +575,8 @@ if ($Type != 0) {
 				type: "POST",
 				url: `ajx_cbo_select.php?type=28&id=&clt=${$(this).val()}`, // &IdTE=
 				success: function (response) {
-					$('#NumeroSerie').html(response).fadeIn();
-					$('#NumeroSerie').trigger('change');
+					$('#IdTarjetaEquipo').html(response).fadeIn();
+					$('#IdTarjetaEquipo').trigger('change');
 				}
 			});
 		});
@@ -696,7 +696,7 @@ if ($Type != 0) {
 		// maxLength("Comentario");
 
 		// SMM, 05/10/2023
-		$("#NumeroSerie").on("change", function () {
+		$("#IdTarjetaEquipo").on("change", function () {
 			if ($(this).val() != "") {
 				$('#AddCampana').prop('disabled', false);
 			} else {
