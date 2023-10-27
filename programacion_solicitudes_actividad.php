@@ -12,6 +12,16 @@ if($edit) {
 	$row = sqlsrv_fetch_array($SQL_Actividad);
 }
 
+// Fechas. SMM, 27/10/2023
+$ValorFechaCreacion = (isset($row["FechaCreacion"]) && ($row["FechaCreacion"] instanceof DateTime)) ? $row["FechaCreacion"]->format("Y-m-d") : date("Y-m-d");
+$ValorFechaFinCreacion = (isset($row["FechaFinCreacion"]) && ($row["FechaCreacion"] instanceof DateTime)) ? $row["FechaCreacion"]->format("Y-m-d") : date("Y-m-d");
+$ValorFechaAgenda = (isset($row["FechaAgenda"]) && ($row["FechaAgenda"] instanceof DateTime)) ? $row["FechaAgenda"]->format("Y-m-d") : date("Y-m-d");
+$ValorFechaFinAgenda = (isset($row["FechaFinAgenda"]) && ($row["FechaFinAgenda"] instanceof DateTime)) ? $row["FechaFinAgenda"]->format("Y-m-d") : date("Y-m-d");
+$ValorHoraCreacion = (isset($row["HoraCreacion"]) && ($row["HoraCreacion"] instanceof DateTime)) ? $row["HoraCreacion"]->format("H:i") : date("H:i");
+$ValorHoraFinCreacion = (isset($row["HoraFinCreacion"]) && ($row["HoraCreacion"] instanceof DateTime)) ? $row["HoraCreacion"]->format("H:i") : date("H:i");
+$ValorHoraAgenda = (isset($row["HoraAgenda"]) && ($row["HoraAgenda"] instanceof DateTime)) ? $row["HoraAgenda"]->format("H:i") : date("H:i");
+$ValorHoraFinAgenda = (isset($row["HoraFinAgenda"]) && ($row["HoraFinAgenda"] instanceof DateTime)) ? $row["HoraFinAgenda"]->format("H:i") : date("H:i");
+
 // SMM, 26/10/2023
 if (isset($row["ID_CodigoCliente"])) {
 	$ID_CodigoCliente = $row["ID_CodigoCliente"];
@@ -336,7 +346,7 @@ if ($Type != 0) {
 								<span class="input-group-text"><i class="fa fa-calendar"></i></span>
 								<input required type="text" name="FechaCreacion" id="FechaCreacion"
 									class="form-control fecha"
-									value="<?php echo ($row["FechaCreacion"] instanceof DateTime) ? $row["FechaCreacion"]->format("Y-m-d") : date("Y-m-d"); ?>">
+									value="<?php echo $ValorFechaCreacion; ?>">
 							</div>
 						</div>
 						<div class="col-lg-6">
@@ -344,7 +354,7 @@ if ($Type != 0) {
 								<span class="input-group-text"><i class="fa fa-clock"></i></span>
 								<input required type="text" name="HoraCreacion" id="HoraCreacion"
 									class="form-control hora"
-									value="<?php echo ($row["FechaCreacion"] instanceof DateTime) ? $row["FechaCreacion"]->format("Y-m-d") : date("Y-m-d"); ?>"
+									value="<?php echo $ValorHoraCreacion; ?>"
 									onchange="ValidarHoras();">
 							</div>
 						</div>
@@ -363,14 +373,14 @@ if ($Type != 0) {
 								<span class="input-group-text"><i class="fa fa-calendar"></i></span>
 								<input required type="text" name="FechaAgenda" id="FechaAgenda"
 									class="form-control fecha"
-									value="<?php echo ($row["FechaAgenda"] instanceof DateTime) ? $row["FechaAgenda"]->format("Y-m-d") : date("Y-m-d"); ?>">
+									value="<?php echo $ValorFechaAgenda; ?>">
 							</div>
 						</div>
 						<div class="col-lg-6">
 							<div class="input-group">
 								<span class="input-group-text"><i class="fa fa-clock"></i></span>
 								<input required type="text" name="HoraAgenda" id="HoraAgenda" class="form-control hora"
-									value="<?php echo ($row["FechaAgenda"] instanceof DateTime) ? $row["FechaAgenda"]->format("Y-m-d") : date("Y-m-d"); ?>"
+									value="<?php echo $ValorHoraAgenda; ?>"
 									onchange="ValidarHorasAgenda();">
 							</div>
 						</div>
@@ -392,7 +402,7 @@ if ($Type != 0) {
 								<span class="input-group-text"><i class="fa fa-calendar"></i></span>
 								<input required type="text" name="FechaFinCreacion" id="FechaFinCreacion"
 									class="form-control fecha"
-									value="<?php echo ($row["FechaFinCreacion"] instanceof DateTime) ? $row["FechaFinCreacion"]->format("Y-m-d") : date("Y-m-d"); ?>">
+									value="<?php echo $ValorFechaFinCreacion; ?>">
 							</div>
 						</div>
 						<div class="col-lg-6">
@@ -400,7 +410,7 @@ if ($Type != 0) {
 								<span class="input-group-text"><i class="fa fa-clock"></i></span>
 								<input required type="text" name="HoraFinCreacion" id="HoraFinCreacion"
 									class="form-control hora"
-									value="<?php echo ($row["FechaFinCreacion"] instanceof DateTime) ? $row["FechaFinCreacion"]->format("Y-m-d") : date("Y-m-d"); ?>"
+									value="<?php echo $ValorHoraFinCreacion; ?>"
 									onchange="ValidarHoras();">
 							</div>
 						</div>
@@ -419,7 +429,7 @@ if ($Type != 0) {
 								<span class="input-group-text"><i class="fa fa-calendar"></i></span>
 								<input required type="text" name="FechaFinAgenda" id="FechaFinAgenda"
 									class="form-control fecha"
-									value="<?php echo ($row["FechaFinAgenda"] instanceof DateTime) ? $row["FechaFinAgenda"]->format("Y-m-d") : date("Y-m-d"); ?>">
+									value="<?php echo $ValorFechaFinAgenda; ?>">
 							</div>
 						</div>
 						<div class="col-lg-6">
@@ -427,7 +437,7 @@ if ($Type != 0) {
 								<span class="input-group-text"><i class="fa fa-clock"></i></span>
 								<input required type="text" name="HoraFinAgenda" id="HoraFinAgenda"
 									class="form-control hora"
-									value="<?php echo ($row["FechaFinAgenda"] instanceof DateTime) ? $row["FechaFinAgenda"]->format("Y-m-d") : date("Y-m-d"); ?>"
+									value="<?php echo $ValorHoraFinAgenda; ?>"
 									onchange="ValidarHorasAgenda();">
 							</div>
 						</div>
@@ -709,11 +719,24 @@ if ($Type != 0) {
 		$("#frmActividad").validate({
 			submitHandler: function (form, event) {
 				event.preventDefault(); // Prevenir redirrección.
-				blockUI(); // Carga iniciada.
+				// blockUI(); // Carga iniciada.
 
 				let formData = new FormData(form);
 				let jsonForm = Object.fromEntries(formData);
-				console.log("Line 366", jsonForm);
+				console.log("Line 720", jsonForm);
+
+				console.log(jsonForm.Campanas);
+				console.log(jsonForm.Campanas[]);
+				console.log(jsonForm["Campanas"]);
+
+				/*
+				let CampanasAsociadas = "";
+				if (typeof jsonForm.Campanas !== "undefined") {
+					CampanasAsociadas = jsonForm.Campanas.join(";");
+				} else {
+					console.log(jsonForm.Campanas);
+					alert("No hay campañas");
+				}
 
 				let jsonActividad = {
 					Type: 3,
@@ -758,7 +781,7 @@ if ($Type != 0) {
 						SubTipoProblema: jsonForm.SubTipoProblema,
 						Cliente: jsonForm.Cliente,
 						SucursalCliente: jsonForm.SucursalCliente,
-						Campanas: jsonForm.Campanas
+						Campanas: CampanasAsociadas
 					};
 				<?php } ?>
 
@@ -801,6 +824,8 @@ if ($Type != 0) {
 						blockUI(false); // Carga terminada.
 					}
 				});
+				// Fin del AJAX
+				*/
 			}
 		});
 
