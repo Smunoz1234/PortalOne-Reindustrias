@@ -3,12 +3,14 @@ require_once "includes/conexion.php";
 PermitirAcceso(336);
 
 $ID = $_GET["id"] ?? "";
-$Where = "ID_SolicitudLlamadaServicio = $ID";
-$SQL_Actividad = Seleccionar("uvw_tbl_SolicitudLlamadasServicios_Calendario", "*", $Where);
-$row = sql_fetch_array($SQL_Actividad);
+$edit = ($ID != "");
 
 // SMM, 27/10/2023
-$edit = ($ID != "");
+if($edit) {
+	$Where = "ID_SolicitudLlamadaServicio = $ID";
+	$SQL_Actividad = Seleccionar("uvw_tbl_SolicitudLlamadasServicios_Calendario", "*", $Where);
+	$row = sqlsrv_fetch_array($SQL_Actividad);
+}
 
 // SMM, 26/10/2023
 if (isset($row["ID_CodigoCliente"])) {
@@ -154,7 +156,7 @@ if ($Type != 0) {
 			$IdSolicitud = ($row_Operacion[0] ?? "NULL");
 
 			// Corregir Campos. Type = 2, ID_SolicitudLlamadaServicio = $IdSolicitud.
-			// EjecutarSP("sp_tbl_SolicitudLlamadaServicios_Calendario", [2, $IdSolicitud]); 
+			EjecutarSP("sp_tbl_SolicitudLlamadaServicios_Calendario", [2, $IdSolicitud]); 
 
 			echo "OK";
 			exit();
@@ -590,7 +592,7 @@ if ($Type != 0) {
 					</label>
 
 					<textarea required type="text" name="Comentario" id="Comentario" rows="3" maxlength="3000"
-						class="form-control"><?php echo $row['ComentarioSolicitud'] ?? ""; ?></textarea>
+						class="form-control"><?php echo $row['ComentarioLlamada'] ?? ""; ?></textarea>
 				</div>
 			</div>
 			<!-- /.form-group -->
@@ -714,7 +716,7 @@ if ($Type != 0) {
 				console.log("Line 366", jsonForm);
 
 				let jsonActividad = {
-					Type: 3
+					Type: 3,
 					ID_SolicitudLlamadaServicio: jsonForm.ID_SolicitudLlamadaServicio,
 					Tecnico: jsonForm.Tecnico,
 					TecnicoAdicional: jsonForm.TecnicoAdicional,
@@ -733,7 +735,7 @@ if ($Type != 0) {
 
 				<?php if(!$edit) { ?>
 					jsonActividad = {
-						Type: 1
+						Type: 1,
 						ID_SolicitudLlamadaServicio: jsonForm.ID_SolicitudLlamadaServicio,
 						Tecnico: jsonForm.Tecnico,
 						TecnicoAdicional: jsonForm.TecnicoAdicional,
