@@ -8,7 +8,7 @@ $SQL_Actividad = Seleccionar("uvw_tbl_SolicitudLlamadasServicios_Calendario", "*
 $row = sql_fetch_array($SQL_Actividad);
 
 // SMM, 27/10/2023
-$edit = ($ID == "");
+$edit = ($ID != "");
 
 // SMM, 26/10/2023
 if (isset($row["ID_CodigoCliente"])) {
@@ -450,11 +450,12 @@ if ($Type != 0) {
 
 						<?php while ($row_Tecnicos = sqlsrv_fetch_array($SQL_TecnicosAdicionales)) { ?>
 							<?php if (in_array($row_Tecnicos['IdCargo'], $ids_grupos) || ($MostrarTodosRecursos || (count($ids_grupos) == 0))) { ?>
-								<option value="<?php echo $row_Tecnicos['ID_Empleado']; ?>" <?php if (isset($row['IdTecnico']) && ($row_Tecnicos['ID_Empleado'] == $row['IdTecnico'])) {
+								<option value="<?php echo $row_Tecnicos['ID_Empleado']; ?>" <?php if (isset($row['CDU_IdTecnicoAdicional']) && ($row_Tecnicos['ID_Empleado'] == $row['CDU_IdTecnicoAdicional'])) {
 									   echo "selected";
-								   } ?> 		<?php if ((count($ids_grupos) > 0) && (!in_array($row_Tecnicos['IdCargo'], $ids_grupos))) {
-												 echo "disabled";
-											 } ?>>
+								   	} ?> 
+									<?php if ((count($ids_grupos) > 0) && (!in_array($row_Tecnicos['IdCargo'], $ids_grupos))) {
+										echo "disabled";
+									} ?>>
 									<?php echo $row_Tecnicos['NombreEmpleado'] . " (" . $row_Tecnicos['NombreCentroCosto2'] . " - " . $row_Tecnicos['DeCargo'] . ")"; ?>
 								</option>
 							<?php } ?>
@@ -820,8 +821,21 @@ if ($Type != 0) {
 			AdicionarEquipo();
 		});
 
-		// SMM, 26/10/2023
-		$("#Cliente").change();
+		// SMM, 27/10/2023
+		<?php if($edit) { ?>
+			$("#Cliente").change();
+			$("#NombreCliente").prop("readonly", true);
+
+			$("#Series").prop("disabled", true);
+			$("#OrigenLlamada").prop("disabled", true);
+			$("#TipoLlamada").prop("disabled", true);
+			$("#TipoProblema").prop("disabled", true);
+			
+			$("#SucursalCliente").prop("disabled", true);
+			$("#NumeroSerie").prop("disabled", true);
+
+			$("#Campanas").prop("disabled", true);
+		<?php } ?>
 	});
 
 	function AdicionarCampanaAsincrono() {
