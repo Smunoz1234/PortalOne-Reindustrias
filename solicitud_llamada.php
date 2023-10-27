@@ -1846,11 +1846,11 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<!-- Fecha de creación -->
 								<label class="control-label">Fecha Inicio/Creación <span class="text-danger">*</span></label>
 								<div class="input-group date">
-									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaCreacion" type="text" class="form-control" id="FechaCreacion" value="<?php if (($edit == 1) && isset($row['FechaCreacion'])) {
-										 echo $row['FechaCreacion'];
-									 } else {
-										 echo date('Y-m-d');
-									 } ?>" required>
+									<span class="input-group-addon">
+										<i class="fa fa-calendar"></i>
+									</span>
+									<input required name="FechaCreacion" id="FechaCreacion" type="text" class="form-control" 
+										value="<?php echo ($row["FechaCreacion"] instanceof DateTime) ? $row["FechaCreacion"]->format("Y-m-d") : date("Y-m-d"); ?>">
 								</div>
 							</div>
 						</div>
@@ -1873,11 +1873,8 @@ function AgregarEsto(contenedorID, valorElemento) {
 									<span class="input-group-addon">
 										<span class="fa fa-clock-o"></span>
 									</span>
-									<input name="HoraCreacion" id="HoraCreacion" type="text" class="form-control" value="<?php if (($edit == 1) && isset($row['HoraCreacion'])) {
-										echo $row["HoraCreacion"]->format("H:i");
-									} else {
-										echo date("H:i");
-									} ?>" required>
+									<input required name="HoraCreacion" id="HoraCreacion" type="text" class="form-control" 
+										value="<?php echo ($row["FechaCreacion"] instanceof DateTime) ? $row["FechaCreacion"]->format("H:i") : date("H:i"); ?>">
 								</div>
 							</div>
 						</div>
@@ -1927,11 +1924,11 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<!-- Fecha de creación -->
 								<label class="control-label">Fecha Fin <span class="text-danger">*</span></label>
 								<div class="input-group date">
-									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaFinCreacion" type="text" class="form-control" id="FechaFinCreacion" value="<?php if (($edit == 1) && isset($row['FechaFinCreacion'])) {
-										 echo $row['FechaFinCreacion'];
-									 } else {
-										 echo date('Y-m-d');
-									 } ?>" required>
+									<span class="input-group-addon">
+										<i class="fa fa-calendar"></i>
+									</span>
+									<input required name="FechaFinCreacion" id="FechaFinCreacion" type="text" class="form-control" 
+										value="<?php echo ($row["FechaFinCreacion"] instanceof DateTime) ? $row["FechaFinCreacion"]->format("Y-m-d") : date("Y-m-d"); ?>">
 								</div>
 							</div>
 						</div>
@@ -1981,11 +1978,8 @@ function AgregarEsto(contenedorID, valorElemento) {
 									<span class="input-group-addon">
 										<span class="fa fa-clock-o"></span>
 									</span>
-									<input name="HoraFinCreacion" id="HoraFinCreacion" type="text" class="form-control" value="<?php if (($edit == 1) && isset($row['HoraFinCreacion'])) {
-										echo $row["HoraFinCreacion"]->format("H:i");
-									} else {
-										echo date("H:i");
-									} ?>" required>
+									<input required name="HoraFinCreacion" id="HoraFinCreacion" type="text" class="form-control" 
+										value="<?php echo ($row["FechaFinCreacion"] instanceof DateTime) ? $row["FechaFinCreacion"]->format("H:i") : date("H:i"); ?>">
 								</div>
 							</div>
 						</div>
@@ -2961,7 +2955,7 @@ $(document).ready(function () {
 	maxLength('CDU_Areas'); // SMM, 02/03/2022
 
 	 <?php if (($edit == 0) || (($edit == 1) && ($CrearSolicitud && ($row['IdEstadoLlamada'] != '-1')))) { ?>
-			$('#FechaCreacion, #FechaAgenda').datepicker({
+			$('#FechaCreacion, #FechaAgenda, #FechaFinCreacion, #FechaFinAgenda').datepicker({
 				todayBtn: "linked",
 				keyboardNavigation: false,
 				forceParse: false,
