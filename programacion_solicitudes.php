@@ -1,6 +1,5 @@
 <?php require_once "includes/conexion.php";
 PermitirAcceso(336);
-$sw = 0;
 $Usuario = $_SESSION['CodUser'] ?? "";
 
 $ParamSede = array(
@@ -13,7 +12,6 @@ $SQL_EstadoServicios = Seleccionar("tbl_SolicitudLlamadasServiciosEstadoServicio
 // Fechas
 if (isset($_GET['FechaInicial']) && $_GET['FechaInicial'] != "") {
 	$FechaInicial = $_GET['FechaInicial'];
-	$sw = 1;
 } else {
 	//Restar 7 dias a la fecha actual
 	$fecha = date('Y-m-d');
@@ -23,7 +21,6 @@ if (isset($_GET['FechaInicial']) && $_GET['FechaInicial'] != "") {
 }
 if (isset($_GET['FechaFinal']) && $_GET['FechaFinal'] != "") {
 	$FechaFinal = $_GET['FechaFinal'];
-	$sw = 1;
 } else {
 	//sumar 7 dias a la fecha actual
 	$fecha = date('Y-m-d');
@@ -381,7 +378,7 @@ $(function () {
 							</div>
 							<div class="form-group col-lg-3">
 								<label class="form-label">&nbsp;</label>
-								<button id="btnRefrescar" type="button" onclick="RefresarCalendario();"
+								<button id="btnRefrescar" type="button" onclick="RefrescarCalendario();"
 									class="btn btn-info mt-4">
 									<i class="fas fa-sync"></i> Refrescar
 								</button>
@@ -571,34 +568,31 @@ $(function () {
 			$("#chkDatesAboveResources").change(function () {
 				if ($('#chkDatesAboveResources').prop('checked')) {
 					window.sessionStorage.setItem('DateAboveResources', true)
-					RefresarCalendario()
+					RefrescarCalendario();
 				} else {
 					window.sessionStorage.setItem('DateAboveResources', false)
-					RefresarCalendario()
+					RefrescarCalendario();
 				}
 			});
 		});
 	</script>
 
 	<script>
-		function RefresarCalendario() {
+		function RefrescarCalendario() {
 			blockUI();
-			var Tecnicos = $("#Recursos").val();
-			var Grupo = $("#Grupo").val();
-			//	console.log(Tecnicos.length);
-			if (Tecnicos.length == 0) {
-				window.sessionStorage.removeItem('ResourceList')
-				//		console.log('Borro')
-			} else {
-				window.sessionStorage.setItem('ResourceList', Tecnicos)
-				//		console.log('Agrego')
-			}
-
+			
 			$.ajax({
-				type: "POST",
-				url: `programacion_solicitudes_calendario.php?sw=1`,
+				type: "GET",
+				url: `programacion_solicitudes_calendario.php${window.location.search}`,
 				success: function (response) {
 					$('#dv_calendar').html(response);
+					
+					blockUI(false);
+				},
+				error: function (error) {
+					console.log("error (590), ", error);
+
+					// Quitar cargando.
 					blockUI(false);
 				}
 			});

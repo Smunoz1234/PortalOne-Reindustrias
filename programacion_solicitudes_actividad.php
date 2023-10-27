@@ -775,6 +775,10 @@ if ($Type != 0) {
 								icon: 'success',
 							});
 
+							// Refrescar desde el documento principal.
+							RefrescarCalendario();
+
+							// Cerrar modal.
 							$('#ModalAct').modal("hide");
 						} else {
 							Swal.fire({

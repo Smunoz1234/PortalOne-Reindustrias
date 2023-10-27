@@ -7,7 +7,6 @@
 
 <?php require_once "includes/conexion.php";
 
-$sw = $_GET['sw'] ?? 0; // Asincrono (Refrescar)
 $sw = isset($_GET['FechaInicial']) ? 1 : 0; // Sincrono (Filtrar datos)
 
 $Filtro = "";
@@ -54,6 +53,7 @@ if ($sw == 1) { // Si estoy refrescando datos ya cargados
 	// SMM, 18/10/2023 
 	// echo $Cons;
 	// echo $Recursos;
+
 }
 
 // Grupos de Empleados, SMM 16/05/2022
@@ -297,7 +297,7 @@ $ids_recursos = array();
 				}
 			},
 			events: [
-				<?php if($sw == 1) { ?>
+				<?php if ($sw == 1) { ?>
 					<?php while ($row_Actividad = sqlsrv_fetch_array($SQL_Actividades)) {
 						/*
 						$classAdd = "";
@@ -592,7 +592,7 @@ $ids_recursos = array();
 								$("#btnGuardar").prop('disabled', false);
 								$("#btnPendientes").prop('disabled', false);
 
-								//								info.event.setExtendedProp('id',response)
+								// info.event.setExtendedProp('id',response)
 								info.event.setExtendedProp('estado', 'N')
 								info.event.setExtendedProp('llamadaServicio', info.draggedEl.dataset.docnum)
 								info.event.setExtendedProp('estadoLlamadaServ', info.draggedEl.dataset.estado)
