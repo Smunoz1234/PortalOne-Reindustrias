@@ -163,7 +163,6 @@ if (isset($_POST['P'])) {
 			"'" . ($_POST['Proyecto'] ?? "") . "'",
 			"'" . LSiqmlObs($_POST['ComentarioLlamada']) . "'",
 			"''", // ResolucionLlamada
-			"'" . FormatoFecha($_POST['FechaCreacion'], $_POST['HoraCreacion']) . "'",
 			"'" . FormatoFecha(date('Y-m-d'), date('H:i')) . "'", // FechaActualizacion
 			"'" . FormatoFecha(date('Y-m-d'), date('H:i:s')) . "'", // FechaCierreLlamada
 			"'" . ($_POST['IdAnexos'] ?? "") . "'",
@@ -200,8 +199,10 @@ if (isset($_POST['P'])) {
 			"'" . $_POST['CDU_ListaMateriales'] . "'",
 			isset($_POST['CDU_TiempoTarea']) ? $_POST['CDU_TiempoTarea'] : 0, // int
 			"'" . $_POST['CDU_IdTecnicoAdicional'] . "'",
+			"'" . FormatoFecha($_POST['FechaCreacion'], $_POST['HoraCreacion']) . "'",
+			"'" . FormatoFecha($_POST['FechaFinCreacion'], $_POST['HoraFinCreacion']) . "'",
 			"'" . FormatoFecha($_POST['FechaAgenda'], $_POST['HoraAgenda']) . "'",
-			"'" . FormatoFecha($_POST['FechaAgenda'], $_POST['HoraAgenda']) . "'",
+			"'" . FormatoFecha($_POST['FechaFinAgenda'], $_POST['HoraFinAgenda']) . "'",
 			"0", // CreacionActividad
 			"0", // EnvioCorreo
 			"'" . ($_POST['NombreContactoFirma'] ?? "") . "'",
@@ -1840,43 +1841,47 @@ function AgregarEsto(contenedorID, valorElemento) {
 									echo $row['ID_SolicitudLlamadaServicio'];
 								} ?>">
 							</div>
+
 							<div class="col-lg-4">
 								<!-- Fecha de creación -->
-								<label class="control-label">Fecha Creación <span class="text-danger">*</span></label>
+								<label class="control-label">Fecha Inicio/Creación <span class="text-danger">*</span></label>
 								<div class="input-group date">
-									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaCreacion" type="text" required="required" class="form-control" id="FechaCreacion" value="<?php if (($edit == 1) && ($row['FechaCreacionLLamada']) != "") {
-										 echo $row['FechaCreacionLLamada'];
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaCreacion" type="text" class="form-control" id="FechaCreacion" value="<?php if (($edit == 1) && isset($row['FechaCreacion'])) {
+										 echo $row['FechaCreacion'];
 									 } else {
 										 echo date('Y-m-d');
-									 } ?>" readonly='readonly'>
+									 } ?>" required>
 								</div>
 							</div>
 						</div>
+
 						<div class="form-group">
 							<div class="col-lg-8">
 								<label class="control-label">Asunto de llamada <span class="text-danger">*</span></label>
 								<input autocomplete="off" name="AsuntoLlamada" type="text" required="required" class="form-control" id="AsuntoLlamada" maxlength="150" <?php if (($edit == 1) && (!$CrearSolicitud || ($row['IdEstadoLlamada'] == '-1'))) {
-									echo "readonly='readonly'";
+									echo "readonly";
 								} ?> value="<?php if (($edit == 1) || ($sw_error == 1)) {
 									  echo $row['AsuntoLlamada'];
 								  } else {
 									  echo $TituloLlamada;
 								  } ?>">
 							</div>
+
 							<div class="col-lg-4">
-								<label class="control-label">Hora Inicio <span class="text-danger">*</span></label>
+								<label class="control-label">Hora Inicio/Creación <span class="text-danger">*</span></label>
 								<div class="input-group clockpicker" data-autoclose="true">
 									<span class="input-group-addon">
 										<span class="fa fa-clock-o"></span>
 									</span>
-									<input name="HoraCreacion" id="HoraCreacion" type="text" class="form-control" value="<?php if ($edit == 1) {
-										echo $row['FechaHoraCreacionLLamada']->format('H:i');
+									<input name="HoraCreacion" id="HoraCreacion" type="text" class="form-control" value="<?php if (($edit == 1) && isset($row['HoraCreacion'])) {
+										echo $row["HoraCreacion"]->format("H:i");
 									} else {
-										echo date('H:i');
-									} ?>" required="required" readonly='readonly'>
+										echo date("H:i");
+									} ?>" required>
 								</div>
 							</div>
 						</div>
+
 						<div class="form-group">
 							<div class="col-lg-4">
 								<label class="control-label">Origen <span class="text-danger">*</span></label>
@@ -1917,20 +1922,20 @@ function AgregarEsto(contenedorID, valorElemento) {
 									<?php } ?>
 								</select>
 							</div>
-							<!-- SMM -->
+							
 							<div class="col-lg-4">
-								<!-- Fecha de agenda -->
-								<label class="control-label">Fecha Agenda <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?><span class="text-danger">*</span><?php } ?></label>
+								<!-- Fecha de creación -->
+								<label class="control-label">Fecha Fin <span class="text-danger">*</span></label>
 								<div class="input-group date">
-									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input <?php if ($edit != 0) { ?> readonly <?php } ?> <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?> required <?php } ?> name="FechaAgenda" type="text" class="form-control" id="FechaAgenda" value="<?php if (($edit == 1) && ($row['FechaAgenda'] != "")) {
-											echo is_string($row['FechaAgenda']) ? date("Y-m-d", strtotime($row['FechaAgenda'])) : $row['FechaAgenda']->format("Y-m-d");
-										} else {
-											echo date('Y-m-d');
-										} ?>">
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaFinCreacion" type="text" class="form-control" id="FechaFinCreacion" value="<?php if (($edit == 1) && isset($row['FechaFinCreacion'])) {
+										 echo $row['FechaFinCreacion'];
+									 } else {
+										 echo date('Y-m-d');
+									 } ?>" required>
 								</div>
 							</div>
-							<!-- 01/06/2022 -->
 						</div>
+
 						<div class="form-group">
 							<div class="col-lg-4">
 								<label class="control-label">Tipo problema (Tipo Servicio) <span class="text-danger">*</span></label>
@@ -1970,22 +1975,19 @@ function AgregarEsto(contenedorID, valorElemento) {
 								</select>
 							</div>
 
-							<!-- SMM -->
 							<div class="col-lg-4">
-								<label class="control-label">Hora Fin <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?><span class="text-danger">*</span><?php } ?></label>
+								<label class="control-label">Hora Fin <span class="text-danger">*</span></label>
 								<div class="input-group clockpicker" data-autoclose="true">
 									<span class="input-group-addon">
 										<span class="fa fa-clock-o"></span>
 									</span>
-									
-									<input <?php if ($edit != 0) { ?> readonly <?php } ?> <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?> required <?php } ?> name="HoraAgenda" id="HoraAgenda" type="text" class="form-control" value="<?php if (($edit == 1) && ($row['HoraAgenda'] != "")) {
-											echo is_string($row['FechaAgenda']) ? date("H:i", strtotime($row['HoraAgenda'])) : $row['HoraAgenda']->format("H:i");
-										} else {
-											echo date('H:i');
-										} ?>" required="required">
+									<input name="HoraFinCreacion" id="HoraFinCreacion" type="text" class="form-control" value="<?php if (($edit == 1) && isset($row['HoraFinCreacion'])) {
+										echo $row["HoraFinCreacion"]->format("H:i");
+									} else {
+										echo date("H:i");
+									} ?>" required>
 								</div>
 							</div>
-							<!-- 01/06/2022 -->
 						</div>
 
 						<div class="form-group">
@@ -2091,6 +2093,35 @@ function AgregarEsto(contenedorID, valorElemento) {
 								</select>
 							</div>
 
+							<!-- SMM -->
+							<div class="col-lg-4">
+								<!-- Fecha de agenda -->
+								<label class="control-label">Fecha Agenda <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?><span class="text-danger">*</span><?php } ?></label>
+								<div class="input-group date">
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input <?php if ($edit != 0) { ?> readonly <?php } ?> <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?> required <?php } ?> name="FechaAgenda" type="text" class="form-control" id="FechaAgenda" value="<?php if (($edit == 1) && ($row['FechaAgenda'] != "")) {
+											echo is_string($row['FechaAgenda']) ? date("Y-m-d", strtotime($row['FechaAgenda'])) : $row['FechaAgenda']->format("Y-m-d");
+										} else {
+											echo date('Y-m-d');
+										} ?>">
+								</div>
+							</div>
+							<!-- 01/06/2022 -->
+							
+							<div class="col-lg-4">
+								<label class="control-label">Estado <span class="text-danger">*</span></label>
+								<select name="EstadoLlamada" class="form-control" id="EstadoLlamada" required="required" <?php if (($edit == 1) && (!$CrearSolicitud || ($row['IdEstadoLlamada'] == '-1'))) {
+									echo "disabled";
+								} ?>>
+								  <?php while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) { ?>
+									<option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['IdEstadoLlamada'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['IdEstadoLlamada']) == 0)) {
+											echo "selected";
+										} ?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option>
+								  <?php } ?>
+								</select>
+							</div>
+						</div>
+
+						<div class="form-group">
 							<div class="col-lg-4">
 								<label class="control-label">Técnico/Asesor Adicional</label>
 								
@@ -2113,19 +2144,93 @@ function AgregarEsto(contenedorID, valorElemento) {
 									<?php } ?>
 								</select>
 							</div>
-							
+
+							<!-- SMM -->
 							<div class="col-lg-4">
-								<label class="control-label">Estado <span class="text-danger">*</span></label>
-								<select name="EstadoLlamada" class="form-control" id="EstadoLlamada" required="required" <?php if (($edit == 1) && (!$CrearSolicitud || ($row['IdEstadoLlamada'] == '-1'))) {
+								<label class="control-label">Hora Agenda <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?><span class="text-danger">*</span><?php } ?></label>
+								<div class="input-group clockpicker" data-autoclose="true">
+									<span class="input-group-addon">
+										<span class="fa fa-clock-o"></span>
+									</span>
+									
+									<input <?php if ($edit != 0) { ?> readonly <?php } ?> <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?> required <?php } ?> name="HoraAgenda" id="HoraAgenda" type="text" class="form-control" value="<?php if (($edit == 1) && ($row['HoraAgenda'] != "")) {
+											echo is_string($row['HoraAgenda']) ? date("H:i", strtotime($row['HoraAgenda'])) : $row['HoraAgenda']->format("H:i");
+										} else {
+											echo date('H:i');
+										} ?>">
+								</div>
+							</div>
+							<!-- 01/06/2022 -->
+
+							<div class="col-lg-4">
+								<label class="control-label">Estado de servicio <span class="text-danger">*</span></label>
+								<select name="CDU_EstadoServicio" class="form-control" id="CDU_EstadoServicio" <?php if (($edit == 1) && (!$CrearSolicitud || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "disabled";
-								} ?>>
-								  <?php while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) { ?>
-									<option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($row['IdEstadoLlamada'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $row['IdEstadoLlamada']) == 0)) {
-											echo "selected";
-										} ?>><?php echo $row_EstadoLlamada['NombreEstado']; ?></option>
+								} ?> required>
+								  <?php while ($row_EstServLlamada = sqlsrv_fetch_array($SQL_EstServLlamada)) { ?>
+											<option value="<?php echo $row_EstServLlamada['id_tipo_estado_servicio_sol_llamada']; ?>" <?php if ((($edit == 0) && ($row_EstServLlamada['id_tipo_estado_servicio_sol_llamada'] == 0)) || ((isset($row['CDU_EstadoServicio'])) && (strcmp($row_EstServLlamada['id_tipo_estado_servicio_sol_llamada'], $row['CDU_EstadoServicio']) == 0))) {
+												   echo "selected";
+											   } ?>><?php echo $row_EstServLlamada['tipo_estado_servicio_sol_llamada']; ?></option>
 								  <?php } ?>
 								</select>
 							</div>
+						</div>
+
+						<div class="form-group">
+							<div class="col-lg-4"></div>
+							
+							<!-- SMM -->
+							<div class="col-lg-4">
+								<!-- Fecha de agenda -->
+								<label class="control-label">Fecha Fin Agenda <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?><span class="text-danger">*</span><?php } ?></label>
+								<div class="input-group date">
+									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input <?php if ($edit != 0) { ?> readonly <?php } ?> <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?> required <?php } ?> 
+									 	name="FechaFinAgenda" type="text" class="form-control" id="FechaFinAgenda" value="<?php if (($edit == 1) && ($row['FechaFinAgenda'] != "")) {
+											echo is_string($row['FechaFinAgenda']) ? date("Y-m-d", strtotime($row['FechaFinAgenda'])) : $row['FechaFinAgenda']->format("Y-m-d");
+										} else {
+											echo date('Y-m-d');
+										} ?>">
+								</div>
+							</div>
+							<!-- 27/10/2023 -->
+
+							<div class="col-lg-4">
+								<label class="control-label">Cancelado por <span class="text-danger">*</span></label>
+
+								<select name="CDU_CanceladoPor" class="form-control" id="CDU_CanceladoPor" <?php if (($edit == 1) && (!$CrearSolicitud || ($row['IdEstadoLlamada'] == '-1'))) {
+									echo "disabled";
+								} ?> required>
+								  <?php while ($row_CanceladoPorLlamada = sqlsrv_fetch_array($SQL_CanceladoPorLlamada)) { ?>
+										<option value="<?php echo $row_CanceladoPorLlamada['IdCanceladoPor']; ?>" <?php if ((isset($row['CDU_CanceladoPor'])) && (strcmp($row_CanceladoPorLlamada['IdCanceladoPor'], $row['CDU_CanceladoPor']) == 0)) {
+												echo "selected";
+											} ?>><?php echo $row_CanceladoPorLlamada['DeCanceladoPor']; ?></option>
+								  <?php } ?>
+								</select>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<div class="col-lg-4"></div>
+
+							<!-- SMM -->
+							<div class="col-lg-4">
+								<label class="control-label">Hora Fin Agenda <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?><span class="text-danger">*</span><?php } ?></label>
+								<div class="input-group clockpicker" data-autoclose="true">
+									<span class="input-group-addon">
+										<span class="fa fa-clock-o"></span>
+									</span>
+									
+									<input <?php if ($edit != 0) { ?> readonly <?php } ?> <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?> required <?php } ?> 
+										name="HoraFinAgenda" id="HoraFinAgenda" type="text" class="form-control" value="<?php if (($edit == 1) && ($row['HoraFinAgenda'] != "")) {
+											echo is_string($row['HoraFinAgenda']) ? date("H:i", strtotime($row['HoraFinAgenda'])) : $row['HoraFinAgenda']->format("H:i");
+										} else {
+											echo date('H:i');
+										} ?>">
+								</div>
+							</div>
+							<!-- 27/10/2023 -->
+
+							<div class="col-lg-4"></div>
 						</div>
 
 						<div class="form-group">
@@ -2169,20 +2274,8 @@ function AgregarEsto(contenedorID, valorElemento) {
 									<?php } ?>
 								</select>
 							</div>
-
-							<div class="col-lg-4">
-								<label class="control-label">Estado de servicio <span class="text-danger">*</span></label>
-								<select name="CDU_EstadoServicio" class="form-control" id="CDU_EstadoServicio" <?php if (($edit == 1) && (!$CrearSolicitud || ($row['IdEstadoLlamada'] == '-1'))) {
-									echo "disabled";
-								} ?> required>
-								  <?php while ($row_EstServLlamada = sqlsrv_fetch_array($SQL_EstServLlamada)) { ?>
-											<option value="<?php echo $row_EstServLlamada['id_tipo_estado_servicio_sol_llamada']; ?>" <?php if ((($edit == 0) && ($row_EstServLlamada['id_tipo_estado_servicio_sol_llamada'] == 0)) || ((isset($row['CDU_EstadoServicio'])) && (strcmp($row_EstServLlamada['id_tipo_estado_servicio_sol_llamada'], $row['CDU_EstadoServicio']) == 0))) {
-												   echo "selected";
-											   } ?>><?php echo $row_EstServLlamada['tipo_estado_servicio_sol_llamada']; ?></option>
-								  <?php } ?>
-								</select>
-							</div>
 						</div>
+
 						<div class="form-group">
 							<div class="col-lg-8">
 								<label class="control-label">Comentario <span class="text-danger">*</span></label>
@@ -2191,21 +2284,9 @@ function AgregarEsto(contenedorID, valorElemento) {
 								} ?>><?php if (($edit == 1) || ($sw_error == 1)) {
 									 echo $row['ComentarioLlamada'];
 								 } ?></textarea>
-							</div>
-							<div class="col-lg-4">
-								<label class="control-label">Cancelado por <span class="text-danger">*</span></label>
-
-								<select name="CDU_CanceladoPor" class="form-control" id="CDU_CanceladoPor" <?php if (($edit == 1) && (!$CrearSolicitud || ($row['IdEstadoLlamada'] == '-1'))) {
-									echo "disabled='disabled'";
-								} ?> required>
-								  <?php while ($row_CanceladoPorLlamada = sqlsrv_fetch_array($SQL_CanceladoPorLlamada)) { ?>
-										<option value="<?php echo $row_CanceladoPorLlamada['IdCanceladoPor']; ?>" <?php if ((isset($row['CDU_CanceladoPor'])) && (strcmp($row_CanceladoPorLlamada['IdCanceladoPor'], $row['CDU_CanceladoPor']) == 0)) {
-												echo "selected";
-											} ?>><?php echo $row_CanceladoPorLlamada['DeCanceladoPor']; ?></option>
-								  <?php } ?>
-								</select>
-							</div>
+							</div>							
 						</div>
+						<!-- /.form-group -->
 					</div>
 				</div>
 
