@@ -870,11 +870,14 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 
 			<div class="wrapper wrapper-content">
 				<!-- SMM, 27/06/2023 -->
-				<div class="modal inmodal fade" id="mdLoteArticulos" tabindex="1" role="dialog" aria-hidden="true">
+				<div class="modal inmodal fade" id="mdLoteArticulos" tabindex="1" role="dialog" aria-hidden="true"
+				data-backdrop="static" data-keyboard="false">
 				</div>
 				
 				<!-- SMM, 24/05/2023 -->
-				<div class="modal inmodal fade" id="mdArticulos" tabindex="1" role="dialog" aria-hidden="true"></div>
+				<div class="modal inmodal fade" id="mdArticulos" tabindex="1" role="dialog" aria-hidden="true"
+				data-backdrop="static" data-keyboard="false">
+				</div>
 
 				<!-- SMM, 02/08/2022 -->
 				<?php include_once 'md_consultar_llamadas_servicios.php'; ?>
