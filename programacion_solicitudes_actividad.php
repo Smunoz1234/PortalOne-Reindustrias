@@ -59,64 +59,80 @@ $TipoProblema = ObtenerValorDefecto(191, "IdTipoProblema", false);
 // Llamar a SP de forma asincrona. SMM, 10/10/2023
 $msg_error = "";
 $parametros = array();
-
 $coduser = $_SESSION['CodUser'];
 $datetime = FormatoFecha(date('Y-m-d'), date('H:i:s'));
 
-$Cliente = $_POST["Cliente"] ?? "";
-$Comentario = $_POST["Comentario"] ?? "";
-$IdTarjetaEquipo = $_POST["IdTarjetaEquipo"] ?? ""; // useless
-$NumeroSerie = $_POST["NumeroSerie"] ?? ""; // TE
-$Series = $_POST["Series"] ?? "NULL";
-$SucursalCliente = $_POST["SucursalCliente"] ?? "NULL"; // NumeroLinea
+// SMM, 27/10/2023
 $Type = $_POST["Type"] ?? 0;
-$Usuario = "'$coduser'";
-
-// SMM, 25/10/2023
 $ID_SolicitudLlamadaServicio = $_POST["ID_SolicitudLlamadaServicio"] ?? "NULL";
 
+$Tecnico = $_POST["Tecnico"] ?? "NULL";
+$TecnicoAdicional = $_POST["TecnicoAdicional"] ?? "NULL";
+$Comentario = $_POST["Comentario"] ?? "";
+
+$FechaAgenda = isset($_POST["FechaAgenda"]) ? FormatoFecha($_POST["FechaAgenda"], $_POST["HoraAgenda"]) : "";
+$FechaFinAgenda = isset($_POST["FechaFinAgenda"]) ? FormatoFecha($_POST["FechaFinAgenda"], $_POST["HoraFinAgenda"]) : "";
+$FechaCreacion = isset($_POST["FechaCreacion"]) ? FormatoFecha($_POST["FechaCreacion"], $_POST["HoraCreacion"]) : "";
+$FechaFinCreacion = isset($_POST["FechaFinCreacion"]) ? FormatoFecha($_POST["FechaFinCreacion"], $_POST["HoraFinCreacion"]) : "";
+$UsuarioCreacion = "'$coduser'";
+
+$CDU_Kilometros = $_POST["CDU_Kilometros"] ?? "NULL";
+$CDU_TipoPreventivo = $_POST["CDU_TipoPreventivo"] ?? "";
+$IdTarjetaEquipo = $_POST["IdTarjetaEquipo"] ?? ""; // useless
+$NumeroSerie = $_POST["NumeroSerie"] ?? ""; // TE
+
+$Series = $_POST["Series"] ?? "NULL";
 $OrigenLlamada = $_POST["OrigenLlamada"] ?? "NULL";
 $TipoLlamada = $_POST["TipoLlamada"] ?? "NULL";
 $TipoProblema = $_POST["TipoProblema"] ?? "NULL";
 $SubTipoProblema = $_POST["SubTipoProblema"] ?? "NULL";
 
-$FechaCreacion = isset($_POST["FechaCreacion"]) ? FormatoFecha($_POST["FechaCreacion"], $_POST["HoraCreacion"]) : "";
-$FechaFinCreacion = isset($_POST["FechaFinCreacion"]) ? FormatoFecha($_POST["FechaFinCreacion"], $_POST["HoraFinCreacion"]) : "";
-$FechaAgenda = isset($_POST["FechaAgenda"]) ? FormatoFecha($_POST["FechaAgenda"], $_POST["HoraAgenda"]) : "";
-$FechaFinAgenda = isset($_POST["FechaFinAgenda"]) ? FormatoFecha($_POST["FechaFinAgenda"], $_POST["HoraFinAgenda"]) : "";
-
-$Tecnico = $_POST["Tecnico"] ?? "NULL";
-$TecnicoAdicional = $_POST["TecnicoAdicional"] ?? "NULL";
-
-$CDU_Kilometros = $_POST["CDU_Kilometros"] ?? "NULL";
-$CDU_TipoPreventivo = $_POST["CDU_TipoPreventivo"] ?? "";
+$Cliente = $_POST["Cliente"] ?? "";
+$SucursalCliente = $_POST["SucursalCliente"] ?? "NULL"; // NumeroLinea
+$CampanasAsociadas = $_POST["Campanas"] ?? "";
 
 if ($Type == 1) {
 	$msg_error = "No se pudo crear la Agenda.";
 
 	$parametros = array(
 		$Type,
-		"NULL",
-		// ID_SolicitudLlamadaServicio
+		"NULL", // ID_SolicitudLlamadaServicio
+		$Tecnico,
+		$TecnicoAdicional,
+		"'$Comentario'",
+		"'$FechaAgenda'",
+		"'$FechaFinAgenda'",
+		"'$FechaCreacion'",
+		"'$FechaFinCreacion'",
+		$UsuarioCreacion,
+		$CDU_Kilometros,
+		"'$CDU_TipoPreventivo'",
+		"'$NumeroSerie'",
 		$Series,
 		$OrigenLlamada,
 		$TipoLlamada,
 		$TipoProblema,
 		$SubTipoProblema,
+		"'$Cliente'",
+		$SucursalCliente,
+		"'$CampanasAsociadas'", 
+	);
+} elseif ($Type == 3) {
+	$msg_error = "No se pudo actualizar la Agenda.";
+
+	$parametros = array(
+		$Type,
+		$ID_SolicitudLlamadaServicio,
 		$Tecnico,
 		$TecnicoAdicional,
-		"'$Cliente'",
-		"'$NumeroSerie'",
-		$CDU_Kilometros,
-		"'$CDU_TipoPreventivo'",
-		$SucursalCliente,
 		"'$Comentario'",
-		"'$FechaCreacion'",
-		"'$FechaFinCreacion'",
-		$Usuario,
 		"'$FechaAgenda'",
 		"'$FechaFinAgenda'",
-		"''" // CampanasAsociadas
+		"'$FechaCreacion'",
+		"'$FechaFinCreacion'",
+		$UsuarioCreacion,
+		$CDU_Kilometros,
+		"'$CDU_TipoPreventivo'",
 	);
 }
 
@@ -697,16 +713,31 @@ if ($Type != 0) {
 				let jsonForm = Object.fromEntries(formData);
 				console.log("Line 366", jsonForm);
 
-				// IdTarjetaEquipo: jsonForm.IdTarjetaEquipo,
-				$.ajax({
-					type: "POST",
-					data: {
+				let jsonActividad = {
+					Type: 3
+					ID_SolicitudLlamadaServicio: jsonForm.ID_SolicitudLlamadaServicio,
+					Tecnico: jsonForm.Tecnico,
+					TecnicoAdicional: jsonForm.TecnicoAdicional,
+					Comentario: jsonForm.Comentario,
+					FechaCreacion: jsonForm.FechaCreacion,
+					FechaFinCreacion: jsonForm.FechaFinCreacion,
+					FechaAgenda: jsonForm.FechaAgenda,
+					FechaFinAgenda: jsonForm.FechaFinAgenda,
+					HoraCreacion: jsonForm.HoraCreacion,
+					HoraFinCreacion: jsonForm.HoraFinCreacion,
+					HoraAgenda: jsonForm.HoraAgenda,
+					HoraFinAgenda: jsonForm.HoraFinAgenda,
+					CDU_Kilometros: jsonForm.CDU_Kilometros,
+					CDU_TipoPreventivo: jsonForm.CDU_TipoPreventivo
+				};
+
+				<?php if(!$edit) { ?>
+					jsonActividad = {
+						Type: 1
 						ID_SolicitudLlamadaServicio: jsonForm.ID_SolicitudLlamadaServicio,
-						Series: jsonForm.Series,
-						OrigenLlamada: jsonForm.OrigenLlamada,
-						TipoLlamada: jsonForm.TipoLlamada,
-						TipoProblema: jsonForm.TipoProblema,
-						SubTipoProblema: jsonForm.SubTipoProblema,
+						Tecnico: jsonForm.Tecnico,
+						TecnicoAdicional: jsonForm.TecnicoAdicional,
+						Comentario: jsonForm.Comentario,
 						FechaCreacion: jsonForm.FechaCreacion,
 						FechaFinCreacion: jsonForm.FechaFinCreacion,
 						FechaAgenda: jsonForm.FechaAgenda,
@@ -715,22 +746,30 @@ if ($Type != 0) {
 						HoraFinCreacion: jsonForm.HoraFinCreacion,
 						HoraAgenda: jsonForm.HoraAgenda,
 						HoraFinAgenda: jsonForm.HoraFinAgenda,
-						Tecnico: jsonForm.Tecnico,
-						TecnicoAdicional: jsonForm.TecnicoAdicional,
-						Cliente: jsonForm.Cliente,
-						SucursalCliente: jsonForm.SucursalCliente,
-						NumeroSerie: jsonForm.NumeroSerie,
 						CDU_Kilometros: jsonForm.CDU_Kilometros,
 						CDU_TipoPreventivo: jsonForm.CDU_TipoPreventivo,
-						Comentario: jsonForm.Comentario,
-						Type: 1
-					},
+						NumeroSerie: jsonForm.NumeroSerie,
+						Series: jsonForm.Series,
+						OrigenLlamada: jsonForm.OrigenLlamada,
+						TipoLlamada: jsonForm.TipoLlamada,
+						TipoProblema: jsonForm.TipoProblema,
+						SubTipoProblema: jsonForm.SubTipoProblema,
+						Cliente: jsonForm.Cliente,
+						SucursalCliente: jsonForm.SucursalCliente,
+						Campanas: jsonForm.Campanas
+					};
+				<?php } ?>
+
+				// IdTarjetaEquipo: jsonForm.IdTarjetaEquipo,
+				$.ajax({
+					type: "POST",
+					data: jsonActividad,
 					url: "programacion_solicitudes_actividad.php",
 					success: function (response) {
 						if (response == "OK") {
 							Swal.fire({
 								title: "¡Listo!",
-								text: "La solicitud se creo correctamente.",
+								text: "La solicitud se <?php echo ($edit) ? "creo": "actualizo"; ?> correctamente.",
 								icon: 'success',
 							});
 
