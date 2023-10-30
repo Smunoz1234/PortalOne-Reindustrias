@@ -534,7 +534,7 @@ if ($Type != 0) {
 							class="text-danger">*</span>
 					</label>
 
-					<select required name="NumeroSerie" id="NumeroSerie" class="form-control">
+					<select required name="NumeroSerie" id="NumeroSerie" class="form-control select2">
 						<option value="">Seleccione...</option>
 
 						<!-- La TE depende del cliente. -->
@@ -725,19 +725,12 @@ if ($Type != 0) {
 				let jsonForm = Object.fromEntries(formData);
 				console.log("Line 720", jsonForm);
 
-				console.log(jsonForm.Campanas);
-				console.log(jsonForm.Campanas[]);
-				console.log(jsonForm["Campanas"]);
+				let campanas = $("#Campanas").val();
+				console.log(campanas);
 
-				/*
-				let CampanasAsociadas = "";
-				if (typeof jsonForm.Campanas !== "undefined") {
-					CampanasAsociadas = jsonForm.Campanas.join(";");
-				} else {
-					console.log(jsonForm.Campanas);
-					alert("No hay campañas");
-				}
-
+				let CampanasAsociadas = campanas.join(";");
+				console.log(CampanasAsociadas);
+				
 				let jsonActividad = {
 					Type: 3,
 					ID_SolicitudLlamadaServicio: jsonForm.ID_SolicitudLlamadaServicio,
@@ -825,7 +818,6 @@ if ($Type != 0) {
 					}
 				});
 				// Fin del AJAX
-				*/
 			}
 		});
 
