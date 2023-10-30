@@ -224,22 +224,23 @@ $ids_recursos = array();
 					blockUI();
 					
 					// Obtener la fecha y hora en objetos separados
-					const fechaSeleccionada = new Date(info.dateStr);
-					// const fecha = fechaSeleccionada.toLocaleDateString(); // Formato de fecha
-    				// const hora = fechaSeleccionada.toLocaleTimeString(); // Formato de hora
+					let recurso = info.resource.id;
+					let fechaSeleccionada = new Date(info.dateStr);
+					// let fecha = fechaSeleccionada.toLocaleDateString(); // Formato de fecha
+    				// let hora = fechaSeleccionada.toLocaleTimeString(); // Formato de hora
 
-					const fecha = fechaSeleccionada.toISOString().split('T')[0]; // Formato Y-m-d
-					const hora = `${fechaSeleccionada.getHours().toString().padStart(2, '0')}:${fechaSeleccionada.getMinutes().toString().padStart(2, '0')}`; // Formato H:i
+					let fecha = fechaSeleccionada.toISOString().split('T')[0]; // Formato Y-m-d
+					let hora = `${fechaSeleccionada.getHours().toString().padStart(2, '0')}:${fechaSeleccionada.getMinutes().toString().padStart(2, '0')}`; // Formato H:i
 
 					// Imprimir la fecha, hora y recurso seleccionado por el usuario
 					console.log("Fecha seleccionada (Y-m-d): " + fecha);
 					console.log("Hora seleccionada (H:i): " + hora);
-    				console.log("Recurso seleccionado: " + info.resource.id);
+    				console.log("Recurso seleccionado: " + recurso);
 
 					// Agregar nueva Solicitud.
 					$.ajax({
-						type: "POST",
-						url: "programacion_solicitudes_actividad.php",
+						type: "GET",
+						url: `programacion_solicitudes_actividad.php?recurso=${recurso}&fecha=${fecha}&hora=${hora}`,
 						success: function (response) {
 							$('#ContenidoModal').html(response);
 							$('#ModalAct').modal("show");

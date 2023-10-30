@@ -5,6 +5,12 @@ PermitirAcceso(336);
 $ID = $_GET["id"] ?? "";
 $edit = ($ID != "");
 
+// SMM, 30/10/2023
+$recurso = $_GET["recurso"] ?? "";
+$fecha = $_GET["fecha"] ?? "";
+$hora = $_GET["hora"] ?? "";
+$hora_final = DateTime::createFromFormat('H:i', $hora)->modify('+1 hour')->format('H:i');
+
 // SMM, 27/10/2023
 if($edit) {
 	$Where = "ID_SolicitudLlamadaServicio = $ID";
@@ -349,7 +355,7 @@ if ($Type != 0) {
 								<span class="input-group-text"><i class="fa fa-calendar"></i></span>
 								<input required type="text" name="FechaCreacion" id="FechaCreacion"
 									class="form-control fecha"
-									value="<?php echo $ValorFechaCreacion; ?>">
+									value="<?php echo $edit ? $ValorFechaCreacion : $fecha; ?>">
 							</div>
 						</div>
 						<div class="col-lg-6">
@@ -357,7 +363,7 @@ if ($Type != 0) {
 								<span class="input-group-text"><i class="fa fa-clock"></i></span>
 								<input required type="text" name="HoraCreacion" id="HoraCreacion"
 									class="form-control hora"
-									value="<?php echo $ValorHoraCreacion; ?>"
+									value="<?php echo $edit ? $ValorHoraCreacion : $hora; ?>"
 									onchange="ValidarHoras();">
 							</div>
 						</div>
@@ -376,14 +382,14 @@ if ($Type != 0) {
 								<span class="input-group-text"><i class="fa fa-calendar"></i></span>
 								<input required type="text" name="FechaAgenda" id="FechaAgenda"
 									class="form-control fecha"
-									value="<?php echo $ValorFechaAgenda; ?>">
+									value="<?php echo $edit ? $ValorFechaAgenda : $fecha; ?>">
 							</div>
 						</div>
 						<div class="col-lg-6">
 							<div class="input-group">
 								<span class="input-group-text"><i class="fa fa-clock"></i></span>
 								<input required type="text" name="HoraAgenda" id="HoraAgenda" class="form-control hora"
-									value="<?php echo $ValorHoraAgenda; ?>"
+									value="<?php echo $edit ? $ValorHoraAgenda : $hora; ?>"
 									onchange="ValidarHorasAgenda();">
 							</div>
 						</div>
@@ -405,7 +411,7 @@ if ($Type != 0) {
 								<span class="input-group-text"><i class="fa fa-calendar"></i></span>
 								<input required type="text" name="FechaFinCreacion" id="FechaFinCreacion"
 									class="form-control fecha"
-									value="<?php echo $ValorFechaFinCreacion; ?>">
+									value="<?php echo $edit ? $ValorFechaFinCreacion : $fecha; ?>">
 							</div>
 						</div>
 						<div class="col-lg-6">
@@ -413,7 +419,7 @@ if ($Type != 0) {
 								<span class="input-group-text"><i class="fa fa-clock"></i></span>
 								<input required type="text" name="HoraFinCreacion" id="HoraFinCreacion"
 									class="form-control hora"
-									value="<?php echo $ValorHoraFinCreacion; ?>"
+									value="<?php echo $edit ? $ValorHoraFinCreacion : $hora_final; ?>"
 									onchange="ValidarHoras();">
 							</div>
 						</div>
@@ -432,7 +438,7 @@ if ($Type != 0) {
 								<span class="input-group-text"><i class="fa fa-calendar"></i></span>
 								<input required type="text" name="FechaFinAgenda" id="FechaFinAgenda"
 									class="form-control fecha"
-									value="<?php echo $ValorFechaFinAgenda; ?>">
+									value="<?php echo $edit ? $ValorFechaFinAgenda : $fecha; ?>">
 							</div>
 						</div>
 						<div class="col-lg-6">
@@ -440,7 +446,7 @@ if ($Type != 0) {
 								<span class="input-group-text"><i class="fa fa-clock"></i></span>
 								<input required type="text" name="HoraFinAgenda" id="HoraFinAgenda"
 									class="form-control hora"
-									value="<?php echo $ValorHoraFinAgenda; ?>"
+									value="<?php echo $edit ? $ValorHoraFinAgenda : $hora_final; ?>"
 									onchange="ValidarHorasAgenda();">
 							</div>
 						</div>
@@ -461,9 +467,12 @@ if ($Type != 0) {
 							<?php if (in_array($row_Tecnicos['IdCargo'], $ids_grupos) || ($MostrarTodosRecursos || (count($ids_grupos) == 0))) { ?>
 								<option value="<?php echo $row_Tecnicos['ID_Empleado']; ?>" <?php if (isset($row['IdTecnico']) && ($row_Tecnicos['ID_Empleado'] == $row['IdTecnico'])) {
 									   echo "selected";
-								   } ?> 		<?php if ((count($ids_grupos) > 0) && (!in_array($row_Tecnicos['IdCargo'], $ids_grupos))) {
-												 echo "disabled";
-											 } ?>>
+								   	} elseif ($recurso == $row_Tecnicos['ID_Empleado']) {
+										echo "selected";
+									} ?> 
+									<?php if ((count($ids_grupos) > 0) && (!in_array($row_Tecnicos['IdCargo'], $ids_grupos))) {
+										echo "disabled";
+									} ?>>
 									<?php echo $row_Tecnicos['NombreEmpleado'] . " (" . $row_Tecnicos['NombreCentroCosto2'] . " - " . $row_Tecnicos['DeCargo'] . ")"; ?>
 								</option>
 							<?php } ?>
