@@ -12,6 +12,15 @@ if($edit) {
 	$row = sqlsrv_fetch_array($SQL_Actividad);
 }
 
+// SMM, 30/10/2023
+if ($edit && isset($row["ID_CodigoCliente"])) {
+	$ID_CodigoCliente = $row["ID_CodigoCliente"];
+	$SQL_SucursalCliente = Seleccionar("uvw_Sap_tbl_Clientes_Sucursales", "*", "CodigoCliente='$ID_CodigoCliente' AND TipoDireccion='S'", "NombreSucursal");
+	$SQL_NumeroSerie = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', '*', "CardCode='$ID_CodigoCliente'", 'SerialFabricante');
+
+	$SQL_Campanas = Seleccionar("uvw_tbl_SolicitudLlamadasServicios_Campanas", "*", "[id_solicitud_llamada_servicio]='$ID'");
+}
+
 // Fechas. SMM, 27/10/2023
 $ValorFechaCreacion = (isset($row["FechaCreacion"]) && ($row["FechaCreacion"] instanceof DateTime)) ? $row["FechaCreacion"]->format("Y-m-d") : date("Y-m-d");
 $ValorFechaFinCreacion = (isset($row["FechaFinCreacion"]) && ($row["FechaCreacion"] instanceof DateTime)) ? $row["FechaCreacion"]->format("Y-m-d") : date("Y-m-d");
@@ -21,12 +30,6 @@ $ValorHoraCreacion = (isset($row["HoraCreacion"]) && ($row["HoraCreacion"] insta
 $ValorHoraFinCreacion = (isset($row["HoraFinCreacion"]) && ($row["HoraCreacion"] instanceof DateTime)) ? $row["HoraCreacion"]->format("H:i") : date("H:i");
 $ValorHoraAgenda = (isset($row["HoraAgenda"]) && ($row["HoraAgenda"] instanceof DateTime)) ? $row["HoraAgenda"]->format("H:i") : date("H:i");
 $ValorHoraFinAgenda = (isset($row["HoraFinAgenda"]) && ($row["HoraFinAgenda"] instanceof DateTime)) ? $row["HoraFinAgenda"]->format("H:i") : date("H:i");
-
-// SMM, 26/10/2023
-if (isset($row["ID_CodigoCliente"])) {
-	$ID_CodigoCliente = $row["ID_CodigoCliente"];
-	$SQL_SucursalCliente = Seleccionar("uvw_Sap_tbl_Clientes_Sucursales", "*", "CodigoCliente='$ID_CodigoCliente' AND TipoDireccion='S'", "NombreSucursal");
-}
 
 // Empleados. SMM, 25/10/2023
 $SQL_Tecnicos = Seleccionar('uvw_Sap_tbl_Recursos', '*', '', 'NombreEmpleado');
@@ -515,10 +518,10 @@ if ($Type != 0) {
 						<option value="">Seleccione...</option>
 
 						<?php while ($row_SucursalCliente = sqlsrv_fetch_array($SQL_SucursalCliente)) { ?>
-							<option value="<?php echo $row_SucursalCliente['IdNombreSucursal']; ?>" <?php if (isset($row['NombreSucursal']) && (strcmp($row_SucursalCliente['NumeroLinea'], $row['IdNombreSucursal']) == 0)) {
-								   echo "selected";
-							   } ?>>
-								<?php echo $row_SucursalCliente['NombreSucursal']; ?>
+							<option value="<?php echo $row_SucursalCliente["IdNombreSucursal"]; ?>" <?php if (isset($row["IdNombreSucursal"]) && ($row_SucursalCliente["NumeroLinea"] == $row["IdNombreSucursal"])) {
+									echo "selected";
+							   	} ?>>
+								<?php echo $row_SucursalCliente["NombreSucursal"]; ?>
 							</option>
 						<?php } ?>
 					</select>
@@ -538,6 +541,13 @@ if ($Type != 0) {
 						<option value="">Seleccione...</option>
 
 						<!-- La TE depende del cliente. -->
+						<?php while ($row_NumeroSerie = sqlsrv_fetch_array($SQL_NumeroSerie)) { ?>
+							<option value="<?php echo $row_NumeroSerie["SerialInterno"]; ?>" <?php if (isset($row["SerialInterno"]) && ($row_NumeroSerie["SerialInterno"] == $row["SerialInterno"])) {
+									echo "selected";
+							   	} ?>>
+								<?php echo "SN Fabricante: " . $row_NumeroSerie["SerialFabricante"] . " - Núm. Serie: " . $row_NumeroSerie["SerialInterno"]; ?>
+							</option>
+						<?php } ?>
 					</select>
 				</div>
 
@@ -560,6 +570,11 @@ if ($Type != 0) {
 						data-placeholder="Debe seleccionar las campañas que desea asociar.">
 
 						<!-- Las campañas dependen de la TE. -->
+						<?php while ($row_Campanas = sqlsrv_fetch_array($SQL_Campanas)) { ?>
+							<option value="<?php echo $row_Campanas["id_campana"]; ?>" selected>
+								<?php echo $row_Campanas["id_campana"] . "-" . $row_Campanas["campana"]; ?>
+							</option>
+						<?php } ?>
 					</select>
 				</div>
 			</div>
@@ -885,7 +900,7 @@ if ($Type != 0) {
 
 		// SMM, 27/10/2023
 		<?php if($edit) { ?>
-			$("#Cliente").change();
+			// $("#Cliente").change();
 			$("#NombreCliente").prop("readonly", true);
 
 			$("#Series").prop("disabled", true);
