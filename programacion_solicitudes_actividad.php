@@ -509,7 +509,15 @@ if ($Type != 0) {
 						placeholder="Digite para buscar..." value="<?php echo $row['NombreClienteLlamada'] ?? ""; ?>">
 				</div>
 
-				<div class="col-lg-2"></div>
+				<div class="col-lg-2">
+					<br>
+					<div class="btn-group">
+						<button type="button" id="AddCliente" class="btn btn-primary" title="Adicionar Cliente">
+							<i class="fa fa-plus"></i>
+						</button>
+						<!-- espacio para más botones -->
+					</div>
+				</div>
 
 				<div class="col-lg-4">
 					<label class="control-label">Sucursal <span class="text-danger">*</span></label>
@@ -898,6 +906,10 @@ if ($Type != 0) {
 			AdicionarEquipo();
 		});
 
+		$("#AddCliente").on("click", function () {
+			AdicionarCliente();
+		});
+
 		// SMM, 27/10/2023
 		<?php if($edit) { ?>
 			// $("#Cliente").change();
@@ -939,6 +951,10 @@ if ($Type != 0) {
 
 	function AdicionarEquipo() {
 		window.open(`tarjeta_equipo.php`, "_blank");
+	}
+
+	function AdicionarCliente() {
+		window.open(`socios_negocios.php`, "_blank");
 	}
 
 	function ValidarHoras() {
