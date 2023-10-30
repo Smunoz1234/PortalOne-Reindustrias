@@ -211,7 +211,7 @@ $ids_recursos = array();
 				resourceIds: [<?php echo implode(",", $ids_recursos); ?>]
 			},
 			resourceOrder: 'title',
-			// Evento de CLICK en una fecha con la tecla ALT. SMM, 14/05/2022
+			// SMM, 30/10/2023
 			dateClick: function (info) {
 				console.log("Se ejecuto el evento dateClick");
 
@@ -222,6 +222,19 @@ $ids_recursos = array();
 				} else if (info.view.type === "resourceTimeGridDay") {
 					// Cargando.
 					blockUI();
+					
+					// Obtener la fecha y hora en objetos separados
+					const fechaSeleccionada = new Date(info.dateStr);
+					// const fecha = fechaSeleccionada.toLocaleDateString(); // Formato de fecha
+    				// const hora = fechaSeleccionada.toLocaleTimeString(); // Formato de hora
+
+					const fecha = fechaSeleccionada.toISOString().split('T')[0]; // Formato Y-m-d
+					const hora = `${fechaSeleccionada.getHours().toString().padStart(2, '0')}:${fechaSeleccionada.getMinutes().toString().padStart(2, '0')}`; // Formato H:i
+
+					// Imprimir la fecha, hora y recurso seleccionado por el usuario
+					console.log("Fecha seleccionada (Y-m-d): " + fecha);
+					console.log("Hora seleccionada (H:i): " + hora);
+    				console.log("Recurso seleccionado: " + info.resource.id);
 
 					// Agregar nueva Solicitud.
 					$.ajax({
@@ -622,7 +635,7 @@ $ids_recursos = array();
 				// Cargando.
 				blockUI();
 
-				// Agregar nueva Solicitud.
+				// Editar Solicitud.
 				$.ajax({
 					type: "GET",
 					url: `programacion_solicitudes_actividad.php?id=${info.event.id}`,
