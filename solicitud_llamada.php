@@ -3435,7 +3435,7 @@ $(function () {
 					$("#CDU_IdTecnicoAdicional").val(data.IdTecnico);
 					$("#CDU_IdTecnicoAdicional").change();
 
-					alert(`Técnico Sugerido: ${data.IdTecnico}`);
+					alert(`Técnico Adicional Sugerido: ${data.DeTecnico}`);
 				},
 				error: function (error) {
 					console.log("Error TecnicoSugerido:", error.responseText);
@@ -3443,6 +3443,7 @@ $(function () {
 			});
 		}
 	});
+	// Hasta aquí, 31/10/2023
 });
 
 function AdicionarCampana() {

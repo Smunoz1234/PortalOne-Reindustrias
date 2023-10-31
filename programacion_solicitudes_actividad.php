@@ -934,6 +934,38 @@ if ($Type != 0) {
 
 			$("#Campanas").prop("disabled", true);
 		<?php } ?>
+
+		// SMM, 31/10/2023
+		$(".TecnicoSugerido").change(function () {
+			let IdSerieLlamada = document.getElementById("Series").value || "";
+			let IdOrigen = document.getElementById("OrigenLlamada").value || "";
+			let IdTipoProblema = document.getElementById("TipoProblema").value || "";
+			let IdMarca = document.getElementById("CDU_Marca").value || "";
+
+			if ((IdSerieLlamada != "") && (IdOrigen != "") && (IdTipoProblema != "") && (IdMarca != "")) {
+				$.ajax({
+					url: "ajx_buscar_datos_json.php",
+					data: {
+						type: 50,
+						IdSerieLlamada: IdSerieLlamada,
+						IdOrigen: IdOrigen,
+						IdTipoProblema: IdTipoProblema,
+						IdMarca: IdMarca
+					},
+					dataType: 'json',
+					success: function (data) {
+						$("#CDU_IdTecnicoAdicional").val(data.IdTecnico);
+						$("#CDU_IdTecnicoAdicional").change();
+
+						alert(`Técnico Adicional Sugerido: ${data.DeTecnico}`);
+					},
+					error: function (error) {
+						console.log("Error TecnicoSugerido:", error.responseText);
+					}
+				});
+			}
+		});
+		// Hasta aquí, 31/10/2023
 	});
 
 	function AdicionarCampanaAsincrono() {

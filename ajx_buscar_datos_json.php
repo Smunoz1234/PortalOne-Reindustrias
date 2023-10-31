@@ -803,10 +803,11 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
         $IdMarca = $_GET["IdMarca"] ?? "";
 
         $Where = "IdSerieLlamada='$IdSerieLlamada' AND IdOrigen='$IdOrigen' AND IdTipoProblema='$IdTipoProblema' AND IdMarca='$IdMarca'";
-        $SQL = Seleccionar("tbl_SolicitudLlamadasServicios_TecnicosSugeridos", "*", $Where);
+        $SQL = Seleccionar("uvw_tbl_SolicitudLlamadasServicios_TecnicosSugeridos", "*", $Where);
         $row = sqlsrv_fetch_array($SQL);
         $records = array(
-            "IdTecnico" => $row["IdTecnico"]
+            "IdTecnico" => $row["IdTecnico"],
+            "DeTecnico" => $row["NombreEmpleado"]
         );
 
         // echo "SELECT * FROM tbl_SolicitudLlamadasServicios_TecnicosSugeridos WHERE $Where\n";
