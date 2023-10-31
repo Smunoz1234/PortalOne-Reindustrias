@@ -795,6 +795,24 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
         echo json_encode($records);
     }
 
+    // SMM, 31/10/2023
+    elseif ($_GET["type"] == 50) {
+        $IdSerieLlamada = $_GET["IdSerieLlamada"] ?? "";
+        $IdOrigen = $_GET["IdOrigen"] ?? "";
+        $IdTipoProblema = $_GET["IdTipoProblema"] ?? "";
+        $IdMarca = $_GET["IdMarca"] ?? "";
+
+        $Where = "IdSerieLlamada='$IdSerieLlamada' AND IdOrigen='$IdOrigen' AND IdTipoProblema='$IdTipoProblema' AND IdMarca='$IdMarca'";
+        $SQL = Seleccionar("tbl_SolicitudLlamadasServicios_TecnicosSugeridos", "*", $Where);
+        $row = sqlsrv_fetch_array($SQL);
+        $records = array(
+            "IdTecnico" => $row["IdTecnico"]
+        );
+
+        // echo "SELECT * FROM tbl_SolicitudLlamadasServicios_TecnicosSugeridos WHERE $Where\n";
+        echo json_encode($records);
+    }
+
     // Después de los condicionales
     // Se cierra la conexión a la BD
     sqlsrv_close($conexion);

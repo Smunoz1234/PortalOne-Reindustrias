@@ -1822,7 +1822,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 						<div class="form-group">
 							<div class="col-lg-4">
 								<label class="control-label">Serie <span class="text-danger">*</span></label>
-								<select name="Series" class="form-control" required="required" id="Series" <?php if (($edit == 1) && (!$CrearSolicitud || ($row['IdEstadoLlamada'] == '-1'))) {
+								<select name="Series" class="form-control TecnicoSugerido" required id="Series" <?php if (($edit == 1) && (!$CrearSolicitud || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "disabled";
 								} ?>>
 									<option value="">Seleccione...</option>
@@ -1893,7 +1893,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 							<div class="col-lg-4">
 								<label class="control-label">Origen <span class="text-danger">*</span></label>
 								
-								<select name="OrigenLlamada" class="form-control" required="required" id="OrigenLlamada" <?php if (($edit == 1) && (!$CrearSolicitud || ($row['IdEstadoLlamada'] == '-1'))) {
+								<select name="OrigenLlamada" class="form-control TecnicoSugerido" required id="OrigenLlamada" <?php if (($edit == 1) && (!$CrearSolicitud || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "disabled";
 								} ?>>
 									<option value="">Seleccione...</option>
@@ -1946,7 +1946,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 						<div class="form-group">
 							<div class="col-lg-4">
 								<label class="control-label">Tipo problema (Tipo Servicio) <span class="text-danger">*</span></label>
-								<select name="TipoProblema" class="form-control" id="TipoProblema" required <?php if (($edit == 1) && (!$CrearSolicitud || ($row['IdEstadoLlamada'] == '-1'))) {
+								<select name="TipoProblema" class="form-control TecnicoSugerido" id="TipoProblema" required <?php if (($edit == 1) && (!$CrearSolicitud || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "disabled";
 								} ?>>
 									<option value="">Seleccione...</option>
@@ -2341,7 +2341,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 						<div class="form-group">
 							<div class="col-lg-4">
 								<label class="control-label">Marca del vehículo <span class="text-danger">*</span></label>
-								<select name="CDU_Marca" class="form-control select2" required="required" id="CDU_Marca"
+								<select name="CDU_Marca" class="form-control select2 TecnicoSugerido" required id="CDU_Marca"
 								<?php if (($edit == 1) && (!$CrearSolicitud || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "disabled";
 								} ?>>
@@ -3412,6 +3412,37 @@ $(function () {
 	<?php if ($sw_error == 1) { ?>
 		$('#NumeroSerie').trigger('change');		
 	<?php } ?>
+
+	// SMM, 31/10/2023
+	$(".TecnicoSugerido").change(function () {
+		let IdSerieLlamada = document.getElementById("Series").value || "";
+		let IdOrigen = document.getElementById("OrigenLlamada").value || "";
+		let IdTipoProblema = document.getElementById("TipoProblema").value || "";
+		let IdMarca = document.getElementById("CDU_Marca").value || "";
+
+		if ((IdSerieLlamada != "") && (IdOrigen != "") && (IdTipoProblema != "") && (IdMarca != "")) {
+			$.ajax({
+				url: "ajx_buscar_datos_json.php",
+				data: {
+					type: 50,
+					IdSerieLlamada: IdSerieLlamada,
+					IdOrigen: IdOrigen,
+					IdTipoProblema: IdTipoProblema,
+					IdMarca: IdMarca
+				},
+				dataType: 'json',
+				success: function (data) {
+					$("#CDU_IdTecnicoAdicional").val(data.IdTecnico);
+					$("#CDU_IdTecnicoAdicional").change();
+
+					alert(`Técnico Sugerido: ${data.IdTecnico}`);
+				},
+				error: function (error) {
+					console.log("Error TecnicoSugerido:", error.responseText);
+				}
+			});
+		}
+	});
 });
 
 function AdicionarCampana() {
