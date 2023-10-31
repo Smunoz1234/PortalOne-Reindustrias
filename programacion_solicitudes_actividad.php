@@ -242,7 +242,7 @@ if ($Type != 0) {
 				<div class="col-lg-4">
 					<label class="control-label">Serie <span class="text-danger">*</span></label>
 
-					<select required name="Series" id="Series" class="form-control">
+					<select required name="Series" id="Series" class="form-control TecnicoSugerido">
 						<option value="">Seleccione...</option>
 
 						<?php while ($row_Series = sqlsrv_fetch_array($SQL_Series)) { ?>
@@ -261,7 +261,7 @@ if ($Type != 0) {
 				<div class="col-lg-4">
 					<label class="control-label">Origen <span class="text-danger">*</span></label>
 
-					<select required id="OrigenLlamada" name="OrigenLlamada" class="form-control">
+					<select required id="OrigenLlamada" name="OrigenLlamada" class="form-control TecnicoSugerido">
 						<option value="">Seleccione...</option>
 
 						<?php while ($row_OrigenLlamada = sqlsrv_fetch_array($SQL_OrigenLlamada)) { ?>
@@ -303,7 +303,7 @@ if ($Type != 0) {
 					<label class="control-label">Tipo problema (Tipo Servicio) <span
 							class="text-danger">*</span></label>
 
-					<select required name="TipoProblema" id="TipoProblema" class="form-control">
+					<select required name="TipoProblema" id="TipoProblema" class="form-control TecnicoSugerido">
 						<option value="">Seleccione...</option>
 
 						<?php while ($row_TipoProblema = sqlsrv_fetch_array($SQL_TipoProblema)) { ?>
@@ -553,6 +553,10 @@ if ($Type != 0) {
 							class="btn-xs btn-success fa fa-search"></i> Tarjeta de equipo <span
 							class="text-danger">*</span>
 					</label>
+
+					<!-- SMM, 31/10/2023 -->
+					<input type="hidden" name="CDU_Marca" id="CDU_Marca"
+						value="<?php echo $row["CDU_Marca"] ?? ""; ?>">
 
 					<select required name="NumeroSerie" id="NumeroSerie" class="form-control select2">
 						<option value="">Seleccione...</option>
@@ -895,6 +899,25 @@ if ($Type != 0) {
 					console.log("error (410), ", error);
 				}
 			});
+
+			// SMM, 31/10/2023
+			$.ajax({
+				url: "ajx_buscar_datos_json.php",
+				data: {
+					type: 44,
+					si: 0,
+					id: id_tarjeta_equipo,
+					clt: $("#Cliente").val()	
+				},
+				dataType: 'json',
+				success: function (data) {
+					$("#CDU_Marca").val(data.CDU_IdMarca);
+					$("#CDU_Marca").change();
+				},
+				error: function (error) {
+					console.log("Error CDU_Marca", error.responseText);
+				}
+			});
 		});
 
 		$("#AddCampana").on("click", function () {
@@ -937,10 +960,10 @@ if ($Type != 0) {
 
 		// SMM, 31/10/2023
 		$(".TecnicoSugerido").change(function () {
-			let IdSerieLlamada = document.getElementById("Series").value || "";
-			let IdOrigen = document.getElementById("OrigenLlamada").value || "";
-			let IdTipoProblema = document.getElementById("TipoProblema").value || "";
-			let IdMarca = document.getElementById("CDU_Marca").value || "";
+			let IdSerieLlamada = $("#Series").val() || "";
+			let IdOrigen = $("#OrigenLlamada").val() || "";
+			let IdTipoProblema = $("#TipoProblema").val() || "";
+			let IdMarca = $("#CDU_Marca").val() || "";
 
 			if ((IdSerieLlamada != "") && (IdOrigen != "") && (IdTipoProblema != "") && (IdMarca != "")) {
 				$.ajax({

@@ -3415,11 +3415,11 @@ $(function () {
 
 	// SMM, 31/10/2023
 	$(".TecnicoSugerido").change(function () {
-		let IdSerieLlamada = document.getElementById("Series").value || "";
-		let IdOrigen = document.getElementById("OrigenLlamada").value || "";
-		let IdTipoProblema = document.getElementById("TipoProblema").value || "";
-		let IdMarca = document.getElementById("CDU_Marca").value || "";
-
+		let IdSerieLlamada = $("#Series").val() || "";
+		let IdOrigen = $("#OrigenLlamada").val() || "";
+		let IdTipoProblema = $("#TipoProblema").val() || "";
+		let IdMarca = $("#CDU_Marca").val() || "";
+		
 		if ((IdSerieLlamada != "") && (IdOrigen != "") && (IdTipoProblema != "") && (IdMarca != "")) {
 			$.ajax({
 				url: "ajx_buscar_datos_json.php",
