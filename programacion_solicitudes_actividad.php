@@ -555,7 +555,7 @@ if ($Type != 0) {
 					</label>
 
 					<!-- SMM, 31/10/2023 -->
-					<input type="hidden" name="CDU_Marca" id="CDU_Marca"
+					<input type="hidden" name="CDU_Marca" id="CDU_Marca" class="TecnicoSugerido"
 						value="<?php echo $row["CDU_Marca"] ?? ""; ?>">
 
 					<select required name="NumeroSerie" id="NumeroSerie" class="form-control select2">
@@ -977,8 +977,8 @@ if ($Type != 0) {
 					},
 					dataType: 'json',
 					success: function (data) {
-						$("#CDU_IdTecnicoAdicional").val(data.IdTecnico);
-						$("#CDU_IdTecnicoAdicional").change();
+						$("#TecnicoAdicional").val(data.IdTecnico);
+						$("#TecnicoAdicional").change();
 
 						alert(`Técnico Adicional Sugerido: ${data.DeTecnico}`);
 					},
