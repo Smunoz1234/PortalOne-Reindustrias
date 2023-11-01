@@ -9,13 +9,15 @@ $edit = ($ID != "");
 $recurso = $_GET["recurso"] ?? "";
 $fecha = $_GET["fecha"] ?? "";
 $hora = $_GET["hora"] ?? "";
-$hora_final = DateTime::createFromFormat('H:i', $hora)->modify('+1 hour')->format('H:i');
+$hora_final = "";
 
 // SMM, 27/10/2023
 if($edit) {
 	$Where = "ID_SolicitudLlamadaServicio = $ID";
 	$SQL_Actividad = Seleccionar("uvw_tbl_SolicitudLlamadasServicios_Calendario", "*", $Where);
 	$row = sqlsrv_fetch_array($SQL_Actividad);
+} else {
+	$hora_final = DateTime::createFromFormat('H:i', $hora)->modify('+1 hour')->format('H:i');
 }
 
 // SMM, 30/10/2023
@@ -373,7 +375,7 @@ if ($Type != 0) {
 
 				<div class="col-lg-6">
 					<label for="FechaAgenda" class="control-label">
-						Fecha Inicio Agenda <span class="text-danger">*</span>
+						Fecha Inicio Actividad <span class="text-danger">*</span>
 					</label>
 
 					<div class="row">
@@ -429,7 +431,7 @@ if ($Type != 0) {
 
 				<div class="col-lg-6">
 					<label for="FechaFinAgenda" class="control-label">
-						Fecha Fin Agenda <span class="text-danger">*</span>
+						Fecha Fin Actividad <span class="text-danger">*</span>
 					</label>
 
 					<div class="row">
@@ -566,7 +568,7 @@ if ($Type != 0) {
 							<option value="<?php echo $row_NumeroSerie["SerialInterno"]; ?>" <?php if (isset($row["SerialInterno"]) && ($row_NumeroSerie["SerialInterno"] == $row["SerialInterno"])) {
 									echo "selected";
 							   	} ?>>
-								<?php echo "SN Fabricante: " . $row_NumeroSerie["SerialFabricante"] . " - Núm. Serie: " . $row_NumeroSerie["SerialInterno"]; ?>
+								<?php echo "SN Fabricante: " . $row_NumeroSerie["SerialFabricante"] . " - Núm. Serie: " . $row_NumeroSerie["SerialInterno"] . " - Marca: " . $row_NumeroSerie["CDU_Marca"]; ?>
 							</option>
 						<?php } ?>
 					</select>

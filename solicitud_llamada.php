@@ -2100,7 +2100,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 							<!-- SMM -->
 							<div class="col-lg-4">
 								<!-- Fecha de agenda -->
-								<label class="control-label">Fecha Agenda <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?><span class="text-danger">*</span><?php } ?></label>
+								<label class="control-label">Fecha Inicio Actividad <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?><span class="text-danger">*</span><?php } ?></label>
 								<div class="input-group date">
 									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input <?php if ($edit != 0) { ?> readonly <?php } ?> <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?> required <?php } ?> name="FechaAgenda" type="text" class="form-control" id="FechaAgenda" value="<?php if (($edit == 1) && ($row['FechaAgenda'] != "")) {
 											echo is_string($row['FechaAgenda']) ? date("Y-m-d", strtotime($row['FechaAgenda'])) : $row['FechaAgenda']->format("Y-m-d");
@@ -2151,7 +2151,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 
 							<!-- SMM -->
 							<div class="col-lg-4">
-								<label class="control-label">Hora Agenda <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?><span class="text-danger">*</span><?php } ?></label>
+								<label class="control-label">Hora Inicio Actividad <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?><span class="text-danger">*</span><?php } ?></label>
 								<div class="input-group clockpicker" data-autoclose="true">
 									<span class="input-group-addon">
 										<span class="fa fa-clock-o"></span>
@@ -2186,7 +2186,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 							<!-- SMM -->
 							<div class="col-lg-4">
 								<!-- Fecha de agenda -->
-								<label class="control-label">Fecha Fin Agenda <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?><span class="text-danger">*</span><?php } ?></label>
+								<label class="control-label">Fecha Fin Actividad <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?><span class="text-danger">*</span><?php } ?></label>
 								<div class="input-group date">
 									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input <?php if ($edit != 0) { ?> readonly <?php } ?> <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?> required <?php } ?> 
 									 	name="FechaFinAgenda" type="text" class="form-control" id="FechaFinAgenda" value="<?php if (($edit == 1) && ($row['FechaFinAgenda'] != "")) {
@@ -2218,7 +2218,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 
 							<!-- SMM -->
 							<div class="col-lg-4">
-								<label class="control-label">Hora Fin Agenda <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?><span class="text-danger">*</span><?php } ?></label>
+								<label class="control-label">Hora Fin Actividad <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?><span class="text-danger">*</span><?php } ?></label>
 								<div class="input-group clockpicker" data-autoclose="true">
 									<span class="input-group-addon">
 										<span class="fa fa-clock-o"></span>

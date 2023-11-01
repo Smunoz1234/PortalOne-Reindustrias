@@ -761,7 +761,12 @@ if (isset($_GET['dt_SLS']) && ($_GET['dt_SLS']) == 1) {
 	}
 
 	// Obtener la Llamada de servicio creada desde la Solicitud-
-	$Cons = "SELECT * FROM uvw_tbl_LlamadasServicios WHERE [ID_SolicitudLlamadaServicio] = '$SLS'";
+	$Cons_ID = "SELECT MAX(ID_LlamadaServicio) AS ID FROM uvw_tbl_LlamadasServicios WHERE [ID_SolicitudLlamadaServicio] = '$SLS'";
+	$SQL_ID = sqlsrv_query($conexion, $Cons_ID);
+	$row_ID = sqlsrv_fetch_array($SQL_ID);
+	$ID_LlamadaServicio = $row_ID["ID"] ?? "";
+	
+	$Cons = "SELECT * FROM uvw_tbl_LlamadasServicios WHERE [ID_LlamadaServicio] = '$ID_LlamadaServicio'";
 	$SQL = sqlsrv_query($conexion, $Cons);
 
 	// $sw_error = 1; // Para probar
@@ -2465,7 +2470,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 							</div>
 							<!-- SMM -->
 							<div class="col-lg-4">
-								<label class="control-label">Fecha Agenda <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?><span class="text-danger">*</span><?php } ?></label>
+								<label class="control-label">Fecha Actividad <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?><span class="text-danger">*</span><?php } ?></label>
 								<div class="input-group date">
 									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input <?php if ($type_llmd != 0) { ?> readonly <?php } ?> <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?> required <?php } ?> 
 									 name="FechaAgenda" type="text" class="form-control" id="FechaAgenda" value="<?php if (($type_llmd == 1 || ($dt_SLS == 1)) && ($row['FechaAgenda'] != "")) {
@@ -2518,7 +2523,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 
 							<!-- SMM -->
 							<div class="col-lg-4">
-								<label class="control-label">Hora Agenda <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?><span class="text-danger">*</span><?php } ?></label>
+								<label class="control-label">Hora Actividad <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?><span class="text-danger">*</span><?php } ?></label>
 								<div class="input-group clockpicker" data-autoclose="true">
 									<span class="input-group-addon">
 										<span class="fa fa-clock-o"></span>
