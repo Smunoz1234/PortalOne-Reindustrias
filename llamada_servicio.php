@@ -760,13 +760,22 @@ if (isset($_GET['dt_SLS']) && ($_GET['dt_SLS']) == 1) {
 		$error_solicitud = true;
 	}
 
-	// Obtener la Llamada de servicio creada desde la Solicitud-
+	// Consultar el ID más reciente en el copiar.
 	$Cons_ID = "SELECT MAX(ID_LlamadaServicio) AS ID FROM uvw_tbl_LlamadasServicios WHERE [ID_SolicitudLlamadaServicio] = '$SLS'";
 	$SQL_ID = sqlsrv_query($conexion, $Cons_ID);
 	$row_ID = sqlsrv_fetch_array($SQL_ID);
 	$ID_LlamadaServicio = $row_ID["ID"] ?? "";
 	
-	$Cons = "SELECT * FROM uvw_tbl_LlamadasServicios WHERE [ID_LlamadaServicio] = '$ID_LlamadaServicio'";
+	// Actualizar técnicos en base al permiso.
+	if(PermitirFuncion(340)) {
+		$Cons_Update = "UPDATE [tbl_LlamadasServicios] 
+		SET [IdTecnico] = [CDU_IdTecnicoAdicional], [CDU_IdTecnicoAdicional] = NULL 
+		WHERE [ID_LlamadaServicio] = '$ID_LlamadaServicio'";
+		sqlsrv_query($conexion, $Cons_Update);
+	}
+
+	// Obtener la Llamada de servicio creada desde la Solicitud.
+	$Cons = "SELECT * FROM [uvw_tbl_LlamadasServicios] WHERE [ID_LlamadaServicio] = '$ID_LlamadaServicio'";
 	$SQL = sqlsrv_query($conexion, $Cons);
 
 	// $sw_error = 1; // Para probar
