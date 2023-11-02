@@ -994,6 +994,7 @@ if ($Type != 0) {
 			$("#OrigenLlamada").prop("disabled", true);
 			$("#TipoLlamada").prop("disabled", true);
 			$("#TipoProblema").prop("disabled", true);
+			$("#SubTipoProblema").prop("disabled", true);
 			
 			$("#SucursalCliente").prop("disabled", true);
 			$("#NumeroSerie").prop("disabled", true);

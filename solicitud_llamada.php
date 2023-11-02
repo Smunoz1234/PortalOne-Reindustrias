@@ -1970,6 +1970,9 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<label class="control-label">SubTipo problema (Subtipo Servicio) <span class="text-danger">*</span></label>
 								<select name="SubTipoProblema" class="form-control" id="SubTipoProblema" <?php if (!$IncluirCamposAdicionales || (($edit == 1) && (!$CrearSolicitud || ($row['IdEstadoLlamada'] == '-1')))) {
 									echo "readonly";
+								} ?>
+								<?php if (($edit == 1) && (!$CrearSolicitud || ($row['IdEstadoLlamada'] == '-1'))) {
+									echo "disabled";
 								} ?>>
 									<option value="">Seleccione...</option>
 									  
