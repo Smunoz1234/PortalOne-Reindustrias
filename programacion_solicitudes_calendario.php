@@ -330,7 +330,10 @@ $ids_recursos = array();
 						$Linea = $row_Actividad["DeLineaModeloVehiculo"] ?? "";
 						$ID_Agenda = $row_Actividad["ID_SolicitudLlamadaServicio"] ?? "";
 
-						$EtiquetaActividad = "#$ID_Agenda ($Cliente - $Sucursal) ($SI_TE - $Marca, $Linea)";
+						$TecnicoAsesor = $row_Actividad["NombreTecnicoAsesor"] ?? "";
+						$TecnicoAdicional = $row_Actividad["NombreTecnicoAdicional"] ?? "";
+
+						$EtiquetaActividad = "#$ID_Agenda ($Cliente - $Sucursal) ($SI_TE - $Marca, $Linea) [$TecnicoAsesor - $TecnicoAdicional]";
 
 						// Bloqueado -> "red". SMM, 02/11/2023
 						$ColorBorde = in_array($row_Actividad["IdTecnico"], $ids_recursos) ? $row_Actividad['ColorEstadoServicioLlamada'] : "red";
@@ -382,6 +385,7 @@ $ids_recursos = array();
 									durationEditable: false,
 									resourceEditable: false,
 								<?php } ?>	
+								classNames: ['event-striped']
 							},
 						<?php } ?>
 					<?php } ?>
