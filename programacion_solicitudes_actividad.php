@@ -16,7 +16,7 @@ if($edit) {
 	$Where = "ID_SolicitudLlamadaServicio = $ID";
 	$SQL_Actividad = Seleccionar("uvw_tbl_SolicitudLlamadasServicios_Calendario", "*", $Where);
 	$row = sqlsrv_fetch_array($SQL_Actividad);
-} else {
+} elseif($hora != "") {
 	$hora_final = DateTime::createFromFormat('H:i', $hora)->modify('+1 hour')->format('H:i');
 }
 
@@ -188,17 +188,18 @@ if ($Type != 0) {
 
 <style>
 	.select2-container {
-		/**
-		Se reemplaza con "dropdownParent"
-		z-index: 10000 !important;
-		*/
-
 		/** 
 		Permite visualizar correctamente el "select2-multiple"
 		SMM, 05/10/2023
 		*/
 		display: block !important;
 		width: 100% !important;
+
+		/** 
+		Se reemplaza con "dropdownParent" 
+		SMM, 01/11/2023
+		z-index: 10000 !important;
+		*/
 	}
 
 	.easy-autocomplete {
@@ -357,7 +358,8 @@ if ($Type != 0) {
 								<span class="input-group-text"><i class="fa fa-calendar"></i></span>
 								<input required type="text" name="FechaCreacion" id="FechaCreacion"
 									class="form-control fecha"
-									value="<?php echo $edit ? $ValorFechaCreacion : $fecha; ?>">
+									value="<?php echo $edit ? $ValorFechaCreacion : $fecha; ?>"
+									onchange="ValidarFechas();">
 							</div>
 						</div>
 						<div class="col-lg-6">
@@ -366,7 +368,7 @@ if ($Type != 0) {
 								<input required type="text" name="HoraCreacion" id="HoraCreacion"
 									class="form-control hora"
 									value="<?php echo $edit ? $ValorHoraCreacion : $hora; ?>"
-									onchange="ValidarHoras();">
+									onchange="ValidarFechas();">
 							</div>
 						</div>
 					</div>
@@ -384,7 +386,8 @@ if ($Type != 0) {
 								<span class="input-group-text"><i class="fa fa-calendar"></i></span>
 								<input required type="text" name="FechaAgenda" id="FechaAgenda"
 									class="form-control fecha"
-									value="<?php echo $edit ? $ValorFechaAgenda : $fecha; ?>">
+									value="<?php echo $edit ? $ValorFechaAgenda : $fecha; ?>"
+									onchange="ValidarFechas();">
 							</div>
 						</div>
 						<div class="col-lg-6">
@@ -392,7 +395,7 @@ if ($Type != 0) {
 								<span class="input-group-text"><i class="fa fa-clock"></i></span>
 								<input required type="text" name="HoraAgenda" id="HoraAgenda" class="form-control hora"
 									value="<?php echo $edit ? $ValorHoraAgenda : $hora; ?>"
-									onchange="ValidarHorasAgenda();">
+									onchange="ValidarFechas();">
 							</div>
 						</div>
 					</div>
@@ -413,7 +416,8 @@ if ($Type != 0) {
 								<span class="input-group-text"><i class="fa fa-calendar"></i></span>
 								<input required type="text" name="FechaFinCreacion" id="FechaFinCreacion"
 									class="form-control fecha"
-									value="<?php echo $edit ? $ValorFechaFinCreacion : $fecha; ?>">
+									value="<?php echo $edit ? $ValorFechaFinCreacion : $fecha; ?>"
+									onchange="ValidarFechas();">
 							</div>
 						</div>
 						<div class="col-lg-6">
@@ -422,7 +426,7 @@ if ($Type != 0) {
 								<input required type="text" name="HoraFinCreacion" id="HoraFinCreacion"
 									class="form-control hora"
 									value="<?php echo $edit ? $ValorHoraFinCreacion : $hora_final; ?>"
-									onchange="ValidarHoras();">
+									onchange="ValidarFechas();">
 							</div>
 						</div>
 					</div>
@@ -440,7 +444,8 @@ if ($Type != 0) {
 								<span class="input-group-text"><i class="fa fa-calendar"></i></span>
 								<input required type="text" name="FechaFinAgenda" id="FechaFinAgenda"
 									class="form-control fecha"
-									value="<?php echo $edit ? $ValorFechaFinAgenda : $fecha; ?>">
+									value="<?php echo $edit ? $ValorFechaFinAgenda : $fecha; ?>"
+									onchange="ValidarFechas();">
 							</div>
 						</div>
 						<div class="col-lg-6">
@@ -449,7 +454,7 @@ if ($Type != 0) {
 								<input required type="text" name="HoraFinAgenda" id="HoraFinAgenda"
 									class="form-control hora"
 									value="<?php echo $edit ? $ValorHoraFinAgenda : $hora_final; ?>"
-									onchange="ValidarHorasAgenda();">
+									onchange="ValidarFechas();">
 							</div>
 						</div>
 					</div>
@@ -657,6 +662,12 @@ if ($Type != 0) {
 
 <script>
 	$(document).ready(function () {
+		// Al cerrar el modal ModalAct
+		$('#ModalAct').on('hidden.bs.modal', function () {
+			// SMM, 02/11/2023
+			$(".select2").select2();
+		});
+
 		let options = {
 			url: function (phrase) {
 				return `ajx_buscar_datos_json.php?type=7&id=${phrase}`;
@@ -750,18 +761,20 @@ if ($Type != 0) {
 			});
 		});
 
+		// Genera conflictos con los "select2" del principal.
 		$(".select2").select2({
 			dropdownParent: $('#ModalAct')
 		});
+		// Pero se resuelven "onsubmit". SMM, 02/11/2023
 
 		$("#frmActividad").validate({
 			submitHandler: function (form, event) {
 				event.preventDefault(); // Prevenir redirrección.
-				// blockUI(); // Carga iniciada.
+				blockUI(); // Carga iniciada.
 
 				let formData = new FormData(form);
 				let jsonForm = Object.fromEntries(formData);
-				console.log("Line 720", jsonForm);
+				console.log("Line 765", jsonForm);
 
 				let campanas = $("#Campanas").val();
 				console.log(campanas);
@@ -769,6 +782,7 @@ if ($Type != 0) {
 				let CampanasAsociadas = campanas.join(";");
 				console.log(CampanasAsociadas);
 				
+				// IdTarjetaEquipo: jsonForm.IdTarjetaEquipo,
 				let jsonActividad = {
 					Type: 3,
 					ID_SolicitudLlamadaServicio: jsonForm.ID_SolicitudLlamadaServicio,
@@ -816,47 +830,53 @@ if ($Type != 0) {
 					};
 				<?php } ?>
 
-				// IdTarjetaEquipo: jsonForm.IdTarjetaEquipo,
-				$.ajax({
-					type: "POST",
-					data: jsonActividad,
-					url: "programacion_solicitudes_actividad.php",
-					success: function (response) {
-						if (response == "OK") {
-							Swal.fire({
-								title: "¡Listo!",
-								text: "La solicitud se <?php echo ($edit) ? "creo": "actualizo"; ?> correctamente.",
-								icon: 'success',
-							});
+				// SMM, 02/11/2023
+				if(ValidarFechas()) {
+					$.ajax({
+						type: "POST",
+						data: jsonActividad,
+						url: "programacion_solicitudes_actividad.php",
+						success: function (response) {
+							if (response == "OK") {
+								Swal.fire({
+									title: "¡Listo!",
+									text: "La solicitud se <?php echo ($edit) ? "creo": "actualizo"; ?> correctamente.",
+									icon: 'success',
+								});
 
-							// Refrescar desde el documento principal.
-							RefrescarCalendario();
+								// Refrescar desde el documento principal.
+								RefrescarCalendario();
 
-							// Cerrar modal.
-							$('#ModalAct').modal("hide");
-						} else {
+								// Cerrar modal.
+								$('#ModalAct').modal("hide");
+							} else {
+								Swal.fire({
+									title: "¡Advertencia!",
+									text: response,
+									icon: "warning",
+								});
+							}
+
+							// Carga terminada.
+							blockUI(false);
+						},
+						error: function (error) {
 							Swal.fire({
 								title: "¡Advertencia!",
-								text: response,
+								text: "Ocurrio un error inesperado.",
 								icon: "warning",
 							});
+
+							console.log("Error:", error.responseText);
+							blockUI(false); // Carga terminada.
 						}
-
-						blockUI(false); // Carga terminada.
-					},
-					error: function (error) {
-						Swal.fire({
-							title: "¡Advertencia!",
-							text: "Ocurrio un error inesperado.",
-							icon: "warning",
-						});
-
-						console.log("Error:", error.responseText);
-						blockUI(false); // Carga terminada.
-					}
-				});
-				// Fin del AJAX
+					});
+					// Fin del AJAX
+				} else {
+					blockUI(false); // Carga terminada.
+				}
 			}
+			// submitHandler()
 		});
 
 		<?php if (true) { ?>
@@ -982,7 +1002,11 @@ if ($Type != 0) {
 						$("#TecnicoAdicional").val(data.IdTecnico);
 						$("#TecnicoAdicional").change();
 
-						alert(`Técnico Adicional Sugerido: ${data.DeTecnico}`);
+						Swal.fire({
+							title: 'Técnico Adicional Sugerido',
+							text: data.DeTecnico,
+							icon: 'success',
+						});
 					},
 					error: function (error) {
 						console.log("Error TecnicoSugerido:", error.responseText);
@@ -1023,11 +1047,13 @@ if ($Type != 0) {
 		window.open(`socios_negocios.php`, "_blank");
 	}
 
-	function ValidarHoras() {
-		var HInicio = document.getElementById("HoraCreacion").value;
-		var HFin = document.getElementById("HoraFinCreacion").value;
+	function ValidarFechas() {
+		let fechaCreacion = new Date(`${$("#FechaCreacion").val()}T${$("#HoraCreacion").val()}`);
+		let fechaFinCreacion = new Date(`${$("#FechaFinCreacion").val()}T${$("#HoraFinCreacion").val()}`);
+		let fechaAgenda = new Date(`${$("#FechaAgenda").val()}T${$("#HoraAgenda").val()}`);
+		let fechaFinAgenda = new Date(`${$("#FechaFinAgenda").val()}T${$("#HoraFinAgenda").val()}`);
 
-		if (!validarRangoHoras(HInicio, HFin)) {
+		if ((fechaAgenda >= fechaFinAgenda) || (fechaCreacion >= fechaFinCreacion)) {
 			Swal.fire({
 				title: '¡Advertencia!',
 				text: 'Tiempo no válido. Ingrese una duración positiva.',
@@ -1035,20 +1061,7 @@ if ($Type != 0) {
 			});
 			return false;
 		}
-	}
-
-	function ValidarHorasAgenda() {
-		var HInicio = document.getElementById("HoraAgenda").value;
-		var HFin = document.getElementById("HoraFinAgenda").value;
-
-		if (!validarRangoHoras(HInicio, HFin)) {
-			Swal.fire({
-				title: '¡Advertencia!',
-				text: 'Tiempo no válido. Ingrese una duración positiva.',
-				icon: 'warning',
-			});
-			return false;
-		}
+		return true;
 	}
 
 	function ConsultarAgenda() {

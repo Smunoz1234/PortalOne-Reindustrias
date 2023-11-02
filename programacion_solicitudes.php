@@ -378,7 +378,7 @@ $(function () {
 							</div>
 							<div class="form-group col-lg-3">
 								<label class="form-label">&nbsp;</label>
-								<button id="btnRefrescar" type="button" onclick="RefrescarCalendario();"
+								<button id="btnRefrescar" type="button" onclick="RefrescarCalendario();" style="display: none;"
 									class="btn btn-info mt-4">
 									<i class="fas fa-sync"></i> Refrescar
 								</button>
