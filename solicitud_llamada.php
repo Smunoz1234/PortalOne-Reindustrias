@@ -1860,7 +1860,8 @@ function AgregarEsto(contenedorID, valorElemento) {
 										<i class="fa fa-calendar"></i>
 									</span>
 									<input required name="FechaCreacion" id="FechaCreacion" type="text" class="form-control" 
-										value="<?php echo $ValorFechaCreacion; ?>">
+										value="<?php echo $ValorFechaCreacion; ?>"
+										onchange="ValidarFechas();">
 								</div>
 							</div>
 						</div>
@@ -1884,7 +1885,8 @@ function AgregarEsto(contenedorID, valorElemento) {
 										<span class="fa fa-clock-o"></span>
 									</span>
 									<input required name="HoraCreacion" id="HoraCreacion" type="text" class="form-control" 
-										value="<?php echo $ValorHoraCreacion; ?>">
+										value="<?php echo $ValorHoraCreacion; ?>"
+										onchange="ValidarFechas();">
 								</div>
 							</div>
 						</div>
@@ -1938,7 +1940,8 @@ function AgregarEsto(contenedorID, valorElemento) {
 										<i class="fa fa-calendar"></i>
 									</span>
 									<input required name="FechaFinCreacion" id="FechaFinCreacion" type="text" class="form-control" 
-										value="<?php echo $ValorFechaFinCreacion; ?>">
+										value="<?php echo $ValorFechaFinCreacion; ?>"
+										onchange="ValidarFechas();">
 								</div>
 							</div>
 						</div>
@@ -1989,7 +1992,8 @@ function AgregarEsto(contenedorID, valorElemento) {
 										<span class="fa fa-clock-o"></span>
 									</span>
 									<input required name="HoraFinCreacion" id="HoraFinCreacion" type="text" class="form-control" 
-										value="<?php echo $ValorHoraFinCreacion; ?>">
+										value="<?php echo $ValorHoraFinCreacion; ?>"
+										onchange="ValidarFechas();">
 								</div>
 							</div>
 						</div>
@@ -2106,7 +2110,8 @@ function AgregarEsto(contenedorID, valorElemento) {
 											echo is_string($row['FechaAgenda']) ? date("Y-m-d", strtotime($row['FechaAgenda'])) : $row['FechaAgenda']->format("Y-m-d");
 										} else {
 											echo date('Y-m-d');
-										} ?>">
+										} ?>"
+										onchange="ValidarFechas();">
 								</div>
 							</div>
 							<!-- 01/06/2022 -->
@@ -2161,7 +2166,8 @@ function AgregarEsto(contenedorID, valorElemento) {
 											echo is_string($row['HoraAgenda']) ? date("H:i", strtotime($row['HoraAgenda'])) : $row['HoraAgenda']->format("H:i");
 										} else {
 											echo date('H:i');
-										} ?>">
+										} ?>"
+										onchange="ValidarFechas();">
 								</div>
 							</div>
 							<!-- 01/06/2022 -->
@@ -2193,7 +2199,8 @@ function AgregarEsto(contenedorID, valorElemento) {
 											echo is_string($row['FechaFinAgenda']) ? date("Y-m-d", strtotime($row['FechaFinAgenda'])) : $row['FechaFinAgenda']->format("Y-m-d");
 										} else {
 											echo date('Y-m-d');
-										} ?>">
+										} ?>"
+										onchange="ValidarFechas();">
 								</div>
 							</div>
 							<!-- 27/10/2023 -->
@@ -2229,7 +2236,8 @@ function AgregarEsto(contenedorID, valorElemento) {
 											echo is_string($row['HoraFinAgenda']) ? date("H:i", strtotime($row['HoraFinAgenda'])) : $row['HoraFinAgenda']->format("H:i");
 										} else {
 											echo date('H:i');
-										} ?>">
+										} ?>"
+										onchange="ValidarFechas();">
 								</div>
 							</div>
 							<!-- 27/10/2023 -->
@@ -3435,7 +3443,11 @@ $(function () {
 					$("#CDU_IdTecnicoAdicional").val(data.IdTecnico);
 					$("#CDU_IdTecnicoAdicional").change();
 
-					alert(`Técnico Adicional Sugerido: ${data.DeTecnico}`);
+					Swal.fire({
+						title: 'Técnico Adicional Sugerido',
+						text: data.DeTecnico,
+						icon: 'success',
+					});
 				},
 				error: function (error) {
 					console.log("Error TecnicoSugerido:", error.responseText);
@@ -3445,6 +3457,24 @@ $(function () {
 	});
 	// Hasta aquí, 31/10/2023
 });
+
+// SMM, 02/11/2023
+function ValidarFechas() {
+	let fechaCreacion = new Date(`${$("#FechaCreacion").val()}T${$("#HoraCreacion").val()}`);
+	let fechaFinCreacion = new Date(`${$("#FechaFinCreacion").val()}T${$("#HoraFinCreacion").val()}`);
+	let fechaAgenda = new Date(`${$("#FechaAgenda").val()}T${$("#HoraAgenda").val()}`);
+	let fechaFinAgenda = new Date(`${$("#FechaFinAgenda").val()}T${$("#HoraFinAgenda").val()}`);
+
+	if ((fechaAgenda >= fechaFinAgenda) || (fechaCreacion >= fechaFinCreacion)) {
+		Swal.fire({
+			title: '¡Advertencia!',
+			text: 'Tiempo no válido. Ingrese una duración positiva.',
+			icon: 'warning',
+		});
+		return false;
+	}
+	return true;
+}
 
 function AdicionarCampana() {
 	$('.ibox-content').toggleClass('sk-loading', true);
