@@ -331,6 +331,10 @@ $ids_recursos = array();
 						$ID_Agenda = $row_Actividad["ID_SolicitudLlamadaServicio"] ?? "";
 
 						$EtiquetaActividad = "#$ID_Agenda ($Cliente - $Sucursal) ($SI_TE - $Marca, $Linea)";
+
+						// Bloqueado -> "red". SMM, 02/11/2023
+						$ColorBorde = in_array($row_Actividad["IdTecnico"], $ids_recursos) ? $row_Actividad['ColorEstadoServicioLlamada'] : "red";
+						$ColorBordeAdicional = in_array($row_Actividad["CDU_IdTecnicoAdicional"], $ids_recursos) ? $row_Actividad['ColorEstadoServicioLlamada'] : "red";
 						?>
 						
 						{
@@ -342,22 +346,22 @@ $ids_recursos = array();
 							resourceId: '<?php echo $row_Actividad['IdTecnico']; ?>',
 							textColor: '#FFF',
 							backgroundColor: '<?php echo $row_Actividad['ColorEstadoServicioLlamada']; ?>',
-							/*
-							classNames: [<?php echo $classAdd; ?>],
-							tl: '<?php echo ($row_Actividad['IdActividadPortal'] == 0) ? 1 : 0; ?>',
-							estado: '<?php echo $row_Actividad['IdEstadoActividad']; ?>',
-							tipoEstado: '<?php echo $row_Actividad['DeTipoEstadoActividad'] ?? ""; ?>', // SMM, 07/03/2023
-							llamadaServicio: '<?php echo $row_Actividad['ID_LlamadaServicio']; ?>',
-							estadoLlamadaServ: '<?php echo $row_Actividad['IdEstadoLlamada']; ?>',
-							informacionAdicional: '<?php echo $row_Actividad['InformacionAdicional']; ?>',
-							manualChange: '0',
-							// SMM, 18/05/2022
-							<?php if (!in_array($row_Actividad['ID_EmpleadoActividad'], $ids_recursos)) { ?>
+							borderColor: '<?php echo $ColorBorde; ?>',
+							<?php if (($ColorBorde == "red") || true) { ?>
 								startEditable: false,
 								durationEditable: false,
 								resourceEditable: false,
 							<?php } ?>
-							borderColor: '<?php echo in_array($row_Actividad['ID_EmpleadoActividad'], $ids_recursos) ? $row_Actividad['ColorEstadoServicio'] : 'red'; ?>'
+
+							/*
+							classNames: [<?php echo $classAdd; ?>],
+							tl: '<?php echo ($row_Actividad['IdActividadPortal'] == 0) ? 1 : 0; ?>',
+							estado: '<?php echo $row_Actividad['IdEstadoActividad']; ?>',
+							tipoEstado: '<?php echo $row_Actividad['DeTipoEstadoActividad'] ?? ""; ?>',
+							llamadaServicio: '<?php echo $row_Actividad['ID_LlamadaServicio']; ?>',
+							estadoLlamadaServ: '<?php echo $row_Actividad['IdEstadoLlamada']; ?>',
+							informacionAdicional: '<?php echo $row_Actividad['InformacionAdicional']; ?>',
+							manualChange: '0',
 							*/
 						},
 
@@ -371,7 +375,13 @@ $ids_recursos = array();
 								end: '<?php echo $row_Actividad["FechaFinAgenda"]->format('Y-m-d H:i'); ?>',
 								resourceId: '<?php echo $row_Actividad['CDU_IdTecnicoAdicional']; ?>',
 								textColor: '#FFF',
-								backgroundColor: '<?php echo $row_Actividad['ColorEstadoServicioLlamada']; ?>'
+								backgroundColor: '<?php echo $row_Actividad['ColorEstadoServicioLlamada']; ?>',
+								borderColor: '<?php echo $ColorBordeAdicional; ?>',
+								<?php if (($ColorBordeAdicional == "red") || true) { ?>
+									startEditable: false,
+									durationEditable: false,
+									resourceEditable: false,
+								<?php } ?>	
 							},
 						<?php } ?>
 					<?php } ?>

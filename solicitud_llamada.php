@@ -1,7 +1,7 @@
 <?php require_once "includes/conexion.php";
 PermitirAcceso(334);
 $IdSolicitud = "";
-$MostrarTodosRecursos = false; // SMM, 10/08/2023
+$MostrarTodosRecursos = true; // SMM, 02/10/2023
 $IncluirCamposAdicionales = PermitirFuncion(332); // SMM, 30/06/2023
 
 // SMM, 17/10/2023
