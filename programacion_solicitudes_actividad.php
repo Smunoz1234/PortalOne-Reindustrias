@@ -11,6 +11,9 @@ $fecha = $_GET["fecha"] ?? "";
 $hora = $_GET["hora"] ?? "";
 $hora_final = "";
 
+ // SMM, 02/11/2023
+$MostrarTodosRecursos = true;
+
 // SMM, 27/10/2023
 if($edit) {
 	$Where = "ID_SolicitudLlamadaServicio = $ID";
@@ -467,7 +470,8 @@ if ($Type != 0) {
 				<div class="col-lg-4">
 					<label class="control-label">Técnico/Asesor <span class="text-danger">*</span></label>
 
-					<select required name="Tecnico" id="Tecnico" class="form-control select2">
+					<!-- required -->
+					<select name="Tecnico" id="Tecnico" class="form-control select2">
 						<option value="" disabled selected>Seleccione...</option>
 
 						<?php while ($row_Tecnicos = sqlsrv_fetch_array($SQL_Tecnicos)) { ?>
@@ -831,7 +835,7 @@ if ($Type != 0) {
 				<?php } ?>
 
 				// SMM, 02/11/2023
-				if(ValidarFechas()) {
+				if(ValidarFechas() && ValidarTecnicos()) {
 					$.ajax({
 						type: "POST",
 						data: jsonActividad,
@@ -1047,6 +1051,7 @@ if ($Type != 0) {
 		window.open(`socios_negocios.php`, "_blank");
 	}
 
+	// SMM, 02/11/2023
 	function ValidarFechas() {
 		let fechaCreacion = new Date(`${$("#FechaCreacion").val()}T${$("#HoraCreacion").val()}`);
 		let fechaFinCreacion = new Date(`${$("#FechaFinCreacion").val()}T${$("#HoraFinCreacion").val()}`);
@@ -1057,6 +1062,38 @@ if ($Type != 0) {
 			Swal.fire({
 				title: '¡Advertencia!',
 				text: 'Tiempo no válido. Ingrese una duración positiva.',
+				icon: 'warning',
+			});
+			return false;
+		}
+		return true;
+	}
+
+	// SMM, 02/11/2023
+	function ValidarTecnicos() {
+		let Tecnico = $('#Tecnico').val() || "";
+		let TecnicoAdicional = $('#TecnicoAdicional').val() || "";
+
+		// Verifica si la opción seleccionada está deshabilitada.
+		let disabledTecnico = $(`#Tecnico option[value='${Tecnico}']`).is(':disabled');
+		let disabledTecnicoAdicional = $(`#TecnicoAdicional option[value='${TecnicoAdicional}']`).is(':disabled');
+		
+
+		// Validación "required"
+		if (Tecnico === "") {
+			Swal.fire({
+				title: '¡Técnico Obligatorio!',
+				text: 'No se ha seleccionado un técnico o se selecciono un técnico bloqueado.',
+				icon: 'warning',
+			});
+			return false;
+		}
+
+		// La opción seleccionada está deshabilitada.
+		if (disabledTecnico || disabledTecnicoAdicional) {
+			Swal.fire({
+				title: '¡Advertencia!',
+				text: 'El técnico esta deshabilitado.',
 				icon: 'warning',
 			});
 			return false;
