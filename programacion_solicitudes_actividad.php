@@ -388,7 +388,7 @@ if ($Type != 0) {
 							<div class="input-group">
 								<span class="input-group-text"><i class="fa fa-calendar"></i></span>
 								<input required type="text" name="FechaAgenda" id="FechaAgenda"
-									class="form-control fecha"
+									class="form-control fechaAgenda"
 									value="<?php echo $edit ? $ValorFechaAgenda : $fecha; ?>"
 									onchange="ValidarFechas();">
 							</div>
@@ -396,7 +396,7 @@ if ($Type != 0) {
 						<div class="col-lg-6">
 							<div class="input-group">
 								<span class="input-group-text"><i class="fa fa-clock"></i></span>
-								<input required type="text" name="HoraAgenda" id="HoraAgenda" class="form-control hora"
+								<input required type="text" name="HoraAgenda" id="HoraAgenda" class="form-control horaAgenda"
 									value="<?php echo $edit ? $ValorHoraAgenda : $hora; ?>"
 									onchange="ValidarFechas();">
 							</div>
@@ -446,7 +446,7 @@ if ($Type != 0) {
 							<div class="input-group">
 								<span class="input-group-text"><i class="fa fa-calendar"></i></span>
 								<input required type="text" name="FechaFinAgenda" id="FechaFinAgenda"
-									class="form-control fecha"
+									class="form-control fechaAgenda"
 									value="<?php echo $edit ? $ValorFechaFinAgenda : $fecha; ?>"
 									onchange="ValidarFechas();">
 							</div>
@@ -455,7 +455,7 @@ if ($Type != 0) {
 							<div class="input-group">
 								<span class="input-group-text"><i class="fa fa-clock"></i></span>
 								<input required type="text" name="HoraFinAgenda" id="HoraFinAgenda"
-									class="form-control hora"
+									class="form-control horaAgenda"
 									value="<?php echo $edit ? $ValorHoraFinAgenda : $hora_final; ?>"
 									onchange="ValidarFechas();">
 							</div>
@@ -883,7 +883,7 @@ if ($Type != 0) {
 			// submitHandler()
 		});
 
-		<?php if (true) { ?>
+		<?php if (PermitirFuncion(341) || !$edit) { ?>
 			$(".fecha").flatpickr({
 				dateFormat: "Y-m-d",
 				static: true,
@@ -898,7 +898,24 @@ if ($Type != 0) {
 				static: true,
 				allowInput: true
 			});
+		<?php } else { ?>
+			$(".fecha, .hora").prop("readonly", true);
 		<?php } ?>
+
+		$(".fechaAgenda").flatpickr({
+			dateFormat: "Y-m-d",
+			static: true,
+			allowInput: true
+		});
+
+		$(".horaAgenda").flatpickr({
+			enableTime: true,
+			noCalendar: true,
+			dateFormat: "H:i",
+			time_24hr: true,
+			static: true,
+			allowInput: true
+		});
 
 		// maxLength("Comentario");
 
