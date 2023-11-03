@@ -351,6 +351,54 @@ if (isset($_GET['dt_OV']) && ($_GET['dt_OV']) == 1) {
 }
 // Fin, Verificar que viene de una Orden de Ventas
 
+// SMM, 03/11/2023
+if (isset($_GET['dt_OF']) && ($_GET['dt_OF']) == 1) { //Verificar que viene de una Oferta de ventas
+	$dt_OV = 1;
+
+	$ParametrosCopiarOfertaToEntrega = array(
+		"'" . base64_decode($_GET['OF']) . "'",
+		"'" . base64_decode($_GET['Evento']) . "'",
+		"'" . base64_decode(($_GET['Almacen'] ?? "")) . "'",
+		"'" . base64_decode($_GET['Cardcode']) . "'",
+		"'" . $_SESSION['CodUser'] . "'",
+	);
+
+	$Aprobados = isset($_GET['Aprobados']) ? 1 : 0;
+	$SP_Aprobados = isset($_GET['Aprobados']) ? 'sp_tbl_OfertaVentaDet_Aprobados_To_EntregaVentaDet' : 'sp_tbl_OfertaVentaDet_To_EntregaVentaDet';
+
+	$SQL_CopiarOfertaToEntrega = EjecutarSP($SP_Aprobados, $ParametrosCopiarOfertaToEntrega);
+	if (!$SQL_CopiarOfertaToEntrega) {
+		echo "<script>
+		$(document).ready(function() {
+			Swal.fire({
+				title: '¡Ha ocurrido un error!',
+				text: 'No se pudo copiar la Oferta en Entrega de venta.',
+				icon: 'error'
+			});
+		});
+		</script>";
+	}
+
+	// Clientes
+	$SQL_Cliente = Seleccionar('uvw_Sap_tbl_Clientes', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreCliente');
+	$row_Cliente = sqlsrv_fetch_array($SQL_Cliente);
+
+	// SMM, 29/09/2023
+	$BillToDef = $row_Cliente["BillToDef"];
+	$ShipToDef = $row_Cliente["ShipToDef"];
+
+	//Contacto cliente
+	$SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreContacto');
+
+	//Sucursales, SMM 06/05/2022
+	$SQL_SucursalDestino = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "' AND TipoDireccion='S'", 'NombreSucursal');
+	$SQL_SucursalFacturacion = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "' AND TipoDireccion='B'", 'NombreSucursal');
+
+	//Orden de servicio
+	$SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . base64_decode($_GET['LS']) . "'");
+	$row_OrdenServicioCliente = sqlsrv_fetch_array($SQL_OrdenServicioCliente);
+}
+
 // SMM, 07/03/2022
 if (isset($_GET['dt_ET']) && ($_GET['dt_ET']) == 1) { // Verificar que viene de una Entrega de ventas (Duplicar)
 	$dt_OV = 1;
