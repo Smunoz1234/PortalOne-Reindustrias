@@ -1493,14 +1493,14 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 							<div class="form-group">
 								<label class="col-lg-2">Comentarios</label>
 								<div class="col-lg-10">
-									<textarea name="Comentarios" form="CrearOfertaVenta" rows="4" class="form-control"
-										id="Comentarios" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
+									<textarea type="text" maxlength="2000" name="Comentarios" form="CrearOfertaVenta"
+										rows="4" id="Comentarios" class="form-control" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
 											echo "readonly";
-										} ?>><?php if ($edit == 1) {
-											echo $row['Comentarios'];
-										} elseif (isset($_GET['Comentarios'])) {
-											echo base64_decode($_GET['Comentarios']);
-										} ?></textarea>
+										} ?>><?php if (($edit == 1) || ($sw_error == 1)) {
+											 echo $row['Comentarios'] ?? "";
+										 } elseif (isset($_GET['Comentarios'])) {
+											 echo base64_decode($_GET['Comentarios']);
+										 } ?></textarea>
 								</div>
 							</div>
 							<div class="form-group">
