@@ -13,6 +13,9 @@ $ObjType = 23;
 $BillToDef = ""; // Sucursal de Facturación por Defecto.
 $ShipToDef = ""; // Sucursal de Destino por Defecto.
 
+// SMM, 03/11/2023
+$NameFirma = "";
+
 if (isset($_GET['id']) && ($_GET['id'] != "")) {
 	$IdOferta = base64_decode($_GET['id']);
 }
@@ -43,6 +46,20 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Oferta de venta
 	$RutaAttachSAP = ObtenerDirAttach();
 	$dir = CrearObtenerDirTemp();
 	$dir_new = CrearObtenerDirAnx("ofertaventa");
+
+	// $directorio = opendir("."); // ruta actual
+	$dir_firma = CrearObtenerDirTempFirma();
+
+	// SMM, 03/11/2023
+	if ((isset($_POST['SigRecibe'])) && ($_POST['SigRecibe'] != "")) {
+		$NombreFileFirma = base64_decode($_POST['SigRecibe']);
+		$Nombre_Archivo = "Sig_$NombreFileFirma";
+		if (!copy($dir_firma . $NombreFileFirma, $dir . $Nombre_Archivo)) {
+			$sw_error = 1;
+			$msg_error = "No se pudo mover la firma";
+		}
+	}
+
 	$route = opendir($dir);
 	$DocFiles = array();
 	while ($archivo = readdir($route)) { //obtenemos un archivo y luego otro sucesivamente
@@ -1425,39 +1442,54 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 							</form>
 							<div id="tab-3" class="tab-pane">
 								<div class="panel-body">
-									<?php if ($edit == 1) {
-										if ($row['IdAnexo'] != 0) { ?>
+									<?php if (($edit == 1) || (isset($SQL_Anexo) && sqlsrv_has_rows($SQL_Anexo))) { ?>
+										<?php if ((($edit == 1) && ($row['IdAnexo'] != 0)) || (sqlsrv_has_rows($SQL_Anexo) && ($edit == 0))) { ?>
 											<div class="form-group">
 												<div class="col-lg-4">
 													<ul class="folder-list" style="padding: 0">
-														<?php while ($row_Anexo = sqlsrv_fetch_array($SQL_Anexo)) {
+														<?php while ($row_Anexo = sqlsrv_fetch_array($SQL_Anexo)) { ?>
+
+															<?php
 															$Icon = IconAttach($row_Anexo['FileExt']);
+															$tmp = substr($row_Anexo['NombreArchivo'], 0, 4);
+															if ($tmp == "Sig_") {
+																$NameFirma = $row_Anexo['NombreArchivo'];
+															}
 															?>
-															<li><a href="attachdownload.php?file=<?php echo base64_encode($row_Anexo['AbsEntry']); ?>&line=<?php echo base64_encode($row_Anexo['Line']); ?>"
-																	target="_blank" class="btn-link btn-xs"><i
-																		class="<?php echo $Icon; ?>"></i>
-																	<?php echo $row_Anexo['NombreArchivo']; ?>
-																</a></li>
+															
+															<li>
+																<a <?php if ($edit == 0) {
+																	echo "disabled";
+																} else {
+																	echo "href='attachdownload.php?file=" . base64_encode($row_Anexo['AbsEntry']) . "&line=" . base64_encode($row_Anexo['Line']) . "'";
+																} ?> target="_blank" class="btn-link btn-xs">
+																	<i class="<?php echo $Icon; ?>"></i> <?php echo $row_Anexo['NombreArchivo']; ?>
+																</a>
+															</li>
 														<?php } ?>
 													</ul>
 												</div>
 											</div>
-										<?php } else {
-											echo "<p>Sin anexos.</p>";
-										}
-									} ?>
-									<div class="row">
-										<form action="upload.php" class="dropzone" id="dropzoneForm"
-											name="dropzoneForm">
-											<?php if ($sw_error == 0) {
-												LimpiarDirTemp();
-											} ?>
-											<div class="fallback">
-												<input name="File" id="File" type="file" form="dropzoneForm" />
-											</div>
-										</form>
-									</div>
+										<?php } else { ?>
+											<p>Sin anexos.</p>
+										<?php } ?>
+									<?php } ?>
+
+									<?php if (($edit == 0) || (($edit == 1) && ($row['Cod_Estado'] == 'O'))) { ?>
+										<div class="row">
+											<form action="upload.php" class="dropzone" id="dropzoneForm"
+												name="dropzoneForm">
+												<?php if (($sw_error == 0)) {
+													LimpiarDirTemp();
+												} ?>
+												<div class="fallback">
+													<input name="File" id="File" type="file" form="dropzoneForm" />
+												</div>
+											</form>
+										</div>
+									<?php } ?>
 								</div>
+								<!-- /.panel-body -->
 							</div>
 						</div>
 					</div>
@@ -1469,18 +1501,18 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 								<div class="col-lg-5">
 									<select name="EmpleadoVentas" class="form-control" id="EmpleadoVentas"
 										form="CrearOfertaVenta" required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
-											echo "disabled='disabled'";
+											echo "disabled";
 										} ?>>
 										<?php while ($row_EmpleadosVentas = sqlsrv_fetch_array($SQL_EmpleadosVentas)) { ?>
 											<option value="<?php echo $row_EmpleadosVentas['ID_EmpVentas']; ?>" <?php if ($edit == 0 && $sw_error == 0) {
 												   if (isset($_GET['Empleado']) && (strcmp($row_EmpleadosVentas['ID_EmpVentas'], base64_decode($_GET['Empleado'])) == 0)) {
-													   echo "selected=\"selected\"";
+													   echo "selected";
 												   } elseif (($_SESSION['CodigoEmpVentas'] != "") && (!isset($_GET['Empleado'])) && (strcmp($row_EmpleadosVentas['ID_EmpVentas'], $_SESSION['CodigoEmpVentas']) == 0)) {
-													   echo "selected=\"selected\"";
+													   echo "selected";
 												   }
 											   } elseif ($edit == 1 || $sw_error == 1) {
 												   if (($row['SlpCode'] != "") && (strcmp($row_EmpleadosVentas['ID_EmpVentas'], $row['SlpCode']) == 0)) {
-													   echo "selected=\"selected\"";
+													   echo "selected";
 												   }
 											   } ?>><?php echo $row_EmpleadosVentas['DE_EmpVentas']; ?></option>
 										<?php } ?>
@@ -1503,6 +1535,40 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 										 } ?></textarea>
 								</div>
 							</div>
+
+							<?php if (PermitirFuncion(417)) { ?>
+								<div class="form-group">
+									<label class="col-lg-2">Firma quien recibe</label>
+									
+									<?php if (($edit == 1) && ($NameFirma != "")) { ?>
+										<div class="col-lg-10">
+											<span class="badge badge-primary">Firmado</span>
+										</div>
+									<?php } else { ?>
+										<?php LimpiarDirTempFirma(); ?>
+										
+										<div class="col-lg-5">
+											<button class="btn btn-primary" type="button" id="FirmaCliente"
+												onclick="AbrirFirma('SigRecibe');">
+												<i class="fa fa-pencil-square-o"></i> Realizar firma
+											</button>
+											
+											<input type="hidden" id="SigRecibe" name="SigRecibe" value=""
+												form="CrearOfertaVenta">
+											
+											<div id="msgInfoSigRecibe" style="display: none;" class="alert alert-info">
+												<i class="fa fa-info-circle"></i> El documento ya ha sido firmado.
+											</div>
+										</div>
+										
+										<div class="col-lg-5">
+											<img id="ImgSigRecibe" style="display: none; max-width: 100%; height: auto;" src="" alt="">
+										</div>
+									<?php } ?>
+								</div>
+								<!-- /.form-group -->
+							<?php } ?>
+
 							<div class="form-group">
 								<label class="col-lg-2">Información adicional</label>
 								<div class="col-lg-10">
@@ -1669,6 +1735,9 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 						<input type="hidden" form="CrearOfertaVenta" id="tl" name="tl" value="<?php echo $edit; ?>" />
 						<input type="hidden" form="CrearOfertaVenta" id="return" name="return"
 							value="<?php echo base64_encode($return); ?>" />
+
+						<input type="hidden" form="CrearOfertaVenta" id="swError" name="swError"
+							value="<?php echo $sw_error; ?>" />
 					</form>
 				</div>
 			</div>
@@ -1703,6 +1772,10 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 					}
 				}
 			});
+
+			// SMM, 03/11/2023
+			maxLength('Comentarios');
+
 			$(".alkin").on('click', function () {
 				$('.ibox-content').toggleClass('sk-loading');
 			});
