@@ -357,7 +357,7 @@ $(function () {
 								</div>
 							</div>
 							<div class="form-group col-lg-3">
-								<label class="form-label">Técnicos/Empleados</label>
+								<label class="form-label">Técnico/Asesor (Responsable/Adicional)</label>
 								<div class="select2-success">
 									<select name="Recursos[]" id="Recursos" class="select2 form-control" multiple
 										style="width: 100%" data-placeholder="(TODOS)">
