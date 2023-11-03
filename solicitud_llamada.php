@@ -3476,6 +3476,15 @@ function ValidarFechas() {
 		});
 		return false;
 	}
+	// SMM, 03/11/2023
+	else if(fechaFinCreacion > fechaAgenda) {
+		Swal.fire({
+			title: '¡Advertencia!',
+			text: 'La fecha fin de la solicitud debe ser menor o igual a la fecha inicio de la actividad.',
+			icon: 'warning',
+		});
+		return false;
+	}
 	return true;
 }
 
