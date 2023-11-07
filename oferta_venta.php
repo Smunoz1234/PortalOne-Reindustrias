@@ -50,7 +50,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Oferta de venta
 	// $directorio = opendir("."); // ruta actual
 	$dir_firma = CrearObtenerDirTempFirma();
 
-	// SMM, 03/11/2023
+	// La firma se copia al directorio temporal, pero luego es que se copia a SAP.
 	if ((isset($_POST['SigRecibe'])) && ($_POST['SigRecibe'] != "")) {
 		$NombreFileFirma = base64_decode($_POST['SigRecibe']);
 		$Nombre_Archivo = "Sig_$NombreFileFirma";
@@ -60,6 +60,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Oferta de venta
 		}
 	}
 
+	// Luego el directorio temporal se lee y se copia al directorio de SAP (RutaAttachSAP).
 	$route = opendir($dir);
 	$DocFiles = array();
 	while ($archivo = readdir($route)) { //obtenemos un archivo y luego otro sucesivamente
@@ -80,52 +81,80 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Oferta de venta
 			$IdOfertaVenta = base64_decode($_POST['IdOfertaVenta']);
 			$IdEvento = base64_decode($_POST['IdEvento']);
 			$Type = 2;
+
+			/*
 			if (!PermitirFuncion(403)) { //Permiso para autorizar orden de venta
 				$_POST['Autorizacion'] = 'P'; //Si no tengo el permiso, la orden queda pendiente
 			}
+			*/
+
+			// SMM, 07/11/2023
+			if ((isset($_POST['SigRecibe'])) && ($_POST['SigRecibe'] != "")) { // Si solo estoy actualizando la firma
+                $Type = 4;
+            }
 		} else { //Crear
 			$IdOfertaVenta = "NULL";
 			$IdEvento = "0";
 			$Type = 1;
 		}
-		$ParametrosCabOfertaVenta = array(
-			$IdOfertaVenta,
-			$IdEvento,
-			"NULL",
-			"NULL",
-			"'" . $_POST['Serie'] . "'",
-			"'" . $_POST['EstadoDoc'] . "'",
-			"'" . FormatoFecha($_POST['DocDate']) . "'",
-			"'" . FormatoFecha($_POST['DocDueDate']) . "'",
-			"'" . FormatoFecha($_POST['TaxDate']) . "'",
-			"'" . $_POST['CardCode'] . "'",
-			"'" . $_POST['ContactoCliente'] . "'",
-			"'" . ($_POST['OrdenServicioCliente'] ?? "") . "'",
-			"'" . $_POST['Referencia'] . "'",
-			"'" . $_POST['EmpleadoVentas'] . "'",
-			"'" . LSiqmlObs($_POST['Comentarios']) . "'",
-			"'" . str_replace(',', '', $_POST['SubTotal']) . "'",
-			"'" . str_replace(',', '', $_POST['Descuentos']) . "'",
-			"NULL",
-			"'" . str_replace(',', '', $_POST['Impuestos']) . "'",
-			"'" . str_replace(',', '', $_POST['TotalOferta']) . "'",
-			"'" . $_POST['SucursalFacturacion'] . "'",
-			"'" . $_POST['DireccionFacturacion'] . "'",
-			"'" . $_POST['SucursalDestino'] . "'",
-			"'" . $_POST['DireccionDestino'] . "'",
-			"'" . $_POST['CondicionPago'] . "'",
-			"''", // SMM, 15/06/2023
-			"''", // SMM, 15/06/2023
-			"''", // SMM, 15/06/2023
-			"'" . $_POST['PrjCode'] . "'",
-			"'" . $_POST['Autorizacion'] . "'",
-			"'" . ($_POST['Almacen'] ?? "") . "'",
-			"'" . $_SESSION['CodUser'] . "'",
-			"'" . $_SESSION['CodUser'] . "'",
-			"$Type",
-			"'" . ($_POST['SolicitudLlamadaCliente'] ?? "") . "'",
-			"'" . ($_POST['dt_SLS'] ?? "") . "'",
-		);
+
+		// SMM, 07/11/2023
+		if ($Type == 4) {
+            $ParametrosCabTrasladoInv = array(
+                $IdOfertaVenta,
+                $IdEvento,
+                "'" . $_SESSION['CodUser'] . "'",
+                "'" . $_SESSION['CodUser'] . "'",
+                $Type,
+                "'" . ($_POST['NombreRecibeFirma'] ?? "") . "'",
+                "'" . ($_POST['CedulaRecibeFirma'] ?? "") . "'",
+            );
+        } else {
+			$ParametrosCabOfertaVenta = array(
+				$IdOfertaVenta,
+				$IdEvento,
+				// Estos campos deben ir arriba para poder firmar.
+				"'" . $_SESSION['CodUser'] . "'",
+                "'" . $_SESSION['CodUser'] . "'",
+                $Type,
+                // SMM, 07/11/2023
+                "'" . ($_POST['NombreRecibeFirma'] ?? "") . "'",
+                "'" . ($_POST['CedulaRecibeFirma'] ?? "") . "'",
+                // Hasta aquí.
+				"NULL",
+				"NULL",
+				"'" . $_POST['Serie'] . "'",
+				"'" . $_POST['EstadoDoc'] . "'",
+				"'" . FormatoFecha($_POST['DocDate']) . "'",
+				"'" . FormatoFecha($_POST['DocDueDate']) . "'",
+				"'" . FormatoFecha($_POST['TaxDate']) . "'",
+				"'" . $_POST['CardCode'] . "'",
+				"'" . $_POST['ContactoCliente'] . "'",
+				"'" . ($_POST['OrdenServicioCliente'] ?? "") . "'",
+				"'" . $_POST['Referencia'] . "'",
+				"'" . $_POST['EmpleadoVentas'] . "'",
+				"'" . LSiqmlObs($_POST['Comentarios']) . "'",
+				"'" . str_replace(',', '', $_POST['SubTotal']) . "'",
+				"'" . str_replace(',', '', $_POST['Descuentos']) . "'",
+				"NULL",
+				"'" . str_replace(',', '', $_POST['Impuestos']) . "'",
+				"'" . str_replace(',', '', $_POST['TotalOferta']) . "'",
+				"'" . $_POST['SucursalFacturacion'] . "'",
+				"'" . $_POST['DireccionFacturacion'] . "'",
+				"'" . $_POST['SucursalDestino'] . "'",
+				"'" . $_POST['DireccionDestino'] . "'",
+				"'" . $_POST['CondicionPago'] . "'",
+				"''", // SMM, 15/06/2023
+				"''", // SMM, 15/06/2023
+				"''", // SMM, 15/06/2023
+				"'" . $_POST['PrjCode'] . "'",
+				"'" . $_POST['Autorizacion'] . "'",
+				"'" . ($_POST['Almacen'] ?? "") . "'",
+				"'" . ($_POST['SolicitudLlamadaCliente'] ?? "") . "'",
+				"'" . ($_POST['dt_SLS'] ?? "") . "'",
+			);
+		}
+
 		$SQL_CabeceraOfertaVenta = EjecutarSP('sp_tbl_OfertaVenta', $ParametrosCabOfertaVenta, $_POST['P']);
 		if ($SQL_CabeceraOfertaVenta) {
 			if ($Type == 1) {
@@ -1536,7 +1565,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 								</div>
 							</div>
 
-							<?php if (PermitirFuncion(417)) { ?>
+							<?php /* if (PermitirFuncion(417)) { ?>
 								<div class="form-group">
 									<label class="col-lg-2">Firma quien recibe</label>
 									
@@ -1567,7 +1596,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 									<?php } ?>
 								</div>
 								<!-- /.form-group -->
-							<?php } ?>
+							<?php } */ ?>
 
 							<div class="form-group">
 								<label class="col-lg-2">Información adicional</label>
@@ -1640,6 +1669,57 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 								</div>
 							</div>
 						</div>
+
+						<!-- Información firma. SMM, 07/11/2023 -->
+						<?php if ($edit == 1) {?>
+							<div class="col-lg-12">
+								<div class="form-group">
+									<div class="col-lg-6 border-bottom ">
+										<label class="control-label text-danger">Información de quien recibe</label>
+									</div>
+								</div>
+
+								<?php // if (PermitirFuncion(1213)) {?>
+									<div class="form-group">
+										<div class="col-lg-5">
+											<label class="control-label">Nombre de quien recibe <span class="text-danger cierre-span">*</span></label>
+											<input form="CrearTrasladoInventario" autocomplete="off" name="NombreRecibeFirma" type="text" class="form-control cierre-input" id="NombreRecibeFirma" maxlength="200" value="<?php echo $row['NombreRecibeFirma'] ?? ""; ?>" required <?php if ($NameFirma != "") {echo "readonly";}?>>
+										</div>
+										<div class="col-lg-5">
+											<label class="control-label">Cédula de quien recibe</label>
+											<input form="CrearTrasladoInventario" autocomplete="off" name="CedulaRecibeFirma" type="number" class="form-control cierre-input" id="CedulaRecibeFirma" maxlength="20" value="<?php echo $row['CedulaRecibeFirma'] ?? ""; ?>" <?php if ($NameFirma != "") {echo "readonly";}?>>
+										</div>
+									</div>
+								<?php // }?>
+
+								<!-- Componente "firma"-->
+								<div class="form-group">
+									<label class="col-lg-2">Firma de quien recibe</label>
+									<?php if ($NameFirma != "") {?>
+									<div class="col-lg-10">
+										<span class="badge badge-primary">Firmado</span>
+									</div>
+									<?php } elseif ($PuedeFirmar == 1) {LimpiarDirTempFirma();?>
+									<div class="col-lg-5">
+										<button class="btn btn-primary" type="button" id="FirmaCliente" onClick="AbrirFirma('SigRecibe');"><i class="fa fa-pencil-square-o"></i> Realizar firma</button>
+										<input type="hidden" id="SigRecibe" name="SigRecibe" value="" form="CrearTrasladoInventario" />
+										<div id="msgInfoSigRecibe" style="display: none;" class="alert alert-info"><i class="fa fa-info-circle"></i> El documento ya ha sido firmado.</div>
+									</div>
+									<div class="col-lg-5">
+										<img id="ImgSigRecibe" style="display: none; max-width: 100%; height: auto;" src="" alt="" />
+									</div>
+									<?php } else {?>
+										<div class="col-lg-10">
+											<span class="badge badge-warning">Usuario no autorizado para firmar</span>
+										</div>
+									<?php }?>
+								</div>
+								<!-- Hasta aquí -->
+								<br><br>
+							</div>
+						<?php }?>
+						<!-- Hasta aquí, 07/11/2023 -->
+
 						<div class="form-group">
 							<div class="col-lg-9">
 								<?php if (PermitirFuncion(401)) {
