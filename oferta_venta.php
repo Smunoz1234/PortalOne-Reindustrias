@@ -54,7 +54,9 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Oferta de venta
 	// La firma se copia al directorio temporal, pero luego es que se copia a SAP.
 	if ((isset($_POST['SigRecibe'])) && ($_POST['SigRecibe'] != "")) {
 		$NombreFileFirma = base64_decode($_POST['SigRecibe']);
-		$Nombre_Archivo = "Sig_$NombreFileFirma";
+		// $Nombre_Archivo = "Sig_$NombreFileFirma";
+
+		$Nombre_Archivo = $NombreFileFirma;
 		if (!copy($dir_firma . $NombreFileFirma, $dir . $Nombre_Archivo)) {
 			$sw_error = 1;
 			$msg_error = "No se pudo mover la firma";
@@ -1689,11 +1691,11 @@ if ((isset($row['CodEmpleado']) && ($row['CodEmpleado'] == $_SESSION['IdCardCode
 									<div class="form-group">
 										<div class="col-lg-5">
 											<label class="control-label">Nombre de quien recibe <span class="text-danger cierre-span">*</span></label>
-											<input form="CrearTrasladoInventario" autocomplete="off" name="NombreRecibeFirma" type="text" class="form-control cierre-input" id="NombreRecibeFirma" maxlength="200" value="<?php echo $row['NombreRecibeFirma'] ?? ""; ?>" required <?php if ($NameFirma != "") {echo "readonly";}?>>
+											<input form="CrearOfertaVenta" autocomplete="off" name="NombreRecibeFirma" type="text" class="form-control cierre-input" id="NombreRecibeFirma" maxlength="200" value="<?php echo $row['NombreRecibeFirma'] ?? ""; ?>" required <?php if ($NameFirma != "") {echo "readonly";}?>>
 										</div>
 										<div class="col-lg-5">
 											<label class="control-label">Cédula de quien recibe</label>
-											<input form="CrearTrasladoInventario" autocomplete="off" name="CedulaRecibeFirma" type="number" class="form-control cierre-input" id="CedulaRecibeFirma" maxlength="20" value="<?php echo $row['CedulaRecibeFirma'] ?? ""; ?>" <?php if ($NameFirma != "") {echo "readonly";}?>>
+											<input form="CrearOfertaVenta" autocomplete="off" name="CedulaRecibeFirma" type="number" class="form-control cierre-input" id="CedulaRecibeFirma" maxlength="20" value="<?php echo $row['CedulaRecibeFirma'] ?? ""; ?>" <?php if ($NameFirma != "") {echo "readonly";}?>>
 										</div>
 									</div>
 								<?php // }?>
@@ -1708,7 +1710,7 @@ if ((isset($row['CodEmpleado']) && ($row['CodEmpleado'] == $_SESSION['IdCardCode
 									<?php } elseif ($PuedeFirmar == 1) {LimpiarDirTempFirma();?>
 									<div class="col-lg-5">
 										<button class="btn btn-primary" type="button" id="FirmaCliente" onClick="AbrirFirma('SigRecibe');"><i class="fa fa-pencil-square-o"></i> Realizar firma</button>
-										<input type="hidden" id="SigRecibe" name="SigRecibe" value="" form="CrearTrasladoInventario" />
+										<input type="hidden" id="SigRecibe" name="SigRecibe" value="" form="CrearOfertaVenta" />
 										<div id="msgInfoSigRecibe" style="display: none;" class="alert alert-info"><i class="fa fa-info-circle"></i> El documento ya ha sido firmado.</div>
 									</div>
 									<div class="col-lg-5">
