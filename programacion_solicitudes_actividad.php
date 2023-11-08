@@ -928,7 +928,7 @@ if ($Type != 0) {
 		<?php } ?>
 
 		// SMM, 07/11/2023
-		<?php if (PermitirFuncion(342) || $edit) { ?>
+		<?php if (!PermitirFuncion(342) || $edit) { ?>
 			$(".fechaAgenda").flatpickr({
 				dateFormat: "Y-m-d",
 				static: true,
