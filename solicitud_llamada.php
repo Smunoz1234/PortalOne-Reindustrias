@@ -1860,8 +1860,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 										<i class="fa fa-calendar"></i>
 									</span>
 									<input required name="FechaCreacion" id="FechaCreacion" type="text" class="form-control" 
-										value="<?php echo $ValorFechaCreacion; ?>"
-										onchange="ValidarFechas();">
+										value="<?php echo $ValorFechaCreacion; ?>">
 								</div>
 							</div>
 						</div>
@@ -1885,8 +1884,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 										<span class="fa fa-clock-o"></span>
 									</span>
 									<input required name="HoraCreacion" id="HoraCreacion" type="text" class="form-control" 
-										value="<?php echo $ValorHoraCreacion; ?>"
-										onchange="ValidarFechas();">
+										value="<?php echo $ValorHoraCreacion; ?>">
 								</div>
 							</div>
 						</div>
@@ -1940,8 +1938,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 										<i class="fa fa-calendar"></i>
 									</span>
 									<input required name="FechaFinCreacion" id="FechaFinCreacion" type="text" class="form-control" 
-										value="<?php echo $ValorFechaFinCreacion; ?>"
-										onchange="ValidarFechas();">
+										value="<?php echo $ValorFechaFinCreacion; ?>">
 								</div>
 							</div>
 						</div>
@@ -1995,8 +1992,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 										<span class="fa fa-clock-o"></span>
 									</span>
 									<input required name="HoraFinCreacion" id="HoraFinCreacion" type="text" class="form-control" 
-										value="<?php echo $ValorHoraFinCreacion; ?>"
-										onchange="ValidarFechas();">
+										value="<?php echo $ValorHoraFinCreacion; ?>">
 								</div>
 							</div>
 						</div>
@@ -2113,8 +2109,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 											echo is_string($row['FechaAgenda']) ? date("Y-m-d", strtotime($row['FechaAgenda'])) : $row['FechaAgenda']->format("Y-m-d");
 										} else {
 											echo date('Y-m-d');
-										} ?>"
-										onchange="ValidarFechas();">
+										} ?>">
 								</div>
 							</div>
 							<!-- 01/06/2022 -->
@@ -2169,8 +2164,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 											echo is_string($row['HoraAgenda']) ? date("H:i", strtotime($row['HoraAgenda'])) : $row['HoraAgenda']->format("H:i");
 										} else {
 											echo date('H:i');
-										} ?>"
-										onchange="ValidarFechas();">
+										} ?>">
 								</div>
 							</div>
 							<!-- 01/06/2022 -->
@@ -2202,8 +2196,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 											echo is_string($row['FechaFinAgenda']) ? date("Y-m-d", strtotime($row['FechaFinAgenda'])) : $row['FechaFinAgenda']->format("Y-m-d");
 										} else {
 											echo date('Y-m-d');
-										} ?>"
-										onchange="ValidarFechas();">
+										} ?>">
 								</div>
 							</div>
 							<!-- 27/10/2023 -->
@@ -2239,8 +2232,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 											echo is_string($row['HoraFinAgenda']) ? date("H:i", strtotime($row['HoraFinAgenda'])) : $row['HoraFinAgenda']->format("H:i");
 										} else {
 											echo date('H:i');
-										} ?>"
-										onchange="ValidarFechas();">
+										} ?>">
 								</div>
 							</div>
 							<!-- 27/10/2023 -->
@@ -3477,10 +3469,10 @@ function ValidarFechas() {
 		return false;
 	}
 	// SMM, 03/11/2023
-	else if(fechaFinCreacion > fechaAgenda) {
+	else if(fechaCreacion > fechaAgenda) {
 		Swal.fire({
 			title: '¡Advertencia!',
-			text: 'La fecha fin de la solicitud debe ser menor o igual a la fecha inicio de la actividad.',
+			text: 'La fecha de inicio de la solicitud debe ser menor o igual a la fecha de inicio de la actividad.',
 			icon: 'warning',
 		});
 		return false;

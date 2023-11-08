@@ -361,8 +361,7 @@ if ($Type != 0) {
 								<span class="input-group-text"><i class="fa fa-calendar"></i></span>
 								<input required type="text" name="FechaCreacion" id="FechaCreacion"
 									class="form-control fecha"
-									value="<?php echo $edit ? $ValorFechaCreacion : $fecha; ?>"
-									onchange="ValidarFechas();">
+									value="<?php echo $edit ? $ValorFechaCreacion : $fecha; ?>">
 							</div>
 						</div>
 						<div class="col-lg-6">
@@ -370,8 +369,7 @@ if ($Type != 0) {
 								<span class="input-group-text"><i class="fa fa-clock"></i></span>
 								<input required type="text" name="HoraCreacion" id="HoraCreacion"
 									class="form-control hora"
-									value="<?php echo $edit ? $ValorHoraCreacion : $hora; ?>"
-									onchange="ValidarFechas();">
+									value="<?php echo $edit ? $ValorHoraCreacion : $hora; ?>">
 							</div>
 						</div>
 					</div>
@@ -389,16 +387,14 @@ if ($Type != 0) {
 								<span class="input-group-text"><i class="fa fa-calendar"></i></span>
 								<input required type="text" name="FechaAgenda" id="FechaAgenda"
 									class="form-control fechaAgenda"
-									value="<?php echo $edit ? $ValorFechaAgenda : $fecha; ?>"
-									onchange="ValidarFechas();">
+									value="<?php echo $edit ? $ValorFechaAgenda : $fecha; ?>">
 							</div>
 						</div>
 						<div class="col-lg-6">
 							<div class="input-group">
 								<span class="input-group-text"><i class="fa fa-clock"></i></span>
 								<input required type="text" name="HoraAgenda" id="HoraAgenda" class="form-control horaAgenda"
-									value="<?php echo $edit ? $ValorHoraAgenda : $hora; ?>"
-									onchange="ValidarFechas();">
+									value="<?php echo $edit ? $ValorHoraAgenda : $hora; ?>">
 							</div>
 						</div>
 					</div>
@@ -419,8 +415,7 @@ if ($Type != 0) {
 								<span class="input-group-text"><i class="fa fa-calendar"></i></span>
 								<input required type="text" name="FechaFinCreacion" id="FechaFinCreacion"
 									class="form-control fecha"
-									value="<?php echo $edit ? $ValorFechaFinCreacion : $fecha; ?>"
-									onchange="ValidarFechas();">
+									value="<?php echo $edit ? $ValorFechaFinCreacion : $fecha; ?>">
 							</div>
 						</div>
 						<div class="col-lg-6">
@@ -428,8 +423,7 @@ if ($Type != 0) {
 								<span class="input-group-text"><i class="fa fa-clock"></i></span>
 								<input required type="text" name="HoraFinCreacion" id="HoraFinCreacion"
 									class="form-control hora"
-									value="<?php echo $edit ? $ValorHoraFinCreacion : $hora_final; ?>"
-									onchange="ValidarFechas();">
+									value="<?php echo $edit ? $ValorHoraFinCreacion : $hora_final; ?>">
 							</div>
 						</div>
 					</div>
@@ -447,8 +441,7 @@ if ($Type != 0) {
 								<span class="input-group-text"><i class="fa fa-calendar"></i></span>
 								<input required type="text" name="FechaFinAgenda" id="FechaFinAgenda"
 									class="form-control fechaAgenda"
-									value="<?php echo $edit ? $ValorFechaFinAgenda : $fecha; ?>"
-									onchange="ValidarFechas();">
+									value="<?php echo $edit ? $ValorFechaFinAgenda : $fecha; ?>">
 							</div>
 						</div>
 						<div class="col-lg-6">
@@ -456,8 +449,7 @@ if ($Type != 0) {
 								<span class="input-group-text"><i class="fa fa-clock"></i></span>
 								<input required type="text" name="HoraFinAgenda" id="HoraFinAgenda"
 									class="form-control horaAgenda"
-									value="<?php echo $edit ? $ValorHoraFinAgenda : $hora_final; ?>"
-									onchange="ValidarFechas();">
+									value="<?php echo $edit ? $ValorHoraFinAgenda : $hora_final; ?>">
 							</div>
 						</div>
 					</div>
@@ -902,21 +894,39 @@ if ($Type != 0) {
 			$(".fecha, .hora").prop("readonly", true);
 		<?php } ?>
 
-		$(".fechaAgenda").flatpickr({
-			dateFormat: "Y-m-d",
-			static: true,
-			allowInput: true
-		});
+		// SMM, 07/11/2023
+		<?php if (PermitirFuncion(342) || $edit) { ?>
+			$(".fechaAgenda").flatpickr({
+				dateFormat: "Y-m-d",
+				static: true,
+				allowInput: true
+			});
 
-		$(".horaAgenda").flatpickr({
-			enableTime: true,
-			noCalendar: true,
-			dateFormat: "H:i",
-			time_24hr: true,
-			static: true,
-			allowInput: true
-		});
+			$(".horaAgenda").flatpickr({
+				enableTime: true,
+				noCalendar: true,
+				dateFormat: "H:i",
+				time_24hr: true,
+				static: true,
+				allowInput: true
+			});
+		<?php } else { ?>
+			$(".fechaAgenda, .horaAgenda").prop("readonly", true);
 
+			$(".fecha, .hora").on("change", function() {
+				let fechaCreacion = $("#FechaCreacion").val();
+				let horaCreacion = $("#HoraCreacion").val();
+				let fechaFinCreacion = $("#FechaFinCreacion").val();
+				let horaFinCreacion = $("#HoraFinCreacion").val();
+
+				// Igualar la fecha de solicitud a la de actividad.
+				$("#FechaAgenda").val(fechaCreacion);
+				$("#HoraAgenda").val(horaCreacion);
+				$("#FechaFinAgenda").val(fechaFinCreacion);
+				$("#HoraFinAgenda").val(horaFinCreacion);
+			});
+		<?php } ?>
+		
 		// maxLength("Comentario");
 
 		// SMM, 05/10/2023
@@ -1069,7 +1079,7 @@ if ($Type != 0) {
 		window.open(`socios_negocios.php`, "_blank");
 	}
 
-	// SMM, 02/11/2023
+	// SMM, 07/11/2023
 	function ValidarFechas() {
 		let fechaCreacion = new Date(`${$("#FechaCreacion").val()}T${$("#HoraCreacion").val()}`);
 		let fechaFinCreacion = new Date(`${$("#FechaFinCreacion").val()}T${$("#HoraFinCreacion").val()}`);
@@ -1085,10 +1095,10 @@ if ($Type != 0) {
 			return false;
 		} 
 		// SMM, 03/11/2023
-		else if(fechaFinCreacion > fechaAgenda) {
+		else if(fechaCreacion > fechaAgenda) {
 			Swal.fire({
 				title: '¡Advertencia!',
-				text: 'La fecha fin de la solicitud debe ser menor o igual a la fecha inicio de la actividad.',
+				text: 'La fecha de inicio de la solicitud debe ser menor o igual a la fecha de inicio de la actividad.',
 				icon: 'warning',
 			});
 			return false;
