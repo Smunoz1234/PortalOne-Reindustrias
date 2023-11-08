@@ -70,6 +70,9 @@ $SQL_EstServLlamada = Seleccionar('tbl_SolicitudLlamadasServiciosEstadoServicios
 // Tipos preventivos en la llamada de servicio. SMM, 24/10/2023
 $SQL_TipoPreventivo = Seleccionar('uvw_Sap_tbl_LlamadasServicios_TipoPreventivo', '*');
 
+// Contratos en la llamada de servicio. SMM, 08/11/2023
+$SQL_ContratosLlamada = Seleccionar('uvw_Sap_tbl_LlamadasServicios_Contratos_TBUsuario', '*');
+
 // SMM, 25/10/2023
 $SQL_OrigenLlamada = Seleccionar('uvw_Sap_tbl_LlamadasServiciosOrigen', '*', "Activo = 'Y'", 'DeOrigenLlamada');
 $SQL_TipoLlamadas = Seleccionar('uvw_Sap_tbl_TipoLlamadas', '*', "Activo = 'Y'", 'DeTipoLlamada');
@@ -114,6 +117,7 @@ $TipoProblema = $_POST["TipoProblema"] ?? "NULL";
 $SubTipoProblema = $_POST["SubTipoProblema"] ?? "NULL";
 
 $Cliente = $_POST["Cliente"] ?? "";
+$CDU_Contrato = $_POST["CDU_Contrato"] ?? "";
 $SucursalCliente = $_POST["SucursalCliente"] ?? "NULL"; // NumeroLinea
 $CampanasAsociadas = $_POST["Campanas"] ?? "";
 
@@ -140,6 +144,7 @@ if ($Type == 1) {
 		$TipoProblema,
 		$SubTipoProblema,
 		"'$Cliente'",
+		"'$CDU_Contrato'",
 		$SucursalCliente,
 		"'$CampanasAsociadas'", 
 	);
@@ -423,6 +428,46 @@ if ($Type != 0) {
 				<div class="col-lg-2"></div>
 
 				<div class="col-lg-4">
+					<label class="control-label">Sucursal <span class="text-danger">*</span></label>
+
+					<select required name="SucursalCliente" id="SucursalCliente" class="form-control">
+						<option value="">Seleccione...</option>
+
+						<?php while ($row_SucursalCliente = sqlsrv_fetch_array($SQL_SucursalCliente)) { ?>
+							<option value="<?php echo $row_SucursalCliente["IdNombreSucursal"]; ?>" <?php if (isset($row["IdNombreSucursal"]) && ($row_SucursalCliente["NumeroLinea"] == $row["IdNombreSucursal"])) {
+									echo "selected";
+							   	} ?>>
+								<?php echo $row_SucursalCliente["NombreSucursal"]; ?>
+							</option>
+						<?php } ?>
+					</select>
+				</div>
+			</div>
+			<!-- /.form-group -->
+
+			<div class="form-group row">
+				<div class="col-lg-4">
+					<label class="control-label">Tipo problema (Tipo Servicio) <span
+							class="text-danger">*</span></label>
+
+					<select required name="TipoProblema" id="TipoProblema" class="form-control TecnicoSugerido">
+						<option value="">Seleccione...</option>
+
+						<?php while ($row_TipoProblema = sqlsrv_fetch_array($SQL_TipoProblema)) { ?>
+							<option value="<?php echo $row_TipoProblema['IdTipoProblemaLlamada']; ?>" <?php if (isset($row['IdTipoProblemaLlamada']) && ($row_TipoProblema['IdTipoProblemaLlamada'] == $row['IdTipoProblemaLlamada'])) {
+								   echo "selected";
+							   } elseif ((!isset($row['IdTipoProblemaLlamada'])) && ($TipoProblema == $row_TipoProblema['IdTipoProblemaLlamada'])) {
+								   echo "selected";
+							   } ?>>
+								<?php echo $row_TipoProblema['DeTipoProblemaLlamada']; ?>
+							</option>
+						<?php } ?>
+					</select>
+				</div>
+
+				<div class="col-lg-2"></div>
+
+				<div class="col-lg-4">
 					<label class="control-label">
 						<i onclick="ConsultarEquipo();" title="Consultar equipo" style="cursor: pointer"
 							class="btn-xs btn-success fa fa-search"></i> Tarjeta de equipo <span
@@ -463,39 +508,6 @@ if ($Type != 0) {
 
 			<div class="form-group row">
 				<div class="col-lg-4">
-					<label class="control-label">Tipo problema (Tipo Servicio) <span
-							class="text-danger">*</span></label>
-
-					<select required name="TipoProblema" id="TipoProblema" class="form-control TecnicoSugerido">
-						<option value="">Seleccione...</option>
-
-						<?php while ($row_TipoProblema = sqlsrv_fetch_array($SQL_TipoProblema)) { ?>
-							<option value="<?php echo $row_TipoProblema['IdTipoProblemaLlamada']; ?>" <?php if (isset($row['IdTipoProblemaLlamada']) && ($row_TipoProblema['IdTipoProblemaLlamada'] == $row['IdTipoProblemaLlamada'])) {
-								   echo "selected";
-							   } elseif ((!isset($row['IdTipoProblemaLlamada'])) && ($TipoProblema == $row_TipoProblema['IdTipoProblemaLlamada'])) {
-								   echo "selected";
-							   } ?>>
-								<?php echo $row_TipoProblema['DeTipoProblemaLlamada']; ?>
-							</option>
-						<?php } ?>
-					</select>
-				</div>
-
-				<div class="col-lg-2"></div>
-
-				<div class="col-lg-4">
-					<label class="control-label">
-						Kilometros <span class="text-danger">*</span>
-					</label>
-
-					<input required type="text" name="CDU_Kilometros" id="CDU_Kilometros" class="form-control"
-						value="<?php echo $row["CDU_Kilometros"] ?? ""; ?>">
-				</div>
-			</div>
-			<!-- /.form-group -->
-
-			<div class="form-group row">
-				<div class="col-lg-4">
 					<label class="control-label">Tipo llamada (Tipo Cliente) <span class="text-danger">*</span></label>
 
 					<select required id="TipoLlamada" name="TipoLlamada" class="form-control">
@@ -516,19 +528,12 @@ if ($Type != 0) {
 				<div class="col-lg-2"></div>
 
 				<div class="col-lg-4">
-					<label class="control-label">Sucursal <span class="text-danger">*</span></label>
+					<label class="control-label">
+						Kilometros <span class="text-danger">*</span>
+					</label>
 
-					<select required name="SucursalCliente" id="SucursalCliente" class="form-control">
-						<option value="">Seleccione...</option>
-
-						<?php while ($row_SucursalCliente = sqlsrv_fetch_array($SQL_SucursalCliente)) { ?>
-							<option value="<?php echo $row_SucursalCliente["IdNombreSucursal"]; ?>" <?php if (isset($row["IdNombreSucursal"]) && ($row_SucursalCliente["NumeroLinea"] == $row["IdNombreSucursal"])) {
-									echo "selected";
-							   	} ?>>
-								<?php echo $row_SucursalCliente["NombreSucursal"]; ?>
-							</option>
-						<?php } ?>
-					</select>
+					<input required type="text" name="CDU_Kilometros" id="CDU_Kilometros" class="form-control"
+						value="<?php echo $row["CDU_Kilometros"] ?? ""; ?>">
 				</div>
 			</div>
 			<!-- /.form-group -->
@@ -644,16 +649,16 @@ if ($Type != 0) {
 				<div class="col-lg-2"></div>
 
 				<div class="col-lg-4">
-					<label class="control-label">
-						Tipo preventivo <span class="text-danger">*</span>
-					</label>
-
-					<select required name="CDU_TipoPreventivo" id="CDU_TipoPreventivo" class="form-control">
-						<?php while ($row_TipoPreventivo = sqlsrv_fetch_array($SQL_TipoPreventivo)) { ?>
-							<option value="<?php echo $row_TipoPreventivo['CodigoTipoPreventivo']; ?>" <?php if (isset($row['CDU_TipoPreventivo']) && ($row_TipoPreventivo['CodigoTipoPreventivo'] == $row['CDU_TipoPreventivo'])) {
-								   echo "selected";
-							   } ?>>
-								<?php echo $row_TipoPreventivo['TipoPreventivo']; ?>
+					<label class="control-label">Contrato/Campaña</label>
+					
+					<select name="CDU_Contrato" id="CDU_Contrato" class="form-control">
+						<option value="" disabled selected>Seleccione...</option>
+						
+						<?php while ($row_Contrato = sqlsrv_fetch_array($SQL_ContratosLlamada)) { ?>
+							<option value="<?php echo $row_Contrato['NombreContrato']; ?>" <?php if (isset($row['CDU_Contrato']) && ($row_Contrato['NombreContrato'] == $row['CDU_Contrato'])) {
+								echo "selected";
+							} ?>>
+								<?php echo $row_Contrato['NombreContrato']; ?>
 							</option>
 						<?php } ?>
 					</select>
@@ -848,6 +853,7 @@ if ($Type != 0) {
 						TipoProblema: jsonForm.TipoProblema,
 						SubTipoProblema: jsonForm.SubTipoProblema,
 						Cliente: jsonForm.Cliente,
+						CDU_Contrato: jsonForm.CDU_Contrato,
 						SucursalCliente: jsonForm.SucursalCliente,
 						Campanas: CampanasAsociadas
 					};
@@ -1036,6 +1042,7 @@ if ($Type != 0) {
 			$("#SucursalCliente").prop("disabled", true);
 			$("#NumeroSerie").prop("disabled", true);
 
+			$("#CDU_Contrato").prop("disabled", true);
 			$("#Campanas").prop("disabled", true);
 		<?php } ?>
 

@@ -13,8 +13,9 @@ $ObjType = 23;
 $BillToDef = ""; // Sucursal de Facturación por Defecto.
 $ShipToDef = ""; // Sucursal de Destino por Defecto.
 
-// SMM, 03/11/2023
+// SMM, 07/11/2023
 $NameFirma = "";
+$PuedeFirmar = 0;
 
 if (isset($_GET['id']) && ($_GET['id'] != "")) {
 	$IdOferta = base64_decode($_GET['id']);
@@ -467,6 +468,11 @@ $SQL_Proyecto = Seleccionar('uvw_Sap_tbl_Proyectos', '*', '', 'DeProyecto');
 $row_encode = isset($row) ? json_encode($row) : "";
 $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'Not Found'";
 // echo "<script> console.log($cadena); </script>";
+
+// SMM, 07/11/2023
+if ((isset($row['CodEmpleado']) && ($row['CodEmpleado'] == $_SESSION['IdCardCode'])) || PermitirFuncion(427)) {
+	$PuedeFirmar = 1;
+}
 ?>
 
 <!DOCTYPE html>
@@ -1722,15 +1728,16 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 
 						<div class="form-group">
 							<div class="col-lg-9">
-								<?php if (PermitirFuncion(401)) {
-									if ($edit == 0) { ?>
-										<button class="btn btn-primary" type="submit" form="CrearOfertaVenta" id="Crear"><i
-												class="fa fa-check"></i> Crear Oferta de venta</button>
-									<?php } elseif ($row['Cod_Estado'] == "O") { ?>
-										<button class="btn btn-warning" type="submit" form="CrearOfertaVenta" id="Actualizar"><i
-												class="fa fa-refresh"></i> Actualizar Oferta de venta</button>
-									<?php }
-								} ?>
+								<?php if ($edit == 0 && PermitirFuncion(401)) {?>
+									<button class="btn btn-primary" type="submit" form="CrearOfertaVenta" id="Crear">
+										<i class="fa fa-check"></i> Crear Oferta de venta
+									</button>
+								<?php } elseif (($edit == 1) && (($row['Cod_Estado'] == "O" && PermitirFuncion(401)) || (($NameFirma == "") && ($PuedeFirmar == 1)))) {?>
+									<button class="btn btn-warning" type="submit" form="CrearOfertaVenta" id="Actualizar">
+										<i class="fa fa-refresh"></i> Actualizar Oferta de venta
+									</button>
+								<?php } ?>
+
 								<?php
 								$EliminaMsg = array("&a=" . base64_encode("OK_OFertAdd"), "&a=" . base64_encode("OK_OFertUpd")); //Eliminar mensajes
 								if (isset($_GET['return'])) {
