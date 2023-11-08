@@ -1756,7 +1756,7 @@ if ((isset($row['CodEmpleado']) && ($row['CodEmpleado'] == $_SESSION['IdCardCode
 							</div>
 
 							<?php if (PermitirFuncion(401)) { ?>
-								<?php if (($edit == 1) && ($row['Cod_Estado'] != 'C')) { ?>
+								<?php if (($edit == 1) && ($row['Cod_Estado'] != 'C') && ($NameFirma != "")) { ?>
 									<div class="col-lg-3">
 										<div class="btn-group dropup pull-right">
 											<button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i
