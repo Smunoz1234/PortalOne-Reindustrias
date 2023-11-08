@@ -101,7 +101,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Oferta de venta
 
 		// SMM, 07/11/2023
 		if ($Type == 4) {
-            $ParametrosCabTrasladoInv = array(
+            $ParametrosCabOfertaVenta = array(
                 $IdOfertaVenta,
                 $IdEvento,
                 "'" . $_SESSION['CodUser'] . "'",
