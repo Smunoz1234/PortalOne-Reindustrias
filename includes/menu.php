@@ -549,6 +549,7 @@ if (!isset($_COOKIE["banderaMenu"])) {
 							<?php if (PermitirFuncion(224)) {?><li><a class="alnk" href="parametros_consultas_sap.php">Parámetros Consultas SAP B1</a></li><?php }?>
 							
 							<?php if (true) {?><li><a class="alnk" href="parametros_conceptos_salida.php">Parámetros de Conceptos de salida de inventario</a></li><?php }?>
+							<?php if (PermitirFuncion(225)) {?><li><a class="alnk" href="parametros_tecnicos_sugeridos.php">Parámetros técnicos sugeridos</a></li><?php }?>
 						</ul>
 					</li>
 					<?php }?>
