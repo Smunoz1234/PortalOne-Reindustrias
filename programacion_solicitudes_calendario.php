@@ -313,11 +313,12 @@ $ids_recursos = array();
 			events: [
 				<?php if ($sw == 1) { ?>
 					<?php while ($row_Actividad = sqlsrv_fetch_array($SQL_Actividades)) {
-						/*
 						$classAdd = "";
-						if ($row_Actividad['IdEstadoActividad'] == 'Y') {
+						if (isset($row_Actividad['CDU_IdTecnicoAdicional']) && ($row_Actividad['CDU_IdTecnicoAdicional'] != "")) {
 							$classAdd = "'event-striped'";
 						}
+
+						/*
 						if ($row_Actividad['IdEstadoLlamada'] == '-2') { //Llamada pendiente
 							$classAdd .= ",'event-pend'";
 						}
@@ -355,9 +356,9 @@ $ids_recursos = array();
 								durationEditable: false,
 								resourceEditable: false,
 							<?php } ?>
+							classNames: [<?php echo $classAdd; ?>]
 
 							/*
-							classNames: [<?php echo $classAdd; ?>],
 							tl: '<?php echo ($row_Actividad['IdActividadPortal'] == 0) ? 1 : 0; ?>',
 							estado: '<?php echo $row_Actividad['IdEstadoActividad']; ?>',
 							tipoEstado: '<?php echo $row_Actividad['DeTipoEstadoActividad'] ?? ""; ?>',

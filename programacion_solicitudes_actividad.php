@@ -5,6 +5,10 @@ PermitirAcceso(336);
 $ID = $_GET["id"] ?? "";
 $edit = ($ID != "");
 
+// SMM, 09/11/2023
+$CrearSolicitud = PermitirFuncion(335);
+$ActualizarSolicitud = PermitirFuncion(343);
+
 // SMM, 30/10/2023
 $recurso = $_GET["recurso"] ?? "";
 $fecha = $_GET["fecha"] ?? "";
@@ -192,6 +196,9 @@ if ($Type != 0) {
 		}
 	}
 }
+
+// SMM, 09/11/2023
+$SolicitudCerrada = (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] == '-1'));
 ?>
 
 <style>
@@ -532,7 +539,7 @@ if ($Type != 0) {
 						Kilometros <span class="text-danger">*</span>
 					</label>
 
-					<input required type="text" name="CDU_Kilometros" id="CDU_Kilometros" class="form-control"
+					<input required type="number" name="CDU_Kilometros" id="CDU_Kilometros" class="form-control"
 						value="<?php echo $row["CDU_Kilometros"] ?? ""; ?>">
 				</div>
 			</div>
@@ -682,7 +689,12 @@ if ($Type != 0) {
 
 		<div class="modal-footer">
 			<button type="button" class="btn btn-secondary md-btn-flat" data-dismiss="modal">Cerrar</button>
-			<button type="submit" class="btn btn-primary md-btn-flat"><i class="fas fa-save"></i> Guardar</button>
+
+			<?php if(!$SolicitudCerrada && $edit && $ActualizarSolicitud) { ?>
+				<button type="submit" class="btn btn-primary md-btn-flat"><i class="fas fa-save"></i> Guardar/Actualizar</button>			
+			<?php } elseif(!$SolicitudCerrada && !$edit && $CrearSolicitud) { ?>
+				<button type="submit" class="btn btn-primary md-btn-flat"><i class="fas fa-save"></i> Guardar/Crear</button>
+			<?php } ?>
 		</div>
 		<!-- /modal-footer -->
 	</div>
@@ -1081,6 +1093,13 @@ if ($Type != 0) {
 			}
 		});
 		// Hasta aquí, 31/10/2023
+
+		// SMM, 09/11/2023
+		<?php if($SolicitudCerrada || (!$edit && !$CrearSolicitud) || ($edit && !$ActualizarSolicitud)) { ?>
+			$("input").prop("disabled", true);
+			$("select").prop("disabled", true);
+			$("textarea").prop("disabled", true);
+		<?php } ?>
 	});
 
 	function AdicionarCampanaAsincrono() {

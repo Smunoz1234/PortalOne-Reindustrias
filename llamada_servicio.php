@@ -769,7 +769,7 @@ if (isset($_GET['dt_SLS']) && ($_GET['dt_SLS']) == 1) {
 	// Actualizar técnicos en base al permiso.
 	if(PermitirFuncion(340)) {
 		$Cons_Update = "UPDATE [tbl_LlamadasServicios] 
-		SET [IdTecnico] = [CDU_IdTecnicoAdicional], [CDU_IdTecnicoAdicional] = NULL 
+		SET [IdTecnico] = [CDU_IdTecnicoAdicional], [CDU_IdTecnicoAdicional] = [IdTecnico] 
 		WHERE [ID_LlamadaServicio] = '$ID_LlamadaServicio'";
 		sqlsrv_query($conexion, $Cons_Update);
 	}
