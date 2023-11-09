@@ -61,10 +61,8 @@ while ($row_GruposUsuario = sqlsrv_fetch_array($SQL_GruposUsuario)) {
 // Serie de Llamada.
 $ParamSerie = array(
 	"'" . $_SESSION['CodUser'] . "'",
-	"'191'",
-	// @IdTipoDocumento
-	2,
-	// @TipoAccion
+	"'191'", // @IdTipoDocumento
+	($edit) ? 1 : 2, // @TipoAccion
 );
 $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 
