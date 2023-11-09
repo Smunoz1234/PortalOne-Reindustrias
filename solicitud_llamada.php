@@ -2642,9 +2642,9 @@ function AgregarEsto(contenedorID, valorElemento) {
 									<i class="fa fa-refresh"></i> Actualizar Solicitud (Agenda)
 								</button>
 								
-								<a style="margin-left: 10px;" class="alkin btn btn-success" href="llamada_servicio.php?dt_SLS=1&SLS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>">
+								<button id="copiarSolicitud" style="margin-left: 10px;" class="alkin btn btn-success">
 									<i class="fa fa-copy"></i> Copiar a Llamada Servicio
-								</a>
+								</button>
 							<?php } elseif (($edit == 0) && $CrearSolicitud) { ?>
 								<button class="btn btn-primary" form="CrearLlamada" type="submit" id="Crear">
 									<i class="fa fa-check"></i> Crear Solicitud (Agenda)
@@ -3467,6 +3467,21 @@ $(function () {
 		}
 	});
 	// Hasta aquí, 31/10/2023
+
+	// SMM, 09/11/2023
+	<?php if(PermitirFuncion(345)) { ?>
+		let fechaInicioSolicitud = new Date(`${$("#FechaCreacion").val()}T${$("#HoraCreacion").val()}`);
+		let fechaActual = new Date();
+
+		if (fechaInicioSolicitud < fechaActual) {
+			console.log("La fecha de inicio de la solicitud es menor que la fecha actual.");
+			$("#copiarSolicitud").prop("disabled", true);
+		}
+	<?php } ?>
+
+	$("#copiarSolicitud").on("click", function() {
+		location.href = "llamada_servicio.php?dt_SLS=1&SLS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>"
+	});
 });
 
 // SMM, 02/11/2023
