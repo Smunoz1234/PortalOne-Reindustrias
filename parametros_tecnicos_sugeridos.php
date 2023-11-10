@@ -3,61 +3,51 @@ require_once "includes/conexion.php";
 PermitirAcceso(225);
 
 $sw_error = 0;
+if (isset($_POST['Metodo']) && ($_POST['TipoDoc'] == "Tecnico")) {
+	if($_POST['Metodo'] == 3) {
+		try {
+			$Param = array(
+				$_POST['Metodo'], // 3 - Eliminar
+				isset($_POST['id']) ? $_POST['id'] : "NULL",
+			);
+			$SQL = EjecutarSP('sp_tbl_SolicitudLlamadasServicios_TecnicosSugeridos', $Param);
+			if (!$SQL) {
+				$sw_error = 1;
+				$msg_error = "No se pudo eliminar el registro";
+			}
+		} catch (Exception $e) {
+			$sw_error = 1;
+			$msg_error = $e->getMessage();
+		}
+	} else {
+		try {
+			$Param = array(
+				$_POST['Metodo'] ?? 1, // 1 - Crear, 2 - Actualizar
+				"'" . $_POST['id_interno'] . "'",
+				"'" . $_POST['Tecnico_salida'] . "'",
+				"'" . $_POST['id_cc'] . "'", // id_cuenta_contable
+				"'" . $_POST['cc'] . "'", // cuenta_contable
+				"'" . $_POST['estado'] . "'",
+			);
+			$SQL = EjecutarSP('sp_tbl_SolicitudLlamadasServicios_TecnicosSugeridos', $Param);
+			if (!$SQL) {
+				$sw_error = 1;
+				$msg_error = "No se actualizar el registro";
+			}
+		} catch (Exception $e) {
+			$sw_error = 1;
+			$msg_error = $e->getMessage();
+		}
+	}
 
-if (isset($_POST['Metodo']) && ($_POST['Metodo'] == 3)) {
-    try {
-
-        if ($_POST['TipoDoc'] == "Concepto") {
-            $Param = array(
-                $_POST['Metodo'], // 3 - Eliminar
-                isset($_POST['id']) ? $_POST['id'] : "NULL",
-            );
-            $SQL = EjecutarSP('sp_tbl_SalidaInventario_Conceptos', $Param);
-            if (!$SQL) {
-                $sw_error = 1;
-                $msg_error = "No se pudo eliminar el registro";
-            }
-        }
-
-    } catch (Exception $e) {
-        $sw_error = 1;
-        $msg_error = $e->getMessage();
-    }
+	if ($sw_error == 0) {
+		$TipoDoc = $_POST['TipoDoc'];
+		header("Location:parametros_tecnicos_sugeridos.php?doc=$TipoDoc&a=" . base64_encode("OK_PRUpd") . "#$TipoDoc");
+	}
 }
 
-//Insertar datos o actualizar datos
-if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Metodo']) && ($_POST['Metodo'] == 2))) {
-    try {
-
-        if ($_POST['TipoDoc'] == "Concepto") {
-            $Param = array(
-                $_POST['Metodo'] ?? 1, // 1 - Crear, 2 - Actualizar
-                "'" . $_POST['id_concepto_salida'] . "'",
-                "'" . $_POST['concepto_salida'] . "'",
-                "'" . $_POST['id_cc'] . "'", // id_cuenta_contable
-                "'" . $_POST['cc'] . "'", // cuenta_contable
-                "'" . $_POST['estado'] . "'",
-            );
-            $SQL = EjecutarSP('sp_tbl_SalidaInventario_Conceptos', $Param);
-            if (!$SQL) {
-                $sw_error = 1;
-                $msg_error = "No se pudo insertar los datos";
-            }
-        }
-
-        if ($sw_error == 0) {
-            $TipoDoc = $_POST['TipoDoc'];
-            header("Location:parametros_conceptos_salida.php?doc=$TipoDoc&a=" . base64_encode("OK_PRUpd") . "#$TipoDoc");
-        }
-
-    } catch (Exception $e) {
-        $sw_error = 1;
-        $msg_error = $e->getMessage();
-    }
-
-}
-
-$SQL_ConceptosSalida = Seleccionar("tbl_SalidaInventario_Conceptos", "*");
+// SMM, 10/11/2023
+$SQL_TecnicosSugeridos = Seleccionar("uvw_tbl_SolicitudLlamadasServicios_TecnicosSugeridos", "*");
 ?>
 
 <!DOCTYPE html>
@@ -66,7 +56,7 @@ $SQL_ConceptosSalida = Seleccionar("tbl_SalidaInventario_Conceptos", "*");
 <head>
 <?php include_once "includes/cabecera.php";?>
 <!-- InstanceBeginEditable name="doctitle" -->
-<title>Parámetros asistente de socios de negocio | <?php echo NOMBRE_PORTAL; ?></title>
+<title>Parámetros de Técnicos Sugeridos | <?php echo NOMBRE_PORTAL; ?></title>
 <!-- InstanceEndEditable -->
 <!-- InstanceBeginEditable name="head" -->
 <style>
@@ -135,7 +125,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
         <!-- InstanceBeginEditable name="Contenido" -->
         <div class="row wrapper border-bottom white-bg page-heading">
                 <div class="col-sm-8">
-                    <h2>Parámetros de Concepto de salida de inventario</h2>
+                    <h2>Parámetros de Técnicos Sugeridos</h2>
                     <ol class="breadcrumb">
                         <li>
                             <a href="index1.php">Inicio</a>
@@ -147,38 +137,40 @@ if (isset($sw_error) && ($sw_error == 1)) {
                             <a href="#">Parámetros del sistema</a>
                         </li>
                         <li class="active">
-                            <strong>Parámetros de Concepto de salida de inventario</strong>
+                            <strong>Parámetros de Técnicos Sugeridos</strong>
                         </li>
                     </ol>
                 </div>
             </div>
             <?php //echo $Cons;?>
-         <div class="wrapper wrapper-content">
-			 <div class="modal inmodal fade" id="myModal" tabindex="-1" role="dialog" aria-hidden="true">
-				<div class="modal-dialog modal-lg">
+        
+		<div class="wrapper wrapper-content">
+			<div class="modal inmodal fade" id="myModal" tabindex="-1" role="dialog" aria-hidden="true">
+				<div class="modal-dialog modal-lg" style="width: 70%;">
 					<div class="modal-content" id="ContenidoModal">
-
+						<!-- Generado dinámicamente por JS -->
 					</div>
 				</div>
 			</div>
-			 <div class="row">
+			
+			<div class="row">
 			 	<div class="col-lg-12">
 					<div class="ibox-content">
 						<?php include "includes/spinner.php";?>
 						 <div class="tabs-container">
 							<ul class="nav nav-tabs">
-								<li class="<?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Concepto") || !isset($_GET['doc'])) ? "active" : ""; ?>">
-									<a data-toggle="tab" href="#tab-1"><i class="fa fa-list"></i> Lista de Conceptos de Salida</a>
+								<li class="<?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Tecnico") || !isset($_GET['doc'])) ? "active" : ""; ?>">
+									<a data-toggle="tab" href="#tab-1"><i class="fa fa-list"></i> Lista de Tecnicos Sugeridos</a>
 								</li>
 							</ul>
 							<div class="tab-content">
-								<!-- Inicio, lista Conceptos de Salida -->
-								<div id="tab-1" class="tab-pane <?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Concepto") || !isset($_GET['doc'])) ? "active" : ""; ?>">
+								<!-- Inicio, lista Tecnicos Sugeridos -->
+								<div id="tab-1" class="tab-pane <?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Tecnico") || !isset($_GET['doc'])) ? "active" : ""; ?>">
 									<form class="form-horizontal">
-										<!-- Inicio, ibox Conceptos -->
-										<div class="ibox" id="Concepto">
+										<!-- Inicio, ibox Tecnicos -->
+										<div class="ibox" id="Tecnico">
 											<div class="ibox-title bg-success">
-												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista de Conceptos de Salida</h5>
+												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista de Tecnicos Sugeridos</h5>
 												 <a class="collapse-link pull-right">
 													<i class="fa fa-chevron-up"></i>
 												</a>
@@ -186,37 +178,48 @@ if (isset($sw_error) && ($sw_error == 1)) {
 											<div class="ibox-content">
 												<div class="row m-b-md">
 													<div class="col-lg-12">
-														<button class="btn btn-primary pull-right" type="button" id="NewConcepto" onClick="CrearCampo('Concepto');"><i class="fa fa-plus-circle"></i> Agregar nuevo</button>
+														<button class="btn btn-primary pull-right" type="button" id="NewTecnico" onClick="CrearCampo('Tecnico');"><i class="fa fa-plus-circle"></i> Agregar nuevo</button>
 													</div>
 												</div>
 												<div class="table-responsive">
 													<table class="table table-striped table-bordered table-hover dataTables-example">
 														<thead>
 															<tr>
-																<th>ID Concepto Salida</th>
-																<th>Concepto Salida</th>
-																<th>ID Cuenta Contable</th>
-																<th>Cuenta Contable</th>
+																<th>ID</th>
+																<th>Serie</th>
+																<th>Origen</th>
+																<th>Tipo Problema</th>
+																<th>Marca Vehiculo</th>
+																<th>Técnico Sugerido</th>
+
+																<th>Usuario Actualización</th>
+																<th>Fecha Actualización</th>
+
 																<th>Estado</th>
 																<th>Acciones</th>
 															</tr>
 														</thead>
 														<tbody>
-															 <?php while ($row_ConceptosSalida = sqlsrv_fetch_array($SQL_ConceptosSalida)) {?>
+															 <?php while ($row_TecnicosSugeridos = sqlsrv_fetch_array($SQL_TecnicosSugeridos)) {?>
 															<tr>
-																<td><?php echo $row_ConceptosSalida['id_concepto_salida']; ?></td>
-																<td><?php echo $row_ConceptosSalida['concepto_salida']; ?></td>
-																<td><?php echo $row_ConceptosSalida['id_cuenta_contable']; ?></td>
-																<td><?php echo $row_ConceptosSalida['cuenta_contable']; ?></td>
+																<td><?php echo $row_TecnicosSugeridos['ID']; ?></td>
+																<td><?php echo $row_TecnicosSugeridos['DeSeries']; ?></td>
+																<td><?php echo $row_TecnicosSugeridos['DeOrigenLlamada']; ?></td>
+																<td><?php echo $row_TecnicosSugeridos['DeTipoProblemaLlamada']; ?></td>
+																<td><?php echo $row_TecnicosSugeridos['DeMarcaVehiculo']; ?></td>
+																<td><?php echo $row_TecnicosSugeridos['NombreEmpleado']; ?></td>
+
+																<td><?php echo $row_TecnicosSugeridos['usuario_actualizacion']; ?></td>
+																<td><?php echo $row_TecnicosSugeridos['fecha_actualizacion']->format("Y-m-d h:i:s"); ?></td>
 
 																<td>
-																	<span class="label <?php echo ($row_ConceptosSalida['estado'] == "Y") ? "label-info" : "label-danger"; ?>">
-																		<?php echo ($row_ConceptosSalida['estado'] == "Y") ? "Activo" : "Inactivo"; ?>
+																	<span class="label <?php echo ($row_TecnicosSugeridos['estado'] == "Y") ? "label-info" : "label-danger"; ?>">
+																		<?php echo ($row_TecnicosSugeridos['estado'] == "Y") ? "Activo" : "Inactivo"; ?>
 																	</span>
 																</td>
 																<td>
-																	<button type="button" id="btnEdit<?php echo $row_ConceptosSalida['id']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_ConceptosSalida['id_concepto_salida']; ?>','Concepto');"><i class="fa fa-pencil"></i> Editar</button>
-																	<button type="button" id="btnDelete<?php echo $row_ConceptosSalida['id']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_ConceptosSalida['id_concepto_salida']; ?>','Concepto');"><i class="fa fa-trash"></i> Eliminar</button>
+																	<button type="button" id="btnEdit<?php echo $row_TecnicosSugeridos['ID']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_TecnicosSugeridos['ID']; ?>','Tecnico');"><i class="fa fa-pencil"></i> Editar</button>
+																	<button type="button" id="btnDelete<?php echo $row_TecnicosSugeridos['ID']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_TecnicosSugeridos['ID']; ?>','Tecnico');"><i class="fa fa-trash"></i> Eliminar</button>
 																</td>
 															</tr>
 															 <?php }?>
@@ -225,16 +228,16 @@ if (isset($sw_error) && ($sw_error == 1)) {
 												</div>
 											</div>
 										</div>
-										<!-- Fin, ibox Conceptos -->
+										<!-- Fin, ibox Tecnicos -->
 									</form>
 								</div>
-								<!-- Fin, lista Conceptos de Salida -->
+								<!-- Fin, lista Tecnicos Sugeridos -->
 							</div>
 						 </div>
 					</div>
           		</div>
-			 </div>
-
+			</div>
+			<!-- /.row -->
         </div>
         <!-- InstanceEndEditable -->
         <?php include_once "includes/footer.php";?>
@@ -278,8 +281,8 @@ if (isset($sw_error) && ($sw_error == 1)) {
 					"sortDescending": ": Activar para ordenar la columna descendente"
 				}
 			},
-			buttons: []
-
+			buttons: [],
+			order: [[ 0, "desc" ]]
 		});
 	});
 </script>
@@ -290,7 +293,7 @@ function CrearCampo(doc){
 
 	$.ajax({
 		type: "POST",
-		url: "md_parametros_conceptos_salida.php",
+		url: "md_parametros_tecnicos_sugeridos.php",
 		data:{
 			doc:doc
 		},
@@ -309,7 +312,7 @@ function EditarCampo(id, doc){
 
 	$.ajax({
 		type: "POST",
-		url: "md_parametros_conceptos_salida.php",
+		url: "md_parametros_tecnicos_sugeridos.php",
 		data:{
 			doc:doc,
 			id:id,
@@ -334,10 +337,11 @@ function EliminarCampo(id, doc){
 		cancelButtonText: "No"
 	}).then((result) => {
 		if (result.isConfirmed) {
-			//$('.ibox-content').toggleClass('sk-loading',true);
+			// $('.ibox-content').toggleClass('sk-loading',true);
+			
 			$.ajax({
 				type: "post",
-				url: "parametros_conceptos_salida.php",
+				url: "parametros_tecnicos_sugeridos.php",
 				data: {
 					TipoDoc: doc,
 					id: id,
@@ -346,7 +350,7 @@ function EliminarCampo(id, doc){
 				async: false,
 				success: function(data){
 					console.log(data);
-					location.href = "parametros_conceptos_salida.php?a=<?php echo base64_encode("OK_PRDel"); ?>";
+					location.href = "parametros_tecnicos_sugeridos.php?a=<?php echo base64_encode("OK_PRDel"); ?>";
 				},
 				error: function(error) {
 					console.error("consulta erronea, eliminar");
