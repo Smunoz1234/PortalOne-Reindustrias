@@ -942,8 +942,8 @@ $SolicitudCerrada = (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] 
 			$(".fecha, .hora").prop("readonly", true);
 		<?php } ?>
 
-		// SMM, 07/11/2023
-		<?php if (!PermitirFuncion(342) || $edit) { ?>
+		// SMM, 10/11/2023
+		<?php if (PermitirFuncion(344)) { ?>
 			$(".fechaAgenda").flatpickr({
 				dateFormat: "Y-m-d",
 				static: true,
@@ -960,7 +960,10 @@ $SolicitudCerrada = (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] 
 			});
 		<?php } else { ?>
 			$(".fechaAgenda, .horaAgenda").prop("readonly", true);
+		<?php } ?>
 
+		// SMM, 07/11/2023
+		<?php if(PermitirFuncion(342)) { ?>
 			$(".fecha, .hora").on("change", function() {
 				let fechaCreacion = $("#FechaCreacion").val();
 				let horaCreacion = $("#HoraCreacion").val();
