@@ -2637,8 +2637,10 @@ function AgregarEsto(contenedorID, valorElemento) {
 				   <div class="form-group">
 						<br>
 						<div class="col-lg-8">
-							<?php if (($edit == 1) && (($row['IdEstadoLlamada'] == '-3') || ($row['IdEstadoLlamada'] == '-2')) && $ActualizarSolicitud) { ?>
-								<button class="btn btn-warning" type="submit" form="CrearLlamada" id="Actualizar">
+							<?php if (($edit == 1) && (($row['IdEstadoLlamada'] == '-3') || ($row['IdEstadoLlamada'] == '-2'))) { ?>
+								<button class="btn btn-warning" type="submit" form="CrearLlamada" id="Actualizar" <?php if(!$ActualizarSolicitud) {
+										echo "disabled";
+									} ?>>
 									<i class="fa fa-refresh"></i> Actualizar Solicitud (Agenda)
 								</button>
 								
