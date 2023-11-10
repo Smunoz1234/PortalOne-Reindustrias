@@ -586,7 +586,10 @@ $SolicitudCerrada = (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] 
 
 			<div class="form-group row">
 				<div class="col-lg-4">
-					<label class="control-label">Técnico/Asesor <span class="text-danger">*</span></label>
+					<label class="control-label">
+						<?php echo (ObtenerVariable("LabelTecnicoResponsableSolicitudLlamada") == "") ? "Técnico/Asesor" : ObtenerVariable("LabelTecnicoResponsableSolicitudLlamada"); ?> 
+						<span class="text-danger">*</span>
+					</label>
 
 					<!-- required -->
 					<select name="Tecnico" id="Tecnico" class="form-control select2">
@@ -631,7 +634,9 @@ $SolicitudCerrada = (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] 
 
 			<div class="form-group row">
 				<div class="col-lg-4">
-					<label class="control-label">Técnico/Asesor Adicional</label>
+					<label class="control-label">
+						<?php echo (ObtenerVariable("LabelTecnicoAdicionalSolicitudLlamada") == "") ? "Técnico/Asesor Adicional" : ObtenerVariable("LabelTecnicoAdicionalSolicitudLlamada"); ?> 
+					</label>
 
 					<select name="TecnicoAdicional" id="TecnicoAdicional" class="form-control select2">
 						<option value="" disabled selected>Seleccione...</option>

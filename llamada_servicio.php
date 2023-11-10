@@ -2513,7 +2513,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 
 							<div class="col-lg-4">
 								<label class="control-label">SubTipo problema (Subtipo Servicio) <span class="text-danger">*</span></label>
-								<select name="SubTipoProblema" class="form-control" id="SubTipoProblema" <?php if (!$IncluirCamposAdicionales || (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1')))) {
+								<select name="SubTipoProblema" class="form-control" id="SubTipoProblema" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "readonly";
 								} ?>>
 									<option value="">Seleccione...</option>
@@ -2624,7 +2624,10 @@ function AgregarEsto(contenedorID, valorElemento) {
 
 						<div class="form-group">
 							<div class="col-lg-4">
-								<label class="control-label">Técnico/Asesor <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?><span class="text-danger">*</span><?php } ?></label>
+								<label class="control-label">
+									<?php echo (ObtenerVariable("LabelTecnicoResponsableLlamada") == "") ? "Técnico/Asesor" : ObtenerVariable("LabelTecnicoResponsableLlamada"); ?> 
+									<?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?><span class="text-danger">*</span><?php } ?>
+								</label>
 								
 								<select <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?> required <?php } ?> name="Tecnico" class="form-control select2" id="Tecnico" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 											 echo "disabled";
@@ -2646,7 +2649,9 @@ function AgregarEsto(contenedorID, valorElemento) {
 							</div>
 
 							<div class="col-lg-4">
-								<label class="control-label">Técnico/Asesor Adicional</label>
+								<label class="control-label">
+									<?php echo (ObtenerVariable("LabelTecnicoAdicionalLlamada") == "") ? "Técnico/Asesor Adicional" : ObtenerVariable("LabelTecnicoAdicionalLlamada"); ?>
+								</label>
 								
 								<select name="CDU_IdTecnicoAdicional" class="form-control select2" id="CDU_IdTecnicoAdicional" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "disabled";
