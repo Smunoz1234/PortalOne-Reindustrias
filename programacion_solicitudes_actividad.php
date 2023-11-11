@@ -97,8 +97,9 @@ $datetime = FormatoFecha(date('Y-m-d'), date('H:i:s'));
 $Type = $_POST["Type"] ?? 0;
 $ID_SolicitudLlamadaServicio = $_POST["ID_SolicitudLlamadaServicio"] ?? "NULL";
 
-$Tecnico = $_POST["Tecnico"] ?? "NULL";
-$TecnicoAdicional = $_POST["TecnicoAdicional"] ?? "NULL";
+$Tecnico = (isset($_POST["Tecnico"]) && ($_POST["Tecnico"] != "")) ? $_POST["Tecnico"] : "NULL";
+$TecnicoAdicional = (isset($_POST["TecnicoAdicional"]) && ($_POST["TecnicoAdicional"] != "")) ? $_POST["TecnicoAdicional"] : "NULL";
+
 $Comentario = $_POST["Comentario"] ?? "";
 
 $FechaAgenda = isset($_POST["FechaAgenda"]) ? FormatoFecha($_POST["FechaAgenda"], $_POST["HoraAgenda"]) : "";
@@ -120,7 +121,9 @@ $SubTipoProblema = $_POST["SubTipoProblema"] ?? "NULL";
 
 $Cliente = $_POST["Cliente"] ?? "";
 $CDU_Contrato = $_POST["CDU_Contrato"] ?? "";
+
 $SucursalCliente = $_POST["SucursalCliente"] ?? "NULL"; // NumeroLinea
+
 $CampanasAsociadas = $_POST["Campanas"] ?? "";
 
 if ($Type == 1) {
@@ -552,9 +555,7 @@ $SolicitudCerrada = (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] 
 					<label class="control-label">SubTipo problema (Subtipo Servicio) <span
 							class="text-danger">*</span></label>
 
-					<select id="SubTipoProblema" name="SubTipoProblema" class="form-control" <?php if (!PermitirFuncion(332)) {
-						echo "readonly";
-					} ?>>
+					<select id="SubTipoProblema" name="SubTipoProblema" class="form-control">
 						<option value="">Seleccione...</option>
 
 						<?php while ($row_SubTipoProblema = sqlsrv_fetch_array($SQL_SubTipoProblema)) { ?>
@@ -597,7 +598,7 @@ $SolicitudCerrada = (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] 
 
 					<!-- required -->
 					<select name="Tecnico" id="Tecnico" class="form-control select2">
-						<option value="" disabled selected>Seleccione...</option>
+						<option value="">Seleccione...</option>
 
 						<?php while ($row_Tecnicos = sqlsrv_fetch_array($SQL_Tecnicos)) { ?>
 							<?php if (in_array($row_Tecnicos['IdCargo'], $ids_grupos) || ($MostrarTodosRecursos || (count($ids_grupos) == 0))) { ?>
@@ -643,7 +644,7 @@ $SolicitudCerrada = (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] 
 					</label>
 
 					<select name="TecnicoAdicional" id="TecnicoAdicional" class="form-control select2">
-						<option value="" disabled selected>Seleccione...</option>
+						<option value="">Seleccione...</option>
 
 						<?php while ($row_Tecnicos = sqlsrv_fetch_array($SQL_TecnicosAdicionales)) { ?>
 							<?php if (in_array($row_Tecnicos['IdCargo'], $ids_grupos) || ($MostrarTodosRecursos || (count($ids_grupos) == 0))) { ?>

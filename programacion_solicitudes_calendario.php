@@ -375,7 +375,7 @@ $ids_recursos = array();
 								id: '<?php echo $row_Actividad['ID_SolicitudLlamadaServicio']; ?>',
 								title: '<?php echo $EtiquetaActividad; ?>',
 								comentario: '<?php echo preg_replace('([^A-Za-z0-9 ])', '', $row_Actividad['ComentarioLlamada']); ?>',
-								start: '<?php echo $row_Actividad["FechaFinAgenda"]->format('Y-m-d H:i'); ?>',
+								start: '<?php echo $row_Actividad["FechaAgenda"]->format('Y-m-d H:i'); ?>',
 								end: '<?php echo $row_Actividad["FechaFinAgenda"]->format('Y-m-d H:i'); ?>',
 								resourceId: '<?php echo $row_Actividad['CDU_IdTecnicoAdicional']; ?>',
 								textColor: '#FFF',
