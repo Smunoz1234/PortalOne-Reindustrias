@@ -187,7 +187,11 @@ if ($Type != 0) {
 			$IdSolicitud = ($row_Operacion[0] ?? "NULL");
 
 			// Corregir Campos. Type = 2, ID_SolicitudLlamadaServicio = $IdSolicitud.
+			// if($Type != 3) {
+			
 			EjecutarSP("sp_tbl_SolicitudLlamadaServicios_Calendario", [2, $IdSolicitud]); 
+			
+			// }
 
 			echo "OK";
 			exit();
@@ -884,7 +888,7 @@ $SolicitudCerrada = (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] 
 							if (response == "OK") {
 								Swal.fire({
 									title: "¡Listo!",
-									text: "La solicitud se <?php echo ($edit) ? "creo": "actualizo"; ?> correctamente.",
+									text: "La solicitud se <?php echo ($edit) ? "actualizo": "creo"; ?> correctamente.",
 									icon: 'success',
 								});
 
@@ -943,13 +947,23 @@ $SolicitudCerrada = (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] 
 		<?php } ?>
 
 		// SMM, 10/11/2023
-		<?php if (PermitirFuncion(344)) { ?>
+		<?php if ($edit && PermitirFuncion(344)) { ?>
+			// Deshabilitar todo.
+			$("input").prop("disabled", true);
+			$("select").prop("disabled", true);
+			$("textarea").prop("disabled", true);
+			
+			// Habilitar ID, requerido para la actualización.
+			$("#ID_SolicitudLlamadaServicio").prop("disabled", false);
+
+			// Habilitar fecha solicitud.
+			$(".fechaAgenda, .horaAgenda").prop("disabled", false);
+
 			$(".fechaAgenda").flatpickr({
 				dateFormat: "Y-m-d",
 				static: true,
 				allowInput: true
 			});
-
 			$(".horaAgenda").flatpickr({
 				enableTime: true,
 				noCalendar: true,
@@ -958,8 +972,11 @@ $SolicitudCerrada = (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] 
 				static: true,
 				allowInput: true
 			});
+
+			// Habilitar técnico adicional.
+			$("#TecnicoAdicional").prop("disabled", false);
 		<?php } else { ?>
-			$(".fechaAgenda, .horaAgenda").prop("readonly", true);
+			// $(".fechaAgenda, .horaAgenda").prop("readonly", true);
 		<?php } ?>
 
 		// SMM, 07/11/2023
