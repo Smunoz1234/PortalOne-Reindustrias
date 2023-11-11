@@ -3644,7 +3644,7 @@ $(document).ready(function () {
 
 		$("#CrearLlamada").validate({
 			submitHandler: function (form) {
-				if (Validar()) {
+				if (Validar() && ValidarFechas()) {
 					let vP = document.getElementById('P');
 					let msg = (vP.value == '40') ? "¿Está seguro que desea reabrir la llamada?" : "¿Está seguro que desea guardar los datos?";
 					let sw_ValDir =<?php echo $sw_valDir; ?>;
@@ -4359,6 +4359,29 @@ function ConsultarDatosFactSN() {
 		remote = open('socios_negocios.php?id=' + Base64.encode(ClienteFactSN.value) + '&ext=1&tl=1', 'remote', 'location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
 		remote.focus();
 	}
+}
+
+// SMM, 10/11/2023
+function ValidarFechas() {
+	let fechaCreacion = new Date(`${$("#FechaCreacion").val()}T${$("#HoraCreacion").val()}`);
+	let fechaAgenda = new Date(`${$("#FechaAgenda").val()}T${$("#HoraAgenda").val()}`);
+
+	if(fechaCreacion > fechaAgenda) {
+		Swal.fire({
+			title: '¡Advertencia!',
+			text: 'La fecha de inicio de la actividad debe ser mayor o igual a la fecha de creación de la llamada.',
+			icon: 'warning',
+		});
+		return false;
+	} else {
+		console.log("fechaCreacion", fechaCreacion);
+		console.log("fechaAgenda", fechaAgenda);
+		console.log("fechaCreacion > fechaAgenda", fechaCreacion > fechaAgenda);
+		
+		// alert("Paso la validación de fechas");
+		// return false;
+	}
+	return true;
 }
 
 function VerTAB(id) {

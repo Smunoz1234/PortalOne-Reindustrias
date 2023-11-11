@@ -2954,7 +2954,7 @@ $(document).ready(function () {
 
 		$("#CrearLlamada").validate({
 			submitHandler: function (form) {
-				if (Validar()) {
+				if (Validar() && ValidarFechas()) {
 					let vP = document.getElementById('P');
 					let msg = (vP.value == '40') ? "¿Está seguro que desea reabrir la llamada?" : "¿Está seguro que desea guardar los datos?";
 					let sw_ValDir =<?php echo $sw_valDir; ?>;
