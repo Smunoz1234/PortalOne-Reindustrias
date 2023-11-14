@@ -34,10 +34,11 @@ $Sede = $_GET['Sede'] ?? "";
 
 // SMM, 17/10/2023
 $Recurso = isset($_GET['Recursos']) ? implode(',', $_GET['Recursos']) : "";
-// echo "<script> console.log('programacion_solicitudes.php 40', '$Recurso'); </script>";
+// echo "<script> console.log('programacion_solicitudes.php 37', '$Recurso'); </script>";
 
 // Lista de cargos de recursos (Tecnicos)
-$SQL_CargosRecursos = Seleccionar('uvw_Sap_tbl_Recursos', 'DISTINCT IdCargo, DeCargo', "CentroCosto2='$Sede'");
+$DimSeries = intval(ObtenerVariable("DimensionSeries"));
+$SQL_CargosRecursos = Seleccionar('uvw_Sap_tbl_Recursos', 'DISTINCT IdCargo, DeCargo', "CentroCosto$DimSeries='$Sede'");
 
 //Lista de recursos (Tecnicos)
 $ParamRec = array(

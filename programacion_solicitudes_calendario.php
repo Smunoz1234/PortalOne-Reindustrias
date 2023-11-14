@@ -30,7 +30,7 @@ $Filtro .= ($Sede == "") ? "" : " AND CentroCosto$DimSeries='$Sede'";
 
 // SMM, 17/10/2023
 $Recursos = isset($_GET['Recursos']) ? implode(',', $_GET['Recursos']) : "";
-// echo "<script> console.log('programacion_solicitudes_calendario.php 25', '$Recursos'); </script>";
+// echo "<script> console.log('programacion_solicitudes_calendario.php 33', '$Recursos'); </script>";
 
 // Filtrar técnicos principal y secundario. SMM, 03/11/2023 
 $Filtro .= ($Recursos == "") ? "" : " AND ([IdTecnico] IN ($Recursos) OR [CDU_IdTecnicoAdicional] IN ($Recursos))";
