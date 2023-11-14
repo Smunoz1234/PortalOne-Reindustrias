@@ -978,8 +978,21 @@ $SolicitudCerrada = (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] 
 
 			// Habilitar técnico adicional.
 			$("#TecnicoAdicional").prop("disabled", false);
-		<?php } else { ?>
-			// $(".fechaAgenda, .horaAgenda").prop("readonly", true);
+		<?php } elseif($edit) { ?>
+			// Deben estar activos en la edición. SMM, 14/11/2023
+			$(".fechaAgenda").flatpickr({
+				dateFormat: "Y-m-d",
+				static: true,
+				allowInput: true
+			});
+			$(".horaAgenda").flatpickr({
+				enableTime: true,
+				noCalendar: true,
+				dateFormat: "H:i",
+				time_24hr: true,
+				static: true,
+				allowInput: true
+			});
 		<?php } ?>
 
 		// SMM, 07/11/2023

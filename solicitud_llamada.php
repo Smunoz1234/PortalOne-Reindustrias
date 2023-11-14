@@ -1840,33 +1840,37 @@ function AgregarEsto(contenedorID, valorElemento) {
 									<?php } ?>
 								</select>
 							</div>
+							<!-- /.col-lg-4 -->
+							
 							<div class="col-lg-2">
 								<label class="control-label">Número de llamada</label>
 								<input autocomplete="off" name="Ticket" type="text" class="form-control" id="Ticket" maxlength="50" readonly="readonly" value="<?php if (($edit == 1) || ($sw_error == 1)) {
 									echo $row['DocNum'];
 								} ?>">
 							</div>
+							<!-- /.col-lg-2 -->
+
 							<div class="col-lg-2">
 								<label class="control-label">ID de solicitud</label>
 								<input autocomplete="off" name="CallID" type="text" class="form-control" id="CallID" maxlength="50" readonly="readonly" value="<?php if (($edit == 1) || ($sw_error == 1)) {
 									echo $row['ID_SolicitudLlamadaServicio'];
 								} ?>">
 							</div>
+							<!-- /.col-lg-2 -->
 
 							<div class="col-lg-4">
-								<!-- Fecha de creación -->
+								<!-- Fecha de Solicitud -->
 								<label class="control-label">Fecha Inicio/Creación <span class="text-danger">*</span></label>
 								
 								<div class="input-group date">
 									<span class="input-group-addon">
 										<i class="fa fa-calendar"></i>
 									</span>
-									<input required name="FechaCreacion" id="FechaCreacion" type="text" class="form-control fecha" 
-										value="<?php echo $ValorFechaCreacion; ?>" <?php if (($edit == 1) && ((!$CrearSolicitud || !$ActualizarSolicitud) || ($row['IdEstadoLlamada'] == '-1'))) {
-											echo "disabled";
-										} ?>>
+									<input required type="text" name="FechaCreacion" id="FechaCreacion" class="form-control fecha"
+										value="<?php echo $ValorFechaCreacion; ?>">
 								</div>
 							</div>
+							<!-- /.col-lg-4 -->
 						</div>
 
 						<div class="form-group">
@@ -1882,16 +1886,15 @@ function AgregarEsto(contenedorID, valorElemento) {
 							</div>
 
 							<div class="col-lg-4">
+								<!-- Fecha de Solicitud -->
 								<label class="control-label">Hora Inicio/Creación <span class="text-danger">*</span></label>
 								
 								<div class="input-group clockpicker" data-autoclose="true">
 									<span class="input-group-addon">
-										<span class="fa fa-clock-o"></span>
+										<i class="fa fa-clock-o"></i>
 									</span>
-									<input required name="HoraCreacion" id="HoraCreacion" type="text" class="form-control hora" 
-										value="<?php echo $ValorHoraCreacion; ?>" <?php if (($edit == 1) && ((!$CrearSolicitud || !$ActualizarSolicitud) || ($row['IdEstadoLlamada'] == '-1'))) {
-											echo "disabled";
-										} ?>>
+									<input required type="text" name="HoraCreacion" id="HoraCreacion" class="form-control hora"
+										value="<?php echo $ValorHoraCreacion; ?>">
 								</div>
 							</div>
 						</div>
@@ -1938,16 +1941,15 @@ function AgregarEsto(contenedorID, valorElemento) {
 							</div>
 							
 							<div class="col-lg-4">
+								<!-- Fecha de Solicitud -->
 								<label class="control-label">Fecha Fin <span class="text-danger">*</span></label>
 								
 								<div class="input-group date">
 									<span class="input-group-addon">
 										<i class="fa fa-calendar"></i>
 									</span>
-									<input required name="FechaFinCreacion" id="FechaFinCreacion" type="text" class="form-control fecha" 
-										value="<?php echo $ValorFechaFinCreacion; ?>" <?php if (($edit == 1) && ((!$CrearSolicitud || !$ActualizarSolicitud) || ($row['IdEstadoLlamada'] == '-1'))) {
-											echo "disabled";
-										} ?>>
+									<input required type="text" name="FechaFinCreacion" id="FechaFinCreacion" class="form-control fecha"
+										value="<?php echo $ValorFechaFinCreacion; ?>">
 								</div>
 							</div>
 						</div>
@@ -1995,16 +1997,15 @@ function AgregarEsto(contenedorID, valorElemento) {
 							</div>
 
 							<div class="col-lg-4">
+								<!-- Fecha de Solicitud -->
 								<label class="control-label">Hora Fin <span class="text-danger">*</span></label>
 								
 								<div class="input-group clockpicker" data-autoclose="true">
 									<span class="input-group-addon">
-										<span class="fa fa-clock-o"></span>
+										<i class="fa fa-clock-o"></i>
 									</span>
-									<input required name="HoraFinCreacion" id="HoraFinCreacion" type="text" class="form-control hora" 
-										value="<?php echo $ValorHoraFinCreacion; ?>" <?php if (($edit == 1) && ((!$CrearSolicitud || !$ActualizarSolicitud) || ($row['IdEstadoLlamada'] == '-1'))) {
-											echo "disabled";
-										} ?>>
+									<input required type="text" name="HoraFinCreacion" id="HoraFinCreacion" class="form-control hora"
+										value="<?php echo $ValorHoraFinCreacion; ?>">
 								</div>
 							</div>
 						</div>
@@ -2117,20 +2118,15 @@ function AgregarEsto(contenedorID, valorElemento) {
 
 							<!-- SMM -->
 							<div class="col-lg-4">
-								<!-- Fecha de agenda -->
+								<!-- Fecha de Agenda -->
 								<label class="control-label">Fecha Inicio Actividad <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?><span class="text-danger">*</span><?php } ?></label>
+								
 								<div class="input-group date">
 									<span class="input-group-addon">
 										<i class="fa fa-calendar"></i>
 									</span>
-									
-									<input <?php if (($edit != 0) || (!PermitirFuncion(344))) { ?> readonly <?php } ?> <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?> required <?php } ?> name="FechaAgenda" type="text" class="form-control" id="FechaAgenda" value="<?php if (($edit == 1) && ($row['FechaAgenda'] != "")) {
-											echo is_string($row['FechaAgenda']) ? date("Y-m-d", strtotime($row['FechaAgenda'])) : $row['FechaAgenda']->format("Y-m-d");
-										} else {
-											echo date('Y-m-d');
-										} ?>" <?php if (($edit == 1) && ((!$CrearSolicitud || !$ActualizarSolicitud) || ($row['IdEstadoLlamada'] == '-1'))) {
-											echo "disabled";
-										} ?>>
+									<input type="text" name="FechaAgenda" id="FechaAgenda" <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?> required <?php } ?>
+										class="form-control fechaAgenda" value="<?php echo $ValorFechaAgenda; ?>">
 								</div>
 							</div>
 							<!-- 01/06/2022 -->
@@ -2177,19 +2173,15 @@ function AgregarEsto(contenedorID, valorElemento) {
 
 							<!-- SMM -->
 							<div class="col-lg-4">
+								<!-- Fecha de Agenda -->
 								<label class="control-label">Hora Inicio Actividad <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?><span class="text-danger">*</span><?php } ?></label>
+								
 								<div class="input-group clockpicker" data-autoclose="true">
 									<span class="input-group-addon">
-										<span class="fa fa-clock-o"></span>
+										<i class="fa fa-clock-o"></i>
 									</span>
-									
-									<input <?php if ($edit != 0) { ?> readonly <?php } ?> <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?> required <?php } ?> name="HoraAgenda" id="HoraAgenda" type="text" class="form-control" value="<?php if (($edit == 1) && ($row['HoraAgenda'] != "")) {
-											echo is_string($row['HoraAgenda']) ? date("H:i", strtotime($row['HoraAgenda'])) : $row['HoraAgenda']->format("H:i");
-										} else {
-											echo date('H:i');
-										} ?>" <?php if (($edit == 1) && ((!$CrearSolicitud || !$ActualizarSolicitud) || ($row['IdEstadoLlamada'] == '-1'))) {
-											echo "disabled";
-										} ?>>
+									<input type="text" name="HoraAgenda" id="HoraAgenda" <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?> required <?php } ?>
+										class="form-control horaAgenda"  value="<?php echo $ValorHoraAgenda; ?>">
 								</div>
 							</div>
 							<!-- 01/06/2022 -->
@@ -2213,17 +2205,15 @@ function AgregarEsto(contenedorID, valorElemento) {
 							
 							<!-- SMM -->
 							<div class="col-lg-4">
-								<!-- Fecha de agenda -->
+								<!-- Fecha de Agenda -->
 								<label class="control-label">Fecha Fin Actividad <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?><span class="text-danger">*</span><?php } ?></label>
+								
 								<div class="input-group date">
-									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input <?php if ($edit != 0) { ?> readonly <?php } ?> <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?> required <?php } ?> 
-									 	name="FechaFinAgenda" type="text" class="form-control" id="FechaFinAgenda" value="<?php if (($edit == 1) && ($row['FechaFinAgenda'] != "")) {
-											echo is_string($row['FechaFinAgenda']) ? date("Y-m-d", strtotime($row['FechaFinAgenda'])) : $row['FechaFinAgenda']->format("Y-m-d");
-										} else {
-											echo date('Y-m-d');
-										} ?>" <?php if (($edit == 1) && ((!$CrearSolicitud || !$ActualizarSolicitud) || ($row['IdEstadoLlamada'] == '-1'))) {
-											echo "disabled";
-										} ?>>
+									<span class="input-group-addon">
+										<i class="fa fa-calendar"></i>
+									</span>
+									<input type="text" name="FechaFinAgenda" id="FechaFinAgenda" <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?> required <?php } ?>
+										class="form-control fechaAgenda" value="<?php echo $ValorFechaFinAgenda; ?>">
 								</div>
 							</div>
 							<!-- 27/10/2023 -->
@@ -2248,23 +2238,17 @@ function AgregarEsto(contenedorID, valorElemento) {
 
 							<!-- SMM -->
 							<div class="col-lg-4">
+								<!-- Fecha de Agenda -->
 								<label class="control-label">Hora Fin Actividad <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?><span class="text-danger">*</span><?php } ?></label>
 								<div class="input-group clockpicker" data-autoclose="true">
 									<span class="input-group-addon">
-										<span class="fa fa-clock-o"></span>
+										<i class="fa fa-clock-o"></i>
 									</span>
-									
-									<input <?php if (($edit != 0) || (!PermitirFuncion(344))) { ?> readonly <?php } ?> <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?> required <?php } ?> 
-										name="HoraFinAgenda" id="HoraFinAgenda" type="text" class="form-control" value="<?php if (($edit == 1) && ($row['HoraFinAgenda'] != "")) {
-											echo is_string($row['HoraFinAgenda']) ? date("H:i", strtotime($row['HoraFinAgenda'])) : $row['HoraFinAgenda']->format("H:i");
-										} else {
-											echo date('H:i');
-										} ?>" <?php if (($edit == 1) && ((!$CrearSolicitud || !$ActualizarSolicitud) || ($row['IdEstadoLlamada'] == '-1'))) {
-											echo "disabled";
-										} ?>>
+									<input type="text" name="HoraFinAgenda" id="HoraFinAgenda" <?php if (PermitirFuncion(323) && PermitirFuncion(304)) { ?> required <?php } ?>
+										class="form-control horaAgenda" value="<?php echo $ValorHoraFinAgenda; ?>">
 								</div>
 							</div>
-							<!-- 27/10/2023 -->
+							<!-- 14/11/2023 -->
 
 							<div class="col-lg-4"></div>
 						</div>
