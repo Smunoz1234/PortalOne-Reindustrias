@@ -140,6 +140,7 @@ if ($Type == 1) {
 		"'$FechaCreacion'",
 		"'$FechaFinCreacion'",
 		$UsuarioCreacion,
+		"'$datetime'", // FechaCreacion
 		$CDU_Kilometros,
 		"'$CDU_TipoPreventivo'",
 		"'$NumeroSerie'",
@@ -166,7 +167,8 @@ if ($Type == 1) {
 		"'$FechaFinAgenda'",
 		"'$FechaCreacion'",
 		"'$FechaFinCreacion'",
-		$UsuarioCreacion,
+		$UsuarioCreacion, // UsuarioActualizacion
+		"'$datetime'", // FechaActualizacion
 		$CDU_Kilometros,
 		"'$CDU_TipoPreventivo'",
 	);

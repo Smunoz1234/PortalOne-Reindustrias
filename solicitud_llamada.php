@@ -164,7 +164,7 @@ if (isset($_POST['P'])) {
 			"'" . ($_POST['Proyecto'] ?? "") . "'",
 			"'" . LSiqmlObs($_POST['ComentarioLlamada']) . "'",
 			"''", // ResolucionLlamada
-			"'" . FormatoFecha(date('Y-m-d'), date('H:i')) . "'", // FechaActualizacion
+			"'" . FormatoFecha(date('Y-m-d'), date('H:i:s')) . "'", // FechaActualizacion
 			"'" . FormatoFecha(date('Y-m-d'), date('H:i:s')) . "'", // FechaCierreLlamada
 			"'" . ($_POST['IdAnexos'] ?? "") . "'",
 			($_POST['P'] == 32) ? "1" : "$Metodo",
