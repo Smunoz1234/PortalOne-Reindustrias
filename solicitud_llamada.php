@@ -1600,7 +1600,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								} elseif ($dt_LS == 1) {
 									echo $row_Cliente['CodigoCliente'];
 								} ?>">
-								<input name="NombreClienteLlamada" type="text" required class="form-control" id="NombreClienteLlamada" placeholder="Digite para buscar..." <?php if (($edit == 1) && ((!$CrearSolicitud || !$ActualizarSolicitud) || ($row['IdEstadoLlamada'] == '-1') || ($row['TipoTarea'] == 'Interna')) || ($dt_LS == 1) || ($edit == 1)) {
+								<input name="NombreClienteLlamada" type="text" required class="form-control" id="NombreClienteLlamada" placeholder="Digite para buscar..." <?php if (($edit == 1) && ((!$ActualizarSolicitud) || ($row['IdEstadoLlamada'] == '-1') || ($row['TipoTarea'] == 'Interna')) || ($dt_LS == 1) || ($edit == 1)) {
 									echo "readonly";
 								} ?> value="<?php if (($edit == 1) || ($sw_error == 1)) {
 									  echo $row['NombreClienteLlamada'];
@@ -3122,9 +3122,15 @@ function MostrarCostos_Documentos(docnum, id_objeto, de_objeto) {
 <script>
 $(function () {
 	// Permisos de edición y creación. SMM, 14/11/2023
-	// if (($edit == 1) && ((!$CrearSolicitud || !$ActualizarSolicitud) || ($row['IdEstadoLlamada'] == '-1'))) {
-	//	echo "disabled";
-	// } >
+	<?php if (($edit == 1) && ((!$ActualizarSolicitud) || ($row['IdEstadoLlamada'] == '-1'))) { ?>
+		$("input").prop("disabled", true);
+		$("select").prop("disabled", true);
+		$("textarea").prop("disabled", true);
+	<?php } elseif($edit == 0 && !$CrearSolicitud) { ?>
+		$("input").prop("disabled", true);
+		$("select").prop("disabled", true);
+		$("textarea").prop("disabled", true);
+	<?php } ?>
 	// Hasta aquí. SMM, 14/11/2023
 
 	var url = "";
