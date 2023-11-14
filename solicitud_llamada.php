@@ -514,11 +514,11 @@ $hasRowsAnotaciones = ($SQL_Anotaciones) ? sqlsrv_has_rows($SQL_Anotaciones) : f
 
 // Fechas. SMM, 27/10/2023
 $ValorFechaCreacion = (isset($row["FechaCreacion"]) && ($row["FechaCreacion"] instanceof DateTime)) ? $row["FechaCreacion"]->format("Y-m-d") : date("Y-m-d");
-$ValorFechaFinCreacion = (isset($row["FechaFinCreacion"]) && ($row["FechaCreacion"] instanceof DateTime)) ? $row["FechaCreacion"]->format("Y-m-d") : date("Y-m-d");
+$ValorFechaFinCreacion = (isset($row["FechaFinCreacion"]) && ($row["FechaFinCreacion"] instanceof DateTime)) ? $row["FechaFinCreacion"]->format("Y-m-d") : date("Y-m-d");
 $ValorFechaAgenda = (isset($row["FechaAgenda"]) && ($row["FechaAgenda"] instanceof DateTime)) ? $row["FechaAgenda"]->format("Y-m-d") : date("Y-m-d");
 $ValorFechaFinAgenda = (isset($row["FechaFinAgenda"]) && ($row["FechaFinAgenda"] instanceof DateTime)) ? $row["FechaFinAgenda"]->format("Y-m-d") : date("Y-m-d");
 $ValorHoraCreacion = (isset($row["HoraCreacion"]) && ($row["HoraCreacion"] instanceof DateTime)) ? $row["HoraCreacion"]->format("H:i") : date("H:i");
-$ValorHoraFinCreacion = (isset($row["HoraFinCreacion"]) && ($row["HoraCreacion"] instanceof DateTime)) ? $row["HoraCreacion"]->format("H:i") : date("H:i");
+$ValorHoraFinCreacion = (isset($row["HoraFinCreacion"]) && ($row["HoraFinCreacion"] instanceof DateTime)) ? $row["HoraFinCreacion"]->format("H:i") : date("H:i");
 $ValorHoraAgenda = (isset($row["HoraAgenda"]) && ($row["HoraAgenda"] instanceof DateTime)) ? $row["HoraAgenda"]->format("H:i") : date("H:i");
 $ValorHoraFinAgenda = (isset($row["HoraFinAgenda"]) && ($row["HoraFinAgenda"] instanceof DateTime)) ? $row["HoraFinAgenda"]->format("H:i") : date("H:i");
 ?>

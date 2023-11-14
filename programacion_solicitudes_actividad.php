@@ -952,9 +952,9 @@ $SolicitudCerrada = (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] 
 		// SMM, 10/11/2023
 		<?php if ($edit && PermitirFuncion(344)) { ?>
 			// Deshabilitar todo.
-			$("input").prop("disabled", true);
-			$("select").prop("disabled", true);
-			$("textarea").prop("disabled", true);
+			$("#frmActividad input").prop("disabled", true);
+			$("#frmActividad select").prop("disabled", true);
+			$("#frmActividad textarea").prop("disabled", true);
 			
 			// Habilitar ID, requerido para la actualización.
 			$("#ID_SolicitudLlamadaServicio").prop("disabled", false);
@@ -1122,9 +1122,9 @@ $SolicitudCerrada = (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] 
 
 		// SMM, 09/11/2023
 		<?php if($SolicitudCerrada || (!$edit && !$CrearSolicitud) || ($edit && !$ActualizarSolicitud)) { ?>
-			$("input").prop("disabled", true);
-			$("select").prop("disabled", true);
-			$("textarea").prop("disabled", true);
+			$("#frmActividad input").prop("disabled", true);
+			$("#frmActividad select").prop("disabled", true);
+			$("#frmActividad textarea").prop("disabled", true);
 		<?php } ?>
 	});
 
