@@ -139,58 +139,54 @@ if (isset($_POST['P'])) {
 			($_POST['P'] == 32) ? "NULL" : ("'" . base64_decode($_POST['IdLlamadaPortal'] ?? "") . "'"),
 			($_POST['P'] == 32) ? "NULL" : ("'" . base64_decode($_POST['DocEntry'] ?? "") . "'"),
 			($_POST['P'] == 32) ? "NULL" : ("'" . base64_decode($_POST['DocNum'] ?? "") . "'"),
-			"'Externa'",
-			"'" . $_POST['AsuntoLlamada'] . "'",
-			"'" . $_POST['Series'] . "'",
-			"'" . $_POST['EstadoLlamada'] . "'",
-			"'" . $_POST['OrigenLlamada'] . "'",
-			"'" . $_POST['TipoLlamada'] . "'",
-			"'" . $_POST['TipoProblema'] . "'",
+			"'Externa'", // @TipoTarea
+			"'" . ($_POST['AsuntoLlamada'] ?? "") . "'",
+			$_POST['Series'] ?? "NULL",
+			"'" . ($_POST['EstadoLlamada'] ?? "") . "'",
+			"'" . ($_POST['OrigenLlamada'] ?? "") . "'",
+			"'" . ($_POST['TipoLlamada'] ?? "") . "'",
+			"'" . ($_POST['TipoProblema'] ?? "") . "'",
 			"'" . ($_POST['SubTipoProblema'] ?? "") . "'",
 			"'" . ($_POST['ContratoServicio'] ?? "") . "'",
-			"'" . $_POST['Tecnico'] . "'",
-			"'" . $_POST['ClienteLlamada'] . "'",
+			"'" . ($_POST['Tecnico'] ?? "") . "'",
+			"'" . ($_POST['ClienteLlamada'] ?? "") . "'",
 			"'" . ($_POST['ContactoCliente'] ?? "") . "'",
-			"'" . $_POST['TelefonoLlamada'] . "'",
-			"'" . $_POST['CorreoLlamada'] . "'",
-			"'" . $_POST['IdArticuloLlamada'] . "'",
-			"'" . $_POST['NumeroSerie'] . "'",
+			"'" . ($_POST['TelefonoLlamada'] ?? "") . "'",
+			"'" . ($_POST['CorreoLlamada'] ?? "") . "'",
+			"'" . ($_POST['IdArticuloLlamada'] ?? "") . "'",
+			"'" . ($_POST['NumeroSerie'] ?? "") . "'",
 			"'" . ($_POST['SucursalCliente'] ?? "") . "'",
-			"'" . $_POST['IdSucursalCliente'] . "'",
-			"'" . $_POST['DireccionLlamada'] . "'",
-			"'" . $_POST['CiudadLlamada'] . "'",
-			"'" . $_POST['BarrioDireccionLlamada'] . "'",
+			"'" . ($_POST['IdSucursalCliente'] ?? "") . "'",
+			"'" . ($_POST['DireccionLlamada'] ?? "") . "'",
+			"'" . ($_POST['CiudadLlamada'] ?? "") . "'",
+			"'" . ($_POST['BarrioDireccionLlamada'] ?? "") . "'",
 			"'" . ($_POST['EmpleadoLlamada'] ?? "") . "'",
 			"'" . ($_POST['Proyecto'] ?? "") . "'",
-			"'" . LSiqmlObs($_POST['ComentarioLlamada']) . "'",
-			"''",
-			// ResolucionLlamada
-			"'" . FormatoFecha(date('Y-m-d'), date('H:i:s')) . "'",
-			// FechaActualizacion
-			"'" . FormatoFecha(date('Y-m-d'), date('H:i:s')) . "'",
-			// FechaCierreLlamada
+			"'" . LSiqmlObs($_POST['ComentarioLlamada'] ?? "") . "'",
+			"''", // ResolucionLlamada
+			"'" . FormatoFecha(date('Y-m-d'), date('H:i:s')) . "'", // FechaActualizacion
+			"'" . FormatoFecha(date('Y-m-d'), date('H:i:s')) . "'", // FechaCierreLlamada
 			"'" . ($_POST['IdAnexos'] ?? "") . "'",
 			($_POST['P'] == 32) ? "1" : "$Metodo",
 			"'" . $_SESSION['CodUser'] . "'",
 			"'" . $_SESSION['CodUser'] . "'",
 			"'" . $_POST['CDU_EstadoServicio'] . "'",
-			"'" . LSiqmlObs($_POST['CDU_Servicios']) . "'",
-			"'" . LSiqmlObs($_POST['CDU_Areas']) . "'",
-			"'" . LSiqmlObs($_POST['CDU_NombreContacto']) . "'",
-			"'" . LSiqmlObs($_POST['CDU_TelefonoContacto']) . "'",
-			"'" . LSiqmlObs($_POST['CDU_CargoContacto']) . "'",
-			"'" . LSiqmlObs($_POST['CDU_CorreoContacto']) . "'",
+			"'" . LSiqmlObs($_POST['CDU_Servicios'] ?? "") . "'",
+			"'" . LSiqmlObs($_POST['CDU_Areas'] ?? "") . "'",
+			"'" . LSiqmlObs($_POST['CDU_NombreContacto'] ?? "") . "'",
+			"'" . LSiqmlObs($_POST['CDU_TelefonoContacto'] ?? "") . "'",
+			"'" . LSiqmlObs($_POST['CDU_CargoContacto'] ?? "") . "'",
+			"'" . LSiqmlObs($_POST['CDU_CorreoContacto'] ?? "") . "'",
 			"NULL",
 			"NULL",
 			"NULL",
 			"NULL",
 			"NULL",
 			"NULL",
-			"'" . $_POST['CDU_CanceladoPor'] . "'",
+			"'" . ($_POST['CDU_CanceladoPor'] ?? "") . "'",
 			(isset($_POST['CantArticulo']) && ($_POST['CantArticulo'] != "")) ? LSiqmlValorDecimal($_POST['CantArticulo']) : 0,
 			(isset($_POST['PrecioArticulo']) && ($_POST['PrecioArticulo'] != "")) ? LSiqmlValorDecimal($_POST['PrecioArticulo']) : 0,
-			($_POST['P'] == 32) ? "1" : "$Type",
-			// Tipo de SP
+			($_POST['P'] == 32) ? "1" : "$Type", // Tipo de SP
 			"'" . ($_POST['CDU_Marca'] ?? "") . "'",
 			"'" . ($_POST['CDU_Linea'] ?? "") . "'",
 			"'" . ($_POST['CDU_Ano'] ?? "") . "'",
@@ -198,32 +194,25 @@ if (isset($_POST['P'])) {
 			"'" . ($_POST['CDU_Aseguradora'] ?? "") . "'",
 			"'" . ($_POST['CDU_TipoPreventivo'] ?? "") . "'",
 			"'" . ($_POST['CDU_TipoServicio'] ?? "") . "'",
-			isset($_POST['CDU_Kilometros']) ? $_POST['CDU_Kilometros'] : 0,
-			// int
+			$_POST['CDU_Kilometros'] ?? 0,
 			"'" . ($_POST['CDU_Contrato'] ?? "") . "'",
-			"NULL",
-			// CDU_Asesor
+			"NULL", // CDU_Asesor
 			"'" . $_POST['CDU_ListaMateriales'] . "'",
-			isset($_POST['CDU_TiempoTarea']) ? $_POST['CDU_TiempoTarea'] : 0,
-			// int
-			"'" . $_POST['CDU_IdTecnicoAdicional'] . "'",
+			$_POST['CDU_TiempoTarea'] ?? 0,
+			"'" . ($_POST['CDU_IdTecnicoAdicional'] ?? "") . "'",
 			"'" . FormatoFecha($_POST['FechaCreacion'], $_POST['HoraCreacion']) . "'",
 			"'" . FormatoFecha($_POST['FechaFinCreacion'], $_POST['HoraFinCreacion']) . "'",
 			"'" . FormatoFecha($_POST['FechaAgenda'], $_POST['HoraAgenda']) . "'",
 			"'" . FormatoFecha($_POST['FechaFinAgenda'], $_POST['HoraFinAgenda']) . "'",
-			"0",
-			// CreacionActividad
-			"0",
-			// EnvioCorreo
+			"0", // CreacionActividad
+			"0", // EnvioCorreo
 			"'" . ($_POST['NombreContactoFirma'] ?? "") . "'",
 			"'" . ($_POST['CedulaContactoFirma'] ?? "") . "'",
 			"'" . ($_POST['TelefonosContactosFirma'] ?? "") . "'",
 			"'" . ($_POST['CorreosContactosFirma'] ?? "") . "'",
 			"'$FirmaContactoResponsable'",
-			"0",
-			// FormatoCierreLlamada
-			$Campanas,
-			// SMM, 15/09/2023
+			"0", // FormatoCierreLlamada
+			$Campanas, // SMM, 15/09/2023
 		);
 
 		$SQL_Llamada = EjecutarSP('sp_tbl_SolicitudLlamadaServicios', $ParamLlamada, $_POST['P']);
@@ -3130,6 +3119,24 @@ $(function () {
 		$("input").prop("disabled", true);
 		$("select").prop("disabled", true);
 		$("textarea").prop("disabled", true);
+	<?php } ?>
+
+	// SMM, 
+	<?php if (($edit == 1) && PermitirFuncion(344)) { ?>
+		$("select").prop("disabled", true);
+		$("textarea").prop("disabled", true);
+
+		// ID es necesario, por eso no puede ser disabled.
+		$("input").prop("readonly", true);
+
+		// Las fechas son de tipo input pero necesito que sean disabled.
+		$(".fecha, .hora").prop("disabled", true);
+
+		// Habilitar fecha solicitud.
+		$(".fechaAgenda, .horaAgenda").prop("readonly", false);
+
+		// Habilitar técnico adicional.
+		$("#CDU_IdTecnicoAdicional").prop("disabled", false);
 	<?php } ?>
 	// Hasta aquí. SMM, 14/11/2023
 
