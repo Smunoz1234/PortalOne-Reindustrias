@@ -296,10 +296,15 @@ if (isset($_POST['P'])) {
 			try {
 				if ($_POST['P'] == 32) { // Creando 
 					sqlsrv_close($conexion);
-					header('Location:gestionar_solicitudes_llamadas.php?a=' . base64_encode("OK_OTSolAdd"));
+					
+					$encode_a=base64_encode("OK_OTSolAdd");
+					header("Location:gestionar_solicitudes_llamadas.php?a=$encode_a");
 				} else { // Actualizando solicitud
 					sqlsrv_close($conexion);
-					header('Location:gestionar_solicitudes_llamadas.php?a=' . base64_encode("OK_OTSolUpd"));
+
+					$encode_id=base64_encode($IdSolicitud);
+					$encode_a=base64_encode("OK_OTSolUpd");
+					header("Location:solicitud_llamada.php?a=$encode_a&tl=1&id=$encode_id");
 				}
 			} catch (Exception $e) {
 				echo 'Excepcion capturada: ', $e->getMessage(), "\n";
@@ -533,6 +538,28 @@ $ValorHoraFinAgenda = (isset($row["HoraFinAgenda"]) && ($row["HoraFinAgenda"] in
 <!-- InstanceEndEditable -->
 <!-- InstanceBeginEditable name="head" -->
 <?php
+if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_OTSolAdd"))) {
+	echo "<script>
+	$(document).ready(function() {
+		Swal.fire({
+			title: '¡Listo!',
+			text: 'La Solicitud de Llamada de servicio ha sido creada exitosamente.',
+			icon: 'success'
+		});
+	});
+	</script>";
+}
+if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_OTSolUpd"))) {
+	echo "<script>
+	$(document).ready(function() {
+		Swal.fire({
+			title: '¡Listo!',
+			text: 'La Solicitud de Llamada de servicio ha sido actualizada exitosamente.',
+			icon: 'success'
+		});
+	});
+	</script>";
+}
 if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_LlamAdd"))) {
 	echo "<script>
 		$(document).ready(function() {
