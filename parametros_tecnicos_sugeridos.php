@@ -21,13 +21,24 @@ if (isset($_POST['Metodo']) && ($_POST['TipoDoc'] == "Tecnico")) {
 		}
 	} else {
 		try {
+			$FechaHora = "'" . FormatoFecha(date('Y-m-d'), date('H:i:s')) . "'";
+            $Usuario = "'" . $_SESSION['CodUser'] . "'";
+
 			$Param = array(
 				$_POST['Metodo'] ?? 1, // 1 - Crear, 2 - Actualizar
-				"'" . $_POST['id_interno'] . "'",
-				"'" . $_POST['Tecnico_salida'] . "'",
-				"'" . $_POST['id_cc'] . "'", // id_cuenta_contable
-				"'" . $_POST['cc'] . "'", // cuenta_contable
-				"'" . $_POST['estado'] . "'",
+				"'" . ($_POST['id_interno'] ?? "") . "'",
+				"'" . ($_POST['IdSerieLlamada'] ?? "") . "'",
+				"'" . ($_POST['IdOrigen'] ?? "") . "'",
+				"'" . ($_POST['IdTipoProblema'] ?? "") . "'",
+				"'" . ($_POST['IdMarca'] ?? "") . "'",
+				"'" . ($_POST['IdTecnico'] ?? "") . "'",
+				"'" . ($_POST['estado'] ?? "") . "'",
+				$Usuario, // @id_usuario_actualizacion
+                $FechaHora, // @fecha_actualizacion
+                $FechaHora, // @hora_actualizacion
+                ($_POST['Metodo'] == 1) ? $Usuario : "NULL",
+                ($_POST['Metodo'] == 1) ? $FechaHora : "NULL",
+                ($_POST['Metodo'] == 1) ? $FechaHora : "NULL",
 			);
 			$SQL = EjecutarSP('sp_tbl_SolicitudLlamadasServicios_TecnicosSugeridos', $Param);
 			if (!$SQL) {

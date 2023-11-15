@@ -64,7 +64,7 @@ if ($edit == 1 && $id != "") {
 	}
 </style>
 
-<form id="frm_NewParam" method="post" action="parametros_conceptos_salida.php" enctype="multipart/form-data">
+<form id="frm_NewParam" method="post" action="parametros_tecnicos_sugeridos.php" enctype="multipart/form-data">
 	<div class="modal-header">
 		<h4 class="modal-title">
 			<?php echo $Title; ?>
@@ -77,13 +77,11 @@ if ($edit == 1 && $id != "") {
 				<?php if ($doc == "Tecnico") { ?>
 					<div class="form-group row">
 						<div class="col-md-4">
-							<label class="control-label">ID <span class="text-danger">*</span></label>
-							<input type="text" class="form-control" name="id_interno" id="id_interno" required
+							<label class="control-label">ID</label>
+							<input type="text" class="form-control" name="id_interno" id="id_interno" readonly
 								autocomplete="off" value="<?php if ($edit == 1) {
 									echo $row['ID'];
-								} ?>" <?php if ($edit == 1) {
-									echo "readonly";
-								} ?>>
+								} ?>">
 						</div>
 
 						<div class="col-md-4">
@@ -106,6 +104,26 @@ if ($edit == 1 && $id != "") {
 
 						<div class="col-md-4">
 							<label class="control-label">
+								Origen <span class="text-danger">*</span>
+							</label>
+							
+							<select name="IdOrigen" class="form-control select2" id="IdOrigen" required>
+								<option value="">Seleccione...</option>
+								
+								<?php while ($row_Origen = sqlsrv_fetch_array($SQL_Origen)) { ?>
+									<option value="<?php echo $row_Origen["IdOrigenLlamada"]; ?>" <?php if (isset($row["IdOrigen"]) && ($row_Origen["IdOrigenLlamada"] == $row["IdOrigen"])) {
+											echo "selected";
+										} ?>>
+										<?php echo $row_Origen["IdOrigenLlamada"] . " - " . $row_Origen["DeOrigenLlamada"]; ?>
+									</option>
+								<?php } ?>
+							</select>
+						</div>
+					</div>
+
+					<div class="form-group row">
+						<div class="col-md-4">
+							<label class="control-label">
 								Tipo Problema <span class="text-danger">*</span>
 							</label>
 							
@@ -121,9 +139,7 @@ if ($edit == 1 && $id != "") {
 								<?php } ?>
 							</select>
 						</div>
-					</div>
-
-					<div class="form-group row">
+						
 						<div class="col-md-4">
 							<label class="control-label">
 								Marca Vehiculo <span class="text-danger">*</span>
@@ -159,7 +175,9 @@ if ($edit == 1 && $id != "") {
 								<?php } ?>
 							</select>
 						</div>
+					</div>
 
+					<div class="form-group row">
 						<div class="col-md-4">
 							<label class="control-label">Estado <span class="text-danger">*</span></label>
 							<select class="form-control" id="estado" name="estado">
