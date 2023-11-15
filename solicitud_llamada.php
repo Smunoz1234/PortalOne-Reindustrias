@@ -141,35 +141,35 @@ if (isset($_POST['P'])) {
 			($_POST['P'] == 32) ? "NULL" : ("'" . base64_decode($_POST['DocNum'] ?? "") . "'"),
 			"'Externa'", // @TipoTarea
 			"'" . ($_POST['AsuntoLlamada'] ?? "") . "'",
-			$_POST['Series'] ?? "NULL",
+			isset($_POST['Series']) && ($_POST['Series'] != "") ? $_POST['Series'] : "NULL", // @IdSeries
 			"'" . ($_POST['EstadoLlamada'] ?? "") . "'",
-			"'" . ($_POST['OrigenLlamada'] ?? "") . "'",
-			"'" . ($_POST['TipoLlamada'] ?? "") . "'",
-			"'" . ($_POST['TipoProblema'] ?? "") . "'",
-			"'" . ($_POST['SubTipoProblema'] ?? "") . "'",
-			"'" . ($_POST['ContratoServicio'] ?? "") . "'",
-			"'" . ($_POST['Tecnico'] ?? "") . "'",
+			isset($_POST['OrigenLlamada']) && ($_POST['OrigenLlamada'] != "") ? $_POST['OrigenLlamada'] : "NULL",
+			isset($_POST['TipoLlamada']) && ($_POST['TipoLlamada'] != "") ? $_POST['TipoLlamada'] : "NULL",
+			isset($_POST['TipoProblema']) && ($_POST['TipoProblema'] != "") ? $_POST['TipoProblema'] : "NULL",
+			isset($_POST['SubTipoProblema']) && ($_POST['SubTipoProblema'] != "") ? $_POST['SubTipoProblema'] : "NULL",
+			isset($_POST['ContratoServicio']) && ($_POST['ContratoServicio'] != "") ? $_POST['ContratoServicio'] : "NULL",
+			isset($_POST['Tecnico']) && ($_POST['Tecnico'] != "") ? $_POST['Tecnico'] : "NULL",
 			"'" . ($_POST['ClienteLlamada'] ?? "") . "'",
-			"'" . ($_POST['ContactoCliente'] ?? "") . "'",
+			isset($_POST['ContactoCliente']) && ($_POST['ContactoCliente'] != "") ? $_POST['ContactoCliente'] : "NULL", // @ID_ContactoCliente
 			"'" . ($_POST['TelefonoLlamada'] ?? "") . "'",
 			"'" . ($_POST['CorreoLlamada'] ?? "") . "'",
 			"'" . ($_POST['IdArticuloLlamada'] ?? "") . "'",
 			"'" . ($_POST['NumeroSerie'] ?? "") . "'",
 			"'" . ($_POST['SucursalCliente'] ?? "") . "'",
-			"'" . ($_POST['IdSucursalCliente'] ?? "") . "'",
+			isset($_POST['IdSucursalCliente']) && ($_POST['IdSucursalCliente'] != "") ? : "NULL", // @IdNombreSucursal
 			"'" . ($_POST['DireccionLlamada'] ?? "") . "'",
 			"'" . ($_POST['CiudadLlamada'] ?? "") . "'",
 			"'" . ($_POST['BarrioDireccionLlamada'] ?? "") . "'",
-			"'" . ($_POST['EmpleadoLlamada'] ?? "") . "'",
+			isset($_POST['EmpleadoLlamada']) && ($_POST['EmpleadoLlamada'] != "") ? $_POST['EmpleadoLlamada'] : "NULL", // @ID_EmpleadoLlamada
 			"'" . ($_POST['Proyecto'] ?? "") . "'",
-			"'" . LSiqmlObs($_POST['ComentarioLlamada'] ?? "") . "'",
-			"''", // ResolucionLlamada
-			"'" . FormatoFecha(date('Y-m-d'), date('H:i:s')) . "'", // FechaActualizacion
-			"'" . FormatoFecha(date('Y-m-d'), date('H:i:s')) . "'", // FechaCierreLlamada
-			"'" . ($_POST['IdAnexos'] ?? "") . "'",
-			($_POST['P'] == 32) ? "1" : "$Metodo",
-			"'" . $_SESSION['CodUser'] . "'",
-			"'" . $_SESSION['CodUser'] . "'",
+			"'" . LSiqmlObs($_POST['ComentarioLlamada'] ?? "") . "'", // @RequerimientoLlamada
+			"''", // @ResolucionLlamada
+			"'" . FormatoFecha(date('Y-m-d'), date('H:i:s')) . "'", // @FechaActualizacion
+			"'" . FormatoFecha(date('Y-m-d'), date('H:i:s')) . "'", // @FechaCierreLlamada
+			isset($_POST['IdAnexos']) && ($_POST['IdAnexos'] != "") ? $_POST['IdAnexos'] : "NULL", // @IdAnexoLlamada
+			($_POST['P'] == 32) ? "1" : "$Metodo", // @Metodo
+			$_SESSION['CodUser'] ?? "NULL", // @Usuario
+			$_SESSION['CodUser'] ?? "NULL", // @UsuarioCierre (Actualización)
 			"'" . $_POST['CDU_EstadoServicio'] . "'",
 			"'" . LSiqmlObs($_POST['CDU_Servicios'] ?? "") . "'",
 			"'" . LSiqmlObs($_POST['CDU_Areas'] ?? "") . "'",
@@ -177,16 +177,16 @@ if (isset($_POST['P'])) {
 			"'" . LSiqmlObs($_POST['CDU_TelefonoContacto'] ?? "") . "'",
 			"'" . LSiqmlObs($_POST['CDU_CargoContacto'] ?? "") . "'",
 			"'" . LSiqmlObs($_POST['CDU_CorreoContacto'] ?? "") . "'",
-			"NULL",
-			"NULL",
-			"NULL",
-			"NULL",
-			"NULL",
-			"NULL",
+			"NULL", // @CDU_Reprogramacion1
+			"NULL", // @CDU_Reprogramacion2
+			"NULL", // @CDU_Reprogramacion3
+			"NULL", // @CDU_CausaReprogramacion1
+			"NULL", // @CDU_CausaReprogramacion2
+			"NULL", // @CDU_CausaReprogramacion3
 			"'" . ($_POST['CDU_CanceladoPor'] ?? "") . "'",
-			(isset($_POST['CantArticulo']) && ($_POST['CantArticulo'] != "")) ? LSiqmlValorDecimal($_POST['CantArticulo']) : 0,
-			(isset($_POST['PrecioArticulo']) && ($_POST['PrecioArticulo'] != "")) ? LSiqmlValorDecimal($_POST['PrecioArticulo']) : 0,
-			($_POST['P'] == 32) ? "1" : "$Type", // Tipo de SP
+			(isset($_POST['CantArticulo']) && ($_POST['CantArticulo'] != "")) ? LSiqmlValorDecimal($_POST['CantArticulo']) : 0, // ¿nvarchar?
+			(isset($_POST['PrecioArticulo']) && ($_POST['PrecioArticulo'] != "")) ? LSiqmlValorDecimal($_POST['PrecioArticulo']) : 0, // ¿nvarchar?
+			($_POST['P'] == 32) ? "1" : "$Type", // INT, Tipo de SP
 			"'" . ($_POST['CDU_Marca'] ?? "") . "'",
 			"'" . ($_POST['CDU_Linea'] ?? "") . "'",
 			"'" . ($_POST['CDU_Ano'] ?? "") . "'",
@@ -194,24 +194,24 @@ if (isset($_POST['P'])) {
 			"'" . ($_POST['CDU_Aseguradora'] ?? "") . "'",
 			"'" . ($_POST['CDU_TipoPreventivo'] ?? "") . "'",
 			"'" . ($_POST['CDU_TipoServicio'] ?? "") . "'",
-			$_POST['CDU_Kilometros'] ?? 0,
+			$_POST['CDU_Kilometros'] ?? "0",
 			"'" . ($_POST['CDU_Contrato'] ?? "") . "'",
-			"NULL", // CDU_Asesor
-			"'" . $_POST['CDU_ListaMateriales'] . "'",
-			$_POST['CDU_TiempoTarea'] ?? 0,
-			"'" . ($_POST['CDU_IdTecnicoAdicional'] ?? "") . "'",
+			"''", // @CDU_Asesor
+			"'" . ($_POST['CDU_ListaMateriales'] ?? "") . "'",
+			$_POST['CDU_TiempoTarea'] ?? "0",
+			isset($_POST['CDU_IdTecnicoAdicional']) && ($_POST['CDU_IdTecnicoAdicional'] != "") ? $_POST['CDU_IdTecnicoAdicional'] : "NULL",
 			"'" . FormatoFecha($_POST['FechaCreacion'], $_POST['HoraCreacion']) . "'",
 			"'" . FormatoFecha($_POST['FechaFinCreacion'], $_POST['HoraFinCreacion']) . "'",
 			"'" . FormatoFecha($_POST['FechaAgenda'], $_POST['HoraAgenda']) . "'",
 			"'" . FormatoFecha($_POST['FechaFinAgenda'], $_POST['HoraFinAgenda']) . "'",
-			"0", // CreacionActividad
-			"0", // EnvioCorreo
+			"0", // @CreacionActividad
+			"0", // @EnvioCorreo
 			"'" . ($_POST['NombreContactoFirma'] ?? "") . "'",
 			"'" . ($_POST['CedulaContactoFirma'] ?? "") . "'",
 			"'" . ($_POST['TelefonosContactosFirma'] ?? "") . "'",
 			"'" . ($_POST['CorreosContactosFirma'] ?? "") . "'",
 			"'$FirmaContactoResponsable'",
-			"0", // FormatoCierreLlamada
+			"0", // @FormatoCierreLlamada
 			$Campanas, // SMM, 15/09/2023
 		);
 
