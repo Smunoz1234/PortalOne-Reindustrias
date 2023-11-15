@@ -304,7 +304,7 @@ if (isset($_POST['P'])) {
 
 					$encode_id=base64_encode($IdSolicitud);
 					$encode_a=base64_encode("OK_OTSolUpd");
-					header("Location:solicitud_llamada.php?a=$encode_a&tl=1&id=$encode_id");
+					header("Location:solicitud_llamada.php?&id=$encode_id&tl=1&a=$encode_a");
 				}
 			} catch (Exception $e) {
 				echo 'Excepcion capturada: ', $e->getMessage(), "\n";
@@ -2933,35 +2933,44 @@ $(document).ready(function () {
 	maxLength('CDU_Areas'); // SMM, 02/03/2022
 
 	 <?php if (($edit == 0) || (($edit == 1) && ($CrearSolicitud && ($row['IdEstadoLlamada'] != '-1')))) { ?>
-				$('#FechaCreacion, #FechaAgenda, #FechaFinCreacion, #FechaFinAgenda').datepicker({
-					todayBtn: "linked",
-					keyboardNavigation: false,
-					forceParse: false,
-					calendarWeeks: true,
-					autoclose: true,
-					format: 'yyyy-mm-dd',
-					todayHighlight: true,
-					//startDate: '<?php if ($edit == 1) {
-						echo $row['FechaCreacionLLamada'];
-					} else {
-						echo date('Y-m-d');
-					} ?>'
-						});
-			$('.clockpicker').clockpicker();
-	<?php } ?>
-	
-	<?php if (($edit == 1) && ($CrearSolicitud && ($row['IdEstadoLlamada'] != '-1'))) { ?>
-			$('#FechaCierre').datepicker({
+		$(".fechaAgenda").datepicker({
+			todayBtn: "linked",
+			keyboardNavigation: false,
+			forceParse: false,
+			calendarWeeks: true,
+			autoclose: true,
+			format: 'yyyy-mm-dd',
+			todayHighlight: true
+		});
+		$(".horaAgenda").clockpicker();
+
+		// SMM, 15/11/2023
+		<?php if (($edit == 0) || !PermitirFuncion(344)) { ?>
+			$(".fecha").datepicker({
 				todayBtn: "linked",
 				keyboardNavigation: false,
 				forceParse: false,
 				calendarWeeks: true,
 				autoclose: true,
 				format: 'yyyy-mm-dd',
-				todayHighlight: true,
-				startDate: '<?php echo $row['FechaCreacionLLamada']; ?>',
-				endDate: '<?php echo date('Y- m - d'); ?>'
-							});
+				todayHighlight: true
+			});
+			$(".hora").clockpicker();
+		<?php } ?>
+	<?php } ?>
+	
+	<?php if (($edit == 1) && ($CrearSolicitud && ($row['IdEstadoLlamada'] != '-1'))) { ?>
+		$('#FechaCierre').datepicker({
+			todayBtn: "linked",
+			keyboardNavigation: false,
+			forceParse: false,
+			calendarWeeks: true,
+			autoclose: true,
+			format: 'yyyy-mm-dd',
+			todayHighlight: true,
+			startDate: '<?php echo $row['FechaCreacionLLamada']; ?>',
+			endDate: '<?php echo date('Y- m - d'); ?>'
+		});
 	<?php } ?>
 
 	$(".select2").select2();
@@ -3148,7 +3157,7 @@ $(function () {
 		$("textarea").prop("disabled", true);
 	<?php } ?>
 
-	// SMM, 
+	// SMM, 15/11/2023
 	<?php if (($edit == 1) && PermitirFuncion(344)) { ?>
 		$("select").prop("disabled", true);
 		$("textarea").prop("disabled", true);
@@ -3156,10 +3165,7 @@ $(function () {
 		// ID es necesario, por eso no puede ser disabled.
 		$("input").prop("readonly", true);
 
-		// Las fechas son de tipo input pero necesito que sean disabled.
-		$(".fecha, .hora").prop("disabled", true);
-
-		// Habilitar fecha solicitud.
+		// Habilitar fecha solicitud. Las fechas también son de tipo input.
 		$(".fechaAgenda, .horaAgenda").prop("readonly", false);
 
 		// Habilitar técnico adicional.
