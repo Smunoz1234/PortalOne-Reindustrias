@@ -143,15 +143,15 @@ if ($Type == 1) {
 		"'$datetime'", // FechaCreacion
 		$CDU_Kilometros,
 		"'$CDU_TipoPreventivo'",
-		"'$NumeroSerie'",
 		$Series,
 		$OrigenLlamada,
 		$TipoLlamada,
 		$TipoProblema,
 		$SubTipoProblema,
-		"'$Cliente'",
 		"'$CDU_Contrato'",
+		"'$Cliente'",
 		$SucursalCliente,
+		"'$NumeroSerie'",
 		"'$CampanasAsociadas'", 
 	);
 } elseif ($Type == 3) {
@@ -171,6 +171,12 @@ if ($Type == 1) {
 		"'$datetime'", // FechaActualizacion
 		$CDU_Kilometros,
 		"'$CDU_TipoPreventivo'",
+		$Series,
+		$OrigenLlamada,
+		$TipoLlamada,
+		$TipoProblema,
+		$SubTipoProblema,
+		"'$CDU_Contrato'",
 	);
 }
 
@@ -448,7 +454,9 @@ $SolicitudCerrada = (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] 
 						<option value="">Seleccione...</option>
 
 						<?php while ($row_SucursalCliente = sqlsrv_fetch_array($SQL_SucursalCliente)) { ?>
-							<option value="<?php echo $row_SucursalCliente["IdNombreSucursal"]; ?>" <?php if (isset($row["IdNombreSucursal"]) && ($row_SucursalCliente["NumeroLinea"] == $row["IdNombreSucursal"])) {
+							<option value="<?php echo $row_SucursalCliente["NumeroLinea"]; ?>" <?php if (isset($row["IdNombreSucursal"]) && ($row_SucursalCliente["NumeroLinea"] == $row["IdNombreSucursal"])) {
+									echo "selected";
+							   	} elseif (isset($row["NombreSucursal"]) && ($row_SucursalCliente["NobreSucursal"] == $row["NombreSucursal"])) {
 									echo "selected";
 							   	} ?>>
 								<?php echo $row_SucursalCliente["NombreSucursal"]; ?>
@@ -848,7 +856,13 @@ $SolicitudCerrada = (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] 
 					HoraAgenda: jsonForm.HoraAgenda,
 					HoraFinAgenda: jsonForm.HoraFinAgenda,
 					CDU_Kilometros: jsonForm.CDU_Kilometros,
-					CDU_TipoPreventivo: jsonForm.CDU_TipoPreventivo
+					CDU_TipoPreventivo: jsonForm.CDU_TipoPreventivo,
+					Series: jsonForm.Series,
+					OrigenLlamada: jsonForm.OrigenLlamada,
+					TipoLlamada: jsonForm.TipoLlamada,
+					TipoProblema: jsonForm.TipoProblema,
+					SubTipoProblema: jsonForm.SubTipoProblema,
+					CDU_Contrato: jsonForm.CDU_Contrato
 				};
 
 				<?php if(!$edit) { ?>
@@ -868,15 +882,15 @@ $SolicitudCerrada = (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] 
 						HoraFinAgenda: jsonForm.HoraFinAgenda,
 						CDU_Kilometros: jsonForm.CDU_Kilometros,
 						CDU_TipoPreventivo: jsonForm.CDU_TipoPreventivo,
-						NumeroSerie: jsonForm.NumeroSerie,
 						Series: jsonForm.Series,
 						OrigenLlamada: jsonForm.OrigenLlamada,
 						TipoLlamada: jsonForm.TipoLlamada,
 						TipoProblema: jsonForm.TipoProblema,
 						SubTipoProblema: jsonForm.SubTipoProblema,
-						Cliente: jsonForm.Cliente,
 						CDU_Contrato: jsonForm.CDU_Contrato,
+						Cliente: jsonForm.Cliente,
 						SucursalCliente: jsonForm.SucursalCliente,
+						NumeroSerie: jsonForm.NumeroSerie,
 						Campanas: CampanasAsociadas
 					};
 				<?php } ?>
@@ -1082,18 +1096,11 @@ $SolicitudCerrada = (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] 
 		// SMM, 27/10/2023
 		<?php if($edit) { ?>
 			// $("#Cliente").change();
-			$("#NombreCliente").prop("readonly", true);
-
-			$("#Series").prop("disabled", true);
-			$("#OrigenLlamada").prop("disabled", true);
-			$("#TipoLlamada").prop("disabled", true);
-			$("#TipoProblema").prop("disabled", true);
-			$("#SubTipoProblema").prop("disabled", true);
 			
+			$("#NombreCliente").prop("readonly", true);
 			$("#SucursalCliente").prop("disabled", true);
+			
 			$("#NumeroSerie").prop("disabled", true);
-
-			$("#CDU_Contrato").prop("disabled", true);
 			$("#Campanas").prop("disabled", true);
 		<?php } ?>
 
