@@ -1028,37 +1028,41 @@ $SolicitudCerrada = (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] 
 					$("#Campanas").trigger('change');
 
 					// Iterar sobre cada ID y seleccionar opciones específicas. SMM, 16/11/2023
-					<?php while (isset($SQL_CampanasClone) && $row_Clone = sqlsrv_fetch_array($SQL_CampanasClone)) { ?>
-						$("#Campanas option[value='<?php echo $row_Clone["id_campana"] ?? ""; ?>']").prop("selected", true);
-					<?php } ?>
-					// Eso lo hice con un .forEach(), en la solicitud directa.
+					if($("#NumeroSerie").val() === "<?php echo $row["SerialInterno"] ?? ""; ?>") {
+						<?php while (isset($SQL_CampanasClone) && $row_Clone = sqlsrv_fetch_array($SQL_CampanasClone)) { ?>
+							$("#Campanas option[value='<?php echo $row_Clone["id_campana"] ?? ""; ?>']").prop("selected", true);
+						<?php } ?>
 
-					// Cargar de nuevo con los ids seleccionados.
-					$("#Campanas").trigger('change');
+						// Cargar de nuevo con los ids seleccionados.
+						$("#Campanas").trigger('change');
+					}
+					// Eso lo hice con un .forEach(), en la solicitud directa.
 				},
 				error: function (error) {
 					console.log("error (410), ", error);
 				}
 			});
 
-			// SMM, 31/10/2023
-			$.ajax({
-				url: "ajx_buscar_datos_json.php",
-				data: {
-					type: 44,
-					si: 0,
-					id: id_tarjeta_equipo,
-					clt: $("#Cliente").val()	
-				},
-				dataType: 'json',
-				success: function (data) {
-					$("#CDU_Marca").val(data.CDU_IdMarca);
-					$("#CDU_Marca").change();
-				},
-				error: function (error) {
-					console.log("Error CDU_Marca", error.responseText);
-				}
-			});
+			// SMM, 16/11/2023
+			if($("#NumeroSerie").val() !== "<?php echo $row["SerialInterno"] ?? ""; ?>") {
+				$.ajax({
+					url: "ajx_buscar_datos_json.php",
+					data: {
+						type: 44,
+						si: 0,
+						id: id_tarjeta_equipo,
+						clt: $("#Cliente").val()	
+					},
+					dataType: 'json',
+					success: function (data) {
+						$("#CDU_Marca").val(data.CDU_IdMarca);
+						$("#CDU_Marca").change();
+					},
+					error: function (error) {
+						console.log("Error CDU_Marca", error.responseText);
+					}
+				});
+			}
 		});
 
 		$("#AddCampana").on("click", function () {
