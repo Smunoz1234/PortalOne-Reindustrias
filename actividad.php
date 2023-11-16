@@ -1523,7 +1523,10 @@ if (isset($_GET['return'])) {
 			 	todayHighlight: true,
 				format: 'yyyy-mm-dd'
             });
-		 $('.clockpicker').clockpicker();
+
+			$('.clockpicker').clockpicker({
+				donetext: 'Done'
+			});
 	 	<?php }?>
 		 $(".select2").select2();
 		 $('.i-checks').iCheck({

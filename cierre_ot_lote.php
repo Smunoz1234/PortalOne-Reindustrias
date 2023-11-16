@@ -717,7 +717,10 @@ function cambiarCampos(tipo) {
 
 		// SMM, 13/09/2022
 		$('.date').datepicker();
-		$('.clockpicker').clockpicker();
+		
+		$('.clockpicker').clockpicker({
+			donetext: 'Done'
+		});
 
 		$("#formCambiarActividades").on("click", function(event) {
 			// event.preventDefault(); // Evitar redirección del formulario

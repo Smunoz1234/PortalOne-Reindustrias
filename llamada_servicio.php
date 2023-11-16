@@ -3705,7 +3705,7 @@ $(document).ready(function () {
 	maxLength('CDU_Areas'); // SMM, 02/03/2022
 
 	 <?php if (($type_llmd == 0) || (($type_llmd == 1) && (PermitirFuncion(302) && ($row['IdEstadoLlamada'] != '-1')))) { ?>
-			$('#FechaCreacion, #FechaAgenda').datepicker({
+		$('#FechaCreacion, #FechaAgenda').datepicker({
 				todayBtn: "linked",
 				keyboardNavigation: false,
 				forceParse: false,
@@ -3718,10 +3718,14 @@ $(document).ready(function () {
 				} else {
 					echo date('Y-m-d');
 				} ?> '
-						});
-	$('.clockpicker').clockpicker();
-	  <?php } ?>
-	 <?php if (($type_llmd == 1) && (PermitirFuncion(302) && ($row['IdEstadoLlamada'] != '-1'))) { ?>
+		});
+		
+		$('.clockpicker').clockpicker({
+			donetext: 'Done'
+		});
+	<?php } ?>
+	
+	<?php if (($type_llmd == 1) && (PermitirFuncion(302) && ($row['IdEstadoLlamada'] != '-1'))) { ?>
 		$('#FechaCierre').datepicker({
 			todayBtn: "linked",
 			keyboardNavigation: false,
@@ -3732,8 +3736,9 @@ $(document).ready(function () {
 			todayHighlight: true,
 			startDate: '<?php echo $row['FechaCreacionLLamada']; ?>',
 			endDate: '<?php echo date('Y- m - d'); ?>'
-						});
+		});
 	<?php } ?>
+	
 	$(".select2").select2();
 var options = {
 	url: function (phrase) {

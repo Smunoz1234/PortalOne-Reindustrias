@@ -2942,7 +2942,9 @@ $(document).ready(function () {
 			format: 'yyyy-mm-dd',
 			todayHighlight: true
 		});
-		$(".horaAgenda").clockpicker();
+		$(".horaAgenda").clockpicker({
+			donetext: 'Done'
+		});
 
 		// SMM, 15/11/2023
 		<?php if (($edit == 0) || !PermitirFuncion(344)) { ?>
@@ -2955,7 +2957,9 @@ $(document).ready(function () {
 				format: 'yyyy-mm-dd',
 				todayHighlight: true
 			});
-			$(".hora").clockpicker();
+			$(".hora").clockpicker({
+				donetext: 'Done'
+			});
 		<?php } ?>
 	<?php } ?>
 	
