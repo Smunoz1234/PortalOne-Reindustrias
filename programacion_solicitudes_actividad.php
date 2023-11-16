@@ -34,6 +34,7 @@ if ($edit && isset($row["ID_CodigoCliente"])) {
 	$SQL_NumeroSerie = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', '*', "CardCode='$ID_CodigoCliente'", 'SerialFabricante');
 
 	$SQL_Campanas = Seleccionar("uvw_tbl_SolicitudLlamadasServicios_Campanas", "*", "[id_solicitud_llamada_servicio]='$ID'");
+	$SQL_CampanasClone = Seleccionar("uvw_tbl_SolicitudLlamadasServicios_Campanas", "*", "[id_solicitud_llamada_servicio]='$ID'");
 }
 
 // Fechas. SMM, 27/10/2023
@@ -177,6 +178,10 @@ if ($Type == 1) {
 		$TipoProblema,
 		$SubTipoProblema,
 		"'$CDU_Contrato'",
+		"'$Cliente'",
+		$SucursalCliente,
+		"'$NumeroSerie'",
+		"'$CampanasAsociadas'", 
 	);
 }
 
@@ -505,7 +510,7 @@ $SolicitudCerrada = (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] 
 
 						<!-- La TE depende del cliente. -->
 						<?php while ($row_NumeroSerie = sqlsrv_fetch_array($SQL_NumeroSerie)) { ?>
-							<option value="<?php echo $row_NumeroSerie["SerialInterno"]; ?>" <?php if (isset($row["SerialInterno"]) && ($row_NumeroSerie["SerialInterno"] == $row["SerialInterno"])) {
+							<option data-id="<?php echo $row_NumeroSerie["IdTarjetaEquipo"]; ?>" value="<?php echo $row_NumeroSerie["SerialInterno"]; ?>" <?php if (isset($row["SerialInterno"]) && ($row_NumeroSerie["SerialInterno"] == $row["SerialInterno"])) {
 									echo "selected";
 							   	} ?>>
 								<?php echo "SN Fabricante: " . $row_NumeroSerie["SerialFabricante"] . " - Núm. Serie: " . $row_NumeroSerie["SerialInterno"] . " - Marca: " . $row_NumeroSerie["CDU_Marca"]; ?>
@@ -841,8 +846,10 @@ $SolicitudCerrada = (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] 
 				console.log(CampanasAsociadas);
 				
 				// IdTarjetaEquipo: jsonForm.IdTarjetaEquipo,
+				let sp_type = <?php echo $edit ? 3 : 1; ?>
+
 				let jsonActividad = {
-					Type: 3,
+					Type: sp_type,
 					ID_SolicitudLlamadaServicio: jsonForm.ID_SolicitudLlamadaServicio,
 					Tecnico: jsonForm.Tecnico,
 					TecnicoAdicional: jsonForm.TecnicoAdicional,
@@ -862,38 +869,12 @@ $SolicitudCerrada = (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] 
 					TipoLlamada: jsonForm.TipoLlamada,
 					TipoProblema: jsonForm.TipoProblema,
 					SubTipoProblema: jsonForm.SubTipoProblema,
-					CDU_Contrato: jsonForm.CDU_Contrato
+					CDU_Contrato: jsonForm.CDU_Contrato,
+					Cliente: jsonForm.Cliente,
+					SucursalCliente: jsonForm.SucursalCliente,
+					NumeroSerie: jsonForm.NumeroSerie,
+					Campanas: CampanasAsociadas
 				};
-
-				<?php if(!$edit) { ?>
-					jsonActividad = {
-						Type: 1,
-						ID_SolicitudLlamadaServicio: jsonForm.ID_SolicitudLlamadaServicio,
-						Tecnico: jsonForm.Tecnico,
-						TecnicoAdicional: jsonForm.TecnicoAdicional,
-						Comentario: jsonForm.Comentario,
-						FechaCreacion: jsonForm.FechaCreacion,
-						FechaFinCreacion: jsonForm.FechaFinCreacion,
-						FechaAgenda: jsonForm.FechaAgenda,
-						FechaFinAgenda: jsonForm.FechaFinAgenda,
-						HoraCreacion: jsonForm.HoraCreacion,
-						HoraFinCreacion: jsonForm.HoraFinCreacion,
-						HoraAgenda: jsonForm.HoraAgenda,
-						HoraFinAgenda: jsonForm.HoraFinAgenda,
-						CDU_Kilometros: jsonForm.CDU_Kilometros,
-						CDU_TipoPreventivo: jsonForm.CDU_TipoPreventivo,
-						Series: jsonForm.Series,
-						OrigenLlamada: jsonForm.OrigenLlamada,
-						TipoLlamada: jsonForm.TipoLlamada,
-						TipoProblema: jsonForm.TipoProblema,
-						SubTipoProblema: jsonForm.SubTipoProblema,
-						CDU_Contrato: jsonForm.CDU_Contrato,
-						Cliente: jsonForm.Cliente,
-						SucursalCliente: jsonForm.SucursalCliente,
-						NumeroSerie: jsonForm.NumeroSerie,
-						Campanas: CampanasAsociadas
-					};
-				<?php } ?>
 
 				// SMM, 02/11/2023
 				if(ValidarFechas() && ValidarTecnicos()) {
@@ -1045,6 +1026,15 @@ $SolicitudCerrada = (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] 
 				success: function (response) {
 					$("#Campanas").html(response).fadeIn();
 					$("#Campanas").trigger('change');
+
+					// Iterar sobre cada ID y seleccionar opciones específicas. SMM, 16/11/2023
+					<?php while (isset($SQL_CampanasClone) && $row_Clone = sqlsrv_fetch_array($SQL_CampanasClone)) { ?>
+						$("#Campanas option[value='<?php echo $row_Clone["id_campana"] ?? ""; ?>']").prop("selected", true);
+					<?php } ?>
+					// Eso lo hice con un .forEach(), en la solicitud directa.
+
+					// Cargar de nuevo con los ids seleccionados.
+					$("#Campanas").trigger('change');
 				},
 				error: function (error) {
 					console.log("error (410), ", error);
@@ -1093,15 +1083,18 @@ $SolicitudCerrada = (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] 
 			AdicionarCliente();
 		});
 
-		// SMM, 27/10/2023
+		// SMM, 16/11/2023
 		<?php if($edit) { ?>
+			console.log("entrando a la validación de la edición y campañas");
+			
 			// $("#Cliente").change();
+			$("#NumeroSerie").change();
 			
-			$("#NombreCliente").prop("readonly", true);
-			$("#SucursalCliente").prop("disabled", true);
+			// $("#NombreCliente").prop("readonly", true);
+			// $("#SucursalCliente").prop("disabled", true);
 			
-			$("#NumeroSerie").prop("disabled", true);
-			$("#Campanas").prop("disabled", true);
+			// $("#NumeroSerie").prop("disabled", true);
+			// $("#Campanas").prop("disabled", true);
 		<?php } ?>
 
 		// SMM, 31/10/2023
