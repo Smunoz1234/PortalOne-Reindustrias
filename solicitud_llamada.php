@@ -156,7 +156,7 @@ if (isset($_POST['P'])) {
 			"'" . ($_POST['IdArticuloLlamada'] ?? "") . "'",
 			"'" . ($_POST['NumeroSerie'] ?? "") . "'",
 			"'" . ($_POST['SucursalCliente'] ?? "") . "'",
-			isset($_POST['IdSucursalCliente']) && ($_POST['IdSucursalCliente'] != "") ? : "NULL", // @IdNombreSucursal
+			isset($_POST['IdSucursalCliente']) && ($_POST['IdSucursalCliente'] != "") ? $_POST['IdSucursalCliente'] : "NULL", // @IdNombreSucursal
 			"'" . ($_POST['DireccionLlamada'] ?? "") . "'",
 			"'" . ($_POST['CiudadLlamada'] ?? "") . "'",
 			"'" . ($_POST['BarrioDireccionLlamada'] ?? "") . "'",
