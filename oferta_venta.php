@@ -356,7 +356,7 @@ if ($edit == 1 && $sw_error == 0) {
 	$IdEvento = $SQL_Evento[0];
 
 	//Oferta de venta
-	$Cons = "Select * From uvw_tbl_OfertaVenta Where DocEntry='" . $IdOferta . "' AND IdEvento='" . $IdEvento . "'";
+	$Cons = "SELECT * FROM uvw_tbl_OfertaVenta WHERE DocEntry='$IdOferta' AND IdEvento='$IdEvento'";
 	$SQL = sqlsrv_query($conexion, $Cons);
 	$row = sqlsrv_fetch_array($SQL);
 
@@ -953,9 +953,17 @@ if ((isset($row['CodEmpleado']) && ($row['CodEmpleado'] == $_SESSION['IdCardCode
 												class="fa fa-plus-circle"></i> Agregar actividad</button>
 									<?php } ?>
 									<?php if ($edit == 1 && $row['DocDestinoDocEntry'] != "") { ?>
-										<a href="orden_venta.php?id=<?php echo base64_encode($row['DocDestinoDocEntry']); ?>&id_portal=<?php echo base64_encode($row['DocDestinoIdPortal']); ?>&tl=1"
-											target="_blank" class="btn btn-outline btn-primary pull-right">Ir a documento
-											destino <i class="fa fa-external-link"></i></a>
+										<?php if($row['DocDestinoObjeto'] == 17) { ?>
+											<a href="orden_venta.php?id=<?php echo base64_encode($row['DocDestinoDocEntry']); ?>&id_portal=<?php echo base64_encode($row['DocDestinoIdPortal']); ?>&tl=1"
+												target="_blank" class="btn btn-outline btn-primary pull-right">
+												Ir a documento destino <i class="fa fa-external-link"></i>
+											</a>
+										<?php } else { ?>
+											<a href="entrega_venta.php?id=<?php echo base64_encode($row['DocDestinoDocEntry']); ?>&id_portal=<?php echo base64_encode($row['DocDestinoIdPortal']); ?>&tl=1"
+												target="_blank" class="btn btn-outline btn-primary pull-right">
+												Ir a documento destino <i class="fa fa-external-link"></i>
+											</a>
+										<?php } ?>
 									<?php } ?>
 								</div>
 							</div>
