@@ -1229,21 +1229,36 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 											onClick="VerMapaRel('<?php echo base64_encode($row['DocEntry']); ?>','<?php echo base64_encode('15'); ?>');"><i
 												class="fa fa-sitemap"></i> Mapa de relaciones</a>
 									</div>
+									
 									<div class="col-lg-6">
 										<?php if ($row['DocDestinoDocEntry'] != "") { ?>
-											<a href="<?php if ($row['DocDestinoObjeto'] == 16) {
-												echo "devolucion_venta";
-											} else {
-												echo "factura_venta";
-											} ?>.php?id=<?php echo base64_encode($row['DocDestinoDocEntry']); ?>&id_portal=<?php echo base64_encode($row['DocDestinoIdPortal']); ?>&tl=1"
-												target="_blank" class="btn btn-outline btn-primary pull-right m-l-sm">Ir a
-												documento destino <i class="fa fa-mail-forward"></i></a>
+											<?php if($row['DocDestinoObjeto'] == 16) { ?>
+												<a href="devolucion_venta.php?id=<?php echo base64_encode($row['DocDestinoDocEntry']); ?>&id_portal=<?php echo base64_encode($row['DocDestinoIdPortal']); ?>&tl=1"
+													target="_blank" class="btn btn-outline btn-primary pull-right m-l-sm">
+													Ir a documento destino <i class="fa fa-mail-forward"></i>
+												</a>
+											<?php } else { ?>
+												<a href="factura_venta.php?id=<?php echo base64_encode($row['DocDestinoDocEntry']); ?>&id_portal=<?php echo base64_encode($row['DocDestinoIdPortal']); ?>&tl=1"
+													target="_blank" class="btn btn-outline btn-primary pull-right m-l-sm">
+													Ir a documento destino <i class="fa fa-mail-forward"></i>
+												</a>
+											<?php } ?>
 										<?php } ?>
+
 										<?php if ($row['DocBaseDocEntry'] != "") { ?>
-											<a href="orden_venta.php?id=<?php echo base64_encode($row['DocBaseDocEntry']); ?>&id_portal=<?php echo base64_encode($row['DocBaseIdPortal']); ?>&tl=1"
-												target="_blank" class="btn btn-outline btn-primary pull-right"><i
-													class="fa fa-mail-reply"></i> Ir a documento base</a>
+											<?php if($row['DocDestinoObjeto'] == 17) { ?>
+												<a href="orden_venta.php?id=<?php echo base64_encode($row['DocBaseDocEntry']); ?>&id_portal=<?php echo base64_encode($row['DocBaseIdPortal']); ?>&tl=1"
+													target="_blank" class="btn btn-outline btn-primary pull-right">
+													<i class="fa fa-mail-reply"></i> Ir a documento base
+												</a>
+											<?php } else { ?>
+												<a href="oferta_venta.php?id=<?php echo base64_encode($row['DocBaseDocEntry']); ?>&id_portal=<?php echo base64_encode($row['DocBaseIdPortal']); ?>&tl=1"
+													target="_blank" class="btn btn-outline btn-primary pull-right">
+													<i class="fa fa-mail-reply"></i> Ir a documento base
+												</a>
+											<?php } ?>
 										<?php } ?>
+										
 										<?php if ($row['Cod_Estado'] == 'O') { ?>
 											<button type="button"
 												onClick="javascript:location.href='actividad.php?dt_DM=1&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&DM_type=<?php echo base64_encode('15'); ?>&DM=<?php echo base64_encode($row['DocEntry']); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('entrega_venta.php'); ?>'"
