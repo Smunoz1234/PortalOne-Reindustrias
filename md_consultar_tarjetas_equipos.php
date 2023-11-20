@@ -167,7 +167,7 @@ $SQL_Llamadas = Seleccionar('uvw_Sap_tbl_LlamadasServicios', 'TOP 100 *', $Where
 											<td><?php echo $row_Llamadas['DeTipoLlamada']; ?></td>
 											<td><?php echo $row_Llamadas['AsuntoLlamada']; ?></td>
 											<td>
-												<a type="button" class="btn btn-success btn-xs" onclick="cambiarOT('<?php echo $row_Llamadas['ID_LlamadaServicio']; ?>', '<?php echo $row_Llamadas['DocNum'] . ' - ' . $row_Llamadas['AsuntoLlamada'] . ' (' . $row_Llamadas['DeTipoLlamada'] . ')'; ?>')"><b><?php echo $row_Llamadas['DocNum']; ?></b></a>
+												<a type="button" class="btn btn-success btn-xs" onclick="cambiarTE('<?php echo $row_Llamadas['ID_LlamadaServicio']; ?>', '<?php echo $row_Llamadas['DocNum'] . ' - ' . $row_Llamadas['AsuntoLlamada'] . ' (' . $row_Llamadas['DeTipoLlamada'] . ')'; ?>')"><b><?php echo $row_Llamadas['DocNum']; ?></b></a>
 											</td>
 											<td><?php echo $row_Llamadas['IdNumeroSerie']; ?></td>
 											<td><?php echo $row_Llamadas['DeAsignadoPor']; ?></td>
@@ -199,13 +199,11 @@ $SQL_Llamadas = Seleccionar('uvw_Sap_tbl_LlamadasServicios', 'TOP 100 *', $Where
 </div>
 
 <script>
-function cambiarOT(orden_trabajo, descripcion_ot){
+function cambiarTE(orden_trabajo, descripcion_ot){
 	$("#OrdenServicioCliente").val(orden_trabajo);
 	$("#Desc_OrdenServicioCliente").val(descripcion_ot);
 	$('#mdTE').modal('hide');
 }
-
-
 
 $(document).ready(function(){
 	$('#footable').footable();
