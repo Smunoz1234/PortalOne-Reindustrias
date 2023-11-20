@@ -2264,8 +2264,9 @@ function AgregarEsto(contenedorID, valorElemento) {
 							</div>
 							
 							<div class="col-lg-3">
-								<label class="control-label">
-									<i onclick="ConsultarEquipo();" title="Consultar tarjeta de equipo" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Tarjeta de equipo
+								<label class="col-lg-1 control-label">
+									<i onclick="ConsultarEquipo();" title="Consultar Tarjeta Equipo"
+										style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Tarjeta de equipo
 								</label>
 
 								<input type="hidden" class="form-control" name="NumeroSerie" id="NumeroSerie"
