@@ -28,16 +28,6 @@ if ($ID_CodigoCliente != "") {
 	// var_dump($row_Cliente);
 }
 
-// Filtrar fechas
-/*
-$fecha = date('Y-m-d');
-$nuevafecha = strtotime('-' . ObtenerVariable("DiasRangoFechasDocSAP") . ' day');
-$nuevafecha = date('Y-m-d', $nuevafecha);
-
-$FechaInicial = $nuevafecha;
-$FechaFinal = $fecha;
-*/
-
 if (isset($_GET['BuscarDato']) && $_GET['BuscarDato'] != "") {
 	$BuscarDato = $_GET['BuscarDato'];
 	$Filtro .= " AND (Calle LIKE '%$BuscarDato%' OR CodigoPostal LIKE '%$BuscarDato%' OR Barrio LIKE '%$BuscarDato%' OR Ciudad LIKE '%$BuscarDato%' OR Distrito LIKE '%$BuscarDato%' OR SerialFabricante LIKE '%$BuscarDato%' OR SerialInterno LIKE '%$BuscarDato%' OR IdTarjetaEquipo LIKE '%$BuscarDato%')";
@@ -97,20 +87,7 @@ $SQL_TE = sqlsrv_query($conexion, $Cons_TarjetasEquipos);
 									</div>
 								</div>
 
-								<div class="form-group">
-									<label class="col-lg-1 control-label">Fechas</label>
-									<div class="col-lg-5">
-										<div class="input-daterange input-group" id="datepicker">
-											<input name="FechaInicial" autocomplete="off" type="text"
-												class="input-sm form-control" id="FechaInicial"
-												placeholder="Fecha inicial" value="<?php // echo $FechaInicial; ?>" />
-											<span class="input-group-addon">hasta</span>
-											<input name="FechaFinal" autocomplete="off" type="text"
-												class="input-sm form-control" id="FechaFinal" placeholder="Fecha final"
-												value="<?php // echo $FechaFinal; ?>" />
-										</div>
-									</div>
-									
+								<div class="form-group">									
 									<label class="col-lg-1 control-label">Estado de equipo</label>
 									<div class="col-lg-5">
 										<select name="EstadoEquipo" class="form-control" id="EstadoEquipo">
@@ -156,7 +133,7 @@ $SQL_TE = sqlsrv_query($conexion, $Cons_TarjetasEquipos);
 				</div>
 				<!-- Fin, filtros -->
 
-				<?php if ($SQL_TE && false) { ?>
+				<?php if ($SQL_TE) { ?>
 				
 				<!-- Inicio, tabla -->
 				<div class="row">
@@ -166,11 +143,11 @@ $SQL_TE = sqlsrv_query($conexion, $Cons_TarjetasEquipos);
 								<table id="footable" class="table" data-paging="true" data-sorting="true">
 									<thead>
 										<tr>
-											<th>Núm.</th>
 											<th>Código cliente</th>
 											<th>Cliente</th>
 											<th>Serial fabricante</th>
 											<th>Serial interno</th>
+											<th>Núm.</th>
 											<th data-breakpoints="all">Código de artículo</th>
 											<th data-breakpoints="all">Artículo</th>
 											<th data-breakpoints="all">Tipo de equipo</th>
@@ -182,62 +159,53 @@ $SQL_TE = sqlsrv_query($conexion, $Cons_TarjetasEquipos);
 										<?php while ($row_TE = sqlsrv_fetch_array($SQL_TE)) { ?>
 												<tr>
 													<td>
-														<?php echo $row_TE['FechaHoraCreacionLLamada']->format('Y-m-d H:i'); ?>
+														<?php echo $row_TE['CardCode']; ?>
 													</td>
 													<td>
-														<?php echo $row_TE['NombreSucursal']; ?>
+														<?php echo $row_TE['CardName']; ?>
 													</td>
 													<td>
-														<?php echo $row_TE['NombreCliente']; ?>
+														<?php echo $row_TE['SerialFabricante']; ?>
 													</td>
 													<td>
-														<span <?php if ($row_TE['IdEstadoLlamada'] == '-3') {
-															echo "class='label label-info'";
-														} elseif ($row_TE['IdEstadoLlamada'] == '-2') {
-															echo "class='label label-warning'";
-														} else {
-															echo "class='label label-danger'";
-														} ?>>
-															<?php echo $row_TE['DeEstadoLlamada']; ?>
-														</span>
-													</td>
-													<td>
-														<?php echo $row_TE['DeTipoLlamada']; ?>
-													</td>
-													<td>
-														<?php echo $row_TE['AsuntoLlamada']; ?>
+														<?php echo $row_TE['SerialInterno']; ?>
 													</td>
 													<td>
 														<a type="button" class="btn btn-success btn-xs"
-															onclick="cambiarTE('<?php echo $row_TE['ID_TEervicio']; ?>', '<?php echo $row_TE['DocNum'] . ' - ' . $row_TE['AsuntoLlamada'] . ' (' . $row_TE['DeTipoLlamada'] . ')'; ?>')"><b>
-																<?php echo $row_TE['DocNum']; ?>
-															</b></a>
+															title="Adicionar o cambiar TE"
+															onclick="cambiarTE('<?php echo $row_TE['IdTarjetaEquipo']; ?>', '<?php echo 'SN Fabricante: ' . $row_NumeroSerie['SerialFabricante'] . ' - Núm. Serie: ' . $row_NumeroSerie['SerialInterno']; ?>')">
+															<b>
+																<?php echo $row_TE['IdTarjetaEquipo']; ?>
+															</b>
+														</a>
 													</td>
 													<td>
-														<?php echo $row_TE['IdNumeroSerie']; ?>
+														<?php echo $row_TE['ItemCode']; ?>
 													</td>
 													<td>
-														<?php echo $row_TE['DeAsignadoPor']; ?>
+														<?php echo $row_TE['ItemName']; ?>
 													</td>
 													<td>
-														<?php echo $row_TE['DeTipoProblemaLlamada']; ?>
+														<?php if ($row_TE['TipoEquipo'] === 'P') {echo 'Compras';} elseif ($row_TE['TipoEquipo'] === 'R') {echo 'Ventas';}?>
 													</td>
 													<td>
-														<span <?php if ($row_TE['CDU_EstadoServicio'] == '0') {
-															echo "class='label label-warning'";
-														} elseif ($row_TE['CDU_EstadoServicio'] == '1') {
-															echo "class='label label-primary'";
-														} else {
-															echo "class='label label-danger'";
-														} ?>>
-															<?php echo $row_TE['DeEstadoServicio']; ?>
-														</span>
+														<?php if ($row_TE['CodEstado'] == 'A') {?>
+															<span  class='label label-info'>Activo</span>
+														<?php } elseif ($row_TE['CodEstado'] == 'R') {?>
+															<span  class='label label-danger'>Devuelto</span>
+														<?php } elseif ($row_TE['CodEstado'] == 'T') {?>
+															<span  class='label label-success'>Finalizado</span>
+														<?php } elseif ($row_TE['CodEstado'] == 'L') {?>
+															<span  class='label label-secondary'>Concedido en préstamo</span>
+														<?php } elseif ($row_TE['CodEstado'] == 'I') {?>
+															<span  class='label label-warning'>En laboratorio de reparación</span>
+														<?php }?>
 													</td>
 													<td>
-														<a target="_blank"
-															href="llamada_servicio.php?id=<?php echo base64_encode($row_TE['ID_TEervicio']); ?>&tl=1"
-															class="btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i>
-															Abrir</a>
+														<a href="tarjeta_equipo.php?id=<?php echo base64_encode($row_TE['IdTarjetaEquipo']); ?>&tl=1"
+															class="btn btn-success btn-xs" target="_blank">
+															<i class="fa fa-folder-open-o"></i> Abrir
+														</a>
 													</td>
 												</tr>
 										<?php } ?>
