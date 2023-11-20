@@ -173,7 +173,7 @@ $SQL_TE = sqlsrv_query($conexion, $Cons_TarjetasEquipos);
 													<td>
 														<a type="button" class="btn btn-success btn-xs"
 															title="Adicionar o cambiar TE"
-															onclick="cambiarTE('<?php echo $row_TE['IdTarjetaEquipo']; ?>', '<?php echo 'SN Fabricante: ' . $row_NumeroSerie['SerialFabricante'] . ' - Núm. Serie: ' . $row_NumeroSerie['SerialInterno']; ?>')">
+															onclick="cambiarTE('<?php echo $row_TE['IdTarjetaEquipo']; ?>', '<?php echo 'SN Fabricante: ' . $row_TE['SerialFabricante'] . ' - Núm. Serie: ' . $row_TE['SerialInterno']; ?>')">
 															<b>
 																<?php echo $row_TE['IdTarjetaEquipo']; ?>
 															</b>
@@ -232,9 +232,9 @@ $SQL_TE = sqlsrv_query($conexion, $Cons_TarjetasEquipos);
 </div>
 
 <script>
-	function cambiarTE(orden_trabajo, descripcion_ot) {
-		$("#OrdenServicioCliente").val(orden_trabajo);
-		$("#Desc_OrdenServicioCliente").val(descripcion_ot);
+	function cambiarTE(tarjeta_equipo, descripcion_te) {
+		$("#NumeroSerie").val(tarjeta_equipo);
+		$("#Desc_NumeroSerie").val(descripcion_te);
 		$('#mdTE').modal('hide');
 	}
 
