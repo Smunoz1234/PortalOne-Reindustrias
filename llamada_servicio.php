@@ -2289,7 +2289,14 @@ function AgregarEsto(contenedorID, valorElemento) {
 							<br>
 							<button type="button" id="AddCampana" class="btn btn-sm btn-info btn-circle" title="Adicionar Campaña" disabled <?php if ($type_llmd == 1) {
 								echo "style='display: none;'";
-							} ?>><i class="fa fa-bell"></i></button>
+							} ?>>
+								<i class="fa fa-bell"></i>
+							</button>
+							<button type="button" id="AddCampana" class="btn btn-sm btn-info btn-circle" title="Adicionar Campaña" disabled <?php if ($type_llmd == 1) {
+								echo "style='display: none;'";
+							} ?>>
+								<i class="fa fa-bell"></i>
+							</button>
 						</div>
 
 						<div class="form-group" <?php if ($type_llmd == 1) {
