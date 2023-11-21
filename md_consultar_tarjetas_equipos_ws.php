@@ -11,75 +11,42 @@ Sucursal: "CHINCHINA"
 }
  */
 
-// Filtrar fechas
-if (isset($_POST['FechaInicial']) && $_POST['FechaInicial'] != "") {
-    $FechaInicial = $_POST['FechaInicial'];
-} else {
-    $FechaInicial = date('Y-m-d');
+$Filtro = "TipoEquipo <> ''";
+
+// Filtros
+$TipoEquipo = $_POST["TipoEquipo"] ?? "";
+if ($TipoEquipo != "") {
+    $Filtro .= " AND TipoEquipo='$TipoEquipo'";
 }
 
-if (isset($_POST['FechaFinal']) && $_POST['FechaFinal'] != "") {
-    $FechaFinal = $_POST['FechaFinal'];
-} else {
-    $FechaFinal = date('Y-m-d');
+$SerialEquipo = $_POST["SerialEquipo"] ?? "";
+if ($SerialEquipo != "") {
+    $Filtro .= " AND (SerialFabricante LIKE '%$SerialEquipo%' OR SerialInterno LIKE '%$SerialEquipo%')";
 }
 
-// Filtrar estados
-$Filtro = "";
-$Filtro .= " AND [IdEstadoLlamada] <> -1";
-
-// Obtener series de llamada
-$ParamSerie = array(
-    "'" . $_SESSION['CodUser'] . "'",
-    "'191'",
-    1,
-);
-$SQL_SeriesLlamada = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
-
-// Filtrar series
-$FilSerie = "";
-$i = 0;
-while ($row_Series = sqlsrv_fetch_array($SQL_SeriesLlamada)) {
-    if ($i == 0) {
-        $FilSerie .= "'" . $row_Series['IdSeries'] . "'";
-    } else {
-        $FilSerie .= ",'" . $row_Series['IdSeries'] . "'";
-    }
-    $i++;
-}
-$Filtro .= " AND [Series] IN (" . $FilSerie . ")";
-$SQL_SeriesLlamada = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
-
-// Filtrar serie seleccionada
-if (isset($_POST['Series']) && $_POST['Series'] != "") {
-    $Filtro .= " and [Series]='" . $_POST['Series'] . "'";
+$EstadoEquipo = $_POST["EstadoEquipo"] ?? "";
+if ($EstadoEquipo != "") {
+    $Filtro .= " AND CodEstado='$EstadoEquipo'";
 }
 
-// Filtrar cliente
-if (isset($_POST['Cliente']) && ($_POST['Cliente'] != "")) {
-    $Filtro .= " AND ID_CodigoCliente='" . $_POST['Cliente'] . "'";
+$Cliente = $_POST["Cliente"] ?? "";
+if ($Cliente != "") {
+    $Filtro .= " AND CardCode = '$Cliente'";
 }
 
-// Filtrar sucursal
-if (isset($_POST['Sucursal']) && ($_POST['Sucursal'] != "")) {
-    $Filtro .= " AND NombreSucursal='" . $_POST['Sucursal'] . "'";
-}
-
-// Clausula Where para la consulta con filtros
-$Where = "Metodo = 0 AND ([FechaCreacionLLamada] BETWEEN '$FechaInicial' AND '$FechaFinal') $Filtro";
-
-// Filtrar ticket, elimina los otros filtros
-if (isset($_POST['IDTicket']) && $_POST['IDTicket'] != "") {
-    $Where = "DocNum LIKE '%" . trim($_POST['IDTicket']) . "%'";
+$BuscarDato = $_POST['BuscarDato'] ?? "";
+if ($BuscarDato != "") {
+    $Filtro .= " AND (Calle LIKE '%$BuscarDato%' OR CodigoPostal LIKE '%$BuscarDato%' OR Barrio LIKE '%$BuscarDato%' OR Ciudad LIKE '%$BuscarDato%' OR Distrito LIKE '%$BuscarDato%' OR SerialFabricante LIKE '%$BuscarDato%' OR SerialInterno LIKE '%$BuscarDato%' OR IdTarjetaEquipo LIKE '%$BuscarDato%')";
 }
 
 // Realizar consulta con filtros
-$SQL = Seleccionar('uvw_Sap_tbl_LlamadasServicios', 'TOP 100 *', $Where);
-// echo "<script> console.log($Where); </script>";
+$Where = "$Filtro ORDER BY IdTarjetaEquipo DESC";
+$Cons_TE = "SELECT TOP 100 * FROM uvw_Sap_tbl_TarjetasEquipos WHERE $Where";
+$SQL = sqlsrv_query($conexion, $Cons_TE);
 
-// SMM, 16/08/2023
+// SMM, 21/11/2023
 if (!$SQL) {
-    echo "SELECT TOP 100 * FROM uvw_Sap_tbl_LlamadasServicios WHERE $Where";
+    echo $Cons_TE;
 }
 
 // Devolver respuesta en formato JSON
@@ -103,17 +70,15 @@ echo $dataString;
 <table id="footable" class="table" data-paging="true" data-sorting="true">
     <thead>
         <tr>
-            <th>Fecha creación</th>
-            <th>Sucursal</th>
+            <th>Código cliente</th>
             <th>Cliente</th>
-            <th>Estado</th>
-            <th>Tipo llamada</th>
-            <th>Asunto</th>
-            <th>Ticket</th>
-            <th data-breakpoints="all">Serial Interno</th>
-            <th data-breakpoints="all">Asignado por</th>
-            <th data-breakpoints="all">Tipo problema</th>
-            <th data-breakpoints="all">Estado servicio</th>
+            <th>Serial fabricante</th>
+            <th>Serial interno</th>
+            <th>Núm.</th>
+            <th data-breakpoints="all">Código de artículo</th>
+            <th data-breakpoints="all">Artículo</th>
+            <th data-breakpoints="all">Tipo de equipo</th>
+            <th data-breakpoints="all">Estado</th>
             <th data-breakpoints="all">Acciones</th>
         </tr>
     </thead>
@@ -121,61 +86,56 @@ echo $dataString;
         <?php while ($row = sqlsrv_fetch_array($SQL)) { ?>
             <tr>
                 <td>
-                    <?php echo $row['FechaHoraCreacionLLamada']->format('Y-m-d H:i'); ?>
+                    <?php echo $row['CardCode']; ?>
                 </td>
                 <td>
-                    <?php echo $row['NombreSucursal']; ?>
+                    <?php echo $row['CardName']; ?>
                 </td>
                 <td>
-                    <?php echo $row['NombreClienteLlamada']; ?>
+                    <?php echo $row['SerialFabricante']; ?>
                 </td>
                 <td>
-                    <span <?php if ($row['IdEstadoLlamada'] == '-3') {
-                        echo "class='label label-info'";
-                    } elseif ($row['IdEstadoLlamada'] == '-2') {
-                        echo "class='label label-warning'";
-                    } else {
-                        echo "class='label label-danger'";
-                    } ?>>
-                        <?php echo $row['DeEstadoLlamada']; ?>
-                    </span>
+                    <?php echo $row['SerialInterno']; ?>
                 </td>
                 <td>
-                    <?php echo $row['DeTipoLlamada']; ?>
+                    <a type="button" class="btn btn-success btn-xs" title="Adicionar o cambiar TE"
+                        onclick="cambiarTE('<?php echo $row['IdTarjetaEquipo']; ?>', '<?php echo 'SN Fabricante: ' . $row['SerialFabricante'] . ' - Núm. Serie: ' . $row['SerialInterno']; ?>')">
+                        <b>
+                            <?php echo $row['IdTarjetaEquipo']; ?>
+                        </b>
+                    </a>
                 </td>
                 <td>
-                    <?php echo $row['AsuntoLlamada']; ?>
+                    <?php echo $row['ItemCode']; ?>
                 </td>
                 <td>
-                    <a type="button" class="btn btn-success btn-xs"
-                        onclick="cambiarOT('<?php echo $row['ID_LlamadaServicio']; ?>', '<?php echo $row['DocNum'] . ' - ' . $row['AsuntoLlamada'] . ' (' . $row['DeTipoLlamada'] . ')'; ?>')"><b>
-                            <?php echo $row['DocNum']; ?>
-                        </b></a>
+                    <?php echo $row['ItemName']; ?>
                 </td>
                 <td>
-                    <?php echo $row['IdNumeroSerie']; ?>
+                    <?php if ($row['TipoEquipo'] === 'P') {
+                        echo 'Compras';
+                    } elseif ($row['TipoEquipo'] === 'R') {
+                        echo 'Ventas';
+                    } ?>
                 </td>
                 <td>
-                    <?php echo $row['DeAsignadoPor']; ?>
+                    <?php if ($row['CodEstado'] == 'A') { ?>
+                        <span class='label label-info'>Activo</span>
+                    <?php } elseif ($row['CodEstado'] == 'R') { ?>
+                        <span class='label label-danger'>Devuelto</span>
+                    <?php } elseif ($row['CodEstado'] == 'T') { ?>
+                        <span class='label label-success'>Finalizado</span>
+                    <?php } elseif ($row['CodEstado'] == 'L') { ?>
+                        <span class='label label-secondary'>Concedido en préstamo</span>
+                    <?php } elseif ($row['CodEstado'] == 'I') { ?>
+                        <span class='label label-warning'>En laboratorio de reparación</span>
+                    <?php } ?>
                 </td>
                 <td>
-                    <?php echo $row['DeTipoProblemaLlamada']; ?>
-                </td>
-                <td>
-                    <span <?php if ($row['CDU_EstadoServicio'] == '0') {
-                        echo "class='label label-warning'";
-                    } elseif ($row['CDU_EstadoServicio'] == '1') {
-                        echo "class='label label-primary'";
-                    } else {
-                        echo "class='label label-danger'";
-                    } ?>>
-                        <?php echo $row['DeEstadoServicio']; ?>
-                    </span>
-                </td>
-                <td>
-                    <a target="_blank"
-                        href="llamada_servicio.php?id=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&tl=1"
-                        class="btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i> Abrir</a>
+                    <a href="tarjeta_equipo.php?id=<?php echo base64_encode($row['IdTarjetaEquipo']); ?>&tl=1"
+                        class="btn btn-success btn-xs" target="_blank">
+                        <i class="fa fa-folder-open-o"></i> Abrir
+                    </a>
                 </td>
             </tr>
         <?php } ?>
