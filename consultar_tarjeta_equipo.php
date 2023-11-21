@@ -11,18 +11,6 @@ $Where="ID_Usuario = ".$_SESSION['CodUser'];
 $SQL_Cliente=Seleccionar("uvw_tbl_ClienteUsuario","CodigoCliente, NombreCliente",$Where);
 }*/
 
-//Empleados
-$SQL_EmpleadoActividad = Seleccionar('uvw_Sap_tbl_Empleados', '*', '', 'NombreEmpleado');
-
-//Usuarios
-$SQL_UsuariosActividad = Seleccionar('uvw_Sap_tbl_Actividades', 'DISTINCT IdAsignadoPor, DeAsignadoPor', '', 'DeAsignadoPor');
-
-//Estado actividad
-$SQL_EstadoActividad = Seleccionar('uvw_tbl_EstadoActividad', '*');
-
-//Tipos de actividad
-$SQL_TipoActividad = Seleccionar('uvw_Sap_tbl_TiposActividad', '*', '', 'DE_TipoActividad');
-
 //Fechas
 if (isset($_GET['FechaInicial']) && $_GET['FechaInicial'] != "") {
     $FechaInicial = $_GET['FechaInicial'];
@@ -165,15 +153,15 @@ $Campos = "
 ";
 
 if ($sw == 1) {
-    $Cons = "Select $Campos,[TipoEquipo],[CodEstado] From uvw_Sap_tbl_TarjetasEquipos Where $Filtro ORDER BY IdTarjetaEquipo DESC";
+    $Cons = "SELECT $Campos,[TipoEquipo],[CodEstado] FROM uvw_Sap_tbl_TarjetasEquipos WHERE $Filtro ORDER BY IdTarjetaEquipo DESC";
     $SQL = sqlsrv_query($conexion, $Cons);
 
 } else {
-    $Cons = "Select TOP 100 $Campos,[TipoEquipo],[CodEstado] From uvw_Sap_tbl_TarjetasEquipos Where $Filtro ORDER BY IdTarjetaEquipo DESC";
+    $Cons = "SELECT TOP 100 $Campos,[TipoEquipo],[CodEstado] FROM uvw_Sap_tbl_TarjetasEquipos WHERE $Filtro ORDER BY IdTarjetaEquipo DESC";
     $SQL = sqlsrv_query($conexion, $Cons);
 }
 
-//echo $Cons;
+// echo $Cons;
 
 // SMM, 03/09/2022
 $Cons2 = "SELECT $Campos FROM uvw_Sap_tbl_TarjetasEquipos WHERE $Filtro ORDER BY IdTarjetaEquipo DESC";

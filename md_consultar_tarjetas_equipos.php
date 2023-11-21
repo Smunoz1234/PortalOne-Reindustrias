@@ -17,7 +17,7 @@ if (isset($_GET['EstadoEquipo']) && $_GET['EstadoEquipo'] != "") {
 }
 
 // Filtrar cliente
-$ID_CodigoCliente = $row["CardCode"] ?? "";
+$ID_CodigoCliente = $row["Cliente"] ?? "";
 
 if ($ID_CodigoCliente != "") {
 	$Filtro .= " AND ID_CodigoCliente = '$ID_CodigoCliente'";
@@ -35,7 +35,6 @@ if (isset($_GET['BuscarDato']) && $_GET['BuscarDato'] != "") {
 }
 
 // Realizar consulta con filtros
-// $Where = "([FechaCreacionLLamada] BETWEEN '$FechaInicial' AND '$FechaFinal') $Filtro";
 $Where = "$Filtro ORDER BY IdTarjetaEquipo DESC";
 $Cons_TarjetasEquipos = "SELECT TOP 100 * FROM uvw_Sap_tbl_TarjetasEquipos WHERE $Where";
 $SQL_TE = sqlsrv_query($conexion, $Cons_TarjetasEquipos);
@@ -157,57 +156,57 @@ $SQL_TE = sqlsrv_query($conexion, $Cons_TarjetasEquipos);
 									</thead>
 									<tbody>
 										<?php while ($row_TE = sqlsrv_fetch_array($SQL_TE)) { ?>
-												<tr>
-													<td>
-														<?php echo $row_TE['CardCode']; ?>
-													</td>
-													<td>
-														<?php echo $row_TE['CardName']; ?>
-													</td>
-													<td>
-														<?php echo $row_TE['SerialFabricante']; ?>
-													</td>
-													<td>
-														<?php echo $row_TE['SerialInterno']; ?>
-													</td>
-													<td>
-														<a type="button" class="btn btn-success btn-xs"
-															title="Adicionar o cambiar TE"
-															onclick="cambiarTE('<?php echo $row_TE['IdTarjetaEquipo']; ?>', '<?php echo 'SN Fabricante: ' . $row_TE['SerialFabricante'] . ' - Núm. Serie: ' . $row_TE['SerialInterno']; ?>')">
-															<b>
-																<?php echo $row_TE['IdTarjetaEquipo']; ?>
-															</b>
-														</a>
-													</td>
-													<td>
-														<?php echo $row_TE['ItemCode']; ?>
-													</td>
-													<td>
-														<?php echo $row_TE['ItemName']; ?>
-													</td>
-													<td>
-														<?php if ($row_TE['TipoEquipo'] === 'P') {echo 'Compras';} elseif ($row_TE['TipoEquipo'] === 'R') {echo 'Ventas';}?>
-													</td>
-													<td>
-														<?php if ($row_TE['CodEstado'] == 'A') {?>
-															<span  class='label label-info'>Activo</span>
-														<?php } elseif ($row_TE['CodEstado'] == 'R') {?>
-															<span  class='label label-danger'>Devuelto</span>
-														<?php } elseif ($row_TE['CodEstado'] == 'T') {?>
-															<span  class='label label-success'>Finalizado</span>
-														<?php } elseif ($row_TE['CodEstado'] == 'L') {?>
-															<span  class='label label-secondary'>Concedido en préstamo</span>
-														<?php } elseif ($row_TE['CodEstado'] == 'I') {?>
-															<span  class='label label-warning'>En laboratorio de reparación</span>
-														<?php }?>
-													</td>
-													<td>
-														<a href="tarjeta_equipo.php?id=<?php echo base64_encode($row_TE['IdTarjetaEquipo']); ?>&tl=1"
-															class="btn btn-success btn-xs" target="_blank">
-															<i class="fa fa-folder-open-o"></i> Abrir
-														</a>
-													</td>
-												</tr>
+											<tr>
+												<td>
+													<?php echo $row_TE['CardCode']; ?>
+												</td>
+												<td>
+													<?php echo $row_TE['CardName']; ?>
+												</td>
+												<td>
+													<?php echo $row_TE['SerialFabricante']; ?>
+												</td>
+												<td>
+													<?php echo $row_TE['SerialInterno']; ?>
+												</td>
+												<td>
+													<a type="button" class="btn btn-success btn-xs"
+														title="Adicionar o cambiar TE"
+														onclick="cambiarTE('<?php echo $row_TE['IdTarjetaEquipo']; ?>', '<?php echo 'SN Fabricante: ' . $row_TE['SerialFabricante'] . ' - Núm. Serie: ' . $row_TE['SerialInterno']; ?>')">
+														<b>
+															<?php echo $row_TE['IdTarjetaEquipo']; ?>
+														</b>
+													</a>
+												</td>
+												<td>
+													<?php echo $row_TE['ItemCode']; ?>
+												</td>
+												<td>
+													<?php echo $row_TE['ItemName']; ?>
+												</td>
+												<td>
+													<?php if ($row_TE['TipoEquipo'] === 'P') {echo 'Compras';} elseif ($row_TE['TipoEquipo'] === 'R') {echo 'Ventas';}?>
+												</td>
+												<td>
+													<?php if ($row_TE['CodEstado'] == 'A') {?>
+														<span  class='label label-info'>Activo</span>
+													<?php } elseif ($row_TE['CodEstado'] == 'R') {?>
+														<span  class='label label-danger'>Devuelto</span>
+													<?php } elseif ($row_TE['CodEstado'] == 'T') {?>
+														<span  class='label label-success'>Finalizado</span>
+													<?php } elseif ($row_TE['CodEstado'] == 'L') {?>
+														<span  class='label label-secondary'>Concedido en préstamo</span>
+													<?php } elseif ($row_TE['CodEstado'] == 'I') {?>
+														<span  class='label label-warning'>En laboratorio de reparación</span>
+													<?php }?>
+												</td>
+												<td>
+													<a href="tarjeta_equipo.php?id=<?php echo base64_encode($row_TE['IdTarjetaEquipo']); ?>&tl=1"
+														class="btn btn-success btn-xs" target="_blank">
+														<i class="fa fa-folder-open-o"></i> Abrir
+													</a>
+												</td>
+											</tr>
 										<?php } ?>
 									</tbody>
 								</table>
@@ -235,6 +234,7 @@ $SQL_TE = sqlsrv_query($conexion, $Cons_TarjetasEquipos);
 	function cambiarTE(tarjeta_equipo, descripcion_te) {
 		$("#NumeroSerie").val(tarjeta_equipo);
 		$("#Desc_NumeroSerie").val(descripcion_te);
+		
 		$('#mdTE').modal('hide');
 	}
 
@@ -277,17 +277,17 @@ $SQL_TE = sqlsrv_query($conexion, $Cons_TarjetasEquipos);
 				let formData = new FormData(form);
 
 				let json = Object.fromEntries(formData);
-				console.log("Line 250", json);
+				console.log("Line 280", json);
 
 				// Inicio, AJAX
 				$.ajax({
-					url: 'md_consultar_TE_servicios_ws.php',
+					url: 'md_consultar_tarjetas_equipos_ws.php',
 					type: 'POST',
 					data: formData,
 					processData: false,  // tell jQuery not to process the data
 					contentType: false,   // tell jQuery not to set contentType
 					success: function (response) {
-						// console.log("Line 260", response);
+						// console.log("Line 290", response);
 
 						$("#tableContainer").html(response);
 						$('#footable').footable();
@@ -303,26 +303,10 @@ $SQL_TE = sqlsrv_query($conexion, $Cons_TarjetasEquipos);
 				// Fin, AJAX
 			}
 		});
-		$('#FechaInicial').datepicker({
-			todayBtn: "linked",
-			keyboardNavigation: false,
-			forceParse: false,
-			calendarWeeks: true,
-			autoclose: true,
-			todayHighlight: true,
-			format: 'yyyy-mm-dd'
-		});
-		$('#FechaFinal').datepicker({
-			todayBtn: "linked",
-			keyboardNavigation: false,
-			forceParse: false,
-			calendarWeeks: true,
-			autoclose: true,
-			todayHighlight: true,
-			format: 'yyyy-mm-dd'
-		});
+
 		$('.chosen-select').chosen({ width: "100%" });
-		var options = {
+		
+		let options = {
 			adjustWidth: false,
 			url: function (phrase) {
 				return "ajx_buscar_datos_json.php?type=7&id=" + phrase;
