@@ -1217,8 +1217,7 @@ $(document).ready(function () {
 		ActualizarAsunto();
 	});
 
-
-	var borrarNumeroSerie = true;
+	// Revisado. SMM, 21/11/2023
 	var borrarLineaModeloVehiculo = true;
 
 	//Cargar los combos dependiendo de otros
@@ -1266,19 +1265,6 @@ $(document).ready(function () {
 					}
 				});
 		<?php } ?>
-
-			$.ajax({
-				type: "POST",
-				url: "ajx_cbo_select.php?type=28&id=&clt=" + Cliente + "&<?php echo isset($_GET['Serial']) ? ("Serial=" . base64_decode($_GET['Serial'])) : ""; ?>&<?php echo isset($_GET['IdTE']) ? ("IdTE = " . base64_decode($_GET['IdTE'])) : ""; ?>",
-				success: function (response) {
-					// console.log(response);
-
-					$('#NumeroSerie').html(response).fadeIn();
-					$('#NumeroSerie').trigger('change');
-
-					$('.ibox-content').toggleClass('sk-loading', false);
-				}
-			});
 	});
 	$("#SucursalCliente").change(function () {
 		$('.ibox-content').toggleClass('sk-loading', true);
@@ -1369,29 +1355,17 @@ $(document).ready(function () {
 					$('.ibox-content').toggleClass('sk-loading', false);
 				}
 			});
-			$.ajax({
-				type: "POST",
-				url: "ajx_cbo_select.php?type=28&id=" + ID + "&clt=" + Cliente,
-				success: function (response) {
-					// console.log(response);
-
-					if (borrarNumeroSerie) {
-						$('#NumeroSerie').html(response).fadeIn();
-						$('#NumeroSerie').trigger('change');
-					} else {
-						borrarNumeroSerie = true;
-					}
-
-					$('.ibox-content').toggleClass('sk-loading', false);
-				}
-			});
 		} else {
 			document.getElementById('CDU_Servicios').value = '';
 			document.getElementById('CDU_Areas').value = '';
-			/*document.getElementById('CDU_NombreContacto').value='';
+			
+			/*
+			document.getElementById('CDU_NombreContacto').value='';
 			document.getElementById('CDU_TelefonoContacto').value='';
 			document.getElementById('CDU_CargoContacto').value='';
-			document.getElementById('CDU_CorreoContacto').value='';*/
+			document.getElementById('CDU_CorreoContacto').value='';
+			*/
+			
 			$('.ibox-content').toggleClass('sk-loading', false);
 		}
 		$('.ibox-content').toggleClass('sk-loading', false);
@@ -1520,29 +1494,25 @@ $(document).ready(function () {
 			$("#NumeroSerie").change(function () {
 				$('.ibox-content').toggleClass('sk-loading', true);
 
-				var ID = document.getElementById('NumeroSerie').value;
-				var Cliente = document.getElementById('ClienteLlamada').value;
+				let Cliente = $("#ClienteLlamada").val();
+				let IdTarjetaEquipo = $("#NumeroSerie").val();
 
-				// SMM, 19/05/2022
-				let IdTarjetaEquipo = $("#NumeroSerie").find(':selected').data('id');
-
-				if (ID != "") {
+				if (IdTarjetaEquipo != "") {
 					$.ajax({
 						url: "ajx_buscar_datos_json.php",
 						data: {
 							type: 44,
-							id: IdTarjetaEquipo, // Antes, ID.
-							clt: Cliente,
-							si: 0 // SMM, 19/05/2022
+							id: IdTarjetaEquipo,
+							clt: Cliente
 						},
 						dataType: 'json',
 						success: function (data) {
 							console.log("ajx_buscar_datos_json(44)", data);
 
-							borrarNumeroSerie = false;
 							document.getElementById('IdArticuloLlamada').value = data.IdArticuloLlamada;
 							document.getElementById('DeArticuloLlamada').value = data.DeArticuloLlamada;
 							// $('#IdArticuloLlamada').trigger('change');
+							// $('#DeArticuloLlamada').trigger('change');
 
 							document.getElementById('CDU_Marca').value = data.CDU_IdMarca;
 							$('#CDU_Marca').trigger('change');
@@ -2264,7 +2234,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 							</div>
 							
 							<div class="col-lg-3">
-								<label class="col-lg-1 control-label">
+								<label class="control-label">
 									<i onclick="ConsultarEquipo();" title="Consultar Tarjeta Equipo"
 										style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Tarjeta de equipo
 								</label>
@@ -3639,11 +3609,6 @@ function AgregarEsto(contenedorID, valorElemento) {
 <!-- InstanceBeginEditable name="EditRegion4" -->
 <script>
 $(document).ready(function () {
-	// SMM, 11/05/2022
-	<?php if (isset($_GET['Serial'])) { ?>
-					// $('#NumeroSerie').trigger('change');
-	 <?php } ?>
-
 		$("#CrearLlamada").validate({
 			submitHandler: function (form) {
 				if (Validar() && ValidarFechas()) {
