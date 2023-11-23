@@ -386,7 +386,7 @@ if ($edit == 1 && $sw_error == 0) {
 if ($sw_error == 1) {
 
 	//Oferta de venta
-	$Cons = "Select * From uvw_tbl_OfertaVenta Where ID_OfertaVenta='" . $IdOfertaVenta . "' AND IdEvento='" . $IdEvento . "'";
+	$Cons = "Select * From uvw_tbl_OfertaVenta Where ID_OfertaVenta='$IdOfertaVenta' AND IdEvento='$IdEvento'";
 	$SQL = sqlsrv_query($conexion, $Cons);
 	$row = sqlsrv_fetch_array($SQL);
 
@@ -1289,7 +1289,7 @@ if ((isset($row['CodEmpleado']) && ($row['CodEmpleado'] == $_SESSION['IdCardCode
 										</div>
 										<div class="col-lg-4">
 											<button class="btn btn-success" type="button"
-												onClick="$('#mdOT').modal('show');"><i class="fa fa-refresh"></i>
+												onclick="$('#mdOT').modal('show');"><i class="fa fa-refresh"></i>
 												Cambiar Orden de Servicio</button>
 										</div>
 									</div>
@@ -1766,7 +1766,7 @@ if ((isset($row['CodEmpleado']) && ($row['CodEmpleado'] == $_SESSION['IdCardCode
 							</div>
 
 							<?php if (PermitirFuncion(401)) { ?>
-								<?php if (($edit == 1) && ($row['Cod_Estado'] != 'C') && ($NameFirma != "")) { ?>
+								<?php if (($edit == 1) && ($row['Cod_Estado'] != 'C')) { ?>
 									<div class="col-lg-3">
 										<div class="btn-group dropup pull-right">
 											<button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i
