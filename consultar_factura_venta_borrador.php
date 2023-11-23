@@ -288,7 +288,11 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_FactVentUpd"))) {
                     <table class="table table-striped table-bordered table-hover dataTables-example" >
                     <thead>
                     <tr>
-                        <th>Número</th>
+						<th>
+							ID Borrador
+						</th> <!-- SMM, 23/11/2023 -->
+                        
+						<th>Número</th>
 						<th>Serie</th>
 						<th>Fecha factura</th>
 						<th>Socio de negocio</th>
@@ -304,10 +308,13 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_FactVentUpd"))) {
                     </tr>
                     </thead>
                     <tbody>
-                    <?php
-if ($sw == 1) {
-    while ($row = sqlsrv_fetch_array($SQL)) {?>
-						 <tr class="gradeX">
+                    <?php if ($sw == 1) { ?>
+    					<?php while ($row = sqlsrv_fetch_array($SQL)) { ?>
+						<tr class="gradeX">
+							<td>
+								<?php echo $row['ID_FacturaVenta']; ?>
+							</td> <!-- SMM, 23/11/2023 -->
+
 							<td><?php echo $row['DocNum']; ?></td>
 							<td><?php echo $row['DeSeries']; ?></td>
 							<td><?php echo $row['DocDate']; ?></td>
@@ -340,8 +347,8 @@ if ($sw == 1) {
 								<?php if ($row['URLVisorPublico'] != "") {?><a href="<?php echo $row['URLVisorPublico']; ?>" target="_blank" class="btn btn-primary btn-xs" title="Ver factura eléctronica"><i class="fa fa-external-link"></i> Fact. Elect</a><?php }?>
 							</td>
 						</tr>
-					<?php }
-}?>
+						<?php } ?>
+					<?php } ?>
                     </tbody>
                     </table>
               </div>
