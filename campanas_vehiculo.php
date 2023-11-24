@@ -17,6 +17,10 @@ $Estado = $row_Encabezado['estado'] ?? "";
 
 $TiempoMeses = number_format(($row_Encabezado['tiempo_campana_meses'] ?? 0), 2);
 
+// SMM, 24/11/2023
+$IdMarca = $row_Encabezado['id_marca'] ?? "";
+$SQL_Marca = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_MarcaVehiculo', '*');
+
 $FechaVigencia = isset($row_Encabezado['fecha_limite_vigencia']) ? $row_Encabezado['fecha_limite_vigencia']->format("Y-m-d") : "";
 
 $Proveedor = $row_Encabezado['id_socio_negocio'] ?? "";
@@ -77,6 +81,7 @@ $id_direccion_destino = $_POST['id_direccion_destino'] ?? "";
 $direccion_destino = $_POST['direccion_destino'] ?? "";
 $tiempo_campana_meses = $_POST['tiempo_campana_meses'] ?? "NULL";
 $fecha_limite_vigencia = isset($_POST['fecha_limite_vigencia']) ? FormatoFecha($_POST['fecha_limite_vigencia']) : "";
+$id_marca = $_POST['Marca'] ?? "";
 $estado = $_POST['estado'] ?? "";
 $id_usuario_creacion = "'$coduser'";
 $fecha_creacion = "'$datetime'";
@@ -100,6 +105,7 @@ if ($type == 1) {
 		"'$direccion_destino'",
 		$tiempo_campana_meses,
 		"'$fecha_limite_vigencia'",
+		"'$id_marca'",
 		"'$estado'",
 		$id_usuario_actualizacion,
 		$fecha_actualizacion,
@@ -124,6 +130,7 @@ if ($type == 1) {
 		"'$direccion_destino'",
 		$tiempo_campana_meses,
 		"'$fecha_limite_vigencia'",
+		"'$id_marca'",
 		"'$estado'",
 		$id_usuario_actualizacion,
 		$fecha_actualizacion,
@@ -406,6 +413,24 @@ if ($type != 0) {
 											class="form-control" required id="descripcion_campana"
 											type="text"><?php echo $Comentario; ?></textarea>
 									</div>
+
+									<!-- Inicio, #Marca -->
+									<label class="col-lg-1 control-label">Marca</label>
+									
+									<div class="col-lg-3">
+										<select name="Marca" id="Marca" class="form-control select2">
+											<option value="">Seleccione...</option>
+											
+											<?php while ($row_Marca = sqlsrv_fetch_array($SQL_Marca)) { ?>
+												<option value="<?php echo $row_Marca['IdMarcaVehiculo']; ?>" <?php if ($row_Marca['IdMarcaVehiculo'] == $IdMarca) {
+														echo "selected";
+												   	} ?>>
+													<?php echo $row_Marca['DeMarcaVehiculo']; ?>
+												</option>
+											<?php } ?>
+										</select>
+									</div>
+									<!-- Fin, #Marca -->
 
 									<label class="col-lg-1 control-label">
 										Tiempo meses <span class="text-danger">*</span>
@@ -697,6 +722,9 @@ if ($type != 0) {
 
 			$('.chosen-select').chosen({ width: "100%" });
 
+			// SMM, 23/11/2023
+			$(".select2").select2();
+			
 			var options = {
 				url: function (phrase) {
 					return `ajx_buscar_datos_json.php?type=7&id=${phrase}&pv=1`;

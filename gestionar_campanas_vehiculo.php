@@ -58,7 +58,7 @@ if ($sw == 1) {
 	)";
 
 	// SMM, 23/11/2023
-	$Cons = "SELECT * FROM tbl_CampanaVehiculos WHERE $Filtro";
+	$Cons = "SELECT * FROM uvw_tbl_CampanaVehiculos WHERE $Filtro";
 	
 	// echo $Cons;
 	$SQL = sqlsrv_query($conexion, $Cons);
@@ -292,6 +292,7 @@ if ($sw == 1) {
 												<th>ID Campaña</th>
 												<th>Campaña</th>
 												<th>Descripción</th>
+												<th>Marca</th>
 												<th>Estado</th>
 												<th>Proveedor</th>
 												<th>Sucursal Proveedor</th>
@@ -314,6 +315,9 @@ if ($sw == 1) {
 													</td>
 													<td>
 														<?php echo $row['descripcion_campana'] ?? ""; ?>
+													</td>
+													<td>
+														<?php echo $row['marca'] ?? ""; ?>
 													</td>
 													<td>
 														<?php if ($row['estado'] == 'Y') { ?>
