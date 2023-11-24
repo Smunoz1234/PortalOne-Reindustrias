@@ -405,15 +405,6 @@ if ($type != 0) {
 								</div>
 
 								<div class="form-group">
-									<label class="col-lg-1 control-label">
-										Comentario <span class="text-danger">*</span>
-									</label>
-									<div class="col-lg-3">
-										<textarea name="descripcion_campana" rows="3" maxlength="3000"
-											class="form-control" required id="descripcion_campana"
-											type="text"><?php echo $Comentario; ?></textarea>
-									</div>
-
 									<!-- Inicio, #Marca -->
 									<label class="col-lg-1 control-label">Marca</label>
 									
@@ -441,8 +432,20 @@ if ($type != 0) {
 												   echo "readonly";
 											   } ?>>
 									</div>
+									
+									<label class="col-lg-1 control-label">
+										Comentario <span class="text-danger">*</span>
+									</label>
+									<div class="col-lg-3">
+										<textarea name="descripcion_campana" rows="3" maxlength="3000"
+											class="form-control" required id="descripcion_campana"
+											type="text"><?php echo $Comentario; ?></textarea>
+									</div>
+								</div>
+								<!-- /.form-group -->
 
-									<div class="col-lg-4">
+								<div class="form-group">
+									<div class="col-lg-12">
 										<br>
 										<div class="btn-group pull-right">
 											<button type="submit" class="btn btn-outline btn-primary">
