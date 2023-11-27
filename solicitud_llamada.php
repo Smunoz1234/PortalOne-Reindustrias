@@ -154,7 +154,7 @@ if (isset($_POST['P'])) {
 			"'" . ($_POST['TelefonoLlamada'] ?? "") . "'",
 			"'" . ($_POST['CorreoLlamada'] ?? "") . "'",
 			"'" . ($_POST['IdArticuloLlamada'] ?? "") . "'",
-			"'" . ($_POST['NumeroSerie'] ?? "") . "'",
+			"'" . ($_POST['SerialInterno'] ?? "") . "'",
 			"'" . ($_POST['SucursalCliente'] ?? "") . "'",
 			isset($_POST['IdSucursalCliente']) && ($_POST['IdSucursalCliente'] != "") ? $_POST['IdSucursalCliente'] : "NULL", // @IdNombreSucursal
 			"'" . ($_POST['DireccionLlamada'] ?? "") . "'",
@@ -351,9 +351,6 @@ if ($edit == 1 && $sw_error == 0) {
 	);
 	$SQL_Articulos = EjecutarSP('sp_ConsultarArticulosLlamadas', $ParamArt);
 
-	//Numero de series -> Tarjeta de equipo
-	$SQL_NumeroSerie = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', '*', "ItemCode='" . $row['IdArticuloLlamada'] . "' AND CardCode='$ID_CodigoCliente'", 'SerialFabricante');
-
 	// SMM, 01/03/2022
 	$CDU_IdMarca_TarjetaEquipo = $row['CDU_IdMarca_TarjetaEquipo'] ?? '';
 	$CDU_IdLinea_TarjetaEquipo = $row['CDU_IdLinea_TarjetaEquipo'] ?? '';
@@ -399,9 +396,6 @@ if ($sw_error == 1) {
 		"'0'",
 	);
 	$SQL_Articulos = EjecutarSP('sp_ConsultarArticulosLlamadas', $ParamArt);
-
-	//Numero de series -> Tarjeta de equipo
-	$SQL_NumeroSerie = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', '*', "ItemCode='" . ($row['IdArticuloLlamada'] ?? "") . "'", 'SerialFabricante');
 
 	// Documentos relacionados. SMM, 27/09/2023
 	$SQL_DocRel = Seleccionar('uvw_tbl_SolicitudLlamadasServiciosDocRelacionados', '*', "ID_SolicitudLlamadaServicio='$IdSolicitud'");
@@ -526,6 +520,10 @@ $ValorHoraCreacion = (isset($row["HoraCreacion"]) && ($row["HoraCreacion"] insta
 $ValorHoraFinCreacion = (isset($row["HoraFinCreacion"]) && ($row["HoraFinCreacion"] instanceof DateTime)) ? $row["HoraFinCreacion"]->format("H:i") : date("H:i");
 $ValorHoraAgenda = (isset($row["HoraAgenda"]) && ($row["HoraAgenda"] instanceof DateTime)) ? $row["HoraAgenda"]->format("H:i") : date("H:i");
 $ValorHoraFinAgenda = (isset($row["HoraFinAgenda"]) && ($row["HoraFinAgenda"] instanceof DateTime)) ? $row["HoraFinAgenda"]->format("H:i") : date("H:i");
+
+// SMM, 27/11/2023
+$SQL_NumeroSerie = Seleccionar("uvw_Sap_tbl_TarjetasEquipos", "*", "IdTarjetaEquipo='" . ($row['IdTarjetaEquipo'] ?? "") . "'");
+$row_NumeroSerie = sqlsrv_fetch_array($SQL_NumeroSerie);
 ?>
 
 <!DOCTYPE html>
@@ -721,7 +719,7 @@ $(document).ready(function () {
 		ActualizarAsunto();
 	});
 
-	var borrarNumeroSerie = true;
+	// Revisado. SMM, 21/11/2023
 	var borrarLineaModeloVehiculo = true;
 
 	//Cargar los combos dependiendo de otros
@@ -769,19 +767,6 @@ $(document).ready(function () {
 						}
 					});
 		<?php } ?>
-
-			$.ajax({
-				type: "POST",
-				url: "ajx_cbo_select.php?type=28&id=&clt=" + Cliente + "&<?php echo isset($_GET['Serial']) ? ("Serial=" . base64_decode($_GET['Serial'])) : ""; ?>&<?php echo isset($_GET['IdTE']) ? ("IdTE = " . base64_decode($_GET['IdTE'])) : ""; ?>",
-				success: function (response) {
-					// console.log(response);
-
-					$('#NumeroSerie').html(response).fadeIn();
-					$('#NumeroSerie').trigger('change');
-
-					$('.ibox-content').toggleClass('sk-loading', false);
-				}
-			});
 	});
 	$("#SucursalCliente").change(function () {
 		$('.ibox-content').toggleClass('sk-loading', true);
@@ -872,29 +857,17 @@ $(document).ready(function () {
 					$('.ibox-content').toggleClass('sk-loading', false);
 				}
 			});
-			$.ajax({
-				type: "POST",
-				url: "ajx_cbo_select.php?type=28&id=" + ID + "&clt=" + Cliente,
-				success: function (response) {
-					// console.log(response);
-
-					if (borrarNumeroSerie) {
-						$('#NumeroSerie').html(response).fadeIn();
-						$('#NumeroSerie').trigger('change');
-					} else {
-						borrarNumeroSerie = true;
-					}
-
-					$('.ibox-content').toggleClass('sk-loading', false);
-				}
-			});
 		} else {
 			document.getElementById('CDU_Servicios').value = '';
 			document.getElementById('CDU_Areas').value = '';
-			/*document.getElementById('CDU_NombreContacto').value='';
+			
+			/*
+			document.getElementById('CDU_NombreContacto').value='';
 			document.getElementById('CDU_TelefonoContacto').value='';
 			document.getElementById('CDU_CargoContacto').value='';
-			document.getElementById('CDU_CorreoContacto').value='';*/
+			document.getElementById('CDU_CorreoContacto').value='';
+			*/
+			
 			$('.ibox-content').toggleClass('sk-loading', false);
 		}
 		$('.ibox-content').toggleClass('sk-loading', false);
@@ -1016,33 +989,29 @@ $(document).ready(function () {
 					});
 				});
 
-				// Stiven Muñoz Murillo, 22/12/2021
-				$("#NumeroSerie").change(function () {
+				// SMM, 27/11/2023
+				$("#NumeroSerie").on("change", function () {
 					$('.ibox-content').toggleClass('sk-loading', true);
 
-					var ID = document.getElementById('NumeroSerie').value;
-					var Cliente = document.getElementById('ClienteLlamada').value;
+					let Cliente = $("#ClienteLlamada").val();
+					let IdTarjetaEquipo = $("#NumeroSerie").val() || "";
 
-					// SMM, 19/05/2022
-					let IdTarjetaEquipo = $("#NumeroSerie").find(':selected').data('id');
-
-					if (ID != "") {
+					if (IdTarjetaEquipo != "") {
 						$.ajax({
 							url: "ajx_buscar_datos_json.php",
 							data: {
 								type: 44,
-								id: IdTarjetaEquipo, // Antes, ID.
-								clt: Cliente,
-								si: 0 // SMM, 19/05/2022
+								id: IdTarjetaEquipo,
+								clt: Cliente
 							},
 							dataType: 'json',
 							success: function (data) {
-								// console.log(data);
+								console.log("ajx_buscar_datos_json(44)", data);
 
-								borrarNumeroSerie = false;
 								document.getElementById('IdArticuloLlamada').value = data.IdArticuloLlamada;
 								document.getElementById('DeArticuloLlamada').value = data.DeArticuloLlamada;
 								// $('#IdArticuloLlamada').trigger('change');
+								// $('#DeArticuloLlamada').trigger('change');
 
 								document.getElementById('CDU_Marca').value = data.CDU_IdMarca;
 								$('#CDU_Marca').trigger('change');
@@ -1063,14 +1032,14 @@ $(document).ready(function () {
 								$('.ibox-content').toggleClass('sk-loading', false);
 							},
 							error: function (data) {
-								console.error("Line 1133", data.responseText);
+								console.error("Line 1530", data.responseText);
 							}
 						});
 						$.ajax({
 							type: "POST",
-							url: "ajx_cbo_select.php?type=40&id=" + ID,
+							url: `ajx_cbo_select.php?type=40&id=${IdTarjetaEquipo}`,
 							success: function (response) {
-								// console.log(response);
+								console.log("ajx_buscar_datos_json(40)", response);
 
 								$('#CDU_ListaMateriales').html(response).fadeIn();
 								$('#CDU_ListaMateriales').trigger('change');
