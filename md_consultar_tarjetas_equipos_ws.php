@@ -13,10 +13,9 @@ Sucursal: "CHINCHINA"
 
 $Filtro = "TipoEquipo <> ''";
 
-// Filtros
-$TipoEquipo = $_POST["TipoEquipo"] ?? "";
-if ($TipoEquipo != "") {
-    $Filtro .= " AND TipoEquipo='$TipoEquipo'";
+$ItemCode = $_POST["ItemCode"] ?? "";
+if ($ItemCode != "") {
+    $Filtro .= " AND ItemCode='$ItemCode'";
 }
 
 $SerialEquipo = $_POST["SerialEquipo"] ?? "";
@@ -41,7 +40,7 @@ if ($BuscarDato != "") {
 
 // Realizar consulta con filtros
 $Where = "$Filtro ORDER BY IdTarjetaEquipo DESC";
-$Cons_TE = "SELECT TOP 100 * FROM uvw_Sap_tbl_TarjetasEquipos WHERE $Where";
+$Cons_TE = "SELECT TOP 1000 * FROM uvw_Sap_tbl_TarjetasEquipos WHERE $Where";
 $SQL = sqlsrv_query($conexion, $Cons_TE);
 
 // SMM, 21/11/2023
