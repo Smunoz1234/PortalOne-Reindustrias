@@ -616,97 +616,48 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
         echo json_encode($records);
     }
 
-    // Stiven Muñoz Murillo, 22/12/2021
+    // Usado en la solicitud y llamada de servicio. SMM, 22/11/2023
     elseif ($type == 44) {
-        $SerialInterno = "'" . $_GET['id'] . "'";
+        $IdTarjetaEquipo = "'" . ($_GET['id'] ?? "") . "'";
+        $ID_LlamadaServicio = "'" . ($_GET['ot'] ?? "") . "'";
+        $Cliente = "'" . ($_GET['clt'] ?? "") . "'";
 
-        if ($SerialInterno == "''") {
-            $ID_LlamadaServicio = "'" . $_GET['ot'] . "'";
+        // Usado en la recepción y entrega de vehiculo.
+        if ($ID_LlamadaServicio != "''") {
+            $SQL = Seleccionar("uvw_Sap_tbl_LlamadasServicios", "*", "ID_LlamadaServicio=$ID_LlamadaServicio");
+            $row_OT = sqlsrv_fetch_array($SQL);
 
-            $SQL = Seleccionar("uvw_Sap_tbl_LlamadasServicios", "IdNumeroSerie", "ID_LlamadaServicio=" . $ID_LlamadaServicio);
-            $row = sqlsrv_fetch_array($SQL);
-
-            if (isset($row['IdNumeroSerie'])) {
-                $SerialInterno = $row['IdNumeroSerie'];
-                $SerialInterno = "'" . $SerialInterno . "'";
-            }
+            $IdTarjetaEquipo = $row_OT['IdTarjetaEquipo'] ?? "";
+            $IdTarjetaEquipo = "'$IdTarjetaEquipo '";
         }
 
-        if (isset($ID_LlamadaServicio)) {
-            $SQL = Seleccionar("uvw_Sap_tbl_LlamadasServicios", "*", "ID_LlamadaServicio=" . $ID_LlamadaServicio);
-            $row = sqlsrv_fetch_array($SQL);
-
-            $NombreContacto = $row['CDU_NombreContacto'] ?? "";
-            $TelefonoContacto = $row['CDU_TelefonoContacto'] ?? "";
-            $CorreoContacto = $row['CDU_CorreoContacto'] ?? "";
-
-            // SMM, 02/03/2022
-            $Kilometros = $row['CDU_Kilometros'] ?? "";
-        }
-
-        if ($SerialInterno != "''") {
-            $cliente = isset($_GET['clt']) ? "'" . $_GET['clt'] . "'" : "";
-
-            if (isset($_GET['si']) && ($_GET['si'] == 0)) {
-                // Ruta nueva, SMM 19/05/2022
-                $IdTarjetaEquipo = $SerialInterno;
-                if ($cliente == "") {
-                    $SQL = Seleccionar("uvw_Sap_tbl_TarjetasEquipos", "*", "IdTarjetaEquipo=$IdTarjetaEquipo");
-                } else {
-                    $SQL = Seleccionar("uvw_Sap_tbl_TarjetasEquipos", "*", "IdTarjetaEquipo=$IdTarjetaEquipo AND CardCode=$cliente");
-                }
-            } else {
-                // Ruta normal
-                if ($cliente == "") {
-                    $SQL = Seleccionar("uvw_Sap_tbl_TarjetasEquipos", "*", "SerialInterno=$SerialInterno");
-                } else {
-                    $SQL = Seleccionar("uvw_Sap_tbl_TarjetasEquipos", "*", "SerialInterno=$SerialInterno AND CardCode=$cliente");
-                }
-            }
-
-            $row = sqlsrv_fetch_array($SQL);
-            $records = array(
-                'SerialInterno' => ($row['SerialInterno'] ?? ""),
-                'SerialFabricante' => ($row['SerialFabricante'] ?? ""),
-                'No_Motor' => ($row['CDU_No_Motor'] ?? ""),
-                'IdArticuloLlamada' => ($row['ItemCode'] ?? ""), // SMM, 24/01/2022
-                'DeArticuloLlamada' => $row['ItemCode'] . " - " . $row['ItemName'], // SMM, 24/01/2022
-                'CDU_IdMarca' => ($row['CDU_IdMarca'] ?? ""),
-                'CDU_Marca' => ($row['CDU_Marca'] ?? ""),
-                'CDU_IdLinea' => ($row['CDU_IdLinea'] ?? ""),
-                'CDU_Linea' => ($row['CDU_Linea'] ?? ""),
-                'CDU_Ano' => ($row['CDU_Ano'] ?? ""),
-                'CDU_Color' => $row['CDU_Color'], // SMM, 24/01/2022
-                'CDU_Concesionario' => ($row['CDU_Concesionario'] ?? ""),
-                'CDU_TipoServicio' => ($row['CDU_TipoServicio'] ?? ""),
-                'CDU_NombreContacto' => $NombreContacto ?? "", // SMM, 15/02/2022
-                'CDU_TelefonoContacto' => $TelefonoContacto ?? "", // SMM, 22/02/2022
-                'CDU_CorreoContacto' => $CorreoContacto ?? "", // SMM, 22/02/2022
-                'CDU_Kilometros' => $Kilometros ?? "", // SMM, 02/03/2022
-            );
-            echo json_encode($records);
+        if ($Cliente == "''") {
+            $SQL = Seleccionar("uvw_Sap_tbl_TarjetasEquipos", "*", "IdTarjetaEquipo=$IdTarjetaEquipo");
         } else {
-            $records = array(
-                'SerialInterno' => null,
-                'SerialFabricante' => null,
-                'No_Motor' => null,
-                'IdArticuloLlamada' => null,
-                'DeArticuloLlamada' => null,
-                'CDU_IdMarca' => null,
-                'CDU_Marca' => null,
-                'CDU_IdLinea' => null,
-                'CDU_Linea' => null,
-                'CDU_Ano' => null,
-                'CDU_Color' => null,
-                'CDU_Concesionario' => null,
-                'CDU_TipoServicio' => null,
-                'CDU_NombreContacto' => null,
-                'CDU_TelefonoContacto' => null,
-                'CDU_CorreoContacto' => null,
-                'CDU_Kilometros' => null,
-            );
-            echo json_encode($records);
+            $SQL = Seleccionar("uvw_Sap_tbl_TarjetasEquipos", "*", "IdTarjetaEquipo=$IdTarjetaEquipo AND CardCode=$Cliente");
         }
+    
+        $row = sqlsrv_fetch_array($SQL);
+        $records = array(
+            'SerialInterno' => ($row['SerialInterno'] ?? ""),
+            'SerialFabricante' => ($row['SerialFabricante'] ?? ""),
+            'No_Motor' => ($row['CDU_No_Motor'] ?? ""),
+            'IdArticuloLlamada' => ($row['ItemCode'] ?? ""),
+            'DeArticuloLlamada' => ($row['ItemCode'] ?? "") . " - " . ($row['ItemName'] ?? ""),
+            'CDU_IdMarca' => ($row['CDU_IdMarca'] ?? ""),
+            'CDU_Marca' => ($row['CDU_Marca'] ?? ""),
+            'CDU_IdLinea' => ($row['CDU_IdLinea'] ?? ""),
+            'CDU_Linea' => ($row['CDU_Linea'] ?? ""),
+            'CDU_Ano' => ($row['CDU_Ano'] ?? ""),
+            'CDU_Color' => ($row['CDU_Color'] ?? ""),
+            'CDU_Concesionario' => ($row['CDU_Concesionario'] ?? ""),
+            'CDU_TipoServicio' => ($row['CDU_TipoServicio'] ?? ""),
+            'CDU_NombreContacto' => ($row_OT['CDU_NombreContacto'] ?? ""),
+            'CDU_TelefonoContacto' => ($row_OT['CDU_TelefonoContacto'] ?? ""),
+            'CDU_CorreoContacto' => ($row_OT['CDU_CorreoContacto'] ?? ""),
+            'CDU_Kilometros' => ($row_OT['CDU_Kilometros'] ?? ""),
+        );
+        echo json_encode($records);
     }
 
     // Stiven Muñoz Murillo, 20/01/2022
