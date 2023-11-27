@@ -641,13 +641,9 @@ if ($type_llmd == 1 && $sw_error == 0) {
 		"'" . $row['NombreSucursal'] . "'",
 		"'0'",
 	);
+
 	$SQL_Articulos = EjecutarSP('sp_ConsultarArticulosLlamadas', $ParamArt);
-
 	$IdArticuloLlamada = $row["IdArticuloLlamada"] ?? "";
-	// echo "SELECT * FROM uvw_Sap_tbl_TarjetasEquipos WHERE ItemCode='$IdArticuloLlamada' AND CardCode='$ID_CodigoCliente' ORDER BY SerialFabricante";
-
-	//Numero de series -> Tarjeta de equipo
-	$SQL_NumeroSerie = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', '*', "ItemCode='$IdArticuloLlamada' AND CardCode='$ID_CodigoCliente'", 'SerialFabricante');
 
 	// SMM, 01/03/2022
 	$CDU_IdMarca_TarjetaEquipo = $row['CDU_IdMarca_TarjetaEquipo'] ?? '';
@@ -718,13 +714,9 @@ if ($sw_error == 1) {
 		"'" . ($row['NombreSucursal'] ?? "") . "'",
 		"'0'",
 	);
+	
 	$SQL_Articulos = EjecutarSP('sp_ConsultarArticulosLlamadas', $ParamArt);
-
 	$IdArticuloLlamada = $row["IdArticuloLlamada"] ?? "";
-	// echo "SELECT * FROM uvw_Sap_tbl_TarjetasEquipos WHERE ItemCode='$IdArticuloLlamada' AND CardCode='$ID_CodigoCliente' ORDER BY SerialFabricante";
-
-	// Numero de series -> Tarjeta de equipo
-	$SQL_NumeroSerie = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', '*', "ItemCode='$IdArticuloLlamada'", 'SerialFabricante');
 
 	// Articulos
 	$SQL_Articulo = Seleccionar('uvw_Sap_tbl_ArticulosLlamadas', '*', "ItemCode='$IdArticuloLlamada'");
@@ -833,13 +825,9 @@ if (isset($_GET['dt_SLS']) && ($_GET['dt_SLS']) == 1) {
 		"'" . $row['NombreSucursal'] . "'",
 		"'0'",
 	);
+
 	$SQL_Articulos = EjecutarSP('sp_ConsultarArticulosLlamadas', $ParamArt);
-
 	$IdArticuloLlamada = $row["IdArticuloLlamada"] ?? "";
-	// echo "SELECT * FROM uvw_Sap_tbl_TarjetasEquipos WHERE ItemCode='$IdArticuloLlamada' AND CardCode='$ID_CodigoCliente' ORDER BY SerialFabricante";
-
-	// Numero de series -> Tarjeta de equipo
-	$SQL_NumeroSerie = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', '*', "ItemCode='$IdArticuloLlamada' AND CardCode='$ID_CodigoCliente'", 'SerialFabricante');
 
 	// Articulos
 	$SQL_Articulo = Seleccionar('uvw_Sap_tbl_ArticulosLlamadas', '*', "ItemCode='$IdArticuloLlamada'");
@@ -944,6 +932,10 @@ $TipoProblema = ObtenerValorDefecto(191, "IdTipoProblema", false);
 $id_ls = $row['DocNum'] ?? "";
 $SQL_Campanas = Seleccionar("uvw_tbl_LlamadasServicios_Campanas", "*", "[id_llamada_servicio]='$id_ls'");
 $hasRowsCampanas = ($SQL_Campanas) ? sqlsrv_has_rows($SQL_Campanas) : false;
+
+// SMM, 22/11/2023
+$SQL_NumeroSerie = Seleccionar("uvw_Sap_tbl_TarjetasEquipos", "*", "IdTarjetaEquipo='" . ($row['IdTarjetaEquipo'] ?? "") . "'");
+$row_NumeroSerie = sqlsrv_fetch_array($SQL_NumeroSerie);
 ?>
 
 <!DOCTYPE html>
@@ -1495,7 +1487,7 @@ $(document).ready(function () {
 				$('.ibox-content').toggleClass('sk-loading', true);
 
 				let Cliente = $("#ClienteLlamada").val();
-				let IdTarjetaEquipo = $("#NumeroSerie").val();
+				let IdTarjetaEquipo = $("#NumeroSerie").val() || "";
 
 				if (IdTarjetaEquipo != "") {
 					$.ajax({
@@ -1616,20 +1608,11 @@ function ConsultarArticulo() {
 	}
 }
 function ConsultarEquipo() {
-	var numSerie = document.getElementById('NumeroSerie');
+	let IdTarjetaEquipo = $("#NumeroSerie").val() || "";
 
-	if (numSerie.value != "") {
+	if (IdTarjetaEquipo != "") {
 		self.name = 'opener';
-
-		let parametros = "";
-		let IdTarjetaEquipo = $("#NumeroSerie").find(':selected').data('id');
-		if (((typeof IdTarjetaEquipo) !== 'undefined') && (IdTarjetaEquipo != null && IdTarjetaEquipo != "")) {
-			parametros = `id='${Base64.encode(IdTarjetaEquipo + "")}'&ext=1&tl=1`;
-		} else {
-			parametros = `id='${Base64.encode(numSerie.value)}'&ext=1&tl=1&te=1`;
-		}
-
-		remote = open('tarjeta_equipo.php?' + parametros, 'remote', 'location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
+		remote = open(`tarjeta_equipo.php?id='${Base64.encode(IdTarjetaEquipo)}'&ext=1&tl=1`, 'remote', 'location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
 		remote.focus();
 	}
 }
@@ -2240,14 +2223,14 @@ function AgregarEsto(contenedorID, valorElemento) {
 								</label>
 
 								<input type="hidden" class="form-control" name="NumeroSerie" id="NumeroSerie"
-									value="<?php if (isset($row_NumeroSerie['SerialInterno']) && ($row_NumeroSerie['SerialInterno'] != 0)) {
-										echo $row_NumeroSerie['SerialInterno'];
+									value="<?php if (isset($row_NumeroSerie['IdTarjetaEquipo']) && ($row_NumeroSerie['IdTarjetaEquipo'] != 0)) {
+										echo $row_NumeroSerie['IdTarjetaEquipo'];
 									} ?>">
 								<input readonly type="text" class="form-control"
 									name="Desc_NumeroSerie" id="Desc_NumeroSerie"
 									placeholder="Haga clic en el botón"
-									value="<?php if (isset($row_NumeroSerie['SerialInterno']) && ($row_NumeroSerie['SerialInterno'] != 0)) {
-										echo "SN Fabricante: " . $row_NumeroSerie['SerialFabricante'] . " - Núm. Serie: " . $row_NumeroSerie['SerialInterno'];
+									value="<?php if (isset($row_NumeroSerie['IdTarjetaEquipo']) && ($row_NumeroSerie['IdTarjetaEquipo'] != 0)) {
+										echo "SN Fabricante: " . ($row_NumeroSerie['SerialFabricante'] ?? "") . " - Núm. Serie: " . ($row_NumeroSerie['SerialInterno'] ?? "");
 									} ?>">
 							</div>
 							<!-- /#NumeroSerie -->
@@ -2567,20 +2550,22 @@ function AgregarEsto(contenedorID, valorElemento) {
 							</div>
 
 							<div class="col-lg-4">
-								<label class="control-label">Contrato/Campaña</label>
-								<select name="CDU_Contrato" class="form-control select2" id="CDU_Contrato"
-								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
-									echo "disabled";
-								} ?>>
-										<option value="" disabled selected>Seleccione...</option>
-								  <?php while ($row_Contrato = sqlsrv_fetch_array($SQL_ContratosLlamada)) { ?>
-													<option value="<?php echo $row_Contrato['NombreContrato']; ?>"
-													<?php if ((isset($row['CDU_Contrato'])) && (strcmp($row_Contrato['NombreContrato'], $row['CDU_Contrato']) == 0)) {
-														echo "selected";
-													} ?>>
-														<?php echo $row_Contrato['NombreContrato']; ?>
-													</option>
-								  <?php } ?>
+								<label class="control-label">Contrato/Campaña <span class="text-danger">*</span></label>
+								
+								<select name="CDU_Contrato" class="form-control select2" id="CDU_Contrato" required
+									<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
+										echo "disabled";
+									} ?>>
+									<option value="" disabled selected>Seleccione...</option>
+									  
+									<?php while ($row_Contrato = sqlsrv_fetch_array($SQL_ContratosLlamada)) { ?>
+										<option value="<?php echo $row_Contrato['NombreContrato']; ?>"
+											<?php if ((isset($row['CDU_Contrato'])) && ($row_Contrato['NombreContrato'] == $row['CDU_Contrato'])) {
+												echo "selected";
+											} ?>>
+											<?php echo $row_Contrato['NombreContrato']; ?>
+										</option>
+									<?php } ?>
 								</select>
 							</div>
 						</div>
@@ -4218,7 +4203,8 @@ $(function () {
 			$('#AddCampana').prop('disabled', true);
 		}
 
-		let id_tarjeta_equipo = $(this).find(':selected').data('id');
+		// SMM, 22/11/2023
+		let id_tarjeta_equipo = $(this).val();
 
 		$.ajax({
 			type: "POST",
@@ -4263,23 +4249,20 @@ $(function () {
 		VerTAB(<?php echo $_GET["active"]; ?>);
 	<?php } ?>
 
-	// SMM, 15/09/2023
-	<?php if ((($sw_error == 1) || ($dt_SLS == 1)) && (isset($row['IdNumeroSerie']) && ($row['IdNumeroSerie'] != ""))) { ?>
-		$('#NumeroSerie').trigger('change');		
-	<?php } ?>
-
 	// SMM, 18/10/2023
 	$('#SubTipoProblema[readonly] option:not(:selected)').attr('disabled', true);
 });
 
 function AdicionarCampana() {
 	$('.ibox-content').toggleClass('sk-loading', true);
-	let IdInterno_TarjetaEquipo = $("#NumeroSerie").find(':selected').data('id');
+	
+	// SMM, 22/11/2023
+	let IdTarjetaEquipo = $("#NumeroSerie").val() || "";
 
 	$.ajax({
 		type: "POST",
 		data: {
-			id_tarjeta_equipo: IdInterno_TarjetaEquipo,
+			id_tarjeta_equipo: IdTarjetaEquipo,
 			id_llamada_servicio: $("#Ticket").val(),
 			docentry_llamada_servicio: $("#CallID").val()
 		},
@@ -4295,12 +4278,14 @@ function AdicionarCampana() {
 
 function AdicionarCampanaAsincrono() {
 	$('.ibox-content').toggleClass('sk-loading', true);
-	let IdInterno_TarjetaEquipo = $("#NumeroSerie").find(':selected').data('id');
+	
+	// SMM, 22/11/2023
+	let IdTarjetaEquipo = $("#NumeroSerie").val() || "";
 
 	$.ajax({
 		type: "POST",
 		data: {
-			id_tarjeta_equipo: IdInterno_TarjetaEquipo,
+			id_tarjeta_equipo: IdTarjetaEquipo,
 			asincrono: 1 // Asincrono - En la creación.
 		},
 		url: "md_adicionar_campanas.php",

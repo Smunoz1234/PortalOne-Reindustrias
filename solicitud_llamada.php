@@ -2040,20 +2040,19 @@ function AgregarEsto(contenedorID, valorElemento) {
 							</div>
 
 							<div class="col-lg-4">
-								<label class="control-label">Contrato/Campaña</label>
+								<label class="control-label">Contrato/Campaña <span class="text-danger">*</span></label>
 								
-								<select name="CDU_Contrato" class="form-control select2" id="CDU_Contrato"
-								>
+								<select name="CDU_Contrato" class="form-control select2" id="CDU_Contrato" required>
 									<option value="" disabled selected>Seleccione...</option>
 									  
 									<?php while ($row_Contrato = sqlsrv_fetch_array($SQL_ContratosLlamada)) { ?>
-											<option value="<?php echo $row_Contrato['NombreContrato']; ?>"
-											<?php if ((isset($row['CDU_Contrato'])) && (strcmp($row_Contrato['NombreContrato'], $row['CDU_Contrato']) == 0)) {
+										<option value="<?php echo $row_Contrato['NombreContrato']; ?>"
+											<?php if ((isset($row['CDU_Contrato'])) && ($row_Contrato['NombreContrato'] == $row['CDU_Contrato'])) {
 												echo "selected";
 											} ?>>
-												<?php echo $row_Contrato['NombreContrato']; ?>
-											</option>
-									  <?php } ?>
+											<?php echo $row_Contrato['NombreContrato']; ?>
+										</option>
+									<?php } ?>
 								</select>
 							</div>
 						</div>
