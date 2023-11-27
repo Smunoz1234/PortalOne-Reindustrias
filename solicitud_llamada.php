@@ -1115,21 +1115,14 @@ function ConsultarArticulo() {
 		remote.focus();
 	}
 }
+
+// SMM, 22/11/2023
 function ConsultarEquipo() {
-	var numSerie = document.getElementById('NumeroSerie');
+	let IdTarjetaEquipo = $("#NumeroSerie").val() || "";
 
-	if (numSerie.value != "") {
+	if (IdTarjetaEquipo != "") {
 		self.name = 'opener';
-
-		let parametros = "";
-		let IdTarjetaEquipo = $("#NumeroSerie").find(':selected').data('id');
-		if (((typeof IdTarjetaEquipo) !== 'undefined') && (IdTarjetaEquipo != null && IdTarjetaEquipo != "")) {
-			parametros = `id='${Base64.encode(IdTarjetaEquipo + "")}'&ext=1&tl=1`;
-		} else {
-			parametros = `id='${Base64.encode(numSerie.value)}'&ext=1&tl=1&te=1`;
-		}
-
-		remote = open('tarjeta_equipo.php?' + parametros, 'remote', 'location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
+		remote = open(`tarjeta_equipo.php?id='${Base64.encode(IdTarjetaEquipo)}'&ext=1&tl=1`, 'remote', 'location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
 		remote.focus();
 	}
 }
@@ -1296,6 +1289,9 @@ function AgregarEsto(contenedorID, valorElemento) {
 				</div>
 			</div>
 			<!-- /#MyModal2 -->
+
+			<!-- SMM, 27/11/2023 -->
+			<?php include_once 'md_consultar_tarjetas_equipos.php'; ?>
 
 			<!-- Inicio, modalSN -->
 			<div class="modal inmodal fade" id="modalSN" tabindex="-1" role="dialog" aria-hidden="true">
@@ -1687,33 +1683,37 @@ function AgregarEsto(contenedorID, valorElemento) {
 							
 							<div class="col-lg-3">
 								<label class="control-label">
-									<i onclick="ConsultarEquipo();" title="Consultar tarjeta de equipo" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Tarjeta de equipo <span class="text-danger">*</span>
+									<i onclick="ConsultarEquipo();" title="Consultar Tarjeta Equipo"
+										style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Tarjeta de equipo
 								</label>
-								
-								<select required name="NumeroSerie" class="form-control select2" id="NumeroSerie">
-									<option value="">Seleccione...</option>
-									
-									<?php if (($edit == 1) || ($sw_error == 1)) { ?>
-											<?php while ($row_NumeroSerie = sqlsrv_fetch_array($SQL_NumeroSerie)) { ?>
-													<option value="<?php echo $row_NumeroSerie['SerialInterno']; ?>" data-id="<?php echo $row_NumeroSerie['IdTarjetaEquipo'] ?? ""; ?>" 
-														<?php if ((isset($row_NumeroSerie['SerialInterno'])) && (strcmp($row_NumeroSerie['SerialInterno'], $row['IdNumeroSerie']) == 0)) {
-															echo "selected";
-														} elseif ((isset($_GET['Serial'])) && (strcmp(base64_decode($_GET['Serial']), $row_NumeroSerie['SerialInterno']) == 0)) {
-															echo "selected";
-														} ?>>
-										
-														<?php echo "SN Fabricante: " . $row_NumeroSerie['SerialFabricante'] . " - Núm. Serie: " . $row_NumeroSerie['SerialInterno']; ?>
-													</option>
-											<?php } ?>
-									<?php } ?>
-								</select>
+
+								<!-- Se necesita el SerialInterno para el llamado al WebService. SMM, 27/11/2023 -->
+								<input type="hidden" class="form-control" name="SerialInterno" id="SerialInterno"
+									value="<?php echo $row_NumeroSerie['SerialInterno'] ?? ""; ?>">
+
+								<input type="hidden" class="form-control" name="NumeroSerie" id="NumeroSerie"
+									value="<?php if (isset($row_NumeroSerie['IdTarjetaEquipo']) && ($row_NumeroSerie['IdTarjetaEquipo'] != 0)) {
+										echo $row_NumeroSerie['IdTarjetaEquipo'];
+									} ?>">
+								<input readonly type="text" class="form-control"
+									name="Desc_NumeroSerie" id="Desc_NumeroSerie"
+									placeholder="Haga clic en el botón"
+									value="<?php if (isset($row_NumeroSerie['IdTarjetaEquipo']) && ($row_NumeroSerie['IdTarjetaEquipo'] != 0)) {
+										echo "SN Fabricante: " . ($row_NumeroSerie['SerialFabricante'] ?? "") . " - Núm. Serie: " . ($row_NumeroSerie['SerialInterno'] ?? "");
+									} ?>">
 							</div>
 							<!-- /#NumeroSerie -->
 
 							<br>
+							<button type="button" class="btn btn-sm btn-success btn-circle" title="Cambiar Tarjeta Equipo"
+								onclick="$('#mdTE').modal('show');">
+								<i class="fa fa-refresh"></i>
+							</button>
 							<button type="button" id="AddCampana" class="btn btn-sm btn-info btn-circle" title="Adicionar Campaña" disabled <?php if ($edit == 1) {
 								echo "style='display: none;'";
-							} ?>><i class="fa fa-bell"></i></button>
+							} ?>>
+								<i class="fa fa-bell"></i>
+							</button>
 						</div>
 
 						<div class="form-group" <?php if ($edit == 1) {
@@ -2831,13 +2831,6 @@ $(document).ready(function () {
 			// Selecciona todos los elementos con el atributo 'required' dentro del formulario
 			$('form [required]').removeAttr('required');
 	<?php } ?>
-	
-	
-	// SMM, 11/05/2022
-	<?php if (isset($_GET['Serial'])) { ?>
-			// $('#NumeroSerie').trigger('change');
-	<?php } ?>
-
 
 		$("#CrearLlamada").validate({
 			submitHandler: function (form) {
@@ -3337,18 +3330,23 @@ $(function () {
 
 	// Adicionar campanas.
 	$("#NumeroSerie").on("change", function () {
+		$('.ibox-content').toggleClass('sk-loading', true);
+
 		if ($(this).val() != "") {
 			$('#AddCampana').prop('disabled', false);
 		} else {
 			$('#AddCampana').prop('disabled', true);
 		}
 
-		let id_tarjeta_equipo = $(this).find(':selected').data('id');
+		// SMM, 22/11/2023
+		let id_tarjeta_equipo = $(this).val();
 
 		$.ajax({
 			type: "POST",
 			url: `ajx_cbo_select.php?type=49&id=${id_tarjeta_equipo}`,
 			success: function (response) {
+				console.log("ajx_buscar_datos_json(49)", response);
+
 				$("#Campanas").html(response).fadeIn();
 				$("#Campanas").trigger('change');
 
@@ -3367,9 +3365,13 @@ $(function () {
 
 				// Cargar de nuevo con los ids seleccionados.
 				$("#Campanas").trigger('change');
+
+				$('.ibox-content').toggleClass('sk-loading', false);
 			},
 			error: function(error) {
 				console.log("error (4128), ", error);
+
+				$('.ibox-content').toggleClass('sk-loading', false);
 			}
 		});
 	});
@@ -3386,8 +3388,11 @@ $(function () {
 	
 	// SMM, 15/09/2023
 	<?php if ($sw_error == 1) { ?>
-			$('#NumeroSerie').trigger('change');		
+		$('#NumeroSerie').trigger('change');		
 	<?php } ?>
+
+	// SMM, 18/10/2023
+	$('#SubTipoProblema[readonly] option:not(:selected)').attr('disabled', true);
 
 	// SMM, 31/10/2023
 	$(".TecnicoSugerido").change(function () {
@@ -3470,12 +3475,14 @@ function ValidarFechas() {
 
 function AdicionarCampana() {
 	$('.ibox-content').toggleClass('sk-loading', true);
-	let IdInterno_TarjetaEquipo = $("#NumeroSerie").find(':selected').data('id');
+	
+	// SMM, 22/11/2023
+	let IdTarjetaEquipo = $("#NumeroSerie").val() || "";
 
 	$.ajax({
 		type: "POST",
 		data: {
-			id_tarjeta_equipo: IdInterno_TarjetaEquipo,
+			id_tarjeta_equipo: IdTarjetaEquipo,
 			id_llamada_servicio: $("#Ticket").val(),
 			docentry_llamada_servicio: $("#CallID").val(),
 			solicitud: "Solicitud"
@@ -3486,18 +3493,23 @@ function AdicionarCampana() {
 
 			$('#ContenidoModal2').html(response);
 			$('#myModal2').modal("show");
+		},
+		error: function (error) {
+			console.log("error (3490), ", error);
 		}
 	});
 }
 
 function AdicionarCampanaAsincrono() {
 	$('.ibox-content').toggleClass('sk-loading', true);
-	let IdInterno_TarjetaEquipo = $("#NumeroSerie").find(':selected').data('id');
+	
+	// SMM, 22/11/2023
+	let IdTarjetaEquipo = $("#NumeroSerie").val() || "";
 
 	$.ajax({
 		type: "POST",
 		data: {
-			id_tarjeta_equipo: IdInterno_TarjetaEquipo,
+			id_tarjeta_equipo: IdTarjetaEquipo,
 			asincrono: 1, // Asincrono - En la creación.
 			solicitud: "Solicitud"
 		},
@@ -3509,7 +3521,7 @@ function AdicionarCampanaAsincrono() {
 			$('#myModal2').modal("show");
 		},
 		error: function (error) {
-			console.log("error (3360), ", error);
+			console.log("error (3515), ", error);
 		}
 	});
 }
