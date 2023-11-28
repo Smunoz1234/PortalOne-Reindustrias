@@ -1016,9 +1016,8 @@ $SolicitudCerrada = (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] 
 				$('#AddCampana').prop('disabled', true);
 			}
 
-			// SMM, 25/10/2023
-			// let id_tarjeta_equipo = $(this).val();
-			let id_tarjeta_equipo = $(this).find(':selected').data('id');
+			// SMM, 22/11/2023
+			let id_tarjeta_equipo = $(this).val();
 
 			$.ajax({
 				type: "POST",
@@ -1027,8 +1026,8 @@ $SolicitudCerrada = (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] 
 					$("#Campanas").html(response).fadeIn();
 					$("#Campanas").trigger('change');
 
-					// Iterar sobre cada ID y seleccionar opciones específicas. SMM, 16/11/2023
-					if($("#NumeroSerie").val() === "<?php echo $row["SerialInterno"] ?? ""; ?>") {
+					// Iterar sobre cada ID y seleccionar opciones específicas. SMM, 22/11/2023
+					if(id_tarjeta_equipo === "<?php echo $row["IdTarjetaEquipo"] ?? ""; ?>") {
 						<?php while (isset($SQL_CampanasClone) && $row_Clone = sqlsrv_fetch_array($SQL_CampanasClone)) { ?>
 							$("#Campanas option[value='<?php echo $row_Clone["id_campana"] ?? ""; ?>']").prop("selected", true);
 						<?php } ?>
@@ -1043,18 +1042,18 @@ $SolicitudCerrada = (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] 
 				}
 			});
 
-			// SMM, 16/11/2023
-			if($("#NumeroSerie").val() !== "<?php echo $row["SerialInterno"] ?? ""; ?>") {
+			// Verifico si la TE no corresponde a la de la solicitud. SMM, 22/11/2023
+			if(id_tarjeta_equipo !== "<?php echo $row["IdTarjetaEquipo"] ?? ""; ?>") {
 				$.ajax({
 					url: "ajx_buscar_datos_json.php",
 					data: {
 						type: 44,
-						si: 0,
 						id: id_tarjeta_equipo,
 						clt: $("#Cliente").val()	
 					},
 					dataType: 'json',
 					success: function (data) {
+						// Si no corresponde modifico la marca en base a la TE.
 						$("#CDU_Marca").val(data.CDU_IdMarca);
 						$("#CDU_Marca").change();
 					},
