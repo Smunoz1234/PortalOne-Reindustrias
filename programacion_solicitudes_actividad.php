@@ -31,8 +31,6 @@ if($edit) {
 if ($edit && isset($row["ID_CodigoCliente"])) {
 	$ID_CodigoCliente = $row["ID_CodigoCliente"];
 	$SQL_SucursalCliente = Seleccionar("uvw_Sap_tbl_Clientes_Sucursales", "*", "CodigoCliente='$ID_CodigoCliente' AND TipoDireccion='S'", "NombreSucursal");
-	$SQL_NumeroSerie = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', '*', "CardCode='$ID_CodigoCliente'", 'SerialFabricante');
-
 	$SQL_Campanas = Seleccionar("uvw_tbl_SolicitudLlamadasServicios_Campanas", "*", "[id_solicitud_llamada_servicio]='$ID'");
 	$SQL_CampanasClone = Seleccionar("uvw_tbl_SolicitudLlamadasServicios_Campanas", "*", "[id_solicitud_llamada_servicio]='$ID'");
 }
@@ -217,6 +215,10 @@ if ($Type != 0) {
 
 // SMM, 09/11/2023
 $SolicitudCerrada = (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] == '-1'));
+
+// SMM, 28/11/2023
+$SQL_NumeroSerie = Seleccionar("uvw_Sap_tbl_TarjetasEquipos", "*", "IdTarjetaEquipo='" . ($row['IdTarjetaEquipo'] ?? "") . "'");
+$row_NumeroSerie = sqlsrv_fetch_array($SQL_NumeroSerie);
 ?>
 
 <style>
@@ -413,9 +415,9 @@ $SolicitudCerrada = (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] 
 							class="btn-xs btn-success fa fa-search"></i> Cliente <span class="text-danger">*</span>
 					</label>
 
-					<input type="hidden" name="Cliente" id="Cliente"
+					<input type="hidden" name="ClienteLlamada" id="ClienteLlamada"
 						value="<?php echo $row['ID_CodigoCliente'] ?? ""; ?>">
-					<input required type="text" name="NombreCliente" id="NombreCliente" class="form-control"
+					<input required type="text" name="NombreClienteLlamada" id="NombreClienteLlamada" class="form-control"
 						placeholder="Digite para buscar..." value="<?php echo $row['NombreClienteLlamada'] ?? ""; ?>">
 				</div>
 
@@ -494,7 +496,7 @@ $SolicitudCerrada = (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] 
 
 				<div class="col-lg-2"></div>
 
-				<div class="col-lg-4">
+				<div class="col-lg-3">
 					<label class="control-label">
 						<i onclick="ConsultarEquipo();" title="Consultar equipo" style="cursor: pointer"
 							class="btn-xs btn-success fa fa-search"></i> Tarjeta de equipo <span
@@ -505,28 +507,35 @@ $SolicitudCerrada = (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] 
 					<input type="hidden" name="CDU_Marca" id="CDU_Marca" class="TecnicoSugerido"
 						value="<?php echo $row["CDU_Marca"] ?? ""; ?>">
 
-					<select required name="NumeroSerie" id="NumeroSerie" class="form-control select2">
-						<option value="">Seleccione...</option>
+					<!-- Se necesita el SerialInterno para el llamado al WebService. SMM, 27/11/2023 -->
+					<input type="hidden" class="form-control" name="SerialInterno" id="SerialInterno"
+						value="<?php echo $row_NumeroSerie['SerialInterno'] ?? ""; ?>">
 
-						<!-- La TE depende del cliente. -->
-						<?php while ($row_NumeroSerie = sqlsrv_fetch_array($SQL_NumeroSerie)) { ?>
-							<option data-id="<?php echo $row_NumeroSerie["IdTarjetaEquipo"]; ?>" value="<?php echo $row_NumeroSerie["SerialInterno"]; ?>" <?php if (isset($row["SerialInterno"]) && ($row_NumeroSerie["SerialInterno"] == $row["SerialInterno"])) {
-									echo "selected";
-							   	} ?>>
-								<?php echo "SN Fabricante: " . $row_NumeroSerie["SerialFabricante"] . " - Núm. Serie: " . $row_NumeroSerie["SerialInterno"] . " - Marca: " . $row_NumeroSerie["CDU_Marca"]; ?>
-							</option>
-						<?php } ?>
-					</select>
+					<input type="hidden" class="form-control" name="NumeroSerie" id="NumeroSerie"
+						value="<?php if (isset($row_NumeroSerie['IdTarjetaEquipo']) && ($row_NumeroSerie['IdTarjetaEquipo'] != 0)) {
+							echo $row_NumeroSerie['IdTarjetaEquipo'];
+						} ?>">
+					<input required readonly type="text" class="form-control"
+						name="Desc_NumeroSerie" id="Desc_NumeroSerie"
+						placeholder="Haga clic en el botón"
+						value="<?php if (isset($row_NumeroSerie['IdTarjetaEquipo']) && ($row_NumeroSerie['IdTarjetaEquipo'] != 0)) {
+							echo "SN Fabricante: " . ($row_NumeroSerie['SerialFabricante'] ?? "") . " - Núm. Serie: " . ($row_NumeroSerie['SerialInterno'] ?? "") . " - Marca: " . ($row_NumeroSerie["CDU_Marca"] ?? "");
+						} ?>">
 				</div>
+				<!-- /#NumeroSerie -->
 
-				<div class="col-lg-2">
+				<div class="col-lg-3">
 					<br>
 					<div class="btn-group">
-						<button type="button" id="AddEquipo" class="btn btn-primary" title="Adicionar Equipo">
-							<i class="fa fa-plus"></i>
+						<button type="button" class="btn btn-success" title="Cambiar Equipo"  id="btnTE"
+							onclick="$('#mdTE').modal('show');">
+							<i class="fas fa-sync-alt"></i>
 						</button>
 						<button disabled type="button" id="AddCampana" class="btn btn-info" title="Adicionar Campaña">
 							<i class="fa fa-bell"></i>
+						</button>
+						<button type="button" id="AddEquipo" class="btn btn-primary" title="Adicionar Equipo">
+							<i class="fa fa-plus"></i>
 						</button>
 					</div>
 				</div>
@@ -742,14 +751,14 @@ $SolicitudCerrada = (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] 
 					enabled: true
 				},
 				onClickEvent: function () {
-					let value = $("#NombreCliente").getSelectedItemData().CodigoCliente;
-					$("#Cliente").val(value).trigger("change");
+					let value = $("#NombreClienteLlamada").getSelectedItemData().CodigoCliente;
+					$("#ClienteLlamada").val(value).trigger("change");
 				}
 			}
 		};
-		$("#NombreCliente").easyAutocomplete(options);
+		$("#NombreClienteLlamada").easyAutocomplete(options);
 
-		$("#Cliente").on("change", function () {
+		$("#ClienteLlamada").on("change", function () {
 			$.ajax({
 				type: "POST",
 				url: `ajx_cbo_select.php?type=3&id=${$(this).val()}&sucline=1`,
@@ -870,7 +879,7 @@ $SolicitudCerrada = (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] 
 					TipoProblema: jsonForm.TipoProblema,
 					SubTipoProblema: jsonForm.SubTipoProblema,
 					CDU_Contrato: jsonForm.CDU_Contrato,
-					Cliente: jsonForm.Cliente,
+					Cliente: jsonForm.ClienteLlamada,
 					SucursalCliente: jsonForm.SucursalCliente,
 					NumeroSerie: jsonForm.NumeroSerie,
 					Campanas: CampanasAsociadas
@@ -950,6 +959,7 @@ $SolicitudCerrada = (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] 
 			$("#frmActividad input").prop("disabled", true);
 			$("#frmActividad select").prop("disabled", true);
 			$("#frmActividad textarea").prop("disabled", true);
+			$("#frmActividad #btnTE").prop("disabled", true);
 			
 			// Habilitar ID, requerido para la actualización.
 			$("#ID_SolicitudLlamadaServicio").prop("disabled", false);
@@ -1049,7 +1059,7 @@ $SolicitudCerrada = (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] 
 					data: {
 						type: 44,
 						id: id_tarjeta_equipo,
-						clt: $("#Cliente").val()	
+						clt: $("#ClienteLlamada").val()	
 					},
 					dataType: 'json',
 					success: function (data) {
@@ -1068,14 +1078,17 @@ $SolicitudCerrada = (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] 
 			AdicionarCampanaAsincrono();
 		});
 
-		// Función para oscurecer el primer modal cuando se abre el segundo
-		$('#myModal2').on('show.bs.modal', function () {
+		// Función para oscurecer el primer modal cuando se abre el segundo.
+		$('#myModal2, #mdTE').on('show.bs.modal', function () {
 			$('#ModalAct').addClass('modal-backdrop');
 		});
 
-		// Función para eliminar el oscurecimiento cuando se cierra el segundo modal
-		$('#myModal2').on('hidden.bs.modal', function () {
+		// Función para eliminar el oscurecimiento cuando se cierra el segundo modal.
+		$('#myModal2, #mdTE').on('hidden.bs.modal', function () {
 			$('#ModalAct').removeClass('modal-backdrop');
+			
+			// Indicarle al Scroll que aún esta abierto el modal principal.
+			$('body').addClass('modal-open');
 		});
 
 		$("#AddEquipo").on("click", function () {
@@ -1090,10 +1103,10 @@ $SolicitudCerrada = (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] 
 		<?php if($edit) { ?>
 			console.log("entrando a la validación de la edición y campañas");
 			
-			// $("#Cliente").change();
+			// $("#ClienteLlamada").change();
 			$("#NumeroSerie").change();
 			
-			// $("#NombreCliente").prop("readonly", true);
+			// $("#NombreClienteLlamada").prop("readonly", true);
 			// $("#SucursalCliente").prop("disabled", true);
 			
 			// $("#NumeroSerie").prop("disabled", true);
@@ -1141,6 +1154,7 @@ $SolicitudCerrada = (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] 
 			$("#frmActividad input").prop("disabled", true);
 			$("#frmActividad select").prop("disabled", true);
 			$("#frmActividad textarea").prop("disabled", true);
+			$("#frmActividad #btnTE").prop("disabled", true);
 		<?php } ?>
 	});
 
@@ -1242,20 +1256,19 @@ $SolicitudCerrada = (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] 
 	}
 
 	function ConsultarCliente() {
-		let Cliente = document.getElementById("Cliente");
+		let Cliente = document.getElementById("ClienteLlamada");
 
 		if (Cliente.value != "") {
 			window.open(`socios_negocios.php?id=${Base64.encode(Cliente.value)}&tl=1`, "_blank");
 		}
 	}
 
+	// SMM, 28/11/2023
 	function ConsultarEquipo() {
-		// let Equipo = document.getElementById("IdTarjetaEquipo");
 		let Equipo = document.getElementById("NumeroSerie");
 
 		if (Equipo.value != "") {
-			// Se borra, &te=1
-			window.open(`tarjeta_equipo.php?id=${Base64.encode(Equipo.value)}&tl=1&te=1`, "_blank");
+			window.open(`tarjeta_equipo.php?id=${Base64.encode(Equipo.value)}&tl=1`, "_blank");
 		}
 	}
 </script>
