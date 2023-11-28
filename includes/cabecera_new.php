@@ -82,3 +82,8 @@
 
 <!-- Data picker -->
 <script src="js/plugins/datapicker/bootstrap-datepicker.js"></script>
+
+<!-- FooTable. SMM, 28/11/2023 -->
+<link href="plugins/footable-bootstrap/css/footable.bootstrap.min.css" rel="stylesheet">
+<script src="js/moment.min.js"></script>
+<script src="plugins/footable-bootstrap/js/footable.min.js"></script>
