@@ -239,7 +239,8 @@ if ($sw == 1) {
 										<select name="FiltroOperacion" class="form-control" id="FiltroOperacion">
 											<option value="1" <?php if (isset($_GET['FiltroOperacion']) && ($_GET['FiltroOperacion'] == "1")) {
 												echo "selected";
-											} ?>>Solicitud Llamada (Agenda)
+											} ?>>Solicitud
+												Llamada (Agenda)
 											</option>
 										</select>
 									</div>
@@ -255,20 +256,50 @@ if ($sw == 1) {
 												value="<?php echo $FechaFinal; ?>" />
 										</div>
 									</div>
+									
+									<label class="col-lg-1 control-label">Serie</label>
+									<div class="col-lg-3">
+										<select name="Series" class="form-control" id="Series">
+											<option value="">(Todos)</option>
+											<?php while ($row_Series = sqlsrv_fetch_array($SQL_Series)) { ?>
+												<option value="<?php echo $row_Series['IdSeries']; ?>" <?php if ((isset($_GET['Series'])) && (strcmp($row_Series['IdSeries'], $_GET['Series']) == 0)) {
+													   echo "selected";
+												   } ?>>
+													<?php echo $row_Series['DeSeries']; ?>
+												</option>
+											<?php } ?>
+										</select>
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label class="col-lg-1 control-label">Tipo llamada</label>
+									<div class="col-lg-3">
+										<select data-placeholder="(Todos)" name="TipoLlamada[]"
+											class="form-control chosen-select" id="TipoLlamada" multiple>
+											<?php $j = 0;
+											while ($row_TipoLlamadas = sqlsrv_fetch_array($SQL_TipoLlamadas)) { ?>
+												<option value="<?php echo $row_TipoLlamadas['IdTipoLlamada']; ?>" <?php if ((isset($_GET['TipoLlamada'][$j]) && ($_GET['TipoLlamada'][$j] != "")) && (strcmp($row_TipoLlamadas['IdTipoLlamada'], $_GET['TipoLlamada'][$j]) == 0)) {
+													   echo "selected";
+													   $j++;
+												   } ?>>
+													<?php echo $row_TipoLlamadas['DeTipoLlamada']; ?>
+												</option>
+											<?php } ?>
+										</select>
+									</div>
+
 									<label class="col-lg-1 control-label">Cliente</label>
 									<div class="col-lg-3">
-										<input name="Cliente" type="hidden" id="Cliente"
-											value="<?php if (isset($_GET['Cliente']) && ($_GET['Cliente'] != "")) {
-												echo $_GET['Cliente'];
-											} ?>">
+										<input name="Cliente" type="hidden" id="Cliente" value="<?php if (isset($_GET['Cliente']) && ($_GET['Cliente'] != "")) {
+											echo $_GET['Cliente'];
+										} ?>">
 										<input name="NombreCliente" type="text" class="form-control" id="NombreCliente"
-											placeholder="Ingrese para buscar..."
-											value="<?php if (isset($_GET['NombreCliente']) && ($_GET['NombreCliente'] != "")) {
+											placeholder="Ingrese para buscar..." value="<?php if (isset($_GET['NombreCliente']) && ($_GET['NombreCliente'] != "")) {
 												echo $_GET['NombreCliente'];
 											} ?>">
 									</div>
-								</div>
-								<div class="form-group">
+
 									<label class="col-lg-1 control-label">Sucursal cliente</label>
 									<div class="col-lg-3">
 										<select id="Sucursal" name="Sucursal" class="form-control select2">
@@ -284,35 +315,25 @@ if ($sw == 1) {
 												}
 												while ($row_Sucursal = sqlsrv_fetch_array($SQL_Sucursal)) { ?>
 													<option value="<?php echo $row_Sucursal['NombreSucursal']; ?>" <?php if (strcmp($row_Sucursal['NombreSucursal'], $_GET['Sucursal']) == 0) {
-														   echo "selected=\"selected\"";
+														   echo "selected";
 													   } ?>>
 														<?php echo $row_Sucursal['NombreSucursal']; ?>
 													</option>
 												<?php }
 											} ?>
 										</select>
-									</div>
-									<label class="col-lg-1 control-label">Serie</label>
-									<div class="col-lg-3">
-										<select name="Series" class="form-control" id="Series">
-											<option value="">(Todos)</option>
-											<?php while ($row_Series = sqlsrv_fetch_array($SQL_Series)) { ?>
-												<option value="<?php echo $row_Series['IdSeries']; ?>" <?php if ((isset($_GET['Series'])) && (strcmp($row_Series['IdSeries'], $_GET['Series']) == 0)) {
-													   echo "selected=\"selected\"";
-												   } ?>>
-													<?php echo $row_Series['DeSeries']; ?>
-												</option>
-											<?php } ?>
-										</select>
-									</div>
-									<label class="col-lg-1 control-label">Tipo llamada</label>
+									</div>	
+								</div>
+
+								<div class="form-group">
+									<label class="col-lg-1 control-label">Origen llamada</label>
 									<div class="col-lg-3">
 										<select data-placeholder="(Todos)" name="TipoLlamada[]"
 											class="form-control chosen-select" id="TipoLlamada" multiple>
 											<?php $j = 0;
 											while ($row_TipoLlamadas = sqlsrv_fetch_array($SQL_TipoLlamadas)) { ?>
 												<option value="<?php echo $row_TipoLlamadas['IdTipoLlamada']; ?>" <?php if ((isset($_GET['TipoLlamada'][$j]) && ($_GET['TipoLlamada'][$j] != "")) && (strcmp($row_TipoLlamadas['IdTipoLlamada'], $_GET['TipoLlamada'][$j]) == 0)) {
-													   echo "selected=\"selected\"";
+													   echo "selected";
 													   $j++;
 												   } ?>>
 													<?php echo $row_TipoLlamadas['DeTipoLlamada']; ?>
@@ -320,35 +341,69 @@ if ($sw == 1) {
 											<?php } ?>
 										</select>
 									</div>
-								</div>
-								<div class="form-group">
+
+									<label class="col-lg-1 control-label">Técnico responsable</label>
+									<div class="col-lg-3">
+										<select name="NombreEmpleado" class="form-control select2" id="NombreEmpleado">
+											<option value="">(Todos)</option>
+											<?php while ($row_EmpleadoActividad = sqlsrv_fetch_array($SQL_EmpleadoActividad)) { ?>
+												<option value="<?php echo $row_EmpleadoActividad['NombreEmpleado']; ?>"
+													<?php if ((isset($_GET['NombreEmpleado'])) && (strcmp($row_EmpleadoActividad['NombreEmpleado'], $_GET['NombreEmpleado']) == 0)) {
+														echo "selected";
+													} ?>>
+													<?php echo $row_EmpleadoActividad['NombreEmpleado']; ?>
+												</option>
+											<?php } ?>
+										</select>
+									</div>
+
 									<label class="col-lg-1 control-label">Estado llamada</label>
 									<div class="col-lg-3">
 										<select name="EstadoLlamada" class="form-control" id="EstadoLlamada">
 											<option value="">(Todos)</option>
 											<?php while ($row_EstadoLlamada = sqlsrv_fetch_array($SQL_EstadoLlamada)) { ?>
 												<option value="<?php echo $row_EstadoLlamada['Cod_Estado']; ?>" <?php if ((isset($_GET['EstadoLlamada'])) && (strcmp($row_EstadoLlamada['Cod_Estado'], $_GET['EstadoLlamada']) == 0)) {
-													   echo "selected=\"selected\"";
+													   echo "selected";
 												   } ?>>
 													<?php echo $row_EstadoLlamada['NombreEstado']; ?>
 												</option>
 											<?php } ?>
 										</select>
 									</div>
-									<label class="col-lg-1 control-label">Estado actividad</label>
+								</div>
+
+								<div class="form-group">
+									<label class="col-lg-1 control-label">Tipo problema</label>
 									<div class="col-lg-3">
-										<select name="EstadoActividad" class="form-control" id="EstadoActividad">
-											<option value="">(Todos)</option>
-											<?php while ($row_EstadoActividad = sqlsrv_fetch_array($SQL_EstadoActividad)) { ?>
-												<option value="<?php echo $row_EstadoActividad['DE_TipoEstadoServicio']; ?>"
-													<?php if ((isset($_GET['EstadoActividad'])) && (strcmp($row_EstadoActividad['DE_TipoEstadoServicio'], $_GET['EstadoActividad']) == 0)) {
-														echo "selected=\"selected\"";
-													} ?>>
-													<?php echo $row_EstadoActividad['DE_TipoEstadoServicio']; ?>
+										<select data-placeholder="(Todos)" name="TipoLlamada[]"
+											class="form-control chosen-select" id="TipoLlamada" multiple>
+											<?php $j = 0;
+											while ($row_TipoLlamadas = sqlsrv_fetch_array($SQL_TipoLlamadas)) { ?>
+												<option value="<?php echo $row_TipoLlamadas['IdTipoLlamada']; ?>" <?php if ((isset($_GET['TipoLlamada'][$j]) && ($_GET['TipoLlamada'][$j] != "")) && (strcmp($row_TipoLlamadas['IdTipoLlamada'], $_GET['TipoLlamada'][$j]) == 0)) {
+													   echo "selected";
+													   $j++;
+												   } ?>>
+													<?php echo $row_TipoLlamadas['DeTipoLlamada']; ?>
 												</option>
 											<?php } ?>
 										</select>
 									</div>
+
+									<label class="col-lg-1 control-label">Técnico adicional</label>
+									<div class="col-lg-3">
+										<select name="NombreEmpleado" class="form-control select2" id="NombreEmpleado">
+											<option value="">(Todos)</option>
+											<?php while ($row_EmpleadoActividad = sqlsrv_fetch_array($SQL_EmpleadoActividad)) { ?>
+												<option value="<?php echo $row_EmpleadoActividad['NombreEmpleado']; ?>"
+													<?php if ((isset($_GET['NombreEmpleado'])) && (strcmp($row_EmpleadoActividad['NombreEmpleado'], $_GET['NombreEmpleado']) == 0)) {
+														echo "selected";
+													} ?>>
+													<?php echo $row_EmpleadoActividad['NombreEmpleado']; ?>
+												</option>
+											<?php } ?>
+										</select>
+									</div>
+
 									<label class="col-lg-1 control-label">Estado servicio llamada</label>
 									<div class="col-lg-3">
 										<select data-placeholder="(Todos)" name="EstadoServicio[]"
@@ -356,7 +411,7 @@ if ($sw == 1) {
 											<?php $j = 0;
 											while ($row_EstServLlamada = sqlsrv_fetch_array($SQL_EstServLlamada)) { ?>
 												<option value="<?php echo $row_EstServLlamada['IdEstadoServicio']; ?>" <?php if ((isset($_GET['EstadoServicio'][$j]) && ($_GET['EstadoServicio'][$j] != "")) && (strcmp($row_EstServLlamada['IdEstadoServicio'], $_GET['EstadoServicio'][$j]) == 0)) {
-													   echo "selected=\"selected\"";
+													   echo "selected";
 													   $j++;
 												   } ?>>
 													<?php echo $row_EstServLlamada['DeEstadoServicio']; ?>
@@ -365,35 +420,24 @@ if ($sw == 1) {
 										</select>
 									</div>
 								</div>
+
 								<div class="form-group">
-									<label class="col-lg-1 control-label">Técnico</label>
+									<label class="col-lg-1 control-label">Subtipo problema</label>
 									<div class="col-lg-3">
-										<select name="NombreEmpleado" class="form-control select2" id="NombreEmpleado">
-											<option value="">(Todos)</option>
-											<?php while ($row_EmpleadoActividad = sqlsrv_fetch_array($SQL_EmpleadoActividad)) { ?>
-												<option value="<?php echo $row_EmpleadoActividad['NombreEmpleado']; ?>"
-													<?php if ((isset($_GET['NombreEmpleado'])) && (strcmp($row_EmpleadoActividad['NombreEmpleado'], $_GET['NombreEmpleado']) == 0)) {
-														echo "selected=\"selected\"";
-													} ?>>
-													<?php echo $row_EmpleadoActividad['NombreEmpleado']; ?>
+										<select data-placeholder="(Todos)" name="TipoLlamada[]"
+											class="form-control chosen-select" id="TipoLlamada" multiple>
+											<?php $j = 0;
+											while ($row_TipoLlamadas = sqlsrv_fetch_array($SQL_TipoLlamadas)) { ?>
+												<option value="<?php echo $row_TipoLlamadas['IdTipoLlamada']; ?>" <?php if ((isset($_GET['TipoLlamada'][$j]) && ($_GET['TipoLlamada'][$j] != "")) && (strcmp($row_TipoLlamadas['IdTipoLlamada'], $_GET['TipoLlamada'][$j]) == 0)) {
+													   echo "selected";
+													   $j++;
+												   } ?>>
+													<?php echo $row_TipoLlamadas['DeTipoLlamada']; ?>
 												</option>
 											<?php } ?>
 										</select>
 									</div>
-									<label class="col-lg-1 control-label">Facturado</label>
-									<div class="col-lg-3">
-										<select name="Facturado" class="form-control" id="Facturado">
-											<option value="">(Todos)</option>
-											<option value="SI" <?php if (isset($_GET['Facturado']) && ($_GET['Facturado'] == "SI")) {
-												echo "selected=\"selected\"";
-											} ?>>SI
-											</option>
-											<option value="NO" <?php if (isset($_GET['Facturado']) && ($_GET['Facturado'] == "NO")) {
-												echo "selected=\"selected\"";
-											} ?>>NO
-											</option>
-										</select>
-									</div>
+
 									<div class="col-lg-4 pull-right">
 										<button type="submit" class="btn btn-outline btn-success pull-right"><i
 												class="fa fa-search"></i> Buscar</button>
