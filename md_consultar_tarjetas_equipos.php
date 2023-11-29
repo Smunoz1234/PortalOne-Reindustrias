@@ -19,31 +19,26 @@ $SQL_TE = sqlsrv_query($conexion, $Cons_TarjetasEquipos);
 					<div class="col-lg-12">
 						<div class="ibox-content">
 							<form id="formBuscar" class="form-horizontal">
-								<div class="form-group">
-									<label class="col-xs-12">
-										<h3 class="bg-success p-xs b-r-sm">
-											<i class="fa fa-filter"></i> Datos para filtrar
-										</h3>
-									</label>
-								</div>
-
-								<div class="form-group">
-									<label class="col-lg-1 control-label">ID servicio (IdArticulo)</label>
-									<div class="col-lg-5">
+								<div class="form-group row">
+									<div class="col-lg-6">	
+										<label class="control-label">ID servicio (IdArticulo)</label>
+									
 										<input name="ItemCode" type="text" class="form-control" id="ItemCode"
 											maxlength="100" placeholder="ID del articulo o servicio">
 									</div>
 
-									<label class="col-lg-1 control-label">Serial</label>
-									<div class="col-lg-5">
+									<div class="col-lg-6">
+										<label class="control-label">Serial</label>
+									
 										<input name="SerialEquipo" type="text" class="form-control" id="SerialEquipo"
 											maxlength="100" placeholder="Serial fabricante o interno">
 									</div>
 								</div>
 
-								<div class="form-group">
-									<label class="col-lg-1 control-label">Estado de equipo</label>
-									<div class="col-lg-5">
+								<div class="form-group row">
+									<div class="col-lg-6">
+										<label class="control-label">Estado de equipo</label>
+									
 										<select name="EstadoEquipo" class="form-control" id="EstadoEquipo">
 											<option value="">(Todos)</option>
 											<option value="A">Activo</option>
@@ -54,23 +49,26 @@ $SQL_TE = sqlsrv_query($conexion, $Cons_TarjetasEquipos);
 										</select>
 									</div>
 
-									<label class="col-lg-1 control-label">Cliente</label>
-									<div class="col-lg-5">
+									<div class="col-lg-6">
+										<label class="control-label">Cliente</label>
+									
 										<input name="Cliente" type="hidden" id="Cliente">
 										<input name="NombreCliente" type="text" class="form-control" id="NombreCliente"
 											placeholder="Para TODOS, dejar vacio...">
 									</div>
 								</div>
 
-								<div class="form-group">
-									<label class="col-lg-1 control-label">Buscar dato</label>
+								<div class="form-group row">
 									<div class="col-lg-6">
+										<label class="control-label">Buscar dato</label>
+									
 										<input name="BuscarDato" type="text" class="form-control" id="BuscarDato"
 											placeholder="Digite un dato completo, o una parte del mismo...">
 									</div>
 
-									<div class="col-lg-4"> <!-- pull-right -->
-										<button type="submit" class="btn btn-outline btn-success">
+									<div class="col-lg-6">
+										<br>
+										<button type="submit" class="btn btn-outline btn-success pull-right">
 											<i class="fa fa-search"></i> Buscar
 										</button>
 									</div>
@@ -82,6 +80,7 @@ $SQL_TE = sqlsrv_query($conexion, $Cons_TarjetasEquipos);
 				<!-- Fin, filtros -->
 
 				<?php if ($SQL_TE) { ?>
+					<br>
 
 					<!-- Inicio, tabla -->
 					<div class="row">
@@ -121,7 +120,7 @@ $SQL_TE = sqlsrv_query($conexion, $Cons_TarjetasEquipos);
 													<td>
 														<a type="button" class="btn btn-success btn-xs"
 															title="Adicionar o cambiar TE"
-															onclick="cambiarTE('<?php echo $row_TE['IdTarjetaEquipo']; ?>', '<?php echo 'SN Fabricante: ' . $row_TE['SerialFabricante'] . ' - Núm. Serie: ' . $row_TE['SerialInterno']; ?>')">
+															onclick="cambiarTE('<?php echo $row_TE['IdTarjetaEquipo']; ?>', '<?php echo 'SN Fabricante: ' . $row_TE['SerialFabricante'] . ' - Núm. Serie: ' . $row_TE['SerialInterno']; ?>', '<?php echo $row['SerialInterno']; ?>')">
 															<b>
 																<?php echo $row_TE['IdTarjetaEquipo']; ?>
 															</b>
@@ -184,9 +183,14 @@ $SQL_TE = sqlsrv_query($conexion, $Cons_TarjetasEquipos);
 </div>
 
 <script>
-	function cambiarTE(tarjeta_equipo, descripcion_te) {
+	function cambiarTE(tarjeta_equipo, descripcion_te, serial_interno) {
 		$("#NumeroSerie").val(tarjeta_equipo);
 		$("#Desc_NumeroSerie").val(descripcion_te);
+		$("#SerialInterno").val(serial_interno);
+
+		$("#NumeroSerie").change();
+		$("#Desc_NumeroSerie").change();
+		$("#SerialInterno").change();
 
 		$('#mdTE').modal('hide');
 	}
@@ -257,7 +261,8 @@ $SQL_TE = sqlsrv_query($conexion, $Cons_TarjetasEquipos);
 			}
 		});
 
-		$('.chosen-select').chosen({ width: "100%" });
+		// Error con cabecera_new
+		// $('.chosen-select').chosen({ width: "100%" });
 
 		let options = {
 			adjustWidth: false,

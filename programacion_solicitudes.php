@@ -109,7 +109,8 @@ $SQL_Recursos = EjecutarSP("sp_ConsultarTecnicos", $ParamRec);
 
 		#small-calendar .day,
 		#small-calendar .prev,
-		#small-calendar .next  {
+		#small-calendar .next,
+		.fc-daygrid-event  {
 			cursor: pointer;
 		}
 
@@ -258,6 +259,9 @@ $(function () {
 			</div>
 		</div>
 		<!-- /#MyModal2 -->
+
+		<!-- SMM, 27/11/2023 -->
+		<?php include_once 'md_consultar_tarjetas_equipos.php'; ?>
 
 		<div id="dvHead" class="row mb-md-3 mt-md-4">
 			<div id="accordionTitle" class="card col-lg-12 p-md-4">

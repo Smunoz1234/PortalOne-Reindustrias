@@ -98,7 +98,7 @@ echo $dataString;
                 </td>
                 <td>
                     <a type="button" class="btn btn-success btn-xs" title="Adicionar o cambiar TE"
-                        onclick="cambiarTE('<?php echo $row['IdTarjetaEquipo']; ?>', '<?php echo 'SN Fabricante: ' . $row['SerialFabricante'] . ' - Núm. Serie: ' . $row['SerialInterno']; ?>')">
+                        onclick="cambiarTE('<?php echo $row['IdTarjetaEquipo']; ?>', '<?php echo 'SN Fabricante: ' . $row['SerialFabricante'] . ' - Núm. Serie: ' . $row['SerialInterno']; ?>', '<?php echo $row['SerialInterno']; ?>')">
                         <b>
                             <?php echo $row['IdTarjetaEquipo']; ?>
                         </b>

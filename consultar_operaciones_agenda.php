@@ -1,41 +1,44 @@
 <?php require_once "includes/conexion.php";
-//require_once("includes/conexion_hn.php");
+// require_once("includes/conexion_hn.php");
 PermitirAcceso(320);
 
 $sw = 0;
+
 $Cliente = "";
 $Sucursal = "";
 $Serie = "";
 $TipoLlamada = "";
 $EstadoLlamada = "";
-$EstadoActividad = "";
 $EstadoServicioLlamada = "";
 $NombreEmpleado = "";
+$NombreAdicional = "";
+
 $sw_suc = 0;
 
-//Estado llamada
+// Estado llamada
 $SQL_EstadoLlamada = Seleccionar('uvw_tbl_EstadoLlamada', '*');
 
-//Estado actividad
-$SQL_EstadoActividad = Seleccionar('uvw_tbl_TipoEstadoServicio', '*');
+// SMM, 29/11/2023
+$SQL_OrigenLlamada = Seleccionar('uvw_Sap_tbl_LlamadasServiciosOrigen', '*', "Activo = 'Y'", 'DeOrigenLlamada');
+$SQL_TipoLlamadas = Seleccionar('uvw_Sap_tbl_TipoLlamadas', '*', "Activo = 'Y'", 'DeTipoLlamada');
+$SQL_TipoProblema = Seleccionar('uvw_Sap_tbl_TipoProblemasLlamadas', '*', "Activo = 'Y'", 'DeTipoProblemaLlamada');
+$SQL_SubTipoProblema = Seleccionar('uvw_Sap_tbl_SubTipoProblemasLlamadas', '*', "Activo = 'Y'", 'DeSubTipoProblemaLlamada');
 
-//Tipo de llamada
-$SQL_TipoLlamadas = Seleccionar('uvw_Sap_tbl_TipoLlamadas', '*', '', 'DeTipoLlamada');
-
-//Estado servicio llamada
+// Estado servicio llamada
 $SQL_EstServLlamada = Seleccionar('uvw_Sap_tbl_LlamadasServiciosEstadoServicios', '*', '', 'DeEstadoServicio');
 
-//Empleados
+// Empleados. SMM, 29/11/2023
 $SQL_EmpleadoActividad = Seleccionar('uvw_Sap_tbl_Empleados', '*', "IdUsuarioSAP=0", 'NombreEmpleado');
+$SQL_EmpleadoAdicional = Seleccionar('uvw_Sap_tbl_Empleados', '*', "IdUsuarioSAP=0", 'NombreEmpleado');
 
-//Serie de llamada
+// Serie de llamada
 $ParamSerie = array(
 	"'" . $_SESSION['CodUser'] . "'",
 	"'191'",
 );
 $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 
-//Fechas
+// Fechas
 if (isset($_GET['FechaInicial']) && $_GET['FechaInicial'] != "") {
 	$FechaInicial = $_GET['FechaInicial'];
 	$sw = 1;
@@ -74,35 +77,42 @@ if (isset($_GET['EstadoLlamada']) && $_GET['EstadoLlamada'] != "") {
 	$sw = 1;
 }
 
-if (isset($_GET['EstadoActividad']) && $_GET['EstadoActividad'] != "") {
-	$EstadoActividad = $_GET['EstadoActividad'];
-	$sw = 1;
-}
-
 if (isset($_GET['NombreEmpleado']) && $_GET['NombreEmpleado'] != "") {
 	$NombreEmpleado = $_GET['NombreEmpleado'];
 	$sw = 1;
 }
 
-$Facturado = isset($_GET['Facturado']) ? $_GET['Facturado'] : "";
-$TipoLlamada = isset($_GET['TipoLlamada']) ? implode(",", $_GET['TipoLlamada']) : "";
+// SMM, 29/11/2023
+if (isset($_GET['NombreAdicional']) && $_GET['NombreAdicional'] != "") {
+	$NombreAdicional = $_GET['NombreAdicional'];
+	$sw = 1;
+}
+
 $EstadoServicioLlamada = isset($_GET['EstadoServicio']) ? implode(",", $_GET['EstadoServicio']) : "";
 $FiltroOperacion = isset($_GET['FiltroOperacion']) ? $_GET['FiltroOperacion'] : "1";
+
+// SMM, 29/11/2023
+$TipoLlamada = isset($_GET['TipoLlamada']) ? implode(",", $_GET['TipoLlamada']) : "";
+$OrigenLlamada = isset($_GET['OrigenLlamada']) ? implode(",", $_GET['OrigenLlamada']) : "";
+$TipoProblema = isset($_GET['TipoProblema']) ? implode(",", $_GET['TipoProblema']) : "";
+$SubTipoProblema = isset($_GET['SubTipoProblema']) ? implode(",", $_GET['SubTipoProblema']) : "";
 
 if ($sw == 1) {
 	$Param = array(
 		"'" . FormatoFecha($FechaInicial) . "'",
 		"'" . FormatoFecha($FechaFinal) . "'",
-		"'" . $Cliente . "'",
-		"'" . $Sucursal . "'",
-		"'" . $Serie . "'",
-		"'" . $TipoLlamada . "'",
-		"'" . $EstadoLlamada . "'",
-		"'" . $EstadoActividad . "'",
-		"'" . $EstadoServicioLlamada . "'",
-		"'" . $NombreEmpleado . "'",
-		"'" . $Facturado . "'",
-		"'" . $FiltroOperacion . "'",
+		"'$Cliente'",
+		"'$Sucursal'",
+		"'$Serie'",
+		"'$TipoLlamada'",
+		"'$OrigenLlamada'",
+		"'$TipoProblema'",
+		"'$SubTipoProblema'",
+		"'$EstadoLlamada'",
+		"'$EstadoServicioLlamada'",
+		"'$NombreEmpleado'",
+		"'$NombreAdicional'",
+		"'$FiltroOperacion'",
 		"'" . strtolower($_SESSION['User']) . "'",
 	);
 	$SQL = EjecutarSP('usp_rep_OperacionesReindustrias', $Param);
@@ -328,15 +338,15 @@ if ($sw == 1) {
 								<div class="form-group">
 									<label class="col-lg-1 control-label">Origen llamada</label>
 									<div class="col-lg-3">
-										<select data-placeholder="(Todos)" name="TipoLlamada[]"
-											class="form-control chosen-select" id="TipoLlamada" multiple>
+										<select data-placeholder="(Todos)" name="OrigenLlamada[]"
+											class="form-control chosen-select" id="OrigenLlamada" multiple>
 											<?php $j = 0;
-											while ($row_TipoLlamadas = sqlsrv_fetch_array($SQL_TipoLlamadas)) { ?>
-												<option value="<?php echo $row_TipoLlamadas['IdTipoLlamada']; ?>" <?php if ((isset($_GET['TipoLlamada'][$j]) && ($_GET['TipoLlamada'][$j] != "")) && (strcmp($row_TipoLlamadas['IdTipoLlamada'], $_GET['TipoLlamada'][$j]) == 0)) {
+											while ($row_OrigenLlamada = sqlsrv_fetch_array($SQL_OrigenLlamada)) { ?>
+												<option value="<?php echo $row_OrigenLlamada['IdOrigenLlamada']; ?>" <?php if ((isset($_GET['OrigenLlamada'][$j]) && ($_GET['OrigenLlamada'][$j] != "")) && (strcmp($row_OrigenLlamada['IdOrigenLlamada'], $_GET['OrigenLlamada'][$j]) == 0)) {
 													   echo "selected";
 													   $j++;
 												   } ?>>
-													<?php echo $row_TipoLlamadas['DeTipoLlamada']; ?>
+													<?php echo $row_OrigenLlamada['DeOrigenLlamada']; ?>
 												</option>
 											<?php } ?>
 										</select>
@@ -375,15 +385,15 @@ if ($sw == 1) {
 								<div class="form-group">
 									<label class="col-lg-1 control-label">Tipo problema</label>
 									<div class="col-lg-3">
-										<select data-placeholder="(Todos)" name="TipoLlamada[]"
-											class="form-control chosen-select" id="TipoLlamada" multiple>
+										<select data-placeholder="(Todos)" name="TipoProblema[]"
+											class="form-control chosen-select" id="TipoProblema" multiple>
 											<?php $j = 0;
-											while ($row_TipoLlamadas = sqlsrv_fetch_array($SQL_TipoLlamadas)) { ?>
-												<option value="<?php echo $row_TipoLlamadas['IdTipoLlamada']; ?>" <?php if ((isset($_GET['TipoLlamada'][$j]) && ($_GET['TipoLlamada'][$j] != "")) && (strcmp($row_TipoLlamadas['IdTipoLlamada'], $_GET['TipoLlamada'][$j]) == 0)) {
+											while ($row_TipoProblema = sqlsrv_fetch_array($SQL_TipoProblema)) { ?>
+												<option value="<?php echo $row_TipoProblema['IdTipoProblemaLlamada']; ?>" <?php if ((isset($_GET['TipoProblema'][$j]) && ($_GET['TipoProblema'][$j] != "")) && (strcmp($row_TipoProblema['IdTipoProblemaLlamada'], $_GET['TipoProblema'][$j]) == 0)) {
 													   echo "selected";
 													   $j++;
 												   } ?>>
-													<?php echo $row_TipoLlamadas['DeTipoLlamada']; ?>
+													<?php echo $row_TipoProblema['DeTipoProblemaLlamada']; ?>
 												</option>
 											<?php } ?>
 										</select>
@@ -391,14 +401,15 @@ if ($sw == 1) {
 
 									<label class="col-lg-1 control-label">Técnico adicional</label>
 									<div class="col-lg-3">
-										<select name="NombreEmpleado" class="form-control select2" id="NombreEmpleado">
+										<select name="NombreAdicional" class="form-control select2" id="NombreAdicional">
 											<option value="">(Todos)</option>
-											<?php while ($row_EmpleadoActividad = sqlsrv_fetch_array($SQL_EmpleadoActividad)) { ?>
-												<option value="<?php echo $row_EmpleadoActividad['NombreEmpleado']; ?>"
-													<?php if ((isset($_GET['NombreEmpleado'])) && (strcmp($row_EmpleadoActividad['NombreEmpleado'], $_GET['NombreEmpleado']) == 0)) {
+											
+											<?php while ($row_EmpleadoAdicional = sqlsrv_fetch_array($SQL_EmpleadoAdicional)) { ?>
+												<option value="<?php echo $row_EmpleadoAdicional['NombreEmpleado']; ?>"
+													<?php if (isset($_GET['NombreAdicional']) && ($row_EmpleadoAdicional['NombreEmpleado'] == $_GET['NombreAdicional'])) {
 														echo "selected";
 													} ?>>
-													<?php echo $row_EmpleadoActividad['NombreEmpleado']; ?>
+													<?php echo $row_EmpleadoAdicional['NombreEmpleado']; ?>
 												</option>
 											<?php } ?>
 										</select>
@@ -424,15 +435,15 @@ if ($sw == 1) {
 								<div class="form-group">
 									<label class="col-lg-1 control-label">Subtipo problema</label>
 									<div class="col-lg-3">
-										<select data-placeholder="(Todos)" name="TipoLlamada[]"
-											class="form-control chosen-select" id="TipoLlamada" multiple>
+										<select data-placeholder="(Todos)" name="SubTipoProblema[]"
+											class="form-control chosen-select" id="SubTipoProblema" multiple>
 											<?php $j = 0;
-											while ($row_TipoLlamadas = sqlsrv_fetch_array($SQL_TipoLlamadas)) { ?>
-												<option value="<?php echo $row_TipoLlamadas['IdTipoLlamada']; ?>" <?php if ((isset($_GET['TipoLlamada'][$j]) && ($_GET['TipoLlamada'][$j] != "")) && (strcmp($row_TipoLlamadas['IdTipoLlamada'], $_GET['TipoLlamada'][$j]) == 0)) {
+											while ($row_SubTipoProblema = sqlsrv_fetch_array($SQL_SubTipoProblema)) { ?>
+												<option value="<?php echo $row_SubTipoProblema['IdSubTipoProblemaLlamada']; ?>" <?php if ((isset($_GET['SubTipoProblema'][$j]) && ($_GET['SubTipoProblema'][$j] != "")) && (strcmp($row_SubTipoProblema['IdSubTipoProblemaLlamada'], $_GET['SubTipoProblema'][$j]) == 0)) {
 													   echo "selected";
 													   $j++;
 												   } ?>>
-													<?php echo $row_TipoLlamadas['DeTipoLlamada']; ?>
+													<?php echo $row_SubTipoProblema['DeSubTipoProblemaLlamada']; ?>
 												</option>
 											<?php } ?>
 										</select>
