@@ -30,6 +30,7 @@ if (isset($_GET['FF_FechaVigencia']) && $_GET['FF_FechaVigencia'] != "") {
 $Estado = $_GET['Estado'] ?? "";
 $BuscarDato = $_GET['BuscarDato'] ?? "";
 
+$Tipo = $_GET['Tipo'] ?? "";
 $IdMarca = $_GET['Marca'] ?? "";
 $Campana = $_GET['Campana'] ?? "";
 $Proveedor = $_GET['Proveedor'] ?? "";
@@ -47,6 +48,7 @@ if ($sw == 1) {
 	
 	$Filtro .= ($Campana == "") ? "" : "AND id_campana = '$Campana'";
 	$Filtro .= ($IdMarca == "") ? "" : "AND id_marca = '$IdMarca'";
+	$Filtro .= ($Tipo == "") ? "" : "AND tipo_campana = '$Tipo'";
 	$Filtro .= ($Proveedor == "") ? "" : "AND id_socio_negocio = '$Proveedor'";
 	$Filtro .= ($Sucursal == "") ? "" : "AND id_direccion_destino = '$Sucursal'";
 
@@ -185,24 +187,22 @@ if ($sw == 1) {
 										<input name="Campana" type="text" class="form-control" id="Campana"
 											maxlength="100" value="<?php echo $Campana; ?>">
 									</div>
-
-									<!-- Inicio, #Marca -->
-									<label class="col-lg-1 control-label">Marca</label>
 									
+									<label class="col-lg-1 control-label">
+										Tipo Campaña
+									</label>
 									<div class="col-lg-3">
-										<select name="Marca" id="Marca" class="form-control select2">
-											<option value="">Seleccione...</option>
-											
-											<?php while ($row_Marca = sqlsrv_fetch_array($SQL_Marca)) { ?>
-												<option value="<?php echo $row_Marca['IdMarcaVehiculo']; ?>" <?php if ((isset($_GET['Marca'])) && ($row_Marca['IdMarcaVehiculo'] == $_GET['Marca'])) {
-														echo "selected";
-												   	} ?>>
-													<?php echo $row_Marca['DeMarcaVehiculo']; ?>
-												</option>
-											<?php } ?>
+										<select name="Tipo" class="form-control" id="Tipo">
+											<option value="">(Todos)</option>
+
+											<option value="1" <?php if ($Tipo == "1") {
+												echo "selected";
+											} ?>>Garantía</option>
+											<option value="2" <?php if ($Tipo == "2") {
+												echo "selected";
+											} ?>>Comercial</option>
 										</select>
 									</div>
-									<!-- Fin, #Marca -->
 								</div>
 
 								<div class="form-group">
@@ -251,13 +251,31 @@ if ($sw == 1) {
 								</div>
 
 								<div class="form-group">
+									<!-- Inicio, #Marca -->
+									<label class="col-lg-1 control-label">Marca</label>
+									
+									<div class="col-lg-3">
+										<select name="Marca" id="Marca" class="form-control select2">
+											<option value="">Seleccione...</option>
+											
+											<?php while ($row_Marca = sqlsrv_fetch_array($SQL_Marca)) { ?>
+												<option value="<?php echo $row_Marca['IdMarcaVehiculo']; ?>" <?php if ((isset($_GET['Marca'])) && ($row_Marca['IdMarcaVehiculo'] == $_GET['Marca'])) {
+														echo "selected";
+												   	} ?>>
+													<?php echo $row_Marca['DeMarcaVehiculo']; ?>
+												</option>
+											<?php } ?>
+										</select>
+									</div>
+									<!-- Fin, #Marca -->
+
 									<label class="col-lg-1 control-label">Buscar Dato</label>
 									<div class="col-lg-3">
 										<input name="BuscarDato" type="text" class="form-control" id="BuscarDato"
 											maxlength="100" value="<?php echo $BuscarDato; ?>">
 									</div>
 
-									<div class="col-lg-8">
+									<div class="col-lg-4">
 										<button type="submit" class="btn btn-outline btn-success pull-right"><i
 												class="fa fa-search"></i> Buscar</button>
 									</div>
@@ -292,6 +310,7 @@ if ($sw == 1) {
 												<th>ID Campaña</th>
 												<th>Campaña</th>
 												<th>Descripción</th>
+												<th>Tipo</th>
 												<th>Marca</th>
 												<th>Estado</th>
 												<th>Proveedor</th>
@@ -315,6 +334,13 @@ if ($sw == 1) {
 													</td>
 													<td>
 														<?php echo $row['descripcion_campana'] ?? ""; ?>
+													</td>
+													<td>
+														<?php if ($row['tipo_campana'] == "1") {
+															echo "Garantia";
+														} elseif ($row['tipo_campana'] == "2") {
+															echo "Comercial";
+														}; ?>
 													</td>
 													<td>
 														<?php echo $row['marca'] ?? ""; ?>

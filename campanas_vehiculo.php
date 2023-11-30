@@ -14,6 +14,7 @@ $row_Encabezado = sqlsrv_fetch_array($SQL_Encabezado);
 $Campana = $row_Encabezado['campana'] ?? "";
 $Comentario = $row_Encabezado['descripcion_campana'] ?? "";
 $Estado = $row_Encabezado['estado'] ?? "";
+$Tipo = $row_Encabezado['tipo_campana'] ?? "";
 
 $TiempoMeses = number_format(($row_Encabezado['tiempo_campana_meses'] ?? 0), 2);
 
@@ -82,7 +83,8 @@ $direccion_destino = $_POST['direccion_destino'] ?? "";
 $tiempo_campana_meses = $_POST['tiempo_campana_meses'] ?? "NULL";
 $fecha_limite_vigencia = isset($_POST['fecha_limite_vigencia']) ? FormatoFecha($_POST['fecha_limite_vigencia']) : "";
 $id_marca = $_POST['Marca'] ?? "";
-$estado = $_POST['estado'] ?? "";
+$tipo_campana = $_POST['tipo'] ?? "";
+$estado_campana = $_POST['estado'] ?? "";
 $id_usuario_creacion = "'$coduser'";
 $fecha_creacion = "'$datetime'";
 $hora_creacion = "'$datetime'";
@@ -106,7 +108,8 @@ if ($type == 1) {
 		$tiempo_campana_meses,
 		"'$fecha_limite_vigencia'",
 		"'$id_marca'",
-		"'$estado'",
+		"'$tipo_campana'",
+		"'$estado_campana'",
 		$id_usuario_actualizacion,
 		$fecha_actualizacion,
 		$hora_actualizacion,
@@ -131,7 +134,8 @@ if ($type == 1) {
 		$tiempo_campana_meses,
 		"'$fecha_limite_vigencia'",
 		"'$id_marca'",
-		"'$estado'",
+		"'$tipo_campana'",
+		"'$estado_campana'",
 		$id_usuario_actualizacion,
 		$fecha_actualizacion,
 		$hora_actualizacion,
@@ -434,18 +438,34 @@ if ($type != 0) {
 									</div>
 									
 									<label class="col-lg-1 control-label">
-										Comentario <span class="text-danger">*</span>
+										Tipo Campaña
 									</label>
 									<div class="col-lg-3">
-										<textarea name="descripcion_campana" rows="3" maxlength="3000"
-											class="form-control" required id="descripcion_campana"
-											type="text"><?php echo $Comentario; ?></textarea>
+										<select name="tipo" class="form-control" id="tipo">
+											<option value="">Seleccione...</option>
+
+											<option value="1" <?php if ($Tipo == "1") {
+												echo "selected";
+											} ?>>Garantía</option>
+											<option value="2" <?php if ($Tipo == "2") {
+												echo "selected";
+											} ?>>Comercial</option>
+										</select>
 									</div>
 								</div>
 								<!-- /.form-group -->
 
 								<div class="form-group">
-									<div class="col-lg-12">
+									<label class="col-lg-1 control-label">
+										Comentario <span class="text-danger">*</span>
+									</label>
+									<div class="col-lg-7">
+										<textarea name="descripcion_campana" rows="3" maxlength="3000"
+											class="form-control" required id="descripcion_campana"
+											type="text"><?php echo $Comentario; ?></textarea>
+									</div>
+
+									<div class="col-lg-4">
 										<br>
 										<div class="btn-group pull-right">
 											<button type="submit" class="btn btn-outline btn-primary">
