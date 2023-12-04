@@ -109,8 +109,10 @@ $UsuarioCreacion = "'$coduser'";
 
 $CDU_Kilometros = $_POST["CDU_Kilometros"] ?? "NULL";
 $CDU_TipoPreventivo = $_POST["CDU_TipoPreventivo"] ?? "";
-$IdTarjetaEquipo = $_POST["IdTarjetaEquipo"] ?? ""; // useless
-$NumeroSerie = $_POST["NumeroSerie"] ?? ""; // TE
+
+// SMM, 04/12/2023
+$IdTarjetaEquipo = $_POST["IdTarjetaEquipo"] ?? "NULL";
+$NumeroSerie = $_POST["NumeroSerie"] ?? "";
 
 $Series = $_POST["Series"] ?? "NULL";
 $OrigenLlamada = $_POST["OrigenLlamada"] ?? "NULL";
@@ -151,6 +153,7 @@ if ($Type == 1) {
 		"'$Cliente'",
 		$SucursalCliente,
 		"'$NumeroSerie'",
+		$IdTarjetaEquipo,
 		"'$CampanasAsociadas'", 
 	);
 } elseif ($Type == 3) {
@@ -179,6 +182,7 @@ if ($Type == 1) {
 		"'$Cliente'",
 		$SucursalCliente,
 		"'$NumeroSerie'",
+		$IdTarjetaEquipo,
 		"'$CampanasAsociadas'", 
 	);
 }

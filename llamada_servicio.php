@@ -164,7 +164,7 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
 			"'" . $_POST['TelefonoLlamada'] . "'",
 			"'" . $_POST['CorreoLlamada'] . "'",
 			"'" . $_POST['IdArticuloLlamada'] . "'", // SMM, 24/01/2022
-			"'" . $_POST['NumeroSerie'] . "'",
+			"'" . ($_POST['SerialInterno'] ?? "") . "'", // SMM, 27/11/2023
 			"'" . $_POST['SucursalCliente'] . "'",
 			"'" . $_POST['IdSucursalCliente'] . "'",
 			"'" . $_POST['DireccionLlamada'] . "'",
@@ -292,8 +292,9 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
 				} else {
 					$msg = $Resultado->Mensaje;
 
-					// Consultar la llamada para recargarla nuevamente y poder mantenerla
-					$SQL_Llamada = Seleccionar("uvw_Sap_tbl_LlamadasServicios", "*", "[IdLlamadaPortal]='$IdLlamada'");
+					// Consultar la llamada para recargarla nuevamente y poder mantenerla. SMM, 28/11/2023
+					$Cons_Llamada = "SELECT * FROM uvw_Sap_tbl_LlamadasServicios WHERE [IdLlamadaPortal] = '$IdLlamada' ORDER BY [ID_LlamadaServicio] DESC";
+    				$SQL_Llamada = sqlsrv_query($conexion, $Cons_Llamada);
 					$row_Llamada = sqlsrv_fetch_array($SQL_Llamada);
 
 					// Actualizar la Solicitud de Llamada de Servicio. 
@@ -406,7 +407,7 @@ if (isset($_POST['P']) && ($_POST['P'] == 33)) { //Actualizar llamada de servici
 			"'" . $_POST['TelefonoLlamada'] . "'",
 			"'" . $_POST['CorreoLlamada'] . "'",
 			"'" . $_POST['IdArticuloLlamada'] . "'", // SMM, 24/01/2022
-			"'" . $_POST['NumeroSerie'] . "'",
+			"'" . ($_POST['SerialInterno'] ?? "") . "'", // SMM, 27/11/2023
 			"'" . $_POST['SucursalCliente'] . "'",
 			"'" . $_POST['IdSucursalCliente'] . "'",
 			"'" . $_POST['DireccionLlamada'] . "'",
@@ -1482,8 +1483,8 @@ $(document).ready(function () {
 				});
 			});
 
-			// Stiven Muñoz Murillo, 22/12/2021
-			$("#NumeroSerie").change(function () {
+			// SMM, 27/11/2023
+			$("#NumeroSerie").on("change", function () {
 				$('.ibox-content').toggleClass('sk-loading', true);
 
 				let Cliente = $("#ClienteLlamada").val();
@@ -1525,14 +1526,14 @@ $(document).ready(function () {
 							$('.ibox-content').toggleClass('sk-loading', false);
 						},
 						error: function (data) {
-							console.error("Line 1133", data.responseText);
+							console.error("Line 1530", data.responseText);
 						}
 					});
 					$.ajax({
 						type: "POST",
-						url: "ajx_cbo_select.php?type=40&id=" + ID,
+						url: `ajx_cbo_select.php?type=40&id=${IdTarjetaEquipo}`,
 						success: function (response) {
-							// console.log(response);
+							console.log("ajx_buscar_datos_json(40)", response);
 
 							$('#CDU_ListaMateriales').html(response).fadeIn();
 							$('#CDU_ListaMateriales').trigger('change');
@@ -1607,6 +1608,8 @@ function ConsultarArticulo() {
 		remote.focus();
 	}
 }
+
+// SMM, 22/11/2023
 function ConsultarEquipo() {
 	let IdTarjetaEquipo = $("#NumeroSerie").val() || "";
 
@@ -2221,6 +2224,10 @@ function AgregarEsto(contenedorID, valorElemento) {
 									<i onclick="ConsultarEquipo();" title="Consultar Tarjeta Equipo"
 										style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Tarjeta de equipo
 								</label>
+
+								<!-- Se necesita el SerialInterno para el llamado al WebService. SMM, 27/11/2023 -->
+								<input type="hidden" class="form-control" name="SerialInterno" id="SerialInterno"
+									value="<?php echo $row_NumeroSerie['SerialInterno'] ?? ""; ?>">
 
 								<input type="hidden" class="form-control" name="NumeroSerie" id="NumeroSerie"
 									value="<?php if (isset($row_NumeroSerie['IdTarjetaEquipo']) && ($row_NumeroSerie['IdTarjetaEquipo'] != 0)) {
@@ -4210,6 +4217,8 @@ $(function () {
 			type: "POST",
 			url: `ajx_cbo_select.php?type=49&id=${id_tarjeta_equipo}`,
 			success: function (response) {
+				console.log("ajx_buscar_datos_json(49)", response);
+
 				$("#Campanas").html(response).fadeIn();
 				$("#Campanas").trigger('change');
 
@@ -4247,6 +4256,11 @@ $(function () {
 	// SMM, 13/09/2023
 	<?php if(isset($_GET["active"])) { ?>
 		VerTAB(<?php echo $_GET["active"]; ?>);
+	<?php } ?>
+
+	// SMM, 15/09/2023
+	<?php if ($sw_error == 1) { ?>
+		$('#NumeroSerie').trigger('change');		
 	<?php } ?>
 
 	// SMM, 18/10/2023

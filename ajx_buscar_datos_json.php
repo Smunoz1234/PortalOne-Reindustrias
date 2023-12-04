@@ -616,7 +616,7 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
         echo json_encode($records);
     }
 
-    // Usado en la solicitud y llamada de servicio. SMM, 22/11/2023
+    // Usado en la solicitud y llamada de servicio. SMM, 27/11/2023
     elseif ($type == 44) {
         $IdTarjetaEquipo = "'" . ($_GET['id'] ?? "") . "'";
         $ID_LlamadaServicio = "'" . ($_GET['ot'] ?? "") . "'";

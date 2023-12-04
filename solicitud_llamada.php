@@ -212,6 +212,7 @@ if (isset($_POST['P'])) {
 			"'" . ($_POST['CorreosContactosFirma'] ?? "") . "'",
 			"'$FirmaContactoResponsable'",
 			"0", // @FormatoCierreLlamada
+			"'" . ($_POST['NumeroSerie'] ?? "") . "'", // SMM, 04/12/2023
 			$Campanas, // SMM, 15/09/2023
 		);
 
