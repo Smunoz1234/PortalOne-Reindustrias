@@ -496,7 +496,7 @@ $row_NumeroSerie = sqlsrv_fetch_array($SQL_NumeroSerie);
 
 				<div class="col-lg-2"></div>
 
-				<div class="col-lg-3">
+				<div class="col-lg-4">
 					<label class="control-label">
 						<i onclick="ConsultarEquipo();" title="Consultar equipo" style="cursor: pointer"
 							class="btn-xs btn-success fa fa-search"></i> Tarjeta de equipo <span
@@ -524,7 +524,7 @@ $row_NumeroSerie = sqlsrv_fetch_array($SQL_NumeroSerie);
 				</div>
 				<!-- /#NumeroSerie -->
 
-				<div class="col-lg-3">
+				<div class="col-lg-2">
 					<br>
 					<div class="btn-group">
 						<button type="button" class="btn btn-success" title="Cambiar Equipo"  id="btnTE"
@@ -767,16 +767,6 @@ $row_NumeroSerie = sqlsrv_fetch_array($SQL_NumeroSerie);
 					$('#SucursalCliente').trigger('change');
 				}
 			});
-
-			$.ajax({
-				type: "POST",
-				url: `ajx_cbo_select.php?type=28&id=&clt=${$(this).val()}`, // &IdTE=
-				success: function (response) {
-					// IdTarjetaEquipo
-					$("#NumeroSerie").html(response).fadeIn();
-					$("#NumeroSerie").trigger('change');
-				}
-			});
 		});
 
 		// SMM, 25/10/2023
@@ -849,12 +839,9 @@ $row_NumeroSerie = sqlsrv_fetch_array($SQL_NumeroSerie);
 				console.log("Line 765", jsonForm);
 
 				let campanas = $("#Campanas").val();
-				console.log(campanas);
-
 				let CampanasAsociadas = campanas.join(";");
-				console.log(CampanasAsociadas);
 				
-				// IdTarjetaEquipo: jsonForm.IdTarjetaEquipo,
+				console.log(CampanasAsociadas);
 				let sp_type = <?php echo $edit ? 3 : 1; ?>
 
 				let jsonActividad = {
@@ -881,7 +868,8 @@ $row_NumeroSerie = sqlsrv_fetch_array($SQL_NumeroSerie);
 					CDU_Contrato: jsonForm.CDU_Contrato,
 					Cliente: jsonForm.ClienteLlamada,
 					SucursalCliente: jsonForm.SucursalCliente,
-					NumeroSerie: jsonForm.NumeroSerie,
+					NumeroSerie: jsonForm.SerialInterno,
+					IdTarjetaEquipo: jsonForm.NumeroSerie,
 					Campanas: CampanasAsociadas
 				};
 
@@ -1158,9 +1146,9 @@ $row_NumeroSerie = sqlsrv_fetch_array($SQL_NumeroSerie);
 		<?php } ?>
 	});
 
+	// SMM, 28/11/2023
 	function AdicionarCampanaAsincrono() {
-		// let id_tarjeta_equipo = $("#IdTarjetaEquipo").val();
-		let id_tarjeta_equipo = $("#NumeroSerie").find(':selected').data('id');
+		let id_tarjeta_equipo = $("#NumeroSerie").val();
 
 		$.ajax({
 			type: "POST",
