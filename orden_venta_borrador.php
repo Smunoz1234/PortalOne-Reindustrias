@@ -2216,5 +2216,6 @@ function CambiarDefinitivo() {
 <!-- InstanceEndEditable -->
 </body>
 
-<!-- InstanceEnd --></html>
+<!-- InstanceEnd -->
+</html>
 <?php sqlsrv_close($conexion);?>

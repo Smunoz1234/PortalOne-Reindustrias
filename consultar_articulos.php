@@ -22,7 +22,8 @@ if (isset($_GET['BuscarDatoArt']) && $_GET['BuscarDatoArt'] != "") {
     // SMM, 28/04/2023
     $VistaArticulos = ($PermitirListas) ? "uvw_Sap_tbl_ArticulosTodos_ListaPrecios" : "uvw_Sap_tbl_ArticulosTodos";
 
-    $Cons = "Select $Campos From $VistaArticulos $Filtro"; // echo $Cons;
+    $Cons = "SELECT $Campos FROM $VistaArticulos $Filtro";
+    // echo $Cons;
 
     $SQL = sqlsrv_query($conexion, $Cons);
     $sw = 1;
