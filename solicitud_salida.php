@@ -418,9 +418,9 @@ if ($edit == 1 && $sw_error == 0) {
 }
 
 if ($sw_error == 1) {
+    $Cons = "SELECT * FROM uvw_tbl_SolicitudSalida WHERE ID_SolSalida='$IdSolSalida' AND IdEvento='$IdEvento'";
+	// echo $Cons;
 
-    //Solicitud salida
-    $Cons = "Select * From uvw_tbl_SolicitudSalida Where ID_SolSalida='" . $IdSolSalida . "' AND IdEvento='" . $IdEvento . "'";
     $SQL = sqlsrv_query($conexion, $Cons);
     $row = sqlsrv_fetch_array($SQL);
 
@@ -661,6 +661,12 @@ function BuscarArticulo(dato){
 	// SMM, 23/01/2023
 	let conceptoSalida = document.getElementById("ConceptoSalida").value;
 
+	// SMM, 27/03/2023
+	let serie = document.getElementById("Serie").value;
+
+	// Dimensión Series. SMM, 04/04/2023
+	let sucursal = document.getElementById("Dim1").value;
+
 	var posicion_x;
 	var posicion_y;
 	posicion_x=(screen.width/2)-(1200/2);
@@ -668,7 +674,7 @@ function BuscarArticulo(dato){
 
 	if(dato!=""){
 		if((cardcode!="")&&(almacen!="")){
-			remote=open(`buscar_articulo.php?concepto=${conceptoSalida}&dim1=${dim1}&dim2=${dim2}&dim3=${dim3}&towhscode=${almacenDestino}&prjcode=${proyecto}&dato=`+dato+'&cardcode='+cardcode+'&whscode='+almacen+'&doctype=<?php if ($edit == 0) {echo "7";} else {echo "8";}?>&idsolsalida=<?php if ($edit == 1) {echo base64_encode($row['ID_SolSalida']);} else {echo "0";}?>&evento=<?php if ($edit == 1) {echo base64_encode($row['IdEvento']);} else {echo "0";}?>&tipodoc=3&dim1='+dim1+'&dim2='+dim2+'&dim3='+dim3,'remote',"width=1200,height=500,location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=no,fullscreen=no,directories=no,status=yes,left="+posicion_x+",top="+posicion_y+"");
+			remote=open(`buscar_articulo.php?concepto=${conceptoSalida}&serie=${serie}&sucursal=${sucursal}&dim1=${dim1}&dim2=${dim2}&dim3=${dim3}&towhscode=${almacenDestino}&prjcode=${proyecto}&dato=`+dato+'&cardcode='+cardcode+'&whscode='+almacen+'&doctype=<?php if ($edit == 0) {echo "7";} else {echo "8";}?>&idsolsalida=<?php if ($edit == 1) {echo base64_encode($row['ID_SolSalida']);} else {echo "0";}?>&evento=<?php if ($edit == 1) {echo base64_encode($row['IdEvento']);} else {echo "0";}?>&tipodoc=3&dim1='+dim1+'&dim2='+dim2+'&dim3='+dim3,'remote',"width=1200,height=500,location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=no,fullscreen=no,directories=no,status=yes,left="+posicion_x+",top="+posicion_y+"");
 			remote.focus();
 		}else{
 			Swal.fire({
@@ -781,10 +787,13 @@ function verAutorizacion() {
 			<?php if (isset($_GET['a'])) {?>
 				frame.src="detalle_solicitud_salida.php";
 			<?php } else {?>
+				// SMM, 27/03/2023
+				let serie = document.getElementById('Serie').value;
+
 				// Antiguo fragmento de código
 				<?php if ($edit == 0) {?>
 					if(carcode!="") {
-						frame.src="detalle_solicitud_salida.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+carcode;
+						frame.src=`detalle_solicitud_salida.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode=${carcode}&serie=${serie}`;
 					}else{
 						frame.src="detalle_solicitud_salida.php";
 					}
@@ -865,18 +874,19 @@ function verAutorizacion() {
 
 		$("#Serie").change(function() {
 			$('.ibox-content').toggleClass('sk-loading',true);
-
-			console.log("SDim Message,\n<?php echo $console_Msg; ?>"); // SMM, 29/08/2022
+			
+			console.log("OnChange de la Serie");
+			console.log("SDim Message,\n<?php echo $console_Msg; ?>");
 
 			var Serie=document.getElementById('Serie').value;
-			var SDim = document.getElementById('<?php echo $SDimPO; ?>').value; // SMM, 29/08/2022
+			var SDim = document.getElementById('<?php echo $SDimPO; ?>').value;
 
 			$.ajax({
 				type: "POST",
-				url: `ajx_cbo_select.php?type=19&id=${Serie}&SDim=${SDim}`, // SMM, 29/08/2022
+				url: `ajx_cbo_select.php?type=19&id=${Serie}&SDim=${SDim}`,
 				success: function(response){
-					$('#<?php echo $SDimPO; ?>').html(response).fadeIn(); // SMM, 29/08/2022
-					$('#<?php echo $SDimPO; ?>').trigger('change'); // SMM, 29/08/2022
+					$('#<?php echo $SDimPO; ?>').html(response).fadeIn();
+					$('#<?php echo $SDimPO; ?>').trigger('change');
 
 					$('.ibox-content').toggleClass('sk-loading',false);
 				},
@@ -889,42 +899,44 @@ function verAutorizacion() {
 		});
 
 		// Actualización del almacen en las líneas.
-		$("#Almacen").change(function() {
-			var frame=document.getElementById('DataGrid');
+		<?php if($sw_error == 0) { ?>
+			$("#Almacen").change(function() {
+				var frame=document.getElementById('DataGrid');
 
-			if(document.getElementById('Almacen').value!=""&&document.getElementById('CardCode').value!=""&&document.getElementById('TotalItems').value!="0"){
-				Swal.fire({
-					title: "¿Desea actualizar las lineas?",
-					icon: "question",
-					showCancelButton: true,
-					confirmButtonText: "Si, confirmo",
-					cancelButtonText: "No"
-				}).then((result) => {
-					if (result.isConfirmed) {
-						$('.ibox-content').toggleClass('sk-loading',true);
-							<?php if ($edit == 0) {?>
-						$.ajax({
-							type: "GET",
-							url: "registro.php?P=36&doctype=4&type=1&name=WhsCode&value="+Base64.encode(document.getElementById('Almacen').value)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
-							success: function(response){
-								frame.src="detalle_solicitud_salida.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
-								$('.ibox-content').toggleClass('sk-loading',false);
-							}
-						});
-						<?php } else {?>
-						$.ajax({
-							type: "GET",
-							url: "registro.php?P=36&doctype=4&type=2&name=WhsCode&value="+Base64.encode(document.getElementById('Almacen').value)+"&line=0&id=<?php echo $row['ID_SolSalida']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
-							success: function(response){
-								frame.src="detalle_solicitud_salida.php?id=<?php echo base64_encode($row['ID_SolSalida']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
-								$('.ibox-content').toggleClass('sk-loading',false);
-							}
-						});
-						<?php }?>
-					}
-				});
-			}
-		});
+				if(document.getElementById('Almacen').value!=""&&document.getElementById('CardCode').value!=""&&document.getElementById('TotalItems').value!="0"){
+					Swal.fire({
+						title: "¿Desea actualizar las lineas del Almacen Origen?",
+						icon: "question",
+						showCancelButton: true,
+						confirmButtonText: "Si, confirmo",
+						cancelButtonText: "No"
+					}).then((result) => {
+						if (result.isConfirmed) {
+							$('.ibox-content').toggleClass('sk-loading',true);
+								<?php if ($edit == 0) {?>
+							$.ajax({
+								type: "GET",
+								url: "registro.php?P=36&doctype=4&type=1&name=WhsCode&value="+Base64.encode(document.getElementById('Almacen').value)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
+								success: function(response){
+									frame.src="detalle_solicitud_salida.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
+									$('.ibox-content').toggleClass('sk-loading',false);
+								}
+							});
+							<?php } else {?>
+							$.ajax({
+								type: "GET",
+								url: "registro.php?P=36&doctype=4&type=2&name=WhsCode&value="+Base64.encode(document.getElementById('Almacen').value)+"&line=0&id=<?php echo $row['ID_SolSalida']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
+								success: function(response){
+									frame.src="detalle_solicitud_salida.php?id=<?php echo base64_encode($row['ID_SolSalida']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
+									$('.ibox-content').toggleClass('sk-loading',false);
+								}
+							});
+							<?php }?>
+						}
+					});
+				}
+			});
+		<?php } ?>
 		// Actualizar almacen, llega hasta aquí.
 
 // Actualización de las dimensiones dinámicamente, SMM 22/08/2022
@@ -935,6 +947,7 @@ function verAutorizacion() {
 	<?php $OcrId = ($DimCode == 1) ? "" : $DimCode;?>
 
 	$("#<?php echo $dim['IdPortalOne']; ?>").change(function() {
+		console.log("OnChange de la <?php echo $dim['DescPortalOne']; ?>");
 
 		var docType = 4;
 		var detalleDoc = "detalle_solicitud_salida.php";
@@ -959,13 +972,17 @@ function verAutorizacion() {
 
 					$('#Almacen').html(response).fadeIn();
 
-					// SMM, 20/02/2023
-					let valorSeleccionado = "<?php echo $row_DatosEmpleados["AlmacenOrigen"] ?? ""; ?>";
-					if ($(`#Almacen option[value="${valorSeleccionado}"]`).length > 0) {
-						$('#Almacen').val(valorSeleccionado);
-						$('#Almacen').trigger('change');
-					}
+					// SMM, 19/10/2023
+					<?php if(($edit == 0) && ($sw_error == 0)) { ?>
+						let valorSeleccionado = "<?php echo $row_DatosEmpleados["AlmacenOrigen"] ?? ""; ?>";
+						if ($(`#Almacen option[value="${valorSeleccionado}"]`).length > 0) {
+							$('#Almacen').val(valorSeleccionado);
+						} else {
+							console.log("Line 980");
+						}
+					<?php } ?>
 
+					$('#Almacen').trigger('change');
 					$('.ibox-content').toggleClass('sk-loading',false);
 				},
 				error: function(error) {
@@ -984,13 +1001,17 @@ function verAutorizacion() {
 
 					$('#AlmacenDestino').html(response).fadeIn();
 
-					// SMM, 20/02/2023
-					let valorSeleccionado = "<?php echo $row_DatosEmpleados["AlmacenDestino"] ?? ""; ?>";
-					if ($(`#AlmacenDestino option[value="${valorSeleccionado}"]`).length > 0) {
-						$('#AlmacenDestino').val(valorSeleccionado);
-						$('#AlmacenDestino').trigger('change');
-					}
+					// SMM, 19/10/2023
+					<?php if(($edit == 0) && ($sw_error == 0)) { ?>
+						let valorSeleccionado = "<?php echo $row_DatosEmpleados["AlmacenDestino"] ?? ""; ?>";
+						if ($(`#AlmacenDestino option[value="${valorSeleccionado}"]`).length > 0) {
+							$('#AlmacenDestino').val(valorSeleccionado);
+						} else {
+							console.log("Line 1010");
+						}
+					<?php } ?>
 
+					$('#AlmacenDestino').trigger('change');
 					$('.ibox-content').toggleClass('sk-loading',false);
 				},
 				error: function(error) {
@@ -1005,51 +1026,45 @@ function verAutorizacion() {
 		var CardCode = document.getElementById('CardCode').value;
 		var TotalItems = document.getElementById('TotalItems').value;
 
-		if(DimIdPO!="" && CardCode!="" && TotalItems!="0") {
-			Swal.fire({
-				title: "¿Desea actualizar las lineas de la <?php echo $dim['DescPortalOne']; ?>?",
-				icon: "question",
-				showCancelButton: true,
-				confirmButtonText: "Si, confirmo",
-				cancelButtonText: "No"
-			}).then((result) => {
-				if (result.isConfirmed) {
-					$('.ibox-content').toggleClass('sk-loading',true);
+		<?php if($sw_error == 0) { ?>
+			if(DimIdPO!="" && CardCode!="" && TotalItems!="0") {
+				Swal.fire({
+					title: "¿Desea actualizar las lineas de la <?php echo $dim['DescPortalOne']; ?>?",
+					icon: "question",
+					showCancelButton: true,
+					confirmButtonText: "Si, confirmo",
+					cancelButtonText: "No"
+				}).then((result) => {
+					if (result.isConfirmed) {
+						$('.ibox-content').toggleClass('sk-loading',true);
 
-					<?php if ($edit == 0) {?>
-						$.ajax({
-							type: "GET",
-							url: `registro.php?P=36&type=1&doctype=${docType}&name=OcrCode<?php echo $OcrId; ?>&value=${Base64.encode(DimIdPO)}&cardcode=${CardCode}&actodos=1&whscode=0&line=0`,
-							success: function(response){
-								frame.src=`${detalleDoc}?type=1&id=0&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode=${CardCode}`;
+						<?php if ($edit == 0) {?>
+							$.ajax({
+								type: "GET",
+								url: `registro.php?P=36&type=1&doctype=${docType}&name=OcrCode<?php echo $OcrId; ?>&value=${Base64.encode(DimIdPO)}&cardcode=${CardCode}&actodos=1&whscode=0&line=0`,
+								success: function(response){
+									frame.src=`${detalleDoc}?type=1&id=0&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode=${CardCode}`;
 
-								$('.ibox-content').toggleClass('sk-loading',false);
-							}
-						});
-					<?php } else {?>
-						$.ajax({
-							type: "GET",
-							url: `registro.php?P=36&type=2&doctype=${docType}&name=OcrCode<?php echo $OcrId; ?>&value=${Base64.encode(DimIdPO)}&id=<?php echo $row[strval($Name_IdDoc)]; ?>&evento=<?php echo $IdEvento; ?>&actodos=1&line=0`,
-							success: function(response){
-								frame.src=`${detalleDoc}?type=2&id=<?php echo base64_encode($row[strval($Name_IdDoc)]); ?>&evento=<?php echo base64_encode($IdEvento); ?>`;
+									$('.ibox-content').toggleClass('sk-loading',false);
+								}
+							});
+						<?php } else {?>
+							$.ajax({
+								type: "GET",
+								url: `registro.php?P=36&type=2&doctype=${docType}&name=OcrCode<?php echo $OcrId; ?>&value=${Base64.encode(DimIdPO)}&id=<?php echo $row[strval($Name_IdDoc)]; ?>&evento=<?php echo $IdEvento; ?>&actodos=1&line=0`,
+								success: function(response){
+									frame.src=`${detalleDoc}?type=2&id=<?php echo base64_encode($row[strval($Name_IdDoc)]); ?>&evento=<?php echo base64_encode($IdEvento); ?>`;
 
-								$('.ibox-content').toggleClass('sk-loading',false);
-							}
-						});
-					<?php }?>
-				}
-			});
-		} else  {
-			if(false) {
-				console.log("No se cumple la siguiente condición en la <?php echo $dim['DimName']; ?>");
-
-				console.log(`DimIdPO == ${DimIdPO}`);
-				console.log(`CardCode == ${CardCode}`);
-				console.log(`TotalItems == ${TotalItems}`);
-
-				$('.ibox-content').toggleClass('sk-loading',false);
+									$('.ibox-content').toggleClass('sk-loading',false);
+								}
+							});
+						<?php }?>
+					}
+				});
+			} else  {
+				console.log("No entro a la actualización en Lote de las Dimensiones");
 			}
-		}
+		<?php } ?>
 	});
 
 <?php }?>
@@ -1096,119 +1111,125 @@ function verAutorizacion() {
 		});
 
 		// Actualización del AlmacenDestino en las líneas, SMM 29/11/2022
-		$("#AlmacenDestino").change(function(){
-			var frame=document.getElementById('DataGrid');
-			if(document.getElementById('AlmacenDestino').value!=""&&document.getElementById('CardCode').value!=""&&document.getElementById('TotalItems').value!="0"){
-				Swal.fire({
-					title: "¿Desea actualizar las lineas?",
-					icon: "question",
-					showCancelButton: true,
-					confirmButtonText: "Si, confirmo",
-					cancelButtonText: "No"
-				}).then((result) => {
-					if (result.isConfirmed) {
-						$('.ibox-content').toggleClass('sk-loading',true);
-							<?php if ($edit == 0) {?>
-						$.ajax({
-							type: "GET",
-							url: "registro.php?P=36&doctype=4&type=1&name=ToWhsCode&value="+Base64.encode(document.getElementById('AlmacenDestino').value)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
-							success: function(response){
-								frame.src="detalle_solicitud_salida.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
-								$('.ibox-content').toggleClass('sk-loading',false);
-							}
-						});
-						<?php } else {?>
-						$.ajax({
-							type: "GET",
-							url: "registro.php?P=36&doctype=4&type=2&name=ToWhsCode&value="+Base64.encode(document.getElementById('AlmacenDestino').value)+"&line=0&id=<?php echo $row['ID_SolSalida']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
-							success: function(response){
-								frame.src="detalle_solicitud_salida.php?id=<?php echo base64_encode($row['ID_SolSalida']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
-								$('.ibox-content').toggleClass('sk-loading',false);
-							}
-						});
-						<?php }?>
-					}
-				});
-			}
-		});
+		<?php if($sw_error == 0) { ?>
+			$("#AlmacenDestino").change(function(){
+				var frame=document.getElementById('DataGrid');
+				if(document.getElementById('AlmacenDestino').value!=""&&document.getElementById('CardCode').value!=""&&document.getElementById('TotalItems').value!="0"){
+					Swal.fire({
+						title: "¿Desea actualizar las lineas del Almacen Destino?",
+						icon: "question",
+						showCancelButton: true,
+						confirmButtonText: "Si, confirmo",
+						cancelButtonText: "No"
+					}).then((result) => {
+						if (result.isConfirmed) {
+							$('.ibox-content').toggleClass('sk-loading',true);
+								<?php if ($edit == 0) {?>
+							$.ajax({
+								type: "GET",
+								url: "registro.php?P=36&doctype=4&type=1&name=ToWhsCode&value="+Base64.encode(document.getElementById('AlmacenDestino').value)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
+								success: function(response){
+									frame.src="detalle_solicitud_salida.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
+									$('.ibox-content').toggleClass('sk-loading',false);
+								}
+							});
+							<?php } else {?>
+							$.ajax({
+								type: "GET",
+								url: "registro.php?P=36&doctype=4&type=2&name=ToWhsCode&value="+Base64.encode(document.getElementById('AlmacenDestino').value)+"&line=0&id=<?php echo $row['ID_SolSalida']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
+								success: function(response){
+									frame.src="detalle_solicitud_salida.php?id=<?php echo base64_encode($row['ID_SolSalida']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
+									$('.ibox-content').toggleClass('sk-loading',false);
+								}
+							});
+							<?php }?>
+						}
+					});
+				}
+			});
+		<?php } ?>
 		// Actualizar AlmacenDestino, llega hasta aquí.
 
 		// Actualización del proyecto en las líneas, SMM 29/11/2022
-		$("#PrjCode").change(function() {
-			var frame=document.getElementById('DataGrid');
+		<?php if($sw_error == 0) { ?>
+			$("#PrjCode").change(function() {
+				var frame=document.getElementById('DataGrid');
 
-			if(document.getElementById('PrjCode').value!=""&&document.getElementById('CardCode').value!=""&&document.getElementById('TotalItems').value!="0"){
-				Swal.fire({
-					title: "¿Desea actualizar las lineas?",
-					icon: "question",
-					showCancelButton: true,
-					confirmButtonText: "Si, confirmo",
-					cancelButtonText: "No"
-				}).then((result) => {
-					if (result.isConfirmed) {
-						$('.ibox-content').toggleClass('sk-loading',true);
-							<?php if ($edit == 0) {?>
-						$.ajax({
-							type: "GET",
-							url: "registro.php?P=36&doctype=4&type=1&name=PrjCode&value="+Base64.encode(document.getElementById('PrjCode').value)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
-							success: function(response){
-								frame.src="detalle_solicitud_salida.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
-								$('.ibox-content').toggleClass('sk-loading',false);
-							}
-						});
-						<?php } else {?>
-						$.ajax({
-							type: "GET",
-							url: "registro.php?P=36&doctype=4&type=2&name=PrjCode&value="+Base64.encode(document.getElementById('PrjCode').value)+"&line=0&id=<?php echo $row['ID_SolSalida']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
-							success: function(response){
-								frame.src="detalle_solicitud_salida.php?id=<?php echo base64_encode($row['ID_SolSalida']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
-								$('.ibox-content').toggleClass('sk-loading',false);
-							}
-						});
-						<?php }?>
-					}
-				});
-			}
-		});
+				if(document.getElementById('PrjCode').value!=""&&document.getElementById('CardCode').value!=""&&document.getElementById('TotalItems').value!="0"){
+					Swal.fire({
+						title: "¿Desea actualizar las lineas del Proyecto?",
+						icon: "question",
+						showCancelButton: true,
+						confirmButtonText: "Si, confirmo",
+						cancelButtonText: "No"
+					}).then((result) => {
+						if (result.isConfirmed) {
+							$('.ibox-content').toggleClass('sk-loading',true);
+								<?php if ($edit == 0) {?>
+							$.ajax({
+								type: "GET",
+								url: "registro.php?P=36&doctype=4&type=1&name=PrjCode&value="+Base64.encode(document.getElementById('PrjCode').value)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
+								success: function(response){
+									frame.src="detalle_solicitud_salida.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
+									$('.ibox-content').toggleClass('sk-loading',false);
+								}
+							});
+							<?php } else {?>
+							$.ajax({
+								type: "GET",
+								url: "registro.php?P=36&doctype=4&type=2&name=PrjCode&value="+Base64.encode(document.getElementById('PrjCode').value)+"&line=0&id=<?php echo $row['ID_SolSalida']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
+								success: function(response){
+									frame.src="detalle_solicitud_salida.php?id=<?php echo base64_encode($row['ID_SolSalida']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
+									$('.ibox-content').toggleClass('sk-loading',false);
+								}
+							});
+							<?php }?>
+						}
+					});
+				}
+			});
+		<?php } ?>
 		// Actualizar proyecto, llega hasta aquí.
 
 		// Actualización del concepto de salida en las líneas, SMM 21/01/2023
-		$("#ConceptoSalida").change(function() {
-			var frame=document.getElementById('DataGrid');
+		<?php if($sw_error == 0) { ?>
+			$("#ConceptoSalida").change(function() {
+				var frame=document.getElementById('DataGrid');
 
-			if(document.getElementById('ConceptoSalida').value!=""&&document.getElementById('CardCode').value!=""&&document.getElementById('TotalItems').value!="0"){
-				Swal.fire({
-					title: "¿Desea actualizar las lineas?",
-					icon: "question",
-					showCancelButton: true,
-					confirmButtonText: "Si, confirmo",
-					cancelButtonText: "No"
-				}).then((result) => {
-					if (result.isConfirmed) {
-						$('.ibox-content').toggleClass('sk-loading',true);
-							<?php if ($edit == 0) {?>
-						$.ajax({
-							type: "GET",
-							url: "registro.php?P=36&doctype=4&type=1&name=ConceptoSalida&value="+Base64.encode(document.getElementById('ConceptoSalida').value)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
-							success: function(response){
-								frame.src="detalle_solicitud_salida.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
-								$('.ibox-content').toggleClass('sk-loading',false);
-							}
-						});
-						<?php } else {?>
-						$.ajax({
-							type: "GET",
-							url: "registro.php?P=36&doctype=4&type=2&name=ConceptoSalida&value="+Base64.encode(document.getElementById('ConceptoSalida').value)+"&line=0&id=<?php echo $row['ID_SolSalida']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
-							success: function(response){
-								frame.src="detalle_solicitud_salida.php?id=<?php echo base64_encode($row['ID_SolSalida']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
-								$('.ibox-content').toggleClass('sk-loading',false);
-							}
-						});
-						<?php }?>
-					}
-				});
-			}
-		});
+				if(document.getElementById('ConceptoSalida').value!=""&&document.getElementById('CardCode').value!=""&&document.getElementById('TotalItems').value!="0"){
+					Swal.fire({
+						title: "¿Desea actualizar las lineas del Concepto de Salida?",
+						icon: "question",
+						showCancelButton: true,
+						confirmButtonText: "Si, confirmo",
+						cancelButtonText: "No"
+					}).then((result) => {
+						if (result.isConfirmed) {
+							$('.ibox-content').toggleClass('sk-loading',true);
+								<?php if ($edit == 0) {?>
+							$.ajax({
+								type: "GET",
+								url: "registro.php?P=36&doctype=4&type=1&name=ConceptoSalida&value="+Base64.encode(document.getElementById('ConceptoSalida').value)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
+								success: function(response){
+									frame.src="detalle_solicitud_salida.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
+									$('.ibox-content').toggleClass('sk-loading',false);
+								}
+							});
+							<?php } else {?>
+							$.ajax({
+								type: "GET",
+								url: "registro.php?P=36&doctype=4&type=2&name=ConceptoSalida&value="+Base64.encode(document.getElementById('ConceptoSalida').value)+"&line=0&id=<?php echo $row['ID_SolSalida']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
+								success: function(response){
+									frame.src="detalle_solicitud_salida.php?id=<?php echo base64_encode($row['ID_SolSalida']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
+									$('.ibox-content').toggleClass('sk-loading',false);
+								}
+							});
+							<?php }?>
+						}
+					});
+				}
+			});
+		<?php } ?>
 		// Actualización del concepto de salida, llega hasta aquí.
 	});
 </script>
@@ -1598,7 +1619,7 @@ function verAutorizacion() {
 					<!-- SMM, 29/08/2022 -->
 					<label class="col-lg-1 control-label">Condición de pago</label>
 					<div class="col-lg-3">
-						<select name="CondicionPago" class="form-control" id="CondicionPago" required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "disabled='disabled'";}?>>
+						<select name="CondicionPago" class="form-control" id="CondicionPago" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "disabled='disabled'";}?>>
 							<option value="">Seleccione...</option>
 						  <?php while ($row_CondicionPago = sqlsrv_fetch_array($SQL_CondicionPago)) {?>
 								<option value="<?php echo $row_CondicionPago['IdCondicionPago']; ?>" <?php if ($edit == 1 || $sw_error) {if (isset($row['IdCondicionPago']) && ($row['IdCondicionPago'] != "") && (strcmp($row_CondicionPago['IdCondicionPago'], $row['IdCondicionPago']) == 0)) {echo "selected=\"selected\"";}}?>><?php echo $row_CondicionPago['NombreCondicion']; ?></option>
@@ -1613,7 +1634,7 @@ function verAutorizacion() {
 					<?php foreach ($array_Dimensiones as &$dim) {?>
 						<label class="col-lg-1 control-label"><?php echo $dim['DescPortalOne']; ?> <span class="text-danger">*</span></label>
 						<div class="col-lg-3">
-							<select name="<?php echo $dim['IdPortalOne'] ?>" id="<?php echo $dim['IdPortalOne'] ?>" class="form-control select2 Dim" required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "disabled='disabled'";}?>>
+							<select name="<?php echo $dim['IdPortalOne'] ?>" id="<?php echo $dim['IdPortalOne'] ?>" class="form-control select2 Dim" required <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "disabled";}?>>
 								<option value="">Seleccione...</option>
 
 							<?php $SQL_Dim = Seleccionar('uvw_Sap_tbl_DimensionesReparto', '*', 'DimCode=' . $dim['DimCode']);?>
@@ -1622,7 +1643,9 @@ function verAutorizacion() {
 								<?php $OcrId = ($DimCode == 1) ? "" : $DimCode;?>
 
 								<option value="<?php echo $row_Dim['OcrCode']; ?>"
-								<?php if ((isset($row["OcrCode$OcrId"]) && ($row["OcrCode$OcrId"] != "")) && (strcmp($row_Dim['OcrCode'], $row["OcrCode$OcrId"]) == 0)) {echo "selected=\"selected\"";} elseif (($edit == 0) && ($row_DatosEmpleados["CentroCosto$DimCode"] != "") && (strcmp($row_DatosEmpleados["CentroCosto$DimCode"], $row_Dim['OcrCode']) == 0)) {echo "selected=\"selected\"";} elseif (isset($_GET[strval($dim['IdPortalOne'])]) && (strcmp($row_Dim['OcrCode'], base64_decode($_GET[strval($dim['IdPortalOne'])])) == 0)) {echo "selected=\"selected\"";}?>>
+								<?php if (isset($row["OcrCode$OcrId"]) && ($row_Dim['OcrCode'] == $row["OcrCode$OcrId"])) {echo "selected";} 
+									elseif ((($edit == 0) && ($sw_error == 0)) && ($row_DatosEmpleados["CentroCosto$DimCode"] == $row_Dim['OcrCode'])) {echo "selected";} 
+									elseif (isset($_GET[strval($dim['IdPortalOne'])]) && (strcmp($row_Dim['OcrCode'], base64_decode($_GET[strval($dim['IdPortalOne'])])) == 0)) {echo "selected";}?>>
 									<?php echo $row_Dim['OcrCode'] . "-" . $row_Dim['OcrName']; ?>
 								</option>
 							<?php }?>
@@ -1636,11 +1659,14 @@ function verAutorizacion() {
 				<div class="form-group">
 					<label class="col-lg-1 control-label">Almacén origen <span class="text-danger">*</span></label>
 					<div class="col-lg-3">
-						<select name="Almacen" class="form-control" id="Almacen" required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "disabled='disabled'";}?>>
+						<select name="Almacen" class="form-control" id="Almacen" required <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "disabled";}?>>
 							<option value="">Seleccione...</option>
-						  	<?php if ($edit == 1) {?>
+						  	
+							<?php if ($edit == 1) {?>
     							<?php while ($row_Almacen = sqlsrv_fetch_array($SQL_Almacen)) {?>
-									<option value="<?php echo $row_Almacen['WhsCode']; ?>" <?php if (($edit == 1) && (isset($row['WhsCode'])) && (strcmp($row_Almacen['WhsCode'], $row['WhsCode']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Almacen['WhsName']; ?></option>
+									<option value="<?php echo $row_Almacen['WhsCode']; ?>" <?php if (($edit == 1) && (isset($row['WhsCode'])) && ($row_Almacen['WhsCode'] == $row['WhsCode'])) {echo "selected";}?>>
+										<?php echo $row_Almacen['WhsName']; ?>
+									</option>
 						  		<?php }?>
 							<?php }?>
 						</select>
@@ -1649,13 +1675,16 @@ function verAutorizacion() {
 					<!-- Inicio, AlmacenDestino -->
 					<label class="col-lg-1 control-label">Almacén destino <span class="text-danger">*</span></label>
 					<div class="col-lg-3">
-						<select name="AlmacenDestino" class="form-control" id="AlmacenDestino" required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "disabled='disabled'";}?>>
+						<select name="AlmacenDestino" class="form-control" id="AlmacenDestino" required <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {echo "disabled";}?>>
 							<option value="">Seleccione...</option>
-						  <?php if ($edit == 1) {?>
-							<?php while ($row_AlmacenDestino = sqlsrv_fetch_array($SQL_AlmacenDestino)) {?>
-								<option value="<?php echo $row_AlmacenDestino['ToWhsCode']; ?>" <?php if (($edit == 1) && (isset($row['ToWhsCode'])) && (strcmp($row_AlmacenDestino['ToWhsCode'], $row['ToWhsCode']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_AlmacenDestino['ToWhsName']; ?></option>
+						  
+							<?php if ($edit == 1) {?>
+								<?php while ($row_AlmacenDestino = sqlsrv_fetch_array($SQL_AlmacenDestino)) {?>
+									<option value="<?php echo $row_AlmacenDestino['ToWhsCode']; ?>" <?php if (($edit == 1) && (isset($row['ToWhsCode'])) && ($row_AlmacenDestino['ToWhsCode'] == $row['ToWhsCode'])) {echo "selected";}?>>
+										<?php echo $row_AlmacenDestino['ToWhsName']; ?>
+									</option>
+								<?php }?>
 						  	<?php }?>
-						  <?php }?>
 						</select>
 					</div>
 					<!-- Fin, AlmacenDestino -->
@@ -1903,7 +1932,7 @@ if (isset($_GET['return'])) {
 						<div class="btn-group pull-right">
                             <button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i class="fa fa-mail-forward"></i> Copiar a <i class="fa fa-caret-down"></i></button>
                             <ul class="dropdown-menu">
-                                <li><a class="alkin dropdown-item" href="traslado_inventario.php?dt_SS=1&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Dim1=<?php echo base64_encode($row['OcrCode']); ?>&Dim2=<?php echo base64_encode($row['OcrCode2']); ?>&Dim3=<?php echo base64_encode($row['OcrCode3']); ?>&SucursalFact=<?php echo base64_encode($row['SucursalFacturacion']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&AlmacenDestino=<?php echo base64_encode($row['ToWhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['CodEmpleado']); ?>&TipoEntrega=<?php echo base64_encode($row['IdTipoEntrega']); ?>&AnioEntrega=<?php echo base64_encode($row['IdAnioEntrega']); ?>&EntregaDescont=<?php echo base64_encode($row['Descontable']); ?>&ValorCuotaDesc=<?php echo base64_encode($row['ValorCuotaDesc']); ?>&SS=<?php echo base64_encode($row['ID_SolSalida']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>&ConceptoSalida=<?php echo base64_encode($row['ConceptoSalida']); ?>">Traslado de salida</a></li>
+                                <li><a class="alkin dropdown-item" href="traslado_inventario.php?dt_SS=1&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Dim1=<?php echo base64_encode($row['OcrCode']); ?>&Dim2=<?php echo base64_encode($row['OcrCode2']); ?>&Dim3=<?php echo base64_encode($row['OcrCode3']); ?>&SucursalFact=<?php echo base64_encode($row['SucursalFacturacion']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&AlmacenDestino=<?php echo base64_encode($row['ToWhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['CodEmpleado']); ?>&TipoEntrega=<?php echo base64_encode($row['IdTipoEntrega']); ?>&AnioEntrega=<?php echo base64_encode($row['IdAnioEntrega']); ?>&EntregaDescont=<?php echo base64_encode($row['Descontable']); ?>&ValorCuotaDesc=<?php echo base64_encode($row['ValorCuotaDesc']); ?>&SS=<?php echo base64_encode($row['ID_SolSalida']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>&ConceptoSalida=<?php echo base64_encode($row['ConceptoSalida']); ?>&CondicionPago=<?php echo base64_encode($row['IdCondicionPago']); ?>">Traslado de salida</a></li>
                             </ul>
                         </div>
 					</div>
@@ -2068,7 +2097,7 @@ if ($edit == 1) {?>
 
 		// $('#Autorizacion option:not(:selected)').attr('disabled',true);
 
-		 var options = {
+		var options = {
 			  url: function(phrase) {
 				  return "ajx_buscar_datos_json.php?type=7&id="+phrase;
 			  },
@@ -2084,11 +2113,13 @@ if ($edit == 1) {?>
 				  }
 			  }
 		 };
-		  <?php if ($edit == 0) {?>
-		 $("#CardName").easyAutocomplete(options);
-	 	 <?php }?>
+		
 		<?php if ($edit == 0) {?>
-		 $('#Serie').trigger('change');
+			$("#CardName").easyAutocomplete(options);
+	 	<?php }?>
+		
+		<?php if ($edit == 0) {?>
+		 	$('#Serie').trigger('change');
 	 	<?php }?>
 	});
 </script>
