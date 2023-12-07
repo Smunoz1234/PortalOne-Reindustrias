@@ -645,7 +645,7 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 								url.searchParams.set('type', '2');
 							} else {
 								// ?id=0&type=1&usr&cardcode
-								console.log(url.search);
+								console.log("url.search", url.search);
 							}
 
 							// Asigna la nueva URL al atributo 'src' del elemento

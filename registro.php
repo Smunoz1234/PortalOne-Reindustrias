@@ -2157,7 +2157,7 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
             // Fusionar los arreglos
             $ParametrosEdit = array_merge($ParametrosEdit, $ParametrosDims, $ParametrosOthers);
 
-            if ($type == 1) { //Orden de venta
+            if ($type == 1) { // Orden de venta
                 $SQL_Insert = EjecutarSP('sp_tbl_OrdenVentaDetalleCarritoInsert' . $borrador, $ParametrosInsert, 35);
 
                 if ($SQL_Insert) {
@@ -2171,7 +2171,7 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     sqlsrv_close($conexion);
                     exit();
                 }
-            } elseif ($type == 2) { //Orden de venta editar
+            } elseif ($type == 2) { // Orden de venta - Editar
                 $SQL_Insert = EjecutarSP("sp_tbl_OrdenVentaDetalleInsert$borrador", $ParametrosEdit, 35);
 
                 if ($SQL_Insert) {
@@ -2512,7 +2512,7 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     sqlsrv_close($conexion);
                     exit();
                 }
-            } elseif ($type == 18) { //Orden de compra
+            } elseif ($type == 18) { // Orden de compra
                 //Insertar el registro en la BD
                 $ParametrosInsert = array(
                     "'" . $Item . "'",
@@ -2544,7 +2544,7 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     sqlsrv_close($conexion);
                     exit();
                 }
-            } elseif ($type == 19) { //Orden de compra editar
+            } elseif ($type == 19) { // Orden de compra - Editar
                 //Insertar el registro en la BD
                 $ParametrosInsert = array(
                     "'" . $Item . "'",

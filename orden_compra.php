@@ -2295,7 +2295,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 			let proyecto = $("#PrjCode").val();
 			let cardCode = $("#CardCode").val();
 			let listaPrecio = $("#IdListaPrecio").val();
-			let empleado = $("#EmpleadoCompras").val();
+			let empleado = $("#EmpleadoVentas").val();
 
 			if (((cardCode != "") && (serie != "")) || probarModal) {
 				$.ajax({
@@ -2305,7 +2305,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 						ObjType: 22,
 						OT: ordenServicio,
 						Edit: <?php echo $edit; ?>,
-						DocType: "<?php echo ($edit == 0) ? 1 : 2; ?>",
+						DocType: "<?php echo ($edit == 0) ? 18 : 19; ?>",
 						DocId: "<?php echo $row['ID_OrdenCompra'] ?? 0; ?>",
 						DocEvent: "<?php echo $row['IdEvento'] ?? 0; ?>",
 						CardCode: cardCode,
@@ -2338,7 +2338,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 			let proyecto = $("#PrjCode").val();
 			let cardCode = $("#CardCode").val();
 			let listaPrecio = $("#IdListaPrecio").val();
-			let empleado = $("#EmpleadoCompras").val();
+			let empleado = $("#EmpleadoVentas").val();
 
 			if (((cardCode != "") && (serie != "") && (totalItems > 0)) || probarModal) {
 				$.ajax({
@@ -2346,7 +2346,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 					url: "md_actualizar_articulos.php",
 					data: {
 						Edit: <?php echo $edit; ?>,
-						DocType: "<?php echo 1; ?>",
+						DocType: "<?php echo 16; ?>",
 						DocId: "<?php echo $row['ID_OrdenCompra'] ?? 0; ?>",
 						DocEvent: "<?php echo $row['IdEvento'] ?? 0; ?>",
 						CardCode: cardCode,
