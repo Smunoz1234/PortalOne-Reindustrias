@@ -2815,6 +2815,12 @@ function AgregarEsto(contenedorID, valorElemento) {
 <!-- InstanceBeginEditable name="EditRegion4" -->
 <script>
 $(document).ready(function () {
+	// Esto se utiliza al momento de crear la OT desde la TE.
+	<?php if (isset($_GET["IdTE"])) { ?>
+		$('#NumeroSerie').trigger('change');
+	<?php } ?>
+	// SMM, 07/12/2023
+	
 	// SMM, 07/11/2023
 	<?php if (PermitirFuncion(342)) { ?>
 			$(".fecha, .hora").on("change", function() {

@@ -928,7 +928,6 @@ $SubtipoProblema = ObtenerValorDefecto(191, "IdSubtipoProblema", false);
 $TipoLlamada = ObtenerValorDefecto(191, "IdTipoLlamada", false);
 $TipoProblema = ObtenerValorDefecto(191, "IdTipoProblema", false);
 
-
 // SMM, 01/09/2023
 $id_ls = $row['DocNum'] ?? "";
 $SQL_Campanas = Seleccionar("uvw_tbl_LlamadasServicios_Campanas", "*", "[id_llamada_servicio]='$id_ls'");
@@ -3605,6 +3604,12 @@ function AgregarEsto(contenedorID, valorElemento) {
 <!-- InstanceBeginEditable name="EditRegion4" -->
 <script>
 $(document).ready(function () {
+	// Esto se utiliza al momento de crear la OT desde la TE.
+	<?php if (isset($_GET["IdTE"])) { ?>
+		$('#NumeroSerie').trigger('change');
+	<?php } ?>
+	// SMM, 07/12/2023
+
 		$("#CrearLlamada").validate({
 			submitHandler: function (form) {
 				if (Validar() && ValidarFechas()) {
