@@ -734,7 +734,7 @@ function ConsultarDocVentas(tipo){
 
 														<!-- Crear llamada, SMM 23/05/2022 -->
 														<?php if (isset($row['CodEstado']) && (strcmp("A", $row['CodEstado']) == 0)) { ?>
-																	<a style="margin-left: 10px;" class="btn btn-outline btn-info" href="llamada_servicio.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Serial=<?php echo base64_encode($row['SerialInterno']); ?>&IdTE=<?php echo base64_encode($row['IdTarjetaEquipo']); ?>" target="_blank"><i class="fa fa-plus-circle"></i> Crear llamada de servicio</a>
+															<a style="margin-left: 10px;" class="btn btn-outline btn-info" href="llamada_servicio.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Serial=<?php echo base64_encode($row['SerialInterno']); ?>&IdTE=<?php echo $row['IdTarjetaEquipo'] ?? ""; ?>" target="_blank"><i class="fa fa-plus-circle"></i> Crear llamada de servicio</a>
 														<?php } ?>
 													</div>
 

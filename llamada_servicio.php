@@ -934,8 +934,9 @@ $id_ls = $row['DocNum'] ?? "";
 $SQL_Campanas = Seleccionar("uvw_tbl_LlamadasServicios_Campanas", "*", "[id_llamada_servicio]='$id_ls'");
 $hasRowsCampanas = ($SQL_Campanas) ? sqlsrv_has_rows($SQL_Campanas) : false;
 
-// SMM, 22/11/2023
-$SQL_NumeroSerie = Seleccionar("uvw_Sap_tbl_TarjetasEquipos", "*", "IdTarjetaEquipo='" . ($row['IdTarjetaEquipo'] ?? "") . "'");
+// SMM, 07/12/2023
+$IdTarjetaEquipo = ($_GET["IdTE"] ?? ($row['IdTarjetaEquipo'] ?? ""));
+$SQL_NumeroSerie = Seleccionar("uvw_Sap_tbl_TarjetasEquipos", "*", "IdTarjetaEquipo='$IdTarjetaEquipo'");
 $row_NumeroSerie = sqlsrv_fetch_array($SQL_NumeroSerie);
 ?>
 
@@ -2202,7 +2203,10 @@ function AgregarEsto(contenedorID, valorElemento) {
 
 						<div class="form-group">
 							<div class="col-lg-8">
-								<label class="control-label"><i onClick="ConsultarArticulo();" title="Consultar ID Servicio" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> ID servicio <span class="text-danger">*</span></label>
+								<label class="control-label">
+									<i onclick="ConsultarArticulo();" title="Consultar ID Servicio" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> ID servicio <span class="text-danger">*</span>
+								</label>
+
 								<input name="IdArticuloLlamada" type="hidden" id="IdArticuloLlamada" value="<?php if (($type_llmd == 1) || ($sw_error == 1 || ($dt_SLS == 1))) {
 									echo $row['IdArticuloLlamada'];
 								} elseif ($dt_LS == 1 && isset($row_Articulo['ItemCode'])) {
@@ -2210,7 +2214,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								} ?>">
 
 								<!-- Descripción del Item -->
-								<input name="DeArticuloLlamada" type="text" required="required" class="form-control" id="DeArticuloLlamada" placeholder="Digite para buscar..."
+								<input name="DeArticuloLlamada" type="text" required class="form-control" id="DeArticuloLlamada" placeholder="Digite para buscar..."
 								<?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "disabled";
 								} ?>
@@ -2222,7 +2226,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 							<div class="col-lg-3">
 								<label class="control-label">
 									<i onclick="ConsultarEquipo();" title="Consultar Tarjeta Equipo"
-										style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Tarjeta de equipo
+										style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Tarjeta de equipo <span class="text-danger">*</span>
 								</label>
 
 								<!-- Se necesita el SerialInterno para el llamado al WebService. SMM, 27/11/2023 -->
@@ -2233,7 +2237,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 									value="<?php if (isset($row_NumeroSerie['IdTarjetaEquipo']) && ($row_NumeroSerie['IdTarjetaEquipo'] != 0)) {
 										echo $row_NumeroSerie['IdTarjetaEquipo'];
 									} ?>">
-								<input readonly type="text" class="form-control"
+								<input readonly type="text" class="form-control" required
 									name="Desc_NumeroSerie" id="Desc_NumeroSerie"
 									placeholder="Haga clic en el botón"
 									value="<?php if (isset($row_NumeroSerie['IdTarjetaEquipo']) && ($row_NumeroSerie['IdTarjetaEquipo'] != 0)) {
