@@ -256,7 +256,7 @@ if ($sw == 1) {
 									
 									<div class="col-lg-3">
 										<select name="Marca" id="Marca" class="form-control select2">
-											<option value="">Seleccione...</option>
+											<option value="">(Todos)</option>
 											
 											<?php while ($row_Marca = sqlsrv_fetch_array($SQL_Marca)) { ?>
 												<option value="<?php echo $row_Marca['IdMarcaVehiculo']; ?>" <?php if ((isset($_GET['Marca'])) && ($row_Marca['IdMarcaVehiculo'] == $_GET['Marca'])) {
