@@ -2227,7 +2227,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								} ?>
 								value="<?php if (($type_llmd == 1 || $sw_error == 1 || $dt_LS == 1 || $dt_SLS) && isset($row_Articulo['ItemCode'])) {
 									echo $row_Articulo['ItemCode'] . " - " . $row_Articulo['ItemName'];
-								} ?>" <?php if(($type_llmd == 1) && PermitirFuncion(346)) { echo "readonly"; } ?>>
+								} ?>" <?php if(PermitirFuncion(346)) { echo "readonly"; } ?>>
 							</div>
 							
 							<div class="col-lg-3">
