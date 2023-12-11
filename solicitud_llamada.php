@@ -846,8 +846,10 @@ $(document).ready(function () {
 	// Stiven Muñoz Murillo, 24/01/2022
 	$("#IdArticuloLlamada").change(function () {
 		$('.ibox-content').toggleClass('sk-loading', true);
+		
 		var ID = document.getElementById('IdArticuloLlamada').value;
 		var Cliente = document.getElementById('ClienteLlamada').value;
+
 		if (ID != "") {
 			$.ajax({
 				url: "ajx_buscar_datos_json.php",
@@ -859,6 +861,11 @@ $(document).ready(function () {
 					$('.ibox-content').toggleClass('sk-loading', false);
 				}
 			});
+
+			// SMM, 11/12/2023
+			$("#SerialInterno").val("");
+			$("#NumeroSerie").val("");
+			$("#Desc_NumeroSerie").val("");
 		} else {
 			document.getElementById('CDU_Servicios').value = '';
 			document.getElementById('CDU_Areas').value = '';
@@ -1683,13 +1690,14 @@ function AgregarEsto(contenedorID, valorElemento) {
 								
 								value="<?php if (($edit == 1 || $sw_error == 1 || $dt_LS == 1) && isset($row_Articulo['ItemCode'])) {
 									echo $row_Articulo['ItemCode'] . " - " . $row_Articulo['ItemName'];
-								} ?>">
+								} ?>" <?php if(($edit == 1) && PermitirFuncion(346)) { echo "readonly"; } ?>>
 							</div>
 							
 							<div class="col-lg-3">
 								<label class="control-label">
 									<i onclick="ConsultarEquipo();" title="Consultar Tarjeta Equipo"
-										style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Tarjeta de equipo <span class="text-danger">*</span>
+										style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Tarjeta de equipo 
+										<?php if(PermitirFuncion(347)) { ?><span class="text-danger">*</span><?php } ?>
 								</label>
 
 								<!-- Se necesita el SerialInterno para el llamado al WebService. SMM, 27/11/2023 -->
@@ -1700,7 +1708,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 									value="<?php if (isset($row_NumeroSerie['IdTarjetaEquipo']) && ($row_NumeroSerie['IdTarjetaEquipo'] != 0)) {
 										echo $row_NumeroSerie['IdTarjetaEquipo'];
 									} ?>">
-								<input readonly type="text" class="form-control" required
+								<input readonly type="text" class="form-control" <?php if(PermitirFuncion(347)) { echo "required"; } ?>
 									name="Desc_NumeroSerie" id="Desc_NumeroSerie"
 									placeholder="Haga clic en el botón"
 									value="<?php if (isset($row_NumeroSerie['IdTarjetaEquipo']) && ($row_NumeroSerie['IdTarjetaEquipo'] != 0)) {
