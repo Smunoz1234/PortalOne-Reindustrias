@@ -2438,7 +2438,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 						ObjType: 20,
 						OT: OrdenServicio,
 						Edit: <?php echo $edit; ?>,
-						DocType: "<?php echo ($edit == 0) ? 22 : 23; ?>",
+						DocType: "<?php echo ($edit == 0) ? 20 : 21; ?>",
 						DocId: "<?php echo $row['ID_EntradaCompra'] ?? 0; ?>",
 						DocEvent: "<?php echo $row['IdEvento'] ?? 0; ?>",
 						CardCode: cardCode,
@@ -2479,7 +2479,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 					url: "md_actualizar_articulos.php",
 					data: {
 						Edit: <?php echo $edit; ?>,
-						DocType: "<?php echo 18; ?>",
+						DocType: "<?php echo 17; ?>",
 						DocId: "<?php echo $row['ID_EntradaCompra'] ?? 0; ?>",
 						DocEvent: "<?php echo $row['IdEvento'] ?? 0; ?>",
 						CardCode: cardCode,
