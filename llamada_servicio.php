@@ -298,12 +298,12 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
 					$row_Llamada = sqlsrv_fetch_array($SQL_Llamada);
 
 					// Actualizar la Solicitud de Llamada de Servicio. 
-					if ($dt_SLS == 1) {
+					if (($dt_SLS == 1) || ($SLS != "")) {
 						$Param_CierreSolicitud = array(
 							"'" . ($row_Llamada["IdSolicitudLlamadaServicio"] ?? "") . "'", // @ID_SolicitudLlamadaServicio
 							"'" . ($row_Llamada["ID_LlamadaServicio"] ?? "") . "'", // @DocEntryLlamada_Destino
 							"'" . ($row_Llamada["DocNum"] ?? "") . "'", // @DocNumLlamada_Destino
-							"'" . ($row_Llamada["ID_Usuario"] ?? "") . "'", // @UsuarioCierre
+							"'" . ($_SESSION['CodUser'] ?? "") . "'", // @UsuarioCierre
 							"'" . FormatoFecha($_POST['FechaCreacion'], $_POST['HoraCreacion']) . "'", // @FechaCierreLlamada
 							"'" . FormatoFecha($_POST['FechaCreacion'], $_POST['HoraCreacion']) . "'", // @FechaActualizacion
 						);
@@ -1541,7 +1541,7 @@ $(document).ready(function () {
 						type: "POST",
 						url: `ajx_cbo_select.php?type=40&id=${IdTarjetaEquipo}`,
 						success: function (response) {
-							console.log("ajx_buscar_datos_json(40)", response);
+							console.log("ajx_cbo_select(40)", response);
 
 							$('#CDU_ListaMateriales').html(response).fadeIn();
 							$('#CDU_ListaMateriales').trigger('change');
@@ -3619,61 +3619,64 @@ $(document).ready(function () {
 	<?php } ?>
 	// SMM, 07/12/2023
 
-		$("#CrearLlamada").validate({
-			submitHandler: function (form) {
-				if (Validar() && ValidarFechas()) {
-					let vP = document.getElementById('P');
-					let msg = (vP.value == '40') ? "¿Está seguro que desea reabrir la llamada?" : "¿Está seguro que desea guardar los datos?";
-					let sw_ValDir =<?php echo $sw_valDir; ?>;
+	// Preparar el llamado asincrono de la validación. 
+	PreValidarDocumentoBase(); // SMM, 13/12/2023
 
-					if (sw_ValDir == 1) {
-						let dirAnterior = '<?php echo isset($row['NombreSucursal']) ? $row['NombreSucursal'] : ""; ?>';
-						let combo = document.getElementById("SucursalCliente");
-						let dirActual = combo.options[combo.selectedIndex].text;
+	$("#CrearLlamada").validate({
+		submitHandler: function (form) {
+			if (Validar() && ValidarFechas() && ValidarDocumentoBase()) {
+				let vP = document.getElementById('P');
+				let msg = (vP.value == '40') ? "¿Está seguro que desea reabrir la llamada?" : "¿Está seguro que desea guardar los datos?";
+				let sw_ValDir =<?php echo $sw_valDir; ?>;
 
-						Swal.fire({
-							title: '¡Advertencia!',
-							html: 'La sucursal <strong>' + dirAnterior + '</strong> ha cambiado de nombre por <strong>' + dirActual + '</strong>. Se actualizará en la llamada de servicio.',
-							icon: 'warning',
-							showCancelButton: true,
-							confirmButtonText: "Entendido",
-							cancelButtonText: "Cancelar"
-						}).then((des) => {
-							if (des.isConfirmed) {
-								Swal.fire({
-									title: msg,
-									icon: "info",
-									showCancelButton: true,
-									confirmButtonText: "Si, confirmo",
-									cancelButtonText: "No"
-								}).then((result) => {
-									if (result.isConfirmed) {
-										$('.ibox-content').toggleClass('sk-loading', true);
-										form.submit();
-									}
-								});
-							}
-						});
-					} else {
-						Swal.fire({
-							title: msg,
-							icon: "info",
-							showCancelButton: true,
-							confirmButtonText: "Si, confirmo",
-							cancelButtonText: "No"
-						}).then((result) => {
-							if (result.isConfirmed) {
-								$('.ibox-content').toggleClass('sk-loading', true);
-								form.submit();
-							}
-						});
-					}
+				if (sw_ValDir == 1) {
+					let dirAnterior = '<?php echo isset($row['NombreSucursal']) ? $row['NombreSucursal'] : ""; ?>';
+					let combo = document.getElementById("SucursalCliente");
+					let dirActual = combo.options[combo.selectedIndex].text;
 
+					Swal.fire({
+						title: '¡Advertencia!',
+						html: 'La sucursal <strong>' + dirAnterior + '</strong> ha cambiado de nombre por <strong>' + dirActual + '</strong>. Se actualizará en la llamada de servicio.',
+						icon: 'warning',
+						showCancelButton: true,
+						confirmButtonText: "Entendido",
+						cancelButtonText: "Cancelar"
+					}).then((des) => {
+						if (des.isConfirmed) {
+							Swal.fire({
+								title: msg,
+								icon: "info",
+								showCancelButton: true,
+								confirmButtonText: "Si, confirmo",
+								cancelButtonText: "No"
+							}).then((result) => {
+								if (result.isConfirmed) {
+									$('.ibox-content').toggleClass('sk-loading', true);
+									form.submit();
+								}
+							});
+						}
+					});
 				} else {
-					$('.ibox-content').toggleClass('sk-loading', false);
+					Swal.fire({
+						title: msg,
+						icon: "info",
+						showCancelButton: true,
+						confirmButtonText: "Si, confirmo",
+						cancelButtonText: "No"
+					}).then((result) => {
+						if (result.isConfirmed) {
+							$('.ibox-content').toggleClass('sk-loading', true);
+							form.submit();
+						}
+					});
 				}
+
+			} else {
+				$('.ibox-content').toggleClass('sk-loading', false);
 			}
-		});
+		}
+	});
 
 	maxLength('ComentarioLlamada');
 	maxLength('ResolucionLlamada');
@@ -4369,6 +4372,47 @@ function ValidarFechas() {
 		
 		// alert("Paso la validación de fechas");
 		// return false;
+	}
+	return true;
+}
+
+// SMM, 13/12/2023
+var banderaSolicitud = false;
+function PreValidarDocumentoBase() {
+	$.ajax({
+		url: "ajx_buscar_datos_json.php",
+		data: {
+			type: 51,
+			id: "<?php echo $SLS; ?>"
+		},
+		dataType: 'json',
+		success: function (data) {
+			console.log("ajx_buscar_datos_json(51)", data);
+			
+			if(data.Result == 1) {
+				console.log("NO paso la validación de documento base.");
+				banderaSolicitud = true;
+			} else {
+				console.log("Paso la validación de documento base.");
+				banderaSolicitud = false;
+			}
+		},
+		error: function (error) {
+			console.log("AJAX error, ValidarDocumentoBase():", error.responseText);
+			banderaSolicitud = false;
+		}
+	});
+}
+
+// SMM, 13/12/2023
+function ValidarDocumentoBase() {
+	if(banderaSolicitud) {
+		Swal.fire({
+			title: '¡Advertencia!',
+			text: 'El documento base ya fue asignado a otra llamada de servicio.',
+			icon: 'warning',
+		});
+		return false;
 	}
 	return true;
 }

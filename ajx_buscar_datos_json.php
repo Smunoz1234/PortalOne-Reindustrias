@@ -45,7 +45,7 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
 
         $Consulta = "Select * From $Vista Where CodigoCliente='" . $_GET['CardCode'] . "' And NombreSucursal='" . $_GET['Sucursal'] . "'";
         //echo $Consulta;
-        
+
         $SQL = sqlsrv_query($conexion, $Consulta);
         $records = array();
         $row = sqlsrv_fetch_array($SQL);
@@ -97,7 +97,7 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
             'TelefonoContacto' => $row['TelefonoContacto'],
             'CargoContacto' => $row['CargoContacto'],
             'CorreoContacto' => $row['CorreoContacto'],
-//            'Posicion' => $row['Posicion'],
+            //            'Posicion' => $row['Posicion'],
             //            'DeOLT' => $row['DeOLT']
         );
         echo json_encode($records);
@@ -636,7 +636,7 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
         } else {
             $SQL = Seleccionar("uvw_Sap_tbl_TarjetasEquipos", "*", "IdTarjetaEquipo=$IdTarjetaEquipo AND CardCode=$Cliente");
         }
-    
+
         $row = sqlsrv_fetch_array($SQL);
         $records = array(
             'SerialInterno' => ($row['SerialInterno'] ?? ""),
@@ -762,6 +762,23 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
         );
 
         // echo "SELECT * FROM tbl_SolicitudLlamadasServicios_TecnicosSugeridos WHERE $Where\n";
+        echo json_encode($records);
+    }
+
+    // SMM, 13/12/2023
+    elseif ($_GET['type'] == 51) { // Consultar si ya existen llamadas con el documento base asignado.
+        $id = $_GET['id'] ?? "";
+        $SQL = Seleccionar("uvw_Sap_tbl_LlamadasServicios", "*", "IdSolicitudLlamadaServicio <> '' AND IdSolicitudLlamadaServicio='$id'");
+        $row = sqlsrv_fetch_array($SQL);
+        $records = array(
+            "Result" => (isset($row["DocNum"]) ? 1 : 0),
+            "IdSolicitudLlamadaServicio" => $id,
+            "ID_LlamadaServicio" => ($row["ID_LlamadaServicio"] ?? ""),
+            "DocNum" => ($row["DocNum"] ?? ""),
+            "UsuarioCierre" => ($_SESSION['CodUser'] ?? ""),
+            "FechaCierreLlamada" => FormatoFecha($_POST['FechaCreacion'] ?? "", $_POST['HoraCreacion'] ?? ""),
+            "FechaActualizacion" => FormatoFecha($_POST['FechaCreacion'] ?? "", $_POST['HoraCreacion'] ?? ""),
+        );
         echo json_encode($records);
     }
 

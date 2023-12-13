@@ -235,7 +235,7 @@ if ($sw == 1) {
 					<div class="col-lg-12">
 						<div class="ibox-content">
 							<?php include "includes/spinner.php"; ?>
-							<form action="consultar_operaciones_personalizado.php" method="get" id="formBuscar"
+							<form action="consultar_operaciones_agenda.php" method="get" id="formBuscar"
 								class="form-horizontal">
 								<div class="form-group">
 									<label class="col-xs-12">
