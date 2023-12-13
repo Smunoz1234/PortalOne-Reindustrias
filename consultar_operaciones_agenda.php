@@ -115,13 +115,13 @@ if ($sw == 1) {
 		"'$FiltroOperacion'",
 		"'" . strtolower($_SESSION['User']) . "'",
 	);
-	$SQL = EjecutarSP('usp_rep_OperacionesReindustrias', $Param);
+	$SQL = EjecutarSP("usp_rep_OperacionesReindustrias_SolicitudLLamadas", $Param);
 	//    sqlsrv_next_result($SQL);
 	//    print_r($row);
 
 	// SMM, 30/08/2022
 	$parametros = base64_encode(implode(",", $Param));
-	$procedimiento = base64_encode('usp_rep_OperacionesReindustrias');
+	$procedimiento = base64_encode("usp_rep_OperacionesReindustrias_SolicitudLLamadas");
 	$ruta_excel = "exportar_excel.php?exp=19&Cons=$parametros&sp=$procedimiento";
 }
 ?>
