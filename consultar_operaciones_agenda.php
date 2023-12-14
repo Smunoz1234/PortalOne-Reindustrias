@@ -105,14 +105,14 @@ if ($sw == 1) {
 		"'$Sucursal'",
 		"'$Serie'",
 		"'$TipoLlamada'",
-		"'$OrigenLlamada'",
-		"'$TipoProblema'",
-		"'$SubTipoProblema'",
+		// "'$OrigenLlamada'",
+		// "'$TipoProblema'",
+		// "'$SubTipoProblema'",
 		"'$EstadoLlamada'",
-		"'$EstadoServicioLlamada'",
-		"'$NombreEmpleado'",
-		"'$NombreAdicional'",
-		"'$FiltroOperacion'",
+		// "'$EstadoServicioLlamada'",
+		// "'$NombreEmpleado'",
+		// "'$NombreAdicional'",
+		// "'$FiltroOperacion'",
 		"'" . strtolower($_SESSION['User']) . "'",
 	);
 	$SQL = EjecutarSP("usp_rep_OperacionesReindustrias_SolicitudLLamadas", $Param);
@@ -131,8 +131,8 @@ if ($sw == 1) {
 <head>
 	<?php include_once "includes/cabecera.php"; ?>
 	<!-- InstanceBeginEditable name="doctitle" -->
-	<title>Gestión de operaciones |
-		<?php echo NOMBRE_PORTAL; ?>
+	<title>
+		Gestión de operaciones | <?php echo NOMBRE_PORTAL; ?>
 	</title>
 	<!-- InstanceEndEditable -->
 	<!-- InstanceBeginEditable name="head" -->
@@ -167,22 +167,6 @@ if ($sw == 1) {
 			});
 
 		});
-	</script>
-	<script>
-		function CargarAct(ID, DocNum) {
-			$('.ibox-content').toggleClass('sk-loading', true);
-			$.ajax({
-				type: "POST",
-				async: false,
-				url: "sn_actividades.php?id=" + Base64.encode(ID) + "&objtype=191",
-				success: function (response) {
-					$('.ibox-content').toggleClass('sk-loading', false);
-					$('#ContenidoModal').html(response);
-					$('#TituloModal').html('Actividades relacionadas - OT: ' + DocNum);
-					$('#myModal').modal("show");
-				}
-			});
-		}
 	</script>
 	<!-- InstanceEndEditable -->
 </head>
@@ -249,8 +233,8 @@ if ($sw == 1) {
 										<select name="FiltroOperacion" class="form-control" id="FiltroOperacion">
 											<option value="1" <?php if (isset($_GET['FiltroOperacion']) && ($_GET['FiltroOperacion'] == "1")) {
 												echo "selected";
-											} ?>>Solicitud
-												Llamada (Agenda)
+											} ?>>
+												Solicitud Llamada (Agenda)
 											</option>
 										</select>
 									</div>
@@ -491,147 +475,121 @@ if ($sw == 1) {
 									<table class="table table-bordered table-hover table-striped dataTables-example">
 										<thead>
 											<tr>
-												<th>#</th>
-												<th>Actividades</th>
-												<th>Id Llamada servicio</th>
-												<th>Serie</th>
+												<th>ID</th>
+												<th>Acciones</th>
+												<th>Estado Servicio</th>
+												<th>Fecha Agenda</th>
+												<th>Hora Agenda</th>
+												<th>Comentario Llamada</th>
+												<th>Asesor</th>
+												<th>Técnico</th>
+												<th>Asunto</th>
+												<th>Origen llamada</th>
+												<th>Tipo problema</th>
+												<th>Subtipo problema</th>
 												<th>Tipo llamada</th>
 												<th>Cliente</th>
+												<th>Tel-Cel Cliente</th>
+												<th>Correo</th>
+												<th>Dirección</th>
 												<th>Sucursal</th>
-
-												<th>Marca</th> <!-- SMM, 21/09/2022 -->
-												<th>Línea</th> <!-- SMM, 21/09/2022 -->
-
-												<th>Articulo</th>
+												<th>Marca</th>
+												<th>Línea</th>
 												<th>Serial Interno</th>
-												<th>Nombre Contacto</th>
-												<th>Telefono Contacto</th>
-												<th>Correo Contacto</th>
-
-												<th>Facturado</th>
-												<th>Servicio</th>
-												<th>Áreas</th>
-												<th>Fecha creación</th>
-												<th>Fecha cierre</th>
-												<th>Estado llamada</th>
-												<th>Estado servicio llamada</th>
-												<th>Fecha Recepcion</th>
-												<th>Hora Recepcion</th>
-												<th>Comentarios llamada</th>
-												<th>Comentarios de cierre</th>
-												<th>Orden de venta</th>
-												<th>Entregas</th>
-												<th>Devolución</th>
+												<th>#Llamada</th>
+												<th>#Recepción</th>
+												<th>#Entrega</th>
 											</tr>
 										</thead>
 										<tbody>
-											<?php $i = 1;
-											while ($row = sql_fetch_array($SQL)) { ?>
-												<tr id="tr_<?php echo $i; ?>" class="gradeX">
+											<?php while ($row = sql_fetch_array($SQL)) { ?>
+												<tr id="tr_<?php echo $row['NoAgenda']; ?>" class="gradeX">
 													<td>
-														<?php echo $i; ?>
-													</td>
-													<td class="text-center"><button type="button" title="Mostrar actividades"
-															class="btn btn-success btn-xs"
-															onClick="CargarAct('<?php echo $row['ID_LlamadaServicio']; ?>','<?php echo $row['ID_Llamada']; ?>');"><i
-																class="fa fa-plus"></i></button></td>
-													<td><a href="llamada_servicio.php?id=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&tl=1"
-															target="_blank">
-															<?php echo $row['ID_Llamada']; ?>
-														</a></td>
-													<td>
-														<?php echo $row['NombreSerie']; ?>
+														<?php echo $row['NoAgenda']; ?>
 													</td>
 													<td>
-														<?php echo $row['DeTipoLlamada']; ?>
+														<a href="solicitud_llamada.php?id=<?php echo base64_encode($row['NoAgenda']); ?>&tl=1"
+															class="btn btn-success btn-xs" target="_blank">
+															<i class="fa fa-folder-open-o"></i> Abrir
+														</a>
+														<a href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row['NoAgenda']); ?>&ObType=<?php echo base64_encode('20008'); ?>&IdFrm=<?php echo base64_encode(0); ?>"
+															target="_blank" class="btn btn-warning btn-xs">
+															<i class="fa fa-download"></i> Descargar
+														</a>
 													</td>
 													<td>
-														<?php echo $row['NombreCliente']; ?>
+														<span class="label" style="color: white; background-color: <?php echo $row['ColorEstadoServicioLlamada'] ?? ""; ?>;">
+															<?php echo $row['DeEstadoServicio'] ?? ""; ?>
+														</span>
 													</td>
 													<td>
-														<?php echo $row['NombreSucursalCliente']; ?>
+														<?php echo $row['FechaAgenda'] ?? ""; ?>
 													</td>
-
+													<td>
+														<?php echo $row['HoraAgenda'] ?? ""; ?>
+													</td>
+													<td>
+														<?php echo $row['RequerimientoLlamada'] ?? ""; ?>
+													</td>
+													<td>
+														<?php echo $row['NombreAsesor'] ?? ""; ?>
+													</td>
+													<td>
+														<?php echo $row['NombreTecnicoAdicional'] ?? ""; ?>
+													</td>
+													<td>
+														<?php echo $row['Asunto'] ?? ""; ?>
+													</td>
+													<td>
+														<?php echo $row['Origen'] ?? ""; ?>
+													</td>
+													<td>
+														<?php echo $row['TipoProblema'] ?? ""; ?>
+													</td>
+													<td>
+														<?php echo $row['SubtipoProblema'] ?? ""; ?>
+													</td>
+													<td>
+														<?php echo $row['TipoLlamada'] ?? ""; ?>
+													</td>
+													<td>
+														<?php echo $row['NombreCliente'] ?? ""; ?>
+													</td>
+													<td>
+														<?php echo ($row['Telefono1'] ?? "") . "-" . ($row['Celular'] ?? ""); ?>
+													</td>
+													<td>
+														<?php echo $row['Correo'] ?? ""; ?>
+													</td>
+													<td>
+														<?php echo $row['DireccionLlamada'] ?? ""; ?>
+													</td>
+													<td>
+														<?php echo $row['Sucursal'] ?? ""; ?>
+													</td>
 													<td>
 														<?php echo $row['Marca'] ?? ""; ?>
 													</td>
 													<td>
 														<?php echo $row['Linea'] ?? ""; ?>
 													</td>
-
 													<td>
-														<?php echo $row['DeArticuloLlamada']; ?>
+														<?php echo $row['Placa'] ?? ""; ?>
 													</td>
 													<td>
-														<?php echo $row['SerialArticuloLlamada']; ?>
+														<a href="llamada_servicio.php?id=<?php echo base64_encode($row['ID_Llamada']); ?>&tl=1"
+															target="_blank">
+															<?php echo $row['ID_Llamada'] ?? ""; ?>
+														</a>
 													</td>
 													<td>
-														<?php echo $row['NombreContactoCliente']; ?>
+														<?php echo $row['IdRecepcion'] ?? ""; ?>
 													</td>
 													<td>
-														<?php echo $row['TelefonoContactoCliente']; ?>
-													</td>
-													<td>
-														<?php echo $row['CorreoContactoCliente']; ?>
-													</td>
-
-													<td>
-														<?php echo $row['Facturado']; ?>
-													</td>
-													<td>
-														<?php echo $row['ServiciosLlamadas']; ?>
-													</td>
-													<td>
-														<?php echo SubComent($row['AreasCtrlLlamadas'], 50); ?>
-													</td>
-													<td>
-														<?php echo $row['FechaCreacionLLamada']; ?>
-													</td>
-													<td>
-														<?php echo $row['FechaCierreLLamada']; ?>
-													</td>
-													<td><span <?php if ($row['IdEstadoLlamada'] == '-3') {
-														echo "class='label label-info'";
-													} elseif ($row['IdEstadoLlamada'] == '-2') {
-														echo "class='label label-warning'";
-													} else {
-														echo "class='label label-danger'";
-													} ?>>
-															<?php echo $row['DeEstadoLlamada']; ?>
-														</span></td>
-													<td><span <?php if ($row['IdEstadoServicioLlamada'] == '0') {
-														echo "class='label label-warning'";
-													} elseif ($row['IdEstadoServicioLlamada'] == '1') {
-														echo "class='label label-primary'";
-													} else {
-														echo "class='label label-danger'";
-													} ?>>
-															<?php echo $row['EstadoServicioLlamada']; ?>
-														</span></td>
-													<td>
-														<?php echo ($row['FechaIngresoRecepcion'] != "") ? $row['FechaIngresoRecepcion']->format('Y-m-d') : ""; ?>
-													</td>
-													<td>
-														<?php echo $row['HoraIngresoRecepcion']; ?>
-													</td>
-													<td>
-														<?php echo SubComent($row['ComentarioLlamada']); ?>
-													</td>
-													<td>
-														<?php echo SubComent($row['ResolucionLlamada']); ?>
-													</td>
-													<td>
-														<?php echo $row['OrdenVenta']; ?>
-													</td>
-													<td>
-														<?php echo $row['Entregas']; ?>
-													</td>
-													<td>
-														<?php echo $row['Devolucion']; ?>
+														<?php echo $row['IdEntrega'] ?? ""; ?>
 													</td>
 												</tr>
-												<?php $i++;
-											} ?>
+											<?php } ?>
 										</tbody>
 									</table>
 								</div>

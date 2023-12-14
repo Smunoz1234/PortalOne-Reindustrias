@@ -1428,7 +1428,7 @@ function ConsultarDocVentas(tipo){
 																					<a class="btn btn-primary btn-xs" id="btnPreCostos" name="btnPreCostos" onClick="MostrarCostos('<?php echo $row_LlamadaServicio['ID_LlamadaServicio']; ?>');"><i class="fa fa-money"></i> Precios</a>
 																					<a style="margin: 5px;" class="btn btn-success btn-xs" id="btnPreAutorizados" name="btnPreAutorizados" onClick="MostrarAutorizados('<?php echo $row_LlamadaServicio['ID_LlamadaServicio']; ?>');"><i class="fa fa-wrench"></i> Autorizaciones</a>
 																				</td>
-																				<td><?php echo $row_LlamadaServicio['FechaHoraCreacionLLamada']->format('Y-m-d h:m:i'); ?></td>
+																				<td><?php echo $row_LlamadaServicio['FechaHoraCreacionLLamada']->format('Y-m-d H:i:s'); ?></td>
 
 																				<td><?php echo $row_LlamadaServicio["DeOrigenLlamada"]; ?></td>
 
