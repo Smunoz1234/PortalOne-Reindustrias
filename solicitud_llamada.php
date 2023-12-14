@@ -1841,7 +1841,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 
 							<div class="col-lg-4">
 								<!-- Fecha de Solicitud -->
-								<label class="control-label">Fecha Inicio/Creación <span class="text-danger">*</span></label>
+								<label class="control-label">Fecha Inicio Solicitud <span class="text-danger">*</span></label>
 								
 								<div class="input-group date">
 									<span class="input-group-addon">
@@ -1866,7 +1866,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 
 							<div class="col-lg-4">
 								<!-- Fecha de Solicitud -->
-								<label class="control-label">Hora Inicio/Creación <span class="text-danger">*</span></label>
+								<label class="control-label">Hora Inicio Solicitud <span class="text-danger">*</span></label>
 								
 								<div class="input-group clockpicker" data-autoclose="true">
 									<span class="input-group-addon">
@@ -1917,7 +1917,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 							
 							<div class="col-lg-4">
 								<!-- Fecha de Solicitud -->
-								<label class="control-label">Fecha Fin <span class="text-danger">*</span></label>
+								<label class="control-label">Fecha Fin Solicitud <span class="text-danger">*</span></label>
 								
 								<div class="input-group date">
 									<span class="input-group-addon">
@@ -1966,7 +1966,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 
 							<div class="col-lg-4">
 								<!-- Fecha de Solicitud -->
-								<label class="control-label">Hora Fin <span class="text-danger">*</span></label>
+								<label class="control-label">Hora Fin Solicitud <span class="text-danger">*</span></label>
 								
 								<div class="input-group clockpicker" data-autoclose="true">
 									<span class="input-group-addon">
