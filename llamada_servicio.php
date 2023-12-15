@@ -2378,7 +2378,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								} ?>">
 							</div>
 							<div class="col-lg-4">
-								<label class="control-label">Fecha de creación <span class="text-danger">*</span></label>
+								<label class="control-label">Fecha de apertura llamada <span class="text-danger">*</span></label>
 								<div class="input-group date">
 									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaCreacion" type="text" required class="form-control" id="FechaCreacion" value="<?php if (($type_llmd == 1 || ($dt_SLS == 1)) && ($row['FechaCreacionLLamada']) != "") {
 										 echo $row['FechaCreacionLLamada'];
@@ -2400,7 +2400,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								  } ?>">
 							</div>
 							<div class="col-lg-4">
-								<label class="control-label">Hora de creación <span class="text-danger">*</span></label>
+								<label class="control-label">Hora de apertura llamada <span class="text-danger">*</span></label>
 								<div class="input-group clockpicker" data-autoclose="true">
 									<span class="input-group-addon">
 										<span class="fa fa-clock-o"></span>

@@ -1392,7 +1392,7 @@ function ConsultarDocVentas(tipo){
 																	<th>Número de llamada</th>
 																	<th>Estado</th>
 																	<th>Artículos/Costos</th>
-																	<th>Fecha de creación</th>
+																	<th>Fecha de apertura llamada</th>
 																	<th>Origen</th> <!-- SMM, 03/09/2022 -->
 																	<th>Tipo Problema</th>
 																	<th>Subtipo Problema</th> <!-- SMM, 03/09/2022 -->
