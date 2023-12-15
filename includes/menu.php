@@ -181,6 +181,7 @@ if (!isset($_COOKIE["banderaMenu"])) {
 					<?php if (PermitirFuncion([1706, 1707])) {?><li><a class="alnk" href="consultar_frm_recepcion_vehiculo.php">Recepción de vehículos</a></li> <?php }?>
 					
 					<?php if (PermitirFuncion(1710)) {?><li><a class="alnk" href="consultar_frm_entrega_vehiculo.php">Entrega de vehículos</a></li> <?php }?>
+					<?php if (PermitirFuncion(1712)) {?><li><a class="alnk" href="consultar_frm_car_advisor.php">Car Advisor</a></li> <?php }?>
 					
 					<?php if (PermitirFuncion(1702)) {?>
 					<li>
