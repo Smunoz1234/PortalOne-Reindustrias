@@ -1,6 +1,6 @@
 <?php require_once "includes/conexion.php";
 // require_once("includes/conexion_hn.php");
-PermitirAcceso(320);
+PermitirAcceso(339);
 
 $sw = 0;
 
@@ -105,14 +105,14 @@ if ($sw == 1) {
 		"'$Sucursal'",
 		"'$Serie'",
 		"'$TipoLlamada'",
-		// "'$OrigenLlamada'",
-		// "'$TipoProblema'",
-		// "'$SubTipoProblema'",
+		"'$OrigenLlamada'",
+		"'$TipoProblema'",
+		"'$SubTipoProblema'",
 		"'$EstadoLlamada'",
-		// "'$EstadoServicioLlamada'",
-		// "'$NombreEmpleado'",
-		// "'$NombreAdicional'",
-		// "'$FiltroOperacion'",
+		"'$EstadoServicioLlamada'",
+		"'$NombreEmpleado'",
+		"'$NombreAdicional'",
+		"'$FiltroOperacion'",
 		"'" . strtolower($_SESSION['User']) . "'",
 	);
 	$SQL = EjecutarSP("usp_rep_OperacionesReindustrias_SolicitudLLamadas", $Param);
@@ -446,9 +446,6 @@ if ($sw == 1) {
 										<div class="col-lg-3">
 											<select class="form-control" id="TipoInforme">
 												<option value="">Informe Estándar</option>
-												<option value="1">Informe de Actividades</option>
-												<option value="2">Informe de Documentos Relacionados</option>
-												<option value="3">Informe de Agenda Llamadas</option>
 											</select>
 										</div>
 										<!-- Hasta aquí, 30/08/2022 -->
@@ -579,7 +576,7 @@ if ($sw == 1) {
 													<td>
 														<a href="llamada_servicio.php?id=<?php echo base64_encode($row['ID_Llamada']); ?>&tl=1"
 															target="_blank">
-															<?php echo $row['ID_Llamada'] ?? ""; ?>
+															<?php echo $row['DocNum_Llamada'] ?? ""; ?>
 														</a>
 													</td>
 													<td>
