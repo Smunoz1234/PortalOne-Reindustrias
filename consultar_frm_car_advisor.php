@@ -162,7 +162,7 @@ $SQL_Supervisor = Seleccionar('uvw_tbl_EntregaVehiculos', 'DISTINCT id_empleado_
 			<!-- InstanceBeginEditable name="Contenido" -->
 			<div class="row wrapper border-bottom white-bg page-heading">
 				<div class="col-sm-8">
-					<h2>Entrega de vehículos</h2>
+					<h2>Car Advisor</h2>
 					<ol class="breadcrumb">
 						<li>
 							<a href="index1.php">Inicio</a>
@@ -171,14 +171,14 @@ $SQL_Supervisor = Seleccionar('uvw_tbl_EntregaVehiculos', 'DISTINCT id_empleado_
 							<a href="#">Formularios</a>
 						</li>
 						<li class="active">
-							<strong>Entrega de vehículos</strong>
+							<strong>Car Advisor</strong>
 						</li>
 					</ol>
 				</div>
 				<?php if (PermitirFuncion(1711)) { ?>
 					<div class="col-sm-4">
 						<div class="title-action">
-							<a href="frm_entrega_vehiculo.php" class="alkin btn btn-primary"><i
+							<a href="frm_car_advisor.php" class="alkin btn btn-primary"><i
 									class="fa fa-plus-circle"></i> Crear nuevo Car Advisor</a>
 						</div>
 					</div>
