@@ -196,7 +196,7 @@ $SQL_Supervisor = Seleccionar('uvw_tbl_EntregaVehiculos', 'DISTINCT id_empleado_
 					<div class="col-lg-12">
 						<div class="ibox-content">
 							<?php include "includes/spinner.php"; ?>
-							<form action="consultar_frm_entrega_vehiculo.php" method="get" id="formBuscar"
+							<form action="consultar_frm_car_advisor.php" method="get" id="formBuscar"
 								class="form-horizontal">
 								<div class="form-group">
 									<label class="col-xs-12">
@@ -319,13 +319,13 @@ $SQL_Supervisor = Seleccionar('uvw_tbl_EntregaVehiculos', 'DISTINCT id_empleado_
 												<th>Empleado</th>
 												<th>Cliente</th>
 												<th>Sucursal</th>
-												<th>Placa</th>
-												<th>Comentarios cierre</th>
+												<th>VIN</th>
+												<th>Mensaje integración</th>
+												<th>Fecha integración</th>
+												<th>Reintentos</th>
+												<th>Estado integración</th>
 												<th>Fecha creación</th>
 												<th>Usuario creación</th>
-												<th>Fecha cierre</th>
-												<th>Usuario cierre</th>
-												<th>App</th>
 												<th>Estado</th>
 												<th>Acciones</th>
 												<th class="text-center">
@@ -364,16 +364,20 @@ $SQL_Supervisor = Seleccionar('uvw_tbl_EntregaVehiculos', 'DISTINCT id_empleado_
 														<?php echo $row['hora_creacion']->format('Y-m-d H:i'); ?>
 													</td>
 													<td>
-														<?php echo $row['nombre_usuario_creacion']; ?>
+														<?php echo $row['reintentos'] ?? ""; ?>
 													</td>
+													<td><span id="lblEstado<?php echo $row['id_entrega_vehiculo']; ?>" <?php if ($row['estado'] == 'O') {
+														   echo "class='label label-info'";
+													   } elseif ($row['estado'] == 'A') {
+														   echo "class='label label-danger'";
+													   } else {
+														   echo "class='label label-primary'";
+													   } ?>><?php echo $row['nombre_estado']; ?></span></td>
 													<td>
 														<?php echo ($row['fecha_cierre'] != "") ? $row['fecha_cierre']->format('Y-m-d H:i') : ""; ?>
 													</td>
 													<td>
 														<?php echo $row['nombre_usuario_cierre']; ?>
-													</td>
-													<td>
-														<?php echo $row['app'] ?? ""; ?>
 													</td>
 													<td><span id="lblEstado<?php echo $row['id_entrega_vehiculo']; ?>" <?php if ($row['estado'] == 'O') {
 														   echo "class='label label-info'";
