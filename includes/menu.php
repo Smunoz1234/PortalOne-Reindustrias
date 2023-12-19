@@ -196,7 +196,7 @@ if (!isset($_COOKIE["banderaMenu"])) {
 			<?php }?>
 			<?php if (PermitirFuncion(207) || PermitirFuncion(208) || PermitirFuncion(209) || PermitirFuncion(210)) {?>
 			<li>
-				<a href="#"><i class="fa fa-file-text"></i> <span class="nav-label">Gesti&oacute;n de archivos</span><span class="fa arrow"></span></a>
+				<a href="#"><i class="fa fa-file-text"></i> <span class="nav-label">Gestión de archivos</span><span class="fa arrow"></span></a>
 				<ul class="nav nav-second-level">
 					<?php if (PermitirFuncion(207)) {?><li><a class="alnk" href="gestionar_documentos.php">Gestionar documentos</a></li><?php }?>
 					<?php if (PermitirFuncion(208)) {?><li><a class="alnk" href="gestionar_informes.php">Gestionar informes</a></li><?php }?>
@@ -524,9 +524,9 @@ if (!isset($_COOKIE["banderaMenu"])) {
 			<li>
 				<a href="#"><i class="fa fa-gears"></i> <span class="nav-label">Administración</span><span class="fa arrow"></span></a>
 				<ul class="nav nav-second-level">
-					<li><a href="cambiar_clave.php">Cambiar contrase&ntilde;a</a></li>
+					<li><a href="cambiar_clave.php">Cambiar contraseña</a></li>
 					<?php if (PermitirFuncion(222)) {?><li><a class="alnk" href="cambiar_firma.php">Actualizar mi firma</a></li><?php }?>
-					<?php if (PermitirFuncion(201)) {?><li><a class="alnk" href="gestionar_categorias.php">Gestionar categor&iacute;as</a></li><?php }?>
+					<?php if (PermitirFuncion(201)) {?><li><a class="alnk" href="gestionar_categorias.php">Gestionar categorías</a></li><?php }?>
 					<?php if (PermitirFuncion(202)) {?><li><a class="alnk" href="gestionar_usuarios.php">Gestionar usuarios</a></li><?php }?>
 					<?php if (PermitirFuncion(203)) {?><li><a class="alnk" href="gestionar_perfiles.php">Gestionar perfiles</a></li><?php }?>
 					<?php if (PermitirFuncion(214)) {?><li><a class="alnk" href="gestionar_series.php">Gestionar series</a></li><?php }?>
@@ -551,6 +551,14 @@ if (!isset($_COOKIE["banderaMenu"])) {
 							
 							<?php if (true) {?><li><a class="alnk" href="parametros_conceptos_salida.php">Parámetros de Conceptos de salida de inventario</a></li><?php }?>
 							<?php if (PermitirFuncion(225)) {?><li><a class="alnk" href="parametros_tecnicos_sugeridos.php">Parámetros técnicos sugeridos</a></li><?php }?>
+						</ul>
+					</li>
+					<?php }?>
+					<?php if (PermitirFuncion(226)) {?>
+					<li>
+						<a href="#">Parámetros de formularios<span class="fa arrow"></span></a>
+						<ul class='nav nav-third-level'>
+							<?php if (PermitirFuncion(1713)) {?><li><a class="alnk" href="parametros_car_advisor.php">Parámetros Car Advisor</a></li><?php }?>
 						</ul>
 					</li>
 					<?php }?>

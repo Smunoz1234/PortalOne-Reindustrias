@@ -38,7 +38,7 @@ if ($sw == 1) {
 		"'" . $Empleado . "'",
 		"'" . $Supervisor . "'",
 	);
-	$SQL = EjecutarSP('sp_ConsultarFormEntregaVehiculos', $Param);
+	$SQL = Seleccionar("uvw_tbl_FormularioCarAdvisor", "*");
 }
 
 //Estado
@@ -324,8 +324,8 @@ $SQL_Supervisor = Seleccionar('uvw_tbl_EntregaVehiculos', 'DISTINCT id_empleado_
 												<th>Fecha integración</th>
 												<th>Reintentos</th>
 												<th>Estado integración</th>
-												<th>Fecha creación</th>
-												<th>Usuario creación</th>
+												<th>Fecha actuallización</th>
+												<th>Usuario actualización</th>
 												<th>Estado</th>
 												<th>Acciones</th>
 												<th class="text-center">
@@ -337,88 +337,75 @@ $SQL_Supervisor = Seleccionar('uvw_tbl_EntregaVehiculos', 'DISTINCT id_empleado_
 										</thead>
 										<tbody>
 											<?php while ($row = sqlsrv_fetch_array($SQL)) { ?>
-
-												<?php $SQL_Formulario = Seleccionar('uvw_tbl_LlamadasServicios_Formularios', '*', "nombre_servicio = 'entregaVehiculos' AND id_formulario='" . $row['id_entrega_vehiculo'] . "'"); ?>
-												<?php $row_Formulario = sqlsrv_fetch_array($SQL_Formulario); ?>
-
-												<tr id="tr_Resum<?php echo $row['id_entrega_vehiculo']; ?>" class="trResum">
+												<tr id="tr_Resum<?php echo $row['id_formulario_caradvisor']; ?>" class="trResum">
 													<td>
-														<?php echo $row['id_entrega_vehiculo']; ?>
+														<?php echo $row['id_formulario_caradvisor']; ?>
 													</td>
 													<td>
-														<?php echo $row['empleado_tecnico']; ?>
+														<?php echo $row['empleado']; ?>
 													</td>
 													<td>
-														<?php echo $row['socio_negocio']; ?>
+														<?php echo $row['cliente']; ?>
 													</td>
 													<td>
-														<?php echo $row['id_direccion_destino']; ?>
+														<?php echo $row['id_direccion_destino'] ?? $row['city']; ?>
 													</td>
 													<td>
-														<?php echo $row['placa']; ?>
+														<?php echo $row['vin']; ?>
 													</td>
 													<td>
-														<?php echo $row['comentarios_cierre']; ?>
+														<?php echo $row['comentarios_integracion']; ?>
 													</td>
 													<td>
-														<?php echo $row['hora_creacion']->format('Y-m-d H:i'); ?>
+														<?php echo ($row['fecha_integracion'] != "") ? $row['fecha_integracion']->format('Y-m-d H:i') : ""; ?>
 													</td>
 													<td>
-														<?php echo $row['reintentos'] ?? ""; ?>
-													</td>
-													<td><span id="lblEstado<?php echo $row['id_entrega_vehiculo']; ?>" <?php if ($row['estado'] == 'O') {
-														   echo "class='label label-info'";
-													   } elseif ($row['estado'] == 'A') {
-														   echo "class='label label-danger'";
-													   } else {
-														   echo "class='label label-primary'";
-													   } ?>><?php echo $row['nombre_estado']; ?></span></td>
-													<td>
-														<?php echo ($row['fecha_cierre'] != "") ? $row['fecha_cierre']->format('Y-m-d H:i') : ""; ?>
+														<?php echo $row['cantidad_reintentos'] ?? ""; ?>
 													</td>
 													<td>
-														<?php echo $row['nombre_usuario_cierre']; ?>
+														<span id="lblEstado<?php echo $row['id_formulario_caradvisor']; ?>" <?php if ($row['integracion'] == 0) {
+															echo "class='label label-danger'";
+														} else {
+															echo "class='label label-primary'";
+														} ?>>
+													   		<?php echo $row['integracion']; ?>
+														</span>
 													</td>
-													<td><span id="lblEstado<?php echo $row['id_entrega_vehiculo']; ?>" <?php if ($row['estado'] == 'O') {
-														   echo "class='label label-info'";
-													   } elseif ($row['estado'] == 'A') {
-														   echo "class='label label-danger'";
-													   } else {
-														   echo "class='label label-primary'";
-													   } ?>><?php echo $row['nombre_estado']; ?></span></td>
+													<td>
+														<?php echo ($row['fecha_actualizacion'] != "") ? $row['fecha_actualizacion']->format('Y-m-d H:i') : ""; ?>
+													</td>
+													<td>
+														<?php echo $row['id_usuario_actualizacion']; ?>
+													</td>
+													<td>
+														<span id="lblEstado<?php echo $row['id_formulario_caradvisor']; ?>" <?php if ($row['estado'] == 'O') {
+															echo "class='label label-danger'";
+														} else {
+															echo "class='label label-primary'";
+														} ?>>
+													   		<?php echo $row['estado']; ?>
+														</span>
+													</td>
 													<td class="text-center form-inline w-80">
 														<?php if ($row['estado'] == 'O') { ?>
-															<button id="btnEstado<?php echo $row['id_entrega_vehiculo']; ?>"
+															<button id="btnEstado<?php echo $row['id_formulario_caradvisor']; ?>"
 																class="btn btn-success btn-xs"
-																onClick="CambiarEstado('<?php echo $row['id_entrega_vehiculo']; ?>');"
+																onClick="CambiarEstado('<?php echo $row['id_formulario_caradvisor']; ?>');"
 																title="Cambiar estado"><i class="fa fa-pencil"></i></button>
 														<?php } ?>
 
-														<a href="filedownload.php?file=<?php echo base64_encode("EntregaVehiculos/DescargarFormatos/" . $row['id_entrega_vehiculo'] . "/" . $_SESSION['User']); ?>&api=1"
-															target="_blank" class="btn btn-warning btn-xs" title="Descargar"><i
-																class="fa fa-download"></i></a>
-
-														<a href="descargar_frm_entrega_vehiculo.php?id=<?php echo $row['id_entrega_vehiculo']; ?>"
-															target="_blank" class="btn btn-danger btn-xs"
-															title="Descargar Fotos"><i class="fa fa-file-image-o"></i></a>
-
-														<?php if (isset($row_Formulario['docentry_llamada_servicio']) && ($row_Formulario['docentry_llamada_servicio'] != "")) { ?>
-															<br><br>
-															<a target="_blank" title="Abrir OT"
-																href="llamada_servicio.php?id=<?php echo base64_encode($row_Formulario['docentry_llamada_servicio']); ?>&tl=1&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('consultar_frm_entrega_vehiculo.php'); ?>"
-																class="btn btn-info btn-xs"><i class="fa fa-folder-open-o"></i>
-																<?php echo $row_Formulario['id_llamada_servicio']; ?>
-															</a>
-														<?php } ?>
+														<a href="descargar_frm_entrega_vehiculo.php?id=<?php echo $row['id_formulario_caradvisor']; ?>"
+															target="_blank" class="btn btn-warning btn-xs"
+															title="Descargar Fotos"><i class="fa fa-code-fork"></i></a>
 													</td>
 													<td class="text-center">
 														<?php if ($row['estado'] == 'O') { ?>
 															<div class="checkbox checkbox-success"
-																id="dvChkSel<?php echo $row['id_entrega_vehiculo']; ?>">
+																id="dvChkSel<?php echo $row['id_formulario_caradvisor']; ?>">
 																<input type="checkbox" class="chkSelOT"
-																	id="chkSelOT<?php echo $row['id_entrega_vehiculo']; ?>"
+																	id="chkSelOT<?php echo $row['id_formulario_caradvisor']; ?>"
 																	value=""
-																	onChange="SeleccionarOT('<?php echo $row['id_entrega_vehiculo']; ?>');"
+																	onChange="SeleccionarOT('<?php echo $row['id_formulario_caradvisor']; ?>');"
 																	aria-label="Single checkbox One"><label></label>
 															</div>
 														<?php } ?>
