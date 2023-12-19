@@ -304,13 +304,14 @@ $SQL_Supervisor = Seleccionar('uvw_tbl_EntregaVehiculos', 'DISTINCT id_empleado_
 						<div class="col-lg-12">
 							<div class="ibox-content">
 								<?php include "includes/spinner.php"; ?>
-								<div class="row m-b-md">
+								<!-- div class="row m-b-md">
 									<div class="col-lg-12">
 										<button class="pull-right btn btn-success" id="btnCambiarLote" name="btnCambiarLote"
 											onClick="CambiarEstado('',true);" disabled><i class="fa fa-pencil"></i> Cambiar
 											estados en lote</button>
 									</div>
-								</div>
+								</div -->
+								<br>
 								<div class="table-responsive">
 									<table class="table table-striped table-bordered table-hover dataTables-example">
 										<thead>
@@ -328,11 +329,11 @@ $SQL_Supervisor = Seleccionar('uvw_tbl_EntregaVehiculos', 'DISTINCT id_empleado_
 												<th>Usuario actualización</th>
 												<th>Estado</th>
 												<th>Acciones</th>
-												<th class="text-center">
+												<!-- th class="text-center">
 													<div class="checkbox checkbox-success"><input type="checkbox"
 															id="chkAll" value="" onChange="SeleccionarTodos();"
 															title="Seleccionar todos"><label></label></div>
-												</th>
+												</th -->
 											</tr>
 										</thead>
 										<tbody>
@@ -398,7 +399,7 @@ $SQL_Supervisor = Seleccionar('uvw_tbl_EntregaVehiculos', 'DISTINCT id_empleado_
 															target="_blank" class="btn btn-warning btn-xs"
 															title="Descargar Fotos"><i class="fa fa-code-fork"></i></a>
 													</td>
-													<td class="text-center">
+													<!-- td class="text-center">
 														<?php if ($row['estado'] == 'O') { ?>
 															<div class="checkbox checkbox-success"
 																id="dvChkSel<?php echo $row['id_formulario_caradvisor']; ?>">
@@ -409,7 +410,7 @@ $SQL_Supervisor = Seleccionar('uvw_tbl_EntregaVehiculos', 'DISTINCT id_empleado_
 																	aria-label="Single checkbox One"><label></label>
 															</div>
 														<?php } ?>
-													</td>
+													</td -->
 												</tr>
 											<?php } ?>
 										</tbody>
@@ -525,7 +526,7 @@ $SQL_Supervisor = Seleccionar('uvw_tbl_EntregaVehiculos', 'DISTINCT id_empleado_
 
 			$.ajax({
 				type: "POST",
-				url: "md_frm_cambiar_estados.php",
+				url: "md_frm_car_advisor.php",
 				data: {
 					id: id,
 					frm: 'EntregaVehiculos',
