@@ -1,14 +1,9 @@
 <?php
 require_once("includes/conexion.php");
 
-//Estado
-$SQL_EstadoFrm = Seleccionar('tbl_EstadoFormulario', '*', "Cod_Estado <> 'O'");
-
 $id = 0;
 $esArray = false;
 $count = 0;
-$frm = isset($_POST['frm']) ? $_POST['frm'] : "";
-$nomID = isset($_POST['nomID']) ? $_POST['nomID'] : "";
 
 if (isset($_POST['id'])) {
 	if (is_array($_POST['id'])) {
@@ -20,7 +15,11 @@ if (isset($_POST['id'])) {
 	}
 }
 
+// Consultar registro Car Advisor
+$SQL_ca = Seleccionar("tbl_FormularioCarAdvisor", "*", "id_formulario_caradvisor = '$id'");
+$row_ca =  sqlsrv_fetch_array($SQL_ca);
 ?>
+
 <div class="modal-header">
 	<h4 class="modal-title">
 		Actualizar
@@ -42,33 +41,94 @@ if (isset($_POST['id'])) {
 	<div class="form-group">
 		<div class="ibox-content">
 			<?php include("includes/spinner.php"); ?>
-			<div class="form-group">
-				<label class="control-label">Estado <span class="text-danger">*</span></label>
-				<select name="Estado" class="form-control" id="Estado" required>
-					<option value="">Seleccione...</option>
-					<?php while ($row_EstadoFrm = sqlsrv_fetch_array($SQL_EstadoFrm)) { ?>
-						<option value="<?php echo $row_EstadoFrm['Cod_Estado']; ?>">
-							<?php echo $row_EstadoFrm['NombreEstado']; ?>
-						</option>
-					<?php } ?>
-				</select>
+
+			<div class="form-group row">
+				<div class="col-lg-4">
+					<label class="control-label">
+						Nombre Contacto <span class="text-danger">*</span>
+					</label>
+					<input required autocomplete="off" type="text" class="form-control" name="firstname" id="firstname" value="<?php echo $row_ca["firstname"] ?? ""; ?>">
+				</div>
+				
+				<div class="col-lg-4">
+					<label class="control-label">
+						Apellido Contacto <span class="text-danger">*</span>
+					</label>
+					<input required autocomplete="off" type="text" class="form-control" name="lastname" id="lastname" value="<?php echo $row_ca["lastname"] ?? ""; ?>">
+				</div>
+
+				<div class="col-lg-4">
+					<label class="control-label">
+						Correo electrónico <span class="text-danger">*</span>
+					</label>
+					<input required autocomplete="off" type="text" class="form-control" name="email" id="email" value="<?php echo $row_ca["email"] ?? ""; ?>">
+				</div>
 			</div>
-			<div class="form-group">
-				<label class="control-label">Comentarios <span class="text-danger">*</span></label>
-				<textarea name="Comentarios" rows="5" class="form-control" id="Comentarios"
-					placeholder="Ingrese sus comentarios..." required></textarea>
+
+			<div class="form-group row">
+				<div class="col-lg-4">
+					<label class="control-label">
+						ZIP <span class="text-danger">*</span>
+					</label>
+					<input required autocomplete="off" type="text" class="form-control" name="zip" id="zip" value="<?php echo $row_ca["zip"] ?? ""; ?>">
+				</div>
+				
+				<div class="col-lg-4">
+					<label class="control-label">
+						Ciudad <span class="text-danger">*</span>
+					</label>
+					<input required autocomplete="off" type="text" class="form-control" name="city" id="city" value="<?php echo $row_ca["city"] ?? ""; ?>">
+				</div>
+
+				<div class="col-lg-4">
+					<label class="control-label">
+						Dirección <span class="text-danger">*</span>
+					</label>
+					<input required autocomplete="off" type="text" class="form-control" name="street" id="street" value="<?php echo $row_ca["street"] ?? ""; ?>">
+				</div>
+			</div>
+
+			<div class="form-group row">
+				<div class="col-lg-4">
+					<label class="control-label">
+						Teléfono <span class="text-danger">*</span>
+					</label>
+					<input required autocomplete="off" type="text" class="form-control" name="phone" id="phone" value="<?php echo $row_ca["phone"] ?? ""; ?>">
+				</div>
+				
+				<div class="col-lg-4">
+					<label class="control-label">
+						Teléfono Compañía <span class="text-danger">*</span>
+					</label>
+					<input required autocomplete="off" type="text" class="form-control" name="phonecompany" id="phonecompany" value="<?php echo $row_ca["phonecompany"] ?? ""; ?>">
+				</div>
+
+				<div class="col-lg-4">
+					<label class="control-label">
+						Teléfono Móvil <span class="text-danger">*</span>
+					</label>
+					<input required autocomplete="off" type="text" class="form-control" name="phonemobile" id="phonemobile" value="<?php echo $row_ca["phonemobile"] ?? ""; ?>">
+				</div>
+			</div>
+
+			<div class="form-group row">
+				<div class="col-lg-4">
+					<label class="control-label">
+						Modelo Variante <span class="text-danger">*</span>
+					</label>
+					<input required autocomplete="off" type="text" class="form-control" name="modelvariant" id="modelvariant" value="<?php echo $row_ca["modelvariant"] ?? ""; ?>">
+				</div>
 			</div>
 		</div>
 	</div>
 </div>
 <div class="modal-footer">
-	<button type="button" class="btn btn-success m-t-md" onClick="GuardarDatos('<?php echo $id; ?>');"><i
+	<button type="button" class="btn btn-success m-t-md" onclick="GuardarDatos('<?php echo $id; ?>');"><i
 			class="fa fa-check"></i> Aceptar</button>
 	<button type="button" class="btn btn-danger m-t-md" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
 </div>
 
 <script>
-
 	function GuardarDatos(id) {
 		Swal.fire({
 			title: "¿Está seguro que desea ejecutar el proceso?",
@@ -86,6 +146,7 @@ if (isset($_POST['id'])) {
 
 	function EjecutarProceso(id) {
 		$('.ibox-content').toggleClass('sk-loading', true);
+
 		var estado = document.getElementById("Estado").value;
 		var comentarios = document.getElementById("Comentarios").value;
 
@@ -106,9 +167,7 @@ if (isset($_POST['id'])) {
 					id: id,
 					estado: estado,
 					comentarios: comentarios,
-					esArray: esArray,
-					frm: '<?php echo $frm; ?>',
-					nomID: '<?php echo $nomID; ?>'
+					esArray: esArray
 				},
 				dataType: 'json',
 				success: function (data) {
