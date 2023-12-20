@@ -4,7 +4,7 @@ $id = $_POST["id"] ?? "";
 
 // Llamado AJAX.
 $id_formulario_caradvisor = $_POST["id_formulario_caradvisor"] ?? "";
-if ($id != "") {
+if ($id_formulario_caradvisor != "") {
 	$firstname = $_POST["firstname"] ?? "";
 	$lastname = $_POST["lastname"] ?? "";
 	$email = $_POST["email"] ?? "";
@@ -12,6 +12,7 @@ if ($id != "") {
 	$city = $_POST["city"] ?? "";
 	$street = $_POST["street"] ?? "";
 	$modelvariant = $_POST["modelvariant"] ?? "";
+	$User = $_SESSION['CodUser'] ?? "";
 
 	$param_ca = array(
 		"'$id_formulario_caradvisor'",
@@ -22,6 +23,7 @@ if ($id != "") {
 		"'$city'",
 		"'$street'",
 		"'$modelvariant'",
+		"'$User'",
 	);
 	$SQL_Operacion = EjecutarSP("sp_tbl_FormularioCarAdvisor", $param_ca);
 
@@ -189,7 +191,23 @@ $row_ca = sqlsrv_fetch_array($SQL_ca);
 					processData: false,  // tell jQuery not to process the data
 					contentType: false,   // tell jQuery not to set contentType
 					success: function (response) {
-						console.log("Line 150", response);
+						if (response === "OK") {
+							Swal.fire({
+								icon: "success",
+								title: "¡Listo!",
+								text: "Se actualizo el registro correctamente."
+							}).then((result) => {
+								if (result.isConfirmed) {
+									location.reload();
+								}
+							});
+						} else {
+							Swal.fire({
+								icon: "warning",
+								title: "¡Error!",
+								text: response
+							});
+						}
 
 						$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
 					},
