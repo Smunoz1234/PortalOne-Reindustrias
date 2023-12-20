@@ -113,9 +113,7 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 $SQL_DatosEmpleados = Seleccionar("uvw_tbl_Usuarios", "*", "ID_Usuario='" . $_SESSION['CodUser'] . "'");
 $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 
-// SMM, 20/12/2023
-
-// Filtrar conceptos de salida. SMM, 20/01/2023
+// Filtrar conceptos de salida.
 $Where_Conceptos = "ID_Usuario='" . $_SESSION['CodUser'] . "'";
 $SQL_Conceptos = Seleccionar('uvw_tbl_UsuariosConceptos', '*', $Where_Conceptos);
 
@@ -132,7 +130,7 @@ if (count($Conceptos) > 0 && ($edit == 0)) {
 }
 
 $SQL_ConceptoSalida = Seleccionar('tbl_SalidaInventario_Conceptos', '*', $Filtro_Conceptos, 'id_concepto_salida');
-// Hasta aquí, 16/02/2023
+// Hasta aquí, 20/12/2023
 ?>
 
 <style>
@@ -254,18 +252,18 @@ $SQL_ConceptoSalida = Seleccionar('tbl_SalidaInventario_Conceptos', '*', $Filtro
 
 								<div class="col-xs-12" style="margin-bottom: 10px;">
 									<label class="control-label">
-										Concepto Salida <span class="text-danger">*</span>
+										Concepto Salida
 									</label>
 									
-									<select name="ConceptoSalida" id="ConceptoSalida" class="form-control select2" required  <?php if($Inventario == "") {
+									<select name="ConceptoSalida" id="ConceptoSalida" class="form-control select2" <?php if($Inventario == "") {
 										echo "disabled";
 									} ?>>
 										<option value="">Seleccione...</option>
 											
 										<?php while ($row_ConceptoSalida = sqlsrv_fetch_array($SQL_ConceptoSalida)) { ?>
-												<option value="<?php echo $row_ConceptoSalida['id_concepto_salida']; ?>">
-													<?php echo $row_ConceptoSalida['id_concepto_salida'] . "-" . $row_ConceptoSalida['concepto_salida']; ?>
-												</option>
+											<option value="<?php echo $row_ConceptoSalida['id_concepto_salida']; ?>">
+												<?php echo $row_ConceptoSalida['id_concepto_salida'] . "-" . $row_ConceptoSalida['concepto_salida']; ?>
+											</option>
 										<?php } ?>
 									</select>
 								</div> <!-- col-xs-12 -->

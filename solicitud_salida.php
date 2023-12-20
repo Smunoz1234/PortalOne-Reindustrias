@@ -2155,7 +2155,8 @@ function ActualizarArticulos() {
 				IdSeries: serie,
 				IdProyecto: proyecto,
 				ListaPrecio: listaPrecio,
-				IdEmpleado: empleado
+				IdEmpleado: empleado,
+				Inventario: "Solicitud"
 			},
 			success: function (response) {
 				$('#mdLoteArticulos').html(response);

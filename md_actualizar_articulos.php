@@ -25,6 +25,9 @@ $Proyecto = $_POST['IdProyecto'];
 $IdEmpleado = $_POST['IdEmpleado'];
 $ListaPrecio = $_POST['ListaPrecio'];
 
+// SMM, 20/12/2023
+$Inventario = $_POST['Inventario'] ?? "";
+
 // SMM, 21/06/2023
 $DefaultSelection = false;
 
@@ -52,6 +55,25 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 // Datos de dimensiones del usuario actual, 31/05/2023
 $SQL_DatosEmpleados = Seleccionar("uvw_tbl_Usuarios", "*", "ID_Usuario='" . $_SESSION['CodUser'] . "'");
 $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
+
+// Filtrar conceptos de salida.
+$Where_Conceptos = "ID_Usuario='" . $_SESSION['CodUser'] . "'";
+$SQL_Conceptos = Seleccionar('uvw_tbl_UsuariosConceptos', '*', $Where_Conceptos);
+
+$Conceptos = array();
+while ($Concepto = sqlsrv_fetch_array($SQL_Conceptos)) {
+	$Conceptos[] = ("'" . $Concepto['IdConcepto'] . "'");
+}
+
+$Filtro_Conceptos = "Estado = 'Y'";
+if (count($Conceptos) > 0 && ($edit == 0)) {
+	$Filtro_Conceptos .= " AND id_concepto_salida IN (";
+	$Filtro_Conceptos .= implode(",", $Conceptos);
+	$Filtro_Conceptos .= ")";
+}
+
+$SQL_ConceptoSalida = Seleccionar('tbl_SalidaInventario_Conceptos', '*', $Filtro_Conceptos, 'id_concepto_salida');
+// Hasta aquí, 20/12/2023
 ?>
 
 <style>
@@ -169,7 +191,9 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 								<div class="col-xs-12" style="margin-bottom: 10px;">
 									<label class="control-label">Almacén destino</label>
 
-									<select name="ToWhsCodeUpd" id="ToWhsCodeUpd" class="form-control select2" disabled>
+									<select name="ToWhsCodeUpd" id="ToWhsCodeUpd" class="form-control select2" <?php if($Inventario == "") {
+										echo "disabled";
+									} ?>>
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_AlmacenDestino = sqlsrv_fetch_array($SQL_AlmacenDestino)) { ?>
@@ -204,6 +228,22 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 											<option <?php if ($DefaultSelection && ($IdEmpleado == $row_EmpleadosVentas['ID_EmpVentas'])) {
 												echo "selected";
 											} ?> value="<?php echo $row_EmpleadosVentas['ID_EmpVentas']; ?>"><?php echo $row_EmpleadosVentas['ID_EmpVentas'] . " - " . $row_EmpleadosVentas['DE_EmpVentas']; ?></option>
+										<?php } ?>
+									</select>
+								</div> <!-- col-xs-12 -->
+
+								<div class="col-xs-12" style="margin-bottom: 10px;">
+									<label class="control-label">Concepto Salida</label>
+
+									<select name="ConceptoSalidaUpd" id="ConceptoSalidaUpd" class="form-control select2" <?php if($Inventario == "") {
+										echo "disabled";
+									} ?>>
+										<option value="">Seleccione...</option>
+
+										<?php while ($row_ConceptoSalida = sqlsrv_fetch_array($SQL_ConceptoSalida)) { ?>
+											<option value="<?php echo $row_ConceptoSalida['id_concepto_salida']; ?>">
+												<?php echo $row_ConceptoSalida['id_concepto_salida'] . "-" . $row_ConceptoSalida['concepto_salida']; ?>
+											</option>
 										<?php } ?>
 									</select>
 								</div> <!-- col-xs-12 -->
