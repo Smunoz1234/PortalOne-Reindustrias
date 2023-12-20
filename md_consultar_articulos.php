@@ -28,7 +28,10 @@ $IdEmpleado = $_POST['IdEmpleado'];
 $ListaPrecio = $_POST['ListaPrecio'];
 
 // SMM, 14/10/2023
-$Solicitud = $_POST['Solicitud'] ?? "";
+$Solicitud_OT = $_POST['Solicitud'] ?? "";
+
+// SMM, 20/12/2023
+$Inventario = $_POST['Inventario'] ?? "";
 
 // Valores predeterminados en los campos de documentos del usuario según el tipo.
 $OrigenLlamada = ObtenerValorDefecto($ObjType, "OrigenLlamada", false);
@@ -45,7 +48,7 @@ if(sqlsrv_has_rows($SQL_OT)) {
 	$row_OT = sqlsrv_fetch_array($SQL_OT);
 } else {
 	// Buscar parámetros en la solicitud. SMM, 14/10/2023
-	$SQL_OT = Seleccionar('uvw_tbl_SolicitudLlamadasServicios', '*', "[ID_SolicitudLlamadaServicio]='$Solicitud'");
+	$SQL_OT = Seleccionar('uvw_tbl_SolicitudLlamadasServicios', '*', "[ID_SolicitudLlamadaServicio]='$Solicitud_OT'");
 	$row_OT = sqlsrv_fetch_array($SQL_OT);
 }
 
@@ -109,6 +112,27 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 // Datos de dimensiones del usuario actual, 31/05/2023
 $SQL_DatosEmpleados = Seleccionar("uvw_tbl_Usuarios", "*", "ID_Usuario='" . $_SESSION['CodUser'] . "'");
 $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
+
+// SMM, 20/12/2023
+
+// Filtrar conceptos de salida. SMM, 20/01/2023
+$Where_Conceptos = "ID_Usuario='" . $_SESSION['CodUser'] . "'";
+$SQL_Conceptos = Seleccionar('uvw_tbl_UsuariosConceptos', '*', $Where_Conceptos);
+
+$Conceptos = array();
+while ($Concepto = sqlsrv_fetch_array($SQL_Conceptos)) {
+	$Conceptos[] = ("'" . $Concepto['IdConcepto'] . "'");
+}
+
+$Filtro_Conceptos = "Estado = 'Y'";
+if (count($Conceptos) > 0 && ($edit == 0)) {
+	$Filtro_Conceptos .= " AND id_concepto_salida IN (";
+	$Filtro_Conceptos .= implode(",", $Conceptos);
+	$Filtro_Conceptos .= ")";
+}
+
+$SQL_ConceptoSalida = Seleccionar('tbl_SalidaInventario_Conceptos', '*', $Filtro_Conceptos, 'id_concepto_salida');
+// Hasta aquí, 16/02/2023
 ?>
 
 <style>
@@ -165,12 +189,15 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 								<div class="col-xs-12" style="margin-bottom: 10px;">
 									<label class="control-label">Almacén destino</label>
 
-									<select name="AlmacenDestino" id="AlmacenDestino" class="form-control select2"
-										disabled>
+									<select name="AlmacenDestino" id="AlmacenDestino" class="form-control select2" <?php if($Inventario == "") {
+										echo "disabled";
+									} ?>>
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_AlmacenDestino = sqlsrv_fetch_array($SQL_AlmacenDestino)) { ?>
-											<option value="<?php echo $row_AlmacenDestino['ToWhsCode']; ?>"><?php echo $row_AlmacenDestino['ToWhsCode'] . " - " . $row_AlmacenDestino['ToWhsName']; ?></option>
+											<option value="<?php echo $row_AlmacenDestino['ToWhsCode']; ?>">
+												<?php echo $row_AlmacenDestino['ToWhsCode'] . " - " . $row_AlmacenDestino['ToWhsName']; ?>
+											</option>
 										<?php } ?>
 									</select>
 								</div> <!-- col-xs-12 -->
@@ -221,6 +248,24 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 											<option <?php if ($IdEmpleado == $row_EmpleadosVentas['ID_EmpVentas']) {
 												echo "selected";
 											} ?> value="<?php echo $row_EmpleadosVentas['ID_EmpVentas']; ?>"><?php echo $row_EmpleadosVentas['ID_EmpVentas'] . " - " . $row_EmpleadosVentas['DE_EmpVentas']; ?></option>
+										<?php } ?>
+									</select>
+								</div> <!-- col-xs-12 -->
+
+								<div class="col-xs-12" style="margin-bottom: 10px;">
+									<label class="control-label">
+										Concepto Salida <span class="text-danger">*</span>
+									</label>
+									
+									<select name="ConceptoSalida" id="ConceptoSalida" class="form-control select2" required  <?php if($Inventario == "") {
+										echo "disabled";
+									} ?>>
+										<option value="">Seleccione...</option>
+											
+										<?php while ($row_ConceptoSalida = sqlsrv_fetch_array($SQL_ConceptoSalida)) { ?>
+												<option value="<?php echo $row_ConceptoSalida['id_concepto_salida']; ?>">
+													<?php echo $row_ConceptoSalida['id_concepto_salida'] . "-" . $row_ConceptoSalida['concepto_salida']; ?>
+												</option>
 										<?php } ?>
 									</select>
 								</div> <!-- col-xs-12 -->
