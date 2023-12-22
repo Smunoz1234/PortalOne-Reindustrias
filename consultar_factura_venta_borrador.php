@@ -16,7 +16,7 @@ if ($CerrarBorrador != "") {
 		$Resultado = EnviarWebServiceSAP($Metodo, $Parametros, true, true);
 
 		if ($Resultado->Success == 0) {
-			echo "No se pudo cerrar el documento \n";
+			echo "No se pudo cerrar el documento. \n";
 			echo $Resultado->Mensaje;
 		} else {
 			echo "OK";
