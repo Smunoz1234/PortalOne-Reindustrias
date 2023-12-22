@@ -608,6 +608,8 @@ $SQL = sqlsrv_query($conexion, $Cons);
 				confirmButtonText: "Si, confirmo",
 				cancelButtonText: "No"
 			}).then((result) => {
+				$('.ibox-content').toggleClass('sk-loading', true);
+
 				if (result.isConfirmed) {
 					$.ajax({
 						type: "POST",
@@ -622,6 +624,8 @@ $SQL = sqlsrv_query($conexion, $Cons);
 								title: (response == "OK") ? "¡Listo!" : "¡Error!",
 								text: (response == "OK") ? "Se cerro el documento correctamente." : response
 							}).then((result) => {
+								$('.ibox-content').toggleClass('sk-loading', false);
+								
 								if (result.isConfirmed && (response == "OK")) {
 									location.reload();
 								}

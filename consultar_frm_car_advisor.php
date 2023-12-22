@@ -363,28 +363,32 @@ $SQL_Supervisor = Seleccionar('uvw_tbl_EntregaVehiculos', 'DISTINCT id_empleado_
 														<?php echo $row['cantidad_reintentos'] ?? ""; ?>
 													</td>
 													<td>
-														<span id="lblEstado<?php echo $row['id_formulario_caradvisor']; ?>" <?php if ($row['integracion'] == 0) {
-															echo "class='label label-danger'";
+														<?php echo "<span id='lblEstadoIntegracion" . $row['id_formulario_caradvisor'] . "'";
+														if ($row['integracion'] == '1') {
+															echo "class='label label-info'> Integrado";
+														} elseif ($row['integracion'] == '-1') {
+															echo "class='label label-danger'> Error";
 														} else {
-															echo "class='label label-primary'";
-														} ?>>
-													   		<?php echo $row['integracion']; ?>
-														</span>
+															echo "class='label label-primary'> Pendiente";
+														}
+														echo "</span>"; ?>
 													</td>
 													<td>
 														<?php echo ($row['fecha_actualizacion'] != "") ? $row['fecha_actualizacion']->format('Y-m-d H:i') : ""; ?>
 													</td>
 													<td>
-														<?php echo $row['id_usuario_actualizacion']; ?>
+														<?php echo $row['nombre_usuario_actualizacion']; ?>
 													</td>
 													<td>
-														<span id="lblEstado<?php echo $row['id_formulario_caradvisor']; ?>" <?php if ($row['estado'] == 'O') {
-															echo "class='label label-danger'";
+														<?php echo "<span id='lblEstado" . $row['id_formulario_caradvisor'] . "'";
+														if ($row['estado'] == 'O') {
+															echo "class='label label-info'> Abierto";
+														} elseif ($row['estado'] == 'A') {
+															echo "class='label label-danger'> Anulado";
 														} else {
-															echo "class='label label-primary'";
-														} ?>>
-													   		<?php echo $row['estado']; ?>
-														</span>
+															echo "class='label label-primary'> Cerrado";
+														}
+														echo "</span>"; ?>
 													</td>
 													<td class="text-center form-inline w-80">
 														<?php if ($row['estado'] == 'O') { ?>
