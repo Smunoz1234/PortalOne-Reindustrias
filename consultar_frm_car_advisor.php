@@ -2,6 +2,37 @@
 require_once "includes/conexion.php";
 PermitirAcceso(1712);
 
+// Integrar registro Car Advisor. SMM, 27/12/2023
+$IntegrarCarAdvisor = ($_POST["Integrar"] ?? "");
+if ($IntegrarCarAdvisor != "") {
+	try {
+		$IdCarAdvisor = ($_POST["IdCarAdvisor"] ?? "");
+
+		$Parametros = array(
+			"id_formulario_caradvisor" => $IdCarAdvisor
+		);
+
+		$Metodo = "FormularioCarAdvisor/IntegrarFormulario/$IdCarAdvisor";
+		$Resultado = EnviarWebServiceSAP($Metodo, $Parametros, true, true);
+
+		if ($Resultado->Success == 0) {
+			echo "No se pudo integrar el registro. \n";
+			echo $Resultado->Mensaje;
+		} else {
+			echo "OK";
+		}
+
+		// Mostrar mensaje de la API.
+		exit();
+	} catch (Exception $e) {
+		echo "Excepción capturada: " . $e->getMessage() . "\n";
+
+		// Mostrar excepción.
+		exit();
+	}
+}
+
+
 $sw = 0;
 //Fechas
 if (isset($_GET['FechaInicial']) && $_GET['FechaInicial'] != "") {
@@ -398,9 +429,11 @@ $SQL_Supervisor = Seleccionar('uvw_tbl_EntregaVehiculos', 'DISTINCT id_empleado_
 																title="Cambiar estado"><i class="fa fa-pencil"></i></button>
 														<?php } ?>
 
-														<a href="descargar_frm_entrega_vehiculo.php?id=<?php echo $row['id_formulario_caradvisor']; ?>"
-															target="_blank" class="btn btn-warning btn-xs"
-															title="Descargar Fotos"><i class="fa fa-code-fork"></i></a>
+														<button class="btn btn-warning btn-xs"
+															title="Integrar registro CarAdvisor" 
+															onclick="IntegrarRegistro('<?php echo $row['id_formulario_caradvisor']; ?>')">
+															<i class="fa fa-code-fork"></i>
+														</button>
 													</td>
 												</tr>
 											<?php } ?>
@@ -528,6 +561,51 @@ $SQL_Supervisor = Seleccionar('uvw_tbl_EntregaVehiculos', 'DISTINCT id_empleado_
 					
 					$('#ContenidoModal').html(response);
 					$('#myModal').modal("show");
+				}
+			});
+		}
+
+		// SMM, 27/12/2023
+		function IntegrarRegistro(id) {
+			Swal.fire({
+				title: "¿Está seguro que desea integrar el registro?",
+				icon: "question",
+				showCancelButton: true,
+				confirmButtonText: "Si, confirmo",
+				cancelButtonText: "No"
+			}).then((result) => {
+				$('.ibox-content').toggleClass('sk-loading', true);
+
+				if (result.isConfirmed) {
+					$.ajax({
+						type: "POST",
+						url: "consultar_frm_car_advisor.php",
+						data: {
+							Integrar: "IntegrarCarAdvisor",
+							IdCarAdvisor: id,
+						},
+						success: function (response) {
+							Swal.fire({
+								icon: (response == "OK") ? "success" : "warning",
+								title: (response == "OK") ? "¡Listo!" : "¡Error!",
+								text: (response == "OK") ? "Se integro el registro correctamente." : response
+							}).then((result) => {
+								$('.ibox-content').toggleClass('sk-loading', false);
+								
+								if (result.isConfirmed && (response == "OK")) {
+									location.reload();
+								}
+							});
+						},
+						error: function (error) {
+							console.error("600->", error.responseText);
+
+							$('.ibox-content').toggleClass('sk-loading', false);
+						}
+					});
+					// $.ajax
+				} else {
+					$('.ibox-content').toggleClass('sk-loading', false);
 				}
 			});
 		}

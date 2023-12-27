@@ -633,9 +633,13 @@ $SQL = sqlsrv_query($conexion, $Cons);
 						},
 						error: function (error) {
 							console.error("630->", error.responseText);
+
+							$('.ibox-content').toggleClass('sk-loading', false);
 						}
 					});
 					// $.ajax
+				} else {
+					$('.ibox-content').toggleClass('sk-loading', false);
 				}
 			});
 		}
