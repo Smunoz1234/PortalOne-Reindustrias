@@ -352,7 +352,9 @@ $SQL_ColorVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_ColorVehiculo', '*
 						</li>
 						<li class="active">
 							<a
-								href="<?php echo isset($row_Cat['URL']) ? $row_Cat['URL'] . "?id=" . $frm : "consultar_frm_entrega_vehiculo.php" ?>"><?php echo isset($row_Cat['NombreCategoria']) ? $row_Cat['NombreCategoria'] : "Entrega de vehículos"; ?></a>
+								href="<?php echo isset($row_Cat['URL']) ? $row_Cat['URL'] . "?id=" . $frm : "consultar_frm_entrega_vehiculo.php" ?>">
+								<?php echo isset($row_Cat['NombreCategoria']) ? $row_Cat['NombreCategoria'] : "Entrega de vehículos"; ?>
+							</a>
 						</li>
 						<li class="active">
 							<strong>
@@ -392,34 +394,34 @@ $SQL_ColorVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_ColorVehiculo', '*
 													} elseif ($dt_LS == 1) {
 														echo $row_Cliente['CodigoCliente'];
 													} ?>">
-												<input name="socio_negocio" type="text" required="required"
-													class="form-control" id="socio_negocio"
-													placeholder="Digite para buscar..." <?php if ((($type_frm == 1) && ($row['Cod_Estado'] == '-1')) || ($dt_LS == 1)) {
-														echo "readonly='readonly'";
-													} ?>
-													value="<?php if (($type_frm == 1) || ($sw_error == 1)) {
-														echo $row['NombreCliente'];
-													} elseif ($dt_LS == 1) {
-														echo $row_Cliente['NombreCliente'];
-													} ?>">
+												<input name="socio_negocio" type="text" required class="form-control"
+													id="socio_negocio" placeholder="Digite para buscar..." <?php if ((($type_frm == 1) && ($row['Cod_Estado'] == '-1')) || ($dt_LS == 1)) {
+														echo "readonly";
+													} ?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {
+														  echo $row['NombreCliente'];
+													  } elseif ($dt_LS == 1) {
+														  echo $row_Cliente['NombreCliente'];
+													  } ?>">
 											</div>
 											<div class="col-lg-4">
 												<label class="control-label">Contacto</label>
 
 												<select name="ContactoCliente" class="form-control" id="ContactoCliente"
 													<?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
-														echo "disabled='disabled'";
+														echo "disabled";
 													} ?>>
-													<?php if ((($type_frm == 0) || ($sw_error == 1)) && ($dt_LS != 1)) { ?><option value="">Seleccione...</option>
+													<?php if ((($type_frm == 0) || ($sw_error == 1)) && ($dt_LS != 1)) { ?>
+														<option value="">Seleccione...</option>
 													<?php } ?>
 													<?php if (($type_frm == 1) || ($sw_error == 1) || ($dt_LS == 1)) {
 														while ($row_ContactoCliente = sqlsrv_fetch_array($SQL_ContactoCliente)) { ?>
 															<option
 																value="<?php echo $row_ContactoCliente['CodigoContacto']; ?>"
 																<?php if ((isset($row['ID_Contacto'])) && (strcmp($row_ContactoCliente['CodigoContacto'], $row['ID_Contacto']) == 0)) {
-																	echo "selected=\"selected\"";
+																	echo "selected";
 																} ?>>
-																<?php echo $row_ContactoCliente['ID_Contacto']; ?></option>
+																<?php echo $row_ContactoCliente['ID_Contacto']; ?>
+															</option>
 														<?php }
 													} ?>
 												</select>
@@ -429,18 +431,20 @@ $SQL_ColorVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_ColorVehiculo', '*
 
 												<select name="SucursalCliente" class="form-control select2"
 													id="SucursalCliente" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
-														echo "disabled='disabled'";
+														echo "disabled";
 													} ?>>
-													<?php if ((($type_frm == 0) || ($sw_error == 1)) && ($dt_LS != 1)) { ?><option value="">Seleccione...</option>
+													<?php if ((($type_frm == 0) || ($sw_error == 1)) && ($dt_LS != 1)) { ?>
+														<option value="">Seleccione...</option>
 													<?php } ?>
 													<?php if (($type_frm == 1) || ($sw_error == 1) || ($dt_LS == 1)) {
 														while ($row_SucursalCliente = sqlsrv_fetch_array($SQL_SucursalCliente)) { ?>
 															<option
 																value="<?php echo $row_SucursalCliente['NombreSucursal']; ?>"
 																<?php if ((isset($row['NombreSucursal'])) && (strcmp($row_SucursalCliente['NombreSucursal'], $row['NombreSucursal']) == 0)) {
-																	echo "selected=\"selected\"";
+																	echo "selected";
 																} ?>>
-																<?php echo $row_SucursalCliente['NombreSucursal']; ?></option>
+																<?php echo $row_SucursalCliente['NombreSucursal']; ?>
+															</option>
 														<?php }
 													} ?>
 												</select>
@@ -452,41 +456,38 @@ $SQL_ColorVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_ColorVehiculo', '*
 														class="text-danger">*</span></label>
 
 												<input name="telefono" type="text" class="form-control" id="telefono"
-													required="required" maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
-														echo "readonly='readonly'";
-													} ?>
-													value="<?php if (($type_frm == 1) || ($sw_error == 1)) {
-														echo $row['TelefonoContacto'];
-													} elseif ($dt_LS == 1) {
-														echo isset($_GET['Telefono']) ? base64_decode($_GET['Telefono']) : "";
-													} ?>">
+													required maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
+														echo "readonly";
+													} ?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {
+														  echo $row['TelefonoContacto'];
+													  } elseif ($dt_LS == 1) {
+														  echo isset($_GET['Telefono']) ? base64_decode($_GET['Telefono']) : "";
+													  } ?>">
 											</div>
 											<div class="col-lg-4">
 												<label class="control-label">Celular</label>
 
 												<input name="celular" type="text" class="form-control" id="celular"
 													maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
-														echo "readonly='readonly'";
-													} ?>
-													value="<?php if (($type_frm == 1) || ($sw_error == 1)) {
-														echo $row['CelularContacto'];
-													} elseif ($dt_LS == 1) {
-														echo isset($_GET['Celular']) ? base64_decode($_GET['Celular']) : "";
-													} ?>">
+														echo "readonly";
+													} ?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {
+														  echo $row['CelularContacto'];
+													  } elseif ($dt_LS == 1) {
+														  echo isset($_GET['Celular']) ? base64_decode($_GET['Celular']) : "";
+													  } ?>">
 											</div>
 											<div class="col-lg-4">
 												<label class="control-label">Correo <span
 														class="text-danger">*</span></label>
 
 												<input name="correo" type="email" class="form-control" id="correo"
-													required="required" maxlength="100" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
-														echo "readonly='readonly'";
-													} ?>
-													value="<?php if (($type_frm == 1) || ($sw_error == 1)) {
-														echo $row['CorreoContacto'];
-													} elseif ($dt_LS == 1) {
-														echo isset($_GET['Correo']) ? base64_decode($_GET['Correo']) : "";
-													} ?>">
+													required maxlength="100" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
+														echo "readonly";
+													} ?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {
+														  echo $row['CorreoContacto'];
+													  } elseif ($dt_LS == 1) {
+														  echo isset($_GET['Correo']) ? base64_decode($_GET['Correo']) : "";
+													  } ?>">
 											</div>
 										</div>
 										<div class="form-group">
@@ -495,40 +496,36 @@ $SQL_ColorVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_ColorVehiculo', '*
 
 												<input name="direccion_destino" type="text" class="form-control"
 													id="direccion_destino" maxlength="100" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
-														echo "readonly='readonly'";
-													} ?>
-													value="<?php if (($type_frm == 1) || ($sw_error == 1)) {
-														echo $row['Direccion'];
-													} elseif ($dt_LS == 1) {
-														echo isset($_GET['Direccion']) ? base64_decode($_GET['Direccion']) : "";
-													} ?>">
+														echo "readonly";
+													} ?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {
+														  echo $row['Direccion'];
+													  } elseif ($dt_LS == 1) {
+														  echo isset($_GET['Direccion']) ? base64_decode($_GET['Direccion']) : "";
+													  } ?>">
 											</div>
 											<div class="col-lg-4">
 												<label class="control-label">Barrio</label>
 
 												<input name="barrio" type="text" class="form-control" id="barrio"
 													maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
-														echo "readonly='readonly'";
-													} ?>
-													value="<?php if (($type_frm == 1) || ($sw_error == 1)) {
-														echo $row['barrio'];
-													} elseif ($dt_LS == 1) {
-														echo isset($_GET['Barrio']) ? base64_decode($_GET['Barrio']) : "";
-													} ?>">
+														echo "readonly";
+													} ?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {
+														  echo $row['barrio'];
+													  } elseif ($dt_LS == 1) {
+														  echo isset($_GET['Barrio']) ? base64_decode($_GET['Barrio']) : "";
+													  } ?>">
 											</div>
 											<div class="col-lg-4">
 												<label class="control-label">Ciudad</label>
 
 												<input name="ciudad" type="text" class="form-control" id="ciudad"
-													maxlength="100"
-													value="<?php if (($type_frm == 1) || ($sw_error == 1)) {
+													maxlength="100" value="<?php if (($type_frm == 1) || ($sw_error == 1)) {
 														echo $row['ciudad'];
 													} elseif ($dt_LS == 1) {
 														echo base64_decode($_GET['Ciudad']);
-													} ?>"
-													<?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
-														echo "readonly='readonly'";
-													} ?>>
+													} ?>" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
+														 echo "readonly";
+													 } ?>>
 											</div>
 										</div>
 										<div class="form-group">
@@ -545,21 +542,23 @@ $SQL_ColorVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_ColorVehiculo', '*
 														class="btn-xs btn-success fa fa-search"></i> Orden servicio
 													<span class="text-danger">*</span></label>
 
-												<select name="id_llamada_servicio" class="form-control select2"
-													required="required" id="id_llamada_servicio" <?php if ($dt_LS == 1) {
-														echo "disabled='disabled'";
+												<select name="id_llamada_servicio" class="form-control select2" required
+													id="id_llamada_servicio" <?php if ($dt_LS == 1) {
+														echo "disabled";
 													} ?>>
-													<?php if ($dt_LS != 1) { ?><option value="">(Ninguna)</option>
+													<?php if ($dt_LS != 1) { ?>
+														<option value="">(Ninguna)</option>
 													<?php } ?>
 													<?php if ($sw_error == 1 || $dt_LS == 1 || $type_llmd == 1) {
 														while ($row_OrdenServicioCliente = sqlsrv_fetch_array($SQL_OrdenServicioCliente)) { ?>
 															<option
 																value="<?php echo $row_OrdenServicioCliente['ID_LlamadaServicio']; ?>"
 																<?php if ((isset($row['ID_OrdenServicioActividad'])) && (strcmp($row_OrdenServicioCliente['ID_LlamadaServicio'], $row['ID_LlamadaServicio']) == 0)) {
-																	echo "selected=\"selected\"";
+																	echo "selected";
 																} elseif (isset($_GET['LS']) && (strcmp($row_OrdenServicioCliente['ID_LlamadaServicio'], base64_decode($_GET['LS'])) == 0)) {
-																	echo "selected=\"selected\"";
-																} ?>><?php echo $row_OrdenServicioCliente['DocNum'] . " - " . $row_OrdenServicioCliente['AsuntoLlamada']; ?></option>
+																	echo "selected";
+																} ?>><?php echo $row_OrdenServicioCliente['DocNum'] . " - " . $row_OrdenServicioCliente['AsuntoLlamada']; ?>
+															</option>
 														<?php }
 													} ?>
 												</select>
@@ -585,11 +584,10 @@ $SQL_ColorVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_ColorVehiculo', '*
 														class="btn-xs btn-success fa fa-search"></i> Serial Interno
 													(Placa) <span class="text-danger">*</span></label>
 												<input <?php if ($dt_LS == 1) {
-													echo "readonly='readonly'";
-												} ?>
-													autocomplete="off" name="placa" type="text" required="required"
-													class="form-control" id="placa" maxlength="150"
-													value="<?php if (isset($row['SerialInterno'])) {
+													echo "readonly";
+												} ?> autocomplete="off"
+													name="placa" type="text" required class="form-control" id="placa"
+													maxlength="150" value="<?php if (isset($row['SerialInterno'])) {
 														echo $row['SerialInterno'];
 													} ?>">
 											</div>
@@ -597,21 +595,18 @@ $SQL_ColorVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_ColorVehiculo', '*
 												<label class="control-label">Serial Fabricante (VIN) <span
 														class="text-danger">*</span></label>
 												<input <?php if ($dt_LS == 1) {
-													echo "readonly='readonly'";
-												} ?>
-													autocomplete="off" name="VIN" type="text" required="required"
-													class="form-control" id="VIN" maxlength="150"
-													value="<?php if (isset($row['SerialFabricante'])) {
+													echo "readonly";
+												} ?> autocomplete="off"
+													name="VIN" type="text" required class="form-control" id="VIN"
+													maxlength="150" value="<?php if (isset($row['SerialFabricante'])) {
 														echo $row['SerialFabricante'];
 													} ?>">
 											</div>
 											<div class="col-lg-4">
 												<label class="control-label">No_Motor <span
 														class="text-danger">*</span></label>
-												<input autocomplete="off" name="no_motor" type="text"
-													required="required" class="form-control" id="no_motor"
-													maxlength="100"
-													value="<?php if (isset($row['No_Motor'])) {
+												<input autocomplete="off" name="no_motor" type="text" required
+													class="form-control" id="no_motor" maxlength="100" value="<?php if (isset($row['No_Motor'])) {
 														echo $row['No_Motor'];
 													} ?>">
 											</div>
@@ -620,15 +615,15 @@ $SQL_ColorVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_ColorVehiculo', '*
 											<div class="col-lg-4">
 												<label class="control-label">Marca del vehículo <span
 														class="text-danger">*</span></label>
-												<select name="id_marca" class="form-control select2" required="required"
+												<select name="id_marca" class="form-control select2" required
 													id="id_marca" <?php if ($dt_LS == 1) {
-														echo "disabled='disabled'";
+														echo "disabled";
 													} ?>>
 													<option value="" disabled selected>Seleccione...</option>
 													<?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) { ?>
 														<option value="<?php echo $row_MarcaVehiculo['IdMarcaVehiculo']; ?>"
 															<?php if ((isset($row['CDU_IdMarca'])) && (strcmp($row_MarcaVehiculo['IdMarcaVehiculo'], $row['CDU_IdMarca']) == 0)) {
-																echo "selected=\"selected\"";
+																echo "selected";
 															} ?>>
 															<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
 														</option>
@@ -638,16 +633,16 @@ $SQL_ColorVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_ColorVehiculo', '*
 											<div class="col-lg-4">
 												<label class="control-label">Línea del vehículo <span
 														class="text-danger">*</span></label>
-												<select name="id_linea" class="form-control select2" required="required"
+												<select name="id_linea" class="form-control select2" required
 													id="id_linea" <?php if ($dt_LS == 1) {
-														echo "disabled='disabled'";
+														echo "disabled";
 													} ?>>
 													<option value="" disabled selected>Seleccione...</option>
 													<?php while ($row_LineaVehiculo = sqlsrv_fetch_array($SQL_LineaVehiculo)) { ?>
 														<option
 															value="<?php echo $row_LineaVehiculo['IdLineaModeloVehiculo']; ?>"
 															<?php if ((isset($row['CDU_IdLinea'])) && (strcmp($row_LineaVehiculo['IdLineaModeloVehiculo'], $row['CDU_IdLinea']) == 0)) {
-																echo "selected=\"selected\"";
+																echo "selected";
 															} ?>>
 															<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; ?>
 														</option>
@@ -657,16 +652,16 @@ $SQL_ColorVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_ColorVehiculo', '*
 											<div class="col-lg-4">
 												<label class="control-label">Modelo del vehículo <span
 														class="text-danger">*</span></label>
-												<select name="id_annio" class="form-control select2" required="required"
+												<select name="id_annio" class="form-control select2" required
 													id="id_annio" <?php if ($dt_LS == 1) {
-														echo "disabled='disabled'";
+														echo "disabled";
 													} ?>>
 													<option value="" disabled selected>Seleccione...</option>
 													<?php while ($row_ModeloVehiculo = sqlsrv_fetch_array($SQL_ModeloVehiculo)) { ?>
 														<option
 															value="<?php echo $row_ModeloVehiculo['CodigoModeloVehiculo']; ?>"
 															<?php if ((isset($row['CDU_Ano'])) && ((strcmp($row_ModeloVehiculo['CodigoModeloVehiculo'], $row['CDU_Ano']) == 0) || (strcmp($row_ModeloVehiculo['AñoModeloVehiculo'], $row['CDU_Ano']) == 0))) {
-																echo "selected=\"selected\"";
+																echo "selected";
 															} ?>>
 															<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; ?>
 														</option>
@@ -676,16 +671,16 @@ $SQL_ColorVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_ColorVehiculo', '*
 											<div class="col-lg-4">
 												<label class="control-label">Color <span
 														class="text-danger">*</span></label>
-												<select name="id_color" class="form-control select2" required="required"
+												<select name="id_color" class="form-control select2" required
 													id="id_color" <?php if ($dt_LS == 1) {
-														echo "disabled='disabled'";
+														echo "disabled";
 													} ?>>
 													<option value="" disabled selected>Seleccione...</option>
 													<?php while ($row_ColorVehiculo = sqlsrv_fetch_array($SQL_ColorVehiculo)) { ?>
 														<option
 															value="<?php echo $row_ColorVehiculo['CodigoColorVehiculo']; ?>"
 															<?php if ((isset($row['CDU_Color'])) && ((strcmp($row_ColorVehiculo['CodigoColorVehiculo'], $row['CDU_Color']) == 0) || (strcmp($row_ColorVehiculo['NombreColorVehiculo'], $row['CDU_Color']) == 0))) {
-																echo "selected=\"selected\"";
+																echo "selected";
 															} ?>>
 															<?php echo $row_ColorVehiculo['NombreColorVehiculo']; ?>
 														</option>
@@ -726,23 +721,19 @@ $SQL_ColorVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_ColorVehiculo', '*
 														<span class="input-group-addon"><i
 																class="fa fa-calendar"></i></span><input
 															name="FechaCreacion" type="text" autocomplete="off"
-															class="form-control" id="FechaCreacion"
-															value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {
+															class="form-control" id="FechaCreacion" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {
 																echo $row['FechaCreacion']->format('Y-m-d');
 															} else {
 																echo date('Y-m-d');
-															} ?>"
-															readonly='readonly' placeholder="YYYY-MM-DD" required>
+															} ?>" readonly placeholder="YYYY-MM-DD" required>
 													</div>
 													<div class="col-lg-6 input-group clockpicker" data-autoclose="true">
 														<input name="HoraCreacion" id="HoraCreacion" type="text"
-															autocomplete="off" class="form-control"
-															value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {
+															autocomplete="off" class="form-control" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {
 																echo $row['FechaCreacion']->format('H:i');
 															} else {
 																echo date('H:i');
-															} ?>"
-															readonly='readonly' placeholder="hh:mm" required>
+															} ?>" readonly placeholder="hh:mm" required>
 														<span class="input-group-addon">
 															<span class="fa fa-clock-o"></span>
 														</span>
@@ -762,23 +753,19 @@ $SQL_ColorVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_ColorVehiculo', '*
 														<span class="input-group-addon"><i
 																class="fa fa-calendar"></i></span><input
 															name="fecha_entrega" type="text" autocomplete="off"
-															class="form-control" id="fecha_entrega"
-															value="<?php if (($type_frm == 1) && ($row['fecha_entrega']->format('Y-m-d')) != "1900-01-01") {
+															class="form-control" id="fecha_entrega" value="<?php if (($type_frm == 1) && ($row['fecha_entrega']->format('Y-m-d')) != "1900-01-01") {
 																echo $row['fecha_entrega']->format('Y-m-d');
 															} else {
 																echo date('Y-m-d');
-															} ?>"
-															placeholder="YYYY-MM-DD" required>
+															} ?>" placeholder="YYYY-MM-DD" required>
 													</div>
 													<div class="col-lg-6 input-group clockpicker" data-autoclose="true">
 														<input name="hora_entrega" id="hora_entrega" type="text"
-															autocomplete="off" class="form-control"
-															value="<?php if (($type_frm == 1) && ($row['fecha_entrega']->format('Y-m-d')) != "1900-01-01") {
+															autocomplete="off" class="form-control" value="<?php if (($type_frm == 1) && ($row['fecha_entrega']->format('Y-m-d')) != "1900-01-01") {
 																echo $row['fecha_entrega']->format('H:i');
 															} else {
 																echo date('H:i');
-															} ?>"
-															placeholder="hh:mm" required>
+															} ?>" placeholder="hh:mm" required>
 														<span class="input-group-addon">
 															<span class="fa fa-clock-o"></span>
 														</span>
@@ -795,11 +782,11 @@ $SQL_ColorVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_ColorVehiculo', '*
 													class="text-danger">*</span></label>
 											<div class="col-lg-8">
 												<textarea name="observaciones" id="observaciones" rows="5" type="text"
-													maxlength="3000" class="form-control" required="required" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
-														echo "readonly='readonly'";
+													maxlength="3000" class="form-control" required <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
+														echo "readonly";
 													} ?>><?php if (($type_frm == 1) || ($sw_error == 1)) {
-														echo utf8_decode($row['ComentariosCierre']);
-													} ?></textarea>
+														 echo utf8_decode($row['ComentariosCierre']);
+													 } ?></textarea>
 											</div>
 										</div>
 									</div>
@@ -821,13 +808,11 @@ $SQL_ColorVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_ColorVehiculo', '*
 														class="text-danger">*</span></label>
 												<div class="col-lg-4">
 													<input autocomplete="off" name="responsable_cliente" type="text"
-														class="form-control" required="required" id="responsable_cliente"
-														<?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
-															echo "readonly='readonly'";
-														} ?>
-														value="<?php if (($type_frm == 1) || ($sw_error == 1)) {
-															echo $row['ResponsableCliente'];
-														} ?>">
+														class="form-control" required id="responsable_cliente" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
+															echo "readonly";
+														} ?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {
+															  echo $row['ResponsableCliente'];
+														  } ?>">
 												</div>
 											</div>
 											<div class="form-group">
@@ -835,9 +820,8 @@ $SQL_ColorVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_ColorVehiculo', '*
 														class="text-danger">*</span></label>
 												<div class="col-lg-4">
 													<input autocomplete="off" name="cedula_responsable_cliente" type="text"
-														class="form-control" required="required"
-														id="cedula_responsable_cliente" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
-															echo "readonly='readonly'";
+														class="form-control" required id="cedula_responsable_cliente" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
+															echo "readonly";
 														} ?>>
 												</div>
 											</div>
@@ -846,9 +830,9 @@ $SQL_ColorVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_ColorVehiculo', '*
 														class="text-danger">*</span></label>
 												<div class="col-lg-4">
 													<input autocomplete="off" name="telefono_responsable_cliente"
-														type="text" class="form-control" required="required"
+														type="text" class="form-control" required
 														id="telefono_responsable_cliente" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
-															echo "readonly='readonly'";
+															echo "readonly";
 														} ?>>
 												</div>
 											</div>
@@ -857,9 +841,8 @@ $SQL_ColorVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_ColorVehiculo', '*
 														class="text-danger">*</span></label>
 												<div class="col-lg-4">
 													<input autocomplete="off" name="correo_responsable_cliente" type="email"
-														class="form-control" required="required"
-														id="correo_responsable_cliente" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
-															echo "readonly='readonly'";
+														class="form-control" required id="correo_responsable_cliente" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
+															echo "readonly";
 														} ?>>
 												</div>
 											</div>
@@ -878,7 +861,7 @@ $SQL_ColorVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_ColorVehiculo', '*
 																class="fa fa-pencil-square-o"></i> Realizar firma</button>
 														<br>
 														<input type="text" id="SigCliente" name="SigCliente" value=""
-															form="entregaForm" required="required" readonly="readonly"
+															form="entregaForm" required readonly="readonly"
 															style="width: 0; margin-left: -7px; visibility: hidden;" />
 														<div id="msgInfoSigCliente" style="display: none;"
 															class="alert alert-info"><i class="fa fa-info-circle"></i> El

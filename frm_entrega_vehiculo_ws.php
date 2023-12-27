@@ -110,9 +110,12 @@ try {
 
         echo json_encode($msg);
     } else {
+        // SMM, 27/12/2023
+        $msg_OK = $Resultado->Mensaje;
+
         $msg = array(
             "title" => "¡Listo!",
-            "text" => "La entrega de vehículo ha sido creada exitosamente.",
+            "text" => "$msg_OK",
             "icon" => "success",
             "return" => $return,
         );
