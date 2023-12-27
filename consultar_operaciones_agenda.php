@@ -24,8 +24,8 @@ $SQL_TipoLlamadas = Seleccionar('uvw_Sap_tbl_TipoLlamadas', '*', "Activo = 'Y'",
 $SQL_TipoProblema = Seleccionar('uvw_Sap_tbl_TipoProblemasLlamadas', '*', "Activo = 'Y'", 'DeTipoProblemaLlamada');
 $SQL_SubTipoProblema = Seleccionar('uvw_Sap_tbl_SubTipoProblemasLlamadas', '*', "Activo = 'Y'", 'DeSubTipoProblemaLlamada');
 
-// Estado servicio llamada
-$SQL_EstServLlamada = Seleccionar('uvw_Sap_tbl_LlamadasServiciosEstadoServicios', '*', '', 'DeEstadoServicio');
+// Estado servicio de la Solicitud de Llamada de servicio. SMM, 27/12/2023
+$SQL_EstServLlamada = Seleccionar('tbl_SolicitudLlamadasServiciosEstadoServicios', '*');
 
 // Empleados. SMM, 29/11/2023
 $SQL_EmpleadoActividad = Seleccionar('uvw_Sap_tbl_Empleados', '*', "IdUsuarioSAP=0", 'NombreEmpleado');
@@ -405,11 +405,11 @@ if ($sw == 1) {
 											class="form-control chosen-select" id="EstadoServicio" multiple>
 											<?php $j = 0;
 											while ($row_EstServLlamada = sqlsrv_fetch_array($SQL_EstServLlamada)) { ?>
-												<option value="<?php echo $row_EstServLlamada['IdEstadoServicio']; ?>" <?php if ((isset($_GET['EstadoServicio'][$j]) && ($_GET['EstadoServicio'][$j] != "")) && (strcmp($row_EstServLlamada['IdEstadoServicio'], $_GET['EstadoServicio'][$j]) == 0)) {
+												<option value="<?php echo $row_EstServLlamada['id_tipo_estado_servicio_sol_llamada']; ?>" <?php if ((isset($_GET['EstadoServicio'][$j]) && ($_GET['EstadoServicio'][$j] != "")) && (strcmp($row_EstServLlamada['id_tipo_estado_servicio_sol_llamada'], $_GET['EstadoServicio'][$j]) == 0)) {
 													   echo "selected";
 													   $j++;
 												   } ?>>
-													<?php echo $row_EstServLlamada['DeEstadoServicio']; ?>
+													<?php echo $row_EstServLlamada['tipo_estado_servicio_sol_llamada']; ?>
 												</option>
 											<?php } ?>
 										</select>
