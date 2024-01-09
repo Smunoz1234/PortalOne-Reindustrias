@@ -2489,7 +2489,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<label class="control-label">SubTipo problema (Subtipo Servicio) <span class="text-danger">*</span></label>
 								<select name="SubTipoProblema" class="form-control" id="SubTipoProblema" <?php if (($type_llmd == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "readonly";
-								} ?>>
+								} ?> required>
 									<option value="">Seleccione...</option>
 									  
 									<?php while ($row_SubTipoProblema = sqlsrv_fetch_array($SQL_SubTipoProblema)) { ?>

@@ -580,10 +580,11 @@ $row_NumeroSerie = sqlsrv_fetch_array($SQL_NumeroSerie);
 
 			<div class="form-group row">
 				<div class="col-lg-4">
-					<label class="control-label">SubTipo problema (Subtipo Servicio) <span
-							class="text-danger">*</span></label>
+					<label class="control-label">
+						SubTipo problema (Subtipo Servicio) <span class="text-danger">*</span>
+					</label>
 
-					<select id="SubTipoProblema" name="SubTipoProblema" class="form-control">
+					<select id="SubTipoProblema" name="SubTipoProblema" class="form-control" required>
 						<option value="">Seleccione...</option>
 
 						<?php while ($row_SubTipoProblema = sqlsrv_fetch_array($SQL_SubTipoProblema)) { ?>
@@ -692,9 +693,11 @@ $row_NumeroSerie = sqlsrv_fetch_array($SQL_NumeroSerie);
 				<div class="col-lg-2"></div>
 
 				<div class="col-lg-4">
-					<label class="control-label">Contrato/Campaña</label>
+					<label class="control-label">
+						Contrato/Campaña <span class="text-danger">*</span>
+					</label>
 					
-					<select name="CDU_Contrato" id="CDU_Contrato" class="form-control">
+					<select name="CDU_Contrato" id="CDU_Contrato" class="form-control" required>
 						<option value="" disabled selected>Seleccione...</option>
 						
 						<?php while ($row_Contrato = sqlsrv_fetch_array($SQL_ContratosLlamada)) { ?>

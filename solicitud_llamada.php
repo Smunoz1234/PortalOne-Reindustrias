@@ -1949,7 +1949,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 
 							<div class="col-lg-4">
 								<label class="control-label">SubTipo problema (Subtipo Servicio) <span class="text-danger">*</span></label>
-								<select name="SubTipoProblema" class="form-control" id="SubTipoProblema">
+								<select name="SubTipoProblema" class="form-control" id="SubTipoProblema" required>
 									<option value="">Seleccione...</option>
 									  
 									<?php while ($row_SubTipoProblema = sqlsrv_fetch_array($SQL_SubTipoProblema)) { ?>
