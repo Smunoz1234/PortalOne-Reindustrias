@@ -11,6 +11,9 @@ if ($id_formulario_caradvisor != "") {
 	$zip = $_POST["zip"] ?? "";
 	$city = $_POST["city"] ?? "";
 	$street = $_POST["street"] ?? "";
+	$phone = $_POST["phone"] ?? "";
+	$phonecompany = $_POST["phonecompany"] ?? "";
+	$phonemobile = $_POST["phonemobile"] ?? "";
 	$modelvariant = $_POST["modelvariant"] ?? "";
 	$User = $_SESSION['CodUser'] ?? "";
 
@@ -22,6 +25,9 @@ if ($id_formulario_caradvisor != "") {
 		"'$zip'",
 		"'$city'",
 		"'$street'",
+		"'$phone'",
+		"'$phonecompany'",
+		"'$phonemobile'",
 		"'$modelvariant'",
 		"'$User'",
 	);

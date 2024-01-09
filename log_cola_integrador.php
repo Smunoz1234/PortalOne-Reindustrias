@@ -193,16 +193,16 @@ $SQL = $Cons;
 									<div class="col-lg-2">
 										<select name="Estado" class="form-control" id="Estado">
 											<option <?php if (isset($_POST['Estado']) && $_POST['Estado'] == 2) {
-												echo "selected=\"selected\"";
+												echo "selected";
 											} ?> value="2">(Todos)</option>
 											<option <?php if (isset($_POST['Estado']) && $_POST['Estado'] == 1) {
-												echo "selected=\"selected\"";
+												echo "selected";
 											} ?> value="1">Integrado</option>
 											<option <?php if (isset($_POST['Estado']) && $_POST['Estado'] == 0) {
-												echo "selected=\"selected\"";
+												echo "selected";
 											} ?> value="0">Pendiente</option>
 											<option <?php if (isset($_POST['Estado']) && $_POST['Estado'] == -1) {
-												echo "selected=\"selected\"";
+												echo "selected";
 											} ?> value="-1">Error</option>
 										</select>
 									</div>
@@ -211,29 +211,35 @@ $SQL = $Cons;
 										<select name="Cantidad_Visualizar" class="form-control"
 											id="Cantidad_Visualizar">
 											<option value="5" <?php if ((isset($_POST['Cantidad_Visualizar'])) && (strcmp("5", $_POST['Cantidad_Visualizar']) == 0)) {
-												echo "selected=\"selected\"";
+												echo "selected";
 											} ?>>5</option>
 											<option value="10" <?php if ((isset($_POST['Cantidad_Visualizar'])) && (strcmp("10", $_POST['Cantidad_Visualizar']) == 0)) {
-												echo "selected=\"selected\"";
+												echo "selected";
 											} ?>>10</option>
 											<option value="25" <?php if ((isset($_POST['Cantidad_Visualizar'])) && (strcmp("25", $_POST['Cantidad_Visualizar']) == 0)) {
-												echo "selected=\"selected\"";
+												echo "selected";
 											} ?>>25</option>
 											<option value="50" <?php if ((isset($_POST['Cantidad_Visualizar'])) && (strcmp("50", $_POST['Cantidad_Visualizar']) == 0)) {
-												echo "selected=\"selected\"";
+												echo "selected";
 											} ?>>50</option>
 											<option value="75" <?php if ((isset($_POST['Cantidad_Visualizar'])) && (strcmp("75", $_POST['Cantidad_Visualizar']) == 0)) {
-												echo "selected=\"selected\"";
+												echo "selected";
 											} ?>>75</option>
 											<option value="100" <?php if ((isset($_POST['Cantidad_Visualizar'])) && (strcmp("100", $_POST['Cantidad_Visualizar']) == 0)) {
-												echo "selected=\"selected\"";
+												echo "selected";
 											} ?>>100</option>
 											<option value="200" <?php if ((isset($_POST['Cantidad_Visualizar'])) && (strcmp("200", $_POST['Cantidad_Visualizar']) == 0)) {
-												echo "selected=\"selected\"";
+												echo "selected";
 											} ?>>200</option>
 											<option value="300" <?php if ((isset($_POST['Cantidad_Visualizar'])) && (strcmp("300", $_POST['Cantidad_Visualizar']) == 0)) {
-												echo "selected=\"selected\"";
+												echo "selected";
 											} ?>>300</option>
+											<option value="500" <?php if ((isset($_POST['Cantidad_Visualizar'])) && (strcmp("500", $_POST['Cantidad_Visualizar']) == 0)) {
+												echo "selected";
+											} ?>>500</option>
+											<option value="1000" <?php if ((isset($_POST['Cantidad_Visualizar'])) && (strcmp("1000", $_POST['Cantidad_Visualizar']) == 0)) {
+												echo "selected";
+											} ?>>1000</option>
 										</select>
 									</div>
 									<div class="col-lg-2">
