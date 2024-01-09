@@ -84,7 +84,7 @@ $row_ca = sqlsrv_fetch_array($SQL_ca);
 						<label class="control-label">
 							Nombre Contacto <span class="text-danger">*</span>
 						</label>
-						<input required autocomplete="off" type="text" class="form-control" name="firstname"
+						<input required maxlength="40" autocomplete="off" type="text" class="form-control" name="firstname"
 							id="firstname" value="<?php echo $row_ca["firstname"] ?? ""; ?>">
 					</div>
 
@@ -92,7 +92,7 @@ $row_ca = sqlsrv_fetch_array($SQL_ca);
 						<label class="control-label">
 							Apellido Contacto <span class="text-danger">*</span>
 						</label>
-						<input required autocomplete="off" type="text" class="form-control" name="lastname"
+						<input required maxlength="40" autocomplete="off" type="text" class="form-control" name="lastname"
 							id="lastname" value="<?php echo $row_ca["lastname"] ?? ""; ?>">
 					</div>
 				</div>
@@ -102,7 +102,7 @@ $row_ca = sqlsrv_fetch_array($SQL_ca);
 						<label class="control-label">
 							ZIP <span class="text-danger">*</span>
 						</label>
-						<input required autocomplete="off" type="text" class="form-control" name="zip" id="zip"
+						<input required max="99999999" autocomplete="off" type="number" class="form-control" name="zip" id="zip"
 							value="<?php echo $row_ca["zip"] ?? ""; ?>">
 					</div>
 
@@ -110,7 +110,7 @@ $row_ca = sqlsrv_fetch_array($SQL_ca);
 						<label class="control-label">
 							Ciudad <span class="text-danger">*</span>
 						</label>
-						<input required autocomplete="off" type="text" class="form-control" name="city" id="city"
+						<input required maxlength="20" autocomplete="off" type="text" class="form-control" name="city" id="city"
 							value="<?php echo $row_ca["city"] ?? ""; ?>">
 					</div>
 
@@ -118,7 +118,7 @@ $row_ca = sqlsrv_fetch_array($SQL_ca);
 						<label class="control-label">
 							Dirección <span class="text-danger">*</span>
 						</label>
-						<input required autocomplete="off" type="text" class="form-control" name="street" id="street"
+						<input required maxlength="20" autocomplete="off" type="text" class="form-control" name="street" id="street"
 							value="<?php echo $row_ca["street"] ?? ""; ?>">
 					</div>
 				</div>
@@ -128,7 +128,7 @@ $row_ca = sqlsrv_fetch_array($SQL_ca);
 						<label class="control-label">
 							Teléfono <span class="text-danger">*</span>
 						</label>
-						<input required autocomplete="off" type="text" class="form-control" name="phone" id="phone"
+						<input required max="9999999999" autocomplete="off" type="number" class="form-control" name="phone" id="phone"
 							value="<?php echo $row_ca["phone"] ?? ""; ?>">
 					</div>
 
@@ -136,7 +136,7 @@ $row_ca = sqlsrv_fetch_array($SQL_ca);
 						<label class="control-label">
 							Teléfono Compañía <span class="text-danger">*</span>
 						</label>
-						<input required autocomplete="off" type="text" class="form-control" name="phonecompany"
+						<input required max="9999999999" autocomplete="off" type="number" class="form-control" name="phonecompany"
 							id="phonecompany" value="<?php echo $row_ca["phonecompany"] ?? ""; ?>">
 					</div>
 
@@ -144,7 +144,7 @@ $row_ca = sqlsrv_fetch_array($SQL_ca);
 						<label class="control-label">
 							Teléfono Móvil <span class="text-danger">*</span>
 						</label>
-						<input required autocomplete="off" type="text" class="form-control" name="phonemobile"
+						<input required max="9999999999" autocomplete="off" type="number" class="form-control" name="phonemobile"
 							id="phonemobile" value="<?php echo $row_ca["phonemobile"] ?? ""; ?>">
 					</div>
 				</div>
@@ -154,7 +154,7 @@ $row_ca = sqlsrv_fetch_array($SQL_ca);
 						<label class="control-label">
 							Correo electrónico <span class="text-danger">*</span>
 						</label>
-						<input required autocomplete="off" type="text" class="form-control" name="email" id="email"
+						<input required maxlength="100" autocomplete="off" type="email" class="form-control" name="email" id="email"
 							value="<?php echo $row_ca["email"] ?? ""; ?>">
 					</div>
 
@@ -162,7 +162,7 @@ $row_ca = sqlsrv_fetch_array($SQL_ca);
 						<label class="control-label">
 							Modelo Variante <span class="text-danger">*</span>
 						</label>
-						<input required autocomplete="off" type="text" class="form-control" name="modelvariant"
+						<input required maxlength="20" autocomplete="off" type="text" class="form-control" name="modelvariant"
 							id="modelvariant" value="<?php echo $row_ca["modelvariant"] ?? ""; ?>">
 					</div>
 				</div>
