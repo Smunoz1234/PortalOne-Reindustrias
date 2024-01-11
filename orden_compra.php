@@ -104,7 +104,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Orden de compra
 			"'" . $_POST['ContactoCliente'] . "'",
 			"'" . $_POST['OrdenServicioCliente'] . "'",
 			"'" . $_POST['Referencia'] . "'",
-			"'" . $_POST['EmpleadoComptas'] . "'",
+			"'" . $_POST['EmpleadoVentas'] . "'",
 			"'" . LSiqmlObs($_POST['Comentarios']) . "'",
 			"'" . str_replace(',', '', $_POST['SubTotal']) . "'",
 			"'" . str_replace(',', '', $_POST['Descuentos']) . "'",
@@ -353,7 +353,7 @@ if (isset($_GET['dt_OV']) && ($_GET['dt_OV']) == 1) { // Verificar que viene de 
 		</script>";
 	}
 
-	// Proveedores
+	// Clientes
 	$SQL_Cliente = Seleccionar('uvw_Sap_tbl_Proveedores', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreCliente');
 	$row_Cliente = sqlsrv_fetch_array($SQL_Cliente);
 
@@ -386,9 +386,9 @@ if (isset($_GET['dt_OF']) && ($_GET['dt_OF']) == 1) { //Verificar que viene de u
 		"'" . base64_decode($_GET['Cardcode']) . "'",
 		"'" . $_SESSION['CodUser'] . "'",
 	);
-
+	
 	$SQL_CopiarOfertaToOrden = EjecutarSP('sp_tbl_SolicitudCompraDet_To_OrdenCompraDet', $ParametrosCopiarOfertaToOrden);
-    if (!$SQL_CopiarOfertaToOrden) {
+	if (!$SQL_CopiarOfertaToOrden) {
 		echo "<script>
 		$(document).ready(function() {
 			Swal.fire({
@@ -436,7 +436,7 @@ if (isset($_GET['dt_FC']) && ($_GET['dt_FC']) == 1) { //Verificar que viene de u
 		$_GET['Cardcode'] = $_GET['CodFactura'];
 	}
 
-	// Proveedores
+	// Clientes
 	$SQL_Cliente = Seleccionar('uvw_Sap_tbl_Proveedores', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreCliente');
 	$row_Cliente = sqlsrv_fetch_array($SQL_Cliente);
 
@@ -484,7 +484,7 @@ if ($edit == 1 && $sw_error == 0) {
 	// SMM, 06/09/2022
 	// echo $Cons;
 
-	//Proveedores
+	// Clientes
 	$SQL_Cliente = Seleccionar('uvw_Sap_tbl_Proveedores', '*', "CodigoCliente='" . $row['CardCode'] . "'", 'NombreCliente');
 
 	//Sucursales, SMM 06/05/2022
@@ -509,7 +509,7 @@ if ($sw_error == 1) {
 	$SQL = sqlsrv_query($conexion, $Cons);
 	$row = sqlsrv_fetch_array($SQL);
 
-	//Proveedores
+	//Clientes
 	$SQL_Cliente = Seleccionar('uvw_Sap_tbl_Proveedores', '*', "CodigoCliente='" . $row['CardCode'] . "'", 'NombreCliente');
 
 	//Sucursales, SMM 06/05/2022
@@ -597,9 +597,11 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 <head>
 	<?php include_once "includes/cabecera.php"; ?>
 	<!-- InstanceBeginEditable name="doctitle" -->
+	
 	<title>
 		Orden de compra | <?php echo NOMBRE_PORTAL; ?>
 	</title>
+
 	<?php
 	if (isset($_GET['a']) && $_GET['a'] == base64_encode("OK_OCompAdd")) {
 		echo "<script>
@@ -674,7 +676,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 			padding: 0px !important;
 		}
 
-		.nav-tabs > li > a {
+		.nav-tabs>li>a {
 			padding: 14px 20px 14px 25px !important;
 		}
 
@@ -1242,9 +1244,11 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 											<i class="fa fa-user"></i> Información de proveedor
 										</h3>
 									</label>
+
 									<label class="col-md-4 col-xs-12">
-										<h3 class="bg-success p-xs b-r-sm"><i class="fa fa-calendar"></i> Fechas y
-											estado de documento</h3>
+										<h3 class="bg-success p-xs b-r-sm">
+											<i class="fa fa-calendar"></i> Fechas y estado de documento
+										</h3>
 									</label>
 								</div>
 								<div class="col-lg-8">
@@ -2393,10 +2397,11 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 			}
 		};
 	</script>
+	
 	<!-- InstanceEndEditable -->
 </body>
 
 <!-- InstanceEnd -->
-
 </html>
+
 <?php sqlsrv_close($conexion); ?>
