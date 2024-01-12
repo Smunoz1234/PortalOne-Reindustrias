@@ -736,9 +736,38 @@ function EnviarWebServiceSAP($pNombreWS, $pParametros, $pJSON = false, $pAPI = f
             curl_setopt($curl, CURLOPT_HTTPHEADER, $encabezado);
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 
-            //La respuesta la devuelve en JSON
+            // Manejo de errores en el tiempo de ejecución de la API.
+            function registerShutdown()
+            {
+                $errorInfo = error_get_last();
+
+                if ($errorInfo !== null) {
+                    $errorInfoAsJSON = json_encode($errorInfo);
+
+                    echo "<script>
+                            console.log('$errorInfoAsJSON');
+                            
+                            function showAlert() {
+                                return new Promise(resolve => {
+                                    alert('¡Error, la API tardó demasiado en dar una respuesta!');
+                                    resolve();
+                                });
+                            }
+                            
+                            showAlert().then(() => {
+                                window.location.replace(window.location.href);
+                            });
+                        </script>";
+                } else {
+                    echo "register_shutdown_function(), se ejecutó sin errores.";
+                }
+            }
+
+            register_shutdown_function('registerShutdown');
+            // Hasta aquí, SMM, 12/01/2024
+
+            // La respuesta la devuelve en JSON
             $json = curl_exec($curl);
-            //echo "json: ".$json;
 
             $cod_http = curl_getinfo($curl, CURLINFO_HTTP_CODE);
             if ($cod_http != 200) { //Ocurrio un error

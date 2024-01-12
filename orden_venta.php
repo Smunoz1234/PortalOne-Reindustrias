@@ -230,6 +230,10 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Orden de venta
 						'id_evento' => intval($IdEvento),
 					);
 					// $Metodo = (isset($_POST['Autorizacion']) && ($_POST['Autorizacion'] == "P")) ? "OrdenesVentas/Borrador" : "OrdenesVentas";
+					
+					// Espera de 3 minutos para pruebas con retraso. SMM, 12/01/2024
+					// $Metodo = "OrdenesVentas/Delay";
+
 					$Metodo = "OrdenesVentas";
 					$Resultado = EnviarWebServiceSAP($Metodo, $Parametros, true, true);
 
