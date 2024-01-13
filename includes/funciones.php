@@ -789,6 +789,21 @@ function EnviarWebServiceSAP($pNombreWS, $pParametros, $pJSON = false, $pAPI = f
             $result = json_decode($json);
             curl_close($curl);
 
+            // Manejo de otros mensajes de error en el servidor.
+            function shutdown()
+            {
+                $errorInfo = error_get_last();
+
+                if ($errorInfo !== null) {
+                    print_r($errorInfo);
+                } else {
+                    echo "register_shutdown_function(), se ejecutó sin errores.";
+                }
+            }
+
+            register_shutdown_function('shutdown');
+            // Hasta aquí, SMM, 13/01/2024
+
             return $result;
         }
 
