@@ -1700,7 +1700,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 											<!--span class="text-danger">*</span--></label>
 										<div class="col-lg-5">
 											<select class="form-control select2" name="IdListaPrecio" id="IdListaPrecio"
-												<?php if (!PermitirFuncion(718)) {
+												<?php if (!PermitirFuncion(719)) {
 													echo "disabled";
 												} ?>>
 												<?php while ($row_ListaPrecio = sqlsrv_fetch_array($SQL_ListaPrecios)) { ?>
