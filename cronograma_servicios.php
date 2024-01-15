@@ -4,6 +4,7 @@ $sw = 0; //Para saber si ya se selecciono un cliente y mostrar las sucursales
 $Filtro = "";
 $sw_Clt = 0; //Tipo cliente
 $sw_Std = 0; //Tipo Estandar
+$sw_suc = 0; // SMM, 14/02/2023
 
 //Normas de reparto (Sucursal)
 $DimSede = intval(ObtenerVariable("DimensionSeries")); // SMM, 25/08/2022
@@ -99,8 +100,8 @@ if ($sw == 1) {
 	$SQL_Frecuencia = Seleccionar("tbl_ProgramacionOrdenesServicioFrecuencia", "*");
 }
 
-// SMM, 21/09/2023
-$SQL_Periodos = Seleccionar("tbl_Periodos", "*", "Estado = 'Y'", "Periodo"); 
+// SMM, 25/01/2023
+$SQL_Periodos = Seleccionar("tbl_Periodos", "*", "Estado = 'Y'", "Periodo");
 ?>
 
 <!DOCTYPE html>
@@ -226,6 +227,7 @@ $SQL_Periodos = Seleccionar("tbl_Periodos", "*", "Estado = 'Y'", "Periodo");
 									</label>
 								</div>
 								<div class="form-group">
+									<!-- Inicio, Cliente -->
 									<label class="col-lg-1 control-label">Cliente <span
 											class="text-danger">*</span></label>
 									<div class="col-lg-3">
@@ -240,39 +242,44 @@ $SQL_Periodos = Seleccionar("tbl_Periodos", "*", "Estado = 'Y'", "Periodo");
 											} ?>"
 											required>
 									</div>
+									<!-- Fin, Cliente -->
+
+									<!-- Inicio, Sucursal que depende del Cliente -->
 									<label class="col-lg-1 control-label">Sucursal cliente</label>
 									<div class="col-lg-3">
 										<select id="Sucursal" name="Sucursal" class="form-control select2">
 											<option value="">(Todos)</option>
-											<?php
-											if ($sw_suc == 1) { //Cuando se ha seleccionado una opción
-												if (PermitirFuncion(205)) {
-													$Where = "CodigoCliente='" . $_GET['Cliente'] . "' and TipoDireccion='S'";
-													$SQL_Sucursal = Seleccionar("uvw_Sap_tbl_Clientes_Sucursales", "NombreSucursal, NumeroLinea", $Where);
-												} else {
-													$Where = "CodigoCliente='" . $_GET['Cliente'] . "' and TipoDireccion='S' and ID_Usuario = " . $_SESSION['CodUser'];
-													$SQL_Sucursal = Seleccionar("uvw_tbl_SucursalesClienteUsuario", "NombreSucursal, NumeroLinea", $Where);
-												}
-												while ($row_Sucursal = sqlsrv_fetch_array($SQL_Sucursal)) { ?>
+											<?php if ($sw_suc == 1) { ?>
+												<?php if (PermitirFuncion(205)) { ?>
+													<?php $Where = "CodigoCliente='" . $_GET['Cliente'] . "' and TipoDireccion='S'"; ?>
+													<?php $SQL_Sucursal = Seleccionar("uvw_Sap_tbl_Clientes_Sucursales", "NombreSucursal, NumeroLinea", $Where); ?>
+												<?php } else { ?>
+													<?php $Where = "CodigoCliente='" . $_GET['Cliente'] . "' and TipoDireccion='S' and ID_Usuario = " . $_SESSION['CodUser']; ?>
+													<?php $SQL_Sucursal = Seleccionar("uvw_tbl_SucursalesClienteUsuario", "NombreSucursal, NumeroLinea", $Where); ?>
+												<?php } ?>
+												<?php while ($row_Sucursal = sqlsrv_fetch_array($SQL_Sucursal)) { ?>
 													<option value="<?php echo $row_Sucursal['NumeroLinea']; ?>" <?php if (strcmp($row_Sucursal['NumeroLinea'], $_GET['Sucursal']) == 0) {
 														   echo "selected=\"selected\"";
-													   } ?>>
-														<?php echo $row_Sucursal['NombreSucursal']; ?>
-													</option>
-												<?php }
-											} ?>
+													   } ?>><?php echo $row_Sucursal['NombreSucursal']; ?></option>
+												<?php } ?>
+											<?php } ?>
 										</select>
 									</div>
-									
+									<!-- Fin, Sucursal que depende del Cliente -->
+
+									<!-- Actualizado con la tabla de periodos -->
 									<label class="col-lg-1 control-label">Año <span class="text-danger">*</span></label>
-									<div class="col-lg-2">
+									<div class="col-lg-3">
 										<select name="Anno" required class="form-control" id="Anno">
-											<?php while ($row_Periodo = sqlsrv_fetch_array($SQL_Periodos)) {?>
-												<option value="<?php echo $row_Periodo['Periodo']; ?>" <?php if ((isset($Anno)) && (strcmp($row_Periodo['Periodo'], $Anno) == 0)) {echo "selected";}?>><?php echo $row_Periodo['Periodo']; ?></option>
-											<?php }?>
+											<?php while ($row_Periodo = sqlsrv_fetch_array($SQL_Periodos)) { ?>
+												<option value="<?php echo $row_Periodo['Periodo']; ?>" <?php if ((isset($Anno)) && (strcmp($row_Periodo['Periodo'], $Anno) == 0)) {
+													   echo "selected=\"selected\"";
+												   } ?>><?php echo $row_Periodo['Periodo']; ?>
+												</option>
+											<?php } ?>
 										</select>
 									</div>
-									<!-- /#Anno -->
+									<!-- Hasta aquí. SMM, 25/01/2023 -->
 								</div>
 
 								<div class="form-group">
@@ -284,8 +291,7 @@ $SQL_Periodos = Seleccionar("tbl_Periodos", "*", "Estado = 'Y'", "Periodo");
 											<?php while ($row_DRSucursal = sqlsrv_fetch_array($SQL_DRSucursal)) { ?>
 												<option value="<?php echo $row_DRSucursal['OcrCode']; ?>" <?php if ((isset($_GET['DRSucursal']) && ($_GET['DRSucursal'] != "")) && (strcmp($row_DRSucursal['OcrCode'], $_GET['DRSucursal']) == 0)) {
 													   echo "selected=\"selected\"";
-												   } ?>>
-													<?php echo $row_DRSucursal['OcrName']; ?>
+												   } ?>><?php echo $row_DRSucursal['OcrName']; ?>
 												</option>
 											<?php } ?>
 										</select>
@@ -295,6 +301,48 @@ $SQL_Periodos = Seleccionar("tbl_Periodos", "*", "Estado = 'Y'", "Periodo");
 												class="fa fa-search"></i> Buscar</button>
 									</div>
 								</div>
+
+								<?php if ($sw == 1) { ?>
+									<br>
+									<div class="form-group">
+										<label class="col-xs-12">
+											<h3 class="bg-success p-xs b-r-sm"><i class="fa fa-ellipsis-h"></i> Acciones
+											</h3>
+										</label>
+									</div>
+
+									<div class="form-group">
+										<div class="col-lg-2">
+											<div class="btn-group">
+												<button data-toggle="dropdown" class="btn btn-info dropdown-toggle"><i
+														class="fa fa-download"></i> Descargar formato <i
+														class="fa fa-caret-down"></i></button>
+												<ul class="dropdown-menu">
+													<li>
+														<a class="dropdown-item alkin"
+															href="sapdownload.php?type=<?php echo base64_encode('2'); ?>&id=<?php echo base64_encode('19'); ?>&IdCliente=<?php echo $_GET['Cliente']; ?>&IdPeriodo=<?php echo $Anno; ?>&IdSucursal=<?php echo $_GET['Sucursal'] ?? '-1'; ?>&TipoExp=1"
+															target="_blank">PDF</a>
+													</li>
+													<li>
+														<a class="dropdown-item alkin"
+															href="sapdownload.php?type=<?php echo base64_encode('2'); ?>&id=<?php echo base64_encode('19'); ?>&IdCliente=<?php echo $_GET['Cliente']; ?>&IdPeriodo=<?php echo $Anno; ?>&IdSucursal=<?php echo $_GET['Sucursal'] ?? '-1'; ?>&TipoExp=2"
+															target="_blank">Excel</a>
+													</li>
+												</ul>
+											</div> <!-- btn-group-->
+										</div>
+
+										<div class="col-lg-4">
+											<button class="btn btn-warning" id="ActualizarCronograma"><i
+													class="fa fa-refresh"></i> Actualizar cronograma basado en LMT</button>
+
+											<button style="margin-left: 5px;" type="button" class="btn btn-sm btn-circle"
+												data-toggle="tooltip" data-html="true"
+												title="Actualiza de manera masiva los campos de Áreas, Servicios, Método de aplicación de las LMT hacia el Cronograma de Servicios."><i
+													class="fa fa-info"></i></button>
+										</div>
+									</div>
+								<?php } ?>
 							</form>
 						</div>
 					</div>
@@ -307,7 +355,7 @@ $SQL_Periodos = Seleccionar("tbl_Periodos", "*", "Estado = 'Y'", "Periodo");
 								<?php include "includes/spinner.php"; ?>
 								<div class="row p-md">
 									<div class="form-group">
-										<div class="col-lg-6">
+										<div class="col-lg-5">
 											<label class="control-label">Lista materiales / artículos</label>
 											<select name="ListaLMT" class="form-control select2" id="ListaLMT">
 												<option value="">Seleccione...</option>
@@ -319,9 +367,7 @@ $SQL_Periodos = Seleccionar("tbl_Periodos", "*", "Estado = 'Y'", "Periodo");
 														echo "<optgroup label='Genericas'></optgroup>";
 														$sw_Std = 1;
 													} ?>
-													<option value="<?php echo $row_LMT['ItemCode']; ?>">
-														<?php echo $row_LMT['ItemCode'] . " - " . $row_LMT['ItemName'] . " (SERV: " . substr($row_LMT['Servicios'], 0, 20) . " - ÁREA: " . substr($row_LMT['Areas'], 0, 20) . ")"; ?>
-													</option>
+													<option value="<?php echo $row_LMT['ItemCode']; ?>"><?php echo $row_LMT['ItemCode'] . " - " . $row_LMT['ItemName'] . " (SERV: " . substr($row_LMT['Servicios'], 0, 20) . " - ÁREA: " . substr($row_LMT['Areas'], 0, 20) . ")"; ?></option>
 												<?php } ?>
 											</select>
 										</div>
@@ -330,9 +376,7 @@ $SQL_Periodos = Seleccionar("tbl_Periodos", "*", "Estado = 'Y'", "Periodo");
 											<select name="Frecuencia" class="form-control" id="Frecuencia">
 												<option value="">Ninguna</option>
 												<?php while ($row_Frecuencia = sqlsrv_fetch_array($SQL_Frecuencia)) { ?>
-													<option value="<?php echo $row_Frecuencia['IdFrecuencia']; ?>">
-														<?php echo $row_Frecuencia['DeFrecuencia']; ?>
-													</option>
+													<option value="<?php echo $row_Frecuencia['IdFrecuencia']; ?>"><?php echo $row_Frecuencia['DeFrecuencia'] . " (" . $row_Frecuencia['CantidadVeces'] . ")"; ?></option>
 												<?php } ?>
 											</select>
 										</div>
@@ -349,6 +393,10 @@ $SQL_Periodos = Seleccionar("tbl_Periodos", "*", "Estado = 'Y'", "Periodo");
 											<button type="button" id="btnNuevo" class="btn btn-success m-t-md"
 												onClick="AgregarLMT();"><i class="fa fa-plus-circle"></i> Añadir</button>
 										</div>
+
+										<div class="col-lg-2">
+											<!-- Espacio para un botón -->
+										</div> <!-- col-lg-2 -->
 									</div>
 								</div>
 								<div class="tabs-container">
@@ -378,10 +426,51 @@ $SQL_Periodos = Seleccionar("tbl_Periodos", "*", "Estado = 'Y'", "Periodo");
 
 		</div>
 	</div>
+
 	<?php include_once "includes/pie.php"; ?>
+
 	<!-- InstanceBeginEditable name="EditRegion4" -->
 	<script>
+		$("#ActualizarCronograma").on("click", function () {
+			event.preventDefault(); // Evitar otras acciones del botón
+
+			Swal.fire({
+				title: "¿Desea actualizar todas las lineas?",
+				icon: 'question',
+				showCancelButton: true,
+				confirmButtonText: 'Si, confirmo',
+				cancelButtonText: 'No'
+			}).then((result) => {
+				if (result.isConfirmed) {
+
+					// Cargando...
+					$('.ibox-content').toggleClass('sk-loading', true);
+
+					$.ajax({
+						type: "GET",
+						url: "includes/procedimientos.php?type=66&Metodo=1&Cliente=<?php echo $_GET['Cliente'] ?? ""; ?>&Sucursal=<?php echo $_GET['Sucursal'] ?? ""; ?>&Periodo=<?php echo $Anno ?? ""; ?>",
+						success: function (response) {
+							let frame = document.getElementById('DataGrid');
+							frame.src = "detalle_cronograma_servicios.php?cardcode=<?php echo base64_encode($_GET['Cliente'] ?? ""); ?>&idsucursal=<?php echo base64_encode($_GET['Sucursal'] ?? ""); ?>&periodo=<?php echo base64_encode($Anno ?? ""); ?>";
+
+							Swal.fire({
+								title: '¡Listo!',
+								text: 'Las lineas han sido actualizadas exitosamente',
+								icon: 'success'
+							}); // Swal
+						}
+					}); // ajax
+
+					// Carga terminada.
+					$('.ibox-content').toggleClass('sk-loading', false);
+				}
+			}); // Swal
+		});
+
 		$(document).ready(function () {
+			// SMM, 18/01/2023
+			$('[data-toggle="tooltip"]').tooltip();
+
 			$("#frmBuscar").validate({
 				submitHandler: function (form) {
 					$('.ibox-content').toggleClass('sk-loading');
