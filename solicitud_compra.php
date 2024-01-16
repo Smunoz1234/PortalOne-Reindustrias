@@ -33,7 +33,7 @@ $BillToDef = ""; // Sucursal de Facturación por Defecto.
 $ShipToDef = ""; // Sucursal de Destino por Defecto.
 
 // Procesos de autorización, SMM 19/08/2022
-$SQL_Procesos = Seleccionar("uvw_tbl_Autorizaciones_Procesos", "*", "Estado = 'Y' AND IdTipoDocumento = 1470000113");
+$SQL_Procesos = Seleccionar("uvw_tbl_Autorizaciones_Procesos", "*", "Estado = 'Y' AND IdTipoDocumento = $IdTipoDocumento");
 
 if (isset($_GET['id']) && ($_GET['id'] != "")) { //ID de la Solicitud de compra (DocEntry)
 	$IdSolicitud = base64_decode($_GET['id']);
@@ -273,15 +273,15 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Grabar Solicitud de compras
 			// Inicio, Envio WebService
 			if ($_POST['tl'] == 0) { //Creando
 
-				//Consultar cabecera
-				$SQL_Cab = Seleccionar("uvw_tbl_SolicitudCompra", '*', "ID_SolicitudCompra='" . $IdSolicitudCompra . "' and IdEvento='" . $IdEvento . "'");
+				// Consultar cabecera
+				$SQL_Cab = Seleccionar("uvw_tbl_SolicitudCompra", '*', "ID_SolicitudCompra='$IdSolicitudCompra' AND IdEvento='$IdEvento'");
 				$row_Cab = sqlsrv_fetch_array($SQL_Cab);
 
-				//Consultar detalle
-				$SQL_Det = Seleccionar("uvw_tbl_SolicitudCompraDetalle", '*', "ID_SolicitudCompra='" . $IdSolicitudCompra . "' and IdEvento='" . $IdEvento . "'");
+				// Consultar detalle
+				$SQL_Det = Seleccionar("uvw_tbl_SolicitudCompraDetalle", '*', "ID_SolicitudCompra='$IdSolicitudCompra' AND IdEvento='$IdEvento'");
 
-				//Consultar anexos
-				$SQL_Anx = Seleccionar("uvw_tbl_DocumentosSAP_Anexos", '*', "ID_Documento='" . $IdSolicitudCompra . "' and TipoDocumento='1470000113' and Metodo=1");
+				// Consultar anexos
+				$SQL_Anx = Seleccionar("uvw_tbl_DocumentosSAP_Anexos", '*', "ID_Documento='$IdSolicitudCompra' AND TipoDocumento='$IdTipoDocumento' AND Metodo=1");
 
 				$Detalle = array();
 				$Anexos = array();
@@ -352,7 +352,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Grabar Solicitud de compras
 
 				$Cabecera = array(
 					"id_documento" => 0,
-					"id_tipo_documento" => "1470000113",
+					"id_tipo_documento" => "$IdTipoDocumento",
 					"tipo_documento" => "Solicitud de compras",
 					"moneda_documento" => "$",
 					"estado" => $row_Cab['Cod_Estado'],
@@ -393,15 +393,15 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Grabar Solicitud de compras
 
 			} else { //Actualizando
 
-				//Consultar cabecera
-				$SQL_Cab = Seleccionar("uvw_tbl_SolicitudCompra", '*', "ID_SolicitudCompra='" . $IdSolicitudCompra . "' and IdEvento='" . $IdEvento . "'");
+				// Consultar cabecera
+				$SQL_Cab = Seleccionar("uvw_tbl_SolicitudCompra", '*', "ID_SolicitudCompra='$IdSolicitudCompra' AND IdEvento='$IdEvento'");
 				$row_Cab = sqlsrv_fetch_array($SQL_Cab);
 
-				//Consultar detalle
-				$SQL_Det = Seleccionar("uvw_tbl_SolicitudCompraDetalle", '*', "ID_SolicitudCompra='" . $IdSolicitudCompra . "' and IdEvento='" . $IdEvento . "'");
+				// Consultar detalle
+				$SQL_Det = Seleccionar("uvw_tbl_SolicitudCompraDetalle", '*', "ID_SolicitudCompra='$IdSolicitudCompra' AND IdEvento='$IdEvento'");
 
-				//Consultar anexos
-				$SQL_Anx = Seleccionar("uvw_tbl_DocumentosSAP_Anexos", '*', "ID_Documento='" . $IdSolicitudCompra . "' and TipoDocumento='1470000113' and Metodo=1");
+				// Consultar anexos
+				$SQL_Anx = Seleccionar("uvw_tbl_DocumentosSAP_Anexos", '*', "ID_Documento='$IdSolicitudCompra' AND TipoDocumento='$IdTipoDocumento' AND Metodo=1");
 
 				$Detalle = array();
 				$Anexos = array();
@@ -473,7 +473,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Grabar Solicitud de compras
 
 				$Cabecera = array(
 					"id_documento" => intval($row_Cab['DocNum']),
-					"id_tipo_documento" => "1470000113",
+					"id_tipo_documento" => "$IdTipoDocumento",
 					"tipo_documento" => "Solicitud de compras",
 					"moneda_documento" => "$",
 					"estado" => $row_Cab['Cod_Estado'],
@@ -1166,7 +1166,7 @@ function CrearArticulo(){
 				<?php if ($edit == 0 && $sw_error == 0 && $dt_LS == 0 && $dt_OF == 0) { // Limpiar carrito detalle. ?>
 					$.ajax({
 						type: "POST",
-						url: "includes/procedimientos.php?type=7&objtype=1470000113&cardcode=" + carcode
+						url: "includes/procedimientos.php?type=7&objtype=<?php echo $IdTipoDocumento; ?>&cardcode=" + carcode
 					});
 
 					// Recargar sucursales.
@@ -1696,7 +1696,7 @@ function CrearArticulo(){
 											class="fa fa-download"></i> Descargar formato <i
 											class="fa fa-caret-down"></i></button>
 									<ul class="dropdown-menu">
-										<?php $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=1470000113 AND (IdFormato='" . $row['IdSeries'] . "' OR DeSeries IS NULL) AND VerEnDocumento='Y' AND (EsBorrador='N' OR EsBorrador IS NULL)"); ?>
+										<?php $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=$IdTipoDocumento AND (IdFormato='" . $row['IdSeries'] . "' OR DeSeries IS NULL) AND VerEnDocumento='Y' AND (EsBorrador='N' OR EsBorrador IS NULL)"); ?>
 										<?php while ($row_Formato = sqlsrv_fetch_array($SQL_Formato)) { ?>
 											<li>
 												<a class="dropdown-item" target="_blank"
@@ -1708,7 +1708,7 @@ function CrearArticulo(){
 								<!-- Hasta aquí, 06/10/2022 -->
 
 								<a href="#" class="btn btn-outline btn-info"
-									onClick="VerMapaRel('<?php echo base64_encode($row['DocEntry']); ?>','<?php echo base64_encode('1470000113'); ?>');"><i
+									onClick="VerMapaRel('<?php echo base64_encode($row['DocEntry']); ?>','<?php echo base64_encode("$IdTipoDocumento"); ?>');"><i
 										class="fa fa-sitemap"></i> Mapa de relaciones</a>
 							</div>
 							<div class="col-lg-6">
@@ -2901,7 +2901,7 @@ function ConsultarTab(type) {
 					docentry: '<?php if ($edit == 1) {
 						echo base64_encode($row['DocEntry']);
 					} ?>',
-					objtype: 1470000113,
+					objtype: <?php echo $IdTipoDocumento; ?>,
 					date: '<?php echo FormatoFecha(date('Y-m-d'), date('H:i:s')); ?>'
 				},
 				dataType: 'json',
@@ -2946,7 +2946,7 @@ function ConsultarTab(type) {
 					type: "POST",
 					url: "md_consultar_articulos.php",
 					data: {
-						ObjType: 1470000113,
+						ObjType: <?php echo $IdTipoDocumento; ?>,
 						OT: OrdenServicio,
 						Edit: <?php echo $edit; ?>,
 						DocType: "<?php echo ($edit == 0) ? 22 : 23; ?>",
