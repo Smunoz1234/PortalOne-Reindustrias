@@ -115,8 +115,7 @@ if ($type_llmd == 0) {
 	// SMM, 12/02/2022
 }
 
-if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
-	//Insertar llamada de servicio
+if (isset($_POST['P']) && ($_POST['P'] == 32)) { // Crear llamada de servicio
 	try {
 		//*** Carpeta temporal ***
 		$i = 0; //Archivos
@@ -228,6 +227,7 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
 			"'$SLS'", // SMM, 08/09/2023
 			$Campanas, // SMM, 13/09/2023
 		);
+
 		$SQL_InsLlamada = EjecutarSP('sp_tbl_LlamadaServicios', $ParamInsLlamada, 32);
 		if ($SQL_InsLlamada) {
 			$row_NewIdLlamada = sqlsrv_fetch_array($SQL_InsLlamada);
@@ -250,9 +250,9 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
 						//Registrar archivo en la BD
 						$ParamInsAnex = array(
 							"'191'",
-							"'" . $row_NewIdLlamada[0] . "'",
-							"'" . $OnlyName . "'",
-							"'" . $Ext . "'",
+							"'$IdLlamada'",
+							"'$OnlyName'",
+							"'$Ext'",
 							"1",
 							"'" . $_SESSION['CodUser'] . "'",
 							"1",
@@ -269,7 +269,7 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
 				echo 'Excepcion capturada: ', $e->getMessage(), "\n";
 			}
 
-			//Enviar datos al WebServices
+			// Enviar datos al WebServices
 			try {
 				$Parametros = array(
 					'id_documento' => intval($row_NewIdLlamada[0]),
@@ -340,7 +340,13 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { //Crear llamada de servicio
 					// SMM, 13/09/2023
 
 					sqlsrv_close($conexion);
-					header("Location:llamada_servicio.php?msg=" . base64_encode($msg) . "&id=" . base64_encode($row_Llamada['ID_LlamadaServicio']) . "&tl=1&a=" . base64_encode("OK_LlamAdd"));
+					
+					$IdLlamada_Encode = base64_encode($row_Llamada['ID_LlamadaServicio'] ?? "");
+					if($IdLlamada_Encode == "") {
+						header("Location:gestionar_llamadas_servicios.php?msg=" . base64_encode($msg) . "&a=" . base64_encode("OK_LlamAdd"));
+					} else {
+						header("Location:llamada_servicio.php?msg=" . base64_encode($msg) . "&id=$IdLlamada_Encode&tl=1&a=" . base64_encode("OK_LlamAdd"));
+					}
 				}
 			} catch (Exception $e) {
 				echo 'Excepcion capturada: ', $e->getMessage(), "\n";
@@ -490,7 +496,7 @@ if (isset($_POST['P']) && ($_POST['P'] == 33)) { //Actualizar llamada de servici
 					//Registrar archivo en la BD
 					$ParamDelAnex = array(
 						"'191'",
-						"'" . $IdLlamada . "'",
+						"'$IdLlamada'",
 						"NULL",
 						"NULL",
 						"NULL",
@@ -513,9 +519,9 @@ if (isset($_POST['P']) && ($_POST['P'] == 33)) { //Actualizar llamada de servici
 						//Registrar archivo en la BD
 						$ParamInsAnex = array(
 							"'191'",
-							"'" . $IdLlamada . "'",
-							"'" . $OnlyName . "'",
-							"'" . $Ext . "'",
+							"'$IdLlamada'",
+							"'$OnlyName'",
+							"'$Ext'",
 							"1",
 							"'" . $_SESSION['CodUser'] . "'",
 							"1",
@@ -534,7 +540,7 @@ if (isset($_POST['P']) && ($_POST['P'] == 33)) { //Actualizar llamada de servici
 				echo 'Excepcion capturada: ', $e->getMessage(), "\n";
 			}
 
-			//Enviar datos al WebServices
+			// Enviar datos al WebServices
 			try {
 				$Parametros = array(
 					'id_documento' => intval($IdLlamada),
@@ -549,7 +555,7 @@ if (isset($_POST['P']) && ($_POST['P'] == 33)) { //Actualizar llamada de servici
 					$msg_error = $Resultado->Mensaje;
 
 					if ($_POST['EstadoLlamada'] == '-1') {
-						$UpdEstado = "UPDATE tbl_LlamadasServicios SET Cod_Estado='-3' WHERE ID_LlamadaServicio='" . $IdLlamada . "'";
+						$UpdEstado = "UPDATE tbl_LlamadasServicios SET Cod_Estado='-3' WHERE ID_LlamadaServicio='$IdLlamada'";
 						$SQL_UpdEstado = sqlsrv_query($conexion, $UpdEstado);
 					}
 				} else {
@@ -634,12 +640,12 @@ if ($type_llmd == 1 && $sw_error == 0) {
 	$SQL_SucursalCliente = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', 'NombreSucursal, NumeroLinea, TipoDireccion', "CodigoCliente='$ID_CodigoCliente' AND TipoDireccion='S'", 'TipoDireccion, NombreSucursal');
 
 	//Anexos
-	$SQL_AnexoLlamada = Seleccionar('uvw_Sap_tbl_DocumentosSAP_Anexos', '*', "AbsEntry='" . $row['IdAnexoLlamada'] . "'");
+	$SQL_AnexoLlamada = Seleccionar('uvw_Sap_tbl_DocumentosSAP_Anexos', '*', "AbsEntry='" . ($row['IdAnexoLlamada'] ?? "") . "'");
 
 	//Articulos del cliente (ID servicio)
 	$ParamArt = array(
 		"'$ID_CodigoCliente'",
-		"'" . $row['NombreSucursal'] . "'",
+		"'" . ($row['NombreSucursal'] ?? "") . "'",
 		"'0'",
 	);
 

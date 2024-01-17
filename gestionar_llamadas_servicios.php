@@ -214,14 +214,15 @@ $sw=1;
 if (isset($_GET['BuscarDato']) && $_GET['BuscarDato'] != "") {
     // Stiven Muñoz Murillo, 26/01/2022
     // ."%' OR [IdNumeroSerie] LIKE '%".$_GET['BuscarDato']
-    $Filtro .= " and ([DocNum] LIKE '%" . $_GET['BuscarDato'] . "%' OR [IdNumeroSerie] LIKE '%" . $_GET['BuscarDato'] . "%' OR [NombreContactoLlamada] LIKE '%" . $_GET['BuscarDato'] . "%' OR [TelefonoContactoLlamada] LIKE '%" . $_GET['BuscarDato'] . "%' OR [CorreoContactoLlamada] LIKE '%" . $_GET['BuscarDato'] . "%' OR [AsuntoLlamada] LIKE '%" . $_GET['BuscarDato'] . "%' OR [ComentarioLlamada] LIKE '%" . $_GET['BuscarDato'] . "%' OR [ResolucionLlamada] LIKE '%" . $_GET['BuscarDato'] . "%' OR [DeTipoLlamada] LIKE '%" . $_GET['BuscarDato'] . "%' OR [NombreClienteLlamada] LIKE '%" . $_GET['BuscarDato'] . "%')";
+    $Filtro .= " AND ([DocNum] LIKE '%" . $_GET['BuscarDato'] . "%' OR [IdNumeroSerie] LIKE '%" . $_GET['BuscarDato'] . "%' OR [NombreContactoLlamada] LIKE '%" . $_GET['BuscarDato'] . "%' OR [TelefonoContactoLlamada] LIKE '%" . $_GET['BuscarDato'] . "%' OR [CorreoContactoLlamada] LIKE '%" . $_GET['BuscarDato'] . "%' OR [AsuntoLlamada] LIKE '%" . $_GET['BuscarDato'] . "%' OR [ComentarioLlamada] LIKE '%" . $_GET['BuscarDato'] . "%' OR [ResolucionLlamada] LIKE '%" . $_GET['BuscarDato'] . "%' OR [DeTipoLlamada] LIKE '%" . $_GET['BuscarDato'] . "%' OR [NombreClienteLlamada] LIKE '%" . $_GET['BuscarDato'] . "%')";
     $sw = 1;
 }
 
 if ($sw == 1) {
     //$Where="([FechaCreacionLLamada] Between '$FechaInicial' and '$FechaFinal') $Filtro";
     //$SQL=Seleccionar('uvw_Sap_tbl_LlamadasServicios','*',$Where);
-    $Cons = "Select * From uvw_Sap_tbl_LlamadasServicios Where (FechaCreacionLLamada Between '$FechaInicial' and '$FechaFinal') $Filtro";
+    
+    $Cons = "SELECT * FROM uvw_Sap_tbl_LlamadasServicios WHERE (FechaCreacionLLamada BETWEEN '$FechaInicial' AND '$FechaFinal') $Filtro";
     $SQL = sqlsrv_query($conexion, $Cons);
 
     //echo $Cons;
@@ -245,13 +246,13 @@ if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
         }
         $i++;
     }
-    $Where .= " and [Series] IN (" . $FilSerie . ")";
+    $Where .= " AND [Series] IN ($FilSerie)";
     $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 
     $SQL = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', $Where);
 }
-
 ?>
+
 <!DOCTYPE html>
 <html><!-- InstanceBegin template="/Templates/PlantillaPrincipal.dwt.php" codeOutsideHTMLIsLocked="false" -->
 
