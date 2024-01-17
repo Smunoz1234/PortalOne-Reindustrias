@@ -15,7 +15,8 @@ $palabra = ($doc == "Procesos") ? "proceso" : "motivo";
 $SQL_UsuariosSAP = Seleccionar("uvw_Sap_tbl_UsuariosSAP", "*", "Locked = 'N'", "USER_CODE");
 
 // SMM, 18/07/2022
-$SQL_TipoDoc = Seleccionar("uvw_tbl_ObjetosSAP", "*", "CategoriaObjeto = 'Documentos de ventas' OR IdTipoDocumento = '1250000001'", 'CategoriaObjeto, DeTipoDocumento');
+$WhereTipoDoc = "IdTipoDocumento IN ('17', '15', '1250000001', '1470000113', '22')";
+$SQL_TipoDoc = Seleccionar("uvw_tbl_ObjetosSAP", "*", $WhereTipoDoc, 'CategoriaObjeto, DeTipoDocumento');
 $SQL_ModeloAutorizacion = Seleccionar("uvw_Sap_tbl_ModelosAutorizaciones", "*");
 
 // Perfiles Usuarios, SMM 26/07/2022

@@ -737,6 +737,7 @@ function EnviarWebServiceSAP($pNombreWS, $pParametros, $pJSON = false, $pAPI = f
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 
             // Manejo de errores en el tiempo de ejecución de la API.
+            /*
             function registerShutdown()
             {
                 $errorInfo = error_get_last();
@@ -764,6 +765,7 @@ function EnviarWebServiceSAP($pNombreWS, $pParametros, $pJSON = false, $pAPI = f
             }
 
             register_shutdown_function('registerShutdown');
+            */
             // Hasta aquí, SMM, 12/01/2024
 
             // La respuesta la devuelve en JSON
@@ -790,6 +792,7 @@ function EnviarWebServiceSAP($pNombreWS, $pParametros, $pJSON = false, $pAPI = f
             curl_close($curl);
 
             // Manejo de otros mensajes de error en el servidor.
+            /*
             function shutdown()
             {
                 $errorInfo = error_get_last();
@@ -802,6 +805,7 @@ function EnviarWebServiceSAP($pNombreWS, $pParametros, $pJSON = false, $pAPI = f
             }
 
             register_shutdown_function('shutdown');
+            */
             // Hasta aquí, SMM, 13/01/2024
 
             return $result;
