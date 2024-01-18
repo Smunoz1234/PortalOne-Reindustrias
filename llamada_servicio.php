@@ -2105,6 +2105,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 		   <div class="col-lg-12">
 			  <form action="llamada_servicio.php" method="post" class="form-horizontal" enctype="multipart/form-data" id="CrearLlamada">
 				<div id="DatosCliente" <?php //if($row['TipoTarea']=='Interna'){ echo 'style="display: none;"';}?>>
+				
 				<div class="ibox">
 					<div class="ibox-title bg-success">
 						<h5 class="collapse-link"><i class="fa fa-group"></i> Información de cliente</h5>
@@ -2335,7 +2336,79 @@ function AgregarEsto(contenedorID, valorElemento) {
 						</div>
 					</div>
 				</div>
+				
 				</div>
+				<!-- /# DatosCliente -->
+
+				<!-- INICIO, documentos referenciados -->
+				<div class="ibox">
+					<div class="ibox-title bg-success">
+						<h5 class="collapse-link"><i class="fa fa-info-circle"></i> Documentos referenciados</h5>
+						 <a class="collapse-link pull-right">
+							<i class="fa fa-chevron-up"></i>
+						</a>
+					</div>
+
+					<div class="ibox-content">
+						<div class="form-group">
+							<label class="col-lg-1 control-label">
+							<?php if (($type_llmd == 1) && ($row['IdSolicitudLlamadaServicio'] != 0)) { ?><a
+										href="solicitud_llamada.php?id=<?php echo base64_encode($row['IdSolicitudLlamadaServicio']); ?>&tl=1"
+										target="_blank" title="Consultar Solicitud de Llamada de servicio"
+										class="btn-xs btn-success fa fa-search"></a>
+								<?php } ?>Solicitud de Llamada (Agenda)
+							</label>
+							<div class="col-lg-7">
+								<input type="hidden" class="form-control" name="SolicitudLlamadaCliente"
+									id="SolicitudLlamadaCliente"
+									value="<?php if (isset($row_SolicitudLlamada['ID_SolicitudLlamadaServicio']) && ($row_SolicitudLlamada['ID_SolicitudLlamadaServicio'] != 0)) {
+										echo $row_SolicitudLlamada['ID_SolicitudLlamadaServicio'];
+									} ?>">
+								<input readonly type="text" class="form-control"
+									name="Desc_SolicitudLlamadaCliente" id="Desc_SolicitudLlamadaCliente"
+									placeholder="Haga clic en el botón"
+									value="<?php if (isset($row_SolicitudLlamada['ID_SolicitudLlamadaServicio']) && ($row_SolicitudLlamada['ID_SolicitudLlamadaServicio'] != 0)) {
+										echo $row_SolicitudLlamada['ID_SolicitudLlamadaServicio'] . " - " . $row_SolicitudLlamada['AsuntoLlamada'] . " (" . $row_SolicitudLlamada['DeTipoLlamada'] . ")";
+									} ?>">
+							</div>
+							<div class="col-lg-4">
+								<button class="btn btn-success" type="button"
+									onClick="$('#mdSLS').modal('show');"><i class="fa fa-refresh"></i>
+									Cambiar Agenda</button>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label class="col-lg-1 control-label">
+								<?php if (($type_llmd == 1) && ($row['ID_LlamadaServicio'] != 0)) { ?><a
+										href="llamada_servicio.php?id=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&tl=1"
+										target="_blank" title="Consultar Llamada de servicio"
+										class="btn-xs btn-success fa fa-search"></a>
+								<?php } ?>Orden de Servicio
+							</label>
+							<div class="col-lg-7">
+								<input type="hidden" class="form-control" name="OrdenServicioCliente"
+									id="OrdenServicioCliente"
+									value="<?php if (isset($row_OrdenServicioCliente['ID_LlamadaServicio']) && ($row_OrdenServicioCliente['ID_LlamadaServicio'] != 0)) {
+										echo $row_OrdenServicioCliente['ID_LlamadaServicio'];
+									} ?>">
+								<input readonly type="text" class="form-control"
+									name="Desc_OrdenServicioCliente" id="Desc_OrdenServicioCliente"
+									placeholder="Haga clic en el botón"
+									value="<?php if (isset($row_OrdenServicioCliente['ID_LlamadaServicio']) && ($row_OrdenServicioCliente['ID_LlamadaServicio'] != 0)) {
+										echo $row_OrdenServicioCliente['DocNum'] . " - " . $row_OrdenServicioCliente['AsuntoLlamada'] . " (" . $row_OrdenServicioCliente['DeTipoLlamada'] . ")";
+									} ?>">
+							</div>
+							<div class="col-lg-4">
+								<button class="btn btn-success" type="button"
+									onclick="$('#mdOT').modal('show');"><i class="fa fa-refresh"></i>
+									Cambiar Orden de Servicio</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- FIN, documentos referenciados -->
+				
 				<div class="ibox">
 					<div class="ibox-title bg-success">
 						<h5 class="collapse-link"><i class="fa fa-info-circle"></i> Información de servicio</h5>
