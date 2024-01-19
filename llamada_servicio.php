@@ -224,8 +224,9 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { // Crear llamada de servicio
 			// SMM, 18/10/2022
 			"'$FirmaContactoResponsable'",
 			"0",
-			"'$SLS'", // SMM, 08/09/2023
+			isset($_POST['SolicitudLlamadaCliente']) && ($_POST['SolicitudLlamadaCliente'] != "")  ? $_POST['SolicitudLlamadaCliente'] : 0, // $SLS (int)
 			$Campanas, // SMM, 13/09/2023
+			isset($_POST['OrdenServicioCliente']) && ($_POST['OrdenServicioCliente'] != "") ? $_POST['OrdenServicioCliente'] : 0, // IdLlamadaServicioPadre (int)
 		);
 
 		$SQL_InsLlamada = EjecutarSP('sp_tbl_LlamadaServicios', $ParamInsLlamada, 32);
@@ -473,10 +474,10 @@ if (isset($_POST['P']) && ($_POST['P'] == 33)) { //Actualizar llamada de servici
 			"'" . ($_POST['TelefonosContactosFirma'] ?? "") . "'", // SMM, 18/10/2022
 			"'" . ($_POST['CorreosContactosFirma'] ?? "") . "'", // SMM, 18/10/2022
 			"'" . $FirmaContactoResponsable . "'", // SMM, 16/09/2022
-			(PermitirFuncion(325) && ($_POST['EstadoLlamada'] == -1)) ? "1" : "0",
-			// FormatoCierreLlamada, SMM 14/10/2022
-			"'$SLS'", // SMM, 08/09/2023
+			(PermitirFuncion(325) && ($_POST['EstadoLlamada'] == -1)) ? "1" : "0", // FormatoCierreLlamada, SMM 14/10/2022
+			isset($_POST['SolicitudLlamadaCliente']) && ($_POST['SolicitudLlamadaCliente'] != "")  ? $_POST['SolicitudLlamadaCliente'] : 0, // $SLS (int)
 			"''", // @CampanasAsociadas
+			isset($_POST['OrdenServicioCliente']) && ($_POST['OrdenServicioCliente'] != "") ? $_POST['OrdenServicioCliente'] : 0, // IdLlamadaServicioPadre (int)
 		);
 
 		// Actualizar la llamada de servicio.
@@ -630,6 +631,14 @@ if ($edit == 1 && $sw_error == 0) {
 	$row = sqlsrv_fetch_array($SQL);
 	$ID_CodigoCliente = $row['ID_CodigoCliente'] ?? "";
 
+	// Solicitud base referenciada. SMM, 18/01/2024
+	$SQL_SolicitudLlamada = Seleccionar('uvw_tbl_SolicitudLlamadasServicios', '*', "ID_SolicitudLlamadaServicio='" . ($row['IdSolicitudLlamadaServicio'] ?? "") . "'");
+	$row_SolicitudLlamada = sqlsrv_fetch_array($SQL_SolicitudLlamada);
+
+	// Orden de servicio padre referencia. SMM, 18/01/2024
+	$SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . ($row['IdLlamadaServicioPadre'] ?? "") . "'");
+	$row_OrdenServicioCliente = sqlsrv_fetch_array($SQL_OrdenServicioCliente);
+
 	//Clientes
 	$SQL_Cliente = Seleccionar("uvw_Sap_tbl_Clientes", "CodigoCliente, NombreCliente", "CodigoCliente='$ID_CodigoCliente'", 'NombreCliente');
 
@@ -691,6 +700,14 @@ if ($sw_error == 1) {
 	$row = sqlsrv_fetch_array($SQL);
 	$ID_CodigoCliente = $row['ID_CodigoCliente'] ?? "";
 
+	// Solicitud base referenciada. SMM, 18/01/2024
+	$SQL_SolicitudLlamada = Seleccionar('uvw_tbl_SolicitudLlamadasServicios', '*', "ID_SolicitudLlamadaServicio='" . ($row['IdSolicitudLlamadaServicio'] ?? "") . "'");
+	$row_SolicitudLlamada = sqlsrv_fetch_array($SQL_SolicitudLlamada);
+
+	// Orden de servicio padre referencia. SMM, 18/01/2024
+	$SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . ($row['ID_LlamadaServicio'] ?? "") . "'");
+	$row_OrdenServicioCliente = sqlsrv_fetch_array($SQL_OrdenServicioCliente);
+
 	// Clientes
 	$SQL_Cliente = Seleccionar("uvw_Sap_tbl_Clientes", "CodigoCliente, NombreCliente", "CodigoCliente='$ID_CodigoCliente'", 'NombreCliente');
 
@@ -746,7 +763,13 @@ $error_solicitud = false;
 $anexos_solicitud = array();
 if (isset($_GET['dt_SLS']) && ($_GET['dt_SLS']) == 1) {
 	$dt_SLS = 1;
-	$SLS = base64_decode($_GET['SLS']);
+	$SLS = base64_decode($_GET['SLS'] ?? "");
+
+	// Verificar si viene de una Solicitud. SMM, 18/01/2024
+	if($SLS != "") {
+		$SQL_SolicitudLlamada = Seleccionar('uvw_tbl_SolicitudLlamadasServicios', '*', "ID_SolicitudLlamadaServicio='$SLS'");
+		$row_SolicitudLlamada = sqlsrv_fetch_array($SQL_SolicitudLlamada);
+	}
 
 	$ParametrosCopiar = array(
 		"'$SLS'",
@@ -2084,14 +2107,17 @@ function AgregarEsto(contenedorID, valorElemento) {
 										<div class="col-lg-6">
 											<div class="btn-group pull-right">
 												<?php if ($edit == 1) { ?>
+														<!-- SMM, 18/01/2023 -->
+														<button onclick="MostrarEstados('<?php echo $IdLlamada; ?>');" class="btn btn-outline btn-success"><i class="fa fa-history"></i> Ver Historial de Estados</button>
+
 														<button onclick="VerTAB(1);" class="btn btn-outline btn-primary"><i class="fa fa-calendar"></i> Ver Actividades</button>
 														<button onclick="VerTAB(2);" class="btn btn-outline btn-primary"><i class="fa fa-tags"></i> Ver Documentos Relacionados</button>
-														<button onclick="VerTAB(3);" class="btn btn-outline btn-primary"><i class="fa fa-clipboard"></i> Ver Formatos Adicionales</button>
+														<button onclick="VerTAB(3);" class="btn btn-outline btn-primary"><i class="fa fa-clipboard"></i> Ver Formatos Adicionales</button>							
 												<?php } ?>
 
 												<?php if (($edit == 1) || $hasRowsCampanas) { ?>
 														<button onclick="VerTAB(4);" class="btn btn-outline btn-primary"><i class="fa fa-bell"></i> Ver Campañas Gestionadas</button>
-												<?php } ?>	
+												<?php } ?>
 											</div>
 										</div>
 										<!-- /.col-lg-6 -->
@@ -2384,11 +2410,11 @@ function AgregarEsto(contenedorID, valorElemento) {
 						
 						<div class="form-group">
 							<label class="col-lg-1 control-label">
-								<?php if (($edit == 1) && ($row['ID_LlamadaServicio'] != 0)) { ?><a
-										href="llamada_servicio.php?id=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&tl=1"
+								<?php if (($edit == 1) && ($row['IdLlamadaServicioPadre'] != 0)) { ?><a
+										href="llamada_servicio.php?id=<?php echo base64_encode($row['IdLlamadaServicioPadre']); ?>&tl=1"
 										target="_blank" title="Consultar Llamada de servicio"
 										class="btn-xs btn-success fa fa-search"></a>
-								<?php } ?>Orden de Servicio
+								<?php } ?>Orden de Servicio (Padre)
 							</label>
 							<div class="col-lg-7">
 								<input type="hidden" class="form-control" name="OrdenServicioCliente"
@@ -3985,6 +4011,25 @@ function CambiarEstado(id, form, columID) {
 			$('.ibox-content').toggleClass('sk-loading', false);
 
 			$('#ContenidoModal').html(response);
+			$('#myModal').modal("show");
+		}
+	});
+}
+
+// SMM, 18/01/2024
+function MostrarEstados(id_llamada) {
+	$('.ibox-content').toggleClass('sk-loading', true);
+	$.ajax({
+		type: "POST",
+		async: false,
+		url: "md_estados_llamadas.php",
+		data: {
+			DocEntry: id_llamada
+		},
+		success: function (response) {
+			$('.ibox-content').toggleClass('sk-loading', false);
+			$('#ContenidoModal').html(response);
+			$('#TituloModal').html('Historial de Estados de la Llamada de servicio');
 			$('#myModal').modal("show");
 		}
 	});

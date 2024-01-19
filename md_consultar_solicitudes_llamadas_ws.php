@@ -12,14 +12,14 @@ Sucursal: "CHINCHINA"
  */
 
 // Filtrar fechas
-if (isset($_POST['FechaInicial']) && $_POST['FechaInicial'] != "") {
-    $FechaInicial = $_POST['FechaInicial'];
+if (isset($_POST['FechaInicialSLS']) && $_POST['FechaInicialSLS'] != "") {
+    $FechaInicial = $_POST['FechaInicialSLS'];
 } else {
     $FechaInicial = date('Y-m-d');
 }
 
-if (isset($_POST['FechaFinal']) && $_POST['FechaFinal'] != "") {
-    $FechaFinal = $_POST['FechaFinal'];
+if (isset($_POST['FechaFinalSLS']) && $_POST['FechaFinalSLS'] != "") {
+    $FechaFinal = $_POST['FechaFinalSLS'];
 } else {
     $FechaFinal = date('Y-m-d');
 }
@@ -56,8 +56,8 @@ if (isset($_POST['Series']) && $_POST['Series'] != "") {
 }
 
 // Filtrar cliente
-if (isset($_POST['Cliente2']) && ($_POST['Cliente2'] != "")) {
-    $Filtro .= " AND ID_CodigoCliente='" . $_POST['Cliente2'] . "'";
+if (isset($_POST['ClienteSLS']) && ($_POST['ClienteSLS'] != "")) {
+    $Filtro .= " AND ID_CodigoCliente='" . $_POST['ClienteSLS'] . "'";
 }
 
 // Filtrar sucursal
@@ -100,7 +100,7 @@ echo $dataString;
 
 <!--?php /* -->
 <!-- Devolver respuesta como tabla -->
-<table id="footable2" class="table" data-paging="true" data-sorting="true">
+<table id="footableSLS" class="table" data-paging="true" data-sorting="true">
     <thead>
         <tr>
             <th>Fecha creación</th>

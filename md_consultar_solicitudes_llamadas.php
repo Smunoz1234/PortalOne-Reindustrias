@@ -26,17 +26,17 @@ $Filtro .= " AND [IdSeries] IN (" . $FilSerie . ")";
 $SQL_SeriesLlamada = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 
 // Filtrar cliente y sucursales
-$ID_CodigoCliente2 = "";
+$ID_CodigoClienteSLS = "";
 if (($edit == 1) || ($sw_error == 1)) {
-	$ID_CodigoCliente2 = $row['CardCode'];
+	$ID_CodigoClienteSLS = $row['CardCode'] ?? "";
 } elseif ((isset($dt_LS) && ($dt_LS == 1)) || (isset($dt_OV) && ($dt_OV == 1)) || (isset($dt_ET) && ($dt_ET == 1))) {
-	$ID_CodigoCliente2 = $row_Cliente['CodigoCliente'];
+	$ID_CodigoClienteSLS = $row_Cliente['CodigoCliente'];
 }
 
-if ($ID_CodigoCliente2 != "") {
-	$Filtro .= " AND ID_CodigoCliente = '$ID_CodigoCliente2'";
+if ($ID_CodigoClienteSLS != "") {
+	$Filtro .= " AND ID_CodigoCliente = '$ID_CodigoClienteSLS'";
 
-	$Where = "CodigoCliente = '$ID_CodigoCliente2'";
+	$Where = "CodigoCliente = '$ID_CodigoClienteSLS'";
 	$SQL_ClienteLlamada = Seleccionar("uvw_Sap_tbl_SociosNegocios", "NombreCliente", $Where);
 	$row_ClienteLlamada = sqlsrv_fetch_array($SQL_ClienteLlamada);
 	// var_dump($row_ClienteLlamada);
@@ -83,20 +83,20 @@ $SQL_SolicitudesLlamadas = Seleccionar('uvw_tbl_SolicitudLlamadasServicios', 'TO
 									<label class="col-lg-1 control-label">Fechas</label>
 									<div class="col-lg-5">
 										<div class="input-daterange input-group" id="datepicker">
-											<input name="FechaInicial" autocomplete="off" type="text"
-												class="input-sm form-control" id="FechaInicial"
+											<input name="FechaInicialSLS" autocomplete="off" type="text"
+												class="input-sm form-control" id="FechaInicialSLS"
 												placeholder="Fecha inicial" value="<?php echo $FechaInicial; ?>" />
 											<span class="input-group-addon">hasta</span>
-											<input name="FechaFinal" autocomplete="off" type="text"
-												class="input-sm form-control" id="FechaFinal" placeholder="Fecha final"
+											<input name="FechaFinalSLS" autocomplete="off" type="text"
+												class="input-sm form-control" id="FechaFinalSLS" placeholder="Fecha final"
 												value="<?php echo $FechaFinal; ?>" />
 										</div>
 									</div>
 									<label class="col-lg-1 control-label">Cliente</label>
 									<div class="col-lg-5">
-										<input name="Cliente2" type="hidden" id="Cliente2"
-											value="<?php echo $ID_CodigoCliente2 ?? ''; ?>">
-										<input name="NombreCliente2" type="text" class="form-control" id="NombreCliente2"
+										<input name="ClienteSLS" type="hidden" id="ClienteSLS"
+											value="<?php echo $ID_CodigoClienteSLS ?? ''; ?>">
+										<input name="NombreClienteSLS" type="text" class="form-control" id="NombreClienteSLS"
 											placeholder="Para TODOS, dejar vacio..."
 											value="<?php echo $row_ClienteLlamada['NombreCliente'] ?? ''; ?>">
 									</div>
@@ -151,8 +151,8 @@ $SQL_SolicitudesLlamadas = Seleccionar('uvw_tbl_SolicitudLlamadasServicios', 'TO
 				<div class="row">
 					<div class="col-lg-12">
 						<div class="ibox-content">
-							<div class="table-responsive" id="tableContainer2">
-								<table id="footable2" class="table" data-paging="true" data-sorting="true">
+							<div class="table-responsive" id="tableContainerSLS">
+								<table id="footableSLS" class="table" data-paging="true" data-sorting="true">
 									<thead>
 										<tr>
 											<th>Fecha creación</th>
@@ -256,20 +256,20 @@ $SQL_SolicitudesLlamadas = Seleccionar('uvw_tbl_SolicitudLlamadasServicios', 'TO
 	}
 
 	$(document).ready(function () {
-		$('#footable2').footable();
+		$('#footableSLS').footable();
 
 		// Inicio, cambio asincrono de sucursal en base al cliente.
-		$("#NombreCliente2").on("change", function () {
-			let NomCliente2 = document.getElementById("NombreCliente2");
+		$("#NombreClienteSLS").on("change", function () {
+			let NomCliente2 = document.getElementById("NombreClienteSLS");
 			
 			if (NomCliente2.value == "") {
-				$("#Cliente2").val("");
-				$("#Cliente2").trigger("change");
+				$("#ClienteSLS").val("");
+				$("#ClienteSLS").trigger("change");
 			}
 		});
 
-		$("#Cliente2").change(function () {
-			let Cliente2 = document.getElementById("Cliente2").value;
+		$("#ClienteSLS").change(function () {
+			let Cliente2 = document.getElementById("ClienteSLS").value;
 
 			$.ajax({
 				type: "POST",
@@ -305,8 +305,8 @@ $SQL_SolicitudesLlamadas = Seleccionar('uvw_tbl_SolicitudLlamadasServicios', 'TO
 					success: function (response) {
 						// console.log("Line 310", response);
 
-						$("#tableContainer2").html(response);
-						$('#footable2').footable();
+						$("#tableContainerSLS").html(response);
+						$('#footableSLS').footable();
 
 						$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
 					},
@@ -319,7 +319,7 @@ $SQL_SolicitudesLlamadas = Seleccionar('uvw_tbl_SolicitudLlamadasServicios', 'TO
 				// Fin, AJAX
 			}
 		});
-		$('#FechaInicial').datepicker({
+		$('#FechaInicialSLS').datepicker({
 			todayBtn: "linked",
 			keyboardNavigation: false,
 			forceParse: false,
@@ -328,7 +328,7 @@ $SQL_SolicitudesLlamadas = Seleccionar('uvw_tbl_SolicitudLlamadasServicios', 'TO
 			todayHighlight: true,
 			format: 'yyyy-mm-dd'
 		});
-		$('#FechaFinal').datepicker({
+		$('#FechaFinalSLS').datepicker({
 			todayBtn: "linked",
 			keyboardNavigation: false,
 			forceParse: false,
@@ -352,11 +352,11 @@ $SQL_SolicitudesLlamadas = Seleccionar('uvw_tbl_SolicitudLlamadasServicios', 'TO
 					enabled: true
 				},
 				onClickEvent: function () {
-					var value = $("#NombreCliente2").getSelectedItemData().CodigoCliente;
-					$("#Cliente2").val(value).trigger("change");
+					var value = $("#NombreClienteSLS").getSelectedItemData().CodigoCliente;
+					$("#ClienteSLS").val(value).trigger("change");
 				}
 			}
 		};
-		$("#NombreCliente2").easyAutocomplete(options);
+		$("#NombreClienteSLS").easyAutocomplete(options);
 	});
 </script>
