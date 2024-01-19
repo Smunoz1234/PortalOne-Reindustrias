@@ -12,14 +12,14 @@ Sucursal: "CHINCHINA"
  */
 
 // Filtrar fechas
-if (isset($_POST['FechaInicial']) && $_POST['FechaInicial'] != "") {
-    $FechaInicial = $_POST['FechaInicial'];
+if (isset($_POST['FechaInicialOT']) && $_POST['FechaInicialOT'] != "") {
+    $FechaInicial = $_POST['FechaInicialOT'];
 } else {
     $FechaInicial = date('Y-m-d');
 }
 
-if (isset($_POST['FechaFinal']) && $_POST['FechaFinal'] != "") {
-    $FechaFinal = $_POST['FechaFinal'];
+if (isset($_POST['FechaFinalOT']) && $_POST['FechaFinalOT'] != "") {
+    $FechaFinal = $_POST['FechaFinalOT'];
 } else {
     $FechaFinal = date('Y-m-d');
 }
@@ -100,7 +100,7 @@ echo $dataString;
 
 <!--?php /* -->
 <!-- Devolver respuesta como tabla -->
-<table id="footable" class="table" data-paging="true" data-sorting="true">
+<table id="footableOT" class="table" data-paging="true" data-sorting="true">
     <thead>
         <tr>
             <th>Fecha creación</th>

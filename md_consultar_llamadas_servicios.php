@@ -28,7 +28,7 @@ $SQL_SeriesLlamada = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 // Filtrar cliente y sucursales
 $ID_CodigoCliente = "";
 if (($edit == 1) || ($sw_error == 1)) {
-    $ID_CodigoCliente = $row['CardCode'];
+    $ID_CodigoCliente = $row['CardCode'] ?? "";
 } elseif ((isset($dt_LS) && ($dt_LS == 1)) || (isset($dt_OV) && ($dt_OV == 1)) || (isset($dt_ET) && ($dt_ET == 1))) {
     $ID_CodigoCliente = $row_Cliente['CodigoCliente'] ?? "";
 }
@@ -72,7 +72,7 @@ $SQL_Llamadas = Seleccionar('uvw_Sap_tbl_LlamadasServicios', 'TOP 100 *', $Where
 				<div class="row">
 					<div class="col-lg-12">
 						<div class="ibox-content">
-							<form id="formBuscar" class="form-horizontal">
+							<form id="formBuscarOT" class="form-horizontal">
 								<div class="form-group">
 									<label class="col-xs-12"><h3 class="bg-success p-xs b-r-sm"><i class="fa fa-filter"></i> Datos para filtrar</h3></label>
 								</div>
@@ -80,9 +80,9 @@ $SQL_Llamadas = Seleccionar('uvw_Sap_tbl_LlamadasServicios', 'TOP 100 *', $Where
 									<label class="col-lg-1 control-label">Fechas</label>
 									<div class="col-lg-5">
 										<div class="input-daterange input-group" id="datepicker">
-											<input name="FechaInicial" autocomplete="off" type="text" class="input-sm form-control" id="FechaInicial" placeholder="Fecha inicial" value="<?php echo $FechaInicial; ?>"/>
+											<input name="FechaInicialOT" autocomplete="off" type="text" class="input-sm form-control" id="FechaInicialOT" placeholder="Fecha inicial" value="<?php echo $FechaInicial; ?>"/>
 											<span class="input-group-addon">hasta</span>
-											<input name="FechaFinal" autocomplete="off" type="text" class="input-sm form-control" id="FechaFinal" placeholder="Fecha final" value="<?php echo $FechaFinal; ?>" />
+											<input name="FechaFinalOT" autocomplete="off" type="text" class="input-sm form-control" id="FechaFinalOT" placeholder="Fecha final" value="<?php echo $FechaFinal; ?>" />
 										</div>
 									</div>
 									<label class="col-lg-1 control-label">Cliente</label>
@@ -135,8 +135,8 @@ $SQL_Llamadas = Seleccionar('uvw_Sap_tbl_LlamadasServicios', 'TOP 100 *', $Where
 				<div class="row">
 					<div class="col-lg-12">
 						<div class="ibox-content">
-							<div class="table-responsive" id="tableContainer">
-								<table id="footable" class="table" data-paging="true" data-sorting="true">
+							<div class="table-responsive" id="tableContainerOT">
+								<table id="footableOT" class="table" data-paging="true" data-sorting="true">
 									<thead>
 										<tr>
 											<th>Fecha creación</th>
@@ -208,7 +208,7 @@ function cambiarOT(orden_trabajo, descripcion_ot){
 
 
 $(document).ready(function(){
-	$('#footable').footable();
+	$('#footableOT').footable();
 
 	// Inicio, cambio asincrono de sucursal en base al cliente.
 	$("#NombreCliente").on("change", function() {
@@ -234,12 +234,12 @@ $(document).ready(function(){
 	});
 	// Fin, cambio asincrono de sucursal en base al cliente.
 
-	$('#formBuscar').on('submit', function (event) {
+	$('#formBuscarOT').on('submit', function (event) {
 		// Stiven Muñoz Murillo, 04/08/2022
 		event.preventDefault();
 	});
 
-	$("#formBuscar").validate({
+	$("#formBuscarOT").validate({
 		submitHandler: function(form){
 			$('.ibox-content').toggleClass('sk-loading');
 
@@ -258,8 +258,8 @@ $(document).ready(function(){
 				success: function(response) {
 					// console.log("Line 260", response);
 
-					$("#tableContainer").html(response);
-					$('#footable').footable();
+					$("#tableContainerOT").html(response);
+					$('#footableOT').footable();
 
 					$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
 				},
@@ -272,7 +272,7 @@ $(document).ready(function(){
 			// Fin, AJAX
 		}
 	});
-	$('#FechaInicial').datepicker({
+	$('#FechaInicialOT').datepicker({
 		todayBtn: "linked",
 		keyboardNavigation: false,
 		forceParse: false,
@@ -281,7 +281,7 @@ $(document).ready(function(){
 		todayHighlight: true,
 		format: 'yyyy-mm-dd'
 	});
-	$('#FechaFinal').datepicker({
+	$('#FechaFinalOT').datepicker({
 		todayBtn: "linked",
 		keyboardNavigation: false,
 		forceParse: false,
