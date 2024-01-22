@@ -312,8 +312,8 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_OVenUpd"))) {
 			    <div class="ibox-content">
 					 <?php include "includes/spinner.php";?>
 			<div class="table-responsive">
-                    <table class="table table-striped table-bordered table-hover dataTables-example" >
-                    <thead>
+                <table class="table table-striped table-bordered table-hover dataTables-example" >
+					<thead>
                     <tr>
                         <th>Número</th>
 						<th>Serie</th>
@@ -331,50 +331,51 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_OVenUpd"))) {
                     </tr>
                     </thead>
                     <tbody>
-                    <?php
-if ($sw == 1) {
-    while ($row = sqlsrv_fetch_array($SQL)) {?>
-						 <tr class="gradeX">
-							<td><?php echo $row['DocNum']; ?></td>
-							<td><?php echo $row['DeSeries']; ?></td>
-							<td><?php echo $row['DocDate']; ?></td>
-							<td><?php echo $row['NombreCliente']; ?></td>
-							<td><?php echo $row['Comentarios']; ?></td>
-							<td><?php echo $row['NombreEmpleadoVentas']; ?></td>
-							<td><?php echo $row['TipoVenta']; ?></td>
-							<td><?php echo $row['UsuarioAutoriza']; ?></td>
-							<td><?php if ($row['ID_LlamadaServicio'] != 0) {?><a href="llamada_servicio.php?id=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('consultar_orden_venta.php'); ?>&tl=1" target="_blank"><?php echo $row['DocNumLlamadaServicio']; ?></a><?php } else {echo "--";}?></td>
-							<td><?php if ($row['DocDestinoDocEntry'] != "") {?><a href="entrega_venta.php?id=<?php echo base64_encode($row['DocDestinoDocEntry']); ?>&id_portal=<?php echo base64_encode($row['DocDestinoIdPortal']); ?>&tl=1" target="_blank"><?php echo $row['DocDestinoDocNum']; ?></a><?php } else {echo "--";}?></td>
-							<td><?php echo $row['UsuarioCreacion']; ?></td>
-							<td><span <?php if ($row['Cod_Estado'] == 'O') {echo "class='label label-info'";} else {echo "class='label label-danger'";}?>><?php echo $row['NombreEstado']; ?></span></td>
-							<td>
-								<a href="orden_venta.php?id=<?php echo base64_encode($row['ID_OrdenVenta']); ?>&id_portal=<?php echo base64_encode($row['IdDocPortal']); ?>&tl=1&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('consultar_orden_venta.php'); ?>" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i> Abrir</a> 
+                    
+					<?php if ($sw == 1) { ?>
+    					<?php while ($row = sqlsrv_fetch_array($SQL)) {?>
+							<tr class="gradeX">
+								<td><?php echo $row['DocNum']; ?></td>
+								<td><?php echo $row['DeSeries']; ?></td>
+								<td><?php echo $row['DocDate']; ?></td>
+								<td><?php echo $row['NombreCliente']; ?></td>
+								<td><?php echo $row['Comentarios']; ?></td>
+								<td><?php echo $row['NombreEmpleadoVentas']; ?></td>
+								<td><?php echo $row['TipoVenta']; ?></td>
+								<td><?php echo $row['UsuarioAutoriza']; ?></td>
+								<td><?php if ($row['ID_LlamadaServicio'] != 0) {?><a href="llamada_servicio.php?id=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('consultar_orden_venta.php'); ?>&tl=1" target="_blank"><?php echo $row['DocNumLlamadaServicio']; ?></a><?php } else {echo "--";}?></td>
+								<td><?php if ($row['DocDestinoDocEntry'] != "") {?><a href="entrega_venta.php?id=<?php echo base64_encode($row['DocDestinoDocEntry']); ?>&id_portal=<?php echo base64_encode($row['DocDestinoIdPortal']); ?>&tl=1" target="_blank"><?php echo $row['DocDestinoDocNum']; ?></a><?php } else {echo "--";}?></td>
+								<td><?php echo $row['UsuarioCreacion']; ?></td>
+								<td><span <?php if ($row['Cod_Estado'] == 'O') {echo "class='label label-info'";} else {echo "class='label label-danger'";}?>><?php echo $row['NombreEstado']; ?></span></td>
+								<td>
+									<a href="orden_venta.php?id=<?php echo base64_encode($row['ID_OrdenVenta']); ?>&id_portal=<?php echo base64_encode($row['IdDocPortal']); ?>&tl=1&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('consultar_orden_venta.php'); ?>" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i> Abrir</a> 
 
-								<!-- SMM, 06/10/2022 -->
-								<div class="btn-group">
-									<button data-toggle="dropdown"
-										class="btn btn-outline btn-primary btn-xs dropdown-toggle"><i
-											class="fa fa-download"></i> Descargar formato <i
-											class="fa fa-caret-down"></i></button>
-									<ul class="dropdown-menu">
-										<?php $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=17 AND (IdFormato='" . $row['IdSeries'] . "' OR DeSeries IS NULL) AND VerEnDocumento='Y' AND (EsBorrador='N' OR EsBorrador IS NULL)"); ?>
-										<?php while ($row_Formato = sqlsrv_fetch_array($SQL_Formato)) { ?>
-											<li>
-												<a class="dropdown-item" target="_blank"
-													href="formatdownload.php?DocKey=<?php echo $row['DocEntry']; ?>&ObType=<?php echo $row_Formato['ID_Objeto']; ?>&IdFrm=<?php echo $row_Formato['IdFormato']; ?>&IdReg=<?php echo $row_Formato['ID']; ?>">
-													<?php echo $row_Formato['NombreVisualizar']; ?>
-												</a>
-											</li>
-										<?php } ?>
-									</ul>
-								</div>
-								<!-- Hasta aquí, 06/10/2022 -->
-							</td>
-						</tr>
-					<?php }
-}?>
+									<!-- SMM, 06/10/2022 -->
+									<div class="btn-group">
+										<button data-toggle="dropdown"
+											class="btn btn-outline btn-primary btn-xs dropdown-toggle"><i
+												class="fa fa-download"></i> Descargar formato <i
+												class="fa fa-caret-down"></i></button>
+										<ul class="dropdown-menu">
+											<?php $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=17 AND (IdFormato='" . $row['IdSeries'] . "' OR DeSeries IS NULL) AND VerEnDocumento='Y' AND (EsBorrador='N' OR EsBorrador IS NULL)"); ?>
+											<?php while ($row_Formato = sqlsrv_fetch_array($SQL_Formato)) { ?>
+												<li>
+													<a class="dropdown-item" target="_blank"
+														href="formatdownload.php?DocKey=<?php echo $row['DocEntry']; ?>&ObType=<?php echo $row_Formato['ID_Objeto']; ?>&IdFrm=<?php echo $row_Formato['IdFormato']; ?>&IdReg=<?php echo $row_Formato['ID']; ?>">
+														<?php echo $row_Formato['NombreVisualizar']; ?>
+													</a>
+												</li>
+											<?php } ?>
+										</ul>
+									</div>
+									<!-- Hasta aquí, 06/10/2022 -->
+								</td>
+							</tr>
+						<?php } ?>
+					<?php }?>
+
                     </tbody>
-                    </table>
+				</table>
               </div>
 			</div>
 			 </div>
