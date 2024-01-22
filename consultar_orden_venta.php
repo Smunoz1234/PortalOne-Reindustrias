@@ -462,7 +462,7 @@ $SQL = sqlsrv_query($conexion, $Cons);
 																<?php while ($row_Formato = sqlsrv_fetch_array($SQL_Formato)) { ?>
 																	<li>
 																		<a class="dropdown-item" target="_blank"
-																			href="formatdownload.php?DocKey=<?php echo $row['DocEntry']; ?>&ObType=<?php echo $row_Formato['ID_Objeto']; ?>&IdFrm=<?php echo $row_Formato['IdFormato']; ?>&IdReg=<?php echo $row_Formato['ID']; ?>">
+																			href="formatdownload.php?DocKey=<?php echo $row['ID_OrdenVenta'] ?? ""; ?>&ObType=<?php echo $row_Formato['ID_Objeto'] ?? ""; ?>&IdFrm=<?php echo $row_Formato['IdFormato'] ?? ""; ?>&IdReg=<?php echo $row_Formato['ID'] ?? ""; ?>">
 																			<?php echo $row_Formato['NombreVisualizar']; ?>
 																		</a>
 																	</li>
