@@ -1,7 +1,7 @@
 <?php
 if ((isset($_POST['id']) && $_POST['id'] != "") || (isset($_GET['id']) && $_GET['id'] != "")) {
 	require_once("includes/conexion.php");
-	require_once("includes/conect_ws_rep.php");
+	require_once("includes/conect_ws_rep_new.php");
 
 	if (isset($_POST['id']) && $_POST['id'] != "") {
 		$ID = base64_decode($_POST['id']);
@@ -49,88 +49,7 @@ if ((isset($_POST['id']) && $_POST['id'] != "") || (isset($_GET['id']) && $_GET[
 		if ($Type == 2) { //Layouts de SAP B1
 			if ($ID == 15) { //Formatos SAP B1
 				if ($ZipMode == 1) { //Comprimir los archivos descargados
-
-					//					$Facts=explode("[*]",$_GET['DocKey']);//Lista de los números de las facturas.
-//					$IdSeries=explode("[*]",$_GET['IdFrm']);//Lista de las series de las facturas
-//					$Files=array();//Donde se almacenan los archivos generados, los cuales se van a comprimir.
-
-					//Leer los archivos, los cuales se pasan por JSON
-					$json = ($_REQUEST['file']);
-					$archivos = json_decode($json, true);
-					$Files = array(); //Donde se almacenan los archivos generados, los cuales se van a comprimir.
-
-					$Count = count($archivos);
-					$i = 0;
-					while ($i < $Count) {
-						$Parametros = array(
-							'pIdObjeto' => $archivos[$i]['Obj'], //Código del objeto
-							'pIdFormato' => $archivos[$i]['Serie'], //Id del formato o la serie, en la misma poscicion que la de la factura
-							'pDockey' => $archivos[$i]['Num'],
-							'pID' => (isset($_REQUEST['idreg'])) ? base64_decode($_REQUEST['idreg']) : '',
-							'pUsuario' => $_SESSION['User']
-						);
-
-						//						print_r($Parametros);
-//						exit();
-
-						$result = $Client->FormatoSAPB1($Parametros);
-						if (is_soap_fault($result)) {
-							trigger_error("Fallo IntSAPB1: (Codigo: {$result->faultcode}, Mensaje: {$result->faultstring})", E_USER_ERROR);
-						}
-
-						$Respuesta = $Client->__getLastResponse();
-
-						$Contenido = new SimpleXMLElement($Respuesta, 0, false, "s", true);
-
-						$espaciosDeNombres = $Contenido->getNamespaces(true);
-						$Nodos = $Contenido->children($espaciosDeNombres['s']);
-						$Nodo = $Nodos->children($espaciosDeNombres['']);
-						$Nodo2 = $Nodo->children($espaciosDeNombres['']);
-						//echo $Nodo2[0];
-						try {
-							$Archivo = json_decode($Nodo2[0], true);
-							//$Archivo=explode("#",$Nodo2[0]);
-							if ($Archivo['ID_Respuesta'] == "0") {
-								//InsertarLog(1, 0, 'Error al generar el informe');
-								throw new Exception('Error al generar el informe. Error de WebServices');
-							}
-						} catch (Exception $e) {
-							echo 'Excepción capturada: ', $e->getMessage(), "\n";
-							InsertarLog(1, 501, 'Excepción capturada: ' . $e->getMessage()); //501, cod de SAP Download
-						}
-						$Files[$i] = $Archivo['DE_Respuesta'];
-
-						if (SO == "Linux") { //Copiar los archivos a la ruta local para comprimirlos localmente
-							if (!copy($SrvRuta . $Archivo['DE_Respuesta'], $RutaLocal . $Archivo['DE_Respuesta'])) {
-								exit('No se pudo copiar el archivo ' . $Archivo['DE_Respuesta']);
-							}
-						}
-						$i++;
-					}
-
-					//Crear archivo ZIP e insertar los archivos
-					$zip = new ZipArchive();
-					$zipName = date('YmdHi') . "_" . $_SESSION['CodUser'] . ".zip";
-					$filezip = $RutaLocal . $zipName;
-					//echo $filezip;
-					//exit();
-
-					if ($zip->open($filezip, ZIPARCHIVE::CREATE) === TRUE) {
-						$Count = count($Files);
-						$i = 0;
-						//$zip->close();
-						while ($i < $Count) {
-							$zip->addFile($RutaLocal . $Files[$i], $Files[$i]);
-							//echo "Se agregó: ".$SrvRuta.$Files[$i]."\n";
-							$i++;
-						}
-						//exit();
-						$zip->close();
-						$Archivo['DE_Respuesta'] = $zipName;
-					} else {
-						exit("No se puede abrir el archivo $filezip\n");
-					}
-
+					// Se elimino el contenido proveniente de sapdownload.php
 				} else {
 					$Parametros = array(
 						'pIdObjeto' => base64_decode($_REQUEST['ObType']), //Codigo del objeto
@@ -143,7 +62,7 @@ if ((isset($_POST['id']) && $_POST['id'] != "") || (isset($_GET['id']) && $_GET[
 					// print_r($Parametros);
 					// exit();
 
-					$result = $Client->CrearFormatoSAP($Parametros);
+					$result = $Client->FormatoSAPB1($Parametros);
 					if (is_soap_fault($result)) {
 						trigger_error("Fallo IntSAPB1: (Codigo: {$result->faultcode}, Mensaje: {$result->faultstring})", E_USER_ERROR);
 					}

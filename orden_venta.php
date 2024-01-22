@@ -1205,7 +1205,9 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 												<?php while ($row_Formato = sqlsrv_fetch_array($SQL_Formato)) { ?>
 													<li>
 														<a class="dropdown-item" target="_blank"
-															href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row['DocEntry']); ?>&ObType=<?php echo base64_encode($row_Formato['ID_Objeto']); ?>&IdFrm=<?php echo base64_encode($row_Formato['IdFormato']); ?>&IdReg=<?php echo base64_encode($row_Formato['ID']); ?>"><?php echo $row_Formato['NombreVisualizar']; ?></a>
+															href="formatdownload.php?DocKey=<?php echo $row['DocEntry']; ?>&ObType=<?php echo $row_Formato['ID_Objeto']; ?>&IdFrm=<?php echo $row_Formato['IdFormato']; ?>&IdReg=<?php echo $row_Formato['ID']; ?>">
+															<?php echo $row_Formato['NombreVisualizar']; ?>
+														</a>
 													</li>
 												<?php } ?>
 											</ul>
