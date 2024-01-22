@@ -238,7 +238,7 @@ $SQL = sqlsrv_query($conexion, $Cons);
 											<option value="">(Todos)</option>
 											<?php while ($row_Estado = sqlsrv_fetch_array($SQL_Estado)) { ?>
 												<option value="<?php echo $row_Estado['Cod_Estado']; ?>" <?php if ((isset($_GET['Estado'])) && (strcmp($row_Estado['Cod_Estado'], $_GET['Estado']) == 0)) {
-													   echo "selected=\"selected\"";
+													   echo "selected";
 												   } ?>>
 													<?php echo $row_Estado['NombreEstado']; ?>
 												</option>
@@ -251,7 +251,7 @@ $SQL = sqlsrv_query($conexion, $Cons);
 											<option value="">(Todos)</option>
 											<?php while ($row_Series = sqlsrv_fetch_array($SQL_Series)) { ?>
 												<option value="<?php echo $row_Series['IdSeries']; ?>" <?php if ((isset($_GET['Series'])) && (strcmp($row_Series['IdSeries'], $_GET['Series']) == 0)) {
-													   echo "selected=\"selected\"";
+													   echo "selected";
 												   } ?>>
 													<?php echo $row_Series['DeSeries']; ?>
 												</option>
@@ -286,7 +286,7 @@ $SQL = sqlsrv_query($conexion, $Cons);
 											<option value="">(Todos)</option>
 											<?php while ($row_EstadoAuth = sqlsrv_fetch_array($SQL_EstadoAuth)) { ?>
 												<option value="<?php echo $row_EstadoAuth['IdAuth']; ?>" <?php if (isset($_GET['Autorizacion']) && (strcmp($row_EstadoAuth['IdAuth'], $_GET['Autorizacion']) == 0)) {
-													   echo "selected=\"selected\"";
+													   echo "selected";
 												   } ?>>
 													<?php echo $row_EstadoAuth['DeAuth']; ?>
 												</option>
@@ -301,7 +301,7 @@ $SQL = sqlsrv_query($conexion, $Cons);
 											<option value="">(Todos)</option>
 											<?php while ($row_EmpleadosVentas = sqlsrv_fetch_array($SQL_EmpleadosVentas)) { ?>
 												<option value="<?php echo $row_EmpleadosVentas['ID_EmpVentas']; ?>" <?php if ((isset($_GET['EmpleadoVentas'])) && (strcmp($row_EmpleadosVentas['ID_EmpVentas'], $_GET['EmpleadoVentas']) == 0)) {
-													   echo "selected=\"selected\"";
+													   echo "selected";
 												   } ?>>
 													<?php echo $row_EmpleadosVentas['DE_EmpVentas']; ?>
 												</option>
@@ -333,11 +333,11 @@ $SQL = sqlsrv_query($conexion, $Cons);
 										<select name="TipoVenta" class="form-control" id="TipoVenta">
 											<option value="">(Todos)</option>
 											<option value="0" <?php if (isset($_GET['TipoVenta']) && $_GET['TipoVenta'] == '0') {
-												echo "selected=\"selected\"";
+												echo "selected";
 											} ?>>PRODUCTOS
 											</option>
 											<option value="1" <?php if (isset($_GET['TipoVenta']) && $_GET['TipoVenta'] == '1') {
-												echo "selected=\"selected\"";
+												echo "selected";
 											} ?>>SERVICIOS
 											</option>
 										</select>
