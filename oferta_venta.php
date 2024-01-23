@@ -919,7 +919,7 @@ if ((isset($row['CodEmpleado']) && ($row['CodEmpleado'] == $_SESSION['IdCardCode
 							<div class="form-group">
 								<div class="col-lg-6">
 									<?php if ($edit == 1) { ?>
-										<!-- SMM, 06/10/2022 -->
+										<!-- SMM, 23/01/2024 -->
 										<div class="btn-group">
 											<button data-toggle="dropdown"
 												class="btn btn-outline btn-success dropdown-toggle"><i
@@ -930,12 +930,14 @@ if ((isset($row['CodEmpleado']) && ($row['CodEmpleado'] == $_SESSION['IdCardCode
 												<?php while ($row_Formato = sqlsrv_fetch_array($SQL_Formato)) { ?>
 													<li>
 														<a class="dropdown-item" target="_blank"
-															href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row['DocEntry']); ?>&ObType=<?php echo base64_encode($row_Formato['ID_Objeto']); ?>&IdFrm=<?php echo base64_encode($row_Formato['IdFormato']); ?>"><?php echo $row_Formato['NombreVisualizar']; ?></a>
+															href="formatdownload.php?DocKey=<?php echo $row['DocEntry'] ?? ""; ?>&ObType=<?php echo $row_Formato['ID_Objeto'] ?? ""; ?>&IdFrm=<?php echo $row_Formato['IdFormato'] ?? ""; ?>&IdReg=<?php echo $row_Formato['ID'] ?? ""; ?>">
+															<?php echo $row_Formato['NombreVisualizar'] ?? ""; ?>
+														</a>
 													</li>
 												<?php } ?>
 											</ul>
 										</div>
-										<!-- Hasta aquí, 06/10/2022 -->
+										<!-- Hasta aquí, 23/01/2024 -->
 
 										<a href="#" class="btn btn-outline btn-info"
 											onClick="VerMapaRel('<?php echo base64_encode($row['DocEntry']); ?>','<?php echo base64_encode('23'); ?>');"><i
