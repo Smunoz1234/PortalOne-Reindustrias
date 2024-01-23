@@ -60,7 +60,8 @@ $Result = DescargarFormato($Parametros);
 
 // Validación de respuesta de la API.
 if ($Result->Success !== 1) {
-	echo $Result->Mensaje;
+	$error_msg = $Result->Mensaje;
+	echo "Mensaje: $error_msg";
 	exit();
 } else {
 	// Ruta local de archivos de SAP.
