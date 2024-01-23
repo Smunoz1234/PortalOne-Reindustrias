@@ -1481,17 +1481,16 @@ function ConsultarDocVentas(tipo){
 														<table class="table table-striped table-bordered table-hover dataTables-example">
 															<thead>
 																<tr>
-																	<th>Número de llamada</th>
+																	<th>Número</th>
 																	<th>Estado</th>
-																	<th>Artículos/Costos</th>
-																	<th>Fecha de apertura llamada</th>
-																	<th>Origen</th> <!-- SMM, 03/09/2022 -->
+																	<th>Fecha Inicio Solicitud</th>
+																	<th>Origen</th>
 																	<th>Tipo Problema</th>
-																	<th>Subtipo Problema</th> <!-- SMM, 03/09/2022 -->
+																	<th>Subtipo Problema</th>
 																	<th>Asunto</th>
-																	<th>Número de artículo</th>
-																	<th>Número de serie</th>
-																	<th>Nombre del cliente</th>
+																	<th>Número Artículo</th>
+																	<th>Estado Servicio</th>
+																	<th>Nombre Cliente</th>
 																</tr>
 															</thead>
 															<tbody>
@@ -1499,40 +1498,54 @@ function ConsultarDocVentas(tipo){
 																while ($row_Agenda = sqlsrv_fetch_array($SQL_Agenda)) { ?>
 																			<tr class="gradeX">
 																				<td class="text-left">
-																					<a href="llamada_servicio.php?id=<?php echo base64_encode($row_Agenda['ID_Agenda']); ?>&tl=1&pag=<?php echo base64_encode('gestionar_llamadas_servicios.php'); ?>" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i>
-																						<?php echo $row_Agenda['DocNum']; ?>
+																					<a href="solcitud_llamada.php?id=<?php echo base64_encode($row_Agenda["ID_SolicitudLlamadaServicio"]); ?>&tl=1&pag=<?php echo base64_encode('gestionar_solicitudes_llamadas.php'); ?>" class="alkin btn btn-success btn-xs">
+																						<i class="fa fa-folder-open-o"></i> <?php echo $row_Agenda["ID_SolicitudLlamadaServicio"]; ?>
 																					</a>
 																				</td>
 
 																				<td>
-																					<span <?php if ($row_Agenda['IdEstadoLlamada'] == '-3') {
-																						echo "class='label label-info'";
-																					} elseif ($row_Agenda['IdEstadoLlamada'] == '-2') {
-																						echo "class='label label-warning'";
-																					} else {
-																						echo "class='label label-danger'";
-																					} ?>>
-																						<?php echo $row_Agenda['DeEstadoLlamada']; ?>
+																					<span class="label <?php if ($row["IdEstadoLlamada"] == -3) {
+																							echo "label-primary";
+																						} else {
+																							echo "label-danger";
+																						} ?>">
+																						<?php echo $row_Agenda["NombreEstado"] ?? ""; ?>
 																					</span>
 																				</td>
 
 																				<td>
-																					<a class="btn btn-primary btn-xs" id="btnPreCostos" name="btnPreCostos" onClick="MostrarCostos('<?php echo $row_Agenda['ID_Agenda']; ?>');"><i class="fa fa-money"></i> Precios</a>
-																					<a style="margin: 5px;" class="btn btn-success btn-xs" id="btnPreAutorizados" name="btnPreAutorizados" onClick="MostrarAutorizados('<?php echo $row_Agenda['ID_Agenda']; ?>');"><i class="fa fa-wrench"></i> Autorizaciones</a>
+																					<?php echo $row_Agenda["FechaHoraInicioSolicitud"]->format('Y-m-d H:i:s'); ?>
 																				</td>
-																				<td><?php echo $row_Agenda['FechaHoraCreacionLLamada']->format('Y-m-d H:i:s'); ?></td>
 
-																				<td><?php echo $row_Agenda["DeOrigenLlamada"]; ?></td>
+																				<td>
+																					<?php echo $row_Agenda["DeOrigenSolicitudLlamada"] ?? ""; ?>
+																				</td>
 
-																				<td><?php echo $row_Agenda['DeTipoProblemaLlamada']; ?></td>
+																				<td>
+																					<?php echo $row_Agenda["DeTipoProblemaSolicitudLlamada"] ?? ""; ?>
+																				</td>
 
-																				<td><?php echo $row_Agenda["DeSubTipoProblemaLlamada"]; ?></td>
+																				<td>
+																					<?php echo $row_Agenda["DeSubTipoProblemaSolicitudLlamada"] ?? ""; ?>
+																				</td>
 
-																				<td><?php echo $row_Agenda['AsuntoLlamada']; ?></td>
-																				<td><?php echo $row_Agenda['ItemCode']; ?></td>
-																				<td><?php echo $row_Agenda['SerialFabricante']; ?></td>
-																				<td><?php echo $row_Agenda['CardName']; ?></td>
+																				<td>
+																					<?php echo $row_Agenda["AsuntoSolicitudLlamada"] ?? ""; ?>
+																				</td>
 
+																				<td>
+																					<?php echo $row_Agenda["ItemCode"] ?? ""; ?>
+																				</td>
+																				
+																				<td>
+																					<span class="label" style="color: white; background-color: <?php echo $row_Agenda["ColorEstadoServicioLlamada"] ?? ""; ?>;">
+																						<?php echo $row_Agenda["DeEstadoServicio"] ?? ""; ?>
+																					</span>
+																				</td>
+																				
+																				<td>
+																					<?php echo $row_Agenda["NombreCliente"] ?? ""; ?>
+																				</td>
 																			</tr>
 																<?php } ?>
 															</tbody>
