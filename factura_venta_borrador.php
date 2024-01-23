@@ -1059,19 +1059,25 @@ function MostrarRet(){
 					</div>
 					<div class="form-group">
 						<div class="col-lg-6">
-							<!-- SMM, 26/10/2023 -->
+							<!-- SMM, 23/01/2024 -->
 							<div class="btn-group">
-								<button data-toggle="dropdown" class="btn btn-outline btn-success dropdown-toggle"><i class="fa fa-download"></i> Descargar formato <i class="fa fa-caret-down"></i></button>
+								<button data-toggle="dropdown"
+									class="btn btn-outline btn-success dropdown-toggle"><i
+										class="fa fa-download"></i> Descargar formato <i
+										class="fa fa-caret-down"></i></button>
 								<ul class="dropdown-menu">
-									<?php $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=13 AND (IdFormato='" . $row['IdSeries'] . "' OR DeSeries IS NULL) AND VerEnDocumento='Y' AND EsBorrador='Y'");?>
-									<?php while ($row_Formato = sqlsrv_fetch_array($SQL_Formato)) {?>
+									<?php $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=13 AND (IdFormato='" . $row['IdSeries'] . "' OR DeSeries IS NULL) AND VerEnDocumento='Y' AND EsBorrador='Y'"); ?>
+									<?php while ($row_Formato = sqlsrv_fetch_array($SQL_Formato)) { ?>
 										<li>
-											<a class="dropdown-item" target="_blank" href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row['DocEntry']); ?>&ObType=<?php echo base64_encode($row_Formato['ID_Objeto']); ?>&IdFrm=<?php echo base64_encode($row_Formato['IdFormato']); ?>&IdReg=<?php echo base64_encode($row_Formato['ID']); ?>"><?php echo $row_Formato['NombreVisualizar']; ?></a>
+											<a class="dropdown-item" target="_blank"
+												href="formatdownload.php?DocKey=<?php echo $row['DocEntry'] ?? ""; ?>&ObType=<?php echo $row_Formato['ID_Objeto'] ?? ""; ?>&IdFrm=<?php echo $row_Formato['IdFormato'] ?? ""; ?>&IdReg=<?php echo $row_Formato['ID'] ?? ""; ?>">
+												<?php echo $row_Formato['NombreVisualizar'] ?? ""; ?>
+											</a>
 										</li>
-									<?php }?>
+									<?php } ?>
 								</ul>
 							</div>
-							<!-- Hasta aquí, 26/10/2023 -->
+							<!-- Hasta aquí, 23/01/2024 -->
 
 							<?php if ($row['URLVisorPublico'] != "") {?>
 								<a href="<?php echo $row['URLVisorPublico']; ?>" target="_blank" class="btn btn-outline btn-primary"><i class="fa fa-external-link"></i> Ver Fact. Eléctronica</a>

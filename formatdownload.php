@@ -14,6 +14,10 @@ function DescargarFormato($param, $method = 'GET')
 	$cadenaParametros = implode('/', $param);
 	$apiUrl = $Url . "FormatosSAPB1/$cadenaParametros";
 
+	// Imprime la URL a consultar (útil para depuración)
+	// echo $apiUrl;
+	// exit();
+
 	$curl = curl_init();
 	curl_setopt($curl, CURLOPT_URL, $apiUrl);
 
@@ -33,6 +37,9 @@ function DescargarFormato($param, $method = 'GET')
 	if ($cod_http != 200) {
 		// Ocurrió un error
 		echo "Código $cod_http: ($method)";
+		
+		$error_msg = json_decode($result)->Mensaje;
+		echo "<br>Mensaje: $error_msg";
 		exit();
 	}
 

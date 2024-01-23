@@ -2073,16 +2073,25 @@ function AgregarEsto(contenedorID, valorElemento) {
 										<div class="col-lg-6">
 											<?php if ($edit == 1) { ?>
 													<div class="btn-group">
-														<button data-toggle="dropdown" class="btn btn-outline btn-success dropdown-toggle"><i class="fa fa-download"></i> Descargar formato <i class="fa fa-caret-down"></i></button>
-														<ul class="dropdown-menu">
-															<?php
-															$SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 and (IdFormato='" . $row['Series'] . "' OR DeSeries is null) and VerEnDocumento='Y'");
-															while ($row_Formato = sqlsrv_fetch_array($SQL_Formato)) { ?>
-																			<li>
-																				<a class="dropdown-item" target="_blank" href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&ObType=<?php echo base64_encode('191'); ?>&IdFrm=<?php echo base64_encode($row_Formato['IdFormato']); ?>&IdReg=<?php echo base64_encode($row_Formato['ID']); ?>"><?php echo $row_Formato['NombreVisualizar']; ?></a>
-																			</li>
-														<?php } ?>
-														</ul>
+														<!-- SMM, 23/01/2024 -->
+														<div class="btn-group">
+															<button data-toggle="dropdown"
+																class="btn btn-outline btn-success dropdown-toggle"><i
+																	class="fa fa-download"></i> Descargar formato <i
+																	class="fa fa-caret-down"></i></button>
+															<ul class="dropdown-menu">
+																<?php $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=191 AND (IdFormato='" . $row['Series'] . "' OR DeSeries IS NULL) AND VerEnDocumento='Y'"); ?>
+																<?php while ($row_Formato = sqlsrv_fetch_array($SQL_Formato)) { ?>
+																	<li>
+																		<a class="dropdown-item" target="_blank"
+																			href="formatdownload.php?DocKey=<?php echo $row['ID_LlamadaServicio'] ?? ""; ?>&ObType=<?php echo $row_Formato['ID_Objeto'] ?? ""; ?>&IdFrm=<?php echo $row_Formato['IdFormato'] ?? ""; ?>&IdReg=<?php echo $row_Formato['ID'] ?? ""; ?>">
+																			<?php echo $row_Formato['NombreVisualizar'] ?? ""; ?>
+																		</a>
+																	</li>
+																<?php } ?>
+															</ul>
+														</div>
+														<!-- Hasta aquí, 23/01/2024 -->
 
 														<a href="#" class="btn btn-outline btn-info" onClick="VerMapaRel('<?php echo base64_encode($row['ID_LlamadaServicio']); ?>','<?php echo base64_encode('191'); ?>');"><i class="fa fa-sitemap"></i> Mapa de relaciones</a>
 

@@ -420,20 +420,27 @@ while ($row_EmpleadoActividad = sqlsrv_fetch_array($SQL_EmpleadoActividad)) {?>
 							<td>
 								<a href="actividad.php?id=<?php echo base64_encode($row['ID_Actividad']); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('gestionar_actividades.php'); ?>&tl=1" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i> Abrir</a>
 
-								<!-- Botón de descarga -->
+								<!-- SMM, 23/01/2024 -->
 								<div class="btn-group">
-									<button data-toggle="dropdown" class="btn btn-xs btn-warning dropdown-toggle"><i class="fa fa-download"></i> Descargar formato <i class="fa fa-caret-down"></i></button>
+									<button data-toggle="dropdown"
+										class="btn btn-outline btn-primary btn-xs dropdown-toggle">
+										<i class="fa fa-download"></i> Descargar formato <i class="fa fa-caret-down"></i>
+									</button>
 									<ul class="dropdown-menu">
-										<?php $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=66 and VerEnDocumento='Y'");?>
-										<?php while ($row_Formato = sqlsrv_fetch_array($SQL_Formato)) {?>
+										<?php $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=66 AND VerEnDocumento='Y'"); ?>
+										<?php while ($row_Formato = sqlsrv_fetch_array($SQL_Formato)) { ?>
 											<li>
-												<a class="dropdown-item" target="_blank" href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row['ID_Actividad']); ?>&ObType=<?php echo base64_encode('66'); ?>&IdFrm=<?php echo base64_encode($row_Formato['IdFormato']); ?>&IdReg=<?php echo base64_encode($row_Formato['ID']); ?>"><?php echo $row_Formato['NombreVisualizar']; ?></a>
+												<a class="dropdown-item" target="_blank"
+													href="formatdownload.php?DocKey=<?php echo $row['ID_Actividad'] ?? ""; ?>&ObType=<?php echo $row_Formato['ID_Objeto'] ?? ""; ?>&IdFrm=<?php echo $row_Formato['IdFormato'] ?? ""; ?>&IdReg=<?php echo $row_Formato['ID'] ?? ""; ?>">
+													<?php echo $row_Formato['NombreVisualizar'] ?? ""; ?>
+												</a>
 											</li>
-										<?php }?>
+										<?php } ?>
 									</ul>
 								</div>
-								<!-- SMM, 26/07/2022 -->
+								<!-- Hasta aquí, 23/01/2024 -->
 							</td>
+
 							<td><?php if ($row['Metodo'] == 0) {?><i class="fa fa-check-circle text-info" title="Sincronizado con SAP"></i><?php } else {?><i class="fa fa-times-circle text-danger" title="Error de sincronización con SAP"></i><?php }?></td>
 						</tr>
 					<?php }?>
