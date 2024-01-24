@@ -1667,39 +1667,39 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 									</div>
 								</div>
 
-								<!-- SMM, 16/01/2024 -->
-								<label class="col-lg-1 control-label">
-									Autorización
-									<?php if ((isset($row_Autorizaciones['IdEstadoAutorizacion']) && ($edit == 1)) || ($success == 0) || ($sw_error == 1) || $debug_Condiciones || (isset($row['AuthPortal']) && ($row['AuthPortal'] != "N"))) { ?>
-											<i onClick="verAutorizacion();" title="Ver Autorización" style="cursor: pointer" class="btn-xs btn-success fa fa-eye"></i>
-									<?php } ?>
-								</label>
-								<div class="col-lg-3">
-									<select name="Autorizacion" class="form-control" id="Autorizacion" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
-										echo "disabled";
-									} ?> readonly>
-									<?php while ($row_EstadoAuth = sqlsrv_fetch_array($SQL_EstadoAuth)) { ?>
-												<option value="<?php echo $row_EstadoAuth['IdAuth']; ?>"
-												<?php if (($edit == 1 || $sw_error == 1) && (isset($row['AuthPortal'])) && (strcmp($row_EstadoAuth['IdAuth'], $row['AuthPortal']) == 0)) {
-													echo "selected";
-												} elseif (isset($row_Autorizaciones['IdEstadoAutorizacion']) && ($row_Autorizaciones['IdEstadoAutorizacion'] == 'Y') && ($row_EstadoAuth['IdAuth'] == 'Y')) {
-													echo "selected";
-												} elseif (isset($row_Autorizaciones['IdEstadoAutorizacion']) && ($row_Autorizaciones['IdEstadoAutorizacion'] == 'W') && ($row_EstadoAuth['IdAuth'] == 'P')) {
-													echo "selected";
-												} elseif (($edit == 0 && $sw_error == 0) && ($row_EstadoAuth['IdAuth'] == 'N')) {
-													echo "selected";
-												} ?>>
-													<?php echo $row_EstadoAuth['DeAuth']; ?>
-												</option>
-									<?php } ?>
-									</select>
-								</div>
-								<!-- Hasta aquí, 16/01/2024 -->
+								<div class="form-group">
+									<!-- SMM, 16/01/2024 -->
+									<label class="col-lg-1 control-label">
+										Autorización
+										<?php if ((isset($row_Autorizaciones['IdEstadoAutorizacion']) && ($edit == 1)) || ($success == 0) || ($sw_error == 1) || $debug_Condiciones || (isset($row['AuthPortal']) && ($row['AuthPortal'] != "N"))) { ?>
+												<i onClick="verAutorizacion();" title="Ver Autorización" style="cursor: pointer" class="btn-xs btn-success fa fa-eye"></i>
+										<?php } ?>
+									</label>
+									<div class="col-lg-3">
+										<select name="Autorizacion" class="form-control" id="Autorizacion" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
+											echo "disabled";
+										} ?> readonly>
+										<?php while ($row_EstadoAuth = sqlsrv_fetch_array($SQL_EstadoAuth)) { ?>
+													<option value="<?php echo $row_EstadoAuth['IdAuth']; ?>"
+													<?php if (($edit == 1 || $sw_error == 1) && (isset($row['AuthPortal'])) && (strcmp($row_EstadoAuth['IdAuth'], $row['AuthPortal']) == 0)) {
+														echo "selected";
+													} elseif (isset($row_Autorizaciones['IdEstadoAutorizacion']) && ($row_Autorizaciones['IdEstadoAutorizacion'] == 'Y') && ($row_EstadoAuth['IdAuth'] == 'Y')) {
+														echo "selected";
+													} elseif (isset($row_Autorizaciones['IdEstadoAutorizacion']) && ($row_Autorizaciones['IdEstadoAutorizacion'] == 'W') && ($row_EstadoAuth['IdAuth'] == 'P')) {
+														echo "selected";
+													} elseif (($edit == 0 && $sw_error == 0) && ($row_EstadoAuth['IdAuth'] == 'N')) {
+														echo "selected";
+													} ?>>
+														<?php echo $row_EstadoAuth['DeAuth']; ?>
+													</option>
+										<?php } ?>
+										</select>
+									</div>
+									<!-- Hasta aquí, 16/01/2024 -->
 
 									<!-- Inicio, Proyecto -->
 									<label class="col-lg-1 control-label">Proyecto <span 
 									class="text-danger">*</span></label>
-									
 									<div class="col-lg-3">
 										<select id="PrjCode" name="PrjCode" class="form-control select2" 
 										form="CrearOrdenCompra" required <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
