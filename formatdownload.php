@@ -21,7 +21,8 @@ function DescargarFormato($param, $method = 'GET')
 	$curl = curl_init();
 	curl_setopt($curl, CURLOPT_URL, $apiUrl);
 
-	$ApiKey = "ApiKey: 9be50b83-sebf-8818-q9ap-f772f4fca42b";
+	$Key = ObtenerVariable('APIKEYCrystalReportAPI');
+	$ApiKey = "ApiKey: $Key"; // ApiKey, como parámetro general.
 	curl_setopt($curl, CURLOPT_HTTPHEADER, array("Content-Type: application/json", $ApiKey));
 
 	if ($method != "GET") {
