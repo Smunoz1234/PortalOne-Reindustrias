@@ -695,8 +695,6 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 		});
 		</script>";
 	}
-
-	// SMM, 16/08/2022
 	if (isset($sw_error) && ($sw_error == 1)) {
 		$error_title = ($success == 0) ? "Advertencia" : "Ha ocurrido un error";
 
@@ -710,8 +708,6 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 		});
 		</script>";
 	}
-
-	// SMM, 11/08/2022
 	if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_BorradorAdd"))) {
 		echo "<script>
 		$(document).ready(function() {
@@ -724,8 +720,10 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 		</script>";
 	}
 	?>
+	
 	<!-- InstanceEndEditable -->
 	<!-- InstanceBeginEditable name="head" -->
+	
 	<style>
 		.panel-body {
 			padding: 0px !important;
@@ -944,7 +942,6 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 <body>
 
 	<div id="wrapper">
-
 		<?php include_once "includes/menu.php"; ?>
 
 		<div id="page-wrapper" class="gray-bg">
@@ -1331,8 +1328,10 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 					</div>
 					<br>
 				<?php } ?>
+
 				<div class="ibox-content">
 					<?php include "includes/spinner.php"; ?>
+					
 					<div class="row">
 						<div class="col-lg-12">
 							<form action="orden_compra.php" method="post" class="form-horizontal"
@@ -1535,6 +1534,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 										</div>
 									</div>
 								</div>
+
 								<div class="col-lg-4">
 									<div class="form-group">
 										<label class="col-lg-5">Número</label>
@@ -1698,8 +1698,9 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 									<!-- Hasta aquí, 16/01/2024 -->
 
 									<!-- Inicio, Proyecto -->
-									<label class="col-lg-1 control-label">Proyecto <span 
-									class="text-danger">*</span></label>
+									<label class="col-lg-1 control-label">
+										Proyecto <span class="text-danger">*</span>
+									</label>
 									<div class="col-lg-3">
 										<select id="PrjCode" name="PrjCode" class="form-control select2" 
 										form="CrearOrdenCompra" required <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
@@ -1722,7 +1723,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 									</div>
 									<!-- Fin, Proyecto -->
 								</div>
-
+								
 								<div class="form-group">
 									<label class="col-xs-12">
 										<h3 class="bg-success p-xs b-r-sm">
@@ -1804,272 +1805,290 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 													echo "detalle_orden_compra.php?id=" . base64_encode($row['ID_OrdenCompra']) . "&evento=" . base64_encode($row['IdEvento']) . "&docentry=" . base64_encode($row['DocEntry']) . "&type=2&status=" . base64_encode($row['Cod_Estado']);
 												} ?>"></iframe>
 										</div>
+										<!-- /#tab-1 -->
+
 										<?php if ($edit == 1) { ?>
 											<div id="tab-2" class="tab-pane">
 												<div id="dv_actividades" class="panel-body">
-
+													<!-- Generado por JS -->
 												</div>
 											</div>
 										<?php } ?>
-							</form>
+										<!-- /#tab-2 -->
+										
+										</form>
+										<!-- Cierra form principal pero continua con las pestañas -->
 
-							<!-- Limpiar directorio temporal antes de copiar los anexos de SAP, 01/10/2022 -->
-							<!-- dt_OF, también hace referencia al duplicar orden de compra -->
-							<?php if (($sw_error == 0) && ($dt_OF == 0)) {
-								LimpiarDirTemp();
-							} ?>
+										<!-- Limpiar directorio temporal antes de copiar los anexos de SAP, 01/10/2022 -->
+										<!-- dt_OF, también hace referencia al duplicar orden de compra -->
+										<?php if (($sw_error == 0) && ($dt_OF == 0)) {
+											LimpiarDirTemp();
+										} ?>
 
-							<div id="tab-3" class="tab-pane">
-								<div class="panel-body">
-									<?php if (($edit == 1) || (isset($SQL_Anexo) && sqlsrv_has_rows($SQL_Anexo))) {
-										if ((($edit == 1) && ($row['IdAnexo'] != 0)) || (sqlsrv_has_rows($SQL_Anexo) && ($edit == 0))) { ?>
-											<div class="form-group">
-												<div class="col-lg-4">
-													<ul class="folder-list" style="padding: 0">
-														<?php while ($row_Anexo = sqlsrv_fetch_array($SQL_Anexo)) {
-															$Icon = IconAttach($row_Anexo['FileExt']);
+										<div id="tab-3" class="tab-pane">
+											<div class="panel-body">
+												<?php if (($edit == 1) || (isset($SQL_Anexo) && sqlsrv_has_rows($SQL_Anexo))) {
+													if ((($edit == 1) && ($row['IdAnexo'] != 0)) || (sqlsrv_has_rows($SQL_Anexo) && ($edit == 0))) { ?>
+														<div class="form-group">
+															<div class="col-lg-4">
+																<ul class="folder-list" style="padding: 0">
+																	<?php while ($row_Anexo = sqlsrv_fetch_array($SQL_Anexo)) {
+																		$Icon = IconAttach($row_Anexo['FileExt']);
 
-															// SMM, 30/09/2022
-															$RutaAnexoSAP = ObtenerDirAttach()[0] . $row_Anexo['NombreArchivo'];
-															$RutaAnexoTemporal = CrearObtenerDirTemp() . $row_Anexo['NombreArchivo'];
+																		// SMM, 30/09/2022
+																		$RutaAnexoSAP = ObtenerDirAttach()[0] . $row_Anexo['NombreArchivo'];
+																		$RutaAnexoTemporal = CrearObtenerDirTemp() . $row_Anexo['NombreArchivo'];
 
-															copy($RutaAnexoSAP, $RutaAnexoTemporal);
-															?>
-															<li><a <?php if ($edit == 0) {
-																echo "disabled";
-															} else {
-																echo "href='attachdownload.php?file=" . base64_encode($row_Anexo['AbsEntry']) . "&line=" . base64_encode($row_Anexo['Line']) . "'";
-															} ?> target="_blank"
-																	class="btn-link btn-xs"><i class="<?php echo $Icon; ?>"></i>
-																	<?php echo $row_Anexo['NombreArchivo']; ?>
-																</a></li>
-														<?php } ?>
+																		copy($RutaAnexoSAP, $RutaAnexoTemporal);
+																		?>
+																		<li><a <?php if ($edit == 0) {
+																			echo "disabled";
+																		} else {
+																			echo "href='attachdownload.php?file=" . base64_encode($row_Anexo['AbsEntry']) . "&line=" . base64_encode($row_Anexo['Line']) . "'";
+																		} ?> target="_blank"
+																				class="btn-link btn-xs"><i class="<?php echo $Icon; ?>"></i>
+																				<?php echo $row_Anexo['NombreArchivo']; ?>
+																			</a></li>
+																	<?php } ?>
+																</ul>
+															</div>
+														</div>
+													<?php } else {
+														echo "<p>Sin anexos.</p>";
+													}
+												} ?>
+												<div class="row">
+													<form action="upload.php" class="dropzone" id="dropzoneForm"
+														name="dropzoneForm">
+														<div class="fallback">
+															<input name="File" id="File" type="file" form="dropzoneForm" />
+														</div>
+													</form>
+												</div>
+											</div>
+										</div>
+										<!-- /#tab-3 -->
+									</div>
+									<!-- /.tab-content -->
+								</div>
+								<!-- /.tabs-container -->
+
+								<form id="frm" action="" class="form-horizontal">
+									<div class="form-group">&nbsp;</div>
+
+									<div class="col-lg-8">
+										<div class="form-group">
+											<label class="col-lg-2">Empleado de compras <span class="text-danger">*</span></label>
+											<div class="col-lg-5">
+												<select class="form-control select2" name="EmpleadoVentas" id="EmpleadoVentas"
+													form="CrearOrdenCompra" required <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
+														echo "disabled";
+													} ?>>
+													<?php while ($row_EmpleadosVentas = sqlsrv_fetch_array($SQL_EmpleadosVentas)) { ?>
+														<option value="<?php echo $row_EmpleadosVentas['ID_EmpVentas']; ?>" <?php if ($edit == 0 && $sw_error == 0) {
+															if (isset($_GET['Empleado']) && (strcmp($row_EmpleadosVentas['ID_EmpVentas'], base64_decode($_GET['Empleado'])) == 0)) {
+																echo "selected";
+															} elseif (($_SESSION['CodigoEmpVentas'] != "") && (!isset($_GET['Empleado'])) && (strcmp($row_EmpleadosVentas['ID_EmpVentas'], $_SESSION['CodigoEmpVentas']) == 0)) {
+																echo "selected";
+															}
+														} elseif ($edit == 1 || $sw_error == 1) {
+															if (($row['SlpCode'] != "") && (strcmp($row_EmpleadosVentas['ID_EmpVentas'], $row['SlpCode']) == 0)) {
+																echo "selected";
+															}
+														} ?>><?php echo $row_EmpleadosVentas['DE_EmpVentas']; ?></option>
+													<?php } ?>
+												</select>
+											</div>
+										</div>
+
+										<div class="form-group">
+											<label class="col-lg-2">Comentarios</label>
+											<div class="col-lg-10">
+												<textarea type="text" maxlength="2000" name="Comentarios" form="CrearOrdenCompra"
+													rows="4" id="Comentarios" class="form-control" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
+														echo "readonly";
+													} ?>><?php if ($edit == 1 || $sw_error == 1) {
+														echo $row['Comentarios'];
+													} elseif (isset($_GET['Comentarios'])) {
+														echo base64_decode($_GET['Comentarios']);
+													} ?></textarea>
+											</div>
+										</div>
+
+										<div class="form-group">
+											<label class="col-lg-2">Información adicional</label>
+											<div class="col-lg-4">
+												<button class="btn btn-success" type="button" id="DatoAdicionales"
+													onClick="VerCamposAdi();"><i class="fa fa-list"></i> Ver campos
+													adicionales</button>
+											</div>
+											<div class="col-lg-6">
+												<!-- Espacio para un botón -->
+											</div>
+										</div>
+									</div>
+
+									<div class="col-lg-4">
+										<div class="form-group">
+											<label class="col-lg-7"><strong class="pull-right">Subtotal</strong></label>
+											<div class="col-lg-5">
+												<input type="text" name="SubTotal" form="CrearOrdenCompra" id="SubTotal"
+													class="form-control" style="text-align: right; font-weight: bold;" value="<?php if ($edit == 1) {
+														echo number_format($row['SubTotal'], 0);
+													} else {
+														echo "0.00";
+													} ?>" readonly>
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="col-lg-7"><strong class="pull-right">Descuentos</strong></label>
+											<div class="col-lg-5">
+												<input type="text" name="Descuentos" form="CrearOrdenCompra" id="Descuentos"
+													class="form-control" style="text-align: right; font-weight: bold;" value="<?php if ($edit == 1) {
+														echo number_format($row['DiscSum'], 0);
+													} else {
+														echo "0.00";
+													} ?>" readonly>
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="col-lg-7"><strong class="pull-right">IVA</strong></label>
+											<div class="col-lg-5">
+												<input type="text" name="Impuestos" form="CrearOrdenCompra" id="Impuestos"
+													class="form-control" style="text-align: right; font-weight: bold;" value="<?php if ($edit == 1) {
+														echo number_format($row['VatSum'], 0);
+													} else {
+														echo "0.00";
+													} ?>" readonly>
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="col-lg-7"><strong class="pull-right">Redondeo</strong></label>
+											<div class="col-lg-5">
+												<input type="text" name="Redondeo" form="CrearOrdenCompra" id="Redondeo"
+													class="form-control" style="text-align: right; font-weight: bold;" value="0.00"
+													readonly>
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="col-lg-7"><strong class="pull-right">Total</strong></label>
+											<div class="col-lg-5">
+												<input type="text" name="TotalOrden" form="CrearOrdenCompra" id="TotalOrden"
+													class="form-control" style="text-align: right; font-weight: bold;" value="<?php if ($edit == 1) {
+														echo number_format($row['DocTotal'], 0);
+													} else {
+														echo "0.00";
+													} ?>" readonly>
+											</div>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<div class="col-lg-9">
+											<?php if ($edit == 0 && PermitirFuncion(702)) { ?>
+												<button class="btn btn-primary" type="submit" form="CrearOrdenCompra" id="Crear"><i
+														class="fa fa-check"></i> Crear Orden de compra</button>
+											<?php } elseif ($row['Cod_Estado'] == "O" && PermitirFuncion(702)) { ?>
+												<button class="btn btn-warning" type="submit" form="CrearOrdenCompra" id="Actualizar"><i
+														class="fa fa-refresh"></i> Actualizar Orden de compra</button>
+											<?php } ?>
+											<?php
+											//
+											if (isset($_GET['return'])) {
+												$return = base64_decode($_GET['pag']) . "?" . base64_decode($_GET['return']);
+											} elseif (isset($_POST['return'])) {
+												$return = base64_decode($_POST['return']);
+											} else {
+												$return = "orden_compra.php?" . $_SERVER['QUERY_STRING'];
+											}
+											$return = QuitarParametrosURL($return, array("a"));
+											?>
+											<a href="<?php echo $return; ?>" class="btn btn-outline btn-default"><i
+													class="fa fa-arrow-circle-o-left"></i> Regresar</a>
+										</div>
+
+										<?php if (($edit == 1) && ($row['Cod_Estado'] != 'C')) { ?>
+											<div class="col-lg-3">
+												<div class="btn-group dropup pull-right">
+													<button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i
+															class="fa fa-mail-forward"></i> Copiar a <i
+															class="fa fa-caret-up"></i></button>
+													<ul class="dropdown-menu">
+														<li><a class="alkin dropdown-item"
+																href="entrada_compra.php?dt_OV=1&OV=<?php echo base64_encode($row['ID_OrdenCompra']); ?>&Referencia=<?php echo base64_encode($row['NumAtCard']); ?>&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&SucursalFact=<?php echo base64_encode($row['SucursalFacturacion']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&LS=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>&CondicionPago=<?php echo base64_encode($row['IdCondicionPago']); ?>">Entrada
+																de compra</a></li>
+														<li><a class="alkin dropdown-item d-compra"
+																href="orden_compra.php?dt_OV=1&OV=<?php echo base64_encode($row['ID_OrdenCompra']); ?>&pag=<?php echo $_GET['pag']; ?>&return=<?php echo $_GET['return']; ?>&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&SucursalFact=<?php echo base64_encode($row['SucursalFacturacion']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&LS=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>&CondicionPago=<?php echo base64_encode($row['IdCondicionPago']); ?>&Serie=<?php echo base64_encode($row['IdSeries']); ?>">Orden
+																de compra (Duplicar)</a></li>
+														<li class="dropdown-divider"></li>
+														<li><a class="alkin dropdown-item"
+																href="factura_compra.php?dt_OV=1&adt=1&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&SucursalFact=<?php echo base64_encode($row['SucursalFacturacion']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&OV=<?php echo base64_encode($row['ID_OrdenCompra']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&IdLlamada=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>">Factura
+																de compra (copiar adjuntos)</a></li>
+														<li><a class="alkin dropdown-item"
+																href="factura_compra.php?dt_OV=1&adt=0&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&SucursalFact=<?php echo base64_encode($row['SucursalFacturacion']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&OV=<?php echo base64_encode($row['ID_OrdenCompra']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&IdLlamada=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>">Factura
+																de compra (<strong>NO</strong> copiar adjuntos)</a></li>
 													</ul>
 												</div>
 											</div>
-										<?php } else {
-											echo "<p>Sin anexos.</p>";
-										}
-									} ?>
-									<div class="row">
-										<form action="upload.php" class="dropzone" id="dropzoneForm"
-											name="dropzoneForm">
-											<div class="fallback">
-												<input name="File" id="File" type="file" form="dropzoneForm" />
+										<?php } elseif (($edit == 1) && $row['Cod_Estado'] == 'C') { ?>
+											<div class="col-lg-3">
+												<div class="btn-group dropup pull-right">
+													<button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i
+															class="fa fa-mail-forward"></i> Copiar a <i
+															class="fa fa-caret-up"></i></button>
+													<ul class="dropdown-menu">
+														<li><a class="alkin dropdown-item d-compra"
+																href="orden_compra.php?dt_OV=1&OV=<?php echo base64_encode($row['ID_OrdenCompra']); ?>&pag=<?php echo $_GET['pag']; ?>&return=<?php echo $_GET['return']; ?>&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&SucursalFact=<?php echo base64_encode($row['SucursalFacturacion']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&LS=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>&CondicionPago=<?php echo base64_encode($row['IdCondicionPago']); ?>&Serie=<?php echo base64_encode($row['IdSeries']); ?>">Orden
+																de compra (Duplicar)</a></li>
+													</ul>
+												</div>
 											</div>
-										</form>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<form id="frm" action="" class="form-horizontal">
-						<div class="form-group">&nbsp;</div>
-
-						<div class="col-lg-8">
-							<div class="form-group">
-								<label class="col-lg-2">Empleado de compras <span class="text-danger">*</span></label>
-								<div class="col-lg-5">
-									<select class="form-control select2" name="EmpleadoVentas" id="EmpleadoVentas"
-										form="CrearOrdenCompra" required <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
-											echo "disabled";
-										} ?>>
-										<?php while ($row_EmpleadosVentas = sqlsrv_fetch_array($SQL_EmpleadosVentas)) { ?>
-											<option value="<?php echo $row_EmpleadosVentas['ID_EmpVentas']; ?>" <?php if ($edit == 0 && $sw_error == 0) {
-												   if (isset($_GET['Empleado']) && (strcmp($row_EmpleadosVentas['ID_EmpVentas'], base64_decode($_GET['Empleado'])) == 0)) {
-													   echo "selected";
-												   } elseif (($_SESSION['CodigoEmpVentas'] != "") && (!isset($_GET['Empleado'])) && (strcmp($row_EmpleadosVentas['ID_EmpVentas'], $_SESSION['CodigoEmpVentas']) == 0)) {
-													   echo "selected";
-												   }
-											   } elseif ($edit == 1 || $sw_error == 1) {
-												   if (($row['SlpCode'] != "") && (strcmp($row_EmpleadosVentas['ID_EmpVentas'], $row['SlpCode']) == 0)) {
-													   echo "selected";
-												   }
-											   } ?>><?php echo $row_EmpleadosVentas['DE_EmpVentas']; ?></option>
 										<?php } ?>
-									</select>
-								</div>
-							</div>
-
-							<div class="form-group">
-								<label class="col-lg-2">Comentarios</label>
-								<div class="col-lg-10">
-									<textarea type="text" maxlength="2000" name="Comentarios" form="CrearOrdenCompra"
-										rows="4" id="Comentarios" class="form-control" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
-											echo "readonly";
-										} ?>><?php if ($edit == 1 || $sw_error == 1) {
-											 echo $row['Comentarios'];
-										 } elseif (isset($_GET['Comentarios'])) {
-											 echo base64_decode($_GET['Comentarios']);
-										 } ?></textarea>
-								</div>
-							</div>
-
-							<div class="form-group">
-								<label class="col-lg-2">Información adicional</label>
-								<div class="col-lg-4">
-									<button class="btn btn-success" type="button" id="DatoAdicionales"
-										onClick="VerCamposAdi();"><i class="fa fa-list"></i> Ver campos
-										adicionales</button>
-								</div>
-								<div class="col-lg-6">
-									<!-- Espacio para un botón -->
-								</div>
-							</div>
-						</div>
-						<div class="col-lg-4">
-							<div class="form-group">
-								<label class="col-lg-7"><strong class="pull-right">Subtotal</strong></label>
-								<div class="col-lg-5">
-									<input type="text" name="SubTotal" form="CrearOrdenCompra" id="SubTotal"
-										class="form-control" style="text-align: right; font-weight: bold;" value="<?php if ($edit == 1) {
-											echo number_format($row['SubTotal'], 0);
-										} else {
-											echo "0.00";
-										} ?>" readonly>
-								</div>
-							</div>
-							<div class="form-group">
-								<label class="col-lg-7"><strong class="pull-right">Descuentos</strong></label>
-								<div class="col-lg-5">
-									<input type="text" name="Descuentos" form="CrearOrdenCompra" id="Descuentos"
-										class="form-control" style="text-align: right; font-weight: bold;" value="<?php if ($edit == 1) {
-											echo number_format($row['DiscSum'], 0);
-										} else {
-											echo "0.00";
-										} ?>" readonly>
-								</div>
-							</div>
-							<div class="form-group">
-								<label class="col-lg-7"><strong class="pull-right">IVA</strong></label>
-								<div class="col-lg-5">
-									<input type="text" name="Impuestos" form="CrearOrdenCompra" id="Impuestos"
-										class="form-control" style="text-align: right; font-weight: bold;" value="<?php if ($edit == 1) {
-											echo number_format($row['VatSum'], 0);
-										} else {
-											echo "0.00";
-										} ?>" readonly>
-								</div>
-							</div>
-							<div class="form-group">
-								<label class="col-lg-7"><strong class="pull-right">Redondeo</strong></label>
-								<div class="col-lg-5">
-									<input type="text" name="Redondeo" form="CrearOrdenCompra" id="Redondeo"
-										class="form-control" style="text-align: right; font-weight: bold;" value="0.00"
-										readonly>
-								</div>
-							</div>
-							<div class="form-group">
-								<label class="col-lg-7"><strong class="pull-right">Total</strong></label>
-								<div class="col-lg-5">
-									<input type="text" name="TotalOrden" form="CrearOrdenCompra" id="TotalOrden"
-										class="form-control" style="text-align: right; font-weight: bold;" value="<?php if ($edit == 1) {
-											echo number_format($row['DocTotal'], 0);
-										} else {
-											echo "0.00";
-										} ?>" readonly>
-								</div>
-							</div>
-						</div>
-						<div class="form-group">
-							<div class="col-lg-9">
-								<?php if ($edit == 0 && PermitirFuncion(702)) { ?>
-									<button class="btn btn-primary" type="submit" form="CrearOrdenCompra" id="Crear"><i
-											class="fa fa-check"></i> Crear Orden de compra</button>
-								<?php } elseif ($row['Cod_Estado'] == "O" && PermitirFuncion(702)) { ?>
-									<button class="btn btn-warning" type="submit" form="CrearOrdenCompra" id="Actualizar"><i
-											class="fa fa-refresh"></i> Actualizar Orden de compra</button>
-								<?php } ?>
-								<?php
-								//
-								if (isset($_GET['return'])) {
-									$return = base64_decode($_GET['pag']) . "?" . base64_decode($_GET['return']);
-								} elseif (isset($_POST['return'])) {
-									$return = base64_decode($_POST['return']);
-								} else {
-									$return = "orden_compra.php?" . $_SERVER['QUERY_STRING'];
-								}
-								$return = QuitarParametrosURL($return, array("a"));
-								?>
-								<a href="<?php echo $return; ?>" class="btn btn-outline btn-default"><i
-										class="fa fa-arrow-circle-o-left"></i> Regresar</a>
-							</div>
-
-							<?php if (($edit == 1) && ($row['Cod_Estado'] != 'C')) { ?>
-								<div class="col-lg-3">
-									<div class="btn-group dropup pull-right">
-										<button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i
-												class="fa fa-mail-forward"></i> Copiar a <i
-												class="fa fa-caret-up"></i></button>
-										<ul class="dropdown-menu">
-											<li><a class="alkin dropdown-item"
-													href="entrada_compra.php?dt_OV=1&OV=<?php echo base64_encode($row['ID_OrdenCompra']); ?>&Referencia=<?php echo base64_encode($row['NumAtCard']); ?>&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&SucursalFact=<?php echo base64_encode($row['SucursalFacturacion']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&LS=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>&CondicionPago=<?php echo base64_encode($row['IdCondicionPago']); ?>">Entrada
-													de compra</a></li>
-											<li><a class="alkin dropdown-item d-compra"
-													href="orden_compra.php?dt_OV=1&OV=<?php echo base64_encode($row['ID_OrdenCompra']); ?>&pag=<?php echo $_GET['pag']; ?>&return=<?php echo $_GET['return']; ?>&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&SucursalFact=<?php echo base64_encode($row['SucursalFacturacion']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&LS=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>&CondicionPago=<?php echo base64_encode($row['IdCondicionPago']); ?>&Serie=<?php echo base64_encode($row['IdSeries']); ?>">Orden
-													de compra (Duplicar)</a></li>
-											<li class="dropdown-divider"></li>
-											<li><a class="alkin dropdown-item"
-													href="factura_compra.php?dt_OV=1&adt=1&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&SucursalFact=<?php echo base64_encode($row['SucursalFacturacion']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&OV=<?php echo base64_encode($row['ID_OrdenCompra']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&IdLlamada=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>">Factura
-													de compra (copiar adjuntos)</a></li>
-											<li><a class="alkin dropdown-item"
-													href="factura_compra.php?dt_OV=1&adt=0&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&SucursalFact=<?php echo base64_encode($row['SucursalFacturacion']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&OV=<?php echo base64_encode($row['ID_OrdenCompra']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&IdLlamada=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>">Factura
-													de compra (<strong>NO</strong> copiar adjuntos)</a></li>
-										</ul>
 									</div>
-								</div>
-							<?php } elseif (($edit == 1) && $row['Cod_Estado'] == 'C') { ?>
-								<div class="col-lg-3">
-									<div class="btn-group dropup pull-right">
-										<button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i
-												class="fa fa-mail-forward"></i> Copiar a <i
-												class="fa fa-caret-up"></i></button>
-										<ul class="dropdown-menu">
-											<li><a class="alkin dropdown-item d-compra"
-													href="orden_compra.php?dt_OV=1&OV=<?php echo base64_encode($row['ID_OrdenCompra']); ?>&pag=<?php echo $_GET['pag']; ?>&return=<?php echo $_GET['return']; ?>&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&SucursalFact=<?php echo base64_encode($row['SucursalFacturacion']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&LS=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>&CondicionPago=<?php echo base64_encode($row['IdCondicionPago']); ?>&Serie=<?php echo base64_encode($row['IdSeries']); ?>">Orden
-													de compra (Duplicar)</a></li>
-										</ul>
-									</div>
-								</div>
-							<?php } ?>
-						</div>
-						
-						<input type="hidden" form="CrearOrdenCompra" id="P" name="P" value="<?php if ($edit == 0) {
-							echo "37";
-						} else {
-							echo "39";
-						} ?>" />
+									
+									<input type="hidden" form="CrearOrdenCompra" id="P" name="P" value="<?php if ($edit == 0) {
+										echo "37";
+									} else {
+										echo "39";
+									} ?>" />
 
-						<input type="hidden" form="CrearOrdenCompra" id="IdOrdenCompra" name="IdOrdenCompra" value="<?php if ($edit == 1) {
-							echo base64_encode($row['ID_OrdenCompra']);
-						} ?>" />
-						
-						<input type="hidden" form="CrearOrdenCompra" id="IdEvento" name="IdEvento" value="<?php if ($edit == 1) {
-							echo base64_encode($IdEvento);
-						} ?>" />
-						
-						<input type="hidden" form="CrearOrdenCompra" id="d_LS" name="d_LS"
-							value="<?php echo $dt_LS; ?>" />
-						
-						<input type="hidden" form="CrearOrdenCompra" id="tl" name="tl" value="<?php echo $edit; ?>" />
-						
-						<input type="hidden" form="CrearOrdenCompra" id="swError" name="swError"
-							value="<?php echo $sw_error; ?>" />
-						
-						<input type="hidden" form="CrearOrdenCompra" id="return" name="return"
-							value="<?php echo base64_encode($return); ?>" />
-					</form>
+									<input type="hidden" form="CrearOrdenCompra" id="IdOrdenCompra" name="IdOrdenCompra" value="<?php if ($edit == 1) {
+										echo base64_encode($row['ID_OrdenCompra']);
+									} ?>" />
+									
+									<input type="hidden" form="CrearOrdenCompra" id="IdEvento" name="IdEvento" value="<?php if ($edit == 1) {
+										echo base64_encode($IdEvento);
+									} ?>" />
+									
+									<input type="hidden" form="CrearOrdenCompra" id="d_LS" name="d_LS"
+										value="<?php echo $dt_LS; ?>" />
+									
+									<input type="hidden" form="CrearOrdenCompra" id="tl" name="tl" value="<?php echo $edit; ?>" />
+									
+									<input type="hidden" form="CrearOrdenCompra" id="swError" name="swError"
+										value="<?php echo $sw_error; ?>" />
+									
+									<input type="hidden" form="CrearOrdenCompra" id="return" name="return"
+										value="<?php echo base64_encode($return); ?>" />
+								</form>
+							</div>
+							<!-- /.col-lg-12 -->
+						</div>
+						<!-- /.row -->
+					</div>
+					<!-- /.ibox-content -->
 				</div>
+				<!-- /.wrapper-content -->
 			</div>
-		</div>
-	</div>
-	<!-- InstanceEndEditable -->
-	<?php include_once "includes/footer.php"; ?>
+			<!-- /#page-wrapper -->
 
-	</div>
-	</div>
+			<!-- InstanceEndEditable -->
+			<?php include_once "includes/footer.php"; ?>
+		</div>
+		<!-- /#wrapper -->
+	
 	<?php include_once "includes/pie.php"; ?>
+	
 	<!-- InstanceBeginEditable name="EditRegion4" -->
 	<script>
 		$(document).ready(function () {
@@ -2547,7 +2566,6 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 			}
 		};
 	</script>
-	
 	<!-- InstanceEndEditable -->
 </body>
 
