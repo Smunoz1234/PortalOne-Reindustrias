@@ -444,14 +444,14 @@ if (!isset($_COOKIE["banderaMenu"])) {
 						</ul>
 					</li>
 					<?php }?>
-					<?php if (PermitirFuncion([722, 723, 724])) {?>
+					<?php if (PermitirFuncion([716, 717, 718, 719])) {?>
 					<li>
 						<a href="#">Consultas borradores <span class="fa arrow"></span></a>
 						<ul class='nav nav-third-level'>
-							<?php if (PermitirFuncion(722)) {?><li><a class="alnk" href="consultar_solicitud_compra_borrador.php">Consultar solicitud de compra borrador</a></li><?php }?>
-							<?php if (PermitirFuncion(722)) {?><li><a class="alnk" href="consultar_orden_compra_borrador.php">Consultar orden de compra borrador</a></li><?php }?>
-							<?php if (PermitirFuncion(723)) {?><li><a class="alnk" href="consultar_entrada_compra_borrador.php">Consultar entrada de compra borrador</a></li><?php }?>
-							<?php if (PermitirFuncion(724)) {?><li><a class="alnk" href="consultar_factura_compra_borrador.php">Consultar factura de compra borrador</a></li><?php }?>
+							<?php if (PermitirFuncion(716)) {?><li><a class="alnk" href="consultar_solicitud_compra_borrador.php">Consultar solicitud de compra borrador</a></li><?php }?>
+							<?php if (PermitirFuncion(717)) {?><li><a class="alnk" href="consultar_orden_compra_borrador.php">Consultar orden de compra borrador</a></li><?php }?>
+							<?php if (PermitirFuncion(718)) {?><li><a class="alnk" href="consultar_entrada_compra_borrador.php">Consultar entrada de compra borrador</a></li><?php }?>
+							<?php if (PermitirFuncion(719)) {?><li><a class="alnk" href="consultar_factura_compra_borrador.php">Consultar factura de compra borrador</a></li><?php }?>
 						</ul>
 					</li>
 					<?php }?>
