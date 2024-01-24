@@ -270,21 +270,18 @@ $SQL = sqlsrv_query($conexion, $Cons);
 								<div class="form-group">
 									<label class="col-lg-1 control-label">Socio de negocio</label>
 									<div class="col-lg-3">
-										<input name="Cliente" type="hidden" id="Cliente"
-											value="<?php if (isset($_GET['Cliente']) && ($_GET['Cliente'] != "")) {
-												echo $_GET['Cliente'];
-											} ?>">
+										<input name="Cliente" type="hidden" id="Cliente" value="<?php if (isset($_GET['Cliente']) && ($_GET['Cliente'] != "")) {
+											echo $_GET['Cliente'];
+										} ?>">
 										<input name="NombreCliente" type="text" class="form-control" id="NombreCliente"
-											placeholder="Para TODOS, dejar vacio..."
-											value="<?php if (isset($_GET['NombreCliente']) && ($_GET['NombreCliente'] != "")) {
+											placeholder="Para TODOS, dejar vacio..." value="<?php if (isset($_GET['NombreCliente']) && ($_GET['NombreCliente'] != "")) {
 												echo $_GET['NombreCliente'];
 											} ?>">
 									</div>
 									<label class="col-lg-1 control-label">Buscar dato</label>
 									<div class="col-lg-3">
 										<input name="BuscarDato" type="text" class="form-control" id="BuscarDato"
-											maxlength="100"
-											value="<?php if (isset($_GET['BuscarDato']) && ($_GET['BuscarDato'] != "")) {
+											maxlength="100" value="<?php if (isset($_GET['BuscarDato']) && ($_GET['BuscarDato'] != "")) {
 												echo $_GET['BuscarDato'];
 											} ?>">
 									</div>
@@ -320,8 +317,7 @@ $SQL = sqlsrv_query($conexion, $Cons);
 									<div class="col-lg-3">
 										<input name="IDTicket" type="text" class="form-control" id="IDTicket"
 											maxlength="50"
-											placeholder="Digite un número completo, o una parte del mismo..."
-											value="<?php if (isset($_GET['IDTicket']) && ($_GET['IDTicket'] != "")) {
+											placeholder="Digite un número completo, o una parte del mismo..." value="<?php if (isset($_GET['IDTicket']) && ($_GET['IDTicket'] != "")) {
 												echo $_GET['IDTicket'];
 											} ?>">
 									</div>
@@ -362,8 +358,7 @@ $SQL = sqlsrv_query($conexion, $Cons);
 									<label class="col-lg-1 control-label">Número documento</label>
 									<div class="col-lg-3">
 										<input name="DocNum" type="text" class="form-control" id="DocNum" maxlength="50"
-											placeholder="Digite un número completo, o una parte del mismo..."
-											value="<?php if (isset($_GET['DocNum']) && ($_GET['DocNum'] != "")) {
+											placeholder="Digite un número completo, o una parte del mismo..." value="<?php if (isset($_GET['DocNum']) && ($_GET['DocNum'] != "")) {
 												echo $_GET['DocNum'];
 											} ?>">
 									</div>
@@ -372,11 +367,9 @@ $SQL = sqlsrv_query($conexion, $Cons);
 									<label class="col-lg-1 control-label">Fecha venc. servicio</label>
 									<div class="col-lg-3 input-group date">
 										<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input
-											name="FechaVenc" type="text" class="form-control" id="FechaVenc"
-											value="<?php if (isset($_GET['FechaVenc']) && ($_GET['FechaVenc'] != "")) {
+											name="FechaVenc" type="text" class="form-control" id="FechaVenc" value="<?php if (isset($_GET['FechaVenc']) && ($_GET['FechaVenc'] != "")) {
 												echo $_GET['FechaVenc'];
-											} ?>"
-											readonly="readonly" placeholder="YYYY-MM-DD">
+											} ?>" readonly="readonly" placeholder="YYYY-MM-DD">
 									</div>
 								</div>
 								<div class="form-group">
