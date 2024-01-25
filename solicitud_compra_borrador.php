@@ -2737,36 +2737,37 @@ $("#<?php echo $dim['IdPortalOne']; ?>").change(function() {
 								</div>
 							</div>
 						</div>
+
 						<div class="form-group">
 							<div class="col-lg-9">
 
-								<?php if ($edit == 0 && PermitirFuncion(717)) { ?>
-									<!-- button class="btn btn-primary" type="submit" form="CrearOrdenCompra" id="Crear"><i class="fa fa-check"></i> Crear Orden de compra</button -->
-								<?php } elseif ($row['Cod_Estado'] == "O" && PermitirFuncion(717)) { ?>
+								<?php if ($edit == 0 && PermitirFuncion(716)) { ?>
+									<!-- button class="btn btn-primary" type="submit" form="CrearSolicitudCompra" id="Crear"><i class="fa fa-check"></i> Crear Orden de compra</button -->
+								<?php } elseif ($row['Cod_Estado'] == "O" && PermitirFuncion(716)) { ?>
 
 										<!-- SMM, 20/12/2022 -->
 										<?php if ((strtoupper($_SESSION["User"]) != strtoupper($row['Usuario'])) || $serAutorizador) { ?>
 											<!-- Modificado para incluir la bandera de asignación. SMM, 25/01/2024 -->
-											<button class="btn btn-warning" type="submit" form="CrearOrdenCompra" id="Actualizar" <?php if (!$autorAsignado) {
+											<button class="btn btn-warning" type="submit" form="CrearSolicitudCompra" id="Actualizar" <?php if (!$autorAsignado) {
 												echo "disabled";
 											} ?>>
-												<i class="fa fa-refresh"></i> Actualizar Orden de compra Borrador
+												<i class="fa fa-refresh"></i> Actualizar Solicitud de compra Borrador
 											</button>
 										<?php } else { ?>
 											<?php if ($row["AuthPortal"] == "Y") { ?>
-												<button class="btn btn-primary" type="submit" form="CrearOrdenCompra" id="Actualizar">
-													<i class="fa fa-check"></i> Crear Orden de compra Definitiva
+												<button class="btn btn-primary" type="submit" form="CrearSolicitudCompra" id="Actualizar">
+													<i class="fa fa-check"></i> Crear Solicitud de compra Definitiva
 												</button>
 											<?php } ?>
 										<?php } ?>
 
 										<!-- Usuario de creación en el POST -->
-										<input type="hidden" form="CrearOrdenCompra" name="Usuario" id="Usuario" value="<?php echo $row['Usuario']; ?>">
+										<input type="hidden" form="CrearSolicitudCompra" name="Usuario" id="Usuario" value="<?php echo $row['Usuario']; ?>">
 								<?php } ?>
 
 								<?php
 								// Eliminar mensajes. SMM, 25/01/2024
-								$EliminaMsg = array("&a=" . base64_encode("OK_OCompAdd"), "&a=" . base64_encode("OK_OCompUpd")); 
+								$EliminaMsg = array("&a=" . base64_encode("OK_SolCompAdd"), "&a=" . base64_encode("OK_SolCompUpd")); 
 								if (isset($_GET['return'])) {
 									$_GET['return'] = str_replace($EliminaMsg, "", base64_decode($_GET['return']));
 								}
@@ -2776,7 +2777,7 @@ $("#<?php echo $dim['IdPortalOne']; ?>").change(function() {
 								} elseif (isset($_POST['return'])) {
 									$return = base64_decode($_POST['return']);
 								} else {
-									$return = "orden_compra_borrador.php?" . $_SERVER['QUERY_STRING'];
+									$return = "solicitud_compra_borrador.php?" . $_SERVER['QUERY_STRING'];
 								}
 								$return = QuitarParametrosURL($return, array("a"));
 								?>
@@ -2837,50 +2838,72 @@ $("#<?php echo $dim['IdPortalOne']; ?>").change(function() {
 <!-- InstanceBeginEditable name="EditRegion4" -->
 <script>
 	$(document).ready(function () {
-			// SMM, 09/02/2023
-			$("#IdSolicitante").change(function() {
-				let IdSolicitante = document.getElementById('IdSolicitante').value;
+		// SMM, 09/02/2023
+		$("#IdSolicitante").change(function() {
+			let IdSolicitante = document.getElementById('IdSolicitante').value;
 
-				if (IdSolicitante != "") {
-					$.ajax({
-						url:"ajx_buscar_datos_json.php",
-						data: {
-							type: 25,
-							id: IdSolicitante
-						},
-						dataType:'json',
-						success: function(data) {
-							document.getElementById('SucursalSolicitante').value = data.Sucursal;
-							document.getElementById('DepartamentoSolicitante').value = data.Departamento;
-						},
-						error: function(error) {
-							console.log("Error OnChange(IdSolicitante)", error.responseText);
-						}
-					});
-				}
-			});
+			if (IdSolicitante != "") {
+				$.ajax({
+					url:"ajx_buscar_datos_json.php",
+					data: {
+						type: 25,
+						id: IdSolicitante
+					},
+					dataType:'json',
+					success: function(data) {
+						document.getElementById('SucursalSolicitante').value = data.Sucursal;
+						document.getElementById('DepartamentoSolicitante').value = data.Departamento;
+					},
+					error: function(error) {
+						console.log("Error OnChange(IdSolicitante)", error.responseText);
+					}
+				});
+			}
+		});
 
-		<?php if (($edit == 0) && ($ClienteDefault != "")) { ?>
-					$("#CardCode").change();
-		<?php } ?>
-
-		// SMM, 16/01/2024
+		// SMM, 25/01/2024
 		<?php if ($BloquearDocumento) { ?>
-					$("input").prop("readonly", true);
-					$("select").attr("readonly", true);
-					$("textarea").prop("readonly", true);
+			$("input").prop("readonly", true);
+			$("select").attr("readonly", true);
+			$("textarea").prop("readonly", true);
 
-					$("#Actualizar").prop("disabled", true);
+			// Desactivar sólo el botón de actualizar y no el definitivo.
+			$("#Actualizar.btn-warning").prop("disabled", true);
 
-					// Comentado porque de momento no es necesario.
-					// $('#Almacen option:not(:selected)').attr('disabled', true);
-					// $('#AlmacenDestino option:not(:selected)').attr('disabled', true);
-					// $('#SucursalDestino option:not(:selected)').attr('disabled', true);
-					// $('#SucursalFacturacion option:not(:selected)').attr('disabled', true);
-					// $('.Dim option:not(:selected)').attr('disabled', true);
-					// $('#PrjCode option:not(:selected)').attr('disabled', true);
-					// $('#Empleado option:not(:selected)').attr('disabled', true);
+			// Comentado porque de momento no es necesario.
+			// $('#Almacen option:not(:selected)').attr('disabled', true);
+			// $('#AlmacenDestino option:not(:selected)').attr('disabled', true);
+			// $('#SucursalDestino option:not(:selected)').attr('disabled', true);
+			// $('#SucursalFacturacion option:not(:selected)').attr('disabled', true);
+			// $('.Dim option:not(:selected)').attr('disabled', true);
+			// $('#PrjCode option:not(:selected)').attr('disabled', true);
+			// $('#Empleado option:not(:selected)').attr('disabled', true);
 		<?php } ?>
+
+		// Estado de autorización de PortalOne en el Modal. SMM, 15/12/2022
+		$("#EstadoAutorizacionPO").html($("#Autorizacion").html());
+		$("#EstadoAutorizacionPO").on("change", function() {
+			$("#Autorizacion option").prop("disabled", false); // SMM, 04/04/2023
+
+			$("#Autorizacion").val($(this).val());
+			$("#Autorizacion").change(); // SMM, 17/01/2023
+		});
+
+		// Estado de autorización PortalOne, para la creación y actualización. SMM, 16/12/2022
+		/*
+		// SMM, 17/01/2023
+		$("#Autorizacion").on("change", function() {
+			$("#EstadoAutorizacionPO").val($(this).val());
+
+			if($(this).val() == "Y") {
+				$("#Actualizar").text("Crear Solicitud de Traslado Definitiva");
+				$("#Actualizar").removeClass("btn-warning").addClass("btn-primary");
+			} else {
+				$("#Actualizar").text("Actualizar Solicitud de Traslado Borrador");
+				$("#Actualizar").removeClass("btn-primary").addClass("btn-warning");
+			}
+		});
+		*/
 
 		$("#CrearSolicitudCompra").validate({
 			 submitHandler: function (form) {
@@ -2929,7 +2952,7 @@ $("#<?php echo $dim['IdPortalOne']; ?>").change(function() {
 			} else {
 				Swal.fire({
 					"title": "¡Listo!",
-					"text": "Puede continuar con la creación del documento.",
+					"text": "Puede continuar con la actualización del documento.",
 					"icon": "success"
 				});
 
@@ -2940,7 +2963,15 @@ $("#<?php echo $dim['IdPortalOne']; ?>").change(function() {
 					// Corregir valores nulos en el combo de autorización.
 					$('#Autorizacion option:selected').attr('disabled', false);
 					$('#Autorizacion option:not(:selected)').attr('disabled', true);
+				} else if($("#Autorizacion").val() == "P") {
+					Swal.fire({
+						"title": "¡Advertencia!",
+						"text": "Debería cambiar el estado de la autorización por uno diferente.",
+						"icon": "warning"
+					});
 				}
+
+				// Ocultar Modal
 				$('#modalAUT').modal('hide');
 			}
 		});
@@ -2952,132 +2983,8 @@ $("#<?php echo $dim['IdPortalOne']; ?>").change(function() {
 		$(".alkin").on('click', function () {
 			$('.ibox-content').toggleClass('sk-loading');
 		});
-
-
-		// Cambiar SN en las copias
-		$(".d-compra").on("click", function (event) {
-			<?php if (PermitirFuncion(720)) { ?>
-					event.preventDefault(); // Evitar redirección del ancla
-					console.log(event);
-
-					Swal.fire({
-						title: "¿Desea cambiar de socio de negocio?",
-						icon: "question",
-						showCancelButton: true,
-						confirmButtonText: "Si, confirmo",
-						cancelButtonText: "No"
-					}).then((result) => {
-						if (result.isConfirmed) {
-							let qs = "";
-							[url, qs] = $(this).attr('href').split('?');
-							params = Object.fromEntries(new URLSearchParams(qs));
-
-							$('#modalSN').modal("show");
-						} else {
-							location.href = $(this).attr('href');
-						}
-					});
-			<?php } else { ?>
-					console.log("Permiso 720, no esta activo");
-			<?php } ?>
-		});
-
-		let optionsSN = {
-			url: function (phrase) {
-				return "ajx_buscar_datos_json.php?type=7&id=" + phrase;
-			},
-			adjustWidth: false,
-			getValue: "NombreBuscarCliente",
-			requestDelay: 400,
-			list: {
-				match: {
-					enabled: true
-				},
-				onClickEvent: function () {
-					var value = $("#NombreClienteSN").getSelectedItemData().CodigoCliente;
-					$("#ClienteSN").val(value).trigger("change");
-				}
-			}
-		};
-
-		$("#NombreClienteSN").easyAutocomplete(optionsSN);
-
-		$(".CancelarSN").on("click", function () {
-			$('.ibox-content').toggleClass('sk-loading', false);
-		});
-
-		$("#formCambiarSN").on("submit", function (event) {
-			event.preventDefault(); // Evitar redirección del formulario
-
-			let ClienteSN = document.getElementById('ClienteSN').value;
-			let ContactoSN = document.getElementById('ContactoSN').value;
-			let SucursalSN = document.getElementById('SucursalSN').value;
-			let DireccionSN = document.getElementById('DireccionSN').value;
-
-			params.Cardcode = Base64.encode(ClienteSN);
-			params.Contacto = Base64.encode(ContactoSN);
-			params.Sucursal = Base64.encode(SucursalSN);
-			params.Direccion = Base64.encode(DireccionSN);
-
-			let qs = new URLSearchParams(params).toString();
-			location.href = `${url}?${qs}`;
-		});
-
-		$("#ClienteSN").change(function () {
-			let ClienteSN = document.getElementById('ClienteSN').value;
-
-			$.ajax({
-				type: "POST",
-				url: "ajx_cbo_select.php?type=2&id=" + ClienteSN,
-				success: function (response) {
-					$('#ContactoSN').html(response).fadeIn();
-					$('#ContactoSN').trigger('change');
-				},
-				error: function (error) {
-					console.log("ContactoSN", error.responseText);
-				}
-			});
-			$.ajax({
-				type: "POST",
-				url: "ajx_cbo_select.php?type=3&id=" + ClienteSN,
-				success: function (response) {
-					console.log(response);
-
-					$('#SucursalSN').html(response).fadeIn();
-					$('#SucursalSN').trigger('change');
-				},
-				error: function (error) {
-					console.log("SucursalSN", error.responseText);
-				}
-			});
-		});
-
-		$("#SucursalSN").change(function () {
-			let ClienteSN = document.getElementById('ClienteSN').value;
-			let SucursalSN = document.getElementById('SucursalSN').value;
-
-			if (SucursalSN != -1 && SucursalSN != '') {
-				$.ajax({
-					url: "ajx_buscar_datos_json.php",
-					data: {
-						type: 1,
-						CardCode: ClienteSN,
-						Sucursal: SucursalSN
-					},
-					dataType: 'json',
-					success: function (data) {
-						document.getElementById('DireccionSN').value = data.Direccion;
-					},
-					error: function (error) {
-						console.log("SucursalSN", error.responseText);
-					}
-				});
-			}
-		});
-		// SMM, 02/04/2022
-
-		<?php if ((($edit == 1) && ($row['Cod_Estado'] == 'O') || ($edit == 0))) { ?>
-				$('#DocDate').datepicker({
+		 <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'O') || ($edit == 0))) { ?>
+			 	$('#DocDate').datepicker({
 					todayBtn: "linked",
 					keyboardNavigation: false,
 					forceParse: false,
@@ -3086,7 +2993,7 @@ $("#<?php echo $dim['IdPortalOne']; ?>").change(function() {
 					todayHighlight: true,
 					startDate: '<?php echo date('Y-m-d'); ?>'
 				});
-				$('#DocDueDate').datepicker({
+			 	$('#DocDueDate').datepicker({
 					todayBtn: "linked",
 					keyboardNavigation: false,
 					forceParse: false,
@@ -3113,52 +3020,50 @@ $("#<?php echo $dim['IdPortalOne']; ?>").change(function() {
 						todayHighlight: true,
 						startDate: '<?php echo date('Y-m-d'); ?>'
 				});
-		<?php } ?>
-		
+		  <?php } ?>
+		 
 		// $('.chosen-select').chosen({width: "100%"});
 		$(".select2").select2();
 		
 		$('.i-checks').iCheck({
-			checkboxClass: 'icheckbox_square-green',
-			radioClass: 'iradio_square-green',
+			 checkboxClass: 'icheckbox_square-green',
+			 radioClass: 'iradio_square-green',
 		  });
-		 
+
 		<?php if ($edit == 1) { ?>
-				// $('#Serie option:not(:selected)').attr('disabled',true);
+			// $('#Serie option:not(:selected)').attr('disabled',true);
+			// $('#Sucursal option:not(:selected)').attr('disabled',true);
+			// $('#Almacen option:not(:selected)').attr('disabled',true);
 		<?php } ?>
 
-		<?php /* if (!PermitirFuncion(716) || true) { ?>
-			 $('#Autorizacion').attr('readonly', true); // SMM, 01/08/2022
-			 $('#Autorizacion option:not(:selected)').attr('disabled', true);
-		 <?php } */?>
-
-		var options = {
-			url: function (phrase) {
-					return "ajx_buscar_datos_json.php?type=7&id=" + phrase + "&pv=1";
-			},
-			getValue: "NombreBuscarCliente",
-			requestDelay: 400,
-			list: {
-				match: {
-					enabled: true
-				},
-				onClickEvent: function () {
-					var value = $("#CardName").getSelectedItemData().CodigoCliente;
-					$("#CardCode").val(value).trigger("change");
-				}
-			}
+		 var options = {
+			  url: function (phrase) {
+				  return "ajx_buscar_datos_json.php?type=7&id=" + phrase + "&pv=1";
+			  },
+			  getValue: "NombreBuscarCliente",
+			  requestDelay: 400,
+			  list: {
+				  match: {
+					  enabled: true
+				  },
+				  onClickEvent: function () {
+					  var value = $("#CardName").getSelectedItemData().CodigoCliente;
+					  $("#CardCode").val(value).trigger("change");
+				  }
+			  }
 		 };
 		
-		<?php if (PermitirFuncion(720) || ($edit == 0)) { ?>
+		 <?php if (PermitirFuncion(720) || ($edit == 0)) { ?>
 				$("#CardName").easyAutocomplete(options);
 		<?php } ?>
-		
-		<?php if ($dt_LS == 1 || $dt_OF == 1) { ?>
-				$('#CardCode').trigger('change');
-		<?php } ?>
 
+		<?php if ($dt_LS == 1 || $dt_OF == 1) { ?>
+			$('#CardCode').trigger('change');
+			// $('#Almacen').trigger('change');
+		<?php } ?>
+		
 		<?php if ($edit == 0) { ?>
-				$('#Serie').trigger('change');
+			$('#Serie').trigger('change');
 		<?php } ?>
 
 		$('#CardCode').trigger('change'); // SMM, 24/02/2022
@@ -3167,6 +3072,15 @@ $("#<?php echo $dim['IdPortalOne']; ?>").change(function() {
 		<?php if (isset($_GET['SucursalFact']) || ($BillToDef != "")) { ?>
 				$('#SucursalFacturacion').trigger('change');
 		<?php } ?>
+
+		// SMM, 18/12/2022
+		<?php if ((strtoupper($_SESSION["User"]) == strtoupper($row['Usuario'])) && (!$serAutorizador)) { ?>
+			// Desactivado, 03/04/2023
+			// $('#Autorizacion option:not(:selected)').attr('disabled',true);
+		<?php } ?>
+
+		// SMM, 03/04/2023
+		$('#Autorizacion option:not(:selected)').attr('disabled',true);
 	});
 </script>
 
@@ -3195,156 +3109,155 @@ function ConsultarTab(type) {
 </script>
 
 <script>
-		function Validar() {
-			var result = true;
+function Validar() {
+	var result = true;
 
-			var TotalItems = document.getElementById("TotalItems");
+	var TotalItems = document.getElementById("TotalItems");
 
-			//Validar si fue actualizado por otro usuario
-			$.ajax({
-				url: "ajx_buscar_datos_json.php",
-				data: {
-					type: 15,
-					docentry: '<?php if ($edit == 1) {
-						echo base64_encode($row['DocEntry']);
-					} ?>',
-					objtype: <?php echo $IdTipoDocumento; ?>,
-					date: '<?php echo FormatoFecha(date('Y-m-d'), date('H:i:s')); ?>'
-				},
-				dataType: 'json',
-				success: function (data) {
-					if (data.Result != 1) {
-						result = false;
-						Swal.fire({
-							title: '¡Lo sentimos!',
-							text: 'Este documento ya fue actualizado por otro usuario. Debe recargar la página para volver a cargar los datos.',
-							icon: 'error'
-						});
-					}
-				}
-			});
-
-			if (TotalItems.value == "0") {
+	//Validar si fue actualizado por otro usuario
+	$.ajax({
+		url: "ajx_buscar_datos_json.php",
+		data: {
+			type: 15,
+			docentry: '<?php if ($edit == 1) {
+				echo base64_encode($row['DocEntry']);
+			} ?>',
+			objtype: <?php echo $IdTipoDocumento; ?>,
+			date: '<?php echo FormatoFecha(date('Y-m-d'), date('H:i:s')); ?>'
+		},
+		dataType: 'json',
+		success: function (data) {
+			if (data.Result != 1) {
 				result = false;
 				Swal.fire({
 					title: '¡Lo sentimos!',
-					text: 'No puede guardar el documento sin contenido. Por favor verifique.',
+					text: 'Este documento ya fue actualizado por otro usuario. Debe recargar la página para volver a cargar los datos.',
 					icon: 'error'
 				});
 			}
-
-			return result;
 		}
+	});
 
+	if (TotalItems.value == "0") {
+		result = false;
+		Swal.fire({
+			title: '¡Lo sentimos!',
+			text: 'No puede guardar el documento sin contenido. Por favor verifique.',
+			icon: 'error'
+		});
+	}
 
-		// SMM, 24/05/2023
-		function AgregarArticulos() {
-			let probarModal = false;
-			let OrdenServicio = $("#OrdenServicioCliente").val();
+	return result;
+}
 
-			let serie = $("#Serie").val();
-			let proyecto = $("#PrjCode").val();
-			let cardCode = $("#CardCode").val();
-			let listaPrecio = $("#IdListaPrecio").val();
-			let empleado = $("#EmpleadoVentas").val();
+// SMM, 24/05/2023
+function AgregarArticulos() {
+	let probarModal = false;
+	let OrdenServicio = $("#OrdenServicioCliente").val();
 
-			if (((cardCode != "") && (serie != "")) || probarModal) {
-				$.ajax({
-					type: "POST",
-					url: "md_consultar_articulos.php",
-					data: {
-						ObjType: <?php echo $IdTipoDocumento; ?>,
-						OT: OrdenServicio,
-						Edit: <?php echo $edit; ?>,
-						DocType: "<?php echo ($edit == 0) ? 22 : 23; ?>",
-						DocId: "<?php echo $row['ID_SolicitudCompra'] ?? 0; ?>",
-						DocEvent: "<?php echo $row['IdEvento'] ?? 0; ?>",
-						CardCode: cardCode,
-						IdSeries: serie,
-						IdProyecto: proyecto,
-						ListaPrecio: listaPrecio,
-						IdEmpleado: empleado
-					},
-					success: function (response) {
-						$('#mdArticulos').html(response);
-						$("#mdArticulos").modal("show");
-					}
-				});
-			} else {
-				Swal.fire({
-					title: "¡Advertencia!",
-					text: "Debe seleccionar un Cliente y una Serie.",
-					icon: "warning",
-					confirmButtonText: "OK"
-				});
+	let serie = $("#Serie").val();
+	let proyecto = $("#PrjCode").val();
+	let cardCode = $("#CardCode").val();
+	let listaPrecio = $("#IdListaPrecio").val();
+	let empleado = $("#EmpleadoVentas").val();
+
+	if (((cardCode != "") && (serie != "")) || probarModal) {
+		$.ajax({
+			type: "POST",
+			url: "md_consultar_articulos.php",
+			data: {
+				ObjType: <?php echo $IdTipoDocumento; ?>,
+				OT: OrdenServicio,
+				Edit: <?php echo $edit; ?>,
+				DocType: "<?php echo ($edit == 0) ? 22 : 23; ?>",
+				DocId: "<?php echo $row['ID_SolicitudCompra'] ?? 0; ?>",
+				DocEvent: "<?php echo $row['IdEvento'] ?? 0; ?>",
+				CardCode: cardCode,
+				IdSeries: serie,
+				IdProyecto: proyecto,
+				ListaPrecio: listaPrecio,
+				IdEmpleado: empleado
+			},
+			success: function (response) {
+				$('#mdArticulos').html(response);
+				$("#mdArticulos").modal("show");
 			}
+		});
+	} else {
+		Swal.fire({
+			title: "¡Advertencia!",
+			text: "Debe seleccionar un Cliente y una Serie.",
+			icon: "warning",
+			confirmButtonText: "OK"
+		});
+	}
+}
+
+// SMM, 27/06/2023
+function ActualizarArticulos() {
+	let probarModal = false;
+	let totalItems = parseInt(document.getElementById('TotalItems').value);
+
+	let serie = $("#Serie").val();
+	let proyecto = $("#PrjCode").val();
+	let cardCode = $("#CardCode").val();
+	let listaPrecio = $("#IdListaPrecio").val();
+	let empleado = $("#EmpleadoVentas").val();
+
+	if (((cardCode != "") && (serie != "") && (totalItems > 0)) || probarModal) {
+		$.ajax({
+			type: "POST",
+			url: "md_actualizar_articulos.php",
+			data: {
+				Edit: <?php echo $edit; ?>,
+				DocType: "<?php echo 18; ?>",
+				DocId: "<?php echo $row['ID_SolicitudCompra'] ?? 0; ?>",
+				DocEvent: "<?php echo $row['IdEvento'] ?? 0; ?>",
+				CardCode: cardCode,
+				IdSeries: serie,
+				IdProyecto: proyecto,
+				ListaPrecio: listaPrecio,
+				IdEmpleado: empleado
+			},
+			success: function (response) {
+				$('#mdLoteArticulos').html(response);
+				$("#mdLoteArticulos").modal("show");
+			}
+		});
+	} else {
+		Swal.fire({
+			title: "¡Advertencia!",
+			text: "Debe seleccionar un Cliente y una Serie. También debe haber al menos un artículo en el detalle del documento.",
+			icon: "warning",
+			confirmButtonText: "OK"
+		});
+	}
+}
+</script>
+
+<script>
+	Dropzone.options.dropzoneForm = {
+		paramName: "File", // The name that will be used to transfer the file
+		maxFilesize: "<?php echo ObtenerVariable("MaxSizeFile"); ?>", // MB
+		maxFiles: "<?php echo ObtenerVariable("CantidadArchivos"); ?>",
+		uploadMultiple: true,
+		addRemoveLinks: true,
+		dictRemoveFile: "Quitar",
+		acceptedFiles: "<?php echo ObtenerVariable("TiposArchivos"); ?>",
+		dictDefaultMessage: "<strong>Haga clic aqui para cargar anexos</strong><br>Tambien puede arrastrarlos hasta aqui<br><h4><small>(máximo <?php echo ObtenerVariable("CantidadArchivos"); ?> archivos a la vez)<small></h4>",
+		dictFallbackMessage: "Tu navegador no soporta cargue de archivos mediante arrastrar y soltar",
+		removedfile: function (file) {
+			$.get("includes/procedimientos.php", {
+				type: "3",
+				nombre: file.name
+			}).done(function (data) {
+				var _ref;
+				return (_ref = file.previewElement) !== null ? _ref.parentNode.removeChild(file.previewElement) : void 0;
+			});
 		}
-
-		// SMM, 27/06/2023
-		function ActualizarArticulos() {
-			let probarModal = false;
-			let totalItems = parseInt(document.getElementById('TotalItems').value);
-
-			let serie = $("#Serie").val();
-			let proyecto = $("#PrjCode").val();
-			let cardCode = $("#CardCode").val();
-			let listaPrecio = $("#IdListaPrecio").val();
-			let empleado = $("#EmpleadoVentas").val();
-
-			if (((cardCode != "") && (serie != "") && (totalItems > 0)) || probarModal) {
-				$.ajax({
-					type: "POST",
-					url: "md_actualizar_articulos.php",
-					data: {
-						Edit: <?php echo $edit; ?>,
-						DocType: "<?php echo 18; ?>",
-						DocId: "<?php echo $row['ID_SolicitudCompra'] ?? 0; ?>",
-						DocEvent: "<?php echo $row['IdEvento'] ?? 0; ?>",
-						CardCode: cardCode,
-						IdSeries: serie,
-						IdProyecto: proyecto,
-						ListaPrecio: listaPrecio,
-						IdEmpleado: empleado
-					},
-					success: function (response) {
-						$('#mdLoteArticulos').html(response);
-						$("#mdLoteArticulos").modal("show");
-					}
-				});
-			} else {
-				Swal.fire({
-					title: "¡Advertencia!",
-					text: "Debe seleccionar un Cliente y una Serie. También debe haber al menos un artículo en el detalle del documento.",
-					icon: "warning",
-					confirmButtonText: "OK"
-				});
-			}
-		}
-	</script>
-
-	<script>
-		Dropzone.options.dropzoneForm = {
-			paramName: "File", // The name that will be used to transfer the file
-			maxFilesize: "<?php echo ObtenerVariable("MaxSizeFile"); ?>", // MB
-			maxFiles: "<?php echo ObtenerVariable("CantidadArchivos"); ?>",
-			uploadMultiple: true,
-			addRemoveLinks: true,
-			dictRemoveFile: "Quitar",
-			acceptedFiles: "<?php echo ObtenerVariable("TiposArchivos"); ?>",
-			dictDefaultMessage: "<strong>Haga clic aqui para cargar anexos</strong><br>Tambien puede arrastrarlos hasta aqui<br><h4><small>(máximo <?php echo ObtenerVariable("CantidadArchivos"); ?> archivos a la vez)<small></h4>",
-			dictFallbackMessage: "Tu navegador no soporta cargue de archivos mediante arrastrar y soltar",
-			removedfile: function (file) {
-				$.get("includes/procedimientos.php", {
-					type: "3",
-					nombre: file.name
-				}).done(function (data) {
-					var _ref;
-					return (_ref = file.previewElement) !== null ? _ref.parentNode.removeChild(file.previewElement) : void 0;
-				});
-			}
-		};
-	</script>
-	<!-- InstanceEndEditable -->
+	};
+</script>
+<!-- InstanceEndEditable -->
 </body>
 
 <!-- InstanceEnd -->
