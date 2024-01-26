@@ -63,11 +63,11 @@ if ($sw == 1) {
 	$Param = array(
 		"'" . FormatoFecha($FechaInicial) . "'",
 		"'" . FormatoFecha($FechaFinal) . "'",
-		"'" . $Cliente . "'",
-		"'" . $Sucursal . "'",
-		"'" . $Estado . "'",
-		"'" . $Empleado . "'",
-		"'" . $Supervisor . "'",
+		"'$Cliente'",
+		"'$Sucursal'",
+		"'$Estado'",
+		"'$Empleado'",
+		"'$Supervisor'",
 	);
 	$SQL = Seleccionar("uvw_tbl_FormularioCarAdvisor", "*");
 }
@@ -277,7 +277,7 @@ $SQL_Supervisor = Seleccionar('uvw_tbl_EntregaVehiculos', 'DISTINCT id_empleado_
 												}
 												while ($row_Sucursal = sqlsrv_fetch_array($SQL_Sucursal)) { ?>
 													<option value="<?php echo $row_Sucursal['NumeroLinea']; ?>" <?php if (strcmp($row_Sucursal['NumeroLinea'], $_GET['Sucursal']) == 0) {
-														   echo "selected=\"selected\"";
+														   echo "selected";
 													   } ?>><?php echo $row_Sucursal['NombreSucursal']; ?></option>
 												<?php }
 											} ?>
@@ -291,7 +291,7 @@ $SQL_Supervisor = Seleccionar('uvw_tbl_EntregaVehiculos', 'DISTINCT id_empleado_
 											<option value="">(Todos)</option>
 											<?php while ($row_EstadoFrm = sqlsrv_fetch_array($SQL_EstadoFrm)) { ?>
 												<option value="<?php echo $row_EstadoFrm['Cod_Estado']; ?>" <?php if ((isset($_GET['Estado'])) && (strcmp($row_EstadoFrm['Cod_Estado'], $_GET['Estado']) == 0)) {
-													   echo "selected=\"selected\"";
+													   echo "selected";
 												   } ?>><?php echo $row_EstadoFrm['NombreEstado']; ?></option>
 											<?php } ?>
 										</select>
@@ -303,7 +303,7 @@ $SQL_Supervisor = Seleccionar('uvw_tbl_EntregaVehiculos', 'DISTINCT id_empleado_
 											<?php $j = 0;
 											while ($row_Empleados = sqlsrv_fetch_array($SQL_Empleados)) { ?>
 												<option value="<?php echo $row_Empleados['ID_Empleado']; ?>" <?php if ((isset($_GET['Empleado'][$j]) && ($_GET['Empleado'][$j] != "")) && (strcmp($row_Empleados['ID_Empleado'], $_GET['Empleado'][$j]) == 0)) {
-													   echo "selected=\"selected\"";
+													   echo "selected";
 													   $j++;
 												   } ?>><?php echo $row_Empleados['NombreEmpleado']; ?></option>
 											<?php } ?>

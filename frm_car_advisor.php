@@ -18,11 +18,11 @@ if (isset($_POST['swError']) && ($_POST['swError'] != "")) { //Para saber si ha 
 	$sw_error = 0;
 }
 
-if ($type_frm == 0) {
-	$Title = "Crear nuevo Car Advisor";
-} else {
-	$Title = "Editar Car Advisor"; // useless
-}
+$Title = "Crear nuevo Car Advisor";
+
+$SQL_ID = Seleccionar("tbl_FormularioCarAdvisor", "MAX(id_formulario_caradvisor) + 1 AS next_id");
+$row_ID = sqlsrv_fetch_array($SQL_ID);
+$id = $row_ID["next_id"] ?? "";
 ?>
 
 <!DOCTYPE html>
@@ -40,10 +40,10 @@ if ($type_frm == 0) {
 
 	<script type="text/javascript">
 		$(document).ready(function () {
-			// Espacio para nuevo código jQuery
+			// Espacio para nuevo código jQuery.
 		});
-		
-		// Espacio para nueva funciones JS
+
+		// Espacio para nueva funciones JS.
 	</script>
 	<!-- InstanceEndEditable -->
 </head>
@@ -72,8 +72,7 @@ if ($type_frm == 0) {
 							</a>
 						</li>
 						<li class="active">
-							<a
-								href="<?php echo "consultar_frm_car_advisor.php"; ?>">
+							<a href="<?php echo "consultar_frm_car_advisor.php"; ?>">
 								<?php echo "Car Advisor"; ?>
 							</a>
 						</li>
@@ -104,81 +103,108 @@ if ($type_frm == 0) {
 									<div class="ibox-content">
 										<div class="form-group">
 											<div class="col-lg-4">
-												<label class="control-label">Teléfono <span
-														class="text-danger">*</span></label>
-
-												<input name="telefono" type="text" class="form-control" id="telefono"
-													required maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
-														echo "readonly";
-													} ?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {
-														  echo $row['TelefonoContacto'];
-													  } elseif ($dt_LS == 1) {
-														  echo isset($_GET['Telefono']) ? base64_decode($_GET['Telefono']) : "";
-													  } ?>">
+												<label class="control-label">
+													ID <span class="text-danger">*</span>
+												</label>
+												<input required readonly type="text" class="form-control"
+													name="id_formulario_caradvisor" id="id_formulario_caradvisor"
+													value="<?php echo $id; ?>">
 											</div>
-											<div class="col-lg-4">
-												<label class="control-label">Celular</label>
 
-												<input name="celular" type="text" class="form-control" id="celular"
-													maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
-														echo "readonly";
-													} ?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {
-														  echo $row['CelularContacto'];
-													  } elseif ($dt_LS == 1) {
-														  echo isset($_GET['Celular']) ? base64_decode($_GET['Celular']) : "";
-													  } ?>">
+											<div class="col-lg-4">
+												<label class="control-label">
+													Nombre Contacto <span class="text-danger">*</span>
+												</label>
+												<input required maxlength="40" autocomplete="off" type="text"
+													class="form-control" name="firstname" id="firstname"
+													value="<?php echo $_GET["firstname"] ?? ""; ?>">
 											</div>
-											<div class="col-lg-4">
-												<label class="control-label">Correo <span
-														class="text-danger">*</span></label>
 
-												<input name="correo" type="email" class="form-control" id="correo"
-													required maxlength="100" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
-														echo "readonly";
-													} ?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {
-														  echo $row['CorreoContacto'];
-													  } elseif ($dt_LS == 1) {
-														  echo isset($_GET['Correo']) ? base64_decode($_GET['Correo']) : "";
-													  } ?>">
+											<div class="col-lg-4">
+												<label class="control-label">
+													Apellido Contacto <span class="text-danger">*</span>
+												</label>
+												<input required maxlength="40" autocomplete="off" type="text"
+													class="form-control" name="lastname" id="lastname"
+													value="<?php echo $_GET["lastname"] ?? ""; ?>">
 											</div>
 										</div>
+
 										<div class="form-group">
 											<div class="col-lg-4">
-												<label class="control-label">Dirección</label>
-
-												<input name="direccion_destino" type="text" class="form-control"
-													id="direccion_destino" maxlength="100" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
-														echo "readonly";
-													} ?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {
-														  echo $row['Direccion'];
-													  } elseif ($dt_LS == 1) {
-														  echo isset($_GET['Direccion']) ? base64_decode($_GET['Direccion']) : "";
-													  } ?>">
-											</div>
-											<div class="col-lg-4">
-												<label class="control-label">Barrio</label>
-
-												<input name="barrio" type="text" class="form-control" id="barrio"
-													maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
-														echo "readonly";
-													} ?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {
-														  echo $row['barrio'];
-													  } elseif ($dt_LS == 1) {
-														  echo isset($_GET['Barrio']) ? base64_decode($_GET['Barrio']) : "";
-													  } ?>">
+												<label class="control-label">
+													ZIP <span class="text-danger">*</span>
+												</label>
+												<input required max="99999999" autocomplete="off" type="number"
+													class="form-control" name="zip" id="zip"
+													value="<?php echo $_GET["zip"] ?? ""; ?>">
 											</div>
 
 											<div class="col-lg-4">
-												<label class="control-label">Ciudad</label>
+												<label class="control-label">
+													Ciudad <span class="text-danger">*</span>
+												</label>
+												<input required maxlength="20" autocomplete="off" type="text"
+													class="form-control" name="city" id="city"
+													value="<?php echo $_GET["city"] ?? ""; ?>">
+											</div>
 
-												<input name="city" type="text" class="form-control" id="city"
-													maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
-														echo "readonly";
-													} ?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {
-														  echo $row['barrio'];
-													  } elseif ($dt_LS == 1) {
-														  echo isset($_GET['Barrio']) ? base64_decode($_GET['Barrio']) : "";
-													  } ?>">
+											<div class="col-lg-4">
+												<label class="control-label">
+													Dirección <span class="text-danger">*</span>
+												</label>
+												<input required maxlength="20" autocomplete="off" type="text"
+													class="form-control" name="street" id="street"
+													value="<?php echo $_GET["street"] ?? ""; ?>">
+											</div>
+										</div>
+
+										<div class="form-group">
+											<div class="col-lg-4">
+												<label class="control-label">
+													Teléfono <span class="text-danger">*</span>
+												</label>
+												<input required max="9999999999" autocomplete="off" type="number"
+													class="form-control" name="phone" id="phone"
+													value="<?php echo $_GET["phone"] ?? ""; ?>">
+											</div>
+
+											<div class="col-lg-4">
+												<label class="control-label">
+													Teléfono Compañía <span class="text-danger">*</span>
+												</label>
+												<input required max="9999999999" autocomplete="off" type="number"
+													class="form-control" name="phonecompany" id="phonecompany"
+													value="<?php echo $_GET["phonecompany"] ?? ""; ?>">
+											</div>
+
+											<div class="col-lg-4">
+												<label class="control-label">
+													Teléfono Móvil <span class="text-danger">*</span>
+												</label>
+												<input required max="9999999999" autocomplete="off" type="number"
+													class="form-control" name="phonemobile" id="phonemobile"
+													value="<?php echo $_GET["phonemobile"] ?? ""; ?>">
+											</div>
+										</div>
+
+										<div class="form-group">
+											<div class="col-lg-4">
+												<label class="control-label">
+													Correo electrónico <span class="text-danger">*</span>
+												</label>
+												<input required maxlength="100" autocomplete="off" type="email"
+													class="form-control" name="email" id="email"
+													value="<?php echo $_GET["email"] ?? ""; ?>">
+											</div>
+
+											<div class="col-lg-4">
+												<label class="control-label">
+													Modelo Variante <span class="text-danger">*</span>
+												</label>
+												<input required maxlength="20" autocomplete="off" type="text"
+													class="form-control" name="modelvariant" id="modelvariant"
+													value="<?php echo $_GET["modelvariant"] ?? ""; ?>">
 											</div>
 										</div>
 									</div>
@@ -195,8 +221,7 @@ if ($type_frm == 0) {
 								if (isset($_GET['return'])) {
 									$return = base64_decode($_GET['pag']) . "?" . $_GET['return'];
 								} else {
-									// Stiven Muñoz Murillo, 10/01/2022
-									$return = "consultar_frm_entrega_vehiculo.php?id=" . $frm;
+									$return = "consultar_frm_car_advisor.php";
 								}
 								?>
 								<!-- Fin, relacionado al $return -->
@@ -209,10 +234,8 @@ if ($type_frm == 0) {
 							<!-- Botones de acción al final del formulario, SMM -->
 							<div class="form-group">
 								<div class="col-lg-9">
-									<?php if ($type_frm == 0) { ?>
-										<button class="btn btn-primary" form="entregaForm" type="submit" id="Crear"><i
-												class="fa fa-check"></i> Registrar formulario</button>
-									<?php } ?>
+									<button class="btn btn-primary" form="entregaForm" type="submit" id="Crear"><i
+											class="fa fa-check"></i> Registrar formulario</button>
 									<a href="<?php echo $return; ?>" class="alkin btn btn-outline btn-default"><i
 											class="fa fa-arrow-circle-o-left"></i> Regresar</a>
 								</div>
