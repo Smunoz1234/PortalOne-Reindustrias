@@ -5,46 +5,10 @@ $IdFrm = "";
 $msg_error = ""; //Mensaje del error
 $dt_LS = 0; //sw para saber si vienen datos del SN. 0 no vienen. 1 si vienen.
 
-//Nombre del formulario
-if (isset($_REQUEST['frm']) && ($_REQUEST['frm'] != "")) {
-	$frm = $_REQUEST['frm'];
-
-	// Stiven Muñoz Murillo, 10/01/2022
-	$SQL_Cat = Seleccionar("uvw_tbl_Categorias", "ID_Categoria, NombreCategoria, NombreCategoriaPadre, URL", "ID_Categoria = '" . base64_decode($frm) . "'");
-} else {
-	// Stiven Muñoz Murillo, 09/02/2022
-	$frm = "";
-}
-
-// Stiven Muñoz Murillo, 10/01/2022
-$row_Cat = isset($SQL_Cat) ? sqlsrv_fetch_array($SQL_Cat) : [];
-
-if (isset($_GET['id']) && ($_GET['id'] != "")) {
-	$IdFrm = base64_decode($_GET['id']);
-}
-
-if (isset($_GET['tl']) && ($_GET['tl'] != "")) { //0 Creando el formulario. 1 Editando el formulario.
-	$type_frm = $_GET['tl'];
-} elseif (isset($_POST['tl']) && ($_POST['tl'] != "")) {
-	$type_frm = $_POST['tl'];
-} else {
-	$type_frm = 0;
-}
-
-if (isset($_GET['dt_LS']) && ($_GET['dt_LS']) == 1) { //Verificar que viene de una Llamada de servicio
+if (isset($_GET['dt_LS']) && ($_GET['dt_LS']) == 1) { // Verificar que viene de una Llamada de servicio
 	$dt_LS = 1;
 
-	//Clientes
-	$SQL_Cliente = Seleccionar('uvw_Sap_tbl_Clientes', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreCliente');
-	$row_Cliente = sqlsrv_fetch_array($SQL_Cliente);
-
-	//Contacto cliente
-	$SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreContacto');
-
-	//Sucursal cliente, (Se agrego "TipoDireccion='S' AND ...")
-	$SQL_SucursalCliente = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', '*', "TipoDireccion='S' AND CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreSucursal');
-
-	//Orden de servicio
+	// Orden de servicio
 	$SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . base64_decode($_GET['LS']) . "'");
 }
 
@@ -57,23 +21,8 @@ if (isset($_POST['swError']) && ($_POST['swError'] != "")) { //Para saber si ha 
 if ($type_frm == 0) {
 	$Title = "Crear nuevo Car Advisor";
 } else {
-	$Title = "Editar Car Advisor";
+	$Title = "Editar Car Advisor"; // useless
 }
-
-$dir = CrearObtenerDirTemp();
-$dir_firma = CrearObtenerDirTempFirma();
-
-// Marcas de vehiculo en la tarjeta de equipo
-$SQL_MarcaVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_MarcaVehiculo', '*');
-
-// Lineas de vehiculo en la tarjeta de equipo
-$SQL_LineaVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_LineaVehiculo', '*');
-
-// Modelo o año de fabricación de vehiculo en la tarjeta de equipo
-$SQL_ModeloVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_AñoModeloVehiculo', '*');
-
-// Colores de vehiculo en la tarjeta de equipo
-$SQL_ColorVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_ColorVehiculo', '*');
 ?>
 
 <!DOCTYPE html>
@@ -90,239 +39,11 @@ $SQL_ColorVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_ColorVehiculo', '*
 	<!-- InstanceBeginEditable name="head" -->
 
 	<script type="text/javascript">
-		$(document).ready(function () {//Cargar los combos dependiendo de otros
-			var borrarLineaModeloVehiculo = true;
-
-			$("#id_socio_negocio").change(function () {
-				$('.ibox-content').toggleClass('sk-loading', true);
-				var Cliente = document.getElementById('id_socio_negocio').value;
-
-				$.ajax({
-					type: "POST",
-					url: "ajx_cbo_select.php?type=2&id=" + Cliente,
-					success: function (response) {
-						$('#ContactoCliente').html(response).fadeIn();
-						$('#ContactoCliente').trigger('change');
-						//$('.ibox-content').toggleClass('sk-loading',false);
-					}
-				});
-
-				<?php if ($dt_LS == 0) { //Para que no recargue las listas cuando vienen de una llamada de servicio. ?>
-					$.ajax({
-						type: "POST",
-						url: "ajx_cbo_select.php?type=3&id=" + Cliente,
-						success: function (response) {
-							$('#SucursalCliente').html(response).fadeIn();
-							$('#SucursalCliente').trigger('change');
-						}
-					});
-
-					// Stiven Muñoz Murillo, 10/01/2022
-					$.ajax({
-						type: "POST",
-						url: "ajx_cbo_select.php?type=6&id=" + Cliente,
-						success: function (response) {
-							$('#id_llamada_servicio').html(response).fadeIn();
-							$('#id_llamada_servicio').trigger('change');
-						}
-					});
-				<?php } ?>
-
-				$.ajax({
-					type: "POST",
-					url: "ajx_cbo_select.php?type=16&id=" + Cliente,
-					success: function (response) {
-						$('#Area1').html(response).fadeIn();
-					}
-				});
-
-				// Stiven Muñoz Murillo, 20/01/2022
-				$.ajax({
-					url: "ajx_buscar_datos_json.php",
-					data: {
-						type: 45,
-						id: Cliente
-					},
-					dataType: 'json',
-					success: function (data) {
-						console.log("Line 151, ajx_buscar_datos_json.php 45", data);
-
-						document.getElementById('direccion_destino').value = data.Direccion;
-						document.getElementById('celular').value = data.Celular;
-						document.getElementById('ciudad').value = data.Ciudad;
-						document.getElementById('telefono').value = data.Telefono;
-						document.getElementById('correo').value = data.Correo;
-					},
-					error: function (error) {
-						console.error(error.responseText);
-					}
-				});
-
-				$('.ibox-content').toggleClass('sk-loading', false);
-			});
-			$("#SucursalCliente").change(function () {
-				$('.ibox-content').toggleClass('sk-loading', true);
-
-				var Cliente = document.getElementById('id_socio_negocio').value;
-				var Sucursal = document.getElementById('SucursalCliente').value;
-
-				if (Sucursal !== "" && Sucursal !== null && Sucursal * 1 !== -1) {
-					$.ajax({
-						url: "ajx_buscar_datos_json.php",
-						data: { type: 1, CardCode: Cliente, Sucursal: Sucursal },
-						dataType: 'json',
-						success: function (data) {
-							document.getElementById('direccion_destino').value = data.Direccion;
-							document.getElementById('barrio').value = data.Barrio;
-							document.getElementById('ciudad').value = data.Ciudad;
-							document.getElementById('telefono').value = data.TelefonoContacto;
-							document.getElementById('correo').value = data.CorreoContacto;
-						},
-						error: function (error) {
-							console.error("#SucursalCliente", error.responseText);
-						}
-					});
-				}
-
-				$('.ibox-content').toggleClass('sk-loading', false);
-			});
-			$("#ContactoCliente").change(function () {
-				$('.ibox-content').toggleClass('sk-loading', true);
-				var Contacto = document.getElementById('ContactoCliente').value;
-
-				if (Contacto !== "" && Contacto !== null) {
-					$.ajax({
-						url: "ajx_buscar_datos_json.php",
-						data: { type: 5, Contacto: Contacto },
-						dataType: 'json',
-						success: function (data) {
-							document.getElementById('telefono').value = data.Telefono;
-							document.getElementById('correo').value = data.Correo;
-						},
-						error: function (error) {
-							console.error("#ContactoCliente", error.responseText);
-						}
-					});
-				}
-
-				$('.ibox-content').toggleClass('sk-loading', false);
-			});
-
-			// Stiven Muñoz Murillo, 10/01/2021
-			$("#CDU_Marca").change(function () {
-				$('.ibox-content').toggleClass('sk-loading', true);
-				var marcaVehiculo = document.getElementById('CDU_Marca').value;
-
-				$.ajax({
-					type: "POST",
-					url: "ajx_cbo_select.php?type=39&id=" + marcaVehiculo,
-					success: function (response) {
-						// console.log(response);
-
-						if (borrarLineaModeloVehiculo) {
-							$('#CDU_Linea').html(response).fadeIn();
-							$('#CDU_Linea').trigger('change');
-						} else {
-							borrarLineaModeloVehiculo = true;
-						}
-
-						$('.ibox-content').toggleClass('sk-loading', false);
-					},
-					error: function (error) {
-						console.error("#CDU_Marca", error.responseText);
-						$('.ibox-content').toggleClass('sk-loading', false);
-					}
-				});
-			});
-
-			// Stiven Muñoz Murillo, 19/01/2021
-			$("#id_llamada_servicio").change(function () {
-				$('.ibox-content').toggleClass('sk-loading', true);
-
-				$.ajax({
-					url: "ajx_buscar_datos_json.php",
-					data: {
-						type: 44,
-						id: '',
-						ot: document.getElementById('id_llamada_servicio').value
-					},
-					dataType: 'json',
-					success: function (data) {
-						console.log("Line 254, ajx_buscar_datos_json.php 44", data);
-
-						document.getElementById('placa').value = data.SerialInterno;
-						document.getElementById('VIN').value = data.SerialFabricante;
-						document.getElementById('no_motor').value = data.No_Motor;
-
-						<?php if (PermitirFuncion(1708)) { ?> // SMM, 14/06/2022
-							document.getElementById('responsable_cliente').value = data.CDU_NombreContacto; // SMM, 15/02/2022
-							document.getElementById('telefono_responsable_cliente').value = data.CDU_TelefonoContacto; // SMM, 22/02/2022
-							document.getElementById('correo_responsable_cliente').value = data.CDU_CorreoContacto; // SMM, 22/02/2022
-						<?php } ?> // Se deben llenar sólo con el permiso.
-
-						if (data.CDU_IdMarca !== null) {
-							document.getElementById('id_marca').value = data.CDU_IdMarca;
-							$('#id_marca').trigger('change');
-
-							borrarLineaModeloVehiculo = false;
-							document.getElementById('id_linea').value = data.CDU_IdLinea;
-							$('#id_linea').trigger('change');
-
-							document.getElementById('id_annio').value = data.CDU_Ano;
-							$('#id_annio').trigger('change');
-
-							document.getElementById('id_color').value = data.CDU_Color;
-							$('#id_color').trigger('change');
-						}
-
-						$('.ibox-content').toggleClass('sk-loading', false);
-					},
-					error: function (error) {
-						console.error("#id_llamada_servicio", error.responseText);
-						$('.ibox-content').toggleClass('sk-loading', false);
-					}
-				});
-			});
+		$(document).ready(function () {
+			// Espacio para nuevo código jQuery
 		});
-
-		// Stiven Muñoz Murillo, 12/01/2022
-		function ConsultarServicio() {
-			var llamada = document.getElementById('id_llamada_servicio');
-			if (llamada.value != "") {
-				self.name = 'opener';
-				remote = open('llamada_servicio.php?id=' + Base64.encode(llamada.value) + '&ext=1&tl=1', 'remote', 'location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
-				remote.focus();
-			}
-		}
-
-		function ConsultarDatosCliente() {
-			var Cliente = document.getElementById('id_socio_negocio');
-			if (Cliente.value != "") {
-				self.name = 'opener';
-				remote = open('socios_negocios.php?id=' + Base64.encode(Cliente.value) + '&ext=1&tl=1', 'remote', 'location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
-				remote.focus();
-			}
-		}
-
-		function AbrirFirma(IDCampo) {
-			var posicion_x;
-			var posicion_y;
-			posicion_x = (screen.width / 2) - (1200 / 2);
-			posicion_y = (screen.height / 2) - (500 / 2);
-			self.name = 'opener';
-			remote = open('popup_firma.php?id=' + Base64.encode(IDCampo), 'remote', "width=1200,height=500,location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=no,fullscreen=no,directories=no,status=yes,left=" + posicion_x + ",top=" + posicion_y + "");
-			remote.focus();
-		}
-
-		// SMM, 19/04/2022
-		function ConsultarEquipo() {
-			var numSerie = document.getElementById('placa');
-			if (numSerie.value != "") {
-				self.name = 'opener';
-				remote = open('tarjeta_equipo.php?id=' + Base64.encode(numSerie.value) + '&ext=1&tl=1', 'remote', 'location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
-				remote.focus();
-			}
-		}
+		
+		// Espacio para nueva funciones JS
 	</script>
 	<!-- InstanceEndEditable -->
 </head>
@@ -347,13 +68,13 @@ $SQL_ColorVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_ColorVehiculo', '*
 						</li>
 						<li>
 							<a href="#">
-								<?php echo isset($row_Cat['NombreCategoriaPadre']) ? $row_Cat['NombreCategoriaPadre'] : " Formularios"; ?>
+								<?php echo "Formularios"; ?>
 							</a>
 						</li>
 						<li class="active">
 							<a
-								href="<?php echo isset($row_Cat['URL']) ? $row_Cat['URL'] . "?id=" . $frm : "consultar_frm_entrega_vehiculo.php" ?>">
-								<?php echo isset($row_Cat['NombreCategoria']) ? $row_Cat['NombreCategoria'] : "Entrega de vehículos"; ?>
+								href="<?php echo "consultar_frm_car_advisor.php"; ?>">
+								<?php echo "Car Advisor"; ?>
 							</a>
 						</li>
 						<li class="active">
@@ -375,81 +96,12 @@ $SQL_ColorVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_ColorVehiculo', '*
 								<!-- IBOX, Inicio -->
 								<div class="ibox">
 									<div class="ibox-title bg-success">
-										<h5 class="collapse-link"><i class="fa fa-user"></i> Datos del propietario</h5>
+										<h5 class="collapse-link"><i class="fa fa-car"></i> Información Car Advisor</h5>
 										<a class="collapse-link pull-right" style="color: white;">
 											<i class="fa fa-chevron-up"></i>
 										</a>
 									</div>
 									<div class="ibox-content">
-										<div class="form-group">
-											<div class="col-lg-4">
-												<label class="control-label"><i onClick="ConsultarDatosCliente();"
-														title="Consultar cliente" style="cursor: pointer"
-														class="btn-xs btn-success fa fa-search"></i> Cliente <span
-														class="text-danger">*</span></label>
-
-												<input name="id_socio_negocio" type="hidden" id="id_socio_negocio"
-													value="<?php if (($type_frm == 1) || ($sw_error == 1)) {
-														echo $row['ID_CodigoCliente'];
-													} elseif ($dt_LS == 1) {
-														echo $row_Cliente['CodigoCliente'];
-													} ?>">
-												<input name="socio_negocio" type="text" required class="form-control"
-													id="socio_negocio" placeholder="Digite para buscar..." <?php if ((($type_frm == 1) && ($row['Cod_Estado'] == '-1')) || ($dt_LS == 1)) {
-														echo "readonly";
-													} ?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {
-														  echo $row['NombreCliente'];
-													  } elseif ($dt_LS == 1) {
-														  echo $row_Cliente['NombreCliente'];
-													  } ?>">
-											</div>
-											<div class="col-lg-4">
-												<label class="control-label">Contacto</label>
-
-												<select name="ContactoCliente" class="form-control" id="ContactoCliente"
-													<?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
-														echo "disabled";
-													} ?>>
-													<?php if ((($type_frm == 0) || ($sw_error == 1)) && ($dt_LS != 1)) { ?>
-														<option value="">Seleccione...</option>
-													<?php } ?>
-													<?php if (($type_frm == 1) || ($sw_error == 1) || ($dt_LS == 1)) {
-														while ($row_ContactoCliente = sqlsrv_fetch_array($SQL_ContactoCliente)) { ?>
-															<option
-																value="<?php echo $row_ContactoCliente['CodigoContacto']; ?>"
-																<?php if ((isset($row['ID_Contacto'])) && (strcmp($row_ContactoCliente['CodigoContacto'], $row['ID_Contacto']) == 0)) {
-																	echo "selected";
-																} ?>>
-																<?php echo $row_ContactoCliente['ID_Contacto']; ?>
-															</option>
-														<?php }
-													} ?>
-												</select>
-											</div>
-											<div class="col-lg-4">
-												<label class="control-label">Sucursal</label>
-
-												<select name="SucursalCliente" class="form-control select2"
-													id="SucursalCliente" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
-														echo "disabled";
-													} ?>>
-													<?php if ((($type_frm == 0) || ($sw_error == 1)) && ($dt_LS != 1)) { ?>
-														<option value="">Seleccione...</option>
-													<?php } ?>
-													<?php if (($type_frm == 1) || ($sw_error == 1) || ($dt_LS == 1)) {
-														while ($row_SucursalCliente = sqlsrv_fetch_array($SQL_SucursalCliente)) { ?>
-															<option
-																value="<?php echo $row_SucursalCliente['NombreSucursal']; ?>"
-																<?php if ((isset($row['NombreSucursal'])) && (strcmp($row_SucursalCliente['NombreSucursal'], $row['NombreSucursal']) == 0)) {
-																	echo "selected";
-																} ?>>
-																<?php echo $row_SucursalCliente['NombreSucursal']; ?>
-															</option>
-														<?php }
-													} ?>
-												</select>
-											</div>
-										</div>
 										<div class="form-group">
 											<div class="col-lg-4">
 												<label class="control-label">Teléfono <span
@@ -515,368 +167,22 @@ $SQL_ColorVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_ColorVehiculo', '*
 														  echo isset($_GET['Barrio']) ? base64_decode($_GET['Barrio']) : "";
 													  } ?>">
 											</div>
+
 											<div class="col-lg-4">
 												<label class="control-label">Ciudad</label>
 
-												<input name="ciudad" type="text" class="form-control" id="ciudad"
-													maxlength="100" value="<?php if (($type_frm == 1) || ($sw_error == 1)) {
-														echo $row['ciudad'];
-													} elseif ($dt_LS == 1) {
-														echo base64_decode($_GET['Ciudad']);
-													} ?>" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
-														 echo "readonly";
-													 } ?>>
-											</div>
-										</div>
-										<div class="form-group">
-											<div class="col-lg-8 border-bottom">
-												<label class="control-label text-danger">Información del
-													servicio</label>
-											</div>
-										</div>
-										<!-- Orden de servicio, Inicio -->
-										<div class="form-group">
-											<div class="col-lg-8">
-												<label class="control-label"><i onClick="ConsultarServicio();"
-														title="Consultar llamada de servicio" style="cursor: pointer"
-														class="btn-xs btn-success fa fa-search"></i> Orden servicio
-													<span class="text-danger">*</span></label>
-
-												<select name="id_llamada_servicio" class="form-control select2" required
-													id="id_llamada_servicio" <?php if ($dt_LS == 1) {
-														echo "disabled";
-													} ?>>
-													<?php if ($dt_LS != 1) { ?>
-														<option value="">(Ninguna)</option>
-													<?php } ?>
-													<?php if ($sw_error == 1 || $dt_LS == 1 || $type_llmd == 1) {
-														while ($row_OrdenServicioCliente = sqlsrv_fetch_array($SQL_OrdenServicioCliente)) { ?>
-															<option
-																value="<?php echo $row_OrdenServicioCliente['ID_LlamadaServicio']; ?>"
-																<?php if ((isset($row['ID_OrdenServicioActividad'])) && (strcmp($row_OrdenServicioCliente['ID_LlamadaServicio'], $row['ID_LlamadaServicio']) == 0)) {
-																	echo "selected";
-																} elseif (isset($_GET['LS']) && (strcmp($row_OrdenServicioCliente['ID_LlamadaServicio'], base64_decode($_GET['LS'])) == 0)) {
-																	echo "selected";
-																} ?>><?php echo $row_OrdenServicioCliente['DocNum'] . " - " . $row_OrdenServicioCliente['AsuntoLlamada']; ?>
-															</option>
-														<?php }
-													} ?>
-												</select>
-											</div>
-										</div>
-										<!-- Orden de servicio, Fin -->
-									</div>
-								</div>
-								<!-- IBOX, Fin -->
-								<!-- IBOX, Inicio -->
-								<div class="ibox">
-									<div class="ibox-title bg-success">
-										<h5 class="collapse-link"><i class="fa fa-car"></i> Datos del vehículo</h5>
-										<a class="collapse-link pull-right" style="color: white;">
-											<i class="fa fa-chevron-up"></i>
-										</a>
-									</div>
-									<div class="ibox-content">
-										<div class="form-group">
-											<div class="col-lg-4">
-												<label class="control-label"><i onClick="ConsultarEquipo();"
-														title="Consultar Placa" style="cursor: pointer"
-														class="btn-xs btn-success fa fa-search"></i> Serial Interno
-													(Placa) <span class="text-danger">*</span></label>
-												<input <?php if ($dt_LS == 1) {
-													echo "readonly";
-												} ?> autocomplete="off"
-													name="placa" type="text" required class="form-control" id="placa"
-													maxlength="150" value="<?php if (isset($row['SerialInterno'])) {
-														echo $row['SerialInterno'];
-													} ?>">
-											</div>
-											<div class="col-lg-4">
-												<label class="control-label">Serial Fabricante (VIN) <span
-														class="text-danger">*</span></label>
-												<input <?php if ($dt_LS == 1) {
-													echo "readonly";
-												} ?> autocomplete="off"
-													name="VIN" type="text" required class="form-control" id="VIN"
-													maxlength="150" value="<?php if (isset($row['SerialFabricante'])) {
-														echo $row['SerialFabricante'];
-													} ?>">
-											</div>
-											<div class="col-lg-4">
-												<label class="control-label">No_Motor <span
-														class="text-danger">*</span></label>
-												<input autocomplete="off" name="no_motor" type="text" required
-													class="form-control" id="no_motor" maxlength="100" value="<?php if (isset($row['No_Motor'])) {
-														echo $row['No_Motor'];
-													} ?>">
-											</div>
-										</div>
-										<div class="form-group">
-											<div class="col-lg-4">
-												<label class="control-label">Marca del vehículo <span
-														class="text-danger">*</span></label>
-												<select name="id_marca" class="form-control select2" required
-													id="id_marca" <?php if ($dt_LS == 1) {
-														echo "disabled";
-													} ?>>
-													<option value="" disabled selected>Seleccione...</option>
-													<?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) { ?>
-														<option value="<?php echo $row_MarcaVehiculo['IdMarcaVehiculo']; ?>"
-															<?php if ((isset($row['CDU_IdMarca'])) && (strcmp($row_MarcaVehiculo['IdMarcaVehiculo'], $row['CDU_IdMarca']) == 0)) {
-																echo "selected";
-															} ?>>
-															<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
-														</option>
-													<?php } ?>
-												</select>
-											</div>
-											<div class="col-lg-4">
-												<label class="control-label">Línea del vehículo <span
-														class="text-danger">*</span></label>
-												<select name="id_linea" class="form-control select2" required
-													id="id_linea" <?php if ($dt_LS == 1) {
-														echo "disabled";
-													} ?>>
-													<option value="" disabled selected>Seleccione...</option>
-													<?php while ($row_LineaVehiculo = sqlsrv_fetch_array($SQL_LineaVehiculo)) { ?>
-														<option
-															value="<?php echo $row_LineaVehiculo['IdLineaModeloVehiculo']; ?>"
-															<?php if ((isset($row['CDU_IdLinea'])) && (strcmp($row_LineaVehiculo['IdLineaModeloVehiculo'], $row['CDU_IdLinea']) == 0)) {
-																echo "selected";
-															} ?>>
-															<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; ?>
-														</option>
-													<?php } ?>
-												</select>
-											</div>
-											<div class="col-lg-4">
-												<label class="control-label">Modelo del vehículo <span
-														class="text-danger">*</span></label>
-												<select name="id_annio" class="form-control select2" required
-													id="id_annio" <?php if ($dt_LS == 1) {
-														echo "disabled";
-													} ?>>
-													<option value="" disabled selected>Seleccione...</option>
-													<?php while ($row_ModeloVehiculo = sqlsrv_fetch_array($SQL_ModeloVehiculo)) { ?>
-														<option
-															value="<?php echo $row_ModeloVehiculo['CodigoModeloVehiculo']; ?>"
-															<?php if ((isset($row['CDU_Ano'])) && ((strcmp($row_ModeloVehiculo['CodigoModeloVehiculo'], $row['CDU_Ano']) == 0) || (strcmp($row_ModeloVehiculo['AñoModeloVehiculo'], $row['CDU_Ano']) == 0))) {
-																echo "selected";
-															} ?>>
-															<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; ?>
-														</option>
-													<?php } ?>
-												</select>
-											</div>
-											<div class="col-lg-4">
-												<label class="control-label">Color <span
-														class="text-danger">*</span></label>
-												<select name="id_color" class="form-control select2" required
-													id="id_color" <?php if ($dt_LS == 1) {
-														echo "disabled";
-													} ?>>
-													<option value="" disabled selected>Seleccione...</option>
-													<?php while ($row_ColorVehiculo = sqlsrv_fetch_array($SQL_ColorVehiculo)) { ?>
-														<option
-															value="<?php echo $row_ColorVehiculo['CodigoColorVehiculo']; ?>"
-															<?php if ((isset($row['CDU_Color'])) && ((strcmp($row_ColorVehiculo['CodigoColorVehiculo'], $row['CDU_Color']) == 0) || (strcmp($row_ColorVehiculo['NombreColorVehiculo'], $row['CDU_Color']) == 0))) {
-																echo "selected";
-															} ?>>
-															<?php echo $row_ColorVehiculo['NombreColorVehiculo']; ?>
-														</option>
-													<?php } ?>
-												</select>
-											</div>
-										</div>
-									</div>
-								</div>
-								<!-- IBOX, Fin -->
-								<!-- IBOX, Inicio -->
-								<div class="ibox">
-									<div class="ibox-title bg-success">
-										<h5 class="collapse-link"><i class="fa fa-info-circle"></i> Datos de Entrega
-										</h5>
-										<a class="collapse-link pull-right" style="color: white;">
-											<i class="fa fa-chevron-up"></i>
-										</a>
-									</div>
-									<div class="ibox-content">
-										<!-- Inicio, crono-info -->
-										<div class="form-group">
-											<div class="col-lg-4 border-bottom ">
-												<label class="control-label text-danger">Información cronológica de la
-													Entrega</label>
-											</div>
-										</div>
-										<div class="form-group">
-											<!-- Inicio, Componente Fecha y Hora -->
-											<div class="col-lg-6">
-												<div class="row">
-													<label class="col-lg-6 control-label"
-														style="text-align: left !important;">Fecha y hora de creación
-														<span class="text-danger">*</span></label>
-												</div>
-												<div class="row">
-													<div class="col-lg-6 input-group date">
-														<span class="input-group-addon"><i
-																class="fa fa-calendar"></i></span><input
-															name="FechaCreacion" type="text" autocomplete="off"
-															class="form-control" id="FechaCreacion" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {
-																echo $row['FechaCreacion']->format('Y-m-d');
-															} else {
-																echo date('Y-m-d');
-															} ?>" readonly placeholder="YYYY-MM-DD" required>
-													</div>
-													<div class="col-lg-6 input-group clockpicker" data-autoclose="true">
-														<input name="HoraCreacion" id="HoraCreacion" type="text"
-															autocomplete="off" class="form-control" value="<?php if (($type_frm == 1) && ($row['FechaCreacion']->format('Y-m-d')) != "1900-01-01") {
-																echo $row['FechaCreacion']->format('H:i');
-															} else {
-																echo date('H:i');
-															} ?>" readonly placeholder="hh:mm" required>
-														<span class="input-group-addon">
-															<span class="fa fa-clock-o"></span>
-														</span>
-													</div>
-												</div>
-											</div>
-											<!-- Fin, Componente Fecha y Hora -->
-											<!-- Inicio, Componente Fecha y Hora -->
-											<div class="col-lg-6">
-												<div class="row">
-													<label class="col-lg-6 control-label"
-														style="text-align: left !important;">Fecha y hora de entrega
-														<span class="text-danger">*</span></label>
-												</div>
-												<div class="row">
-													<div class="col-lg-6 input-group date">
-														<span class="input-group-addon"><i
-																class="fa fa-calendar"></i></span><input
-															name="fecha_entrega" type="text" autocomplete="off"
-															class="form-control" id="fecha_entrega" value="<?php if (($type_frm == 1) && ($row['fecha_entrega']->format('Y-m-d')) != "1900-01-01") {
-																echo $row['fecha_entrega']->format('Y-m-d');
-															} else {
-																echo date('Y-m-d');
-															} ?>" placeholder="YYYY-MM-DD" required>
-													</div>
-													<div class="col-lg-6 input-group clockpicker" data-autoclose="true">
-														<input name="hora_entrega" id="hora_entrega" type="text"
-															autocomplete="off" class="form-control" value="<?php if (($type_frm == 1) && ($row['fecha_entrega']->format('Y-m-d')) != "1900-01-01") {
-																echo $row['fecha_entrega']->format('H:i');
-															} else {
-																echo date('H:i');
-															} ?>" placeholder="hh:mm" required>
-														<span class="input-group-addon">
-															<span class="fa fa-clock-o"></span>
-														</span>
-													</div>
-												</div>
-											</div>
-											<!-- Fin, Componente Fecha y Hora -->
-										</div>
-										<!-- Fin, crono-info -->
-
-										<br><br>
-										<div class="form-group">
-											<label class="col-lg-2 control-label">Observaciones <span
-													class="text-danger">*</span></label>
-											<div class="col-lg-8">
-												<textarea name="observaciones" id="observaciones" rows="5" type="text"
-													maxlength="3000" class="form-control" required <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
+												<input name="city" type="text" class="form-control" id="city"
+													maxlength="50" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
 														echo "readonly";
-													} ?>><?php if (($type_frm == 1) || ($sw_error == 1)) {
-														 echo utf8_decode($row['ComentariosCierre']);
-													 } ?></textarea>
+													} ?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {
+														  echo $row['barrio'];
+													  } elseif ($dt_LS == 1) {
+														  echo isset($_GET['Barrio']) ? base64_decode($_GET['Barrio']) : "";
+													  } ?>">
 											</div>
 										</div>
 									</div>
 								</div>
-								<!-- IBOX, Fin -->
-
-								<!-- IBOX, Inicio -->
-								<?php if (PermitirFuncion(1708)) { ?>
-									<div class="ibox">
-										<div class="ibox-title bg-success">
-											<h5 class="collapse-link"><i class="fa fa-pencil-square-o"></i> Firmas</h5>
-											<a class="collapse-link pull-right" style="color: white;">
-												<i class="fa fa-chevron-up"></i>
-											</a>
-										</div>
-										<div class="ibox-content">
-											<div class="form-group">
-												<label class="col-lg-1 control-label">Responsable del cliente <span
-														class="text-danger">*</span></label>
-												<div class="col-lg-4">
-													<input autocomplete="off" name="responsable_cliente" type="text"
-														class="form-control" required id="responsable_cliente" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
-															echo "readonly";
-														} ?> value="<?php if (($type_frm == 1) || ($sw_error == 1)) {
-															  echo $row['ResponsableCliente'];
-														  } ?>">
-												</div>
-											</div>
-											<div class="form-group">
-												<label class="col-lg-1 control-label">Cédula de contacto <span
-														class="text-danger">*</span></label>
-												<div class="col-lg-4">
-													<input autocomplete="off" name="cedula_responsable_cliente" type="text"
-														class="form-control" required id="cedula_responsable_cliente" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
-															echo "readonly";
-														} ?>>
-												</div>
-											</div>
-											<div class="form-group">
-												<label class="col-lg-1 control-label">Teléfono de contacto <span
-														class="text-danger">*</span></label>
-												<div class="col-lg-4">
-													<input autocomplete="off" name="telefono_responsable_cliente"
-														type="text" class="form-control" required
-														id="telefono_responsable_cliente" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
-															echo "readonly";
-														} ?>>
-												</div>
-											</div>
-											<div class="form-group">
-												<label class="col-lg-1 control-label">Correo de contacto <span
-														class="text-danger">*</span></label>
-												<div class="col-lg-4">
-													<input autocomplete="off" name="correo_responsable_cliente" type="email"
-														class="form-control" required id="correo_responsable_cliente" <?php if (($type_frm == 1) && ($row['Cod_Estado'] == '-1')) {
-															echo "readonly";
-														} ?>>
-												</div>
-											</div>
-											<br><br>
-											<div class="form-group">
-												<label class="col-lg-1">Firma del cliente <span
-														class="text-danger">*</span></label>
-												<?php if ($type_frm == 1 && $row['FirmaCliente'] != "") { ?>
-													<div class="col-lg-10">
-														<span class="badge badge-primary">Firmado</span>
-													</div>
-												<?php } else { //LimpiarDirTempFirma();?>
-													<div class="col-lg-5">
-														<button class="btn btn-primary" type="button" id="FirmaCliente"
-															onClick="AbrirFirma('SigCliente');"><i
-																class="fa fa-pencil-square-o"></i> Realizar firma</button>
-														<br>
-														<input type="text" id="SigCliente" name="SigCliente" value=""
-															form="entregaForm" required readonly="readonly"
-															style="width: 0; margin-left: -7px; visibility: hidden;" />
-														<div id="msgInfoSigCliente" style="display: none;"
-															class="alert alert-info"><i class="fa fa-info-circle"></i> El
-															documento ya ha sido firmado.</div>
-													</div>
-													<div class="col-lg-5">
-														<img id="ImgSigCliente"
-															style="display: none; max-width: 100%; height: auto;" src=""
-															alt="" />
-													</div>
-												<?php } ?>
-											</div>
-										</div>
-									</div>
-								<?php } ?>
 								<!-- IBOX, Fin -->
 
 								<!-- Inicio, relacionado al $return -->
@@ -899,28 +205,6 @@ $SQL_ColorVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_ColorVehiculo', '*
 								<input type="hidden" id="return" name="return"
 									value="<?php echo base64_encode($return); ?>" />
 							</form>
-
-
-							<!-- Stiven Muñoz Murillo, 10/01/2022 -->
-							<div class="ibox">
-								<div class="ibox-title bg-success">
-									<h5 class="collapse-link"><i class="fa fa-paperclip"></i> Fotos adicionales</h5>
-									<a class="collapse-link pull-right" style="color: white;">
-										<i class="fa fa-chevron-up"></i>
-									</a>
-								</div>
-								<div class="ibox-content">
-									<div class="row">
-										<form action="upload.php?persistent=entrega_vehiculos" class="dropzone"
-											id="dropzoneForm" name="dropzoneForm">
-											<div class="fallback">
-												<input name="File" id="File" type="file" form="dropzoneForm" />
-											</div>
-										</form>
-									</div>
-								</div>
-							</div>
-							<!-- Fin Anexos -->
 
 							<!-- Botones de acción al final del formulario, SMM -->
 							<div class="form-group">
@@ -990,129 +274,6 @@ $SQL_ColorVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_ColorVehiculo', '*
 				$("#Crear").prop("disabled", false);
 			}
 		};
-	</script>
-
-	<script>
-		var photos = []; // SMM, 11/02/2022
-
-		// Stiven Muñoz Murillo, 11/01/2022
-		function uploadImage(refImage) {
-			$('.ibox-content').toggleClass('sk-loading', true); // Carga iniciada.
-
-			var formData = new FormData();
-			var file = $(`#${refImage}`)[0].files[0];
-
-			console.log("Line 1073, uploadImage", file);
-			formData.append('image', file);
-
-			if (typeof file !== 'undefined') {
-				fileSize = returnFileSize(file.size)
-
-				if (fileSize.heavy) {
-					console.error("Heavy");
-
-					mostrarAlerta(`msg${refImage}`, 'danger', `La imagen no puede superar los 2MB, actualmente pesa ${fileSize.size}`);
-					$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
-				} else {
-					// Inicio, AJAX
-					$.ajax({
-						url: 'upload_image.php?persistent=entrega_vehiculos',
-						type: 'post',
-						data: formData,
-						contentType: false,
-						processData: false,
-						success: function (response) {
-							json_response = JSON.parse(response);
-
-							photo_name = json_response.nombre;
-							photo_route = json_response.directorio + photo_name;
-
-							testImage(photo_route).then(success => {
-								console.log(success);
-								console.log("Line 1100, testImage", photo_route);
-
-								photos[refImage] = photo_name; // SMM, 11/02/2022
-
-								$(`#view${refImage}`).attr("src", photo_route);
-								mostrarAlerta(`msg${refImage}`, 'info', `Imagen cargada éxitosamente con un peso de ${fileSize.size}`);
-							})
-								.catch(error => {
-									console.error(error);
-									console.error(response);
-
-									mostrarAlerta(`msg${refImage}`, 'danger', 'Error al cargar la imagen.');
-								});
-
-							$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
-						},
-						error: function (response) {
-							console.error("server error")
-							console.error(response);
-
-							mostrarAlerta(`msg${refImage}`, 'danger', 'Error al cargar la imagen en el servidor.');
-							$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
-						}
-					});
-					// Fin, AJAX
-				}
-			} else {
-				console.log("Ninguna imagen seleccionada");
-
-				$(`#msg${refImage}`).css("display", "none");
-				$(`#view${refImage}`).attr("src", "");
-
-				$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
-			}
-			return false;
-		}
-
-		// Stiven Muñoz Murillo, 13/01/2022
-		function mostrarAlerta(id, tipo, mensaje) {
-			$(`#${id}`).attr("class", `alert alert-${tipo}`);
-			$(`#${id} span`).text(mensaje);
-			$(`#${id}`).css("display", "inherit");
-		}
-
-		function returnFileSize(number) {
-			if (number < 1024) {
-				return { heavy: false, size: (number + 'bytes') };
-			} else if (number >= 1024 && number < 1048576) {
-				number = (number / 1024).toFixed(1);
-				return { heavy: false, size: (number + 'KB') };
-			} else if (number >= 1048576) {
-				number = (number / 1048576).toFixed(1);
-				if (number > 2) {
-					return { heavy: true, size: (number + 'MB') };
-				} else {
-					return { heavy: false, size: (number + 'MB') };
-				}
-			} else {
-				return { heavy: true, size: Infinity }
-			}
-		}
-
-		// Reference, https://stackoverflow.com/questions/9714525/javascript-image-url-verify
-		function testImage(url, timeoutT) {
-			return new Promise(function (resolve, reject) {
-				var timeout = timeoutT || 5000;
-				var timer, img = new Image();
-				img.onerror = img.onabort = function () {
-					clearTimeout(timer);
-					reject("error loading image");
-				};
-				img.onload = function () {
-					clearTimeout(timer);
-					resolve("image loaded successfully");
-				};
-				timer = setTimeout(function () {
-					// reset .src to invalid URL so it stops previous
-					// loading, but doesn't trigger new load
-					img.src = "//!!!!/test.jpg";
-					reject("timeout");
-				}, timeout);
-				img.src = url;
-			});
-		}
 	</script>
 
 	<script>
@@ -1269,46 +430,6 @@ $SQL_ColorVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_ColorVehiculo', '*
 				radioClass: 'iradio_square-green',
 			});
 
-			var options = {
-				url: function (phrase) {
-					return "ajx_buscar_datos_json.php?type=7&id=" + phrase;
-				},
-
-				getValue: "NombreBuscarCliente",
-				requestDelay: 400,
-				list: {
-					match: {
-						enabled: true
-					},
-					onClickEvent: function () {
-						var value = $("#socio_negocio").getSelectedItemData().CodigoCliente;
-						$("#id_socio_negocio").val(value).trigger("change");
-					}
-				}
-			};
-			var options2 = {
-				url: function (phrase) {
-					return "ajx_buscar_datos_json.php?type=8&id=" + phrase;
-				},
-
-				getValue: "Ciudad",
-				requestDelay: 400,
-				template: {
-					type: "description",
-					fields: {
-						description: "Codigo"
-					}
-				},
-				list: {
-					match: {
-						enabled: true
-					}
-				}
-			};
-
-			$("#socio_negocio").easyAutocomplete(options);
-			$("#ciudad").easyAutocomplete(options2);
-
 			<?php if ($dt_LS == 1) { ?>
 				$('#SucursalCliente option:not(:selected)').attr('disabled', true);
 				$('#id_llamada_servicio option:not(:selected)').attr('disabled', true);
@@ -1326,4 +447,5 @@ $SQL_ColorVehiculo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_ColorVehiculo', '*
 <!-- InstanceEnd -->
 
 </html>
+
 <?php sqlsrv_close($conexion); ?>
