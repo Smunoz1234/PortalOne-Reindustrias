@@ -8,8 +8,9 @@ $dt_LS = 0; //sw para saber si vienen datos del SN. 0 no vienen. 1 si vienen.
 if (isset($_GET['dt_LS']) && ($_GET['dt_LS']) == 1) { // Verificar que viene de una Llamada de servicio
 	$dt_LS = 1;
 
-	// Orden de servicio
-	$SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . base64_decode($_GET['LS']) . "'");
+	// Orden de servicio, OT
+	$SQL_OrdenServicio = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . base64_decode($_GET['LS']) . "'");
+	$row_OT = sqlsrv_fetch_array($SQL_OrdenServicio);
 }
 
 if (isset($_POST['swError']) && ($_POST['swError'] != "")) { //Para saber si ha ocurrido un error.
@@ -166,7 +167,7 @@ if ($id_formulario_caradvisor != "") {
 												</label>
 												<input required maxlength="40" autocomplete="off" type="text"
 													class="form-control" name="firstname" id="firstname"
-													value="<?php echo $_GET["firstname"] ?? ""; ?>">
+													value="<?php echo $row_OT["NombreClienteLlamada"] ?? ""; ?>">
 											</div>
 
 											<div class="col-lg-4">
@@ -175,7 +176,7 @@ if ($id_formulario_caradvisor != "") {
 												</label>
 												<input required maxlength="40" autocomplete="off" type="text"
 													class="form-control" name="lastname" id="lastname"
-													value="<?php echo $_GET["lastname"] ?? ""; ?>">
+													value="<?php echo $row_OT["NombreClienteLlamada"] ?? ""; ?>">
 											</div>
 										</div>
 
@@ -186,7 +187,7 @@ if ($id_formulario_caradvisor != "") {
 												</label>
 												<input required max="99999999" autocomplete="off" type="number"
 													class="form-control" name="zip" id="zip"
-													value="<?php echo $_GET["zip"] ?? ""; ?>">
+													value="<?php echo $row_OT["zip"] ?? ""; ?>">
 											</div>
 
 											<div class="col-lg-4">
@@ -195,7 +196,7 @@ if ($id_formulario_caradvisor != "") {
 												</label>
 												<input required maxlength="20" autocomplete="off" type="text"
 													class="form-control" name="city" id="city"
-													value="<?php echo $_GET["city"] ?? ""; ?>">
+													value="<?php echo $row_OT["NombreSucursal"] ?? ""; ?>">
 											</div>
 
 											<div class="col-lg-4">
@@ -204,7 +205,7 @@ if ($id_formulario_caradvisor != "") {
 												</label>
 												<input required maxlength="20" autocomplete="off" type="text"
 													class="form-control" name="street" id="street"
-													value="<?php echo $_GET["street"] ?? ""; ?>">
+													value="<?php echo $row_OT["DireccionLlamada"] ?? ""; ?>">
 											</div>
 										</div>
 
@@ -215,7 +216,7 @@ if ($id_formulario_caradvisor != "") {
 												</label>
 												<input required max="9999999999" autocomplete="off" type="number"
 													class="form-control" name="phone" id="phone"
-													value="<?php echo $_GET["phone"] ?? ""; ?>">
+													value="<?php echo $row_OT["TelefonoContactoLlamada"] ?? ""; ?>">
 											</div>
 
 											<div class="col-lg-4">
@@ -224,7 +225,7 @@ if ($id_formulario_caradvisor != "") {
 												</label>
 												<input required max="9999999999" autocomplete="off" type="number"
 													class="form-control" name="phonecompany" id="phonecompany"
-													value="<?php echo $_GET["phonecompany"] ?? ""; ?>">
+													value="<?php echo $row_OT["TelefonoContactoLlamada"] ?? ""; ?>">
 											</div>
 
 											<div class="col-lg-4">
@@ -233,7 +234,7 @@ if ($id_formulario_caradvisor != "") {
 												</label>
 												<input required max="9999999999" autocomplete="off" type="number"
 													class="form-control" name="phonemobile" id="phonemobile"
-													value="<?php echo $_GET["phonemobile"] ?? ""; ?>">
+													value="<?php echo $row_OT["TelefonoContactoLlamada"] ?? ""; ?>">
 											</div>
 										</div>
 
@@ -244,7 +245,7 @@ if ($id_formulario_caradvisor != "") {
 												</label>
 												<input required maxlength="100" autocomplete="off" type="email"
 													class="form-control" name="email" id="email"
-													value="<?php echo $_GET["email"] ?? ""; ?>">
+													value="<?php echo $row_OT["CorreoContactoLlamada"] ?? ""; ?>">
 											</div>
 
 											<div class="col-lg-4">
@@ -253,7 +254,7 @@ if ($id_formulario_caradvisor != "") {
 												</label>
 												<input required maxlength="20" autocomplete="off" type="text"
 													class="form-control" name="modelvariant" id="modelvariant"
-													value="<?php echo $_GET["modelvariant"] ?? ""; ?>">
+													value="<?php echo $row_OT["modelvariant"] ?? ""; ?>">
 											</div>
 										</div>
 									</div>
@@ -370,15 +371,6 @@ if ($id_formulario_caradvisor != "") {
 				checkboxClass: 'icheckbox_square-green',
 				radioClass: 'iradio_square-green',
 			});
-
-			<?php if ($dt_LS == 1) { ?>
-				$('#SucursalCliente option:not(:selected)').attr('disabled', true);
-				$('#id_llamada_servicio option:not(:selected)').attr('disabled', true);
-
-				// Stiven Muñoz Murillo, 20/01/2022
-				$('#id_llamada_servicio').trigger('change');
-				$('#id_socio_negocio').trigger('change');
-			<?php } ?>
 		});
 	</script>
 
