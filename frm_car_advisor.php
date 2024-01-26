@@ -23,6 +23,55 @@ $Title = "Crear nuevo Car Advisor";
 $SQL_ID = Seleccionar("tbl_FormularioCarAdvisor", "MAX(id_formulario_caradvisor) + 1 AS next_id");
 $row_ID = sqlsrv_fetch_array($SQL_ID);
 $id = $row_ID["next_id"] ?? "";
+
+// No se necesita el archivo WS, porque se agrega directamente a la BD.
+$id_formulario_caradvisor = $_POST["id_formulario_caradvisor"] ?? "";
+if ($id_formulario_caradvisor != "") {
+	$firstname = $_POST["firstname"] ?? "";
+	$lastname = $_POST["lastname"] ?? "";
+	$email = $_POST["email"] ?? "";
+	$zip = $_POST["zip"] ?? "";
+	$city = $_POST["city"] ?? "";
+	$street = $_POST["street"] ?? "";
+	$phone = $_POST["phone"] ?? "";
+	$phonecompany = $_POST["phonecompany"] ?? "";
+	$phonemobile = $_POST["phonemobile"] ?? "";
+	$modelvariant = $_POST["modelvariant"] ?? "";
+	$User = $_SESSION['CodUser'] ?? "";
+
+	$param_ca = array(
+		"1",
+		"''", // $id_formulario_caradvisor
+		"'$firstname'",
+		"'$lastname'",
+		"'$email'",
+		"'$zip'",
+		"'$city'",
+		"'$street'",
+		"'$phone'",
+		"'$phonecompany'",
+		"'$phonemobile'",
+		"'$modelvariant'",
+		"'$User'",
+	);
+	$SQL_Operacion = EjecutarSP("sp_tbl_FormularioCarAdvisor", $param_ca);
+
+	if (!$SQL_Operacion) {
+		echo "No se pudo actualizar el registro.";
+	} else {
+		$row = sqlsrv_fetch_array($SQL_Operacion);
+
+		$error_ca = $row["Error"] ?? "";
+		if ($error_ca != "") {
+			echo "No se pudo actualizar el registro. ($error_ca)";
+		} else {
+			echo "OK";
+		}
+	}
+
+	// Mostrar mensajes AJAX.
+	exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -91,7 +140,7 @@ $id = $row_ID["next_id"] ?? "";
 					<div class="row">
 						<div class="col-lg-12">
 							<form action="frm_entrega_vehiculo.php" method="post" class="form-horizontal"
-								enctype="multipart/form-data" id="entregaForm">
+								enctype="multipart/form-data" id="formCA">
 								<!-- IBOX, Inicio -->
 								<div class="ibox">
 									<div class="ibox-title bg-success">
@@ -234,7 +283,7 @@ $id = $row_ID["next_id"] ?? "";
 							<!-- Botones de acción al final del formulario, SMM -->
 							<div class="form-group">
 								<div class="col-lg-9">
-									<button class="btn btn-primary" form="entregaForm" type="submit" id="Crear"><i
+									<button class="btn btn-primary" form="formCA" type="submit" id="Crear"><i
 											class="fa fa-check"></i> Registrar formulario</button>
 									<a href="<?php echo $return; ?>" class="alkin btn btn-outline btn-default"><i
 											class="fa fa-arrow-circle-o-left"></i> Regresar</a>
@@ -254,142 +303,60 @@ $id = $row_ID["next_id"] ?? "";
 	<!-- InstanceBeginEditable name="EditRegion4" -->
 
 	<script>
-		var anexos = []; // SMM, 16/02/2022
-
-		// Stiven Muñoz Murillo, 11/01/2022
-		Dropzone.options.dropzoneForm = {
-			paramName: "File", // The name that will be used to transfer the file
-			maxFilesize: "<?php echo ObtenerVariable("MaxSizeFile"); ?>", // MB
-			maxFiles: "<?php echo ObtenerVariable("CantidadArchivos"); ?>",
-			uploadMultiple: true,
-			addRemoveLinks: true,
-			dictRemoveFile: "Quitar",
-			acceptedFiles: "<?php echo ObtenerVariable("TiposArchivos"); ?>",
-			dictDefaultMessage: "<strong>Haga clic aqui para cargar anexos</strong><br>Tambien puede arrastrarlos hasta aqui<br><h4><small>(máximo <?php echo ObtenerVariable("CantidadArchivos"); ?> archivos a la vez)<small></h4>",
-			dictFallbackMessage: "Tu navegador no soporta cargue de archivos mediante arrastrar y soltar",
-			removedfile: function (file) {
-				var indice = anexos.indexOf(file.name);
-				if (indice !== -1) {
-					anexos.splice(indice, 1);
-				}
-
-				$.get("includes/procedimientos.php", {
-					type: "3",
-					nombre: file.name
-				}).done(function (data) {
-					var _ref;
-					return (_ref = file.previewElement) !== null ? _ref.parentNode.removeChild(file.previewElement) : void 0;
-				});
-			},
-			init: function (file) {
-				this.on("addedfile", file => {
-					anexos.push(file.name); // SMM, 16/02/2022
-					console.log("Line 1057, Dropzone(addedfile)", file.name);
-
-					// SMM, 28/09/2022
-					$("#Crear").prop("disabled", true);
-				});
-			},
-			queuecomplete: function () {
-				console.log("Line 1087, Dropzone(queuecomplete)");
-
-				// SMM, 28/09/2022
-				$("#Crear").prop("disabled", false);
-			}
-		};
-	</script>
-
-	<script>
 		$(document).ready(function () {
-			maxLength('observaciones'); // SMM, 02/03/2022
-
-			var bandera_fechas = false; // SMM, 25/02/2022
-			$('#entregaForm').on('submit', function (event) {
-				// Stiven Muñoz Murillo, 08/02/2022
+			$('#formCA').on('submit', function (event) {
 				event.preventDefault();
-
-				// Stiven Muñoz Murillo, 25/02/2022
-				let d1 = new Date(`${$('#fecha_ingreso').val()} ${$('#hora_ingreso').val()}`);
-				let d2 = new Date(`${$('#fecha_aprox_entrega').val()} ${$('#hora_aprox_entrega').val()}`);
-
-				console.log(d1);
-				console.log(d2);
-
-				// Stiven Muñoz Murillo, 25/02/2022
-				bandera_fechas = (d1 > d2) ? true : false;
 			});
 
-			$("#entregaForm").validate({
+			$("#formCA").validate({
 				submitHandler: function (form) {
-					if (bandera_fechas) {
-						Swal.fire({
-							"title": "¡Ha ocurrido un error!",
-							"text": "La fecha de ingreso no puede superar a la fecha de entrega.",
-							"icon": "warning"
-						});
-					} else {
-						Swal.fire({
-							title: "¿Desea continuar con el registro?",
-							icon: "question",
-							showCancelButton: true,
-							confirmButtonText: "Si, confirmo",
-							cancelButtonText: "No"
-						}).then((result) => {
-							if (result.isConfirmed) {
-								$('.ibox-content').toggleClass('sk-loading', true); // Carga iniciada.
+					$('.ibox-content').toggleClass('sk-loading', true); // Cargando...
 
-								let formData = new FormData(form);
-								Object.entries(photos).forEach(([key, value]) => formData.append(key, value));
-								Object.entries(anexos).forEach(([key, value]) => formData.append(`Anexo${key}`, value));
+					let formData = new FormData(form);
 
-								// Agregar valores de las listas
-								formData.append("id_llamada_servicio", $("#id_llamada_servicio").val());
-								formData.append("id_marca", $("#id_marca").val());
-								formData.append("id_linea", $("#id_linea").val());
-								formData.append("id_annio", $("#id_annio").val());
-								formData.append("id_color", $("#id_color").val());
+					// Ejemplo de como agregar nuevos campos.
+					// formData.append("Dim1", $("#Dim1").val() || "");
 
-								let json = Object.fromEntries(formData);
-								localStorage.entregaForm = JSON.stringify(json);
+					let json = Object.fromEntries(formData);
+					console.log("Line 140", json);
 
-								console.log("Line 1790", json);
+					// Inicio, AJAX
+					$.ajax({
+						url: 'frm_car_advisor.php',
+						type: 'POST',
+						data: formData,
+						processData: false,  // tell jQuery not to process the data
+						contentType: false,   // tell jQuery not to set contentType
+						success: function (response) {
+							console.log("Line 330", response);
 
-								// Inicio, AJAX
-								$.ajax({
-									url: 'frm_entrega_vehiculo_ws.php',
-									type: 'POST',
-									data: formData,
-									processData: false,  // tell jQuery not to process the data
-									contentType: false,   // tell jQuery not to set contentType
-									success: function (response) {
-										console.log("Line 1273", response);
-
-										try {
-											let json_response = JSON.parse(response);
-											Swal.fire(json_response).then(() => {
-												if (json_response.hasOwnProperty('return')) {
-													window.location = json_response.return;
-												}
-											});
-										} catch (error) {
-											console.log("Line 1283", error);
-										}
-
-										$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
-									},
-									error: function (response) {
-										console.error("server error")
-										console.error(response);
-
-										$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
+							if (response === "OK") {
+								Swal.fire({
+									icon: "success",
+									title: "¡Listo!",
+									text: "Se agrego el registro correctamente."
+								}).then((result) => {
+									if (result.isConfirmed) {
+										location.reload();
 									}
 								});
-								// Fin, AJAX
 							} else {
-								console.log("Registro NO confirmado.")
+								Swal.fire({
+									icon: "warning",
+									title: "¡Error!",
+									text: response
+								});
 							}
-						}); // SMM, 14/06/2022
-					}
+
+							$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
+						},
+						error: function (error) {
+							console.error(error.responseText);
+
+							$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
+						}
+					});
+					// Fin, AJAX
 				}
 			});
 
@@ -397,57 +364,8 @@ $id = $row_ID["next_id"] ?? "";
 				$('.ibox-content').toggleClass('sk-loading');
 			});
 
-			// Inicio, sección de fechas y horas.
-			if (!$('#fecha_ingreso').prop('readonly')) {
-				$('#fecha_ingreso').datepicker({
-					todayBtn: "linked",
-					keyboardNavigation: false,
-					forceParse: false,
-					calendarWeeks: true,
-					autoclose: true,
-					format: 'yyyy-mm-dd',
-					todayHighlight: true,
-					endDate: '<?php echo date('Y-m-d'); ?>'
-				});
-
-				$('#hora_ingreso').clockpicker({
-					donetext: 'Done'
-				});
-			}
-			if (!$('#fecha_autoriza_campana').prop('readonly')) {
-				$('#fecha_autoriza_campana').datepicker({
-					todayBtn: "linked",
-					keyboardNavigation: false,
-					forceParse: false,
-					calendarWeeks: true,
-					autoclose: true,
-					format: 'yyyy-mm-dd',
-					todayHighlight: true
-				});
-
-				$('#hora_autoriza_campana').clockpicker({
-					donetext: 'Done'
-				});
-			}
-			if (!$('#fecha_aprox_entrega').prop('readonly')) {
-				$('#fecha_aprox_entrega').datepicker({
-					todayBtn: "linked",
-					keyboardNavigation: false,
-					forceParse: false,
-					calendarWeeks: true,
-					autoclose: true,
-					format: 'yyyy-mm-dd',
-					todayHighlight: true
-				});
-
-				$('#hora_aprox_entrega').clockpicker({
-					donetext: 'Done'
-				});
-			}
-			// Fin, sección de fechas y horas.
-
-
 			$(".select2").select2();
+
 			$('.i-checks').iCheck({
 				checkboxClass: 'icheckbox_square-green',
 				radioClass: 'iradio_square-green',

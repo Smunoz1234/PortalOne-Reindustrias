@@ -18,6 +18,7 @@ if ($id_formulario_caradvisor != "") {
 	$User = $_SESSION['CodUser'] ?? "";
 
 	$param_ca = array(
+		"2",
 		"'$id_formulario_caradvisor'",
 		"'$firstname'",
 		"'$lastname'",
