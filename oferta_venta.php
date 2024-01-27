@@ -360,6 +360,11 @@ if ($edit == 1 && $sw_error == 0) {
 	$SQL = sqlsrv_query($conexion, $Cons);
 	$row = sqlsrv_fetch_array($SQL);
 
+	// SMM, 27/01/2024
+	if(!$SQL) {
+		echo $Cons;
+	}
+
 	//Clientes
 	$SQL_Cliente = Seleccionar('uvw_Sap_tbl_Clientes', '*', "CodigoCliente='" . $row['CardCode'] . "'", 'NombreCliente');
 

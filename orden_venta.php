@@ -485,13 +485,15 @@ if ($edit == 1 && $sw_error == 0) {
 	// Empleado de ventas. SMM, 29/05/2023 
 	$SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', '', 'DE_EmpVentas');
 
-	//Orden de venta
-	$Cons = "Select * From uvw_tbl_OrdenVenta Where DocEntry='" . $IdOrden . "' AND IdEvento='" . $IdEvento . "'";
+	// Orden de venta
+	$Cons = "SELECT * FROM uvw_tbl_OrdenVenta Where DocEntry='$IdOrden' AND IdEvento='$IdEvento'";
 	$SQL = sqlsrv_query($conexion, $Cons);
 	$row = sqlsrv_fetch_array($SQL);
 
-	// SMM, 06/09/2022
-	// echo $Cons;
+	// SMM, 27/01/2024
+	if(!$SQL) {
+		echo $Cons;
+	}
 
 	//Clientes
 	$SQL_Cliente = Seleccionar('uvw_Sap_tbl_Clientes', '*', "CodigoCliente='" . $row['CardCode'] . "'", 'NombreCliente');
