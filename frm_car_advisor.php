@@ -4,12 +4,14 @@ PermitirAcceso(1711);
 $IdFrm = "";
 $msg_error = ""; //Mensaje del error
 $dt_LS = 0; //sw para saber si vienen datos del SN. 0 no vienen. 1 si vienen.
+$LS = ""; //ID_LlamadaServicio
 
 if (isset($_GET['dt_LS']) && ($_GET['dt_LS']) == 1) { // Verificar que viene de una Llamada de servicio
 	$dt_LS = 1;
+	$LS = base64_decode($_GET['LS'] ?? "");
 
 	// Orden de servicio, OT
-	$SQL_OrdenServicio = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . base64_decode($_GET['LS']) . "'");
+	$SQL_OrdenServicio = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='$LS'");
 	$row_OT = sqlsrv_fetch_array($SQL_OrdenServicio);
 }
 
@@ -38,26 +40,53 @@ if ($id_formulario_caradvisor != "") {
 	$phonecompany = $_POST["phonecompany"] ?? "";
 	$phonemobile = $_POST["phonemobile"] ?? "";
 	$modelvariant = $_POST["modelvariant"] ?? "";
+	
+	// Info. Sesión.
 	$CodUser = $_SESSION["CodUser"] ?? "";
 	$User = $_SESSION["User"] ?? "";
 
+	// Orden de servicio, OT. CarAdvisor, CA.
+	$OT = $_POST["ID_LlamadaServicio"] ?? "";
+	$SQL_OT = Seleccionar("uvw_Sap_tbl_LlamadasServicios_CarAdvisor", "*", "ID_LlamadaServicio='$OT'");
+	$row_CA = sqlsrv_fetch_array($SQL_OT);
+
+	$vin = $row_CA["vin"] ?? "";
+	$modelcode = $row_CA["modelcode"] ?? "";
+	$brand = $row_CA["brand"] ?? "";
+	$deliverydate = $row_CA["deliverydate"] ?? "";
+	$connected = $row_CA["connected"] ?? "";
+	$dealernr = $row_CA["dealernr"] ?? "";
+	$agentid = $row_CA["agentid"] ?? "";
+	$kdbid = $row_CA["kdbid"] ?? "";
+	$employeefirstname = $row_CA["employeefirstname"] ?? "";
+	$employeelastname = $row_CA["employeelastname"] ?? "";
+	$cupraspecialist = $row_CA["cupraspecialist"] ?? "";
+	$gaid = $row_CA["gaid"] ?? "";
+	$salutation = $row_CA["salutation"] ?? "";
+	$academictitle = $row_CA["academictitle"] ?? "";
+	$type = $row_CA["type"] ?? "";
+	$invoicedate = $row_CA["invoicedate"] ?? "";
+	$annualservice = $row_CA["annualservice"] ?? "";
+	$iacs = $row_CA["iacs"] ?? "";
+	$emobility = $row_CA["emobility"] ?? "";
+
 	$Cabecera = array(
 		"estado" => "O",
-		"vin" => "9BWBH6BFXM4063505",
-		"modelcode" => "",
-		"brand" => "V",
+		"vin" => "$vin",
+		"modelcode" => "$modelcode",
+		"brand" => "$brand",
 		"modelvariant" => "$modelvariant",
-		"deliverydate" => "2023-12-26T00:00:00",
-		"connected" => "false",
-		"dealernr" => 28032,
-		"agentid" => 0,
-		"kdbid" => "",
-		"employeefirstname" => "ADRIAN",
-		"employeelastname" => "GALEANO RODRIGUEZ",
-		"cupraspecialist" => "false",
-		"gaid" => "",
-		"salutation" => "M",
-		"academictitle" => "",
+		"deliverydate" => "$deliverydate",
+		"connected" => "$connected",
+		"dealernr" => $dealernr,
+		"agentid" => $agentid,
+		"kdbid" => "$kdbid",
+		"employeefirstname" => "$employeefirstname",
+		"employeelastname" => "$employeelastname",
+		"cupraspecialist" => "$cupraspecialist",
+		"gaid" => "$gaid",
+		"salutation" => "$salutation",
+		"academictitle" => "$academictitle",
 		"firstname" => "$firstname",
 		"lastname" => "$lastname",
 		"zip" => "$zip",
@@ -67,22 +96,22 @@ if ($id_formulario_caradvisor != "") {
 		"phonecompany" => "$phonecompany",
 		"phonemobile" => "$phonemobile",
 		"email" => "$email",
-		"type" => "SERVICE",
-		"invoicedate" => "2023-12-26T00:00:00",
-		"annualservice" => "false",
-		"iacs" => "false",
-		"emobility" => "false",
+		"type" => "$type",
+		"invoicedate" => "$invoicedate",
+		"annualservice" => "$annualservice",
+		"iacs" => "$iacs",
+		"emobility" => "$emobility",
 		"id_usuario_cierre" => null,
 		"fecha_cierre" => null,
 		"hora_cierre" => null,
 		"comentarios_cierre" => null,
 		"app" => "PortalOne",
-		"id_documento_base" => 111000181,
+		"id_documento_base" => $OT,
 		"id_tipo_objeto_documento_base" => "191",
 		"id_usuario_creacion" => $CodUser,
 		"usuario_creacion" => "$User",
-		"id_llamada_servicio" => 111000181,
-		"docentry_llamada_servicio" => 44178
+		"id_llamada_servicio" => $OT,
+		"docentry_llamada_servicio" => ($row_CA["DocNum_LlamadaServicio"] ?? "")
 	);
 
 	try {
@@ -344,12 +373,10 @@ if ($id_formulario_caradvisor != "") {
 					$('.ibox-content').toggleClass('sk-loading', true); // Cargando...
 
 					let formData = new FormData(form);
-
-					// Ejemplo de como agregar nuevos campos.
-					// formData.append("Dim1", $("#Dim1").val() || "");
+					formData.append("ID_LlamadaServicio", "<?php echo $LS; ?>");
 
 					let json = Object.fromEntries(formData);
-					console.log("Line 140", json);
+					console.log("Line 350", json);
 
 					// Inicio, AJAX
 					$.ajax({
