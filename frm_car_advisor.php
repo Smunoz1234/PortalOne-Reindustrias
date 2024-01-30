@@ -25,7 +25,7 @@ $SQL_ID = Seleccionar("tbl_FormularioCarAdvisor", "MAX(id_formulario_caradvisor)
 $row_ID = sqlsrv_fetch_array($SQL_ID);
 $id = $row_ID["next_id"] ?? "";
 
-// No se necesita el archivo WS, porque se agrega directamente a la BD.
+// Consumo la API para Crear e Integrar el CarAdvisor. SMM, 30/01/2024
 $id_formulario_caradvisor = $_POST["id_formulario_caradvisor"] ?? "";
 if ($id_formulario_caradvisor != "") {
 	$firstname = $_POST["firstname"] ?? "";
@@ -38,36 +38,66 @@ if ($id_formulario_caradvisor != "") {
 	$phonecompany = $_POST["phonecompany"] ?? "";
 	$phonemobile = $_POST["phonemobile"] ?? "";
 	$modelvariant = $_POST["modelvariant"] ?? "";
-	$User = $_SESSION['CodUser'] ?? "";
+	$CodUser = $_SESSION["CodUser"] ?? "";
+	$User = $_SESSION["User"] ?? "";
 
-	$param_ca = array(
-		"1",
-		"''", // $id_formulario_caradvisor
-		"'$firstname'",
-		"'$lastname'",
-		"'$email'",
-		"'$zip'",
-		"'$city'",
-		"'$street'",
-		"'$phone'",
-		"'$phonecompany'",
-		"'$phonemobile'",
-		"'$modelvariant'",
-		"'$User'",
+	$Cabecera = array(
+		"estado" => "O",
+		"vin" => "9BWBH6BFXM4063505",
+		"modelcode" => "",
+		"brand" => "V",
+		"modelvariant" => "$modelvariant",
+		"deliverydate" => "2023-12-26T00:00:00",
+		"connected" => "false",
+		"dealernr" => 28032,
+		"agentid" => 0,
+		"kdbid" => "",
+		"employeefirstname" => "ADRIAN",
+		"employeelastname" => "GALEANO RODRIGUEZ",
+		"cupraspecialist" => "false",
+		"gaid" => "",
+		"salutation" => "M",
+		"academictitle" => "",
+		"firstname" => "$firstname",
+		"lastname" => "$lastname",
+		"zip" => "$zip",
+		"city" => "$city",
+		"street" => "$street",
+		"phone" => "$phone",
+		"phonecompany" => "$phonecompany",
+		"phonemobile" => "$phonemobile",
+		"email" => "$email",
+		"type" => "SERVICE",
+		"invoicedate" => "2023-12-26T00:00:00",
+		"annualservice" => "false",
+		"iacs" => "false",
+		"emobility" => "false",
+		"id_usuario_cierre" => null,
+		"fecha_cierre" => null,
+		"hora_cierre" => null,
+		"comentarios_cierre" => null,
+		"app" => "PortalOne",
+		"id_documento_base" => 111000181,
+		"id_tipo_objeto_documento_base" => "191",
+		"id_usuario_creacion" => $CodUser,
+		"usuario_creacion" => "$User",
+		"id_llamada_servicio" => 111000181,
+		"docentry_llamada_servicio" => 44178
 	);
-	$SQL_Operacion = EjecutarSP("sp_tbl_FormularioCarAdvisor", $param_ca);
 
-	if (!$SQL_Operacion) {
-		echo "No se pudo actualizar el registro.";
-	} else {
-		$row = sqlsrv_fetch_array($SQL_Operacion);
-
-		$error_ca = $row["Error"] ?? "";
-		if ($error_ca != "") {
-			echo "No se pudo actualizar el registro. ($error_ca)";
+	try {
+		$Metodo = "FormularioCarAdvisor/CrearIntegrar";
+		$Resultado = EnviarWebServiceSAP($Metodo, $Cabecera, true, true);
+	
+		if ($Resultado->Success == 0) {
+			$msg_error = $Resultado->Mensaje;
+			echo "No se pudo actualizar el registro. ($msg_error)";
 		} else {
 			echo "OK";
 		}
+	} catch (Exception $e) {
+		$msg_error = $e->getMessage();
+		echo "Excepción capturada, CrearIntegrar: $msg_error";
 	}
 
 	// Mostrar mensajes AJAX.
