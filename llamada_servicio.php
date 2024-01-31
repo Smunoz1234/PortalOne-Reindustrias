@@ -2745,9 +2745,10 @@ function AgregarEsto(contenedorID, valorElemento) {
 							<div class="col-lg-4">
 								<label class="control-label">
 									<?php echo (ObtenerVariable("LabelTecnicoAdicionalLlamada") == "") ? "Técnico/Asesor Adicional" : ObtenerVariable("LabelTecnicoAdicionalLlamada"); ?>
+									<?php if (PermitirFuncion(348)) { ?><span class="text-danger">*</span><?php } ?>
 								</label>
 								
-								<select name="CDU_IdTecnicoAdicional" class="form-control select2" id="CDU_IdTecnicoAdicional" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
+								<select <?php if (PermitirFuncion(348)) { ?> required <?php } ?> name="CDU_IdTecnicoAdicional" class="form-control select2" id="CDU_IdTecnicoAdicional" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "disabled";
 								} ?>>
 									<option value="">Seleccione...</option>
