@@ -2419,7 +2419,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 						
 						<div class="form-group">
 							<label class="col-lg-1 control-label">
-								<?php if (($edit == 1) && ($row['IdLlamadaServicioPadre'] != 0)) { ?><a
+								<?php if (($edit == 1) && isset($row['IdLlamadaServicioPadre']) &&($row['IdLlamadaServicioPadre'] != 0)) { ?><a
 										href="llamada_servicio.php?id=<?php echo base64_encode($row['IdLlamadaServicioPadre']); ?>&tl=1"
 										target="_blank" title="Consultar Llamada de servicio"
 										class="btn-xs btn-success fa fa-search"></a>
