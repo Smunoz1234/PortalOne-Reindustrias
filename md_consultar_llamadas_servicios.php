@@ -87,8 +87,8 @@ $SQL_Llamadas = Seleccionar('uvw_Sap_tbl_LlamadasServicios', 'TOP 100 *', $Where
 									</div>
 									<label class="col-lg-1 control-label">Cliente</label>
 									<div class="col-lg-5">
-										<input name="Cliente" type="hidden" id="Cliente" value="<?php echo $ID_CodigoCliente ?? ''; ?>">
-										<input name="NombreCliente" type="text" class="form-control" id="NombreCliente" placeholder="Para TODOS, dejar vacio..." value="<?php echo $row_ClienteLlamada['NombreCliente'] ?? ''; ?>">
+										<input name="ClienteOT" type="hidden" id="ClienteOT" value="<?php echo $ID_CodigoCliente ?? ''; ?>">
+										<input name="NombreClienteOT" type="text" class="form-control" id="NombreClienteOT" placeholder="Para TODOS, dejar vacio..." value="<?php echo $row_ClienteLlamada['NombreClienteOT'] ?? ''; ?>">
 									</div>
 								</div>
 								<div class="form-group">
@@ -211,17 +211,17 @@ $(document).ready(function(){
 	$('#footableOT').footable();
 
 	// Inicio, cambio asincrono de sucursal en base al cliente.
-	$("#NombreCliente").on("change", function() {
-		var NomCliente=document.getElementById("NombreCliente");
-		var Cliente=document.getElementById("Cliente");
+	$("#NombreClienteOT").on("change", function() {
+		var NomCliente=document.getElementById("NombreClienteOT");
+		var Cliente=document.getElementById("ClienteOT");
 
 		if(NomCliente.value==""){
 			Cliente.value="";
-			$("#Cliente").trigger("change");
+			$("#ClienteOT").trigger("change");
 		}
 	});
 
-	$("#Cliente").change(function(){
+	$("#ClienteOT").change(function(){
 		var Cliente=document.getElementById("Cliente");
 
 		$.ajax({
@@ -303,11 +303,11 @@ $(document).ready(function(){
 				enabled: true
 			},
 			onClickEvent: function() {
-				var value = $("#NombreCliente").getSelectedItemData().CodigoCliente;
-				$("#Cliente").val(value).trigger("change");
+				var value = $("#NombreClienteOT").getSelectedItemData().CodigoCliente;
+				$("#ClienteOT").val(value).trigger("change");
 			}
 		}
 	};
-	$("#NombreCliente").easyAutocomplete(options);
+	$("#NombreClienteOT").easyAutocomplete(options);
 });
 </script>

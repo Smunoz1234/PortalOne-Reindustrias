@@ -56,8 +56,8 @@ if (isset($_POST['Series']) && $_POST['Series'] != "") {
 }
 
 // Filtrar cliente
-if (isset($_POST['Cliente']) && ($_POST['Cliente'] != "")) {
-    $Filtro .= " AND ID_CodigoCliente='" . $_POST['Cliente'] . "'";
+if (isset($_POST['ClienteOT']) && ($_POST['ClienteOT'] != "")) {
+    $Filtro .= " AND ID_CodigoCliente='" . $_POST['ClienteOT'] . "'";
 }
 
 // Filtrar sucursal
