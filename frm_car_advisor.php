@@ -345,10 +345,14 @@ if ($id_formulario_caradvisor != "") {
 							<!-- Botones de acción al final del formulario, SMM -->
 							<div class="form-group">
 								<div class="col-lg-9">
-									<button class="btn btn-primary" form="formCA" type="submit" id="Crear"><i
-											class="fa fa-check"></i> Registrar formulario</button>
-									<a href="<?php echo $return; ?>" class="alkin btn btn-outline btn-default"><i
-											class="fa fa-arrow-circle-o-left"></i> Regresar</a>
+									<button class="btn btn-primary" form="formCA" type="submit" id="Crear">
+										<i class="fa fa-check"></i> Registrar formulario
+									</button>
+									
+									<a href="<?php echo $return; ?>" class="alkin btn btn-outline btn-default"
+										id="btnRegresar">
+										<i class="fa fa-arrow-circle-o-left"></i> Regresar
+									</a>
 								</div>
 							</div>
 							<!-- Pendiente a agregar al formulario, SMM -->
@@ -397,7 +401,13 @@ if ($id_formulario_caradvisor != "") {
 									text: "Se agrego el registro correctamente."
 								}).then((result) => {
 									if (result.isConfirmed) {
-										location.reload();
+										// location.reload();
+										
+										// Obtén el elemento del botón por su id
+										let btnRegresar = document.getElementById("btnRegresar");
+            
+										// Simula un clic en el botón para activarlo y redirigir a la URL especificada
+										btnRegresar.click();
 									}
 								});
 							} else {
