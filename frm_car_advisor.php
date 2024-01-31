@@ -45,6 +45,10 @@ if ($id_formulario_caradvisor != "") {
 	$CodUser = $_SESSION["CodUser"] ?? "";
 	$User = $_SESSION["User"] ?? "";
 
+	// Fecha Actual.
+	$deliverydate = FormatoFechaToSAP(date("Y-m-d"), date("H:i:s"));
+	$invoicedate = FormatoFechaToSAP(date("Y-m-d"), date("H:i:s"));
+
 	// Orden de servicio, OT. CarAdvisor, CA.
 	$OT = $_POST["ID_LlamadaServicio"] ?? "";
 	$SQL_OT = Seleccionar("uvw_Sap_tbl_LlamadasServicios_CarAdvisor", "*", "ID_LlamadaServicio='$OT'");
@@ -53,7 +57,6 @@ if ($id_formulario_caradvisor != "") {
 	$vin = $row_CA["vin"] ?? "";
 	$modelcode = $row_CA["modelcode"] ?? "";
 	$brand = $row_CA["brand"] ?? "";
-	$deliverydate = $row_CA["deliverydate"] ?? "";
 	$connected = $row_CA["connected"] ?? "";
 	$dealernr = $row_CA["dealernr"] ?? "";
 	$agentid = $row_CA["agentid"] ?? "";
@@ -65,7 +68,6 @@ if ($id_formulario_caradvisor != "") {
 	$salutation = $row_CA["salutation"] ?? "";
 	$academictitle = $row_CA["academictitle"] ?? "";
 	$type = $row_CA["type"] ?? "";
-	$invoicedate = $row_CA["invoicedate"] ?? "";
 	$annualservice = $row_CA["annualservice"] ?? "";
 	$iacs = $row_CA["iacs"] ?? "";
 	$emobility = $row_CA["emobility"] ?? "";
@@ -110,8 +112,8 @@ if ($id_formulario_caradvisor != "") {
 		"id_tipo_objeto_documento_base" => "191",
 		"id_usuario_creacion" => $CodUser,
 		"usuario_creacion" => "$User",
-		"id_llamada_servicio" => $OT,
-		"docentry_llamada_servicio" => ($row_CA["DocNum_LlamadaServicio"] ?? "")
+		"docentry_llamada_servicio" => $OT,
+		"id_llamada_servicio" => ($row_CA["DocNum_LlamadaServicio"] ?? "")
 	);
 
 	try {
@@ -120,7 +122,7 @@ if ($id_formulario_caradvisor != "") {
 	
 		if ($Resultado->Success == 0) {
 			$msg_error = $Resultado->Mensaje;
-			echo "No se pudo actualizar el registro. ($msg_error)";
+			echo "No se pudo crear el registro. ($msg_error)";
 		} else {
 			echo "OK";
 		}
@@ -226,7 +228,7 @@ if ($id_formulario_caradvisor != "") {
 												</label>
 												<input required maxlength="40" autocomplete="off" type="text"
 													class="form-control" name="firstname" id="firstname"
-													value="<?php echo $row_OT["NombreClienteLlamada"] ?? ""; ?>">
+													value="<?php echo $row_OT["contact_firstname"] ?? ""; ?>">
 											</div>
 
 											<div class="col-lg-4">
@@ -235,7 +237,7 @@ if ($id_formulario_caradvisor != "") {
 												</label>
 												<input required maxlength="40" autocomplete="off" type="text"
 													class="form-control" name="lastname" id="lastname"
-													value="<?php echo $row_OT["NombreClienteLlamada"] ?? ""; ?>">
+													value="<?php echo $row_OT["contact_lastname"] ?? ""; ?>">
 											</div>
 										</div>
 
@@ -246,7 +248,7 @@ if ($id_formulario_caradvisor != "") {
 												</label>
 												<input required max="99999999" autocomplete="off" type="number"
 													class="form-control" name="zip" id="zip"
-													value="<?php echo $row_OT["zip"] ?? ""; ?>">
+													value="<?php echo $row_OT["ZipLlamada"] ?? ""; ?>">
 											</div>
 
 											<div class="col-lg-4">
@@ -255,7 +257,7 @@ if ($id_formulario_caradvisor != "") {
 												</label>
 												<input required maxlength="20" autocomplete="off" type="text"
 													class="form-control" name="city" id="city"
-													value="<?php echo $row_OT["NombreSucursal"] ?? ""; ?>">
+													value="<?php echo $row_OT["CiudadLlamada"] ?? ""; ?>">
 											</div>
 
 											<div class="col-lg-4">
@@ -275,7 +277,7 @@ if ($id_formulario_caradvisor != "") {
 												</label>
 												<input required max="9999999999" autocomplete="off" type="number"
 													class="form-control" name="phone" id="phone"
-													value="<?php echo $row_OT["TelefonoContactoLlamada"] ?? ""; ?>">
+													value="<?php echo $row_OT["CDU_TelefonoContacto"] ?? ""; ?>">
 											</div>
 
 											<div class="col-lg-4">
@@ -284,7 +286,7 @@ if ($id_formulario_caradvisor != "") {
 												</label>
 												<input required max="9999999999" autocomplete="off" type="number"
 													class="form-control" name="phonecompany" id="phonecompany"
-													value="<?php echo $row_OT["TelefonoContactoLlamada"] ?? ""; ?>">
+													value="<?php echo $row_OT["CDU_TelefonoContacto"] ?? ""; ?>">
 											</div>
 
 											<div class="col-lg-4">
@@ -293,7 +295,7 @@ if ($id_formulario_caradvisor != "") {
 												</label>
 												<input required max="9999999999" autocomplete="off" type="number"
 													class="form-control" name="phonemobile" id="phonemobile"
-													value="<?php echo $row_OT["TelefonoContactoLlamada"] ?? ""; ?>">
+													value="<?php echo $row_OT["CDU_TelefonoContacto"] ?? ""; ?>">
 											</div>
 										</div>
 
@@ -304,7 +306,7 @@ if ($id_formulario_caradvisor != "") {
 												</label>
 												<input required maxlength="100" autocomplete="off" type="email"
 													class="form-control" name="email" id="email"
-													value="<?php echo $row_OT["CorreoContactoLlamada"] ?? ""; ?>">
+													value="<?php echo $row_OT["CDU_CorreoContacto"] ?? ""; ?>">
 											</div>
 
 											<div class="col-lg-4">
@@ -313,7 +315,7 @@ if ($id_formulario_caradvisor != "") {
 												</label>
 												<input required maxlength="20" autocomplete="off" type="text"
 													class="form-control" name="modelvariant" id="modelvariant"
-													value="<?php echo $row_OT["modelvariant"] ?? ""; ?>">
+													value="<?php echo $row_OT["CDU_Linea"] ?? ""; ?>">
 											</div>
 										</div>
 									</div>
