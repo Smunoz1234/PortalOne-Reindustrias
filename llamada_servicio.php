@@ -966,6 +966,12 @@ $hasRowsCampanas = ($SQL_Campanas) ? sqlsrv_has_rows($SQL_Campanas) : false;
 $IdTarjetaEquipo = ($_GET["IdTE"] ?? ($row['IdTarjetaEquipo'] ?? ""));
 $SQL_NumeroSerie = Seleccionar("uvw_Sap_tbl_TarjetasEquipos", "*", "IdTarjetaEquipo='$IdTarjetaEquipo'");
 $row_NumeroSerie = sqlsrv_fetch_array($SQL_NumeroSerie);
+
+// SMM, 01/02/2024
+$Cons_Marca_CA = "SELECT dbo.[FN_NDG_PARAMETRO_CARADVISOR]('id_marca') AS marca_ca";
+$SQL_Marca_CA = sqlsrv_query($conexion, $Cons_Marca_CA);
+$row_Marca_CA = sqlsrv_fetch_array($SQL_Marca_CA);
+$marca_ca = $row_Marca_CA["marca_ca"] ?? "";
 ?>
 
 <!DOCTYPE html>
@@ -2179,7 +2185,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 									<?php if (($edit == 1) || ($sw_error == 1 || ($dt_SLS == 1))) {
 										while ($row_ContactoCliente = sqlsrv_fetch_array($SQL_ContactoCliente)) { ?>
 																	<option value="<?php echo $row_ContactoCliente['CodigoContacto']; ?>" <?php if ((isset($row['IdContactoLLamada'])) && (strcmp($row_ContactoCliente['CodigoContacto'], $row['IdContactoLLamada']) == 0)) {
-																			echo "selected=\"selected\"";
+																			echo "selected";
 																		} ?>><?php echo $row_ContactoCliente['ID_Contacto']; ?></option>
 												<?php }
 									} ?>
@@ -2194,9 +2200,9 @@ function AgregarEsto(contenedorID, valorElemento) {
 									<?php if (($edit == 1) || ($sw_error == 1 || ($dt_SLS == 1))) {
 										while ($row_SucursalCliente = sqlsrv_fetch_array($SQL_SucursalCliente)) { ?>
 																	<option value="<?php echo $row_SucursalCliente['NombreSucursal']; ?>" <?php if (isset($row['NombreSucursal']) && (strcmp($row_SucursalCliente['NombreSucursal'], $row['NombreSucursal']) == 0)) {
-																			echo "selected=\"selected\"";
+																			echo "selected";
 																		} elseif (isset($row['NombreSucursal']) && (strcmp($row_SucursalCliente['NumeroLinea'], $row['IdNombreSucursal']) == 0)) {
-																			echo "selected=\"selected\"";
+																			echo "selected";
 																			$sw_valDir = 1;
 																		} ?>><?php echo $row_SucursalCliente['NombreSucursal']; ?></option>
 												<?php }
@@ -2359,7 +2365,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 										<?php if (($edit == 1) || ($sw_error == 1 || ($dt_SLS == 1))) {
 											while ($row_ListaMateriales = sqlsrv_fetch_array($SQL_ListaMateriales)) { ?>
 																		<option value="<?php echo $row_ListaMateriales['ItemCode']; ?>" <?php if ((isset($row['CDU_ListaMateriales'])) && (strcmp($row_ListaMateriales['ItemCode'], $row['CDU_ListaMateriales']) == 0)) {
-																			echo "selected=\"selected\"";
+																			echo "selected";
 																		} ?>><?php echo $row_ListaMateriales['ItemName']; ?></option>
 													<?php }
 										} ?>
@@ -2830,7 +2836,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								} ?> required>
 								  <?php while ($row_EstServLlamada = sqlsrv_fetch_array($SQL_EstServLlamada)) { ?>
 													<option value="<?php echo $row_EstServLlamada['IdEstadoServicio']; ?>" <?php if ((($edit == 0) && ($row_EstServLlamada['IdEstadoServicio'] == 0)) || ((isset($row['CDU_EstadoServicio'])) && (strcmp($row_EstServLlamada['IdEstadoServicio'], $row['CDU_EstadoServicio']) == 0))) {
-														   echo "selected=\"selected\"";
+														   echo "selected";
 													   } ?>><?php echo $row_EstServLlamada['DeEstadoServicio']; ?></option>
 								  <?php } ?>
 								</select>
@@ -2852,7 +2858,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								} ?> required>
 								  <?php while ($row_CanceladoPorLlamada = sqlsrv_fetch_array($SQL_CanceladoPorLlamada)) { ?>
 													<option value="<?php echo $row_CanceladoPorLlamada['IdCanceladoPor']; ?>" <?php if ((isset($row['CDU_CanceladoPor'])) && (strcmp($row_CanceladoPorLlamada['IdCanceladoPor'], $row['CDU_CanceladoPor']) == 0)) {
-														   echo "selected=\"selected\"";
+														   echo "selected";
 													   } ?>><?php echo $row_CanceladoPorLlamada['DeCanceladoPor']; ?></option>
 								  <?php } ?>
 								</select>
@@ -2895,7 +2901,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								  <?php while ($row_TipoPreventivo = sqlsrv_fetch_array($SQL_TipoPreventivo)) { ?>
 													<option value="<?php echo $row_TipoPreventivo['CodigoTipoPreventivo']; ?>"
 													<?php if ((isset($row['CDU_TipoPreventivo'])) && (strcmp($row_TipoPreventivo['CodigoTipoPreventivo'], $row['CDU_TipoPreventivo']) == 0)) {
-														echo "selected=\"selected\"";
+														echo "selected";
 													} ?>>
 														<?php echo $row_TipoPreventivo['TipoPreventivo']; ?>
 													</option>
@@ -2915,9 +2921,9 @@ function AgregarEsto(contenedorID, valorElemento) {
 								  <?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) { ?>
 												  <option value="<?php echo $row_MarcaVehiculo['IdMarcaVehiculo']; ?>"
 											  	<?php if ((isset($row['CDU_IdMarca'])) && (strcmp($row_MarcaVehiculo['IdMarcaVehiculo'], $row['CDU_IdMarca']) == 0)) {
-													  echo "selected=\"selected\"";
+													  echo "selected";
 												  } elseif ((isset($row['CDU_Marca'])) && (strcmp($row_MarcaVehiculo['IdMarcaVehiculo'], $row['CDU_Marca']) == 0)) {
-													  echo "selected=\"selected\"";
+													  echo "selected";
 												  } ?>>
 												  	<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
 												  </option>
@@ -2934,9 +2940,9 @@ function AgregarEsto(contenedorID, valorElemento) {
 								  <?php while ($row_LineaVehiculo = sqlsrv_fetch_array($SQL_LineaVehiculo)) { ?>
 													<option value="<?php echo $row_LineaVehiculo['IdLineaModeloVehiculo']; ?>"
 													<?php if ((isset($row['CDU_IdLinea'])) && (strcmp($row_LineaVehiculo['IdLineaModeloVehiculo'], $row['CDU_IdLinea']) == 0)) {
-														echo "selected=\"selected\"";
+														echo "selected";
 													} elseif ((isset($row['CDU_Linea'])) && (strcmp($row_LineaVehiculo['IdLineaModeloVehiculo'], $row['CDU_Linea']) == 0)) {
-														echo "selected=\"selected\"";
+														echo "selected";
 													} ?>>
 														<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; ?>
 													</option>
@@ -2953,7 +2959,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								  <?php while ($row_ModeloVehiculo = sqlsrv_fetch_array($SQL_ModeloVehiculo)) { ?>
 													<option value="<?php echo $row_ModeloVehiculo['CodigoModeloVehiculo']; ?>"
 													<?php if ((isset($row['CDU_Ano'])) && ((strcmp($row_ModeloVehiculo['CodigoModeloVehiculo'], $row['CDU_Ano']) == 0) || (strcmp($row_ModeloVehiculo['AñoModeloVehiculo'], $row['CDU_Ano']) == 0))) {
-														echo "selected=\"selected\"";
+														echo "selected";
 													} ?>>
 														<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; ?>
 													</option>
@@ -2991,7 +2997,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								  <?php while ($row_TipoServicio = sqlsrv_fetch_array($SQL_TipoServicio)) { ?>
 													<option value="<?php echo $row_TipoServicio['NombreTipoServicio']; ?>"
 													<?php if ((isset($row['CDU_TipoServicio'])) && (strcmp($row_TipoServicio['NombreTipoServicio'], $row['CDU_TipoServicio']) == 0)) {
-														echo "selected=\"selected\"";
+														echo "selected";
 													} ?>>
 														<?php echo $row_TipoServicio['NombreTipoServicio']; ?>
 													</option>
@@ -3592,7 +3598,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 																		<a class="dropdown-item alkin" href="frm_entrega_vehiculo.php?dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&LS=<?php echo base64_encode($IdLlamada); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('llamada_servicio.php'); ?>">Entrega vehículo</a>
 																	</li>
 																	<li>
-																		<a class="dropdown-item alkin" href="frm_car_advisor.php?dt_LS=1&LS=<?php echo base64_encode($IdLlamada); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('llamada_servicio.php'); ?>">Car Advisor</a>
+																		<a class="dropdown-item" id="btnCarAdvisor">Car Advisor</a>
 																	</li>
 																</ul>
 															</div>
@@ -3736,6 +3742,31 @@ function AgregarEsto(contenedorID, valorElemento) {
 <!-- InstanceBeginEditable name="EditRegion4" -->
 <script>
 $(document).ready(function () {
+	// Hacer llamado al botón de Car Advisor con validación de marca.
+	$("#btnCarAdvisor").on("click", function() {
+		// Evitar el comportamiento predeterminado del enlace
+		event.preventDefault();
+
+		// Obtener el botón
+		$(this).attr("href", "frm_car_advisor.php?dt_LS=1&LS=<?php echo base64_encode($IdLlamada); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('llamada_servicio.php'); ?>");
+
+		// Obtener datos del atributo data
+		let marca_ca = "<?php echo $marca_ca; ?>";
+		let id_marca = "<?php echo $row["CDU_IdMarca"] ?? ""; ?>";
+
+		// Realizar la validación
+		if ((marca_ca !== "") && (marca_ca === id_marca)) {
+			// Ir a la ruta del botón
+			window.location.href = $(this).attr('href');
+		} else {
+			Swal.fire({
+				title: '¡Advertencia!',
+				text: 'La marca no coincide con el parámetro de Car Advisor, por favor revisar y actualizar el documento.',
+				icon: 'warning',
+			});
+		}
+	});
+
 	// Esto se utiliza al momento de crear la OT desde la TE.
 	<?php if (isset($_GET["IdTE"])) { ?>
 		$('#NumeroSerie').trigger('change');
