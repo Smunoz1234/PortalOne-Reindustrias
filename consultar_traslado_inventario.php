@@ -59,9 +59,12 @@ if (isset($_GET['Cliente']) && $_GET['Cliente'] != "") {
     $Filtro .= " and CardCode='" . $_GET['Cliente'] . "'";
 }
 
+// Desactivado para pruebas. SMM, 01/02/2024
+/*
 if (isset($_GET['Empleado']) && $_GET['Empleado'] != "") {
     $Filtro .= " and CodEmpleado='" . $_GET['Empleado'] . "'";
 }
+*/
 
 // SMM, 16/02/2023
 if ($Sucursal != "") {

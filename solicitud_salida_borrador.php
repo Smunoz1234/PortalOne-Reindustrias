@@ -394,8 +394,8 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Solicitud de salida
 if ($edit == 1 && $sw_error == 0) {
 
 	$ParametrosLimpiar = array(
-		"'" . $IdSolSalida . "'",
-		"'" . $IdPortal . "'",
+		"'$IdSolSalida'",
+		"'$IdPortal'",
 		"'" . $_SESSION['CodUser'] . "'",
 	);
 	$LimpiarSolSalida = EjecutarSP('sp_EliminarDatosSolicitudSalida_Borrador', $ParametrosLimpiar);
@@ -404,8 +404,10 @@ if ($edit == 1 && $sw_error == 0) {
 	$IdEvento = $SQL_IdEvento[0];
 
 	//Solicitud de salida
-	$Cons = "Select * From uvw_tbl_SolicitudSalida_Borrador Where DocEntry='" . $IdSolSalida . "' AND IdEvento='" . $IdEvento . "'";
+	$Cons = "Select * From uvw_tbl_SolicitudSalida_Borrador Where DocEntry='$IdSolSalida' AND IdEvento='$IdEvento'";
 	$SQL = sqlsrv_query($conexion, $Cons);
+
+	// echo $Cons;
 	$row = sqlsrv_fetch_array($SQL);
 
 	//Clientes

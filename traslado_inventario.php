@@ -1815,9 +1815,9 @@ function verAutorizacion() {
 
 					<?php $cookie_cardcode = 0; ?>
 					<?php if ($edit == 1) { ?>
-						<?php $ID_SolicitudCompra = $row['ID_SolicitudCompra']; ?>
+						<?php $ID_TrasladoInv = $row['ID_TrasladoInv'] ?? ""; ?>
 						<?php $Evento = $row['IdEvento']; ?>
-						<?php $consulta_detalle = "SELECT $filtro_consulta FROM uvw_tbl_SolicitudCompraDetalle WHERE ID_SolicitudCompra='$ID_SolicitudCompra' AND IdEvento='$Evento' AND Metodo <> 3"; ?>
+						<?php $consulta_detalle = "SELECT $filtro_consulta FROM uvw_tbl_SolicitudCompraDetalle WHERE ID_TrasladoInv='$ID_TrasladoInv' AND IdEvento='$Evento' AND Metodo <> 3"; ?>
 					<?php } else { ?>
 						<?php $Usuario = $_SESSION['CodUser']; ?>
 						<?php $cookie_cardcode = 1; ?>
