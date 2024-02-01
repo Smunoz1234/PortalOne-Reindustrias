@@ -70,6 +70,7 @@ if (isset($_GET['AutorizacionSAP']) && $_GET['AutorizacionSAP'] != "") {
 }
 
 // Filtrar por perfil. SMM, 24/01/2024
+/*
 $Where_PerfilesAutorizador = "ID_Usuario='" . $_SESSION['CodUser'] . "'";
 $SQL_Perfiles = Seleccionar('uvw_tbl_UsuariosPerfilesAsignados', '*', $Where_PerfilesAutorizador);
 
@@ -94,6 +95,7 @@ if (isset($_GET['PerfilAutor'])) {
 		$SQL_Perfiles = Seleccionar('uvw_tbl_UsuariosPerfilesAsignados', '*', $Where_PerfilesAutorizador);
 	}
 }
+*/
 // Hasta aquí, 24/01/2024
 
 if (isset($_GET['Cliente']) && $_GET['Cliente'] != "") {

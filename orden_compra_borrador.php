@@ -119,11 +119,11 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Orden de compra
 
 	try {
 		if ($_POST['P'] == 39) { //Actualizar
-			$IdOrden = base64_decode($_POST['IdOrdenCompra']);
+			$IdOrdenCompra = base64_decode($_POST['IdOrdenCompra']);
 			$IdEvento = base64_decode($_POST['IdEvento']);
 			$Type = 2;
 		} else { //Crear
-			$IdOrden = "NULL";
+			$IdOrdenCompra = "NULL";
 			$IdEvento = "0";
 			$Type = 1;
 		}
@@ -257,9 +257,9 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Orden de compra
 						//Registrar archivo en la BD
 						$ParamInsAnex = array(
 							"'$IdTipoDocumento'", // SMM, 25/01/2024
-							"'" . $IdOrdenCompra . "'",
-							"'" . $OnlyName . "'",
-							"'" . $Ext . "'",
+							"'$IdOrdenCompra'",
+							"'$OnlyName'",
+							"'$Ext'",
 							"1",
 							"'" . $_SESSION['CodUser'] . "'",
 							"1",
@@ -500,8 +500,8 @@ if (isset($_GET['dt_OV']) && ($_GET['dt_OV']) == 1) { // Verificar que viene de 
 if ($edit == 1 && $sw_error == 0) {
 
 	$ParametrosLimpiar = array(
-		"'" . $IdOrden . "'",
-		"'" . $IdPortal . "'",
+		"'$IdOrdenCompra'",
+		"'$IdPortal'",
 		"'" . $_SESSION['CodUser'] . "'",
 	);
 	$LimpiarOrden = EjecutarSP('sp_EliminarDatosOrdenCompra_Borrador', $ParametrosLimpiar);
