@@ -3761,7 +3761,7 @@ $(document).ready(function () {
 		} else {
 			Swal.fire({
 				title: '¡Advertencia!',
-				text: 'La marca no coincide con el parámetro de Car Advisor, por favor revisar y actualizar el documento.',
+				text: 'La marca no coincide con el parámetro de Car Advisor, por favor revisar la marca registrada en el documento.',
 				icon: 'warning',
 			});
 		}
