@@ -13,7 +13,7 @@ $success = 1; // Confirmación de autorización (1 - Autorizado / 0 - NO Autoriz
 $mensajeProceso = ""; // Mensaje proceso, mensaje de salida del procedimiento almacenado.
 
 $msg_error = ""; //Mensaje del error
-$IdSolicitud = 0;
+$IdSolicitudCompra = 0;
 $IdPortal = 0; //Id del portal para las entregas que fueron creadas en el portal, para eliminar el registro antes de cargar al editar
 $NameFirma = "";
 
@@ -36,7 +36,7 @@ $ShipToDef = ""; // Sucursal de Destino por Defecto.
 $SQL_Procesos = Seleccionar("uvw_tbl_Autorizaciones_Procesos", "*", "Estado = 'Y' AND IdTipoDocumento = $IdTipoDocumento");
 
 if (isset($_GET['id']) && ($_GET['id'] != "")) { //ID de la Solicitud de compra (DocEntry)
-	$IdSolicitud = base64_decode($_GET['id']);
+	$IdSolicitudCompra = base64_decode($_GET['id']);
 }
 
 if (isset($_GET['id_portal']) && ($_GET['id_portal'] != "")) { // Id del portal de compra (ID interno)
@@ -63,7 +63,7 @@ if (isset($_REQUEST['tl']) && ($_REQUEST['tl'] != "")) { //0 Si se está creando
 
 // Consulta decisión de autorización en la edición de documentos.
 if ($edit == 1) {
-	$DocEntry = "'$IdSolicitud'"; // Cambiar por el ID respectivo del documento.
+	$DocEntry = "'$IdSolicitudCompra'"; // Cambiar por el ID respectivo del documento.
 
 	$EsBorrador = (false) ? "DocumentoBorrador" : "Documento";
 	$SQL_Autorizaciones = Seleccionar("uvw_Sap_tbl_Autorizaciones", "*", "IdTipoDocumento = $IdTipoDocumento AND DocEntry$EsBorrador = $DocEntry");
@@ -556,13 +556,13 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Grabar Solicitud de compras
 						} else {
 							if ($_POST['tl'] == 0) { //Creando solicitud
 								//Consultar ID creado para cargar el documento
-								$SQL_ConsID = Seleccionar('uvw_Sap_tbl_SolicitudesCompras', 'ID_SolicitudCompra', "IdDocPortal='" . $IdSolicitudCompra . "'");
+								$SQL_ConsID = Seleccionar('uvw_Sap_tbl_SolicitudesCompras', 'ID_SolicitudCompra', "IdDocPortal='$IdSolicitudCompra'");
 								$row_ConsID = sqlsrv_fetch_array($SQL_ConsID);
 								sqlsrv_close($conexion);
 								header('Location:solicitud_compra.php?id=' . base64_encode($row_ConsID['ID_SolicitudCompra']) . '&id_portal=' . base64_encode($IdSolicitudCompra) . '&tl=1&a=' . base64_encode("OK_SolCompAdd"));
 							} else { //Actualizando solicitud
 								//Consultar ID creado para cargar el documento
-								$SQL_ConsID = Seleccionar('uvw_Sap_tbl_SolicitudesCompras', 'ID_SolicitudCompra', "IdDocPortal='" . $IdSolicitudCompra . "'");
+								$SQL_ConsID = Seleccionar('uvw_Sap_tbl_SolicitudesCompras', 'ID_SolicitudCompra', "IdDocPortal='$IdSolicitudCompra'");
 								$row_ConsID = sqlsrv_fetch_array($SQL_ConsID);
 								sqlsrv_close($conexion);
 								header('Location:solicitud_compra.php?id=' . base64_encode($row_ConsID['ID_SolicitudCompra']) . '&id_portal=' . base64_encode($IdSolicitudCompra) . '&tl=1&a=' . base64_encode("OK_SolCompUpd"));
@@ -626,7 +626,7 @@ if (isset($_GET['dt_LS']) && ($_GET['dt_LS']) == 1) { //Verificar que viene de u
 	$SQL_SucursalDestino = Seleccionar('uvw_Sap_tbl_Proveedores_Sucursales', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "' AND TipoDireccion='S'", 'NombreSucursal');
 	$SQL_SucursalFacturacion = Seleccionar('uvw_Sap_tbl_Proveedores_Sucursales', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "' AND TipoDireccion='B'", 'NombreSucursal');
 
-	//Solicitud de servicio
+	// Orden de servicio
 	$SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . base64_decode($_GET['LS']) . "'");
 	$row_OrdenServicioCliente = sqlsrv_fetch_array($SQL_OrdenServicioCliente);
 }
@@ -666,7 +666,7 @@ if (isset($_GET['dt_OF']) && ($_GET['dt_OF']) == 1) { //Verificar que viene de u
 	$SQL_SucursalDestino = Seleccionar('uvw_Sap_tbl_Proveedores_Sucursales', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "' AND TipoDireccion='S'", 'NombreSucursal');
 	$SQL_SucursalFacturacion = Seleccionar('uvw_Sap_tbl_Proveedores_Sucursales', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "' AND TipoDireccion='B'", 'NombreSucursal');
 
-	//Solicitud de servicio
+	// Orden de servicio
 	$SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . base64_decode($_GET['LS']) . "'");
 	$row_OrdenServicioCliente = sqlsrv_fetch_array($SQL_OrdenServicioCliente);
 }
@@ -696,7 +696,7 @@ if (isset($_GET['dt_FC']) && ($_GET['dt_FC']) == 1) { //Verificar que viene de u
 		$(document).ready(function() {
 			Swal.fire({
 				title: '¡Ha ocurrido un error!',
-				text: 'No se pudo copiar el detale de las solicitudes de servicio en Solicitud de compra.',
+				text: 'No se pudo copiar el detale de las ordenes de servicio en Solicitud de compra.',
 				icon: 'error'
 			});
 		});
@@ -799,7 +799,7 @@ $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', "Estado =
 if ($edit == 1 && $sw_error == 0) {
 
 	$ParametrosLimpiar = array(
-		"'$IdSolicitud'",
+		"'$IdSolicitudCompra'",
 		"'$IdPortal'",
 		"'" . $_SESSION['CodUser'] . "'",
 	);
@@ -811,8 +811,8 @@ if ($edit == 1 && $sw_error == 0) {
 	// Empleado de ventas. SMM, 29/05/2023 
 	$SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', '', 'DE_EmpVentas');
 
-	//Solicitud de compra
-	$Cons = "Select * From uvw_tbl_SolicitudCompra Where DocEntry='" . $IdSolicitud . "' AND IdEvento='" . $IdEvento . "'";
+	// Solicitud de compra
+	$Cons = "SELECT * FROM uvw_tbl_SolicitudCompra_Borrador WHERE DocEntry='$IdSolicitudCompra' AND IdEvento='$IdEvento'";
 	$SQL = sqlsrv_query($conexion, $Cons);
 	$row = sqlsrv_fetch_array($SQL);
 
@@ -829,7 +829,7 @@ if ($edit == 1 && $sw_error == 0) {
 	//Contacto cliente
 	$SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ProveedorContactos', '*', "CodigoCliente='" . $row['CardCode'] . "'", 'NombreContacto');
 
-	//Solicitud de servicio, SMM 05/08/2022
+	// Orden de servicio, SMM 05/08/2022
 	$SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . $row['ID_LlamadaServicio'] . "'");
 	$row_OrdenServicioCliente = sqlsrv_fetch_array($SQL_OrdenServicioCliente);
 
@@ -838,7 +838,7 @@ if ($edit == 1 && $sw_error == 0) {
 }
 
 if ($sw_error == 1) {
-	$Cons = "SELECT * FROM uvw_tbl_SolicitudCompra WHERE ID_SolicitudCompra='$IdSolicitud' AND IdEvento='$IdEvento'";
+	$Cons = "SELECT * FROM uvw_tbl_SolicitudCompra WHERE ID_SolicitudCompra='$IdSolicitudCompra' AND IdEvento='$IdEvento'";
 	// echo $Cons;
 
 	$SQL = sqlsrv_query($conexion, $Cons);

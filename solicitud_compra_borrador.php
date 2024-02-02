@@ -23,24 +23,6 @@ $IdPortal = 0; //Id del portal para las solicitudes que fueron creadas en el por
 // Motivos de autorización, SMM 10/12/2022
 $SQL_Motivos = Seleccionar("uvw_tbl_Autorizaciones_Motivos", "*", "Estado = 'Y' AND IdTipoDocumento = 1250000001");
 
-// Dimensiones, SMM 22/08/2022
-$DimSeries = intval(ObtenerVariable("DimensionSeries"));
-$SQL_Dimensiones = Seleccionar('uvw_Sap_tbl_Dimensiones', '*', "DimActive='Y'");
-
-// Pruebas, SMM 22/08/2022
-// $SQL_Dimensiones = Seleccionar('uvw_Sap_tbl_Dimensiones', '*', 'DimCode IN (1,2)');
-
-$array_Dimensiones = [];
-while ($row_Dimension = sqlsrv_fetch_array($SQL_Dimensiones)) {
-	array_push($array_Dimensiones, $row_Dimension);
-}
-
-$encode_Dimensiones = json_encode($array_Dimensiones);
-$cadena_Dimensiones = "JSON.parse('$encode_Dimensiones'.replace(/\\n|\\r/g, ''))";
-// echo "<script> console.log('cadena_Dimensiones'); </script>";
-// echo "<script> console.log($cadena_Dimensiones); </script>";
-// Hasta aquí, SMM 29/08/2022
-
 // SMM, 30/11/2022
 $IdMotivo = "";
 $motivoAutorizacion = "";
@@ -50,17 +32,20 @@ $IdTipoDocumento = 1470000113; // Cambiar por el ID respectivo.
 $success = 1; // Confirmación de autorización (1 - Autorizado / 0 - NO Autorizado)
 $mensajeProceso = ""; // Mensaje proceso, mensaje de salida del procedimiento almacenado.
 
+// Bandera que indica si el documento se autoriza desde SAP.
+$autorizaSAP = ""; // SMM, 02/02/2024
+
 $BillToDef = ""; // Sucursal de Facturación por Defecto.
 $ShipToDef = ""; // Sucursal de Destino por Defecto.
 
 // Procesos de autorización, SMM 25/01/2024
 $SQL_Procesos = Seleccionar("uvw_tbl_Autorizaciones_Procesos", "*", "Estado = 'Y' AND IdTipoDocumento = $IdTipoDocumento");
 
-if (isset($_GET['id']) && ($_GET['id'] != "")) { //ID de la Orden de compra (DocEntry)
+if (isset($_GET['id']) && ($_GET['id'] != "")) { //ID de la Solicitud de compra (DocEntry)
 	$IdSolicitudCompra = base64_decode($_GET['id']);
 }
 
-if (isset($_GET['id_portal']) && ($_GET['id_portal'] != "")) { //Id del portal de compra (ID interno)
+if (isset($_GET['id_portal']) && ($_GET['id_portal'] != "")) { // Id del portal de compra (ID interno)
 	$IdPortal = base64_decode($_GET['id_portal']);
 }
 
@@ -82,7 +67,7 @@ if (isset($_REQUEST['tl']) && ($_REQUEST['tl'] != "")) { //0 Si se está creando
 	$edit = 0;
 }
 
-// Validar si tiene doc de destino, no se pueda editar. Modificado, SMM 25/01/2024
+// Validar si tiene doc de destino, no se pueda editar. SMM 02/02/2024
 if (!isset($row['DocDestinoDocEntry']) || ($row['DocDestinoDocEntry'] == "")) {
 	$EstadoReal = $row['Cod_Estado'] ?? "C";
 }
@@ -172,7 +157,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Grabar Solicitud de compras
 			"'" . FormatoFecha($_POST['DocDate']) . "'",
 			"'" . FormatoFecha($_POST['DocDueDate']) . "'",
 			"'" . FormatoFecha($_POST['TaxDate']) . "'",
-			"'" . FormatoFecha($_POST['ReqDate']) . "'", // SMM, 07/02/2023
+			"'" . FormatoFecha($_POST['ReqDate']) . "'", // SMM, 02/02/2024
 			"'" . $_POST['CardCode'] . "'",
 			"'" . $_POST['ContactoCliente'] . "'",
 			"'" . $_POST['OrdenServicioCliente'] . "'",
@@ -192,7 +177,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Grabar Solicitud de compras
 			"'" . LSiqmlObs($_POST['DireccionDestino']) . "'",
 			"'" . $_POST['CondicionPago'] . "'",
 			"'" . $_POST['PrjCode'] . "'",
-			"'" . ($_POST['Autorizacion'] ?? "P") . "'", // SMM, 25/01/2024
+			"'" . ($_POST['Autorizacion'] ?? "P") . "'", // SMM, 02/02/2024
 			"'" . ($_POST['Almacen'] ?? "") . "'",
 			"'" . $_SESSION['CodUser'] . "'",
 			"'" . $_SESSION['CodUser'] . "'",
@@ -201,21 +186,13 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Grabar Solicitud de compras
 			"'" . ($_POST['IdMotivoAutorizacion'] ?? "") . "'",
 			"'" . ($_POST['ComentariosAutor'] ?? "") . "'",
 			"'" . ($_POST['MensajeProceso'] ?? "") . "'",
-			// SMM, 25/01/2024
+			// SMM, 02/02/2024
 			"'" . ($_POST['AutorizacionSAP'] ?? "") . "'",
 			isset($_POST['FechaAutorizacionPO']) ? ("'" . FormatoFecha($_POST['FechaAutorizacionPO']) . "'") : "NULL",
 			isset($_POST['HoraAutorizacionPO']) ? ("'" . $_POST['HoraAutorizacionPO'] . "'") : "NULL",
 			"'" . ($_POST['UsuarioAutorizacionPO'] ?? "") . "'",
 			"'" . ($_POST['ComentariosAutorizacionPO'] ?? "") . "'",
 		);
-
-		// Enviar el valor de la dimensiones dinámicamente al SP.
-		foreach ($array_Dimensiones as &$dim) {
-			$Dim_PostValue = $_POST[strval($dim['IdPortalOne'])];
-
-			// El nombre de los parámetros es diferente en cada documento.
-			array_push($ParametrosCabOrdenCompra, "'$Dim_PostValue'");
-		} // SMM, 22/08/2022
 
 		$SQL_CabeceraSolicitudCompra = EjecutarSP('sp_tbl_SolicitudCompra', $ParametrosCabSolicitudCompra, $_POST['P']);
 		if ($SQL_CabeceraSolicitudCompra) {
@@ -231,9 +208,9 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Grabar Solicitud de compras
 
 					if (in_array($_SESSION['Perfil'], $ids_perfiles) || (count($ids_perfiles) == 0)) {
 						$sql = $row_Proceso['Condiciones'] ?? '';
-						$autorizaSAP = $row_Proceso['AutorizacionSAP'] ?? ''; // SMM, 25/01/2024
+						$autorizaSAP = $row_Proceso['AutorizacionSAP'] ?? ''; // SMM, 02/02/2024
 
-						// Aquí se debe reemplazar por el ID del documento. SMM, 25/01/2024
+						// Aquí se debe reemplazar por el ID del documento. SMM, 02/02/2024
 						$sql = str_replace("[IdDocumento]", $IdSolicitudCompra, $sql);
 						$sql = str_replace("[IdEvento]", $IdEvento, $sql);
 
@@ -270,7 +247,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Grabar Solicitud de compras
 				}
 
 				$motivoAutorizacion = $row_MotivoAutorizacion['MotivoAutorizacion'] ?? "";
-				// Hasta aquí, 25/01/2024
+				// Hasta aquí, 02/02/2024
 
 			} else {
 				$IdSolicitudCompra = base64_decode($_POST['IdSolicitudCompra']); //Lo coloco otra vez solo para saber que tiene ese valor
@@ -293,7 +270,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Grabar Solicitud de compras
 
 						//Registrar archivo en la BD
 						$ParamInsAnex = array(
-							"'$IdTipoDocumento'", // SMM, 25/01/2024
+							"'$IdTipoDocumento'", // SMM, 02/02/2024
 							"'" . $IdSolicitudCompra . "'",
 							"'" . $OnlyName . "'",
 							"'" . $Ext . "'",
@@ -581,7 +558,6 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Grabar Solicitud de compras
 			// Fin, Envio WebService
 
 			// Verificar que el documento cumpla las Condiciones o este Pendiente de Autorización.
-			// if (($success == 1) || ($_POST['Autorizacion'] != "P")) {
 			if (isset($_POST['Autorizacion']) && ($_POST['Autorizacion'] != "P")) {
 				$success = 1;
 
@@ -625,7 +601,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Grabar Solicitud de compras
 				$sw_error = 1;
 				$msg_error = "Este documento necesita autorización.";
 			}
-			// Hasta aquí, 25/01/2024
+			// Hasta aquí, 02/02/2024
 
 		} else {
 			$sw_error = 1;
@@ -752,7 +728,7 @@ if (isset($_GET['dt_FC']) && ($_GET['dt_FC']) == 1) { //Verificar que viene de u
 }
 
 // SMM, 07/03/2022
-if (isset($_GET['dt_OV']) && ($_GET['dt_OV']) == 1) { // Verificar que viene de una Orden de compras (Duplicar)
+if (isset($_GET['dt_OV']) && ($_GET['dt_OV']) == 1) { // Verificar que viene de una Solicitud de compras (Duplicar)
 	$dt_OF = 1;
 
 	// SMM, 30/09/2022
@@ -772,7 +748,7 @@ if (isset($_GET['dt_OV']) && ($_GET['dt_OV']) == 1) { // Verificar que viene de 
 		"'" . $_SESSION['CodUser'] . "'",
 	);
 
-	$SQL_CopiarSolicitudToSolicitud = EjecutarSP('sp_tbl_SolicitudCompra_BorradorDet_To_SolicitudCompraDet', $ParametrosCopiarSolicitudToSolicitud);
+	$SQL_CopiarSolicitudToSolicitud = EjecutarSP('sp_tbl_SolicitudCompra_Det_To_SolicitudCompraDet', $ParametrosCopiarSolicitudToSolicitud);
 	if (!$SQL_CopiarSolicitudToSolicitud) {
 		echo "<script>
 		$(document).ready(function() {
@@ -857,7 +833,7 @@ if ($edit == 1 && $sw_error == 0) {
 	// Empleado de ventas. SMM, 29/05/2023 
 	$SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', '', 'DE_EmpVentas');
 
-	//Solicitud de compra
+	// Solicitud de compra
 	$Cons = "SELECT * FROM uvw_tbl_SolicitudCompra_Borrador WHERE DocEntry='$IdSolicitudCompra' AND IdEvento='$IdEvento'";
 	$SQL = sqlsrv_query($conexion, $Cons);
 	$row = sqlsrv_fetch_array($SQL);
@@ -939,10 +915,6 @@ if ($edit == 0) {
 //Condiciones de pago
 $SQL_CondicionPago = Seleccionar('uvw_Sap_tbl_CondicionPago', '*', '', 'IdCondicionPago');
 
-//Datos de dimensiones del usuario actual
-$SQL_DatosEmpleados = Seleccionar('uvw_tbl_Usuarios', 'CentroCosto1,CentroCosto2,CentroCosto3', "ID_Usuario='" . $_SESSION['CodUser'] . "'");
-$row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
-
 //Estado documento
 $SQL_EstadoDoc = Seleccionar('uvw_tbl_EstadoDocSAP', '*');
 
@@ -958,15 +930,31 @@ $SQL_UsuariosSAP = Seleccionar('uvw_Sap_tbl_UsuariosSAP', '*', '', 'NombreUsuari
 //Series de documento
 $ParamSerie = array(
 	"'" . $_SESSION['CodUser'] . "'",
-	"'$IdTipoDocumento'", // SMM, 25/01/2024
+	"'$IdTipoDocumento'",
 );
 $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 
 // Lista de precios, 24/02/2022
 $SQL_ListaPrecios = Seleccionar('uvw_Sap_tbl_ListaPrecios', '*');
 
-// Proyectos, SMM 04/03/2022
-$SQL_Proyecto = Seleccionar('uvw_Sap_tbl_Proyectos', '*', '', 'DeProyecto');
+// Filtrar proyectos asignados. SMM, 02/02/2024
+$Where_Proyectos = "ID_Usuario='" . $_SESSION['CodUser'] . "'";
+$SQL_Proyectos = Seleccionar('uvw_tbl_UsuariosProyectos', '*', $Where_Proyectos);
+
+$Proyectos = array();
+while ($Concepto = sqlsrv_fetch_array($SQL_Proyectos)) {
+	$Proyectos[] = ("'" . $Concepto['IdProyecto'] . "'");
+}
+
+$Filtro_Proyectos = "";
+if (count($Proyectos) > 0 && ($edit == 0)) {
+	$Filtro_Proyectos .= "IdProyecto IN (";
+	$Filtro_Proyectos .= implode(",", $Proyectos);
+	$Filtro_Proyectos .= ")";
+}
+
+$SQL_Proyecto = Seleccionar('uvw_Sap_tbl_Proyectos', '*', $Filtro_Proyectos, 'DeProyecto');
+// Hasta aquí, 02/02/2024
 
 // Consultar el motivo de autorización según el ID. SMM, 25/01/2024
 if (isset($row['IdMotivoAutorizacion']) && ($row['IdMotivoAutorizacion'] != "") && ($IdMotivo == "")) {
@@ -976,7 +964,7 @@ if (isset($row['IdMotivoAutorizacion']) && ($row['IdMotivoAutorizacion'] != "") 
 	$motivoAutorizacion = $row_MotivoAutorizacion['MotivoAutorizacion'] ?? "";
 }
 
-// Verificar si el Autorizador tiene asignado el perfil del Autor. SMM, 25/01/2024
+// Verificar si el Autorizador tiene asignado el perfil del Autor. SMM, 02/02/2024
 $autorAsignado = false;
 if (isset($row['ID_PerfilUsuario']) && ($row['ID_PerfilUsuario'] != "")) {
 	$Where_PerfilesAutorizador = "ID_Usuario='" . $_SESSION['CodUser'] . "' AND IdPerfil='" . $row['ID_PerfilUsuario'] . "'";
@@ -986,7 +974,7 @@ if (isset($row['ID_PerfilUsuario']) && ($row['ID_PerfilUsuario'] != "")) {
 	$autorAsignado = sqlsrv_has_rows($SQL_PerfilesAutorizador);
 }
 
-// Permiso para actualizar la solicitud de traslado en borrador. SMM, 25/01/2024
+// Permiso para actualizar la solicitud de compra en borrador. SMM, 02/02/2024
 $BloquearDocumento = false;
 if (!PermitirFuncion(1211)) {
 	$BloquearDocumento = true;
@@ -1008,7 +996,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 		Solicitud de compra borrador | <?php echo NOMBRE_PORTAL; ?>
 	</title>
 	
-<?php
+	<?php
 	if (isset($_GET['a']) && $_GET['a'] == base64_encode("OK_SolCompAdd")) {
 		echo "<script>
 		$(document).ready(function() {
@@ -1070,7 +1058,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 		});
 		</script>";
 	}
-?>
+	?>
 
 <!-- InstanceEndEditable -->
 <!-- InstanceBeginEditable name="head" -->
@@ -1109,56 +1097,6 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 </style>
 
 <script>
-function BuscarArticulo(dato){
-	var almacen= document.getElementById("Almacen").value;
-	var cardcode= document.getElementById("CardCode").value;
-
-	// SMM, 22/08/2022
-	var dim1= ((document.getElementById("Dim1") || {}).value) || "";
-	var dim2= ((document.getElementById("Dim2") || {}).value) || "";
-	var dim3= ((document.getElementById("Dim3") || {}).value) || "";
-	var dim4= ((document.getElementById("Dim4") || {}).value) || "";
-	var dim5= ((document.getElementById("Dim5") || {}).value) || "";
-	// Hasta aquí, 22/08/2022
-
-	var posicion_x;
-	var posicion_y;
-	posicion_x=(screen.width/2)-(1200/2);
-	posicion_y=(screen.height/2)-(500/2);
-	
-	let idlistaprecio = document.getElementById("IdListaPrecio").value; // SMM, 25/02/2022
-
-	let proyecto = document.getElementById("PrjCode").value; // SMM, 04/05/2022
-	let empleado = document.getElementById("EmpleadoVentas").value; // SMM, 04/05/2022
-
-	if(dato!=""){
-		if((cardcode!="")&&(almacen!="")&&(idlistaprecio!="")){
-			// Nuevo, 26/01/2023 (prjcode='+proyecto+'&empventas='+empleado+'&idlistaprecio='+idlistaprecio+'&)
-			remote=open('buscar_articulo.php?borrador=1&prjcode='+proyecto+'&empventas='+empleado+'&idlistaprecio='+idlistaprecio+'&dato='+dato+'&cardcode='+cardcode+'&whscode='+almacen+'&doctype=<?php if ($edit == 0) {
-				echo "18";
-			} else {
-				echo "19";
-			} ?>&IdSolicitudCompra=<?php if ($edit == 1) {
-				 echo base64_encode($row['ID_SolicitudCompra']);
-			 } else {
-				 echo "0";
-			 } ?>&evento=<?php if ($edit == 1) {
-				  echo base64_encode($row['IdEvento']);
-			  } else {
-				  echo "0";
-			  } ?>&tipodoc=1&dim1='+dim1+'&dim2='+dim2+'&dim3='+dim3,'remote',"width=1200,height=500,location=no,scrollbars=yes,menubars=no,toolbars=no,resizable=no,fullscreen=no,directories=no,status=yes,left="+posicion_x+",top="+posicion_y+"");
-			remote.focus();
-		}else{
-			Swal.fire({
-				title: "¡Advertencia!",
-				text: "Debe seleccionar un cliente, almacén y una lista de precios",
-				icon: "warning",
-				confirmButtonText: "OK"
-			});
-		}
-	}
-}
-
 function ConsultarDatosCliente() {
 	var Cliente = document.getElementById('CardCode');
 	if (Cliente.value != "") {
@@ -1170,8 +1108,8 @@ function ConsultarDatosCliente() {
 
 // SMM, 15/07/2022
 function verAutorizacion() {
-	$('#modalAUT').modal('show');
-}
+			$('#modalAUT').modal('show');
+		}
 		
 function AbrirFirma(IDCampo){
 	var posicion_x;
@@ -1354,265 +1292,6 @@ function CrearArticulo(){
 				});
 			}); // Fin, #SucursalFacturacion
 
-// Dimensión de serie dinámica.
-<?php foreach ($array_Dimensiones as &$dim) {
-	$DimCode = intval($dim['DimCode']);
-	$OcrId = ($DimCode == 1) ? "" : $DimCode;
-
-	if ($DimCode == $DimSeries) {
-		$decode_SDim = base64_decode($_GET[strval($dim['IdPortalOne'])] ?? "");
-		$rowValue_SDim = ($row["OcrCode$OcrId"] ?? "");
-
-		$console_Msg = $dim['DimDesc'] . " (GET): $decode_SDim";
-		$console_Msg .= "& " . $dim['DimDesc'] . " (ROW): $rowValue_SDim";
-
-		$SDimPO = $dim['IdPortalOne'];
-	}
-} ?> // SMM, 22/08/2022
-
-		$("#Serie").change(function() {
-			$('.ibox-content').toggleClass('sk-loading',true);
-
-			console.log("SDim Message,\n<?php echo $console_Msg; ?>"); // SMM, 22/08/2022
-
-			var Serie=document.getElementById('Serie').value;
-			var SDim = document.getElementById('<?php echo $SDimPO; ?>').value; // SMM, 22/08/2022
-
-			$.ajax({
-				type: "POST",
-				url: `ajx_cbo_select.php?type=19&id=${Serie}&SDim=${SDim}`, // SMM, 22/08/2022
-				success: function(response){
-					$('#<?php echo $SDimPO; ?>').html(response).fadeIn(); // SMM, 22/08/2022
-					$('#<?php echo $SDimPO; ?>').trigger('change'); // SMM, 22/08/2022
-
-					$('.ibox-content').toggleClass('sk-loading',false);
-				},
-				error: function(error) {
-					console.log("Line 697", error.responseText);
-
-					$('.ibox-content').toggleClass('sk-loading',false);
-				}
-			});
-		});
-
-		// Actualización del almacen en las líneas.
-		<?php if ($sw_error == 0) { ?>
-			$("#Almacen").change(function() {
-				var frame=document.getElementById('DataGrid');
-
-				if(document.getElementById('Almacen').value!=""&&document.getElementById('CardCode').value!=""&&document.getElementById('TotalItems').value!="0"){
-					Swal.fire({
-						title: "¿Desea actualizar las lineas?",
-						icon: "question",
-						showCancelButton: true,
-						confirmButtonText: "Si, confirmo",
-						cancelButtonText: "No"
-					}).then((result) => {
-						if (result.isConfirmed) {
-							$('.ibox-content').toggleClass('sk-loading',true);
-								<?php if ($edit == 0) { ?>
-										$.ajax({
-											type: "GET",
-											url: "registro.php?P=36&doctype=16&type=1&name=WhsCode&value="+Base64.encode(document.getElementById('Almacen').value)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
-											success: function(response){
-												frame.src="detalle_solicitud_compra_borrador.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
-												$('.ibox-content').toggleClass('sk-loading',false);
-											}
-										});
-							<?php } else { ?>
-										$.ajax({
-											type: "GET",
-											url: "registro.php?P=36&doctype=16&type=2&name=WhsCode&value="+Base64.encode(document.getElementById('Almacen').value)+"&line=0&id=<?php echo $row['ID_SolicitudCompra']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
-											success: function(response){
-												frame.src="detalle_solicitud_compra_borrador.php?id=<?php echo base64_encode($row['ID_SolicitudCompra']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
-												$('.ibox-content').toggleClass('sk-loading',false);
-											}
-										});
-							<?php } ?>
-						}
-					});
-				}
-			});
-		<?php } ?>
-		// Actualizar almacen, llega hasta aquí.
-
-// Actualización de las dimensiones dinámicamente, SMM 22/08/2022
-<?php foreach ($array_Dimensiones as &$dim) { ?>
-
-<?php $Name_IdDoc = "ID_SolicitudCompra"; ?>
-<?php $DimCode = intval($dim['DimCode']); ?>
-<?php $OcrId = ($DimCode == 1) ? "" : $DimCode; ?>
-
-$("#<?php echo $dim['IdPortalOne']; ?>").change(function() {
-
-	var docType = 16;
-	var detalleDoc = "detalle_solicitud_compra_borrador.php";
-
-	var frame = document.getElementById('DataGrid');
-	var DimIdPO = document.getElementById('<?php echo $dim['IdPortalOne']; ?>').value;
-
-	<?php if ($DimCode == $DimSeries) { ?>
-		$('.ibox-content').toggleClass('sk-loading',true);
-
-		let tDoc = <?php echo $IdTipoDocumento; ?>;
-		let Serie = document.getElementById('Serie').value;
-
-		var url20 = `ajx_cbo_select.php?type=20&id=${DimIdPO}&serie=${Serie}&tdoc=${tDoc}&WhsCode=<?php echo isset($_GET['Almacen']) ? base64_decode($_GET['Almacen']) : ($row['WhsCode'] ?? ""); ?>`;
-
-		$.ajax({
-			type: "POST",
-			url: url20,
-			success: function(response){
-				// console.log(url20);
-				// console.log("ajx_cbo_select.php?type=20");
-
-				$('#Almacen').html(response).fadeIn();
-				// $('#Almacen').trigger('change');
-
-				$('.ibox-content').toggleClass('sk-loading',false);
-			},
-			error: function(error) {
-				// Mensaje de error
-				console.log("Line 869", error.responseText);
-
-				$('.ibox-content').toggleClass('sk-loading', false);
-			}
-		});
-	<?php } ?>
-
-	var CardCode = document.getElementById('CardCode').value;
-	var TotalItems = document.getElementById('TotalItems').value;
-
-	if(DimIdPO!="" && CardCode!="" && TotalItems!="0") {
-		Swal.fire({
-			title: "¿Desea actualizar las lineas de la <?php echo $dim['DescPortalOne']; ?>?",
-			icon: "question",
-			showCancelButton: true,
-			confirmButtonText: "Si, confirmo",
-			cancelButtonText: "No"
-		}).then((result) => {
-			if (result.isConfirmed) {
-				$('.ibox-content').toggleClass('sk-loading',true);
-
-				<?php if ($edit == 0) { ?>
-					$.ajax({
-						type: "GET",
-						url: `registro.php?P=36&borrador=1&type=1&doctype=${docType}&name=OcrCode<?php echo $OcrId; ?>&value=${Base64.encode(DimIdPO)}&cardcode=${CardCode}&actodos=1&whscode=0&line=0`,
-						success: function(response){
-							frame.src=`${detalleDoc}?type=1&id=0&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode=${CardCode}`;
-
-							$('.ibox-content').toggleClass('sk-loading',false);
-						}
-					});
-				<?php } else { ?>
-					$.ajax({
-						type: "GET",
-						url: `registro.php?P=36&borrador=1&type=2&doctype=${docType}&name=OcrCode<?php echo $OcrId; ?>&value=${Base64.encode(DimIdPO)}&id=<?php echo $row[strval($Name_IdDoc)]; ?>&evento=<?php echo $IdEvento; ?>&actodos=1&line=0`,
-						success: function(response){
-							frame.src=`${detalleDoc}?type=2&id=<?php echo base64_encode($row[strval($Name_IdDoc)]); ?>&evento=<?php echo base64_encode($IdEvento); ?>`;
-
-							$('.ibox-content').toggleClass('sk-loading',false);
-						}
-					});
-				<?php } ?>
-			}
-		});
-	} else  {
-		if(false) {
-			console.log("No se cumple la siguiente condición en la <?php echo $dim['DimName']; ?>");
-
-			console.log(`DimIdPO == ${DimIdPO}`);
-			console.log(`CardCode == ${CardCode}`);
-			console.log(`TotalItems == ${TotalItems}`);
-
-			$('.ibox-content').toggleClass('sk-loading',false);
-		}
-	}
-});
-
-<?php } ?>
-// Actualización dinámica, llega hasta aquí.
-
-		// Actualización del vendedor en las líneas, SMM 23/02/2022
-		$("#EmpleadoVentas").change(function() {
-			var frame=document.getElementById('DataGrid');
-
-			if(document.getElementById('EmpleadoVentas').value!=""&&document.getElementById('CardCode').value!=""&&document.getElementById('TotalItems').value!="0"){
-				Swal.fire({
-					title: "¿Desea actualizar las lineas?",
-					icon: "question",
-					showCancelButton: true,
-					confirmButtonText: "Si, confirmo",
-					cancelButtonText: "No"
-				}).then((result) => {
-					if (result.isConfirmed) {
-						$('.ibox-content').toggleClass('sk-loading',true);
-							<?php if ($edit == 0) { ?>
-									$.ajax({
-										type: "GET", // "EmpVentas" es el nombre que tiene el registro en el detalle.
-										url: "registro.php?P=36&doctype=16&borrador=1&type=1&name=EmpVentas&value="+Base64.encode(document.getElementById('EmpleadoVentas').value)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
-										success: function(response){
-											frame.src="detalle_solicitud_compra_borrador.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
-											$('.ibox-content').toggleClass('sk-loading',false);
-										}
-									});
-						<?php } else { ?>
-									$.ajax({
-										type: "GET", // "EmpVentas" es el nombre que tiene el registro en el detalle.
-										url: "registro.php?P=36&doctype=16&borrador=1&type=2&name=EmpVentas&value="+Base64.encode(document.getElementById('EmpleadoVentas').value)+"&line=0&id=<?php echo $row['ID_SolicitudCompra']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
-										success: function(response){
-											frame.src="detalle_solicitud_compra_borrador.php?id=<?php echo base64_encode($row['ID_SolicitudCompra']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
-											$('.ibox-content').toggleClass('sk-loading',false);
-										}
-									});
-						<?php } ?>
-					}
-				});
-			}
-		});
-		// Actualizar vendedor, llega hasta aquí.
-
-		// Actualización del proyecto en las líneas, SMM 29/11/2022
-		<?php if ($sw_error == 0) { ?>
-			$("#PrjCode").change(function() {
-				var frame=document.getElementById('DataGrid');
-
-				if(document.getElementById('PrjCode').value!=""&&document.getElementById('CardCode').value!=""&&document.getElementById('TotalItems').value!="0"){
-					Swal.fire({
-						title: "¿Desea actualizar las lineas?",
-						icon: "question",
-						showCancelButton: true,
-						confirmButtonText: "Si, confirmo",
-						cancelButtonText: "No"
-					}).then((result) => {
-						if (result.isConfirmed) {
-							$('.ibox-content').toggleClass('sk-loading',true);
-								<?php if ($edit == 0) { ?>
-										$.ajax({
-											type: "GET",
-											url: "registro.php?P=36&doctype=16&borrador=1&type=1&name=PrjCode&value="+Base64.encode(document.getElementById('PrjCode').value)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
-											success: function(response){
-												frame.src="detalle_solicitud_compra_borrador.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
-												$('.ibox-content').toggleClass('sk-loading',false);
-											}
-										});
-							<?php } else { ?>
-										$.ajax({
-											type: "GET",
-											url: "registro.php?P=36&doctype=16&borrador=1&type=2&name=PrjCode&value="+Base64.encode(document.getElementById('PrjCode').value)+"&line=0&id=<?php echo $row['ID_SolicitudCompra']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
-											success: function(response){
-												frame.src="detalle_solicitud_compra_borrador.php?id=<?php echo base64_encode($row['ID_SolicitudCompra']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
-												$('.ibox-content').toggleClass('sk-loading',false);
-											}
-										});
-							<?php } ?>
-						}
-					});
-				}
-			});
-		<?php } ?>
-		// Actualizar proyecto, llega hasta aquí.
-
 		// SMM, 07/02/2023
 		$("#TipoSolicitante").change(function(){
 			$('.ibox-content').toggleClass('sk-loading',true);
@@ -1627,7 +1306,7 @@ $("#<?php echo $dim['IdPortalOne']; ?>").change(function() {
 				}
 			});
 		});
-
+		
 		// Fecha requerida o necesaria. SMM, 07/02/2023
 		$("#ReqDate").change(function(){
 			var frame=document.getElementById('DataGrid');
@@ -1710,7 +1389,7 @@ $("#<?php echo $dim['IdPortalOne']; ?>").change(function() {
 			<!-- SMM, 02/08/2022 -->
 			<?php include_once 'md_consultar_llamadas_servicios.php'; ?>
 
-			<!-- Inicio, modalAUT. SMM, 25/01/2024 -->
+			<!-- Inicio, modalAUT. SMM, 02/02/2024 -->
 			<?php if (($edit == 1) || ($success == 0) || ($sw_error == 1) || $debug_Condiciones) { ?>
 					<div class="modal inmodal fade" id="modalAUT" tabindex="-1" role="dialog" aria-hidden="true">
 						<div class="modal-dialog modal-lg">
@@ -1882,7 +1561,7 @@ $("#<?php echo $dim['IdPortalOne']; ?>").change(function() {
 						</div>
 					</div>
 			<?php } ?>
-			<!-- Fin, modalAUT. SMM, 25/01/2024 -->
+			<!-- Fin, modalAUT. SMM, 02/02/2024 -->
 
 		<!-- Campos de auditoria de documento. SMM, 23/12/2022 -->
 		<?php if ($edit == 1) { ?>
@@ -1969,7 +1648,9 @@ $("#<?php echo $dim['IdPortalOne']; ?>").change(function() {
 									</div>
 									<!-- Hasta aquí, 06/10/2022 -->
 
-									<!-- a href="#" class="btn btn-info btn-outline" onClick="VerMapaRel('<?php echo base64_encode($row['DocEntry']); ?>','<?php echo base64_encode("$IdTipoDocumento"); ?>');"><i class="fa fa-sitemap"></i> Mapa de relaciones</a -->
+									<!-- a href="#" class="btn btn-outline btn-info"
+										onClick="VerMapaRel('<?php echo base64_encode($row['DocEntry']); ?>','<?php echo base64_encode("$IdTipoDocumento"); ?>');"><i
+											class="fa fa-sitemap"></i> Mapa de relaciones</a -->
 								</div>
 								<div class="col-lg-6">
 									<?php if ($row['DocDestinoDocEntry'] != "") { ?>
@@ -2095,7 +1776,7 @@ $("#<?php echo $dim['IdPortalOne']; ?>").change(function() {
 								
 								<?php if ($edit == 1 || $sw_error == 1 || $dt_LS == 1 || $dt_OF == 1) { ?>
 										<optgroup label='Dirección de destino'></optgroup>
-										
+
 										<?php while ($row_SucursalDestino = sqlsrv_fetch_array($SQL_SucursalDestino)) { ?>
 												<option value="<?php echo $row_SucursalDestino['NombreSucursal']; ?>"
 													<?php if ((isset($row['SucursalDestino'])) && (strcmp($row_SucursalDestino['NombreSucursal'], $row['SucursalDestino']) == 0)) {
@@ -2415,37 +2096,7 @@ $("#<?php echo $dim['IdPortalOne']; ?>").change(function() {
 					<!-- Hasta aquí -->
 				</div>
 
-				<!-- Dimensiones dinámicas, SMM 29/08/2022 -->
-				<div class="form-group">
-					<?php foreach ($array_Dimensiones as &$dim) { ?>
-							<label class="col-lg-1 control-label"><?php echo $dim['DescPortalOne']; ?> <span class="text-danger">*</span></label>
-							<div class="col-lg-3">
-								<select name="<?php echo $dim['IdPortalOne'] ?>" id="<?php echo $dim['IdPortalOne'] ?>" class="form-control select2 Dim" required="required">
-									<option value="">Seleccione...</option>
-
-								<?php $SQL_Dim = Seleccionar('uvw_Sap_tbl_DimensionesReparto', '*', 'DimCode=' . $dim['DimCode']); ?>
-								<?php while ($row_Dim = sqlsrv_fetch_array($SQL_Dim)) { ?>
-										<?php $DimCode = intval($dim['DimCode']); ?>
-										<?php $OcrId = ($DimCode == 1) ? "" : $DimCode; ?>
-
-										<option value="<?php echo $row_Dim['OcrCode']; ?>"
-										<?php if ((isset($row["OcrCode$OcrId"]) && ($row["OcrCode$OcrId"] != "")) && (strcmp($row_Dim['OcrCode'], $row["OcrCode$OcrId"]) == 0)) {
-											echo "selected";
-										} elseif (($edit == 0) && (isset($_GET['LMT']) && !isset($_GET[strval($dim['IdPortalOne'])])) && ($row_DatosEmpleados["CentroCosto$DimCode"] != "") && (strcmp($row_DatosEmpleados["CentroCosto$DimCode"], $row_Dim['OcrCode']) == 0)) {
-											echo "selected";
-										} elseif (isset($_GET[strval($dim['IdPortalOne'])]) && (strcmp($row_Dim['OcrCode'], base64_decode($_GET[strval($dim['IdPortalOne'])])) == 0)) {
-											echo "selected";
-										} ?>>
-											<?php echo $row_Dim['OcrCode'] . "-" . $row_Dim['OcrName']; ?>
-										</option>
-								<?php } ?>
-								</select>
-							</div>
-					<?php } ?>
-				</div>
-				<!-- Dimensiones dinámicas, hasta aquí -->
-
-				<div class="form-group">
+					<div class="form-group">
 					<!-- SMM, 25/01/2024 -->
 					<label class="col-lg-1 control-label">
 						Autorización
@@ -2511,11 +2162,22 @@ $("#<?php echo $dim['IdPortalOne']; ?>").change(function() {
 				</div>
 
 				<div class="form-group">
-					<label class="col-lg-1 control-label">Buscar articulo</label>
+
 					<div class="col-lg-4">
-						<input name="BuscarItem" id="BuscarItem" type="text" class="form-control" placeholder="Escriba para buscar..." onBlur="javascript:BuscarArticulo(this.value);" <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || (!PermitirFuncion(702))) {
-							echo "readonly";
-						} ?>>
+						<!-- SMM, 30/05/2023 -->
+						<button <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || (!PermitirFuncion(702))) {
+							echo "disabled";
+						} ?> class="btn btn-success"
+							type="button" onclick="AgregarArticulos();"><i class="fa fa-plus"></i>
+							Agregar artículo</button>
+
+						<!-- SMM, 27/06/2023 -->
+						<button <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || (!PermitirFuncion(702))) {
+							echo "disabled";
+						} ?> class="btn btn-warning"
+							style="margin-left: 20px;" type="button" onclick="ActualizarArticulos();"><i
+								class="fa fa-refresh"></i>
+							Actualización en lote</button>
 					</div>
 
 					<!-- SMM, 04/05/2022 -->
@@ -2537,7 +2199,8 @@ $("#<?php echo $dim['IdPortalOne']; ?>").change(function() {
 
 					<div class="col-lg-1 pull-right">
 						<a href="exportar_excel.php?exp=20&cookie_cardcode=<?php echo $cookie_cardcode; ?>&Cons=<?php echo base64_encode($consulta_detalle); ?>">
-							<img src="css/exp_excel.png" width="50" height="30" alt="Exportar a Excel" title="Exportar a Excel"/>
+							<img src="css/exp_excel.png" width="50" height="30" alt="Exportar a Excel"
+								title="Exportar a Excel" />
 						</a>
 					</div>
 				</div>
@@ -2786,21 +2449,7 @@ $("#<?php echo $dim['IdPortalOne']; ?>").change(function() {
 									class="fa fa-arrow-circle-o-left"></i> Regresar</a>
 							</div>
 
-<!-- Dimensiones dinámicas, SMM 22/08/2022 -->
-<?php if ($edit == 1) {
-	$CopyDim = "";
-	foreach ($array_Dimensiones as &$dim) {
-		$DimCode = intval($dim['DimCode']);
-		$OcrId = ($DimCode == 1) ? "" : $DimCode;
-
-		$DimIdPO = $dim['IdPortalOne'];
-		$encode_OcrCode = base64_encode($row["OcrCode$OcrId"]);
-		$CopyDim .= "$DimIdPO=$encode_OcrCode&";
-	}
-} ?>
-<!-- Hasta aquí, 22/08/2022 -->
-
-<!-- Aquí va el copiar a otros documentos, 23/08/2022 -->
+							<!-- Aquí va el copiar a otros documentos, 23/08/2022 -->
 						</div>
 						
 						<input type="hidden" form="CrearSolicitudCompra" id="P" name="P" value="57" />
@@ -2838,49 +2487,49 @@ $("#<?php echo $dim['IdPortalOne']; ?>").change(function() {
 <!-- InstanceBeginEditable name="EditRegion4" -->
 <script>
 	$(document).ready(function () {
-		// SMM, 09/02/2023
-		$("#IdSolicitante").change(function() {
-			let IdSolicitante = document.getElementById('IdSolicitante').value;
+			// SMM, 09/02/2023
+			$("#IdSolicitante").change(function() {
+				let IdSolicitante = document.getElementById('IdSolicitante').value;
 
-			if (IdSolicitante != "") {
-				$.ajax({
-					url:"ajx_buscar_datos_json.php",
-					data: {
-						type: 25,
-						id: IdSolicitante
-					},
-					dataType:'json',
-					success: function(data) {
-						document.getElementById('SucursalSolicitante').value = data.Sucursal;
-						document.getElementById('DepartamentoSolicitante').value = data.Departamento;
-					},
-					error: function(error) {
-						console.log("Error OnChange(IdSolicitante)", error.responseText);
-					}
-				});
-			}
-		});
+				if (IdSolicitante != "") {
+					$.ajax({
+						url:"ajx_buscar_datos_json.php",
+						data: {
+							type: 25,
+							id: IdSolicitante
+						},
+						dataType:'json',
+						success: function(data) {
+							document.getElementById('SucursalSolicitante').value = data.Sucursal;
+							document.getElementById('DepartamentoSolicitante').value = data.Departamento;
+						},
+						error: function(error) {
+							console.log("Error OnChange(IdSolicitante)", error.responseText);
+						}
+					});
+				}
+			});
 
 		// SMM, 25/01/2024
 		<?php if ($BloquearDocumento) { ?>
-			$("input").prop("readonly", true);
-			$("select").attr("readonly", true);
-			$("textarea").prop("readonly", true);
+					$("input").prop("readonly", true);
+					$("select").attr("readonly", true);
+					$("textarea").prop("readonly", true);
 
-			// Desactivar sólo el botón de actualizar y no el definitivo.
-			$("#Actualizar.btn-warning").prop("disabled", true);
+					// Desactivar sólo el botón de actualizar y no el definitivo.
+					$("#Actualizar.btn-warning").prop("disabled", true);
 
-			// Comentado porque de momento no es necesario.
-			// $('#Almacen option:not(:selected)').attr('disabled', true);
-			// $('#AlmacenDestino option:not(:selected)').attr('disabled', true);
-			// $('#SucursalDestino option:not(:selected)').attr('disabled', true);
-			// $('#SucursalFacturacion option:not(:selected)').attr('disabled', true);
-			// $('.Dim option:not(:selected)').attr('disabled', true);
-			// $('#PrjCode option:not(:selected)').attr('disabled', true);
-			// $('#Empleado option:not(:selected)').attr('disabled', true);
+					// Comentado porque de momento no es necesario.
+					// $('#Almacen option:not(:selected)').attr('disabled', true);
+					// $('#AlmacenDestino option:not(:selected)').attr('disabled', true);
+					// $('#SucursalDestino option:not(:selected)').attr('disabled', true);
+					// $('#SucursalFacturacion option:not(:selected)').attr('disabled', true);
+					// $('.Dim option:not(:selected)').attr('disabled', true);
+					// $('#PrjCode option:not(:selected)').attr('disabled', true);
+					// $('#Empleado option:not(:selected)').attr('disabled', true);
 		<?php } ?>
 
-		// Estado de autorización de PortalOne en el Modal. SMM, 15/12/2022
+		// Estado de autorización de PortalOne en el Modal. SMM, 02/02/2024
 		$("#EstadoAutorizacionPO").html($("#Autorizacion").html());
 		$("#EstadoAutorizacionPO").on("change", function() {
 			$("#Autorizacion option").prop("disabled", false); // SMM, 04/04/2023
@@ -2889,7 +2538,7 @@ $("#<?php echo $dim['IdPortalOne']; ?>").change(function() {
 			$("#Autorizacion").change(); // SMM, 17/01/2023
 		});
 
-		// Estado de autorización PortalOne, para la creación y actualización. SMM, 16/12/2022
+		// Estado de autorización PortalOne, para la creación y actualización. SMM, 02/02/2024
 		/*
 		// SMM, 17/01/2023
 		$("#Autorizacion").on("change", function() {
@@ -2963,7 +2612,7 @@ $("#<?php echo $dim['IdPortalOne']; ?>").change(function() {
 					// Corregir valores nulos en el combo de autorización.
 					$('#Autorizacion option:selected').attr('disabled', false);
 					$('#Autorizacion option:not(:selected)').attr('disabled', true);
-				} else if($("#Autorizacion").val() == "P") {
+				} else if($("#Autorizacion").val() == "P") { // SMM, 02/02/2024
 					Swal.fire({
 						"title": "¡Advertencia!",
 						"text": "Debería cambiar el estado de la autorización por uno diferente.",
@@ -2983,8 +2632,9 @@ $("#<?php echo $dim['IdPortalOne']; ?>").change(function() {
 		$(".alkin").on('click', function () {
 			$('.ibox-content').toggleClass('sk-loading');
 		});
-		 <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'O') || ($edit == 0))) { ?>
-			 	$('#DocDate').datepicker({
+
+		<?php if ((($edit == 1) && ($row['Cod_Estado'] == 'O') || ($edit == 0))) { ?>
+				$('#DocDate').datepicker({
 					todayBtn: "linked",
 					keyboardNavigation: false,
 					forceParse: false,
@@ -2993,7 +2643,7 @@ $("#<?php echo $dim['IdPortalOne']; ?>").change(function() {
 					todayHighlight: true,
 					startDate: '<?php echo date('Y-m-d'); ?>'
 				});
-			 	$('#DocDueDate').datepicker({
+				$('#DocDueDate').datepicker({
 					todayBtn: "linked",
 					keyboardNavigation: false,
 					forceParse: false,
@@ -3020,48 +2670,47 @@ $("#<?php echo $dim['IdPortalOne']; ?>").change(function() {
 						todayHighlight: true,
 						startDate: '<?php echo date('Y-m-d'); ?>'
 				});
-		  <?php } ?>
-		 
+		<?php } ?>
+		
 		// $('.chosen-select').chosen({width: "100%"});
 		$(".select2").select2();
 		
 		$('.i-checks').iCheck({
-			 checkboxClass: 'icheckbox_square-green',
-			 radioClass: 'iradio_square-green',
+			checkboxClass: 'icheckbox_square-green',
+			radioClass: 'iradio_square-green',
 		  });
-
+		 
 		<?php if ($edit == 1) { ?>
 			// $('#Serie option:not(:selected)').attr('disabled',true);
 			// $('#Sucursal option:not(:selected)').attr('disabled',true);
 			// $('#Almacen option:not(:selected)').attr('disabled',true);
 		<?php } ?>
 
-		 var options = {
-			  url: function (phrase) {
-				  return "ajx_buscar_datos_json.php?type=7&id=" + phrase + "&pv=1";
-			  },
-			  getValue: "NombreBuscarCliente",
-			  requestDelay: 400,
-			  list: {
-				  match: {
-					  enabled: true
-				  },
-				  onClickEvent: function () {
-					  var value = $("#CardName").getSelectedItemData().CodigoCliente;
-					  $("#CardCode").val(value).trigger("change");
-				  }
-			  }
+		var options = {
+			url: function (phrase) {
+					return "ajx_buscar_datos_json.php?type=7&id=" + phrase + "&pv=1";
+			},
+			getValue: "NombreBuscarCliente",
+			requestDelay: 400,
+			list: {
+				match: {
+					enabled: true
+				},
+				onClickEvent: function () {
+					var value = $("#CardName").getSelectedItemData().CodigoCliente;
+					$("#CardCode").val(value).trigger("change");
+				}
+			}
 		 };
 		
-		 <?php if (PermitirFuncion(720) || ($edit == 0)) { ?>
+		<?php if (PermitirFuncion(720) || ($edit == 0)) { ?>
 				$("#CardName").easyAutocomplete(options);
 		<?php } ?>
-
+		
 		<?php if ($dt_LS == 1 || $dt_OF == 1) { ?>
 			$('#CardCode').trigger('change');
-			// $('#Almacen').trigger('change');
 		<?php } ?>
-		
+
 		<?php if ($edit == 0) { ?>
 			$('#Serie').trigger('change');
 		<?php } ?>
@@ -3073,13 +2722,13 @@ $("#<?php echo $dim['IdPortalOne']; ?>").change(function() {
 				$('#SucursalFacturacion').trigger('change');
 		<?php } ?>
 
-		// SMM, 18/12/2022
+		// SMM, 02/02/2024
 		<?php if ((strtoupper($_SESSION["User"]) == strtoupper($row['Usuario'])) && (!$serAutorizador)) { ?>
 			// Desactivado, 03/04/2023
 			// $('#Autorizacion option:not(:selected)').attr('disabled',true);
 		<?php } ?>
 
-		// SMM, 03/04/2023
+		// SMM, 02/02/2024
 		$('#Autorizacion option:not(:selected)').attr('disabled',true);
 	});
 </script>
@@ -3109,155 +2758,155 @@ function ConsultarTab(type) {
 </script>
 
 <script>
-function Validar() {
-	var result = true;
+		function Validar() {
+			var result = true;
 
-	var TotalItems = document.getElementById("TotalItems");
+			var TotalItems = document.getElementById("TotalItems");
 
-	//Validar si fue actualizado por otro usuario
-	$.ajax({
-		url: "ajx_buscar_datos_json.php",
-		data: {
-			type: 15,
-			docentry: '<?php if ($edit == 1) {
-				echo base64_encode($row['DocEntry']);
-			} ?>',
-			objtype: <?php echo $IdTipoDocumento; ?>,
-			date: '<?php echo FormatoFecha(date('Y-m-d'), date('H:i:s')); ?>'
-		},
-		dataType: 'json',
-		success: function (data) {
-			if (data.Result != 1) {
+			//Validar si fue actualizado por otro usuario
+			$.ajax({
+				url: "ajx_buscar_datos_json.php",
+				data: {
+					type: 15,
+					docentry: '<?php if ($edit == 1) {
+						echo base64_encode($row['DocEntry']);
+					} ?>',
+					objtype: <?php echo $IdTipoDocumento; ?>,
+					date: '<?php echo FormatoFecha(date('Y-m-d'), date('H:i:s')); ?>'
+				},
+				dataType: 'json',
+				success: function (data) {
+					if (data.Result != 1) {
+						result = false;
+						Swal.fire({
+							title: '¡Lo sentimos!',
+							text: 'Este documento ya fue actualizado por otro usuario. Debe recargar la página para volver a cargar los datos.',
+							icon: 'error'
+						});
+					}
+				}
+			});
+
+			if (TotalItems.value == "0") {
 				result = false;
 				Swal.fire({
 					title: '¡Lo sentimos!',
-					text: 'Este documento ya fue actualizado por otro usuario. Debe recargar la página para volver a cargar los datos.',
+					text: 'No puede guardar el documento sin contenido. Por favor verifique.',
 					icon: 'error'
 				});
 			}
+
+			return result;
 		}
-	});
 
-	if (TotalItems.value == "0") {
-		result = false;
-		Swal.fire({
-			title: '¡Lo sentimos!',
-			text: 'No puede guardar el documento sin contenido. Por favor verifique.',
-			icon: 'error'
-		});
-	}
+		// SMM, 24/05/2023
+		function AgregarArticulos() {
+			let probarModal = false;
+			let OrdenServicio = $("#OrdenServicioCliente").val();
 
-	return result;
-}
+			let serie = $("#Serie").val();
+			let proyecto = $("#PrjCode").val();
+			let cardCode = $("#CardCode").val();
+			let listaPrecio = $("#IdListaPrecio").val();
+			let empleado = $("#EmpleadoVentas").val();
 
-// SMM, 24/05/2023
-function AgregarArticulos() {
-	let probarModal = false;
-	let OrdenServicio = $("#OrdenServicioCliente").val();
-
-	let serie = $("#Serie").val();
-	let proyecto = $("#PrjCode").val();
-	let cardCode = $("#CardCode").val();
-	let listaPrecio = $("#IdListaPrecio").val();
-	let empleado = $("#EmpleadoVentas").val();
-
-	if (((cardCode != "") && (serie != "")) || probarModal) {
-		$.ajax({
-			type: "POST",
-			url: "md_consultar_articulos.php",
-			data: {
-				ObjType: <?php echo $IdTipoDocumento; ?>,
-				OT: OrdenServicio,
-				Edit: <?php echo $edit; ?>,
-				DocType: "<?php echo ($edit == 0) ? 22 : 23; ?>",
-				DocId: "<?php echo $row['ID_SolicitudCompra'] ?? 0; ?>",
-				DocEvent: "<?php echo $row['IdEvento'] ?? 0; ?>",
-				CardCode: cardCode,
-				IdSeries: serie,
-				IdProyecto: proyecto,
-				ListaPrecio: listaPrecio,
-				IdEmpleado: empleado
-			},
-			success: function (response) {
-				$('#mdArticulos').html(response);
-				$("#mdArticulos").modal("show");
+			if (((cardCode != "") && (serie != "")) || probarModal) {
+				$.ajax({
+					type: "POST",
+					url: "md_consultar_articulos.php",
+					data: {
+						ObjType: <?php echo $IdTipoDocumento; ?>,
+						OT: OrdenServicio,
+						Edit: <?php echo $edit; ?>,
+						DocType: "<?php echo ($edit == 0) ? 22 : 23; ?>",
+						DocId: "<?php echo $row['ID_SolicitudCompra'] ?? 0; ?>",
+						DocEvent: "<?php echo $row['IdEvento'] ?? 0; ?>",
+						CardCode: cardCode,
+						IdSeries: serie,
+						IdProyecto: proyecto,
+						ListaPrecio: listaPrecio,
+						IdEmpleado: empleado
+					},
+					success: function (response) {
+						$('#mdArticulos').html(response);
+						$("#mdArticulos").modal("show");
+					}
+				});
+			} else {
+				Swal.fire({
+					title: "¡Advertencia!",
+					text: "Debe seleccionar un Cliente y una Serie.",
+					icon: "warning",
+					confirmButtonText: "OK"
+				});
 			}
-		});
-	} else {
-		Swal.fire({
-			title: "¡Advertencia!",
-			text: "Debe seleccionar un Cliente y una Serie.",
-			icon: "warning",
-			confirmButtonText: "OK"
-		});
-	}
-}
-
-// SMM, 27/06/2023
-function ActualizarArticulos() {
-	let probarModal = false;
-	let totalItems = parseInt(document.getElementById('TotalItems').value);
-
-	let serie = $("#Serie").val();
-	let proyecto = $("#PrjCode").val();
-	let cardCode = $("#CardCode").val();
-	let listaPrecio = $("#IdListaPrecio").val();
-	let empleado = $("#EmpleadoVentas").val();
-
-	if (((cardCode != "") && (serie != "") && (totalItems > 0)) || probarModal) {
-		$.ajax({
-			type: "POST",
-			url: "md_actualizar_articulos.php",
-			data: {
-				Edit: <?php echo $edit; ?>,
-				DocType: "<?php echo 18; ?>",
-				DocId: "<?php echo $row['ID_SolicitudCompra'] ?? 0; ?>",
-				DocEvent: "<?php echo $row['IdEvento'] ?? 0; ?>",
-				CardCode: cardCode,
-				IdSeries: serie,
-				IdProyecto: proyecto,
-				ListaPrecio: listaPrecio,
-				IdEmpleado: empleado
-			},
-			success: function (response) {
-				$('#mdLoteArticulos').html(response);
-				$("#mdLoteArticulos").modal("show");
-			}
-		});
-	} else {
-		Swal.fire({
-			title: "¡Advertencia!",
-			text: "Debe seleccionar un Cliente y una Serie. También debe haber al menos un artículo en el detalle del documento.",
-			icon: "warning",
-			confirmButtonText: "OK"
-		});
-	}
-}
-</script>
-
-<script>
-	Dropzone.options.dropzoneForm = {
-		paramName: "File", // The name that will be used to transfer the file
-		maxFilesize: "<?php echo ObtenerVariable("MaxSizeFile"); ?>", // MB
-		maxFiles: "<?php echo ObtenerVariable("CantidadArchivos"); ?>",
-		uploadMultiple: true,
-		addRemoveLinks: true,
-		dictRemoveFile: "Quitar",
-		acceptedFiles: "<?php echo ObtenerVariable("TiposArchivos"); ?>",
-		dictDefaultMessage: "<strong>Haga clic aqui para cargar anexos</strong><br>Tambien puede arrastrarlos hasta aqui<br><h4><small>(máximo <?php echo ObtenerVariable("CantidadArchivos"); ?> archivos a la vez)<small></h4>",
-		dictFallbackMessage: "Tu navegador no soporta cargue de archivos mediante arrastrar y soltar",
-		removedfile: function (file) {
-			$.get("includes/procedimientos.php", {
-				type: "3",
-				nombre: file.name
-			}).done(function (data) {
-				var _ref;
-				return (_ref = file.previewElement) !== null ? _ref.parentNode.removeChild(file.previewElement) : void 0;
-			});
 		}
-	};
-</script>
-<!-- InstanceEndEditable -->
+
+		// SMM, 27/06/2023
+		function ActualizarArticulos() {
+			let probarModal = false;
+			let totalItems = parseInt(document.getElementById('TotalItems').value);
+
+			let serie = $("#Serie").val();
+			let proyecto = $("#PrjCode").val();
+			let cardCode = $("#CardCode").val();
+			let listaPrecio = $("#IdListaPrecio").val();
+			let empleado = $("#EmpleadoVentas").val();
+
+			if (((cardCode != "") && (serie != "") && (totalItems > 0)) || probarModal) {
+				$.ajax({
+					type: "POST",
+					url: "md_actualizar_articulos.php",
+					data: {
+						Edit: <?php echo $edit; ?>,
+						DocType: "<?php echo 18; ?>",
+						DocId: "<?php echo $row['ID_SolicitudCompra'] ?? 0; ?>",
+						DocEvent: "<?php echo $row['IdEvento'] ?? 0; ?>",
+						CardCode: cardCode,
+						IdSeries: serie,
+						IdProyecto: proyecto,
+						ListaPrecio: listaPrecio,
+						IdEmpleado: empleado
+					},
+					success: function (response) {
+						$('#mdLoteArticulos').html(response);
+						$("#mdLoteArticulos").modal("show");
+					}
+				});
+			} else {
+				Swal.fire({
+					title: "¡Advertencia!",
+					text: "Debe seleccionar un Cliente y una Serie. También debe haber al menos un artículo en el detalle del documento.",
+					icon: "warning",
+					confirmButtonText: "OK"
+				});
+			}
+		}
+	</script>
+
+	<script>
+		Dropzone.options.dropzoneForm = {
+			paramName: "File", // The name that will be used to transfer the file
+			maxFilesize: "<?php echo ObtenerVariable("MaxSizeFile"); ?>", // MB
+			maxFiles: "<?php echo ObtenerVariable("CantidadArchivos"); ?>",
+			uploadMultiple: true,
+			addRemoveLinks: true,
+			dictRemoveFile: "Quitar",
+			acceptedFiles: "<?php echo ObtenerVariable("TiposArchivos"); ?>",
+			dictDefaultMessage: "<strong>Haga clic aqui para cargar anexos</strong><br>Tambien puede arrastrarlos hasta aqui<br><h4><small>(máximo <?php echo ObtenerVariable("CantidadArchivos"); ?> archivos a la vez)<small></h4>",
+			dictFallbackMessage: "Tu navegador no soporta cargue de archivos mediante arrastrar y soltar",
+			removedfile: function (file) {
+				$.get("includes/procedimientos.php", {
+					type: "3",
+					nombre: file.name
+				}).done(function (data) {
+					var _ref;
+					return (_ref = file.previewElement) !== null ? _ref.parentNode.removeChild(file.previewElement) : void 0;
+				});
+			}
+		};
+	</script>
+	<!-- InstanceEndEditable -->
 </body>
 
 <!-- InstanceEnd -->
