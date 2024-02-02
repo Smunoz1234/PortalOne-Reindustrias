@@ -40,7 +40,7 @@ if (isset($_GET['id']) && ($_GET['id'] != "")) {
     }
     if ($type == 1) { //Creando Orden de Venta
         $where = "Usuario='" . $_GET['usr'] . "' and CardCode='" . $_GET['cardcode'] . "'";
-        $SQL = Seleccionar("uvw_tbl_OrdenCompraDetalleCarrito_Borrador", "*", $where);
+        $SQL = Seleccionar("uvw_tbl_SolicitudCompraDetalleCarrito_Borrador", "*", $where);
         // echo $where;
 
         if ($SQL) {
@@ -61,7 +61,7 @@ if (isset($_GET['id']) && ($_GET['id'] != "")) {
         }
 
         $where = base64_decode($_GET['id']) . "' and IdEvento='" . base64_decode($_GET['evento']) . "' and Metodo <> 3";
-        $SQL = Seleccionar("uvw_tbl_OrdenCompraDetalle_Borrador", "*", "ID_OrdenCompra='" . $where);
+        $SQL = Seleccionar("uvw_tbl_SolicitudCompraDetalle_Borrador", "*", "ID_SolicitudCompra='" . $where);
 
         // Editando Orden de compra
         // echo $where;

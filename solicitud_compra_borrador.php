@@ -1139,7 +1139,7 @@ function BuscarArticulo(dato){
 			} else {
 				echo "19";
 			} ?>&IdSolicitudCompra=<?php if ($edit == 1) {
-				 echo base64_encode($row['ID_OrdenCompra']);
+				 echo base64_encode($row['ID_SolicitudCompra']);
 			 } else {
 				 echo "0";
 			 } ?>&evento=<?php if ($edit == 1) {
@@ -1415,16 +1415,16 @@ function CrearArticulo(){
 											type: "GET",
 											url: "registro.php?P=36&doctype=16&type=1&name=WhsCode&value="+Base64.encode(document.getElementById('Almacen').value)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
 											success: function(response){
-												frame.src="detalle_orden_compra_borrador.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
+												frame.src="detalle_solicitud_compra_borrador.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
 												$('.ibox-content').toggleClass('sk-loading',false);
 											}
 										});
 							<?php } else { ?>
 										$.ajax({
 											type: "GET",
-											url: "registro.php?P=36&doctype=16&type=2&name=WhsCode&value="+Base64.encode(document.getElementById('Almacen').value)+"&line=0&id=<?php echo $row['ID_OrdenCompra']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
+											url: "registro.php?P=36&doctype=16&type=2&name=WhsCode&value="+Base64.encode(document.getElementById('Almacen').value)+"&line=0&id=<?php echo $row['ID_SolicitudCompra']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
 											success: function(response){
-												frame.src="detalle_orden_compra_borrador.php?id=<?php echo base64_encode($row['ID_OrdenCompra']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
+												frame.src="detalle_solicitud_compra_borrador.php?id=<?php echo base64_encode($row['ID_SolicitudCompra']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
 												$('.ibox-content').toggleClass('sk-loading',false);
 											}
 										});
@@ -1439,14 +1439,14 @@ function CrearArticulo(){
 // Actualización de las dimensiones dinámicamente, SMM 22/08/2022
 <?php foreach ($array_Dimensiones as &$dim) { ?>
 
-<?php $Name_IdDoc = "ID_OrdenCompra"; ?>
+<?php $Name_IdDoc = "ID_SolicitudCompra"; ?>
 <?php $DimCode = intval($dim['DimCode']); ?>
 <?php $OcrId = ($DimCode == 1) ? "" : $DimCode; ?>
 
 $("#<?php echo $dim['IdPortalOne']; ?>").change(function() {
 
 	var docType = 16;
-	var detalleDoc = "detalle_orden_compra_borrador.php";
+	var detalleDoc = "detalle_solicitud_compra_borrador.php";
 
 	var frame = document.getElementById('DataGrid');
 	var DimIdPO = document.getElementById('<?php echo $dim['IdPortalOne']; ?>').value;
@@ -1552,16 +1552,16 @@ $("#<?php echo $dim['IdPortalOne']; ?>").change(function() {
 										type: "GET", // "EmpVentas" es el nombre que tiene el registro en el detalle.
 										url: "registro.php?P=36&doctype=16&borrador=1&type=1&name=EmpVentas&value="+Base64.encode(document.getElementById('EmpleadoVentas').value)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
 										success: function(response){
-											frame.src="detalle_orden_compra_borrador.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
+											frame.src="detalle_solicitud_compra_borrador.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
 											$('.ibox-content').toggleClass('sk-loading',false);
 										}
 									});
 						<?php } else { ?>
 									$.ajax({
 										type: "GET", // "EmpVentas" es el nombre que tiene el registro en el detalle.
-										url: "registro.php?P=36&doctype=16&borrador=1&type=2&name=EmpVentas&value="+Base64.encode(document.getElementById('EmpleadoVentas').value)+"&line=0&id=<?php echo $row['ID_OrdenCompra']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
+										url: "registro.php?P=36&doctype=16&borrador=1&type=2&name=EmpVentas&value="+Base64.encode(document.getElementById('EmpleadoVentas').value)+"&line=0&id=<?php echo $row['ID_SolicitudCompra']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
 										success: function(response){
-											frame.src="detalle_orden_compra_borrador.php?id=<?php echo base64_encode($row['ID_OrdenCompra']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
+											frame.src="detalle_solicitud_compra_borrador.php?id=<?php echo base64_encode($row['ID_SolicitudCompra']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
 											$('.ibox-content').toggleClass('sk-loading',false);
 										}
 									});
@@ -1592,16 +1592,16 @@ $("#<?php echo $dim['IdPortalOne']; ?>").change(function() {
 											type: "GET",
 											url: "registro.php?P=36&doctype=16&borrador=1&type=1&name=PrjCode&value="+Base64.encode(document.getElementById('PrjCode').value)+"&line=0&cardcode="+document.getElementById('CardCode').value+"&whscode=0&actodos=1",
 											success: function(response){
-												frame.src="detalle_orden_compra_borrador.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
+												frame.src="detalle_solicitud_compra_borrador.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+document.getElementById('CardCode').value;
 												$('.ibox-content').toggleClass('sk-loading',false);
 											}
 										});
 							<?php } else { ?>
 										$.ajax({
 											type: "GET",
-											url: "registro.php?P=36&doctype=16&borrador=1&type=2&name=PrjCode&value="+Base64.encode(document.getElementById('PrjCode').value)+"&line=0&id=<?php echo $row['ID_OrdenCompra']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
+											url: "registro.php?P=36&doctype=16&borrador=1&type=2&name=PrjCode&value="+Base64.encode(document.getElementById('PrjCode').value)+"&line=0&id=<?php echo $row['ID_SolicitudCompra']; ?>&evento=<?php echo $IdEvento; ?>&actodos=1",
 											success: function(response){
-												frame.src="detalle_orden_compra_borrador.php?id=<?php echo base64_encode($row['ID_OrdenCompra']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
+												frame.src="detalle_solicitud_compra_borrador.php?id=<?php echo base64_encode($row['ID_SolicitudCompra']); ?>&evento=<?php echo base64_encode($IdEvento); ?>&type=2";
 												$('.ibox-content').toggleClass('sk-loading',false);
 											}
 										});
