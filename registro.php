@@ -2673,7 +2673,7 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     sqlsrv_close($conexion);
                     exit();
                 }
-            } elseif ($type == 23) { //Solicitud de compra editar
+            } elseif ($type == 23) { // Solicitud de compra editar
                 //Insertar el registro en la BD
                 $ParametrosInsert = array(
                     "'$Item'",
@@ -2691,13 +2691,20 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     // "'" . $_REQUEST['pricelist'] . "'",
                     // "'" . $_REQUEST['empventas'] . "'",
                 );
-                $SQL_Insert = EjecutarSP('sp_tbl_SolicitudCompraDetalleInsert', $ParametrosInsert, 35);
+
+                // SMM, 03/02/2024
+                $borrador = '';
+                if (isset($_REQUEST['borrador']) && ($_REQUEST['borrador'] == 1)) {
+                    $borrador = '_Borrador';
+                }
+
+                $SQL_Insert = EjecutarSP("sp_tbl_SolicitudCompraDetalleInsert$borrador", $ParametrosInsert, 35);
                 if ($SQL_Insert) {
                     $ParametrosCount = array(
                         "'" . $id . "'",
                         "'" . $evento . "'",
                     );
-                    $SQL_ConCount = EjecutarSP('sp_tbl_SolicitudCompraDetalleInsert_Count', $ParametrosCount, 35);
+                    $SQL_ConCount = EjecutarSP("sp_tbl_SolicitudCompraDetalleInsert_Count$borrador", $ParametrosCount, 35);
                     $row_ConCount = sqlsrv_fetch_array($SQL_ConCount);
                     sqlsrv_close($conexion);
                     echo $row_ConCount['Cuenta'];
@@ -3415,7 +3422,7 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                         exit();
                     }
                 }
-            } elseif ($_GET['doctype'] == 18) { //Solicitud de compra
+            } elseif ($_GET['doctype'] == 18) { // Solicitud de compra
                 if ($_GET['type'] == 1) { //Actualiza campos en carrito
                     $Parametros = array(
                         "'" . $_GET['name'] . "'",
@@ -3424,7 +3431,7 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                         "'" . $_GET['cardcode'] . "'",
                         "'" . $_GET['whscode'] . "'",
                         "'" . $_SESSION['CodUser'] . "'",
-                        "'" . $_GET['actodos'] . "'",
+                        "'" . ($_GET['actodos'] ?? 0) . "'", // SMM, 02/02/2024
                     );
                     $SQL = EjecutarSP('sp_tbl_SolicitudCompraDetalleCarritoUpdCampos', $Parametros, 36);
                     if ($SQL) {
@@ -3444,9 +3451,16 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                         "'" . $_GET['id'] . "'",
                         "'" . $_GET['evento'] . "'",
                         "'" . $_SESSION['CodUser'] . "'",
-                        "'" . $_GET['actodos'] . "'",
+                        "'" . ($_GET['actodos'] ?? 0) . "'", // SMM, 02/02/2024
                     );
-                    $SQL = EjecutarSP('sp_tbl_SolicitudCompraDetalleUpdCampos', $Parametros, 36);
+
+                    // SMM, 03/02/2024
+                    $spDetalle = 'sp_tbl_SolicitudCompraDetalleUpdCampos';
+                    if (isset($_GET['borrador']) && $_GET['borrador'] == 1) {
+                        $spDetalle .= '_Borrador';
+                    }
+                    $SQL = EjecutarSP($spDetalle, $Parametros, 36);
+
                     if ($SQL) {
                         sqlsrv_close($conexion);
                         echo date('h:i:s a');
