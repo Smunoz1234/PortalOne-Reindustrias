@@ -2643,9 +2643,9 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
             } elseif ($type == 22) { //Solicitud de compra
                 //Insertar el registro en la BD
                 $ParametrosInsert = array(
-                    "'" . $Item . "'",
-                    "'" . $WhsCode . "'",
-                    "'" . $CardCode . "'",
+                    "'$Item'",
+                    "'$WhsCode'",
+                    "'$CardCode'",
                     "'" . $_SESSION['CodUser'] . "'",
                     "'$dim1'",
                     "'$dim2'",
@@ -2676,10 +2676,10 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
             } elseif ($type == 23) { //Solicitud de compra editar
                 //Insertar el registro en la BD
                 $ParametrosInsert = array(
-                    "'" . $Item . "'",
-                    "'" . $WhsCode . "'",
-                    "'" . $id . "'",
-                    "'" . $evento . "'",
+                    "'$Item'",
+                    "'$WhsCode'",
+                    "'$id'",
+                    "'$evento'",
                     "'" . $_SESSION['CodUser'] . "'",
                     "'$dim1'",
                     "'$dim2'",

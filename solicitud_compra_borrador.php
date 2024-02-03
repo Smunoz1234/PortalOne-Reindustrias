@@ -976,7 +976,7 @@ if (isset($row['ID_PerfilUsuario']) && ($row['ID_PerfilUsuario'] != "")) {
 
 // Permiso para actualizar la solicitud de compra en borrador. SMM, 02/02/2024
 $BloquearDocumento = false;
-if (!PermitirFuncion(1211)) {
+if (!PermitirFuncion(1211) && false) {
 	$BloquearDocumento = true;
 }
 
