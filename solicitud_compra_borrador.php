@@ -2818,6 +2818,7 @@ function ConsultarTab(type) {
 						ObjType: <?php echo $IdTipoDocumento; ?>,
 						OT: OrdenServicio,
 						Edit: <?php echo $edit; ?>,
+						Borrador: "1", // SMM, 03/02/2024
 						DocType: "<?php echo ($edit == 0) ? 22 : 23; ?>",
 						DocId: "<?php echo $row['ID_SolicitudCompra'] ?? 0; ?>",
 						DocEvent: "<?php echo $row['IdEvento'] ?? 0; ?>",
@@ -2859,6 +2860,7 @@ function ConsultarTab(type) {
 					url: "md_actualizar_articulos.php",
 					data: {
 						Edit: <?php echo $edit; ?>,
+						Borrador: "1", // SMM, 03/02/2024
 						DocType: "<?php echo 18; ?>",
 						DocId: "<?php echo $row['ID_SolicitudCompra'] ?? 0; ?>",
 						DocEvent: "<?php echo $row['IdEvento'] ?? 0; ?>",

@@ -16,6 +16,7 @@ $cadena_Dimensiones = "JSON.parse('$encode_Dimensiones'.replace(/\\n|\\r/g, ''))
 // Hasta aquí, SMM 24/05/2023
 
 $Edit = $_POST['Edit'];
+$Borrador = $_POST['Borrador'] ?? "0";
 $DocType = $_POST['DocType'];
 $DocId = $_POST['DocId'];
 $DocEvent = $_POST['DocEvent'];
@@ -306,6 +307,7 @@ $SQL_ConceptoSalida = Seleccionar('tbl_SalidaInventario_Conceptos', '*', $Filtro
 		let dev = <?php echo $DocEvent; ?>;
 		let cc = "<?php echo $CardCode; ?>";
 		let edit = <?php echo $Edit; ?>;
+		let db = <?php echo $Borrador; ?>; // SMM, 03/02/2024
 
 		// Obtén el elemento con el ID 'DataGrid'
 		let dataGrid = document.getElementById('DataGrid');
@@ -335,7 +337,7 @@ $SQL_ConceptoSalida = Seleccionar('tbl_SalidaInventario_Conceptos', '*', $Filtro
 				if (name == "OcrCode1") name = "OcrCode";
 
 				// URL del Ajax que consulta al registro número 36, actualización en detalle.
-				let urlAjax = `registro.php?P=36&actodos=1&line=0&doctype=${dt}&name=${name}&value=${Base64.encode(value)}`;
+				let urlAjax = `registro.php?P=36&actodos=1&line=0&doctype=${dt}&name=${name}&value=${Base64.encode(value)}&borrador=${db}`;
 
 				if (edit == 0) {
 					urlAjax += `&cardcode=${cc}&whscode=0&type=1`;

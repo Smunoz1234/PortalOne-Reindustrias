@@ -18,6 +18,7 @@ $cadena_Dimensiones = "JSON.parse('$encode_Dimensiones'.replace(/\\n|\\r/g, ''))
 $OT = $_POST['OT'] ?? "";
 $ObjType = $_POST['ObjType'];
 $Edit = $_POST['Edit'];
+$Borrador = $_POST['Borrador'] ?? "0";
 $DocType = $_POST['DocType'];
 $DocId = $_POST['DocId'];
 $DocEvent = $_POST['DocEvent'];
@@ -607,6 +608,7 @@ $SQL_ConceptoSalida = Seleccionar('tbl_SalidaInventario_Conceptos', '*', $Filtro
 			let did = <?php echo $DocId; ?>;
 			let dev = <?php echo $DocEvent; ?>;
 			let cc = "<?php echo $CardCode; ?>";
+			let db = <?php echo $Borrador; ?>; // SMM, 03/02/2024
 
 			var totalArticulos = $("#footableTwo tbody tr").length; // Obtener el total de artículos
 			var contadorArticulos = 0; // Inicializar el contador de artículos
@@ -634,6 +636,7 @@ $SQL_ConceptoSalida = Seleccionar('tbl_SalidaInventario_Conceptos', '*', $Filtro
 				let articulo = {
 					P: 35,
 					doctype: dt,
+					borrador: db,
 					id: did,
 					evento: dev,
 					cardcode: cc,
