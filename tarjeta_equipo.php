@@ -737,7 +737,10 @@ function ConsultarDocVentas(tipo){
 															$SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=176 and VerEnDocumento='Y'");
 															while ($row_Formato = sqlsrv_fetch_array($SQL_Formato)) { ?>
 																		<li>
-																			<a class="dropdown-item" target="_blank" href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row['IdTarjetaEquipo']); ?>&ObType=<?php echo base64_encode('176'); ?>&IdFrm=<?php echo base64_encode($row_Formato['IdFormato']); ?>&IdReg=<?php echo base64_encode($row_Formato['ID']); ?>"><?php echo $row_Formato['NombreVisualizar']; ?></a>
+																			<a class="dropdown-item" target="_blank"
+																				href="formatdownload.php?DocKey=<?php echo $row['IdTarjetaEquipo'] ?? ""; ?>&ObType=<?php echo $row_Formato['ID_Objeto'] ?? ""; ?>&IdFrm=<?php echo $row_Formato['IdFormato'] ?? ""; ?>&IdReg=<?php echo $row_Formato['ID'] ?? ""; ?>">
+																				<?php echo $row_Formato['NombreVisualizar'] ?? ""; ?>
+																			</a>
 																		</li>
 															<?php } ?>
 														</ul>

@@ -182,10 +182,10 @@ $IdConcesionario = $_GET['Concesionario'] ?? "";
 
 if ($sw == 1) {
 	$Param = array(
-		"'" . $Cliente . "'",
-		"'" . $IdMarca . "'",
-		"'" . $CiudadSede . "'",
-		"'" . $IdConcesionario . "'",
+		"'$Cliente'",
+		"'$IdMarca'",
+		"'$CiudadSede'",
+		"'$IdConcesionario'",
 		"'" . FormatoFecha($FI_FechaMatricula) . "'",
 		"'" . FormatoFecha($FF_FechaMatricula) . "'",
 		"'" . FormatoFecha($FI_Fecha_SOAT) . "'",
@@ -320,8 +320,7 @@ if ($sw == 1) {
 									<label class="col-lg-1 control-label">Ciudad Sede</label>
 									<div class="col-lg-3">
 										<input name="CiudadSede" type="text" class="form-control" id="CiudadSede"
-											maxlength="100"
-											value="<?php if (isset($_GET['CiudadSede']) && ($_GET['CiudadSede'] != "")) {
+											maxlength="100" value="<?php if (isset($_GET['CiudadSede']) && ($_GET['CiudadSede'] != "")) {
 												echo $_GET['CiudadSede'];
 											} ?>">
 									</div>
@@ -330,13 +329,11 @@ if ($sw == 1) {
 								<div class="form-group">
 									<label class="col-lg-1 control-label">Cliente</label>
 									<div class="col-lg-3">
-										<input name="ClienteEquipo" type="hidden" id="ClienteEquipo"
-											value="<?php if (isset($_GET['ClienteEquipo']) && ($_GET['ClienteEquipo'] != "")) {
-												echo $_GET['ClienteEquipo'];
-											} ?>">
+										<input name="ClienteEquipo" type="hidden" id="ClienteEquipo" value="<?php if (isset($_GET['ClienteEquipo']) && ($_GET['ClienteEquipo'] != "")) {
+											echo $_GET['ClienteEquipo'];
+										} ?>">
 										<input name="NombreClienteEquipo" type="text" class="form-control"
-											id="NombreClienteEquipo" placeholder="Para TODOS, dejar vacio..."
-											value="<?php if (isset($_GET['NombreClienteEquipo']) && ($_GET['NombreClienteEquipo'] != "")) {
+											id="NombreClienteEquipo" placeholder="Para TODOS, dejar vacio..." value="<?php if (isset($_GET['NombreClienteEquipo']) && ($_GET['NombreClienteEquipo'] != "")) {
 												echo $_GET['NombreClienteEquipo'];
 											} ?>">
 									</div>
@@ -615,7 +612,7 @@ if ($sw == 1) {
 
 		</div>
 	</div>
-	
+
 	<?php include "includes/pie.php"; ?>
 	<!-- InstanceBeginEditable name="EditRegion4" -->
 	<script>
