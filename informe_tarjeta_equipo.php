@@ -116,6 +116,44 @@ if (isset($_GET['FF_FechaProx_CambAceite']) && $_GET['FF_FechaProx_CambAceite'] 
 	// $FF_FechaProx_CambAceite = date('Y-m-d');
 }
 
+$FI_FechaUlt_CambLlantas = "";
+$FF_FechaUlt_CambLlantas = "";
+if (isset($_GET['FI_FechaUlt_CambLlantas']) && $_GET['FI_FechaUlt_CambLlantas'] != "") {
+	$FI_FechaUlt_CambLlantas = $_GET['FI_FechaUlt_CambLlantas'];
+	$sw = 1;
+} else {
+	//Restar 7 dias a la fecha actual
+	$fecha = date('Y-m-d');
+	$nuevafecha = strtotime('-' . ObtenerVariable("DiasRangoFechasGestionar") . ' day');
+	$nuevafecha = date('Y-m-d', $nuevafecha);
+	// $FI_FechaUlt_CambLlantas = $nuevafecha;
+}
+if (isset($_GET['FF_FechaUlt_CambLlantas']) && $_GET['FF_FechaUlt_CambLlantas'] != "") {
+	$FF_FechaUlt_CambLlantas = $_GET['FF_FechaUlt_CambLlantas'];
+	$sw = 1;
+} else {
+	// $FF_FechaUlt_CambLlantas = date('Y-m-d');
+}
+
+$FI_FechaProx_CambLlantas = "";
+$FF_FechaProx_CambLlantas = "";
+if (isset($_GET['FI_FechaProx_CambLlantas']) && $_GET['FI_FechaProx_CambLlantas'] != "") {
+	$FI_FechaProx_CambLlantas = $_GET['FI_FechaProx_CambLlantas'];
+	$sw = 1;
+} else {
+	//Restar 7 dias a la fecha actual
+	$fecha = date('Y-m-d');
+	$nuevafecha = strtotime('-' . ObtenerVariable("DiasRangoFechasGestionar") . ' day');
+	$nuevafecha = date('Y-m-d', $nuevafecha);
+	// $FI_FechaProx_CambLlantas = $nuevafecha;
+}
+if (isset($_GET['FF_FechaProx_CambLlantas']) && $_GET['FF_FechaProx_CambLlantas'] != "") {
+	$FF_FechaProx_CambLlantas = $_GET['FF_FechaProx_CambLlantas'];
+	$sw = 1;
+} else {
+	// $FF_FechaProx_CambLlantas = date('Y-m-d');
+}
+
 $FI_FechaUlt_Mant = "";
 $FF_FechaUlt_Mant = "";
 if (isset($_GET['FI_FechaUlt_Mant']) && $_GET['FI_FechaUlt_Mant'] != "") {
@@ -294,7 +332,7 @@ if ($sw == 1) {
 											<option value="" disabled selected>Seleccione...</option>
 											<?php while ($row_Marca = sqlsrv_fetch_array($SQL_Marca)) { ?>
 												<option value="<?php echo $row_Marca['IdMarcaVehiculo']; ?>" <?php if ((isset($_GET['Marca'])) && (strcmp($row_Marca['IdMarcaVehiculo'], $_GET['Marca']) == 0)) {
-													   echo "selected=\"selected\"";
+													   echo "selected";
 												   } ?>>
 													<?php echo $row_Marca['DeMarcaVehiculo']; ?>
 												</option>
@@ -309,7 +347,7 @@ if ($sw == 1) {
 											<?php while ($row_Concesionario = sqlsrv_fetch_array($SQL_Concesionario)) { ?>
 												<option value="<?php echo $row_Concesionario['CodigoConcesionario']; ?>"
 													<?php if ((isset($_GET['Concesionario'])) && (strcmp($row_Concesionario['CodigoConcesionario'], $_GET['Concesionario']) == 0)) {
-														echo "selected=\"selected\"";
+														echo "selected";
 													} ?>>
 													<?php echo $row_Concesionario['NombreConcesionario']; ?>
 												</option>
@@ -383,17 +421,17 @@ if ($sw == 1) {
 										</div>
 									</div>
 
-									<label class="col-lg-1 control-label">Fecha Ult. Camb. Aceite</label>
+									<label class="col-lg-1 control-label">Fecha Prox. Mantenimiento</label>
 									<div class="col-lg-3">
 										<div class="input-daterange input-group">
-											<input name="FI_FechaUlt_CambAceite" type="text"
-												class="input-sm form-control fecha" id="FI_FechaUlt_CambAceite"
-												placeholder="Fecha inicial"
-												value="<?php echo $FI_FechaUlt_CambAceite; ?>" autocomplete="off" />
+											<input name="FI_FechaProx_Mant" type="text"
+												class="input-sm form-control fecha" id="FI_FechaProx_Mant"
+												placeholder="Fecha inicial" value="<?php echo $FI_FechaProx_Mant; ?>"
+												autocomplete="off" />
 											<span class="input-group-addon">hasta</span>
-											<input name="FF_FechaUlt_CambAceite" type="text"
-												class="input-sm form-control fecha" id="FF_FechaUlt_CambAceite"
-												placeholder="Fecha final" value="<?php echo $FF_FechaUlt_CambAceite; ?>"
+											<input name="FF_FechaProx_Mant" type="text"
+												class="input-sm form-control fecha" id="FF_FechaProx_Mant"
+												placeholder="Fecha final" value="<?php echo $FF_FechaProx_Mant; ?>"
 												autocomplete="off" />
 										</div>
 									</div>
@@ -413,17 +451,17 @@ if ($sw == 1) {
 								</div>
 
 								<div class="form-group">
-									<label class="col-lg-1 control-label">Fecha Prox. Mantenimiento</label>
+									<label class="col-lg-1 control-label">Fecha Ult. Camb. Aceite</label>
 									<div class="col-lg-3">
 										<div class="input-daterange input-group">
-											<input name="FI_FechaProx_Mant" type="text"
-												class="input-sm form-control fecha" id="FI_FechaProx_Mant"
-												placeholder="Fecha inicial" value="<?php echo $FI_FechaProx_Mant; ?>"
-												autocomplete="off" />
+											<input name="FI_FechaUlt_CambAceite" type="text"
+												class="input-sm form-control fecha" id="FI_FechaUlt_CambAceite"
+												placeholder="Fecha inicial"
+												value="<?php echo $FI_FechaUlt_CambAceite; ?>" autocomplete="off" />
 											<span class="input-group-addon">hasta</span>
-											<input name="FF_FechaProx_Mant" type="text"
-												class="input-sm form-control fecha" id="FF_FechaProx_Mant"
-												placeholder="Fecha final" value="<?php echo $FF_FechaProx_Mant; ?>"
+											<input name="FF_FechaUlt_CambAceite" type="text"
+												class="input-sm form-control fecha" id="FF_FechaUlt_CambAceite"
+												placeholder="Fecha final" value="<?php echo $FF_FechaUlt_CambAceite; ?>"
 												autocomplete="off" />
 										</div>
 									</div>
@@ -455,6 +493,38 @@ if ($sw == 1) {
 												class="input-sm form-control fecha" id="FF_FechaFactura"
 												placeholder="Fecha final" value="<?php echo $FF_FechaFactura; ?>"
 												autocomplete="off" />
+										</div>
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label class="col-lg-1 control-label">Fecha Ult. Camb. Llantas</label>
+									<div class="col-lg-3">
+										<div class="input-daterange input-group">
+											<input name="FI_FechaUlt_CambLlantas" type="text"
+												class="input-sm form-control fecha" id="FI_FechaUlt_CambLlantas"
+												placeholder="Fecha inicial"
+												value="<?php echo $FI_FechaUlt_CambLlantas; ?>" autocomplete="off" />
+											<span class="input-group-addon">hasta</span>
+											<input name="FF_FechaUlt_CambLlantas" type="text"
+												class="input-sm form-control fecha" id="FF_FechaUlt_CambLlantas"
+												placeholder="Fecha final" value="<?php echo $FF_FechaUlt_CambLlantas; ?>"
+												autocomplete="off" />
+										</div>
+									</div>
+
+									<label class="col-lg-1 control-label">Fecha Prox. Camb. Llantas</label>
+									<div class="col-lg-3">
+										<div class="input-daterange input-group">
+											<input name="FI_FechaProx_CambLlantas" type="text"
+												class="input-sm form-control fecha" id="FI_FechaProx_CambLlantas"
+												placeholder="Fecha inicial"
+												value="<?php echo $FI_FechaProx_CambLlantas; ?>" autocomplete="off" />
+											<span class="input-group-addon">hasta</span>
+											<input name="FF_FechaProx_CambLlantas" type="text"
+												class="input-sm form-control fecha" id="FF_FechaProx_CambLlantas"
+												placeholder="Fecha final"
+												value="<?php echo $FF_FechaProx_CambLlantas; ?>" autocomplete="off" />
 										</div>
 									</div>
 								</div>
@@ -496,6 +566,9 @@ if ($sw == 1) {
 												<th>Núm.</th>
 												<th>Código cliente</th>
 												<th>Nombre cliente</th>
+												<th>Teléfono cliente</th>
+												<th>Celular cliente</th>
+												<th>Email cliente</th>
 												<th>Serial interno</th>
 												<th>Marca vehículo</th>
 												<th>Ciudad Sede</th>
@@ -505,6 +578,8 @@ if ($sw == 1) {
 												<th>Fecha Tecno.</th>
 												<th>Fecha Ult. Camb. Aceite</th>
 												<th>Fecha Prox. Camb. Aceite</th>
+												<th>Fecha Ult. Camb. Llantas</th>
+												<th>Fecha Prox. Camb. Llantas</th>
 												<th>Novedad</th>
 												<th>Fecha Agenda</th>
 												<th>Fecha Ult. Mant.</th>
@@ -527,6 +602,15 @@ if ($sw == 1) {
 														<?php echo $row['CardName']; ?>
 													</td>
 													<td>
+														<?php echo $row["TelefonoCliente"] ?? ""; ?>
+													</td>
+													<td>
+														<?php echo $row["CelularCliente"] ?? ""; ?>
+													</td>
+													<td>
+														<?php echo $row["EmailCliente"] ?? ""; ?>
+													</td>
+													<td>
 														<?php echo $row['SerialInterno']; ?>
 													</td>
 													<td>
@@ -547,11 +631,19 @@ if ($sw == 1) {
 													<td>
 														<?php echo ($row['CDU_Fecha_Tecno'] != "") ? $row['CDU_Fecha_Tecno']->format('Y-m-d') : ""; ?>
 													</td>
+													
 													<td>
 														<?php echo ($row['CDU_FechaUlt_CambAceite'] != "") ? $row['CDU_FechaUlt_CambAceite']->format('Y-m-d') : ""; ?>
 													</td>
 													<td>
 														<?php echo ($row['CDU_FechaProx_CambAceite'] != "") ? $row['CDU_FechaProx_CambAceite']->format('Y-m-d') : ""; ?>
+													</td>
+
+													<td>
+														<?php echo ($row['CDU_FechaUlt_CambLlantas'] != "") ? $row['CDU_FechaUlt_CambLlantas']->format('Y-m-d') : ""; ?>
+													</td>
+													<td>
+														<?php echo ($row['CDU_FechaProx_CambLlantas'] != "") ? $row['CDU_FechaProx_CambLlantas']->format('Y-m-d') : ""; ?>
 													</td>
 
 													<td>
