@@ -4452,8 +4452,8 @@ $(function () {
 		VerTAB(<?php echo $_GET["active"]; ?>);
 	<?php } ?>
 
-	// SMM, 15/09/2023
-	<?php if ($sw_error == 1) { ?>
+	// SMM, 13/02/2024
+	<?php if (($sw_error == 1) || ($dt_LS == 1) || ($dt_SLS == 1)) { ?>
 		$('#NumeroSerie').trigger('change');		
 	<?php } ?>
 
