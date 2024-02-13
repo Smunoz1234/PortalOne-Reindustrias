@@ -585,6 +585,7 @@ if ($sw == 1) {
 												<th>Fecha Ult. Mant.</th>
 												<th>Fecha Prox. Mant.</th>
 												<th>Fecha Factura</th>
+												<th>Fecha Última Gestión CRM</th>
 												<th>Estado</th>
 												<th>Acciones</th>
 											</tr>
@@ -662,6 +663,10 @@ if ($sw == 1) {
 
 													<td>
 														<?php echo ($row['CDU_FechaFactura'] != "") ? $row['CDU_FechaFactura']->format('Y-m-d') : ""; ?>
+													</td>
+
+													<td>
+														<?php echo ($row['UltimaGestionCRM'] != "") ? $row['UltimaGestionCRM']->format('Y-m-d') : ""; ?>
 													</td>
 
 													<td>
