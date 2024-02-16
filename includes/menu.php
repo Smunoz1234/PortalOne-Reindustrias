@@ -249,15 +249,26 @@ if (!isset($_COOKIE["banderaMenu"])) {
 			<li>
 				<a href="#"><i class="fa fa-tasks"></i> <span class="nav-label">Servicios</span><span class="fa arrow"></span></a>
 				<ul class="nav nav-second-level collapse">
-					<?php if (PermitirFuncion(334)) {?><li><a class="alnk" href="gestionar_solicitudes_llamadas.php">Solicitudes de llamadas (Agenda)</a></li><?php }?>
-					
-					<?php if (PermitirFuncion(301)) {?><li><a class="alnk" href="gestionar_llamadas_servicios.php">Llamadas de servicio</a></li><?php }?>
-					<?php if (PermitirFuncion(303)) {?><li><a class="alnk" href="gestionar_actividades.php">Actividades</a></li><?php }?>
-					
-					<?php if (PermitirFuncion(337)) {?><li><a class="alnk" href="gestionar_campanas_vehiculo.php">Campañas</a></li><?php }?>
-					
-					<?php if (PermitirFuncion(316)) {?><li><a href="despacho_rutas.php">Despacho de servicios</a></li><?php }?>
-					
+					<?php if (PermitirFuncion([1601, 337])) {?>
+					<li>
+						<a href="#">Equipos <span class="fa arrow"></span></a>
+						<ul class='nav nav-third-level'>
+							<?php if (PermitirFuncion(1601)) {?><li><a class="alnk" href="consultar_tarjeta_equipo.php">Tarjetas de equipos</a></li><?php }?>
+							<?php if (PermitirFuncion(337)) {?><li><a class="alnk" href="gestionar_campanas_vehiculo.php">Campañas</a></li><?php }?>
+						</ul>
+					</li>
+					<?php }?>
+					<?php if (PermitirFuncion([334, 301, 303])) {?>
+					<li>
+						<a href="#">Ordenes de trabajo <span class="fa arrow"></span></a>
+						<ul class='nav nav-third-level'>
+							<?php if (PermitirFuncion(334)) {?><li><a class="alnk" href="gestionar_solicitudes_llamadas.php">Solicitudes de llamadas (Agenda)</a></li><?php }?>
+							<?php if (PermitirFuncion(301)) {?><li><a class="alnk" href="gestionar_llamadas_servicios.php">Llamadas de servicio</a></li><?php }?>
+							<?php if (PermitirFuncion(303)) {?><li><a class="alnk" href="gestionar_actividades.php">Actividades</a></li><?php }?>
+						</ul>
+					</li>
+					<?php }?>
+
 					<?php if (PermitirFuncion(305) || PermitirFuncion(306) || PermitirFuncion(307)) {?>
 						<li>
 							<a href="#">Calendarios <span class="fa arrow"></span></a>
@@ -283,6 +294,7 @@ if (!isset($_COOKIE["banderaMenu"])) {
 						<li>
 							<a href="#">Asistentes <span class="fa arrow"></span></a>
 							<ul class='nav nav-third-level'>
+								<?php if (PermitirFuncion(316)) {?><li><a class="alnk" href="despacho_rutas.php">Despacho de servicios</a></li><?php }?>
 								<?php if (PermitirFuncion(310)) {?><li><a class="alnk" href="creacion_ot_lote.php">Creación de OT en lote</a></li><?php }?>
 								<?php if (PermitirFuncion(311)) {?><li><a class="alnk" href="cierre_ot_lote.php">Cierre de Llamadas de Servicio en Lote</a></li><?php }?>
 								<?php if (PermitirFuncion(317)) {?><li><a class="alnk" href="cambio_producto_ot.php">Cambio de productos en lote</a></li><?php }?>
@@ -321,7 +333,6 @@ if (!isset($_COOKIE["banderaMenu"])) {
 							<a href="#">Programación <span class="fa arrow"></span></a>
 							<ul class='nav nav-third-level'>
 								<?php if (PermitirFuncion(336)) {?><li><a href="programacion_solicitudes.php" target="_blank">Programación de solicitudes</a></li><?php }?>	
-								
 								<?php if (PermitirFuncion(312)) {?><li><a href="programacion_rutas.php" target="_blank">Programación de servicios</a></li><?php }?>
 							</ul>
 						</li>
@@ -503,18 +514,66 @@ if (!isset($_COOKIE["banderaMenu"])) {
 				</ul>
 			</li>
 			<?php }?>
-			<?php if (PermitirFuncion(1601)) {?>
+			<?php if (PermitirFuncion([1601, 334, 336, 310, 1605])) {?>
 			<li>
 				<a href="#"><i class="fa fa-wrench"></i> <span class="nav-label">Mantenimiento</span><span class="fa arrow"></span></a>
 				<ul class="nav nav-second-level">
-					<?php if (PermitirFuncion(1601)) {?><li><a class="alnk" href="consultar_tarjeta_equipo.php">Tarjetas de equipos</a></li><?php }?>
-					<?php if (PermitirFuncion(1601)) {?><li><a class="alnk" href="#">Base de datos de soluciones</a></li><?php }?>
-
-					<?php if (PermitirFuncion(1605)) {?>
+					<?php if (PermitirFuncion([1601, 349, 351])) {?>
+					<li>
+						<a href="#">Equipos <span class="fa arrow"></span></a>
+						<ul class='nav nav-third-level'>
+							<?php if (PermitirFuncion(1601)) {?><li><a class="alnk" href="consultar_tarjeta_equipo.php">Tarjetas de equipos</a></li><?php }?>
+							<?php if (PermitirFuncion(349)) {?><li><a class="alnk" href="#">Tipos de equipos</a></li><?php }?>
+							<?php if (PermitirFuncion(351)) {?><li><a class="alnk" href="#">Unidades de medida de equipos</a></li><?php }?>
+						</ul>
+					</li>
+					<?php }?>
+					<?php if (PermitirFuncion([334, 301, 303])) {?>
+					<li>
+						<a href="#">Ordenes de trabajo <span class="fa arrow"></span></a>
+						<ul class='nav nav-third-level'>
+							<?php if (PermitirFuncion(334)) {?><li><a class="alnk" href="gestionar_solicitudes_llamadas.php">Solicitudes de llamadas (Agenda)</a></li><?php }?>
+							<?php if (PermitirFuncion(301)) {?><li><a class="alnk" href="gestionar_llamadas_servicios.php">Llamadas de servicio</a></li><?php }?>
+							<?php if (PermitirFuncion(303)) {?><li><a class="alnk" href="gestionar_actividades.php">Actividades</a></li><?php }?>
+						</ul>
+					</li>
+					<?php }?>
+					<?php if (PermitirFuncion(353)) {?>
+					<li>
+						<a href="#">Rutinas <span class="fa arrow"></span></a>
+						<ul class='nav nav-third-level'>
+							<?php if (PermitirFuncion(353)) {?><li><a class="alnk" href="#">Datos maestros rutina</a></li><?php }?>
+						</ul>
+					</li>
+					<?php }?>
+					<?php if (PermitirFuncion([336, 312])) {?>
+					<li>
+						<a href="#">Programación <span class="fa arrow"></span></a>
+						<ul class='nav nav-third-level'>
+							<?php if (PermitirFuncion(336)) {?><li><a href="programacion_solicitudes.php" target="_blank">Programación de solicitudes</a></li><?php }?>	
+							<?php if (PermitirFuncion(312)) {?><li><a href="programacion_rutas.php" target="_blank">Programación de servicios</a></li><?php }?>
+						</ul>
+					</li>
+					<?php }?>
+					<?php if (PermitirFuncion([310, 311, 318, 316])) {?>
+					<li>
+						<a href="#">Asistentes <span class="fa arrow"></span></a>
+						<ul class='nav nav-third-level'>
+							<?php if (PermitirFuncion(310)) {?><li><a class="alnk" href="creacion_ot_lote.php">Creación de OT en lote</a></li><?php }?>
+							<?php if (PermitirFuncion(311)) {?><li><a class="alnk" href="cierre_ot_lote.php">Cierre de OT en Lote</a></li><?php }?>
+							<?php if (PermitirFuncion(318)) {?><li><a class="alnk" href="cronograma_servicios.php">Cronograma de servicios</a></li><?php }?>
+							<?php if (PermitirFuncion(316)) {?><li><a class="alnk" href="despacho_rutas.php">Despacho de servicios</a></li><?php }?>
+						</ul>
+					</li>
+					<?php }?>
+					<?php if (PermitirFuncion([1605, 314, 414, 339])) {?>
 					<li>
 						<a href="#">Informes <span class="fa arrow"></span></a>
 						<ul class='nav nav-third-level'>
 							<?php if (PermitirFuncion(1605)) {?><li><a class="alnk" href="informe_tarjeta_equipo.php">Gestión tarjetas de equipo</a></li><?php }?>
+							<?php if (PermitirFuncion(314)) {?><li><a class="alnk" href="consultar_operaciones.php">Gestión de operaciones</a></li><?php }?>
+							<?php if (PermitirFuncion(414)) {?><li><a class="alnk" href="impresion_orden_servicio.php">Impresión de OT</a></li><?php }?>
+							<?php if (PermitirFuncion(339)) {?><li><a class="alnk" href="consultar_operaciones_agenda.php">Gestión de Operaciones Solicitud Llamada (Agenda)</a></li><?php }?>
 						</ul>
 					</li>
 					<?php }?>

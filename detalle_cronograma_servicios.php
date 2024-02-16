@@ -14,7 +14,10 @@ if (isset($_GET['idsucursal']) && ($_GET['idsucursal'] != "")) {
 	$Sucursal = "";
 }
 
-$SQL = Seleccionar("uvw_tbl_ProgramacionOrdenesServicio", "*", "IdCliente='" . base64_decode($_GET['cardcode']) . "' $Sucursal and Periodo='" . base64_decode($_GET['periodo']) . "'", "IdSucursalCliente");
+$IdCliente = base64_decode($_GET['cardcode'] ?? "");
+$Periodo = base64_decode($_GET['periodo'] ?? "");
+$Cons = "SELECT * FROM uvw_tbl_ProgramacionOrdenesServicio WHERE IdCliente = '$IdCliente' $Sucursal AND Periodo = '$Periodo' ORDER BY IdSucursalCliente";
+$SQL = sqlsrv_query($conexion, $Cons);
 if ($SQL) {
 	$sw = 1;
 }
@@ -634,7 +637,7 @@ if (isset($_GET['cardcode']) && ($_GET['cardcode'] != "")) {
 			$.ajax({
 				url: "ajx_buscar_datos_json.php",
 				data: {
-					type: 48,
+					type: 52,
 					id: ID
 				},
 				dataType: 'json',

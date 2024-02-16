@@ -628,7 +628,7 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
             $row_OT = sqlsrv_fetch_array($SQL);
 
             $IdTarjetaEquipo = $row_OT['IdTarjetaEquipo'] ?? "";
-            $IdTarjetaEquipo = "'$IdTarjetaEquipo '";
+            $IdTarjetaEquipo = "'$IdTarjetaEquipo'";
         }
 
         if ($Cliente == "''") {
@@ -666,13 +666,13 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
         $SQL = Seleccionar("uvw_Sap_tbl_SociosNegocios", "*", "CodigoCliente=" . $CardCode);
         $row = sqlsrv_fetch_array($SQL);
         $records = array(
-            'Direccion' => $row['Address'] ?? "",
-            'Ciudad' => $row['City'] ?? "",
-            'Celular' => $row['Celular'] ?? "",
-            'Telefono' => $row['Telefono'] ?? "",
-            'Correo' => $row['Email'] ?? "",
-            'IdListaPrecio' => $row['IdListaPrecio'] ?? "", // SMM, 24/02/2022
-            'SujetoImpuesto' => $row['SujetoImpuesto'] ?? "", // SMM, 23/04/2022
+            'Direccion' => ($row['Address'] ?? ""),
+            'Ciudad' => ($row['City'] ?? ""),
+            'Celular' => ($row['Celular'] ?? ""),
+            'Telefono' => ($row['Telefono'] ?? ""),
+            'Correo' => ($row['Email'] ?? ""),
+            'IdListaPrecio' => ($row['IdListaPrecio'] ?? ""), // SMM, 24/02/2022
+            'SujetoImpuesto' => ($row['SujetoImpuesto'] ?? ""), // SMM, 23/04/2022
         );
         echo json_encode($records);
     }
@@ -715,7 +715,7 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
         $SQL = Seleccionar("uvw_Sap_tbl_TipoProblemasLlamadas", "*", "IdTipoProblemaLlamada='$id'");
         $row = sqlsrv_fetch_array($SQL);
         $records = array(
-            'tiempoTarea' => $row['TiempoTarea'],
+            'tiempoTarea' => ($row['TiempoTarea'] ?? ""),
         );
         echo json_encode($records);
     }
@@ -778,6 +778,61 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
             "UsuarioCierre" => ($_SESSION['CodUser'] ?? ""),
             "FechaCierreLlamada" => FormatoFecha($_POST['FechaCreacion'] ?? "", $_POST['HoraCreacion'] ?? ""),
             "FechaActualizacion" => FormatoFecha($_POST['FechaCreacion'] ?? "", $_POST['HoraCreacion'] ?? ""),
+        );
+        echo json_encode($records);
+    }
+
+    // SMM, 16/02/2024
+    elseif ($type == 52) { // Consultar linea del cronograma de ordenes de servicio. SMM, 14/01/2023
+        $SQL = Seleccionar("uvw_tbl_ProgramacionOrdenesServicio", "*", "ID='" . $_GET['id'] . "'");
+        $records = array();
+        $row = sqlsrv_fetch_array($SQL);
+        $records = array(
+            "SucursalCliente" => ($row["IdSucursalCliente"] ?? ""),
+            "Estado" => ($row["Estado"] ?? ""),
+            "Frecuencia" => ($row["Frecuencia"] ?? ""),
+            "ArticuloLMT" => ($row["IdArticuloLMT"] ?? ""),
+            "Areas" => ($row["Areas"] ?? ""),
+            "Servicios" => ($row["Servicios"] ?? ""),
+            "MetodoAplicacion" => ($row["MetodoAplicacion"] ?? ""),
+            "Observaciones" => ($row["Observaciones"] ?? ""),
+        );
+        echo json_encode($records);
+    }
+
+    // SMM, 16/02/2024
+    elseif ($type == 53) { // Consultar una zona de socio de negocio en particular. SMM, 25/02/2023
+        $SQL = Seleccionar("uvw_tbl_SociosNegocios_Zonas", "*", "[id_zona_sn]='" . $_GET['id'] . "'");
+        $records = array();
+        $row = sqlsrv_fetch_array($SQL);
+        $records = array(
+            "id_zona_sn" => $row["id_zona_sn"],
+            "zona_sn" => $row["zona_sn"],
+            "id_socio_negocio" => $row["id_socio_negocio"],
+            "id_consecutivo_direccion" => $row["id_consecutivo_direccion"],
+            "estado" => $row["estado"],
+            "observaciones" => $row["observaciones"],
+        );
+        echo json_encode($records);
+    }
+
+    // SMM, 16/02/2024
+    elseif ($type == 54) { // Consultar un punto de control en particular.
+        $SQL = Seleccionar("tbl_PuntoControl", "*", "[id_interno]='" . $_GET['id'] . "'");
+        $records = array();
+        $row = sqlsrv_fetch_array($SQL);
+        $records = array(
+            "id_punto_control" => $row["id_punto_control"],
+            "punto_control" => $row["punto_control"],
+            "id_tipo_punto_control" => $row["id_tipo_punto_control"],
+            "descripcion_punto_control" => $row["descripcion_punto_control"],
+            "id_zona_sn" => $row["id_zona_sn"],
+            "id_nivel_infestacion" => $row["id_nivel_infestacion"],
+            "instala_tecnico" => $row["instala_tecnico"],
+            "fecha_instalacion" => $row["fecha_instalacion"]->format('Y-m-d'),
+            "estado" => $row["estado"],
+            "umbral_seguridad" => $row["umbral_seguridad"],
+            "umbral_critico" => $row["umbral_critico"],
         );
         echo json_encode($records);
     }

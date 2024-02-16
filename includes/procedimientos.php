@@ -1305,8 +1305,36 @@ if (isset($_GET['type']) && $_GET['type'] != "") {
         }
     }
 
-    // SMM, 21/04/2023
-    elseif ($_GET['type'] == 66) { // Eliminar una linea de la tabla de series
+    // Actualizar el cronograma según las listas de materiales en los articulos. SMM, 13/03/2023
+    elseif ($_GET['type'] == 66) {
+        $Parametros = array(
+            "'" . $_GET['Cliente'] . "'",
+            "'" . $_GET['Sucursal'] . "'",
+            "'" . $_GET['Periodo'] . "'",
+            "'" . $_GET['Metodo'] . "'",
+            "'" . $_GET['Linea'] . "'",
+        );
+
+        $SQL_ActualizarLMT = EjecutarSP('sp_tbl_ProgramacionOrdenesServicio_ActualizarLMT', $Parametros);
+        if ($SQL_ActualizarLMT) {
+            echo "*Ok*";
+        }
+    }
+
+    // Corregir datos de la tabla de Zonas SN. SMM, 02/03/2023
+    elseif ($_GET['type'] == 67) {
+        $Parametros = array(
+            "'" . ($_GET['id_socio_negocio'] ?? "") . "'",
+            "'" . ($_GET['id_zona_sn'] ?? "") . "'",
+        );
+        $SQL = EjecutarSP('sp_tbl_SociosNegocios_Zonas_Corregir', $Parametros);
+        if ($SQL) {
+            echo "*Ok*";
+        }
+    }
+
+    // SMM, 01/06/2023
+    elseif ($_GET['type'] == 68) { // Eliminar una linea de la tabla de series
         $ID = $_GET['linenum'] ?? "";
         $SQL_Del = Eliminar("tbl_SeriesSucursalesAlmacenes", "[ID]='$ID'");
         if ($SQL_Del) {

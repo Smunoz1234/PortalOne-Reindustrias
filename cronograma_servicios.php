@@ -14,7 +14,7 @@ $SQL_DRSucursal = Seleccionar('uvw_Sap_tbl_DimensionesReparto', '*', "DimCode=$D
 $FiltrarSucursales = false;
 if ($FiltrarSucursales) {
 	$ParamSucursal = array(
-		"'" . $_SESSION['CodUser'] . "'",
+		"'" . $_SESSION['CodUser'] . "'"
 	);
 	$SQL_DRSucursal = EjecutarSP('sp_ConsultarSucursalesUsuario', $ParamSucursal);
 }
