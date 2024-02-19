@@ -8,21 +8,20 @@ $edit = isset($_POST['edit']) ? $_POST['edit'] : 0;
 $doc = isset($_POST['doc']) ? $_POST['doc'] : "";
 $id = isset($_POST['id']) ? $_POST['id'] : "";
 
-$SQL_CategoriasModal = Seleccionar('tbl_ConsultasSAPB1_Categorias', '*');
-$SQL_ConsultasModal = Seleccionar('tbl_ConsultasSAPB1_Consultas', '*');
+$SQL_TiposEquiposModal = Seleccionar('tbl_TarjetaEquipo_TiposEquipos', '*');
+$SQL_PropiedadesModal = Seleccionar('tbl_TarjetaEquipo_TiposEquipos_Propiedades', '*');
 
-$ids_perfiles = array();
-$SQL_PerfilesUsuarios = Seleccionar('uvw_tbl_PerfilesUsuarios', '*');
+$SQL_TiposEquipos_Campos = Seleccionar('tbl_TarjetaEquipo_TiposEquipos_Campos', '*');
 
 if ($edit == 1 && $id != "") {
     $Title = "Editar registro";
     $Metodo = 2;
 
     if ($doc == "Tipos") {
-        $SQL = Seleccionar('tbl_ConsultasSAPB1_Categorias', '*', "ID='$id'");
+        $SQL = Seleccionar('tbl_TarjetaEquipo_TiposEquipos', '*', "ID='$id'");
         $row = sqlsrv_fetch_array($SQL);
     } elseif ($doc == "Propiedades") {
-        $SQL = Seleccionar('tbl_ConsultasSAPB1_Consultas', '*', "ID='$id'");
+        $SQL = Seleccionar('tbl_TarjetaEquipo_TiposEquipos_Propiedades', '*', "ID='$id'");
         $row = sqlsrv_fetch_array($SQL);
     }
 
@@ -61,7 +60,7 @@ $SQL_Lista = sqlsrv_query($conexion, $Cons_Lista);
 			<?php if ($doc == "Tipos") {?>
 
 				<!-- Inicio Consulta -->
-				<div class="form-group">
+				<div class="form-group row">
 					<div class="col-md-6">
 						<label class="control-label">Nombre Tipo Equipo <span class="text-danger">*</span></label>
 						<input type="text" class="form-control" autocomplete="off" required name="NombreTipoEquipo" id="NombreTipoEquipo" value="<?php if ($edit == 1) {echo $row['NombreTipoEquipo'];}?>">
@@ -75,74 +74,55 @@ $SQL_Lista = sqlsrv_query($conexion, $Cons_Lista);
 					</div>
 				</div>
 
-				<br><br><br><br>
-				<div class="form-group">
+				<div class="form-group row">
 					<div class="col-md-12">
 						<label class="control-label">Comentarios</label>
 						<textarea name="Comentarios" rows="3" maxlength="3000" class="form-control" id="Comentarios" type="text"><?php if ($edit == 1) {echo $row['Comentarios'];}?></textarea>
 					</div>
 				</div>
-				<br><br>
 				<!-- Fin Consulta -->
 
 			<?php } elseif ($doc == "Propiedades") {?>
 
 				<!-- Inicio Entrada -->
-				<div class="form-group">
+				<div class="form-group row">
 					<div class="col-md-6">
-						<label class="control-label">Consulta <span class="text-danger">*</span></label>
-						<select name="ID_Consulta" class="form-control select2" id="ID_Consulta" required>
+						<label class="control-label">Nombre Propiedad <span class="text-danger">*</span></label>
+						<input type="text" class="form-control" autocomplete="off" required name="NombrePropiedad" id="NombrePropiedad" value="<?php if ($edit == 1) {echo $row['NombrePropiedad'];}?>">
+					</div>
+					<div class="col-md-6">
+						<label class="control-label">Tipo Equipo <span class="text-danger">*</span></label>
+						<select name="ID_TipoEquipo" class="form-control select2" id="ID_TipoEquipo" required>
 							<option value="" disabled selected>Seleccione...</option>
-							<?php while ($row_ConsultaModal = sqlsrv_fetch_array($SQL_ConsultasModal)) {?>
-								<option value="<?php echo $row_ConsultaModal['ID']; ?>" <?php if ((isset($row['ID_Consulta'])) && (strcmp($row_ConsultaModal['ID'], $row['ID_Consulta']) == 0)) {echo "selected";}?>><?php echo $row_ConsultaModal['ProcedimientoConsulta']; ?></option>
+							<?php while ($row_TE_Modal = sqlsrv_fetch_array($SQL_TiposEquiposModal)) {?>
+								<option value="<?php echo $row_TE_Modal['id_tipo_equipo']; ?>" <?php if ((isset($row['id_tipo_equipo'])) && (strcmp($row_TE_Modal['id_tipo_equipo'], $row['id_tipo_equipo']) == 0)) {echo "selected";}?>><?php echo $row_TE_Modal['tipo_equipo']; ?></option>
 							<?php }?>
 						</select>
 					</div>
-
-					<div class="col-md-6">
-						<label class="control-label">Estado <span class="text-danger">*</span></label>
-						<select class="form-control" id="Estado" name="Estado" required>
-							<option value="Y" <?php if (($edit == 1) && ($row['Estado'] == "Y")) {echo "selected";}?>>ACTIVO</option>
-							<option value="N" <?php if (($edit == 1) && ($row['Estado'] == "N")) {echo "selected";}?>>INACTIVO</option>
-						</select>
-					</div>
 				</div>
 
-				<br><br><br><br>
-				<div class="form-group">
+				<div class="form-group row">
 					<div class="col-md-6">
-						<label class="control-label">Parámetro <span class="text-danger">*</span></label>
-						<select name="ParametroEntrada" class="form-control" id="ParametroEntrada" required>
-							<option value="">Seleccione...</option>
-							<!-- Las demás opciones dependen de la consulta -->
-						</select>
+						<label class="control-label">Tipo Propiedad <span class="text-danger">*</span></label>
+						<input type="text" class="form-control" autocomplete="off" required name="TipoPropiedad" id="TipoPropiedad" value="<?php if ($edit == 1) {echo $row['TipoPropiedad'];}?>">
 					</div>
 
 					<div class="col-md-6">
-						<label class="control-label">Etiqueta <span class="text-danger">*</span></label>
-						<input type="text" class="form-control" autocomplete="off" required name="EtiquetaEntrada" id="EtiquetaEntrada" value="<?php if ($edit == 1) {echo $row['EtiquetaEntrada'];}?>">
-					</div>
-				</div>
-
-				<br><br><br><br>
-				<div class="form-group">
-					<div class="col-md-12">
 						<label class="control-label">Tipo de campo <span class="text-danger">*</span></label>
-						<select class="form-control" name="TipoCampo" id="TipoCampo" required>
-							<option value="Texto" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Texto')) {echo "selected";}?>>Texto</option>
-							<option value="Comentario" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Comentario')) {echo "selected";}?>>Comentario</option>
-							<option value="Fecha" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Fecha')) {echo "selected";}?>>Fecha</option>
-							<option value="Cliente" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Cliente')) {echo "selected";}?>>Cliente (Lista)</option>
-							<option value="Sucursal" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Sucursal')) {echo "selected";}?>>Sucursal (Dependiendo del cliente)</option>
-							<option value="Seleccion" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Seleccion')) {echo "selected";}?>>Selección (SI/NO)</option>
-							<option value="Lista" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Lista')) {echo "selected";}?>>Lista (Personalizada)</option>
-							<option value="Usuario" <?php if (($edit == 1) && ($row['TipoCampo'] == 'Usuario')) {echo "selected";}?>>Usuario</option>
+						<select class="form-control" name="ID_TipoEquipo_Campo" id="ID_TipoEquipo_Campo" required>
+							<?php while ($row_Campo = sqlsrv_fetch_array($SQL_TiposEquipos_Campos)) {?>
+								<option value="<?php echo $row_Campo['id_tipo_equipo_campo']; ?>" <?php if ((isset($row['id_tipo_equipo_campo'])) && (strcmp($row_Campo['id_tipo_equipo_campo'], $row['id_tipo_equipo_campo']) == 0)) {echo "selected";}?>><?php echo $row_Campo['tipo_equipo_campo']; ?></option>
+							<?php }?>
 						</select>
 					</div>
 				</div>
 
-				<br><br><br><br>
-				<div class="form-group">
+				<div class="form-group row">
+					<div class="col-md-6">
+						<label class="control-label">Tabla Vinculada <span class="text-danger">*</span></label>
+						<input type="text" class="form-control" autocomplete="off" required name="TablaVinculada" id="TablaVinculada" value="<?php if ($edit == 1) {echo $row['TablaVinculada'];}?>">
+					</div>
+
 					<div class="col-md-6">
 						<label class="control-label">Obligatorio <span class="text-danger">*</span></label>
 						<select class="form-control" id="Obligatorio" name="Obligatorio" required>
@@ -150,66 +130,7 @@ $SQL_Lista = sqlsrv_query($conexion, $Cons_Lista);
 							<option value="N" <?php if (($edit == 1) && ($row['Obligatorio'] == "N")) {echo "selected";}?>>NO</option>
 						</select>
 					</div>
-
-					<div class="col-md-6">
-						<label class="control-label">Multiple <span class="text-danger">*</span></label>
-						<select class="form-control" id="Multiple" name="Multiple" disabled>
-							<option value="N" <?php if (($edit == 1) && ($row['Multiple'] == "N")) {echo "selected";}?>>NO</option>
-							<option value="Y" <?php if (($edit == 1) && ($row['Multiple'] == "Y")) {echo "selected";}?>>SI</option>
-						</select>
-					</div>
 				</div>
-
-				<div id="CamposVista" style="display: none;">
-					<br><br><br><br>
-					<div class="form-group">
-						<div class="col-md-12">
-							<label class="control-label">Vista <span class="text-danger">*</span></label>
-							<select name="VistaLista" class="form-control select2" id="VistaLista" required>
-								<option value="" disabled selected>Seleccione...</option>
-								<?php while ($row_Lista = sqlsrv_fetch_array($SQL_Lista)) {?>
-									<option value="<?php echo $row_Lista['TABLE_NAME']; ?>" <?php if ((isset($row['VistaLista'])) && (strcmp($row_Lista['TABLE_NAME'], $row['VistaLista']) == 0)) {echo "selected";}?>><?php echo $row_Lista['TABLE_NAME']; ?></option>
-								<?php }?>
-							</select>
-						</div>
-					</div>
-
-					<br><br><br><br>
-					<div class="form-group">
-						<div class="col-md-4">
-							<label class="control-label">Valor</label>
-							<select name="ValorLista" class="form-control" id="ValorLista" required>
-								<option value="">Seleccione...</option>
-								<!-- Generado por JS -->
-							</select>
-						</div>
-
-						<div class="col-md-4">
-							<label class="control-label">Etiqueta</label>
-							<select name="EtiquetaLista" class="form-control" id="EtiquetaLista" required>
-								<option value="">Seleccione...</option>
-								<!-- Generado por JS -->
-							</select>
-						</div>
-
-						<div class="col-md-4">
-							<label class="control-label">Permitir "Todos"</label>
-							<select name="PermitirTodos" id="PermitirTodos" class="form-control">
-								<option value="N" <?php if (($edit == 1) && ($row['PermitirTodos'] == "N")) {echo "selected";}?>>NO</option>
-								<option value="Y" <?php if (($edit == 1) && ($row['PermitirTodos'] == "Y")) {echo "selected";}?>>SI</option>
-							</select>
-						</div>
-					</div>
-				</div>
-
-				<br><br><br><br>
-				<div class="form-group">
-					<div class="col-md-12">
-						<label class="control-label">Comentarios</label>
-						<textarea name="Comentarios" rows="3" maxlength="3000" class="form-control" id="Comentarios" type="text"><?php if ($edit == 1) {echo $row['Comentarios'];}?></textarea>
-					</div>
-				</div>
-				<br><br>
 				<!-- Fin Entrada -->
 
 			<?php }?>
