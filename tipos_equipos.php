@@ -11,23 +11,17 @@ if (isset($_POST['Metodo']) && ($_POST['Metodo'] == 3)) {
             isset($_POST['ID']) ? $_POST['ID'] : "NULL",
         );
 
-        if ($_POST['TipoDoc'] == "Categoria") {
-            $SQL = EjecutarSP('sp_tbl_ConsultasSAPB1_Categorias', $Param);
+        if ($_POST['TipoDoc'] == "Tipos") {
+            $SQL = EjecutarSP('sp_tbl_TarjetaEquipo_TiposEquipos', $Param);
             if (!$SQL) {
                 $sw_error = 1;
-                $msg_error = "No se pudo eliminar la Categoría.";
+                $msg_error = "No se pudo eliminar el Tipo de Equipo.";
             }
-        } elseif ($_POST['TipoDoc'] == "Consulta") {
-            $SQL = EjecutarSP('sp_tbl_ConsultasSAPB1_Consultas', $Param);
+        } elseif ($_POST['TipoDoc'] == "Propiedades") {
+            $SQL = EjecutarSP('sp_tbl_TarjetaEquipo_TiposEquipos_Propiedades', $Param);
             if (!$SQL) {
                 $sw_error = 1;
-                $msg_error = "No se pudo eliminar la Consulta SAP B1.";
-            }
-        } elseif ($_POST['TipoDoc'] == "Entrada") {
-            $SQL = EjecutarSP('sp_tbl_ConsultasSAPB1_Entradas', $Param);
-            if (!$SQL) {
-                $sw_error = 1;
-                $msg_error = "No se pudo eliminar la Entrada.";
+                $msg_error = "No se pudo eliminar la Propiedad.";
             }
         }
 
@@ -41,69 +35,27 @@ if (isset($_POST['Metodo']) && ($_POST['Metodo'] == 3)) {
 if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Metodo']) && ($_POST['Metodo'] == 2))) {
     try {
 
-        if ($_POST['TipoDoc'] == "Categoria") {
+        if ($_POST['TipoDoc'] == "Tipos") {
             $FechaHora = "'" . FormatoFecha(date('Y-m-d'), date('H:i:s')) . "'";
             $Usuario = "'" . $_SESSION['CodUser'] . "'";
-
-            $Perfiles = implode(";", $_POST['Perfiles']);
-            $Perfiles = count($_POST['Perfiles']) > 0 ? "'$Perfiles'" : "''";
 
             $ID = (isset($_POST['ID_Actual']) && ($_POST['ID_Actual'] != "")) ? $_POST['ID_Actual'] : "NULL";
 
             $Param = array(
                 $_POST['Metodo'] ?? 1, // 1 - Crear, 2 - Actualizar
                 $ID,
-                "'" . $_POST['ID_CategoriaPadre'] . "'",
-                "'" . $_POST['NombreCategoria'] . "'",
-                $Perfiles,
-                "'" . $_POST['Comentarios'] . "'",
+                "'" . $_POST['NombreTipoEquipo'] . "'",
                 "'" . $_POST['Estado'] . "'",
-                $Usuario, // @id_usuario_actualizacion
-                $FechaHora, // @fecha_actualizacion
-                $FechaHora, // @hora_actualizacion
-                ($_POST['Metodo'] == 1) ? $Usuario : "NULL",
-                ($_POST['Metodo'] == 1) ? $FechaHora : "NULL",
-                ($_POST['Metodo'] == 1) ? $FechaHora : "NULL",
+				"'" . $_POST['Comentarios'] . "'",
+                $Usuario, // Usuario de actualización y creación
             );
 
-            $SQL = EjecutarSP('sp_tbl_ConsultasSAPB1_Categorias', $Param);
+            $SQL = EjecutarSP('sp_tbl_TarjetaEquipo_TiposEquipos', $Param);
             if (!$SQL) {
                 $sw_error = 1;
-                $msg_error = "No se pudo insertar la nueva Categoría";
+                $msg_error = "No se pudo insertar el Tipo de Equipo.";
             }
-        } elseif ($_POST['TipoDoc'] == "Consulta") {
-            $FechaHora = "'" . FormatoFecha(date('Y-m-d'), date('H:i:s')) . "'";
-            $Usuario = "'" . $_SESSION['CodUser'] . "'";
-
-            $Perfiles = implode(";", $_POST['Perfiles']);
-            $Perfiles = count($_POST['Perfiles']) > 0 ? "'$Perfiles'" : "''";
-
-            $ID = (isset($_POST['ID_Actual']) && ($_POST['ID_Actual'] != "")) ? $_POST['ID_Actual'] : "NULL";
-
-            $Param = array(
-                $_POST['Metodo'] ?? 1, // 1 - Crear, 2 - Actualizar
-                $ID,
-                "'" . $_POST['ID_Categoria'] . "'",
-                "'" . $_POST['ProcedimientoConsulta'] . "'",
-                "'" . $_POST['EtiquetaConsulta'] . "'",
-                "'" . $_POST['ParametrosEntrada'] . "'",
-                $Perfiles,
-                "'" . $_POST['Comentarios'] . "'",
-                "'" . $_POST['Estado'] . "'",
-                $Usuario, // @id_usuario_actualizacion
-                $FechaHora, // @fecha_actualizacion
-                $FechaHora, // @hora_actualizacion
-                ($_POST['Metodo'] == 1) ? $Usuario : "NULL",
-                ($_POST['Metodo'] == 1) ? $FechaHora : "NULL",
-                ($_POST['Metodo'] == 1) ? $FechaHora : "NULL",
-            );
-
-            $SQL = EjecutarSP('sp_tbl_ConsultasSAPB1_Consultas', $Param);
-            if (!$SQL) {
-                $sw_error = 1;
-                $msg_error = "No se pudo insertar la nueva Consulta SAP B1";
-            }
-        } elseif ($_POST['TipoDoc'] == "Entrada") {
+        } elseif ($_POST['TipoDoc'] == "Propiedades") {
             $FechaHora = "'" . FormatoFecha(date('Y-m-d'), date('H:i:s')) . "'";
             $Usuario = "'" . $_SESSION['CodUser'] . "'";
 
@@ -112,32 +64,21 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
             $Param = array(
                 $_POST['Metodo'] ?? 1, // 1 - Crear, 2 - Actualizar
                 $ID,
-                "'" . $_POST['ID_Consulta'] . "'",
-                "'" . $_POST['ParametroEntrada'] . "'",
-                "'" . $_POST['EtiquetaEntrada'] . "'",
+                "'" . $_POST['NombrePropiedad'] . "'",
+                "'" . $_POST['ID_TipoEquipo'] . "'",
+                "'" . $_POST['TipoPropiedad'] . "'",
+                "'" . $_POST['ID_TipoEquipo_Campo'] . "'",
+                "'" . $_POST['TablaVinculada'] . "'",
                 "'" . $_POST['Obligatorio'] . "'",
-                "'" . $_POST['Estado'] . "'",
-                "'" . $_POST['TipoCampo'] . "'",
-                "'" . $_POST['Multiple'] . "'",
-                "'" . $_POST['PermitirTodos'] . "'",
-                "'" . $_POST['VistaLista'] . "'",
-                "'" . $_POST['EtiquetaLista'] . "'",
-                "'" . $_POST['ValorLista'] . "'",
-                "'" . $_POST['Comentarios'] . "'",
-                $Usuario, // @id_usuario_actualizacion
-                $FechaHora, // @fecha_actualizacion
-                $FechaHora, // @hora_actualizacion
-                ($_POST['Metodo'] == 1) ? $Usuario : "NULL",
-                ($_POST['Metodo'] == 1) ? $FechaHora : "NULL",
-                ($_POST['Metodo'] == 1) ? $FechaHora : "NULL",
+				$Usuario, // Usuario de actualización y creación
             );
 
-            $SQL = EjecutarSP('sp_tbl_ConsultasSAPB1_Entradas', $Param);
+            $SQL = EjecutarSP('sp_tbl_TarjetaEquipo_TiposEquipos_Propiedades', $Param);
             $row = sqlsrv_fetch_array($SQL);
 
             if (!$SQL) {
                 $sw_error = 1;
-                $msg_error = "No se pudo insertar la nueva Entrada";
+                $msg_error = "No se pudo insertar la Propiedad.";
             } elseif (isset($row['Error'])) {
                 $sw_error = 1;
                 $msg_error = $row['Error'];
@@ -157,10 +98,8 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
 
 }
 
-$SQL_Categorias = Seleccionar("uvw_tbl_ConsultasSAPB1_Categorias", "*");
-$SQL_Consultas = Seleccionar("uvw_tbl_ConsultasSAPB1_Consultas", "*");
-$SQL_Entradas = Seleccionar("uvw_tbl_ConsultasSAPB1_Entradas", "*");
-$SQL_Perfiles = Seleccionar('uvw_tbl_PerfilesUsuarios', '*');
+$SQL_Consultas = Seleccionar("tbl_TarjetaEquipo_TiposEquipos", "*");
+$SQL_Entradas = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*");
 ?>
 
 <!DOCTYPE html>
@@ -297,7 +236,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 											<div class="ibox-content">
 												<div class="row m-b-md">
 													<div class="col-lg-12">
-														<button class="btn btn-primary pull-right" type="button" onClick="CrearCampo('Consulta');"><i class="fa fa-plus-circle"></i> Agregar nueva</button>
+														<button class="btn btn-primary pull-right" type="button" onClick="CrearCampo('Tipos');"><i class="fa fa-plus-circle"></i> Agregar nueva</button>
 													</div>
 												</div>
 												<div class="table-responsive">
@@ -308,7 +247,6 @@ if (isset($sw_error) && ($sw_error == 1)) {
 																<th>Procedimiento (Consulta)</th>
 																<th>Etiqueta</th>
 																<th>Parámetros de Entrada</th>
-																<th>Perfiles</th>
 																<th>Comentarios</th>
 																<th>Fecha Actualizacion</th>
 																<th>Usuario Actualizacion</th>
@@ -323,21 +261,6 @@ if (isset($sw_error) && ($sw_error == 1)) {
 																<td><?php echo $row_Consulta['ProcedimientoConsulta']; ?></td>
 																<td><?php echo $row_Consulta['EtiquetaConsulta']; ?></td>
 																<td><?php echo $row_Consulta['ParametrosEntrada']; ?></td>
-
-																<td>
-																	<?php sqlsrv_fetch($SQL_Perfiles, SQLSRV_SCROLL_ABSOLUTE, -1);?>
-																	<?php $ids_perfiles = explode(";", $row_Consulta['Perfiles']);?>
-
-																	<?php echo ($row_Consulta['Perfiles'] == "") ? "(Todos)" : ""; ?>
-
-																	<?php while ($row_Perfil = sqlsrv_fetch_array($SQL_Perfiles)) {?>
-																		<?php if (in_array($row_Perfil['ID_PerfilUsuario'], $ids_perfiles)) {?>
-																			<div style="margin: 10px !important;">
-																				<p class="label label-secondary"><?php echo $row_Perfil['PerfilUsuario']; ?></p>
-																			</div>
-																		<?php }?>
-																	<?php }?>
-																</td>
 
 																<td><?php echo $row_Consulta['Comentarios']; ?></td>
 
@@ -376,7 +299,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 											<div class="ibox-content">
 												<div class="row m-b-md">
 													<div class="col-lg-12">
-														<button class="btn btn-primary pull-right" type="button" onClick="CrearCampo('Entrada');"><i class="fa fa-plus-circle"></i> Agregar nueva</button>
+														<button class="btn btn-primary pull-right" type="button" onClick="CrearCampo('Propiedades');"><i class="fa fa-plus-circle"></i> Agregar nueva</button>
 													</div>
 												</div>
 												<div class="table-responsive">

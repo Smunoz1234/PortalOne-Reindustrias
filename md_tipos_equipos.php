@@ -18,14 +18,11 @@ if ($edit == 1 && $id != "") {
     $Title = "Editar registro";
     $Metodo = 2;
 
-    if ($doc == "Categoria") {
+    if ($doc == "Tipos") {
         $SQL = Seleccionar('tbl_ConsultasSAPB1_Categorias', '*', "ID='$id'");
         $row = sqlsrv_fetch_array($SQL);
-    } elseif ($doc == "Consulta") {
+    } elseif ($doc == "Propiedades") {
         $SQL = Seleccionar('tbl_ConsultasSAPB1_Consultas', '*', "ID='$id'");
-        $row = sqlsrv_fetch_array($SQL);
-    } elseif ($doc == "Entrada") {
-        $SQL = Seleccionar('tbl_ConsultasSAPB1_Entradas', '*', "ID='$id'");
         $row = sqlsrv_fetch_array($SQL);
     }
 
@@ -48,11 +45,11 @@ $SQL_Lista = sqlsrv_query($conexion, $Cons_Lista);
 	}
 </style>
 
-<form id="frm_NewParam" method="post" action="parametros_consultas_sap.php" enctype="multipart/form-data">
+<form id="frm_NewParam" method="post" action="tipos_equipos.php" enctype="multipart/form-data">
 
 <div class="modal-header">
 	<h4 class="modal-title">
-		<?php echo "Crear Nueva $doc"; ?>
+		<?php echo "Crear Nuevo Registro de $doc"; ?>
 	</h4>
 </div>
 
@@ -61,13 +58,13 @@ $SQL_Lista = sqlsrv_query($conexion, $Cons_Lista);
 		<div class="ibox-content">
 			<?php include "includes/spinner.php";?>
 
-			<?php if ($doc == "Consulta") {?>
+			<?php if ($doc == "Tipos") {?>
 
 				<!-- Inicio Consulta -->
 				<div class="form-group">
 					<div class="col-md-6">
 						<label class="control-label">Nombre Tipo Equipo <span class="text-danger">*</span></label>
-						<input type="text" class="form-control" autocomplete="off" required name="NombreCategoria" id="NombreCategoria" value="<?php if ($edit == 1) {echo $row['NombreCategoria'];}?>">
+						<input type="text" class="form-control" autocomplete="off" required name="NombreTipoEquipo" id="NombreTipoEquipo" value="<?php if ($edit == 1) {echo $row['NombreTipoEquipo'];}?>">
 					</div>
 					<div class="col-md-6">
 						<label class="control-label">Estado <span class="text-danger">*</span></label>
@@ -88,7 +85,7 @@ $SQL_Lista = sqlsrv_query($conexion, $Cons_Lista);
 				<br><br>
 				<!-- Fin Consulta -->
 
-			<?php } elseif ($doc == "Entrada") {?>
+			<?php } elseif ($doc == "Propiedades") {?>
 
 				<!-- Inicio Entrada -->
 				<div class="form-group">
