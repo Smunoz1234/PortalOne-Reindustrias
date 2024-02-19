@@ -523,7 +523,7 @@ if (!isset($_COOKIE["banderaMenu"])) {
 						<a href="#">Equipos <span class="fa arrow"></span></a>
 						<ul class='nav nav-third-level'>
 							<?php if (PermitirFuncion(1601)) {?><li><a class="alnk" href="consultar_tarjeta_equipo.php">Tarjetas de equipos</a></li><?php }?>
-							<?php if (PermitirFuncion(349)) {?><li><a class="alnk" href="#">Tipos de equipos</a></li><?php }?>
+							<?php if (PermitirFuncion(349)) {?><li><a class="alnk" href="tipos_equipos.php">Tipos de equipos</a></li><?php }?>
 							<?php if (PermitirFuncion(351)) {?><li><a class="alnk" href="#">Unidades de medida de equipos</a></li><?php }?>
 						</ul>
 					</li>
