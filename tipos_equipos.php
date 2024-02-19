@@ -147,7 +147,7 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
         // OK
         if ($sw_error == 0) {
             $TipoDoc = $_POST['TipoDoc'];
-            header("Location:parametros_consultas_sap.php?doc=$TipoDoc&a=" . base64_encode("OK_PRUpd") . "#$TipoDoc");
+            header("Location:tipos_equipos.php?doc=$TipoDoc&a=" . base64_encode("OK_PRUpd") . "#$TipoDoc");
         }
 
     } catch (Exception $e) {
@@ -169,7 +169,7 @@ $SQL_Perfiles = Seleccionar('uvw_tbl_PerfilesUsuarios', '*');
 <head>
 <?php include_once "includes/cabecera.php";?>
 <!-- InstanceBeginEditable name="doctitle" -->
-<title>Parámetros Consultas SAP B1 | <?php echo NOMBRE_PORTAL; ?></title>
+<title>Parámetros Tipos de Equipos | <?php echo NOMBRE_PORTAL; ?></title>
 <!-- InstanceEndEditable -->
 <!-- InstanceBeginEditable name="head" -->
 
@@ -240,19 +240,19 @@ if (isset($sw_error) && ($sw_error == 1)) {
         <!-- InstanceBeginEditable name="Contenido" -->
         <div class="row wrapper border-bottom white-bg page-heading">
                 <div class="col-sm-8">
-                    <h2>Parámetros Consultas SAP B1</h2>
+                    <h2>Tipos de Equipos</h2>
                     <ol class="breadcrumb">
                         <li>
                             <a href="index1.php">Inicio</a>
                         </li>
 						<li>
-                            <a href="#">Administración</a>
+                            <a href="#">Mantenimiento</a>
                         </li>
 						<li>
-                            <a href="#">Parámetros del sistema</a>
+                            <a href="#">Equipos</a>
                         </li>
                         <li class="active">
-                            <strong>Parámetros Consultas SAP B1</strong>
+                            <strong>Tipos de Equipos</strong>
                         </li>
                     </ol>
                 </div>
@@ -262,7 +262,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 			 <div class="modal inmodal fade" id="myModal" tabindex="-1" role="dialog" aria-hidden="true">
 				<div class="modal-dialog modal-lg">
 					<div class="modal-content" id="ContenidoModal">
-
+						<!-- Contenido generado por JS -->
 					</div>
 				</div>
 			</div>
@@ -274,100 +274,22 @@ if (isset($sw_error) && ($sw_error == 1)) {
 						<div class="tabs-container">
 
 						 	<ul class="nav nav-tabs">
-								<li class="<?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Categoria") || !isset($_GET['doc'])) ? "active" : ""; ?>">
-									<a data-toggle="tab" href="#tab-1"><i class="fa fa-list"></i> Categorías</a>
+								<li class="<?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Tipos") || !isset($_GET['doc'])) ? "active" : ""; ?>">
+									<a data-toggle="tab" href="#tab-1"><i class="fa fa-list"></i> Tipos</a>
 								</li>
-								<li class="<?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Consulta")) ? "active" : ""; ?>">
-									<a data-toggle="tab" href="#tab-2"><i class="fa fa-list"></i> Consultas SAP B1</a>
-								</li>
-								<li class="<?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Entrada")) ? "active" : ""; ?>">
-									<a data-toggle="tab" href="#tab-3"><i class="fa fa-list"></i> Parámetros de Entrada</a>
+								<li class="<?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Propiedades")) ? "active" : ""; ?>">
+									<a data-toggle="tab" href="#tab-2"><i class="fa fa-list"></i> Propiedades</a>
 								</li>
 							</ul>
 
 							<div class="tab-content">
-
-								<!-- Inicio, lista Categorias -->
-								<div id="tab-1" class="tab-pane <?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Categoria") || !isset($_GET['doc'])) ? "active" : ""; ?>">
-									<form class="form-horizontal">
-										<div class="ibox" id="Categoria">
-											<div class="ibox-title bg-success">
-												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista de Categorías</h5>
-												 <a class="collapse-link pull-right">
-													<i class="fa fa-chevron-up"></i>
-												</a>
-											</div>
-											<div class="ibox-content">
-												<div class="row m-b-md">
-													<div class="col-lg-12">
-														<button class="btn btn-primary pull-right" type="button" onClick="CrearCampo('Categoria');"><i class="fa fa-plus-circle"></i> Agregar nueva</button>
-													</div>
-												</div>
-												<div class="table-responsive">
-													<table class="table table-striped table-bordered table-hover dataTables-example">
-														<thead>
-															<tr>
-																<th>Categoría Padre</th>
-																<th>Nombre Categoría</th>
-																<th>Perfiles</th>
-																<th>Comentarios</th>
-																<th>Fecha Actualizacion</th>
-																<th>Usuario Actualizacion</th>
-																<th>Estado</th>
-																<th>Acciones</th>
-															</tr>
-														</thead>
-														<tbody>
-															 <?php while ($row_Categoria = sqlsrv_fetch_array($SQL_Categorias)) {?>
-															<tr>
-																<td><?php echo ($row_Categoria['CategoriaPadre'] == "") ? "[Raíz]" : $row_Categoria['CategoriaPadre']; ?></td>
-																<td><?php echo $row_Categoria['NombreCategoria']; ?></td>
-
-																<td>
-																	<?php sqlsrv_fetch($SQL_Perfiles, SQLSRV_SCROLL_ABSOLUTE, -1);?>
-																	<?php $ids_perfiles = explode(";", $row_Categoria['Perfiles']);?>
-
-																	<?php echo ($row_Categoria['Perfiles'] == "") ? "(Todos)" : ""; ?>
-
-																	<?php while ($row_Perfil = sqlsrv_fetch_array($SQL_Perfiles)) {?>
-																		<?php if (in_array($row_Perfil['ID_PerfilUsuario'], $ids_perfiles)) {?>
-																			<div style="margin: 10px !important;">
-																				<p class="label label-secondary"><?php echo $row_Perfil['PerfilUsuario']; ?></p>
-																			</div>
-																		<?php }?>
-																	<?php }?>
-																</td>
-
-																<td><?php echo $row_Categoria['Comentarios']; ?></td>
-
-																<td><?php echo isset($row_Categoria['fecha_actualizacion']) ? date_format($row_Categoria['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
-																<td><?php echo $row_Categoria['usuario_actualizacion']; ?></td>
-																<td>
-																	<span class="label <?php echo ($row_Categoria['Estado'] == "Y") ? "label-info" : "label-danger"; ?>">
-																		<?php echo ($row_Categoria['Estado'] == "Y") ? "Activo" : "Inactivo"; ?>
-																	</span>
-																</td>
-																<td>
-																	<button type="button" id="btnEdit<?php echo $row_Categoria['ID']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Categoria['ID']; ?>','Categoria');"><i class="fa fa-pencil"></i> Editar</button>
-																	<button type="button" id="btnDelete<?php echo $row_Categoria['ID']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Categoria['ID']; ?>','Categoria');"><i class="fa fa-trash"></i> Eliminar</button>
-																</td>
-															</tr>
-															 <?php }?>
-														</tbody>
-													</table>
-												</div>
-											</div> <!-- ibox-content -->
-										</div> <!-- ibox -->
-									</form>
-								</div>
-								<!-- Fin, lista Categorias -->
-
-								<!-- Inicio, lista Consultas -->
-								<div id="tab-2" class="tab-pane <?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Consulta")) ? "active" : ""; ?>">
+								
+								<!-- Inicio, lista Tipos -->
+								<div id="tab-1" class="tab-pane <?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Tipos") || !isset($_GET['doc'])) ? "active" : ""; ?>">
 									<form class="form-horizontal">
 										<div class="ibox" id="Consulta">
 											<div class="ibox-title bg-success">
-												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista de Consultas SAP B1</h5>
+												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista de Tipos</h5>
 												 <a class="collapse-link pull-right">
 													<i class="fa fa-chevron-up"></i>
 												</a>
@@ -439,14 +361,14 @@ if (isset($sw_error) && ($sw_error == 1)) {
 										</div> <!-- ibox -->
 									</form>
 								</div>
-								<!-- Fin, lista Consultas -->
+								<!-- Fin, lista Tipos -->
 
-								<!-- Inicio, lista Entradas -->
-								<div id="tab-3" class="tab-pane <?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Entrada")) ? "active" : ""; ?>">
+								<!-- Inicio, lista Propiedades -->
+								<div id="tab-2" class="tab-pane <?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Propiedades")) ? "active" : ""; ?>">
 									<form class="form-horizontal">
 										<div class="ibox" id="Entrada">
 											<div class="ibox-title bg-success">
-												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista de Entradas SAP B1</h5>
+												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista de Propiedades</h5>
 												 <a class="collapse-link pull-right">
 													<i class="fa fa-chevron-up"></i>
 												</a>
@@ -507,7 +429,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 										</div> <!-- ibox -->
 									</form>
 								</div>
-								<!-- Fin, lista Entradas -->
+								<!-- Fin, lista Propiedades -->
 
 							</div> <!-- tab-content -->
 						</div> <!-- tabs-container -->
@@ -570,7 +492,7 @@ function CrearCampo(doc){
 
 	$.ajax({
 		type: "POST",
-		url: "md_parametros_consultas_sap.php",
+		url: "md_tipos_equipos.php",
 		data:{
 			doc:doc
 		},
@@ -587,7 +509,7 @@ function EditarCampo(id, doc){
 
 	$.ajax({
 		type: "POST",
-		url: "md_parametros_consultas_sap.php",
+		url: "md_tipos_equipos.php",
 		data:{
 			doc:doc,
 			id:id,
@@ -614,12 +536,12 @@ function EliminarCampo(id, doc){
 
 			$.ajax({
 				type: "post",
-				url: "parametros_consultas_sap.php",
+				url: "tipos_equipos.php",
 				data: { TipoDoc: doc, ID: id, Metodo: 3 },
 				async: false,
 				success: function(data){
 					// console.log(data);
-					location.href = `parametros_consultas_sap.php?doc=${doc}&a=<?php echo base64_encode("OK_PRDel"); ?>`;
+					location.href = `tipos_equipos.php?doc=${doc}&a=<?php echo base64_encode("OK_PRDel"); ?>`;
 				},
 				error: function(error) {
 					console.error("consulta erronea");
