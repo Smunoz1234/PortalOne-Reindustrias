@@ -15,7 +15,7 @@ if (isset($_POST['Metodo']) && ($_POST['Metodo'] == 3)) {
             $SQL = EjecutarSP('sp_tbl_TarjetaEquipo_UnidadMedidas', $Param);
             if (!$SQL) {
                 $sw_error = 1;
-                $msg_error = "No se pudo eliminar el Tipo de Equipo.";
+                $msg_error = "No se pudo eliminar la Unidad de Medida.";
             }
         }
 
@@ -47,7 +47,7 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
             $SQL = EjecutarSP('sp_tbl_TarjetaEquipo_UnidadMedidas', $Param);
             if (!$SQL) {
                 $sw_error = 1;
-                $msg_error = "No se pudo insertar el Tipo de Equipo.";
+                $msg_error = "No se pudo insertar la Unidad de Medida.";
             }
         }
 

@@ -8,14 +8,12 @@ $edit = isset($_POST['edit']) ? $_POST['edit'] : 0;
 $doc = isset($_POST['doc']) ? $_POST['doc'] : "";
 $id = isset($_POST['id']) ? $_POST['id'] : "";
 
-$SQL_TiposEquiposModal = Seleccionar('tbl_TarjetaEquipo_UnidadMedidas', '*');
-
 if ($edit == 1 && $id != "") {
     $Title = "Editar registro";
     $Metodo = 2;
 
     if ($doc == "Unidades") {
-        $SQL = Seleccionar('tbl_TarjetaEquipo_UnidadMedidas', '*', "ID='$id'");
+        $SQL = Seleccionar('tbl_TarjetaEquipo_UnidadMedidas', '*', "[id_unidad_medida_equipo]='$id'");
         $row = sqlsrv_fetch_array($SQL);
     } 
 }
@@ -52,13 +50,13 @@ if ($edit == 1 && $id != "") {
 				<div class="form-group row">
 					<div class="col-md-6">
 						<label class="control-label">Nombre Unidad Medida <span class="text-danger">*</span></label>
-						<input type="text" class="form-control" autocomplete="off" required name="NombreUnidadMedida" id="NombreUnidadMedida" value="<?php if ($edit == 1) {echo $row['NombreUnidadMedida'];}?>">
+						<input type="text" class="form-control" autocomplete="off" required name="NombreUnidadMedida" id="NombreUnidadMedida" value="<?php if ($edit == 1) {echo $row['unidad_medida_equipo'];}?>">
 					</div>
 					<div class="col-md-6">
 						<label class="control-label">Estado <span class="text-danger">*</span></label>
 						<select class="form-control" id="Estado" name="Estado">
-							<option value="Y" <?php if (($edit == 1) && ($row['Estado'] == "Y")) {echo "selected";}?>>ACTIVO</option>
-							<option value="N" <?php if (($edit == 1) && ($row['Estado'] == "N")) {echo "selected";}?>>INACTIVO</option>
+							<option value="Y" <?php if (($edit == 1) && ($row['estado_unidad_medida_equipo'] == "Y")) {echo "selected";}?>>ACTIVO</option>
+							<option value="N" <?php if (($edit == 1) && ($row['estado_unidad_medida_equipo'] == "N")) {echo "selected";}?>>INACTIVO</option>
 						</select>
 					</div>
 				</div>
@@ -66,7 +64,7 @@ if ($edit == 1 && $id != "") {
 				<div class="form-group row">
 					<div class="col-md-12">
 						<label class="control-label">Comentarios</label>
-						<textarea name="Comentarios" rows="3" maxlength="3000" class="form-control" id="Comentarios" type="text"><?php if ($edit == 1) {echo $row['Comentarios'];}?></textarea>
+						<textarea name="Comentarios" rows="3" maxlength="3000" class="form-control" id="Comentarios" type="text"><?php if ($edit == 1) {echo $row['comentarios'];}?></textarea>
 					</div>
 				</div>
 				<!-- Fin Unidad Medida -->
