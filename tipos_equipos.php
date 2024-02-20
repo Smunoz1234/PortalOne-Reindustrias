@@ -98,8 +98,8 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
 
 }
 
-$SQL_Consultas = Seleccionar("tbl_TarjetaEquipo_TiposEquipos", "*");
-$SQL_Entradas = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*");
+$SQL_TipoEquipo = Seleccionar("uvw_tbl_TarjetaEquipo_TiposEquipos", "*");
+$SQL_Propiedades = Seleccionar("uvw_tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*");
 ?>
 
 <!DOCTYPE html>
@@ -243,10 +243,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 													<table class="table table-striped table-bordered table-hover dataTables-example">
 														<thead>
 															<tr>
-																<th>Categoría</th>
-																<th>Procedimiento (Consulta)</th>
-																<th>Etiqueta</th>
-																<th>Parámetros de Entrada</th>
+																<th>Tipo Equipo</th>
 																<th>Comentarios</th>
 																<th>Fecha Actualizacion</th>
 																<th>Usuario Actualizacion</th>
@@ -255,25 +252,20 @@ if (isset($sw_error) && ($sw_error == 1)) {
 															</tr>
 														</thead>
 														<tbody>
-															 <?php while ($row_Consulta = sqlsrv_fetch_array($SQL_Consultas)) {?>
+															 <?php while ($row_TipoEquipo = sqlsrv_fetch_array($SQL_TipoEquipo)) {?>
 															<tr>
-																<td><?php echo $row_Consulta['Categoria']; ?></td>
-																<td><?php echo $row_Consulta['ProcedimientoConsulta']; ?></td>
-																<td><?php echo $row_Consulta['EtiquetaConsulta']; ?></td>
-																<td><?php echo $row_Consulta['ParametrosEntrada']; ?></td>
-
-																<td><?php echo $row_Consulta['Comentarios']; ?></td>
-
-																<td><?php echo isset($row_Consulta['fecha_actualizacion']) ? date_format($row_Consulta['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
-																<td><?php echo $row_Consulta['usuario_actualizacion']; ?></td>
+																<td><?php echo $row_TipoEquipo['tipo_equipo']; ?></td>
+																<td><?php echo $row_TipoEquipo['Comentarios']; ?></td>
+																<td><?php echo isset($row_TipoEquipo['fecha_actualizacion']) ? date_format($row_TipoEquipo['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
+																<td><?php echo $row_TipoEquipo['usuario_actualizacion'] ?? ""; ?></td>
 																<td>
-																	<span class="label <?php echo ($row_Consulta['Estado'] == "Y") ? "label-info" : "label-danger"; ?>">
-																		<?php echo ($row_Consulta['Estado'] == "Y") ? "Activo" : "Inactivo"; ?>
+																	<span class="label <?php echo ($row_TipoEquipo['estado_tipo_equipo'] == "Y") ? "label-info" : "label-danger"; ?>">
+																		<?php echo ($row_TipoEquipo['estado_tipo_equipo'] == "Y") ? "Activo" : "Inactivo"; ?>
 																	</span>
 																</td>
 																<td>
-																	<button type="button" id="btnEdit<?php echo $row_Consulta['ID']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Consulta['ID']; ?>','Consulta');"><i class="fa fa-pencil"></i> Editar</button>
-																	<button type="button" id="btnDelete<?php echo $row_Consulta['ID']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Consulta['ID']; ?>','Consulta');"><i class="fa fa-trash"></i> Eliminar</button>
+																	<button type="button" id="btnEdit<?php echo $row_TipoEquipo['id_tipo_equipo']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_TipoEquipo['id_tipo_equipo']; ?>','Tipos');"><i class="fa fa-pencil"></i> Editar</button>
+																	<button type="button" id="btnDelete<?php echo $row_TipoEquipo['id_tipo_equipo']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_TipoEquipo['id_tipo_equipo']; ?>','Tipos');"><i class="fa fa-trash"></i> Eliminar</button>
 																</td>
 															</tr>
 															 <?php }?>
@@ -306,42 +298,31 @@ if (isset($sw_error) && ($sw_error == 1)) {
 													<table class="table table-striped table-bordered table-hover dataTables-example">
 														<thead>
 															<tr>
-																<th>Consulta SAP B1</th>
-																<th>Parámetro de Entrada</th>
-																<th>Etiqueta</th>
-																<th>Tipo de Campo</th>
-																<th>Vista de referencia</th>
+																<th>Propiedad</th>
+																<th>Tipo Equipo</th>
+																<th>Tipo Propiedad</th>
+																<th>Tipo Campo</th>
+																<th>Tabla Vinculada</th>
 																<th>Obligatorio</th>
-																<th>Multiple</th>
 																<th>Fecha Actualizacion</th>
 																<th>Usuario Actualizacion</th>
-																<th>Estado</th>
 																<th>Acciones</th>
 															</tr>
 														</thead>
 														<tbody>
-															 <?php while ($row_Entrada = sqlsrv_fetch_array($SQL_Entradas)) {?>
+															 <?php while ($row_Propiedades = sqlsrv_fetch_array($SQL_Propiedades)) {?>
 															<tr>
-																<td><?php echo $row_Entrada['Consulta']; ?></td>
-																<td><?php echo $row_Entrada['ParametroEntrada']; ?></td>
-																<td><?php echo $row_Entrada['EtiquetaEntrada']; ?></td>
-
-																<td><?php echo $row_Entrada['TipoCampo']; ?></td>
-																<td><?php echo (isset($row_Entrada['VistaLista']) && ($row_Entrada['VistaLista'] != "")) ? ($row_Entrada['VistaLista'] . " (" . $row_Entrada['ValorLista'] . ", " . $row_Entrada['EtiquetaLista'] . ")") : "(Ninguna)"; ?></td>
-
-																<td><?php echo ($row_Entrada['Obligatorio'] == "Y") ? "SI" : "NO"; ?></td>
-																<td><?php echo ($row_Entrada['Multiple'] == "Y") ? "SI" : "NO"; ?></td>
-
-																<td><?php echo isset($row_Entrada['fecha_actualizacion']) ? date_format($row_Entrada['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
-																<td><?php echo $row_Entrada['usuario_actualizacion']; ?></td>
+																<td><?php echo $row_Propiedades['propiedad']; ?></td>
+																<td><?php echo $row_Propiedades['tipo_equipo_padre'] ?? ""; ?></td>
+																<td><?php echo $row_Propiedades['tipo_propiedad']; ?></td>
+																<td><?php echo $row_Propiedades['tipo_campo'] ?? ""; ?></td>
+																<td><?php echo $row_Propiedades['tabla_vinculada'] ?? ""; ?></td>
+																<td><?php echo ($row_Propiedades['obligatorio'] == "Y") ? "SI" : "NO"; ?></td>
+																<td><?php echo isset($row_Propiedades['fecha_actualizacion']) ? date_format($row_Propiedades['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
+																<td><?php echo $row_Propiedades['usuario_actualizacion'] ?? ""; ?></td>
 																<td>
-																	<span class="label <?php echo ($row_Entrada['Estado'] == "Y") ? "label-info" : "label-danger"; ?>">
-																		<?php echo ($row_Entrada['Estado'] == "Y") ? "Activo" : "Inactivo"; ?>
-																	</span>
-																</td>
-																<td>
-																	<button type="button" id="btnEdit<?php echo $row_Entrada['ID']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Entrada['ID']; ?>','Entrada');"><i class="fa fa-pencil"></i> Editar</button>
-																	<button type="button" id="btnDelete<?php echo $row_Entrada['ID']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Entrada['ID']; ?>','Entrada');"><i class="fa fa-trash"></i> Eliminar</button>
+																	<button type="button" id="btnEdit<?php echo $row_Propiedades['id_propiedad']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Propiedades['id_propiedad']; ?>','Propiedades');"><i class="fa fa-pencil"></i> Editar</button>
+																	<button type="button" id="btnDelete<?php echo $row_Propiedades['id_propiedad']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Propiedades['id_propiedad']; ?>','Propiedades');"><i class="fa fa-trash"></i> Eliminar</button>
 																</td>
 															</tr>
 															 <?php }?>
