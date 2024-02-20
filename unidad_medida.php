@@ -11,17 +11,11 @@ if (isset($_POST['Metodo']) && ($_POST['Metodo'] == 3)) {
             isset($_POST['ID']) ? $_POST['ID'] : "NULL",
         );
 
-        if ($_POST['TipoDoc'] == "Tipos") {
-            $SQL = EjecutarSP('sp_tbl_TarjetaEquipo_TiposEquipos', $Param);
+        if ($_POST['TipoDoc'] == "Unidades") {
+            $SQL = EjecutarSP('sp_tbl_TarjetaEquipo_UnidadMedidas', $Param);
             if (!$SQL) {
                 $sw_error = 1;
                 $msg_error = "No se pudo eliminar el Tipo de Equipo.";
-            }
-        } elseif ($_POST['TipoDoc'] == "Propiedades") {
-            $SQL = EjecutarSP('sp_tbl_TarjetaEquipo_TiposEquipos_Propiedades', $Param);
-            if (!$SQL) {
-                $sw_error = 1;
-                $msg_error = "No se pudo eliminar la Propiedad.";
             }
         }
 
@@ -35,7 +29,7 @@ if (isset($_POST['Metodo']) && ($_POST['Metodo'] == 3)) {
 if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Metodo']) && ($_POST['Metodo'] == 2))) {
     try {
 
-        if ($_POST['TipoDoc'] == "Tipos") {
+        if ($_POST['TipoDoc'] == "Unidades") {
             $FechaHora = "'" . FormatoFecha(date('Y-m-d'), date('H:i:s')) . "'";
             $Usuario = "'" . $_SESSION['CodUser'] . "'";
 
@@ -44,51 +38,23 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
             $Param = array(
                 $_POST['Metodo'] ?? 1, // 1 - Crear, 2 - Actualizar
                 $ID,
-                "'" . $_POST['NombreTipoEquipo'] . "'",
+                "'" . $_POST['NombreUnidadMedida'] . "'",
                 "'" . $_POST['Estado'] . "'",
 				"'" . $_POST['Comentarios'] . "'",
                 $Usuario, // Usuario de actualización y creación
             );
 
-            $SQL = EjecutarSP('sp_tbl_TarjetaEquipo_TiposEquipos', $Param);
+            $SQL = EjecutarSP('sp_tbl_TarjetaEquipo_UnidadMedidas', $Param);
             if (!$SQL) {
                 $sw_error = 1;
                 $msg_error = "No se pudo insertar el Tipo de Equipo.";
-            }
-        } elseif ($_POST['TipoDoc'] == "Propiedades") {
-            $FechaHora = "'" . FormatoFecha(date('Y-m-d'), date('H:i:s')) . "'";
-            $Usuario = "'" . $_SESSION['CodUser'] . "'";
-
-            $ID = (isset($_POST['ID_Actual']) && ($_POST['ID_Actual'] != "")) ? $_POST['ID_Actual'] : "NULL";
-
-            $Param = array(
-                $_POST['Metodo'] ?? 1, // 1 - Crear, 2 - Actualizar
-                $ID,
-                "'" . $_POST['NombrePropiedad'] . "'",
-                "'" . $_POST['ID_TipoEquipo'] . "'",
-                "'" . $_POST['TipoPropiedad'] . "'",
-                "'" . $_POST['ID_TipoEquipo_Campo'] . "'",
-                "'" . $_POST['TablaVinculada'] . "'",
-                "'" . $_POST['Obligatorio'] . "'",
-				$Usuario, // Usuario de actualización y creación
-            );
-
-            $SQL = EjecutarSP('sp_tbl_TarjetaEquipo_TiposEquipos_Propiedades', $Param);
-            $row = sqlsrv_fetch_array($SQL);
-
-            if (!$SQL) {
-                $sw_error = 1;
-                $msg_error = "No se pudo insertar la Propiedad.";
-            } elseif (isset($row['Error'])) {
-                $sw_error = 1;
-                $msg_error = $row['Error'];
             }
         }
 
         // OK
         if ($sw_error == 0) {
             $TipoDoc = $_POST['TipoDoc'];
-            header("Location:tipos_equipos.php?doc=$TipoDoc&a=" . base64_encode("OK_PRUpd") . "#$TipoDoc");
+            header("Location:unidad_medida.php?doc=$TipoDoc&a=" . base64_encode("OK_PRUpd") . "#$TipoDoc");
         }
 
     } catch (Exception $e) {
@@ -98,8 +64,7 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
 
 }
 
-$SQL_TipoEquipo = Seleccionar("uvw_tbl_TarjetaEquipo_TiposEquipos", "*");
-$SQL_Propiedades = Seleccionar("uvw_tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*");
+$SQL_Unidades = Seleccionar("uvw_tbl_TarjetaEquipo_UnidadMedidas", "*");
 ?>
 
 <!DOCTYPE html>
@@ -108,7 +73,7 @@ $SQL_Propiedades = Seleccionar("uvw_tbl_TarjetaEquipo_TiposEquipos_Propiedades",
 <head>
 <?php include_once "includes/cabecera.php";?>
 <!-- InstanceBeginEditable name="doctitle" -->
-<title>Parámetros Tipos de Equipos | <?php echo NOMBRE_PORTAL; ?></title>
+<title>Parámetros Unidades de Medida | <?php echo NOMBRE_PORTAL; ?></title>
 <!-- InstanceEndEditable -->
 <!-- InstanceBeginEditable name="head" -->
 
@@ -179,7 +144,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
         <!-- InstanceBeginEditable name="Contenido" -->
         <div class="row wrapper border-bottom white-bg page-heading">
                 <div class="col-sm-8">
-                    <h2>Tipos de Equipos</h2>
+                    <h2>Unidad de Medida</h2>
                     <ol class="breadcrumb">
                         <li>
                             <a href="index1.php">Inicio</a>
@@ -191,7 +156,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
                             <a href="#">Equipos</a>
                         </li>
                         <li class="active">
-                            <strong>Tipos de Equipos</strong>
+                            <strong>Unidad de Medida</strong>
                         </li>
                     </ol>
                 </div>
@@ -213,22 +178,19 @@ if (isset($sw_error) && ($sw_error == 1)) {
 						<div class="tabs-container">
 
 						 	<ul class="nav nav-tabs">
-								<li class="<?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Tipos") || !isset($_GET['doc'])) ? "active" : ""; ?>">
-									<a data-toggle="tab" href="#tab-1"><i class="fa fa-list"></i> Tipos</a>
-								</li>
-								<li class="<?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Propiedades")) ? "active" : ""; ?>">
-									<a data-toggle="tab" href="#tab-2"><i class="fa fa-list"></i> Propiedades</a>
+								<li class="<?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Unidades") || !isset($_GET['doc'])) ? "active" : ""; ?>">
+									<a data-toggle="tab" href="#tab-1"><i class="fa fa-list"></i> Unidades</a>
 								</li>
 							</ul>
 
 							<div class="tab-content">
 								
-								<!-- Inicio, lista Tipos -->
-								<div id="tab-1" class="tab-pane <?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Tipos") || !isset($_GET['doc'])) ? "active" : ""; ?>">
+								<!-- Inicio, lista Unidades -->
+								<div id="tab-1" class="tab-pane <?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Unidades") || !isset($_GET['doc'])) ? "active" : ""; ?>">
 									<form class="form-horizontal">
-										<div class="ibox" id="Consulta">
+										<div class="ibox" id="Unidades">
 											<div class="ibox-title bg-success">
-												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista de Tipos</h5>
+												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista de Unidades</h5>
 												 <a class="collapse-link pull-right">
 													<i class="fa fa-chevron-up"></i>
 												</a>
@@ -236,14 +198,14 @@ if (isset($sw_error) && ($sw_error == 1)) {
 											<div class="ibox-content">
 												<div class="row m-b-md">
 													<div class="col-lg-12">
-														<button class="btn btn-primary pull-right" type="button" onClick="CrearCampo('Tipos');"><i class="fa fa-plus-circle"></i> Agregar nueva</button>
+														<button class="btn btn-primary pull-right" type="button" onClick="CrearCampo('Unidades');"><i class="fa fa-plus-circle"></i> Agregar nueva</button>
 													</div>
 												</div>
 												<div class="table-responsive">
 													<table class="table table-striped table-bordered table-hover dataTables-example">
 														<thead>
 															<tr>
-																<th>Tipo Equipo</th>
+																<th>Unidad Medida Equipo</th>
 																<th>Comentarios</th>
 																<th>Fecha Actualizacion</th>
 																<th>Usuario Actualizacion</th>
@@ -252,20 +214,20 @@ if (isset($sw_error) && ($sw_error == 1)) {
 															</tr>
 														</thead>
 														<tbody>
-															 <?php while ($row_TipoEquipo = sqlsrv_fetch_array($SQL_TipoEquipo)) {?>
+															 <?php while ($row_TipoEquipo = sqlsrv_fetch_array($SQL_Unidades)) {?>
 															<tr>
-																<td><?php echo $row_TipoEquipo['tipo_equipo']; ?></td>
-																<td><?php echo $row_TipoEquipo['Comentarios']; ?></td>
+																<td><?php echo $row_TipoEquipo['unidad_medida_equipo']; ?></td>
+																<td><?php echo $row_TipoEquipo['comentarios']; ?></td>
 																<td><?php echo isset($row_TipoEquipo['fecha_actualizacion']) ? date_format($row_TipoEquipo['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
 																<td><?php echo $row_TipoEquipo['usuario_actualizacion'] ?? ""; ?></td>
 																<td>
-																	<span class="label <?php echo ($row_TipoEquipo['estado_tipo_equipo'] == "Y") ? "label-info" : "label-danger"; ?>">
-																		<?php echo ($row_TipoEquipo['estado_tipo_equipo'] == "Y") ? "Activo" : "Inactivo"; ?>
+																	<span class="label <?php echo ($row_TipoEquipo['estado_unidad_medida_equipo'] == "Y") ? "label-info" : "label-danger"; ?>">
+																		<?php echo ($row_TipoEquipo['estado_unidad_medida_equipo'] == "Y") ? "Activo" : "Inactivo"; ?>
 																	</span>
 																</td>
 																<td>
-																	<button type="button" id="btnEdit<?php echo $row_TipoEquipo['id_tipo_equipo']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_TipoEquipo['id_tipo_equipo']; ?>','Tipos');"><i class="fa fa-pencil"></i> Editar</button>
-																	<button type="button" id="btnDelete<?php echo $row_TipoEquipo['id_tipo_equipo']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_TipoEquipo['id_tipo_equipo']; ?>','Tipos');"><i class="fa fa-trash"></i> Eliminar</button>
+																	<button type="button" id="btnEdit<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>','Unidades');"><i class="fa fa-pencil"></i> Editar</button>
+																	<button type="button" id="btnDelete<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>','Unidades');"><i class="fa fa-trash"></i> Eliminar</button>
 																</td>
 															</tr>
 															 <?php }?>
@@ -276,64 +238,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 										</div> <!-- ibox -->
 									</form>
 								</div>
-								<!-- Fin, lista Tipos -->
-
-								<!-- Inicio, lista Propiedades -->
-								<div id="tab-2" class="tab-pane <?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Propiedades")) ? "active" : ""; ?>">
-									<form class="form-horizontal">
-										<div class="ibox" id="Entrada">
-											<div class="ibox-title bg-success">
-												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista de Propiedades</h5>
-												 <a class="collapse-link pull-right">
-													<i class="fa fa-chevron-up"></i>
-												</a>
-											</div>
-											<div class="ibox-content">
-												<div class="row m-b-md">
-													<div class="col-lg-12">
-														<button class="btn btn-primary pull-right" type="button" onClick="CrearCampo('Propiedades');"><i class="fa fa-plus-circle"></i> Agregar nueva</button>
-													</div>
-												</div>
-												<div class="table-responsive">
-													<table class="table table-striped table-bordered table-hover dataTables-example">
-														<thead>
-															<tr>
-																<th>Propiedad</th>
-																<th>Tipo Equipo</th>
-																<th>Tipo Propiedad</th>
-																<th>Tipo Campo</th>
-																<th>Tabla Vinculada</th>
-																<th>Obligatorio</th>
-																<th>Fecha Actualizacion</th>
-																<th>Usuario Actualizacion</th>
-																<th>Acciones</th>
-															</tr>
-														</thead>
-														<tbody>
-															 <?php while ($row_Propiedades = sqlsrv_fetch_array($SQL_Propiedades)) {?>
-															<tr>
-																<td><?php echo $row_Propiedades['propiedad']; ?></td>
-																<td><?php echo $row_Propiedades['tipo_equipo_padre'] ?? ""; ?></td>
-																<td><?php echo $row_Propiedades['tipo_propiedad']; ?></td>
-																<td><?php echo $row_Propiedades['tipo_campo'] ?? ""; ?></td>
-																<td><?php echo $row_Propiedades['tabla_vinculada'] ?? ""; ?></td>
-																<td><?php echo ($row_Propiedades['obligatorio'] == "Y") ? "SI" : "NO"; ?></td>
-																<td><?php echo isset($row_Propiedades['fecha_actualizacion']) ? date_format($row_Propiedades['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
-																<td><?php echo $row_Propiedades['usuario_actualizacion'] ?? ""; ?></td>
-																<td>
-																	<button type="button" id="btnEdit<?php echo $row_Propiedades['id_propiedad']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Propiedades['id_propiedad']; ?>','Propiedades');"><i class="fa fa-pencil"></i> Editar</button>
-																	<button type="button" id="btnDelete<?php echo $row_Propiedades['id_propiedad']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Propiedades['id_propiedad']; ?>','Propiedades');"><i class="fa fa-trash"></i> Eliminar</button>
-																</td>
-															</tr>
-															 <?php }?>
-														</tbody>
-													</table>
-												</div>
-											</div> <!-- ibox-content -->
-										</div> <!-- ibox -->
-									</form>
-								</div>
-								<!-- Fin, lista Propiedades -->
+								<!-- Fin, lista Unidades -->
 
 							</div> <!-- tab-content -->
 						</div> <!-- tabs-container -->
@@ -396,7 +301,7 @@ function CrearCampo(doc){
 
 	$.ajax({
 		type: "POST",
-		url: "md_tipos_equipos.php",
+		url: "md_unidad_medida.php",
 		data:{
 			doc:doc
 		},
@@ -413,7 +318,7 @@ function EditarCampo(id, doc){
 
 	$.ajax({
 		type: "POST",
-		url: "md_tipos_equipos.php",
+		url: "md_unidad_medida.php",
 		data:{
 			doc:doc,
 			id:id,
@@ -440,12 +345,12 @@ function EliminarCampo(id, doc){
 
 			$.ajax({
 				type: "post",
-				url: "tipos_equipos.php",
+				url: "unidad_medida.php",
 				data: { TipoDoc: doc, ID: id, Metodo: 3 },
 				async: false,
 				success: function(data){
 					// console.log(data);
-					location.href = `tipos_equipos.php?doc=${doc}&a=<?php echo base64_encode("OK_PRDel"); ?>`;
+					location.href = `unidad_medida.php?doc=${doc}&a=<?php echo base64_encode("OK_PRDel"); ?>`;
 				},
 				error: function(error) {
 					console.error("consulta erronea");
