@@ -226,7 +226,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 								<!-- Inicio, lista Tipos -->
 								<div id="tab-1" class="tab-pane <?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Tipos") || !isset($_GET['doc'])) ? "active" : ""; ?>">
 									<form class="form-horizontal">
-										<div class="ibox" id="Consulta">
+										<div class="ibox" id="Tipos">
 											<div class="ibox-title bg-success">
 												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista de Tipos</h5>
 												 <a class="collapse-link pull-right">
@@ -281,7 +281,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 								<!-- Inicio, lista Propiedades -->
 								<div id="tab-2" class="tab-pane <?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Propiedades")) ? "active" : ""; ?>">
 									<form class="form-horizontal">
-										<div class="ibox" id="Entrada">
+										<div class="ibox" id="Propiedades">
 											<div class="ibox-title bg-success">
 												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista de Propiedades</h5>
 												 <a class="collapse-link pull-right">

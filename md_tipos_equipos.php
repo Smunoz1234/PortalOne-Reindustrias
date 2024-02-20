@@ -9,8 +9,6 @@ $doc = isset($_POST['doc']) ? $_POST['doc'] : "";
 $id = isset($_POST['id']) ? $_POST['id'] : "";
 
 $SQL_TiposEquiposModal = Seleccionar('tbl_TarjetaEquipo_TiposEquipos', '*');
-$SQL_PropiedadesModal = Seleccionar('tbl_TarjetaEquipo_TiposEquipos_Propiedades', '*');
-
 $SQL_TiposEquipos_Campos = Seleccionar('tbl_TarjetaEquipo_TiposEquipos_Campos', '*');
 
 if ($edit == 1 && $id != "") {
@@ -18,18 +16,13 @@ if ($edit == 1 && $id != "") {
     $Metodo = 2;
 
     if ($doc == "Tipos") {
-        $SQL = Seleccionar('tbl_TarjetaEquipo_TiposEquipos', '*', "ID='$id'");
+        $SQL = Seleccionar('tbl_TarjetaEquipo_TiposEquipos', '*', "[id_tipo_equipo]='$id'");
         $row = sqlsrv_fetch_array($SQL);
     } elseif ($doc == "Propiedades") {
-        $SQL = Seleccionar('tbl_TarjetaEquipo_TiposEquipos_Propiedades', '*', "ID='$id'");
+        $SQL = Seleccionar('tbl_TarjetaEquipo_TiposEquipos_Propiedades', '*', "[id_propiedad]='$id'");
         $row = sqlsrv_fetch_array($SQL);
     }
-
-    $ids_perfiles = isset($row['Perfiles']) ? explode(";", $row['Perfiles']) : [];
 }
-
-$Cons_Lista = "EXEC sp_tables @table_owner = 'dbo', @table_type = \"'VIEW'\"";
-$SQL_Lista = sqlsrv_query($conexion, $Cons_Lista);
 ?>
 
 <style>
@@ -63,13 +56,13 @@ $SQL_Lista = sqlsrv_query($conexion, $Cons_Lista);
 				<div class="form-group row">
 					<div class="col-md-6">
 						<label class="control-label">Nombre Tipo Equipo <span class="text-danger">*</span></label>
-						<input type="text" class="form-control" autocomplete="off" required name="NombreTipoEquipo" id="NombreTipoEquipo" value="<?php if ($edit == 1) {echo $row['NombreTipoEquipo'];}?>">
+						<input type="text" class="form-control" autocomplete="off" required name="NombreTipoEquipo" id="NombreTipoEquipo" value="<?php if ($edit == 1) {echo $row['tipo_equipo'];}?>">
 					</div>
 					<div class="col-md-6">
 						<label class="control-label">Estado <span class="text-danger">*</span></label>
 						<select class="form-control" id="Estado" name="Estado">
-							<option value="Y" <?php if (($edit == 1) && ($row['Estado'] == "Y")) {echo "selected";}?>>ACTIVO</option>
-							<option value="N" <?php if (($edit == 1) && ($row['Estado'] == "N")) {echo "selected";}?>>INACTIVO</option>
+							<option value="Y" <?php if (($edit == 1) && ($row['estado_tipo_equipo'] == "Y")) {echo "selected";}?>>ACTIVO</option>
+							<option value="N" <?php if (($edit == 1) && ($row['estado_tipo_equipo'] == "N")) {echo "selected";}?>>INACTIVO</option>
 						</select>
 					</div>
 				</div>
@@ -88,7 +81,7 @@ $SQL_Lista = sqlsrv_query($conexion, $Cons_Lista);
 				<div class="form-group row">
 					<div class="col-md-6">
 						<label class="control-label">Nombre Propiedad <span class="text-danger">*</span></label>
-						<input type="text" class="form-control" autocomplete="off" required name="NombrePropiedad" id="NombrePropiedad" value="<?php if ($edit == 1) {echo $row['NombrePropiedad'];}?>">
+						<input type="text" class="form-control" autocomplete="off" required name="NombrePropiedad" id="NombrePropiedad" value="<?php if ($edit == 1) {echo $row['propiedad'];}?>">
 					</div>
 					<div class="col-md-6">
 						<label class="control-label">Tipo Equipo <span class="text-danger">*</span></label>
@@ -104,7 +97,7 @@ $SQL_Lista = sqlsrv_query($conexion, $Cons_Lista);
 				<div class="form-group row">
 					<div class="col-md-6">
 						<label class="control-label">Tipo Propiedad <span class="text-danger">*</span></label>
-						<input type="text" class="form-control" autocomplete="off" required name="TipoPropiedad" id="TipoPropiedad" value="<?php if ($edit == 1) {echo $row['TipoPropiedad'];}?>">
+						<input type="text" class="form-control" autocomplete="off" required name="TipoPropiedad" id="TipoPropiedad" value="<?php if ($edit == 1) {echo $row['tipo_propiedad'];}?>">
 					</div>
 
 					<div class="col-md-6">
@@ -120,14 +113,14 @@ $SQL_Lista = sqlsrv_query($conexion, $Cons_Lista);
 				<div class="form-group row">
 					<div class="col-md-6">
 						<label class="control-label">Tabla Vinculada <span class="text-danger">*</span></label>
-						<input type="text" class="form-control" autocomplete="off" required name="TablaVinculada" id="TablaVinculada" value="<?php if ($edit == 1) {echo $row['TablaVinculada'];}?>">
+						<input type="text" class="form-control" autocomplete="off" required name="TablaVinculada" id="TablaVinculada" value="<?php if ($edit == 1) {echo $row['tabla_vinculada'];}?>">
 					</div>
 
 					<div class="col-md-6">
 						<label class="control-label">Obligatorio <span class="text-danger">*</span></label>
 						<select class="form-control" id="Obligatorio" name="Obligatorio" required>
-							<option value="Y" <?php if (($edit == 1) && ($row['Obligatorio'] == "Y")) {echo "selected";}?>>SI</option>
-							<option value="N" <?php if (($edit == 1) && ($row['Obligatorio'] == "N")) {echo "selected";}?>>NO</option>
+							<option value="Y" <?php if (($edit == 1) && ($row['obligatorio'] == "Y")) {echo "selected";}?>>SI</option>
+							<option value="N" <?php if (($edit == 1) && ($row['obligatorio'] == "N")) {echo "selected";}?>>NO</option>
 						</select>
 					</div>
 				</div>
@@ -152,15 +145,6 @@ $SQL_Lista = sqlsrv_query($conexion, $Cons_Lista);
 
 <script>
 $(document).ready(function() {
-	// Activación del componente "tagsinput"
-	$('input[data-role=tagsinput]').tagsinput({
-		confirmKeys: [32, 44] // Espacio y coma.
-	});
-
-	// Ajusto el ancho del componente "tagsinput"
-	$('.bootstrap-tagsinput').css("display", "block");
-	$('.bootstrap-tagsinput > input').css("width", "100%");
-
 	$("#frm_NewParam").validate({
 		submitHandler: function(form){
 			let Metodo = document.getElementById("Metodo").value;
@@ -186,59 +170,5 @@ $(document).ready(function() {
 
 	$('.chosen-select').chosen({width: "100%"});
 	$(".select2").select2();
-
-	$("#TipoCampo").on("change", function() {
-		if($(this).val() == "Sucursal" || $(this).val() == "Lista") {
-			$("#Multiple").prop("disabled", false);
-		} else {
-			$("#Multiple").prop("disabled", true);
-		}
-
-		if($(this).val() == "Lista") {
-			$("#CamposVista").css("display", "block");
-		} else {
-			$("#CamposVista").css("display", "none");
-		}
-	});
-
-	// Cargar lista de campos dependiendo de la vista.
-	$("#VistaLista").on("change", function() {
-		$.ajax({
-			type: "POST",
-			url: `ajx_cbo_select.php?type=12&id=${$(this).val()}&obligatorio=1`,
-			success: function(response){
-				$('#EtiquetaLista').html(response).fadeIn();
-				$('#ValorLista').html(response).fadeIn();
-
-				<?php if (($edit == 1) && ($id != "")) {?>
-					$('#EtiquetaLista').val("<?php echo $row['EtiquetaLista'] ?? ""; ?>");
-					$('#ValorLista').val("<?php echo $row['ValorLista'] ?? ""; ?>");
-				<?php }?>
-
-				$('#EtiquetaLista').trigger('change');
-				$('#ValorLista').trigger('change');
-			}
-		});
-	});
-
-	// Cargar entradas dependiendo de la consulta.
-	$("#ID_Consulta").on("change", function() {
-		$.ajax({
-			type: "POST",
-			url: `ajx_cbo_select.php?type=44&id=${$(this).val()}&input=<?php echo $row['ParametroEntrada'] ?? ""; ?>`,
-			success: function(response){
-				$('#ParametroEntrada').html(response).fadeIn();
-				$('#ParametroEntrada').trigger('change');
-			}
-		});
-	});
-
-
-	<?php if (($edit == 1) && ($id != "")) {?>
-		$('#VistaLista').trigger('change');
-
-		$('#ID_Consulta').trigger('change');
-		$('#TipoCampo').trigger('change');
-	<?php }?>
  });
 </script>
