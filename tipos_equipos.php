@@ -70,8 +70,8 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
 				"'" . ($_POST['TablaVinculada'] ?? "") . "'",
                 "'" . $_POST['Obligatorio'] . "'",
 				"'" . ($_POST['Multiple'] ?? "") . "'",
-				"'" . ($_POST['ValorLista'] ?? "") . "'",
 				"'" . ($_POST['EtiquetaLista'] ?? "") . "'",
+				"'" . ($_POST['ValorLista'] ?? "") . "'",
 				$Usuario, // Usuario de actualización y creación
             );
 
@@ -305,6 +305,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 																<th>Tipo Campo</th>
 																<th>Tabla Vinculada</th>
 																<th>Obligatorio</th>
+																<th>Multiple</th>
 																<th>Fecha Actualizacion</th>
 																<th>Usuario Actualizacion</th>
 																<th>Acciones</th>
@@ -318,6 +319,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 																<td><?php echo $row_Propiedades['tipo_campo'] ?? ""; ?></td>
 																<td><?php echo $row_Propiedades['tabla_vinculada'] ?? ""; ?></td>
 																<td><?php echo ($row_Propiedades['obligatorio'] == "Y") ? "SI" : "NO"; ?></td>
+																<td><?php echo ($row_Propiedades['multiple'] == "Y") ? "SI" : "NO"; ?></td>
 																<td><?php echo isset($row_Propiedades['fecha_actualizacion']) ? date_format($row_Propiedades['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
 																<td><?php echo $row_Propiedades['usuario_actualizacion'] ?? ""; ?></td>
 																<td>

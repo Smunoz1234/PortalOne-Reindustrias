@@ -231,8 +231,8 @@ $(document).ready(function() {
 				$('#ValorLista').html(response).fadeIn();
 
 				<?php if (($edit == 1) && ($id != "")) {?>
-					$('#EtiquetaLista').val("<?php echo $row['EtiquetaLista'] ?? ""; ?>");
-					$('#ValorLista').val("<?php echo $row['ValorLista'] ?? ""; ?>");
+					$('#EtiquetaLista').val("<?php echo $row['etiqueta_lista'] ?? ""; ?>");
+					$('#ValorLista').val("<?php echo $row['valor_lista'] ?? ""; ?>");
 				<?php }?>
 
 				$('#EtiquetaLista').trigger('change');
@@ -243,7 +243,7 @@ $(document).ready(function() {
 
 	<?php if (($edit == 1) && ($id != "")) {?>
 		$('#TablaVinculada').trigger('change');
-		$('#TipoCampo').trigger('change');
+		$('#ID_TipoEquipo_Campo').trigger('change');
 	<?php }?>
  });
 </script>
