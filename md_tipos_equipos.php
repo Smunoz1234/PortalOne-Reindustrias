@@ -52,7 +52,7 @@ if ($edit == 1 && $id != "") {
 
 			<?php if ($doc == "Tipos") {?>
 
-				<!-- Inicio Consulta -->
+				<!-- Inicio Tipos -->
 				<div class="form-group row">
 					<div class="col-md-6">
 						<label class="control-label">Nombre Tipo Equipo <span class="text-danger">*</span></label>
@@ -73,11 +73,11 @@ if ($edit == 1 && $id != "") {
 						<textarea name="Comentarios" rows="3" maxlength="3000" class="form-control" id="Comentarios" type="text"><?php if ($edit == 1) {echo $row['Comentarios'];}?></textarea>
 					</div>
 				</div>
-				<!-- Fin Consulta -->
+				<!-- Fin Tipos -->
 
 			<?php } elseif ($doc == "Propiedades") {?>
 
-				<!-- Inicio Entrada -->
+				<!-- Inicio Propiedades -->
 				<div class="form-group row">
 					<div class="col-md-6">
 						<label class="control-label">Nombre Propiedad <span class="text-danger">*</span></label>
@@ -96,24 +96,12 @@ if ($edit == 1 && $id != "") {
 
 				<div class="form-group row">
 					<div class="col-md-6">
-						<label class="control-label">Tipo Propiedad <span class="text-danger">*</span></label>
-						<input type="text" class="form-control" autocomplete="off" required name="TipoPropiedad" id="TipoPropiedad" value="<?php if ($edit == 1) {echo $row['tipo_propiedad'];}?>">
-					</div>
-
-					<div class="col-md-6">
 						<label class="control-label">Tipo de campo <span class="text-danger">*</span></label>
 						<select class="form-control" name="ID_TipoEquipo_Campo" id="ID_TipoEquipo_Campo" required>
 							<?php while ($row_Campo = sqlsrv_fetch_array($SQL_TiposEquipos_Campos)) {?>
 								<option value="<?php echo $row_Campo['id_tipo_equipo_campo']; ?>" <?php if ((isset($row['id_tipo_equipo_campo'])) && (strcmp($row_Campo['id_tipo_equipo_campo'], $row['id_tipo_equipo_campo']) == 0)) {echo "selected";}?>><?php echo $row_Campo['tipo_equipo_campo']; ?></option>
 							<?php }?>
 						</select>
-					</div>
-				</div>
-
-				<div class="form-group row">
-					<div class="col-md-6">
-						<label class="control-label">Tabla Vinculada <span class="text-danger">*</span></label>
-						<input type="text" class="form-control" autocomplete="off" required name="TablaVinculada" id="TablaVinculada" value="<?php if ($edit == 1) {echo $row['tabla_vinculada'];}?>">
 					</div>
 
 					<div class="col-md-6">
@@ -124,7 +112,14 @@ if ($edit == 1 && $id != "") {
 						</select>
 					</div>
 				</div>
-				<!-- Fin Entrada -->
+
+				<div class="form-group row">
+					<div class="col-md-12">
+						<label class="control-label">Tabla Vinculada <span class="text-danger">*</span></label>
+						<input type="text" class="form-control" autocomplete="off" required name="TablaVinculada" id="TablaVinculada" value="<?php if ($edit == 1) {echo $row['tabla_vinculada'];}?>">
+					</div>
+				</div>
+				<!-- Fin Propiedades -->
 
 			<?php }?>
 		</div> <!-- ibox-content -->

@@ -66,7 +66,6 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
                 $ID,
                 "'" . $_POST['NombrePropiedad'] . "'",
                 "'" . $_POST['ID_TipoEquipo'] . "'",
-                "'" . $_POST['TipoPropiedad'] . "'",
                 "'" . $_POST['ID_TipoEquipo_Campo'] . "'",
                 "'" . $_POST['TablaVinculada'] . "'",
                 "'" . $_POST['Obligatorio'] . "'",
@@ -300,7 +299,6 @@ if (isset($sw_error) && ($sw_error == 1)) {
 															<tr>
 																<th>Propiedad</th>
 																<th>Tipo Equipo</th>
-																<th>Tipo Propiedad</th>
 																<th>Tipo Campo</th>
 																<th>Tabla Vinculada</th>
 																<th>Obligatorio</th>
@@ -314,7 +312,6 @@ if (isset($sw_error) && ($sw_error == 1)) {
 															<tr>
 																<td><?php echo $row_Propiedades['propiedad']; ?></td>
 																<td><?php echo $row_Propiedades['tipo_equipo_padre'] ?? ""; ?></td>
-																<td><?php echo $row_Propiedades['tipo_propiedad']; ?></td>
 																<td><?php echo $row_Propiedades['tipo_campo'] ?? ""; ?></td>
 																<td><?php echo $row_Propiedades['tabla_vinculada'] ?? ""; ?></td>
 																<td><?php echo ($row_Propiedades['obligatorio'] == "Y") ? "SI" : "NO"; ?></td>
