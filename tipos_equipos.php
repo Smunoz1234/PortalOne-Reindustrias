@@ -67,8 +67,11 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
                 "'" . $_POST['NombrePropiedad'] . "'",
                 "'" . $_POST['ID_TipoEquipo'] . "'",
                 "'" . $_POST['ID_TipoEquipo_Campo'] . "'",
-                "'" . $_POST['TablaVinculada'] . "'",
+				"'" . ($_POST['TablaVinculada'] ?? "") . "'",
                 "'" . $_POST['Obligatorio'] . "'",
+				"'" . ($_POST['Multiple'] ?? "") . "'",
+				"'" . ($_POST['ValorLista'] ?? "") . "'",
+				"'" . ($_POST['EtiquetaLista'] ?? "") . "'",
 				$Usuario, // Usuario de actualización y creación
             );
 

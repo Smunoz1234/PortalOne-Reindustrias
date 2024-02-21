@@ -23,6 +23,9 @@ if ($edit == 1 && $id != "") {
         $row = sqlsrv_fetch_array($SQL);
     }
 }
+
+$Cons_Lista = "EXEC sp_tables @table_owner = 'dbo', @table_type = \"'VIEW'\"";
+$SQL_Lista = sqlsrv_query($conexion, $Cons_Lista);
 ?>
 
 <style>
@@ -58,6 +61,7 @@ if ($edit == 1 && $id != "") {
 						<label class="control-label">Nombre Tipo Equipo <span class="text-danger">*</span></label>
 						<input type="text" class="form-control" autocomplete="off" required name="NombreTipoEquipo" id="NombreTipoEquipo" value="<?php if ($edit == 1) {echo $row['tipo_equipo'];}?>">
 					</div>
+
 					<div class="col-md-6">
 						<label class="control-label">Estado <span class="text-danger">*</span></label>
 						<select class="form-control" id="Estado" name="Estado">
@@ -83,6 +87,7 @@ if ($edit == 1 && $id != "") {
 						<label class="control-label">Nombre Propiedad <span class="text-danger">*</span></label>
 						<input type="text" class="form-control" autocomplete="off" required name="NombrePropiedad" id="NombrePropiedad" value="<?php if ($edit == 1) {echo $row['propiedad'];}?>">
 					</div>
+
 					<div class="col-md-6">
 						<label class="control-label">Tipo Equipo <span class="text-danger">*</span></label>
 						<select name="ID_TipoEquipo" class="form-control select2" id="ID_TipoEquipo" required>
@@ -95,7 +100,7 @@ if ($edit == 1 && $id != "") {
 				</div>
 
 				<div class="form-group row">
-					<div class="col-md-6">
+					<div class="col-md-12">
 						<label class="control-label">Tipo de campo <span class="text-danger">*</span></label>
 						<select class="form-control" name="ID_TipoEquipo_Campo" id="ID_TipoEquipo_Campo" required>
 							<?php while ($row_Campo = sqlsrv_fetch_array($SQL_TiposEquipos_Campos)) {?>
@@ -103,7 +108,9 @@ if ($edit == 1 && $id != "") {
 							<?php }?>
 						</select>
 					</div>
+				</div>
 
+				<div class="form-group row">
 					<div class="col-md-6">
 						<label class="control-label">Obligatorio <span class="text-danger">*</span></label>
 						<select class="form-control" id="Obligatorio" name="Obligatorio" required>
@@ -111,14 +118,46 @@ if ($edit == 1 && $id != "") {
 							<option value="N" <?php if (($edit == 1) && ($row['obligatorio'] == "N")) {echo "selected";}?>>NO</option>
 						</select>
 					</div>
+
+					<div class="col-md-6">
+						<label class="control-label">Multiple <span class="text-danger">*</span></label>
+						<select class="form-control" id="Multiple" name="Multiple" disabled>
+							<option value="N" <?php if (($edit == 1) && ($row['multiple'] == "N")) {echo "selected";}?>>NO</option>
+							<option value="Y" <?php if (($edit == 1) && ($row['multiple'] == "Y")) {echo "selected";}?>>SI</option>
+						</select>
+					</div>
 				</div>
 
 				<div class="form-group row">
 					<div class="col-md-12">
 						<label class="control-label">Tabla Vinculada <span class="text-danger">*</span></label>
-						<input type="text" class="form-control" autocomplete="off" required name="TablaVinculada" id="TablaVinculada" value="<?php if ($edit == 1) {echo $row['tabla_vinculada'];}?>">
+						<select name="TablaVinculada" class="form-control select2" id="TablaVinculada" disabled>
+							<option value="" disabled selected>Seleccione...</option>
+							<?php while ($row_Lista = sqlsrv_fetch_array($SQL_Lista)) {?>
+								<option value="<?php echo $row_Lista['TABLE_NAME']; ?>" <?php if ((isset($row['tabla_vinculada'])) && ($row_Lista['TABLE_NAME'] == $row['tabla_vinculada'])) {echo "selected";}?>><?php echo $row_Lista['TABLE_NAME']; ?></option>
+							<?php }?>
+						</select>
 					</div>
 				</div>
+
+				<div class="form-group row">
+					<div class="col-md-6">
+						<label class="control-label">Valor <span class="text-danger">*</span></label>
+						<select name="ValorLista" class="form-control" id="ValorLista" disabled>
+							<option value="">Seleccione...</option>
+							<!-- Generado por JS -->
+						</select>
+					</div>
+
+					<div class="col-md-6">
+						<label class="control-label">Etiqueta <span class="text-danger">*</span></label>
+						<select name="EtiquetaLista" class="form-control" id="EtiquetaLista" disabled>
+							<option value="">Seleccione...</option>
+							<!-- Generado por JS -->
+						</select>
+					</div>
+				</div>
+
 				<!-- Fin Propiedades -->
 
 			<?php }?>
@@ -141,29 +180,70 @@ if ($edit == 1 && $id != "") {
 <script>
 $(document).ready(function() {
 	$("#frm_NewParam").validate({
-		submitHandler: function(form){
+		submitHandler: function(form) {
 			let Metodo = document.getElementById("Metodo").value;
-			if(Metodo!="3"){
+			
+			if(Metodo!="3") {
 				Swal.fire({
-				title: "¿Está seguro que desea guardar los datos?",
-				icon: "question",
-				showCancelButton: true,
-				confirmButtonText: "Si, confirmo",
-				cancelButtonText: "No"
-			}).then((result) => {
-				if (result.isConfirmed) {
-					$('.ibox-content').toggleClass('sk-loading',true);
-					form.submit();
-				}
-			});
-			}else{
-			$('.ibox-content').toggleClass('sk-loading',true);
-			form.submit();
+					title: "¿Está seguro que desea guardar los datos?",
+					icon: "question",
+					showCancelButton: true,
+					confirmButtonText: "Si, confirmo",
+					cancelButtonText: "No"
+				}).then((result) => {
+					if (result.isConfirmed) {
+						$('.ibox-content').toggleClass('sk-loading', true);
+						form.submit();
+					}
+				});
+			} else {
+				$('.ibox-content').toggleClass('sk-loading', true);
+				form.submit();
 			}
-	}
-	 });
+		}
+	});
 
 	$('.chosen-select').chosen({width: "100%"});
 	$(".select2").select2();
+
+	// SMM, 21/02/2024
+	$("#ID_TipoEquipo_Campo").on("change", function() {
+		if($(this).val() == 5) {
+			$("#Multiple").prop("disabled", false);
+			$("#TablaVinculada").prop("disabled", false);
+			$("#EtiquetaLista").prop("disabled", false);
+			$("#ValorLista").prop("disabled", false);
+		} else {
+			$("#Multiple").prop("disabled", true);
+			$("#TablaVinculada").prop("disabled", true);
+			$("#EtiquetaLista").prop("disabled", true);
+			$("#ValorLista").prop("disabled", true);
+		}
+	});
+
+	// Cargar lista de campos dependiendo de la vista.
+	$("#TablaVinculada").on("change", function() {
+		$.ajax({
+			type: "POST",
+			url: `ajx_cbo_select.php?type=12&id=${$(this).val()}&obligatorio=1`,
+			success: function(response){
+				$('#EtiquetaLista').html(response).fadeIn();
+				$('#ValorLista').html(response).fadeIn();
+
+				<?php if (($edit == 1) && ($id != "")) {?>
+					$('#EtiquetaLista').val("<?php echo $row['EtiquetaLista'] ?? ""; ?>");
+					$('#ValorLista').val("<?php echo $row['ValorLista'] ?? ""; ?>");
+				<?php }?>
+
+				$('#EtiquetaLista').trigger('change');
+				$('#ValorLista').trigger('change');
+			}
+		});
+	});
+
+	<?php if (($edit == 1) && ($id != "")) {?>
+		$('#TablaVinculada').trigger('change');
+		$('#TipoCampo').trigger('change');
+	<?php }?>
  });
 </script>
