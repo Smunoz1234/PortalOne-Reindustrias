@@ -7,6 +7,24 @@ $dt_TE = 0; //sw para saber si vienen datos de la llamada de servicio. 0 no vien
 $sw_dirS = 0; //Direcciones de destino
 $sw_dirB = 0; //Direcciones de factura
 
+// Dimensiones, SMM 21/02/2024
+$DimSeries = intval(ObtenerVariable("DimensionSeries"));
+$SQL_Dimensiones = Seleccionar('uvw_Sap_tbl_Dimensiones', '*', "DimActive='Y'");
+
+// Pruebas, SMM 21/02/2024
+// $SQL_Dimensiones = Seleccionar('uvw_Sap_tbl_Dimensiones', '*', 'DimCode IN (1,2)');
+
+$array_Dimensiones = [];
+while ($row_Dimension = sqlsrv_fetch_array($SQL_Dimensiones)) {
+    array_push($array_Dimensiones, $row_Dimension);
+}
+
+$encode_Dimensiones = json_encode($array_Dimensiones);
+$cadena_Dimensiones = "JSON.parse('$encode_Dimensiones'.replace(/\\n|\\r/g, ''))";
+echo "<script> console.log('cadena_Dimensiones'); </script>";
+echo "<script> console.log($cadena_Dimensiones); </script>";
+// Hasta aquí, SMM 22/08/2022
+
 if (isset($_GET['id']) && ($_GET['id'] != "")) {
 	$IdTarjetaEquipo = base64_decode($_GET['id']);
 }
@@ -867,6 +885,7 @@ function ConsultarDocVentas(tipo){
 						</div>
 					</div>
 				</div>
+
 				<!-- INICIO, InfoSN -->
 				<div class="ibox">
 					<div class="ibox-title bg-success">
@@ -953,6 +972,162 @@ function ConsultarDocVentas(tipo){
 					</div>
 				</div>
 				<!-- FIN, InfoSN -->
+
+				<!-- INICIO, Info. Mantenimiento -->
+				<div class="ibox">
+					<div class="ibox-title bg-success">
+						<h5 class="collapse-link"><i class="fa fa-wrench"></i> Información de mantenimiento</h5>
+						 <a class="collapse-link pull-right">
+							<i class="fa fa-chevron-up"></i>
+						</a>
+					</div>
+					<div class="ibox-content">
+						<div class="form-group">
+							<div class="col-lg-4">
+								<label class="control-label">
+									Tipo equipo <span class="text-danger">*</span>
+								</label>
+								
+								<select <?php if (!PermitirFuncion(1602)) {
+									echo "disabled";
+								} ?> name="CDU_IdMarca" id="CDU_IdMarca" class="form-control select2" required>
+									<option value="" disabled selected>Seleccione...</option>
+								  	
+									<?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) { ?>
+										<option value="<?php echo $row_MarcaVehiculo['IdMarcaVehiculo']; ?>"
+											<?php if ((isset($row['CDU_IdMarca'])) && ($row_MarcaVehiculo['IdMarcaVehiculo'] == $row['CDU_IdMarca'])) {
+												echo "selected";
+											} ?>>
+											<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
+										</option>
+								  	<?php } ?>
+								</select>
+							</div>
+
+							<div class="col-lg-4">
+								<label class="control-label">
+									Unidad de medida <span class="text-danger">*</span>
+								</label>
+								
+								<select <?php if (!PermitirFuncion(1602)) {
+									echo "disabled";
+								} ?> name="CDU_IdMarca" id="CDU_IdMarca" class="form-control select2" required>
+									<option value="" disabled selected>Seleccione...</option>
+								  	
+									<?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) { ?>
+										<option value="<?php echo $row_MarcaVehiculo['IdMarcaVehiculo']; ?>"
+											<?php if ((isset($row['CDU_IdMarca'])) && ($row_MarcaVehiculo['IdMarcaVehiculo'] == $row['CDU_IdMarca'])) {
+												echo "selected";
+											} ?>>
+											<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
+										</option>
+								  	<?php } ?>
+								</select>
+							</div>
+
+							<div class="col-lg-4">
+								<label class="control-label">
+									Proyecto <span class="text-danger">*</span>
+								</label>
+								
+								<select <?php if (!PermitirFuncion(1602)) {
+									echo "disabled";
+								} ?> name="CDU_IdMarca" id="CDU_IdMarca" class="form-control select2" required>
+									<option value="" disabled selected>Seleccione...</option>
+								  	
+									<?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) { ?>
+										<option value="<?php echo $row_MarcaVehiculo['IdMarcaVehiculo']; ?>"
+											<?php if ((isset($row['CDU_IdMarca'])) && ($row_MarcaVehiculo['IdMarcaVehiculo'] == $row['CDU_IdMarca'])) {
+												echo "selected";
+											} ?>>
+											<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
+										</option>
+								  	<?php } ?>
+								</select>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<div class="col-lg-4">
+								<label class="control-label">
+									Ubicación <span class="text-danger">*</span>
+								</label>
+								
+								<select <?php if (!PermitirFuncion(1602)) {
+									echo "disabled";
+								} ?> name="CDU_IdMarca" id="CDU_IdMarca" class="form-control select2" required>
+									<option value="" disabled selected>Seleccione...</option>
+								  	
+									<?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) { ?>
+										<option value="<?php echo $row_MarcaVehiculo['IdMarcaVehiculo']; ?>"
+											<?php if ((isset($row['CDU_IdMarca'])) && ($row_MarcaVehiculo['IdMarcaVehiculo'] == $row['CDU_IdMarca'])) {
+												echo "selected";
+											} ?>>
+											<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
+										</option>
+								  	<?php } ?>
+								</select>
+							</div>
+
+							<div class="col-lg-4">
+								<label class="control-label">Fecha Operación</label>
+								<div class="input-group date">
+									<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input autocomplete="off" <?php if (!PermitirFuncion(1602)) {
+										echo "readonly";
+									} ?> name="CDU_FechaMatricula" id="CDU_FechaMatricula" type="text" class="form-control"
+									placeholder="YYYY-MM-DD" value="<?php if (isset($row['CDU_FechaMatricula'])) {
+										echo date_format($row['CDU_FechaMatricula'], 'Y-m-d');
+									} //else {echo 'AAAA-mm-dd';}?>">
+								</div>
+							</div>
+
+							<div class="col-lg-4">
+								<label class="control-label">
+									Contador / Horómetro <span class="text-danger">*</span>
+								</label>
+								
+								<input <?php if (!PermitirFuncion(1602)) {
+										echo "readonly";
+									} ?> autocomplete="off" name="TelefonoCliente" id="TelefonoCliente" type="number" class="form-control" 
+									value="<?php if (isset($row['TelefonoCliente'])) {
+										echo $row['TelefonoCliente'];
+									} ?>" required>
+							</div>
+						</div>
+
+						<!-- Dimensiones dinámicas, SMM 21/02/2024 -->
+						<div class="form-group">
+							<?php foreach ($array_Dimensiones as &$dim) {?>
+								<div class="col-lg-4">
+									<label class="control-label">
+										<?php echo $dim['DescPortalOne']; ?> <span class="text-danger">*</span>
+									</label>
+
+									<select name="<?php echo $dim['IdPortalOne'] ?>" id="<?php echo $dim['IdPortalOne'] ?>" class="form-control select2" 
+										<?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
+											echo "disabled";
+										} ?> required>
+										<option value="">Seleccione...</option>
+
+										<?php $SQL_Dim = Seleccionar('uvw_Sap_tbl_DimensionesReparto', '*', 'DimCode=' . $dim['DimCode']);?>
+										<?php while ($row_Dim = sqlsrv_fetch_array($SQL_Dim)) {?>
+											<?php $DimCode = intval($dim['DimCode']);?>
+											<?php $OcrId = ($DimCode == 1) ? "" : $DimCode;?>
+
+											<option value="<?php echo $row_Dim['OcrCode']; ?>"
+											<?php if ((isset($row["OcrCode$OcrId"]) && ($row["OcrCode$OcrId"] != "")) && ($row_Dim['OcrCode'] == $row["OcrCode$OcrId"])) {echo "selected";} ?>>
+												<?php echo $row_Dim['OcrName']; ?>
+											</option>
+										<?php }?>
+									</select>
+								</div>
+							<?php }?>
+						</div>
+						<!-- Dimensiones dinámicas, hasta aquí -->
+					</div>
+				</div>
+				<!-- FIN, Info. Mantenimiento -->
+
 				<!-- INICIO, información del vehículo y de la cita -->
 				<div class="ibox">
 					<div class="ibox-title bg-success">
