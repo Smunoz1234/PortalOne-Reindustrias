@@ -23,7 +23,16 @@ $encode_Dimensiones = json_encode($array_Dimensiones);
 $cadena_Dimensiones = "JSON.parse('$encode_Dimensiones'.replace(/\\n|\\r/g, ''))";
 echo "<script> console.log('cadena_Dimensiones'); </script>";
 echo "<script> console.log($cadena_Dimensiones); </script>";
-// Hasta aquí, SMM 22/08/2022
+// Hasta aquí, SMM 21/02/2024
+
+// Jerarquias, SMM 22/02/2024
+$SQL_Jerarquias = Seleccionar("tbl_TarjetaEquipo_DimensionJerarquias", "*", "estado_dimension_jerarquia = 'Y'");
+
+$array_Jerarquias = [];
+while ($row_Jerarquia = sqlsrv_fetch_array($SQL_Jerarquias)) {
+    array_push($array_Jerarquias, $row_Jerarquia);
+}
+// Hasta aquí, SMM 22/02/2024
 
 if (isset($_GET['id']) && ($_GET['id'] != "")) {
 	$IdTarjetaEquipo = base64_decode($_GET['id']);
@@ -793,7 +802,7 @@ function ConsultarDocVentas(tipo){
 					</div>
 					<div class="ibox-content">
 						<div class="form-group">
-							<label class="col-lg-1 control-label">Tipo de equipo <span class="text-danger">*</span></label>
+							<label class="col-lg-1 control-label">Tipo de proceso <span class="text-danger">*</span></label>
 							<div class="col-lg-3">
 								<select <?php if (!PermitirFuncion(1602)) {
 									echo "disabled";
@@ -1026,50 +1035,6 @@ function ConsultarDocVentas(tipo){
 							</div>
 
 							<div class="col-lg-4">
-								<label class="control-label">
-									Proyecto <span class="text-danger">*</span>
-								</label>
-								
-								<select <?php if (!PermitirFuncion(1602)) {
-									echo "disabled";
-								} ?> name="CDU_IdMarca" id="CDU_IdMarca" class="form-control select2" required>
-									<option value="" disabled selected>Seleccione...</option>
-								  	
-									<?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) { ?>
-										<option value="<?php echo $row_MarcaVehiculo['IdMarcaVehiculo']; ?>"
-											<?php if ((isset($row['CDU_IdMarca'])) && ($row_MarcaVehiculo['IdMarcaVehiculo'] == $row['CDU_IdMarca'])) {
-												echo "selected";
-											} ?>>
-											<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
-										</option>
-								  	<?php } ?>
-								</select>
-							</div>
-						</div>
-
-						<div class="form-group">
-							<div class="col-lg-4">
-								<label class="control-label">
-									Ubicación <span class="text-danger">*</span>
-								</label>
-								
-								<select <?php if (!PermitirFuncion(1602)) {
-									echo "disabled";
-								} ?> name="CDU_IdMarca" id="CDU_IdMarca" class="form-control select2" required>
-									<option value="" disabled selected>Seleccione...</option>
-								  	
-									<?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) { ?>
-										<option value="<?php echo $row_MarcaVehiculo['IdMarcaVehiculo']; ?>"
-											<?php if ((isset($row['CDU_IdMarca'])) && ($row_MarcaVehiculo['IdMarcaVehiculo'] == $row['CDU_IdMarca'])) {
-												echo "selected";
-											} ?>>
-											<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
-										</option>
-								  	<?php } ?>
-								</select>
-							</div>
-
-							<div class="col-lg-4">
 								<label class="control-label">Fecha Operación</label>
 								<div class="input-group date">
 									<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input autocomplete="off" <?php if (!PermitirFuncion(1602)) {
@@ -1095,7 +1060,68 @@ function ConsultarDocVentas(tipo){
 							</div>
 						</div>
 
+						<!-- Jerarquías dinámicas, SMM 22/02/2024 -->
+						<div class="form-group">
+							<div class="col-lg-6 border-bottom ">
+								<label class="control-label text-danger">Información de jerarquías</label>
+							</div>
+						</div>
+						<div class="form-group">
+							<?php foreach ($array_Jerarquias as &$dimJ) {?>
+								<div class="col-lg-4">
+									<label class="control-label">
+										<?php echo $dimJ['dimension_jerarquia']; ?> <span class="text-danger">*</span>
+									</label>
+									
+									<?php $DimJCode = intval($dimJ['id_dimension_jerarquia'] ?? 0); ?>
+									<select name="DimJ<?php echo $DimJCode; ?>" id="DimJ<?php echo $DimJCode; ?>" class="form-control select2" 
+										<?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
+											echo "disabled";
+										} ?> required>
+										<option value="">Seleccione...</option>
+
+										<?php $SQL_DimJ = Seleccionar("tbl_TarjetaEquipo_Jerarquias", "*", "id_dimension_jerarquia = $DimJCode");?>
+										<?php while ($row_DimJ = sqlsrv_fetch_array($SQL_DimJ)) {?>
+											<option value="<?php echo $row_DimJ['id_jerarquia']; ?>"
+												<?php if ((isset($row["DimJ$DimJCode"]) && ($row["DimJ$DimJCode"] != "")) && ($row_DimJ['id_jerarquia'] == $row["DimJ$DimJCode"])) {
+													echo "selected";
+												} ?>>
+												<?php echo $row_DimJ['jerarquia']; ?>
+											</option>
+										<?php }?>
+									</select>
+								</div>
+							<?php }?>
+
+							<div class="col-lg-4">
+								<label class="control-label">
+									Ubicación <span class="text-danger">*</span>
+								</label>
+								
+								<select <?php if (!PermitirFuncion(1602)) {
+									echo "disabled";
+								} ?> name="CDU_IdMarca" id="CDU_IdMarca" class="form-control select2" required>
+									<option value="" disabled selected>Seleccione...</option>
+								  	
+									<?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) { ?>
+										<option value="<?php echo $row_MarcaVehiculo['IdMarcaVehiculo']; ?>"
+											<?php if ((isset($row['CDU_IdMarca'])) && ($row_MarcaVehiculo['IdMarcaVehiculo'] == $row['CDU_IdMarca'])) {
+												echo "selected";
+											} ?>>
+											<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
+										</option>
+								  	<?php } ?>
+								</select>
+							</div>
+						</div>
+						<!-- Jerarquías dinámicas, hasta aquí -->
+
 						<!-- Dimensiones dinámicas, SMM 21/02/2024 -->
+						<div class="form-group">
+							<div class="col-lg-6 border-bottom ">
+								<label class="control-label text-danger">Información de dimensiones</label>
+							</div>
+						</div>
 						<div class="form-group">
 							<?php foreach ($array_Dimensiones as &$dim) {?>
 								<div class="col-lg-4">
@@ -1122,6 +1148,27 @@ function ConsultarDocVentas(tipo){
 									</select>
 								</div>
 							<?php }?>
+
+							<div class="col-lg-4">
+								<label class="control-label">
+									Proyecto <span class="text-danger">*</span>
+								</label>
+								
+								<select <?php if (!PermitirFuncion(1602)) {
+									echo "disabled";
+								} ?> name="CDU_IdMarca" id="CDU_IdMarca" class="form-control select2" required>
+									<option value="" disabled selected>Seleccione...</option>
+								  	
+									<?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) { ?>
+										<option value="<?php echo $row_MarcaVehiculo['IdMarcaVehiculo']; ?>"
+											<?php if ((isset($row['CDU_IdMarca'])) && ($row_MarcaVehiculo['IdMarcaVehiculo'] == $row['CDU_IdMarca'])) {
+												echo "selected";
+											} ?>>
+											<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
+										</option>
+								  	<?php } ?>
+								</select>
+							</div>
 						</div>
 						<!-- Dimensiones dinámicas, hasta aquí -->
 					</div>
@@ -1216,9 +1263,9 @@ function ConsultarDocVentas(tipo){
 												<?php if (isset($row['CDU_Concesionario']) && (strcmp($row_Concesionario['NombreConcesionario'], $row['CDU_Concesionario']) == 0)) {
 													echo "selected";
 												} elseif (($edit == 0) && (strcmp($row_Concesionario['NombreConcesionario'], ObtenerValorDefecto(176, "IdConcesionario", false)) == 0)) {
-													echo "selected='selected'";
+													echo "selected";
 												} elseif (($edit == 0) && (ObtenerValorDefecto(176, "IdConcesionario", false) == "") && (strcmp($row_Concesionario['NombreConcesionario'], "Otro") == 0)) {
-													echo "selected='selected'";
+													echo "selected";
 												} ?>>
 
 													<?php echo $row_Concesionario['NombreConcesionario']; ?>
