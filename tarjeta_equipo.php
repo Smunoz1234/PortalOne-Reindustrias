@@ -491,6 +491,7 @@ $SQL_TipoEquipo = Seleccionar("tbl_TarjetaEquipo_TiposEquipos", "*");
 $SQL_UnidadMedida = Seleccionar("tbl_TarjetaEquipo_UnidadMedidas", "*");
 $SQL_UbicacionEquipo = Seleccionar("tbl_TarjetaEquipo_Ubicaciones", "*");
 $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
+$SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*");
 ?>
 
 <!DOCTYPE html>
@@ -850,7 +851,7 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 													echo "readonly";
 												} ?>
 													autocomplete="off" onkeyup="mayus(this);" name="SerialInterno"
-													type="text" required="required" class="form-control"
+													type="text" required class="form-control"
 													id="SerialInterno" maxlength="150" value="<?php if (isset($row['SerialInterno'])) {
 														echo $row['SerialInterno'];
 													} ?>">
@@ -862,7 +863,7 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 													echo "readonly";
 												} ?>
 													autocomplete="off" onkeyup="mayus(this);" name="SerialFabricante"
-													type="text" required="required" class="form-control"
+													type="text" required class="form-control"
 													id="SerialFabricante" maxlength="150" value="<?php if (isset($row['SerialFabricante'])) {
 														echo $row['SerialFabricante'];
 													} ?>">
@@ -876,7 +877,7 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 													echo "readonly";
 												} ?>
 													autocomplete="off" placeholder="Digite para buscar..."
-													name="ItemCode" type="text" required="required" class="form-control"
+													name="ItemCode" type="text" required class="form-control"
 													id="ItemCode" maxlength="150" value="<?php if (isset($row['ItemCode'])) {
 														echo $row['ItemCode'];
 													} ?>">
@@ -887,7 +888,7 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 												<input <?php if (!PermitirFuncion(1602)) {
 													echo "readonly";
 												} ?>
-													autocomplete="off" name="ItemName" type="text" required="required"
+													autocomplete="off" name="ItemName" type="text" required
 													class="form-control" id="ItemName" maxlength="150" value="<?php if (isset($row['ItemName'])) {
 														echo $row['ItemName'];
 													} ?>">
@@ -976,7 +977,7 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 												<input <?php if (!PermitirFuncion(1602) || ($dt_TE == 1)) {
 													echo "readonly";
 												} ?> name="NombreClienteEquipo" type="text"
-													required="required" class="form-control" id="NombreClienteEquipo"
+													required class="form-control" id="NombreClienteEquipo"
 													placeholder="Digite para buscar..." value="<?php if (($edit == 1) || ($sw_error == 1)) {
 														echo $row['CardName'] ?? "";
 													} elseif ($dt_TE == 1) {
@@ -1010,7 +1011,7 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 													echo "readonly";
 												} ?>
 													autocomplete="off" name="TelefonoCliente" type="text"
-													class="form-control" id="TelefonoCliente" required="required"
+													class="form-control" id="TelefonoCliente" required
 													maxlength="150" value="<?php if (isset($row['TelefonoCliente'])) {
 														echo $row['TelefonoCliente'];
 													} elseif (($dt_TE == 1) && isset($row_Cliente['Telefono'])) {
@@ -1127,7 +1128,7 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 													} ?> name="fecha_operacion" id="fecha_operacion"
 														type="text" class="form-control" placeholder="YYYY-MM-DD" value="<?php if (isset($row['fecha_operacion'])) {
 															echo date_format($row['fecha_operacion'], 'Y-m-d');
-														} // else { echo 'AAAA-mm-dd'; }  ?>">
+														} // else { echo 'AAAA-mm-dd'; }   ?>">
 												</div>
 											</div>
 
@@ -1294,7 +1295,7 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 												<input <?php if (!PermitirFuncion(1602)) {
 													echo "readonly";
 												} ?>
-													autocomplete="off" name="CDU_No_Motor" required="required"
+													autocomplete="off" name="CDU_No_Motor" required
 													type="text" class="form-control" id="CDU_No_Motor" maxlength="100"
 													value="<?php if (isset($row['CDU_No_Motor'])) {
 														echo $row['CDU_No_Motor'];
@@ -1308,7 +1309,7 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 												<select <?php if (!PermitirFuncion(1602)) {
 													echo "disabled";
 												} ?>
-													name="CDU_IdMarca" class="form-control select2" required="required"
+													name="CDU_IdMarca" class="form-control select2" required
 													id="CDU_IdMarca">
 													<option value="" disabled selected>Seleccione...</option>
 													<?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) { ?>
@@ -1327,7 +1328,7 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 												<select <?php if (!PermitirFuncion(1602)) {
 													echo "disabled";
 												} ?>
-													name="CDU_IdLinea" class="form-control select2" required="required"
+													name="CDU_IdLinea" class="form-control select2" required
 													id="CDU_IdLinea">
 													<option value="" disabled selected>Seleccione...</option>
 													<?php while ($row_LineaVehiculo = sqlsrv_fetch_array($SQL_LineaVehiculo)) { ?>
@@ -1347,7 +1348,7 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 												<select <?php if (!PermitirFuncion(1602)) {
 													echo "disabled";
 												} ?>
-													name="CDU_Ano" class="form-control select2" required="required"
+													name="CDU_Ano" class="form-control select2" required
 													id="CDU_Ano">
 													<option value="" disabled selected>Seleccione...</option>
 													<?php while ($row_ModeloVehiculo = sqlsrv_fetch_array($SQL_ModeloVehiculo)) { ?>
@@ -1370,7 +1371,7 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 													echo "disabled";
 												} ?>
 													name="CDU_Concesionario" class="form-control select2"
-													required="required" id="CDU_Concesionario">
+													required id="CDU_Concesionario">
 													<?php while ($row_Concesionario = sqlsrv_fetch_array($SQL_Concesionario)) { ?>
 														<option
 															value="<?php echo $row_Concesionario['NombreConcesionario']; ?>"
@@ -1393,7 +1394,7 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 												<select <?php if (!PermitirFuncion(1602)) {
 													echo "disabled";
 												} ?>
-													name="CDU_Color" class="form-control select2" required="required"
+													name="CDU_Color" class="form-control select2" required
 													id="CDU_Color">
 													<option value="" disabled selected>Seleccione...</option>
 													<?php while ($row_ColorVehiculo = sqlsrv_fetch_array($SQL_ColorVehiculo)) { ?>
@@ -1434,7 +1435,7 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 													echo "disabled";
 												} ?>
 													name="CDU_Cilindraje" class="form-control select2"
-													required="required" id="CDU_Cilindraje">
+													required id="CDU_Cilindraje">
 													<option value="" disabled selected>Seleccione...</option>
 													<?php while ($row_Cilindraje = sqlsrv_fetch_array($SQL_CilindrajeVehiculo)) { ?>
 														<option
@@ -1454,7 +1455,7 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 													echo "disabled";
 												} ?>
 													name="CDU_TipoServicio" class="form-control select2"
-													required="required" id="CDU_TipoServicio">
+													required id="CDU_TipoServicio">
 													<option value="" disabled selected>Seleccione...</option>
 													<?php while ($row_TipoServicio = sqlsrv_fetch_array($SQL_TipoServicio)) { ?>
 														<option
@@ -1503,7 +1504,7 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 														name="CDU_FechaMatricula" id="CDU_FechaMatricula" type="text"
 														class="form-control" placeholder="YYYY-MM-DD" value="<?php if (isset($row['CDU_FechaMatricula'])) {
 															echo date_format($row['CDU_FechaMatricula'], 'Y-m-d');
-														} //else {echo 'AAAA-mm-dd';} ?>">
+														} //else {echo 'AAAA-mm-dd';}  ?>">
 												</div>
 											</div>
 											<div class="col-lg-4">
@@ -1517,7 +1518,7 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 														name="CDU_Fecha_SOAT" id="CDU_Fecha_SOAT" type="text"
 														class="form-control" placeholder="YYYY-MM-DD" value="<?php if (isset($row['CDU_Fecha_SOAT'])) {
 															echo date_format($row['CDU_Fecha_SOAT'], 'Y-m-d');
-														} //else {echo 'AAAA-mm-dd';} ?>">
+														} //else {echo 'AAAA-mm-dd';}  ?>">
 												</div>
 											</div>
 										</div>
@@ -1533,7 +1534,7 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 														name="CDU_Fecha_Tecno" id="CDU_Fecha_Tecno" type="text"
 														class="form-control" placeholder="YYYY-MM-DD" value="<?php if (isset($row['CDU_Fecha_Tecno'])) {
 															echo date_format($row['CDU_Fecha_Tecno'], 'Y-m-d');
-														} //else {echo 'AAAA-mm-dd';} ?>">
+														} //else {echo 'AAAA-mm-dd';}  ?>">
 												</div>
 											</div>
 										</div>
@@ -1549,7 +1550,7 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 														name="CDU_FechaUlt_CambAceite" id="CDU_FechaUlt_CambAceite"
 														type="text" class="form-control" placeholder="YYYY-MM-DD" value="<?php if (isset($row['CDU_FechaUlt_CambAceite'])) {
 															echo date_format($row['CDU_FechaUlt_CambAceite'], 'Y-m-d');
-														} //else {echo 'AAAA-mm-dd';} ?>">
+														} //else {echo 'AAAA-mm-dd';}  ?>">
 												</div>
 											</div>
 											<div class="col-lg-4">
@@ -1561,7 +1562,7 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 														id="CDU_FechaProx_CambAceite" type="text" class="form-control"
 														placeholder="YYYY-MM-DD" value="<?php if (isset($row['CDU_FechaProx_CambAceite'])) {
 															echo date_format($row['CDU_FechaProx_CambAceite'], 'Y-m-d');
-														} //else {echo 'AAAA-mm-dd';} ?>">
+														} //else {echo 'AAAA-mm-dd';}  ?>">
 												</div>
 											</div>
 										</div>
@@ -1577,7 +1578,7 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 														name="CDU_FechaUlt_Mant" id="CDU_FechaUlt_Mant" type="text"
 														class="form-control" placeholder="YYYY-MM-DD" value="<?php if (isset($row['CDU_FechaUlt_Mant'])) {
 															echo date_format($row['CDU_FechaUlt_Mant'], 'Y-m-d');
-														} //else {echo 'AAAA-mm-dd';} ?>">
+														} //else {echo 'AAAA-mm-dd';}  ?>">
 												</div>
 											</div>
 											<div class="col-lg-4">
@@ -1588,7 +1589,7 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 														readonly name="CDU_FechaProx_Mant" id="CDU_FechaProx_Mant"
 														type="text" class="form-control" placeholder="YYYY-MM-DD" value="<?php if (isset($row['CDU_FechaProx_Mant'])) {
 															echo date_format($row['CDU_FechaProx_Mant'], 'Y-m-d');
-														} //else {echo 'AAAA-mm-dd';} ?>">
+														} //else {echo 'AAAA-mm-dd';}  ?>">
 												</div>
 											</div>
 										</div>
@@ -1604,7 +1605,7 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 														name="CDU_FechaUlt_CambLlantas" id="CDU_FechaUlt_CambLlantas"
 														type="text" class="form-control" placeholder="YYYY-MM-DD" value="<?php if (isset($row['CDU_FechaUlt_CambLlantas'])) {
 															echo date_format($row['CDU_FechaUlt_CambLlantas'], 'Y-m-d');
-														} //else {echo 'AAAA-mm-dd';} ?>">
+														} //else {echo 'AAAA-mm-dd';}  ?>">
 												</div>
 											</div>
 											<div class="col-lg-4">
@@ -1616,7 +1617,7 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 														id="CDU_FechaProx_CambLlantas" type="text" class="form-control"
 														placeholder="YYYY-MM-DD" value="<?php if (isset($row['CDU_FechaProx_CambLlantas'])) {
 															echo date_format($row['CDU_FechaProx_CambLlantas'], 'Y-m-d');
-														} //else {echo 'AAAA-mm-dd';} ?>">
+														} //else {echo 'AAAA-mm-dd';}  ?>">
 												</div>
 											</div>
 										</div>
@@ -1632,7 +1633,7 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 														name="CDU_FechaUlt_AlinBalan" id="CDU_FechaUlt_AlinBalan"
 														type="text" class="form-control" placeholder="YYYY-MM-DD" value="<?php if (isset($row['CDU_FechaUlt_AlinBalan'])) {
 															echo date_format($row['CDU_FechaUlt_AlinBalan'], 'Y-m-d');
-														} //else {echo 'AAAA-mm-dd';} ?>">
+														} //else {echo 'AAAA-mm-dd';}  ?>">
 												</div>
 											</div>
 											<div class="col-lg-4">
@@ -1644,7 +1645,7 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 														id="CDU_FechaProx_AlinBalan" type="text" class="form-control"
 														placeholder="YYYY-MM-DD" value="<?php if (isset($row['CDU_FechaProx_AlinBalan'])) {
 															echo date_format($row['CDU_FechaProx_AlinBalan'], 'Y-m-d');
-														} //else {echo 'AAAA-mm-dd';} ?>">
+														} //else {echo 'AAAA-mm-dd';}  ?>">
 												</div>
 											</div>
 										</div>
@@ -1657,7 +1658,7 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 														readonly name="CDU_FechaFactura" id="CDU_FechaFactura"
 														type="text" class="form-control" placeholder="YYYY-MM-DD" value="<?php if (isset($row['CDU_FechaFactura'])) {
 															echo date_format($row['CDU_FechaFactura'], 'Y-m-d');
-														} //else {echo 'AAAA-mm-dd';} ?>">
+														} //else {echo 'AAAA-mm-dd';}  ?>">
 												</div>
 											</div>
 											<div class="col-lg-4">
@@ -1686,7 +1687,7 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 														readonly name="CDU_FechaAgenda" id="CDU_FechaAgenda" type="text"
 														class="form-control" placeholder="YYYY-MM-DD" value="<?php if (isset($row['CDU_FechaAgenda'])) {
 															echo date_format($row['CDU_FechaAgenda'], 'Y-m-d');
-														} //else {echo 'AAAA-mm-dd';} ?>">
+														} //else {echo 'AAAA-mm-dd';}  ?>">
 												</div>
 											</div>
 											<div class="form-group">
@@ -1723,13 +1724,13 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 												Datos de ventas</a></li>
 										<li><a data-toggle="tab" href="#tab-crm"><i class="fa fa-suitcase"></i> Gestión
 												de CRM</a></li>
-										
+
 										<li>
 											<a data-toggle="tab" href="#tab-properties">
 												<i class="fa fa-cogs"></i> Propiedades
 											</a>
 										</li>
-										
+
 										<li><a data-toggle="tab" href="#tab-annexes"><i class="fa fa-paperclip"></i>
 												Anexos</a></li>
 									</ul>
@@ -1744,7 +1745,7 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 															<input <?php if (!PermitirFuncion(1602)) {
 																echo "readonly";
 															} ?> autocomplete="off" name="Calle" type="text"
-																required="required" class="form-control" id="Calle"
+																required class="form-control" id="Calle"
 																maxlength="150" value="<?php if (isset($row['Calle'])) {
 																	echo $row['Calle'];
 																} ?>">
@@ -1754,7 +1755,7 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 															<input <?php if (!PermitirFuncion(1602)) {
 																echo "readonly";
 															} ?> autocomplete="off" name="CodigoPostal" type="text"
-																required="required" class="form-control"
+																required class="form-control"
 																id="CodigoPostal" maxlength="150" value="<?php if (isset($row['CodigoPostal'])) {
 																	echo $row['CodigoPostal'];
 																} ?>">
@@ -1764,7 +1765,7 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 															<input <?php if (!PermitirFuncion(1602)) {
 																echo "readonly";
 															} ?> autocomplete="off" name="Ciudad" type="text"
-																required="required" class="form-control" id="Ciudad"
+																required class="form-control" id="Ciudad"
 																maxlength="150" value="<?php if (isset($row['Ciudad'])) {
 																	echo $row['Ciudad'];
 																} ?>">
@@ -1783,7 +1784,7 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 															<input <?php if (!PermitirFuncion(1602)) {
 																echo "readonly";
 															} ?> autocomplete="off" name="Distrito" type="text"
-																required="required" class="form-control" id="Distrito"
+																required class="form-control" id="Distrito"
 																maxlength="150" value="<?php if (isset($row['Distrito'])) {
 																	echo $row['Distrito'];
 																} ?>">
@@ -2314,7 +2315,7 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 														<label class="col-lg-1 control-label">Código</label>
 														<div class="col-lg-3">
 															<input readonly autocomplete="off" name="CardCodeCompras"
-																type="text" required="required" class="form-control"
+																type="text" required class="form-control"
 																id="CardCodeCompras" maxlength="150" value="<?php if (isset($row['CardCodeCompras'])) {
 																	echo $row['CardCodeCompras'];
 																} ?>">
@@ -2322,7 +2323,7 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 														<label class="col-lg-1 control-label">Nombre</label>
 														<div class="col-lg-3">
 															<input readonly autocomplete="off" name="CardNameCompras"
-																type="text" required="required" class="form-control"
+																type="text" required class="form-control"
 																id="CardNameCompras" maxlength="150" value="<?php if (isset($row['CardNameCompras'])) {
 																	echo $row['CardNameCompras'];
 																} ?>">
@@ -2338,12 +2339,12 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 																class="btn-xs btn-success fa fa-search"></i><br>Entrega</label>
 														<div class="col-lg-3">
 															<input readonly autocomplete="off" name="DocNumEntrega"
-																type="number" required="required" class="form-control"
+																type="number" required class="form-control"
 																id="DocNumEntrega" maxlength="150" value="<?php if (isset($row['DocNumEntrega'])) {
 																	echo $row['DocNumEntrega'];
 																} ?>">
 															<input readonly autocomplete="off" name="DocEntryEntrega2"
-																type="hidden" required="required" class="form-control"
+																type="hidden" required class="form-control"
 																id="DocEntryEntrega2" maxlength="150" value="<?php if (isset($row['DocEntryEntrega'])) {
 																	echo $row['DocEntryEntrega'];
 																} ?>">
@@ -2355,12 +2356,12 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 																class="btn-xs btn-success fa fa-search"></i><br>Factura</label>
 														<div class="col-lg-3">
 															<input readonly autocomplete="off" name="DocNumFactura"
-																type="number" required="required" class="form-control"
+																type="number" required class="form-control"
 																id="DocNumFactura" maxlength="150" value="<?php if (isset($row['DocNumFactura'])) {
 																	echo $row['DocNumFactura'];
 																} ?>">
 															<input readonly autocomplete="off" name="DocEntryFactura2"
-																type="hidden" required="required" class="form-control"
+																type="hidden" required class="form-control"
 																id="DocEntryFactura2" maxlength="150" value="<?php if (isset($row['DocEntryFactura'])) {
 																	echo $row['DocEntryFactura'];
 																} ?>">
@@ -2453,104 +2454,150 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 										<div id="tab-properties" class="tab-pane">
 											<div class="row">
 												<div class="ibox-content">
+													
 													<div class="form-group">
-														<label class="col-lg-1 control-label">Calle</label>
-														<div class="col-lg-3">
-															<input <?php if (!PermitirFuncion(1602)) {
-																echo "readonly";
-															} ?> autocomplete="off" name="Calle" type="text"
-																required="required" class="form-control" id="Calle"
-																maxlength="150" value="<?php if (isset($row['Calle'])) {
-																	echo $row['Calle'];
-																} ?>">
-														</div>
-														<label class="col-lg-1 control-label">Código postal</label>
-														<div class="col-lg-3">
-															<input <?php if (!PermitirFuncion(1602)) {
-																echo "readonly";
-															} ?> autocomplete="off" name="CodigoPostal" type="text"
-																required="required" class="form-control"
-																id="CodigoPostal" maxlength="150" value="<?php if (isset($row['CodigoPostal'])) {
-																	echo $row['CodigoPostal'];
-																} ?>">
-														</div>
-														<label class="col-lg-1 control-label">Ciudad</label>
-														<div class="col-lg-3">
-															<input <?php if (!PermitirFuncion(1602)) {
-																echo "readonly";
-															} ?> autocomplete="off" name="Ciudad" type="text"
-																required="required" class="form-control" id="Ciudad"
-																maxlength="150" value="<?php if (isset($row['Ciudad'])) {
-																	echo $row['Ciudad'];
-																} ?>">
-														</div>
-													</div>
+													<?php while ($row_Propiedad = sqlsrv_fetch_array($SQL_Propiedades)) { ?>
 
-													<div class="form-group">
-														<input <?php if (!PermitirFuncion(1602)) {
-															echo "readonly";
-														} ?>
-															type="hidden" name="EstadoPais" id="EstadoPais" value="<?php if (isset($row['EstadoPais'])) {
-																echo $row['EstadoPais'];
-															} ?>" />
-														<label class="col-lg-1 control-label">Distrito</label>
-														<div class="col-lg-3">
-															<input <?php if (!PermitirFuncion(1602)) {
-																echo "readonly";
-															} ?> autocomplete="off" name="Distrito" type="text"
-																required="required" class="form-control" id="Distrito"
-																maxlength="150" value="<?php if (isset($row['Distrito'])) {
-																	echo $row['Distrito'];
-																} ?>">
-														</div>
-														<label class="col-lg-1 control-label">País</label>
-														<div class="col-lg-3">
-															<select <?php if (!PermitirFuncion(1602)) {
-																echo "disabled";
-															} ?> name="Pais" class="form-control" id="Pais"
-																required>
-																<option value="">(Ninguno)</option>
-																<option value="CO" <?php if ((isset($row['Pais'])) && (strcmp("CO", $row['Pais']) == 0)) {
-																	echo "selected";
-																} ?>>Colombia</option>
-															</select>
-														</div>
-													</div>
-												</div>
+														<?php if ($row_Propiedad['id_tipo_equipo_campo'] == 1) { ?>
+															<div class="col-lg-4">
+																<label class="control-label">
+																	<?php echo $row_Propiedad['propiedad']; ?>
+																	<?php if ($row_Propiedad['obligatorio'] == "Y") { ?><span
+																			class="text-danger">*</span>
+																	<?php } ?>
+																</label>
+
+																<input name="<?php echo $row_Propiedad['ParametroEntrada']; ?>"
+																	id="<?php echo $row_Propiedad['ParametroEntrada']; ?>"
+																	type="text" class="form-control" <?php if ($row_Propiedad['obligatorio'] == "Y") { ?>required
+																	<?php } ?>
+																	value="<?php echo $_GET[$row_Propiedad['ParametroEntrada']] ?? ""; ?>">
+															</div>
+														<?php } elseif ($row_Propiedad['id_tipo_equipo_campo'] == 2) { ?>
+															<div class="col-lg-4">
+																<label class="control-label">
+																	<?php echo $row_Propiedad['propiedad']; ?>
+																	<?php if ($row_Propiedad['obligatorio'] == "Y") { ?><span
+																			class="text-danger">*</span>
+																	<?php } ?>
+																</label>
+
+																<textarea class="form-control" type="text" rows="5"
+																	name="<?php echo $row_Propiedad['ParametroEntrada']; ?>"
+																	id="<?php echo $row_Propiedad['ParametroEntrada']; ?>" <?php if ($row_Propiedad['obligatorio'] == "Y") { ?>required <?php } ?>><?php echo $_GET[$row_Propiedad['ParametroEntrada']] ?? ""; ?></textarea>
+															</div>
+														<?php } elseif ($row_Propiedad['id_tipo_equipo_campo'] == 3) { ?>
+															<div class="col-lg-4 input-group">
+																<label class="control-label">
+																	<?php echo $row_Propiedad['propiedad']; ?>
+																	<?php if ($row_Propiedad['obligatorio'] == "Y") { ?><span
+																			class="text-danger">*</span>
+																	<?php } ?>
+																</label>
+
+																<div class="input-group">
+																	<span class="input-group-addon"><i
+																			class="fa fa-calendar"></i></span><input
+																		autocomplete="off" type="text" class="form-control date"
+																		id="<?php echo $row_Propiedad['ParametroEntrada']; ?>"
+																		name="<?php echo $row_Propiedad['ParametroEntrada']; ?>"
+																		<?php if ($row_Propiedad['obligatorio'] == "Y") { ?>required <?php } ?>
+																		value="<?php echo isset($_GET[$row_Propiedad['ParametroEntrada']]) ? $_GET[$row_Propiedad['ParametroEntrada']] : date('Y-m-d'); ?>">
+																</div>
+															</div>
+														<?php } elseif ($row_Propiedad['id_tipo_equipo_campo'] == 4) { ?>
+															<div class="col-lg-4">
+																<label class="control-label">
+																	<?php echo $row_Propiedad['propiedad']; ?>
+																	<?php if ($row_Propiedad['obligatorio'] == "Y") { ?><span
+																			class="text-danger">*</span>
+																	<?php } ?>
+																</label>
+
+																<select class="form-control"
+																	id="<?php echo $row_Propiedad['ParametroEntrada']; ?>"
+																	name="<?php echo $row_Propiedad['ParametroEntrada']; ?>" <?php if ($row_Propiedad['obligatorio'] == "Y") { ?>required <?php } ?>>
+																	<option value="" selected disabled>Seleccione...</option>
+																	<option value="Y" <?php if (isset($_GET[$row_Propiedad['ParametroEntrada']]) && ($_GET[$row_Propiedad['ParametroEntrada']] == "Y")) {
+																		echo "selected";
+																	} ?>>SI
+																	</option>
+																	<option value="N" <?php if (isset($_GET[$row_Propiedad['ParametroEntrada']]) && ($_GET[$row_Propiedad['ParametroEntrada']] == "N")) {
+																		echo "selected";
+																	} ?>>NO
+																	</option>
+																</select>
+															</div>
+														<?php } elseif ($row_Propiedad['id_tipo_equipo_campo'] == 5) { ?>
+															<?php $Cmp_Lista = ($row_Propiedad['etiqueta_lista']) . ", " . ($row_Propiedad['valor_lista']); ?>
+															<?php $SQL_Lista = Seleccionar(($row_Propiedad['tabla_vinculada']), $Cmp_Lista); ?>
+
+															<div class="col-lg-4">
+																<label class="control-label">
+																	<?php echo $row_Propiedad['propiedad']; ?>
+																	<?php if ($row_Propiedad['obligatorio'] == "Y") { ?>
+																		<span class="text-danger">*</span>
+																	<?php } ?>
+																</label>
+
+																<select class="form-control select2" <?php if ($row_Propiedad['multiple'] == "Y") { ?>data-placeholder="Seleccione..." <?php } ?>
+																	id="<?php echo $row_Propiedad['ParametroEntrada']; ?>" name="<?php if ($row_Propiedad['multiple'] == "Y") {
+																		   echo $row_Propiedad['ParametroEntrada'] . "[]";
+																	   } else {
+																		   echo $row_Propiedad['ParametroEntrada'];
+																	   } ?>" <?php if ($row_Propiedad['obligatorio'] == "Y") { ?> required <?php } ?> <?php if ($row_Propiedad['multiple'] == "Y") { ?> multiple="multiple"
+																	<?php } ?>>
+																	<?php if ($row_Propiedad['multiple'] == "N") { ?>
+																		<option value="" selected disabled>Seleccione...</option>
+																	<?php } ?>
+
+																	<?php while ($row_Lista = sqlsrv_fetch_array($SQL_Lista)) { ?>
+																		<option
+																			value="<?php echo $row_Lista[$row_Propiedad['valor_lista']]; ?>">
+																			<?php echo $row_Lista[$row_Propiedad['etiqueta_lista']]; ?>
+																		</option>
+																	<?php } ?>
+																</select>
+															</div>
+														<?php } ?>
+
+												<?php } ?> <!-- while -->
+												</div> <!-- form-group -->
+
 											</div>
 										</div>
-										<!-- Fin, Propiedades -->
+									</div>
+									<!-- Fin, Propiedades -->
 
+									<!-- Anexos -->
+									<div id="tab-annexes" class="tab-pane">
 										<!-- Anexos -->
-										<div id="tab-annexes" class="tab-pane">
-											<!-- Anexos -->
-											<div class="ibox-content">
-												<?php $return = (isset($_GET['return'])) ? (base64_decode($_GET['pag']) . "?" . base64_decode($_GET['return'])) : "consultar_tarjeta_equipo.php?"; ?>
-												<?php $return = QuitarParametrosURL($return, array("a")); ?>
-												<input type="hidden" id="P" name="P" value="<?php if ($edit == 0) {
-													echo "27";
-												} else {
-													echo "29";
-												} ?>" />
-												<input type="hidden" id="swTipo" name="swTipo" value="0" />
-												<input type="hidden" id="swError" name="swError"
-													value="<?php echo $sw_error; ?>" />
-												<input type="hidden" id="tl" name="tl" value="<?php echo $edit; ?>" />
-												<input type="hidden" id="pag_param" name="pag_param" value="<?php if (isset($_GET['pag'])) {
-													echo $_GET['pag'];
-												} ?>" />
-												<input type="hidden" id="return_param" name="return_param" value="<?php if (isset($_GET['return'])) {
-													echo $_GET['return'];
-												} ?>" />
-												<input type="hidden" id="return" name="return"
-													value="<?php echo base64_encode($return); ?>" />
-												<input type="hidden" id="ID_TarjetaEquipo" name="ID_TarjetaEquipo"
-													value="<?php if ($edit == 1) {
-														echo base64_encode($row['IdTarjetaEquipo']);
-													} ?>" />
-												<input type="hidden" id="IdAnexos" name="IdAnexos" value="<?php if ($edit == 1) {
-													echo $row['IdAnexo'];
-												} ?>" />
+										<div class="ibox-content">
+											<?php $return = (isset($_GET['return'])) ? (base64_decode($_GET['pag']) . "?" . base64_decode($_GET['return'])) : "consultar_tarjeta_equipo.php?"; ?>
+											<?php $return = QuitarParametrosURL($return, array("a")); ?>
+											<input type="hidden" id="P" name="P" value="<?php if ($edit == 0) {
+												echo "27";
+											} else {
+												echo "29";
+											} ?>" />
+											<input type="hidden" id="swTipo" name="swTipo" value="0" />
+											<input type="hidden" id="swError" name="swError"
+												value="<?php echo $sw_error; ?>" />
+											<input type="hidden" id="tl" name="tl" value="<?php echo $edit; ?>" />
+											<input type="hidden" id="pag_param" name="pag_param" value="<?php if (isset($_GET['pag'])) {
+												echo $_GET['pag'];
+											} ?>" />
+											<input type="hidden" id="return_param" name="return_param" value="<?php if (isset($_GET['return'])) {
+												echo $_GET['return'];
+											} ?>" />
+											<input type="hidden" id="return" name="return"
+												value="<?php echo base64_encode($return); ?>" />
+											<input type="hidden" id="ID_TarjetaEquipo" name="ID_TarjetaEquipo" value="<?php if ($edit == 1) {
+												echo base64_encode($row['IdTarjetaEquipo']);
+											} ?>" />
+											<input type="hidden" id="IdAnexos" name="IdAnexos" value="<?php if ($edit == 1) {
+												echo $row['IdAnexo'];
+											} ?>" />
 							</form>
 
 							<?php if (($edit == 1) && ($row['IdAnexo'] != 0)) { ?>
