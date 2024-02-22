@@ -999,15 +999,15 @@ function ConsultarDocVentas(tipo){
 								
 								<select <?php if (!PermitirFuncion(1602)) {
 									echo "disabled";
-								} ?> name="CDU_IdMarca" id="CDU_IdMarca" class="form-control select2" required>
+								} ?> name="id_tipo_equipo" id="id_tipo_equipo" class="form-control select2" required>
 									<option value="" disabled selected>Seleccione...</option>
 								  	
-									<?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) { ?>
-										<option value="<?php echo $row_MarcaVehiculo['IdMarcaVehiculo']; ?>"
-											<?php if ((isset($row['CDU_IdMarca'])) && ($row_MarcaVehiculo['IdMarcaVehiculo'] == $row['CDU_IdMarca'])) {
+									<?php while ($row_TipoEquipo = sqlsrv_fetch_array($SQL_TipoEquipo)) { ?>
+										<option value="<?php echo $row_TipoEquipo['id_tipo_equipo']; ?>"
+											<?php if ((isset($row['id_tipo_equipo'])) && ($row_TipoEquipo['id_tipo_equipo'] == $row['id_tipo_equipo'])) {
 												echo "selected";
 											} ?>>
-											<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
+											<?php echo $row_TipoEquipo['tipo_equipo']; ?>
 										</option>
 								  	<?php } ?>
 								</select>
@@ -1020,15 +1020,15 @@ function ConsultarDocVentas(tipo){
 								
 								<select <?php if (!PermitirFuncion(1602)) {
 									echo "disabled";
-								} ?> name="CDU_IdMarca" id="CDU_IdMarca" class="form-control select2" required>
+								} ?> name="id_unidad_medida_equipo" id="id_unidad_medida_equipo" class="form-control select2" required>
 									<option value="" disabled selected>Seleccione...</option>
 								  	
-									<?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) { ?>
-										<option value="<?php echo $row_MarcaVehiculo['IdMarcaVehiculo']; ?>"
-											<?php if ((isset($row['CDU_IdMarca'])) && ($row_MarcaVehiculo['IdMarcaVehiculo'] == $row['CDU_IdMarca'])) {
+									<?php while ($row_UnidadMedida = sqlsrv_fetch_array($SQL_UnidadMedida)) { ?>
+										<option value="<?php echo $row_UnidadMedida['id_unidad_medida_equipo']; ?>"
+											<?php if ((isset($row['id_unidad_medida_equipo'])) && ($row_UnidadMedida['id_unidad_medida_equipo'] == $row['id_unidad_medida_equipo'])) {
 												echo "selected";
 											} ?>>
-											<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
+											<?php echo $row_UnidadMedida['unidad_medida_equipo']; ?>
 										</option>
 								  	<?php } ?>
 								</select>
@@ -1036,13 +1036,15 @@ function ConsultarDocVentas(tipo){
 
 							<div class="col-lg-4">
 								<label class="control-label">Fecha Operación</label>
+								
 								<div class="input-group date">
-									<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input autocomplete="off" <?php if (!PermitirFuncion(1602)) {
+									<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+									<input autocomplete="off" <?php if (!PermitirFuncion(1602)) {
 										echo "readonly";
-									} ?> name="CDU_FechaMatricula" id="CDU_FechaMatricula" type="text" class="form-control"
-									placeholder="YYYY-MM-DD" value="<?php if (isset($row['CDU_FechaMatricula'])) {
-										echo date_format($row['CDU_FechaMatricula'], 'Y-m-d');
-									} //else {echo 'AAAA-mm-dd';}?>">
+									} ?> name="fecha_operacion" id="fecha_operacion" type="text" class="form-control"
+									placeholder="YYYY-MM-DD" value="<?php if (isset($row['fecha_operacion'])) {
+										echo date_format($row['fecha_operacion'], 'Y-m-d');
+									} // else { echo 'AAAA-mm-dd'; } ?>">
 								</div>
 							</div>
 
@@ -1053,10 +1055,8 @@ function ConsultarDocVentas(tipo){
 								
 								<input <?php if (!PermitirFuncion(1602)) {
 										echo "readonly";
-									} ?> autocomplete="off" name="TelefonoCliente" id="TelefonoCliente" type="number" class="form-control" 
-									value="<?php if (isset($row['TelefonoCliente'])) {
-										echo $row['TelefonoCliente'];
-									} ?>" required>
+									} ?> autocomplete="off" name="contador_horometro" id="contador_horometro" type="number" class="form-control" 
+									value="<?php echo $row['contador_horometro'] ?? ""; ?>" required>
 							</div>
 						</div>
 
@@ -1074,7 +1074,7 @@ function ConsultarDocVentas(tipo){
 									</label>
 									
 									<?php $DimJCode = intval($dimJ['id_dimension_jerarquia'] ?? 0); ?>
-									<select name="DimJ<?php echo $DimJCode; ?>" id="DimJ<?php echo $DimJCode; ?>" class="form-control select2" 
+									<select name="id_jerarquia_<?php echo $DimJCode; ?>" id="id_jerarquia_<?php echo $DimJCode; ?>" class="form-control select2" 
 										<?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
 											echo "disabled";
 										} ?> required>
@@ -1083,7 +1083,7 @@ function ConsultarDocVentas(tipo){
 										<?php $SQL_DimJ = Seleccionar("tbl_TarjetaEquipo_Jerarquias", "*", "id_dimension_jerarquia = $DimJCode");?>
 										<?php while ($row_DimJ = sqlsrv_fetch_array($SQL_DimJ)) {?>
 											<option value="<?php echo $row_DimJ['id_jerarquia']; ?>"
-												<?php if ((isset($row["DimJ$DimJCode"]) && ($row["DimJ$DimJCode"] != "")) && ($row_DimJ['id_jerarquia'] == $row["DimJ$DimJCode"])) {
+												<?php if ((isset($row["id_jerarquia_$DimJCode"]) && ($row["id_jerarquia_$DimJCode"] != "")) && ($row_DimJ['id_jerarquia'] == $row["id_jerarquia_$DimJCode"])) {
 													echo "selected";
 												} ?>>
 												<?php echo $row_DimJ['jerarquia']; ?>
@@ -1100,15 +1100,15 @@ function ConsultarDocVentas(tipo){
 								
 								<select <?php if (!PermitirFuncion(1602)) {
 									echo "disabled";
-								} ?> name="CDU_IdMarca" id="CDU_IdMarca" class="form-control select2" required>
+								} ?> name="id_ubicacion_equipo" id="id_ubicacion_equipo" class="form-control select2" required>
 									<option value="" disabled selected>Seleccione...</option>
 								  	
-									<?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) { ?>
-										<option value="<?php echo $row_MarcaVehiculo['IdMarcaVehiculo']; ?>"
-											<?php if ((isset($row['CDU_IdMarca'])) && ($row_MarcaVehiculo['IdMarcaVehiculo'] == $row['CDU_IdMarca'])) {
+									<?php while ($row_UbicacionEquipo = sqlsrv_fetch_array($SQL_UbicacionEquipo)) { ?>
+										<option value="<?php echo $row_UbicacionEquipo['id_ubicacion_equipo']; ?>"
+											<?php if ((isset($row['id_ubicacion_equipo'])) && ($row_UbicacionEquipo['id_ubicacion_equipo'] == $row['id_ubicacion_equipo'])) {
 												echo "selected";
 											} ?>>
-											<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
+											<?php echo $row_UbicacionEquipo['id_ubicacion_equipo']; ?>
 										</option>
 								  	<?php } ?>
 								</select>
@@ -1129,7 +1129,8 @@ function ConsultarDocVentas(tipo){
 										<?php echo $dim['DescPortalOne']; ?> <span class="text-danger">*</span>
 									</label>
 
-									<select name="<?php echo $dim['IdPortalOne'] ?>" id="<?php echo $dim['IdPortalOne'] ?>" class="form-control select2" 
+									<?php $DimCode = intval($dim['DimCode'] ?? 0); ?>
+									<select name="id_dimension_<?php echo $DimCode; ?>" id="id_dimension_<?php echo $DimCode; ?>" class="form-control select2" 
 										<?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
 											echo "disabled";
 										} ?> required>
@@ -1137,11 +1138,9 @@ function ConsultarDocVentas(tipo){
 
 										<?php $SQL_Dim = Seleccionar('uvw_Sap_tbl_DimensionesReparto', '*', 'DimCode=' . $dim['DimCode']);?>
 										<?php while ($row_Dim = sqlsrv_fetch_array($SQL_Dim)) {?>
-											<?php $DimCode = intval($dim['DimCode']);?>
-											<?php $OcrId = ($DimCode == 1) ? "" : $DimCode;?>
 
 											<option value="<?php echo $row_Dim['OcrCode']; ?>"
-											<?php if ((isset($row["OcrCode$OcrId"]) && ($row["OcrCode$OcrId"] != "")) && ($row_Dim['OcrCode'] == $row["OcrCode$OcrId"])) {echo "selected";} ?>>
+											<?php if ((isset($row["id_dimension_$DimCode"]) && ($row["id_dimension_$DimCode"] != "")) && ($row_Dim['OcrCode'] == $row["id_dimension_$DimCode"])) {echo "selected";} ?>>
 												<?php echo $row_Dim['OcrName']; ?>
 											</option>
 										<?php }?>
@@ -1156,15 +1155,15 @@ function ConsultarDocVentas(tipo){
 								
 								<select <?php if (!PermitirFuncion(1602)) {
 									echo "disabled";
-								} ?> name="CDU_IdMarca" id="CDU_IdMarca" class="form-control select2" required>
+								} ?> name="id_proyecto" id="id_proyecto" class="form-control select2" required>
 									<option value="" disabled selected>Seleccione...</option>
 								  	
-									<?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) { ?>
-										<option value="<?php echo $row_MarcaVehiculo['IdMarcaVehiculo']; ?>"
-											<?php if ((isset($row['CDU_IdMarca'])) && ($row_MarcaVehiculo['IdMarcaVehiculo'] == $row['CDU_IdMarca'])) {
+									<?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) { ?>
+										<option value="<?php echo $row_Proyecto['id_proyecto']; ?>"
+											<?php if ((isset($row['id_proyecto'])) && ($row_Proyecto['id_proyecto'] == $row['id_proyecto'])) {
 												echo "selected";
 											} ?>>
-											<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
+											<?php echo $row_Proyecto['proyecto']; ?>
 										</option>
 								  	<?php } ?>
 								</select>
