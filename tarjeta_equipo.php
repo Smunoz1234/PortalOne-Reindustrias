@@ -1723,6 +1723,13 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 												Datos de ventas</a></li>
 										<li><a data-toggle="tab" href="#tab-crm"><i class="fa fa-suitcase"></i> Gestión
 												de CRM</a></li>
+										
+										<li>
+											<a data-toggle="tab" href="#tab-properties">
+												<i class="fa fa-cogs"></i> Propiedades
+											</a>
+										</li>
+										
 										<li><a data-toggle="tab" href="#tab-annexes"><i class="fa fa-paperclip"></i>
 												Anexos</a></li>
 									</ul>
@@ -2367,7 +2374,7 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 										<div id="tab-crm" class="tab-pane">
 											<div class="row">
 												<div class="col-lg-12 text-center">
-													<?php if (sqlsrv_has_rows($SQL_HistGestion)) { ?>
+													<?php if (isset($SQL_HistGestion) && sqlsrv_has_rows($SQL_HistGestion)) { ?>
 														<div class="table-responsive"
 															style="max-height: 230px; overflow: hidden; overflow-y: auto;">
 															<table
@@ -2441,6 +2448,78 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 											</div>
 										</div>
 										<!-- Fin Gestión CRM, SMM 01/07/2022 -->
+
+										<!-- Inicio, Propiedades -->
+										<div id="tab-properties" class="tab-pane">
+											<div class="row">
+												<div class="ibox-content">
+													<div class="form-group">
+														<label class="col-lg-1 control-label">Calle</label>
+														<div class="col-lg-3">
+															<input <?php if (!PermitirFuncion(1602)) {
+																echo "readonly";
+															} ?> autocomplete="off" name="Calle" type="text"
+																required="required" class="form-control" id="Calle"
+																maxlength="150" value="<?php if (isset($row['Calle'])) {
+																	echo $row['Calle'];
+																} ?>">
+														</div>
+														<label class="col-lg-1 control-label">Código postal</label>
+														<div class="col-lg-3">
+															<input <?php if (!PermitirFuncion(1602)) {
+																echo "readonly";
+															} ?> autocomplete="off" name="CodigoPostal" type="text"
+																required="required" class="form-control"
+																id="CodigoPostal" maxlength="150" value="<?php if (isset($row['CodigoPostal'])) {
+																	echo $row['CodigoPostal'];
+																} ?>">
+														</div>
+														<label class="col-lg-1 control-label">Ciudad</label>
+														<div class="col-lg-3">
+															<input <?php if (!PermitirFuncion(1602)) {
+																echo "readonly";
+															} ?> autocomplete="off" name="Ciudad" type="text"
+																required="required" class="form-control" id="Ciudad"
+																maxlength="150" value="<?php if (isset($row['Ciudad'])) {
+																	echo $row['Ciudad'];
+																} ?>">
+														</div>
+													</div>
+
+													<div class="form-group">
+														<input <?php if (!PermitirFuncion(1602)) {
+															echo "readonly";
+														} ?>
+															type="hidden" name="EstadoPais" id="EstadoPais" value="<?php if (isset($row['EstadoPais'])) {
+																echo $row['EstadoPais'];
+															} ?>" />
+														<label class="col-lg-1 control-label">Distrito</label>
+														<div class="col-lg-3">
+															<input <?php if (!PermitirFuncion(1602)) {
+																echo "readonly";
+															} ?> autocomplete="off" name="Distrito" type="text"
+																required="required" class="form-control" id="Distrito"
+																maxlength="150" value="<?php if (isset($row['Distrito'])) {
+																	echo $row['Distrito'];
+																} ?>">
+														</div>
+														<label class="col-lg-1 control-label">País</label>
+														<div class="col-lg-3">
+															<select <?php if (!PermitirFuncion(1602)) {
+																echo "disabled";
+															} ?> name="Pais" class="form-control" id="Pais"
+																required>
+																<option value="">(Ninguno)</option>
+																<option value="CO" <?php if ((isset($row['Pais'])) && (strcmp("CO", $row['Pais']) == 0)) {
+																	echo "selected";
+																} ?>>Colombia</option>
+															</select>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<!-- Fin, Propiedades -->
 
 										<!-- Anexos -->
 										<div id="tab-annexes" class="tab-pane">
