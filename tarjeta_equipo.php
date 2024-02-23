@@ -1183,7 +1183,7 @@ $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*"
 													<?php $DimJCode = intval($dimJ['id_dimension_jerarquia'] ?? 0); ?>
 													<select name="id_jerarquia_<?php echo $DimJCode; ?>"
 														id="id_jerarquia_<?php echo $DimJCode; ?>"
-														class="form-control select2" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
+														class="form-control select2" <?php if (!PermitirFuncion(1602)) {
 															echo "disabled";
 														} ?> required>
 														<option value="">Seleccione...</option>
@@ -1244,7 +1244,7 @@ $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*"
 													<?php $DimCode = intval($dim['DimCode'] ?? 0); ?>
 													<select name="id_dimension_<?php echo $DimCode; ?>"
 														id="id_dimension_<?php echo $DimCode; ?>"
-														class="form-control select2" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
+														class="form-control select2" <?php if (!PermitirFuncion(1602)) {
 															echo "disabled";
 														} ?> required>
 														<option value="">Seleccione...</option>
@@ -1724,35 +1724,71 @@ $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*"
 									</div>
 								</div>
 								<!-- FIN, información del vehículo y de la cita -->
+								
 								<!-- Inicio, TABS -->
 								<div class="tabs-container">
 									<ul class="nav nav-tabs">
-										<li class="active"><a data-toggle="tab" href="#tab-address"><i
-													class="fa fa-address-book-o"></i> Dirección</a></li>
-										<li><a data-toggle="tab" href="#tab-service-calls"><i class="fa fa-table"></i>
-												Llamadas de servicio</a></li>
-										<li><a data-toggle="tab" href="#tab-2"><i class="fa fa-table"></i> Solicitud
-												Llamada (Agenda)</a></li>
-										<li><a data-toggle="tab" href="#tab-3"><i class="fa fa-table"></i> Recepción /
-												Entrega</a></li>
-										<li><a data-toggle="tab" href="#tab-4"><i class="fa fa-table"></i> Campañas</a>
+										<li class="active" id="nav-address">
+											<a data-toggle="tab" href="#tab-address">
+												<i class="fa fa-address-book-o"></i> Dirección
+											</a>
 										</li>
-										<li><a data-toggle="tab" href="#tab-service-contracts"><i
-													class="fa fa-table"></i> Contratos de servicio</a></li>
-										<li><a data-toggle="tab" href="#tab-sales-data"><i class="fa fa-table"></i>
-												Datos de ventas</a></li>
-										<li><a data-toggle="tab" href="#tab-crm"><i class="fa fa-suitcase"></i> Gestión
-												de CRM</a></li>
 
-										<li>
+										<li id="nav-service-calls">
+											<a data-toggle="tab" href="#tab-service-calls">
+												<i class="fa fa-table"></i> Llamadas de servicio
+											</a>
+										</li>
+										
+										<li id="nav-2">
+											<a data-toggle="tab" href="#tab-2">
+												<i class="fa fa-table"></i> Solicitud Llamada (Agenda)
+											</a>
+										</li>
+										
+										<li id="nav-3">
+											<a data-toggle="tab" href="#tab-3">
+												<i class="fa fa-table"></i> Recepción / Entrega
+											</a>
+										</li>
+										
+										<li id="nav-4">
+											<a data-toggle="tab" href="#tab-4">
+												<i class="fa fa-table"></i> Campañas
+											</a>
+										</li>
+										
+										<li id="nav-service-contracts">
+											<a data-toggle="tab" href="#tab-service-contracts">
+												<i class="fa fa-table"></i> Contratos de servicio
+											</a>
+										</li>
+
+										<li id="nav-1">
+											<a data-toggle="tab" href="#tab-sales-data">
+												<i class="fa fa-table"></i> Datos de ventas
+											</a>
+										</li>
+										
+										<li id="nav-crm">
+											<a data-toggle="tab" href="#tab-crm">
+												<i class="fa fa-suitcase"></i> Gestión de CRM
+											</a>
+										</li>
+
+										<li id="nav-properties">
 											<a data-toggle="tab" href="#tab-properties">
 												<i class="fa fa-cogs"></i> Propiedades
 											</a>
 										</li>
 
-										<li><a data-toggle="tab" href="#tab-annexes"><i class="fa fa-paperclip"></i>
-												Anexos</a></li>
+										<li>
+											<a data-toggle="tab" href="#tab-annexes">
+												<i class="fa fa-paperclip"></i> Anexos
+											</a>
+										</li>
 									</ul>
+
 									<div class="tab-content">
 										<!-- Direcciones -->
 										<div id="tab-address" class="tab-pane active">
@@ -2760,6 +2796,30 @@ $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*"
 				});
 			<?php } ?>
 
+			// SMM, 23/02/2024
+			$("#Crear, #Actualizar").on("click", function () {
+				// Basado en VerTAB(), de la Llamada de Servicio.
+				let id = "properties";
+
+				// Eliminar la clase "active" de todos los títulos dentro de nav-tabs
+				var tituloTabs = document.querySelectorAll('.nav-tabs li');
+				tituloTabs.forEach(function (titulo) {
+					titulo.classList.remove('active');
+				});
+
+				// Eliminar la clase "active" de todas las pestañas dentro de tab-content
+				var tabs = document.querySelectorAll('.tab-content .tab-pane');
+				tabs.forEach(function (tab) {
+					tab.classList.remove('active');
+				});
+
+				// Agregar la clase "active" a la pestaña tab-"id" y su título
+				let tab = document.querySelector(`.nav-tabs #nav-${id}`);
+				let tabContenido = document.querySelector(`.tab-content #tab-${id}`);
+				tab.classList.add('active');
+				tabContenido.classList.add('active');
+			});
+
 			$("#CrearTarjetaEquipo").validate({
 				submitHandler: function (form) {
 					Swal.fire({
@@ -2776,6 +2836,7 @@ $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*"
 					});
 				}
 			});
+
 			$(".alkin").on('click', function () {
 				$('.ibox-content').toggleClass('sk-loading');
 			});
