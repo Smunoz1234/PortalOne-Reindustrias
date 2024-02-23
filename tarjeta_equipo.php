@@ -489,7 +489,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 // SMM, 22/02/2024
 $SQL_TipoEquipo = Seleccionar("tbl_TarjetaEquipo_TiposEquipos", "*");
 $SQL_UnidadMedida = Seleccionar("tbl_TarjetaEquipo_UnidadMedidas", "*");
-$SQL_UbicacionEquipo = Seleccionar("tbl_TarjetaEquipo_Ubicaciones", "*");
+$SQL_UbicacionEquipo = Seleccionar("uvw_tbl_TarjetaEquipo_Ubicaciones", "*");
 $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*");
 ?>
@@ -1118,7 +1118,9 @@ $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*"
 											</div>
 
 											<div class="col-lg-4">
-												<label class="control-label">Fecha Operación</label>
+												<label class="control-label">
+													Fecha Operación <span class="text-danger">*</span>
+												</label>
 
 												<div class="input-group date">
 													<span class="input-group-addon"><i
@@ -1128,7 +1130,7 @@ $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*"
 													} ?> name="fecha_operacion" id="fecha_operacion"
 														type="text" class="form-control" placeholder="YYYY-MM-DD" value="<?php if (isset($row['fecha_operacion'])) {
 															echo date_format($row['fecha_operacion'], 'Y-m-d');
-														} // else { echo 'AAAA-mm-dd'; }   ?>">
+														} // else { echo 'AAAA-mm-dd'; }   ?>" required>
 												</div>
 											</div>
 
@@ -1199,7 +1201,7 @@ $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*"
 															<?php if ((isset($row['id_ubicacion_equipo'])) && ($row_UbicacionEquipo['id_ubicacion_equipo'] == $row['id_ubicacion_equipo'])) {
 																echo "selected";
 															} ?>>
-															<?php echo $row_UbicacionEquipo['id_ubicacion_equipo']; ?>
+															<?php echo $row_UbicacionEquipo['ubicacion_equipo']; ?>
 														</option>
 													<?php } ?>
 												</select>
