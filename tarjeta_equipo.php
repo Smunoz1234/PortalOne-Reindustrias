@@ -1101,7 +1101,7 @@ $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*"
 
 													<?php while ($row_TipoEquipo = sqlsrv_fetch_array($SQL_TipoEquipo)) { ?>
 														<option value="<?php echo $row_TipoEquipo['id_tipo_equipo']; ?>"
-															<?php if ((isset($row['id_tipo_equipo'])) && ($row_TipoEquipo['id_tipo_equipo'] == $row['id_tipo_equipo'])) {
+															<?php if ($row_TipoEquipo['id_tipo_equipo'] == $id_tipo_equipo) {
 																echo "selected";
 															} ?>>
 															<?php echo $row_TipoEquipo['tipo_equipo']; ?>
