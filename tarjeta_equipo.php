@@ -501,11 +501,14 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 // echo "<script> console.log($cadena); </script>";
 
 // SMM, 22/02/2024
-$SQL_TipoEquipo = Seleccionar("tbl_TarjetaEquipo_TiposEquipos", "*");
+$SQL_TipoEquipo = Seleccionar("tbl_TarjetaEquipo_TiposEquipos", "*", "estado_tipo_equipo = 'Y'");
 $SQL_UnidadMedida = Seleccionar("tbl_TarjetaEquipo_UnidadMedidas", "*");
 $SQL_UbicacionEquipo = Seleccionar("uvw_tbl_TarjetaEquipo_Ubicaciones", "*");
 $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
-$SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*");
+
+// SMM, 23/02/2024
+$id_tipo_equipo = isset($_GET["id_tipo_equipo"]) ? $_GET["id_tipo_equipo"] : ($row["id_tipo_equipo"] ?? ""); 
+$SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*","id_tipo_equipo = $id_tipo_equipo");
 ?>
 
 <!DOCTYPE html>
@@ -2470,7 +2473,8 @@ $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*"
 										<div id="tab-properties" class="tab-pane">
 											<div class="row">
 												<div class="ibox-content">
-													
+												<?php if (isset($SQL_Propiedades) && $SQL_Propiedades && sqlsrv_has_rows($SQL_Propiedades)) { ?>
+
 													<div class="form-group">
 													<?php while ($row_Propiedad = sqlsrv_fetch_array($SQL_Propiedades)) { ?>
 
@@ -2478,67 +2482,75 @@ $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*"
 															<div class="col-lg-4">
 																<label class="control-label">
 																	<?php echo $row_Propiedad['propiedad']; ?>
-																	<?php if ($row_Propiedad['obligatorio'] == "Y") { ?><span
-																			class="text-danger">*</span>
+																	<?php if ($row_Propiedad['obligatorio'] == "Y") { ?>
+																		<span class="text-danger">*</span>
 																	<?php } ?>
 																</label>
 
-																<input name="<?php echo $row_Propiedad['ParametroEntrada']; ?>"
-																	id="<?php echo $row_Propiedad['ParametroEntrada']; ?>"
-																	type="text" class="form-control" <?php if ($row_Propiedad['obligatorio'] == "Y") { ?>required
-																	<?php } ?>
-																	value="<?php echo $_GET[$row_Propiedad['ParametroEntrada']] ?? ""; ?>">
+																<input name="propiedad_<?php echo $row_Propiedad['id_propiedad']; ?>"
+																	id="propiedad_<?php echo $row_Propiedad['id_propiedad']; ?>"
+																	type="text" class="form-control" <?php if ($row_Propiedad['obligatorio'] == "Y") { 
+																			echo "required";
+																		} ?> value="">
 															</div>
 														<?php } elseif ($row_Propiedad['id_tipo_equipo_campo'] == 2) { ?>
 															<div class="col-lg-4">
 																<label class="control-label">
 																	<?php echo $row_Propiedad['propiedad']; ?>
-																	<?php if ($row_Propiedad['obligatorio'] == "Y") { ?><span
-																			class="text-danger">*</span>
+																	<?php if ($row_Propiedad['obligatorio'] == "Y") { ?>
+																		<span class="text-danger">*</span>
 																	<?php } ?>
 																</label>
 
 																<textarea class="form-control" type="text" rows="5"
-																	name="<?php echo $row_Propiedad['ParametroEntrada']; ?>"
-																	id="<?php echo $row_Propiedad['ParametroEntrada']; ?>" <?php if ($row_Propiedad['obligatorio'] == "Y") { ?>required <?php } ?>><?php echo $_GET[$row_Propiedad['ParametroEntrada']] ?? ""; ?></textarea>
+																	name="propiedad_<?php echo $row_Propiedad['id_propiedad']; ?>"
+																	id="propiedad_<?php echo $row_Propiedad['id_propiedad']; ?>" <?php if ($row_Propiedad['obligatorio'] == "Y") { 
+																			echo "required";
+																		} ?>></textarea>
 															</div>
 														<?php } elseif ($row_Propiedad['id_tipo_equipo_campo'] == 3) { ?>
 															<div class="col-lg-4 input-group">
 																<label class="control-label">
 																	<?php echo $row_Propiedad['propiedad']; ?>
-																	<?php if ($row_Propiedad['obligatorio'] == "Y") { ?><span
-																			class="text-danger">*</span>
+																	<?php if ($row_Propiedad['obligatorio'] == "Y") { ?>
+																		<span class="text-danger">*</span>
 																	<?php } ?>
 																</label>
 
 																<div class="input-group">
-																	<span class="input-group-addon"><i
-																			class="fa fa-calendar"></i></span><input
-																		autocomplete="off" type="text" class="form-control date"
-																		id="<?php echo $row_Propiedad['ParametroEntrada']; ?>"
-																		name="<?php echo $row_Propiedad['ParametroEntrada']; ?>"
-																		<?php if ($row_Propiedad['obligatorio'] == "Y") { ?>required <?php } ?>
-																		value="<?php echo isset($_GET[$row_Propiedad['ParametroEntrada']]) ? $_GET[$row_Propiedad['ParametroEntrada']] : date('Y-m-d'); ?>">
+																	<span class="input-group-addon">
+																		<i class="fa fa-calendar"></i>
+																	</span>
+																	
+																	<input autocomplete="off" type="text" class="form-control date"
+																		id="propiedad_<?php echo $row_Propiedad['id_propiedad']; ?>"
+																		name="propiedad_<?php echo $row_Propiedad['id_propiedad']; ?>" <?php if ($row_Propiedad['obligatorio'] == "Y") { 
+																			echo "required";
+																		} ?> value="<?php echo isset($_GET[$row_Propiedad['id_propiedad']]) ? $_GET[$row_Propiedad['id_propiedad']] : date('Y-m-d'); ?>">
 																</div>
 															</div>
 														<?php } elseif ($row_Propiedad['id_tipo_equipo_campo'] == 4) { ?>
 															<div class="col-lg-4">
 																<label class="control-label">
 																	<?php echo $row_Propiedad['propiedad']; ?>
-																	<?php if ($row_Propiedad['obligatorio'] == "Y") { ?><span
-																			class="text-danger">*</span>
+																	<?php if ($row_Propiedad['obligatorio'] == "Y") { ?>
+																		<span class="text-danger">*</span>
 																	<?php } ?>
 																</label>
 
 																<select class="form-control"
-																	id="<?php echo $row_Propiedad['ParametroEntrada']; ?>"
-																	name="<?php echo $row_Propiedad['ParametroEntrada']; ?>" <?php if ($row_Propiedad['obligatorio'] == "Y") { ?>required <?php } ?>>
+																	id="propiedad_<?php echo $row_Propiedad['id_propiedad']; ?>"
+																	name="propiedad_<?php echo $row_Propiedad['id_propiedad']; ?>" <?php if ($row_Propiedad['obligatorio'] == "Y") { 
+																		echo "required";
+																	} ?>>
 																	<option value="" selected disabled>Seleccione...</option>
-																	<option value="Y" <?php if (isset($_GET[$row_Propiedad['ParametroEntrada']]) && ($_GET[$row_Propiedad['ParametroEntrada']] == "Y")) {
-																		echo "selected";
-																	} ?>>SI
+																	
+																	<option value="Y" <?php if (isset($_GET[$row_Propiedad['id_propiedad']]) && ($_GET[$row_Propiedad['id_propiedad']] == "Y")) {
+																			echo "selected";
+																		} ?>>SI
 																	</option>
-																	<option value="N" <?php if (isset($_GET[$row_Propiedad['ParametroEntrada']]) && ($_GET[$row_Propiedad['ParametroEntrada']] == "N")) {
+																	
+																	<option value="N" <?php if (isset($_GET[$row_Propiedad['id_propiedad']]) && ($_GET[$row_Propiedad['id_propiedad']] == "N")) {
 																		echo "selected";
 																	} ?>>NO
 																	</option>
@@ -2556,20 +2568,26 @@ $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*"
 																	<?php } ?>
 																</label>
 
-																<select class="form-control select2" <?php if ($row_Propiedad['multiple'] == "Y") { ?>data-placeholder="Seleccione..." <?php } ?>
-																	id="<?php echo $row_Propiedad['ParametroEntrada']; ?>" name="<?php if ($row_Propiedad['multiple'] == "Y") {
-																		   echo $row_Propiedad['ParametroEntrada'] . "[]";
-																	   } else {
-																		   echo $row_Propiedad['ParametroEntrada'];
-																	   } ?>" <?php if ($row_Propiedad['obligatorio'] == "Y") { ?> required <?php } ?> <?php if ($row_Propiedad['multiple'] == "Y") { ?> multiple="multiple"
-																	<?php } ?>>
+																<select class="form-control select2" 
+																	<?php if ($row_Propiedad['multiple'] == "Y") { ?> data-placeholder="Seleccione..." <?php } ?>
+																	id="propiedad_<?php echo $row_Propiedad['id_propiedad']; ?>" 
+																	name="propiedad_<?php if ($row_Propiedad['multiple'] == "Y") {
+																		   	echo $row_Propiedad['id_propiedad'] . "[]";
+																	   	} else {
+																		   	echo $row_Propiedad['id_propiedad'];
+																	   	} ?>" 
+																		
+																		<?php if ($row_Propiedad['obligatorio'] == "Y") { 
+																			echo "required";
+																		} ?> 
+																		<?php if ($row_Propiedad['multiple'] == "Y") { ?> multiple="multiple" <?php } ?>>
+																	
 																	<?php if ($row_Propiedad['multiple'] == "N") { ?>
 																		<option value="" selected disabled>Seleccione...</option>
 																	<?php } ?>
 
 																	<?php while ($row_Lista = sqlsrv_fetch_array($SQL_Lista)) { ?>
-																		<option
-																			value="<?php echo $row_Lista[$row_Propiedad['valor_lista']]; ?>">
+																		<option value="<?php echo $row_Lista[$row_Propiedad['valor_lista']]; ?>">
 																			<?php echo $row_Lista[$row_Propiedad['etiqueta_lista']]; ?>
 																		</option>
 																	<?php } ?>
@@ -2580,7 +2598,15 @@ $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*"
 												<?php } ?> <!-- while -->
 												</div> <!-- form-group -->
 
-											</div>
+											<?php } else { ?>
+												<br>
+												<i class="fa fa-search" style="font-size: 18px; color: lightgray;"></i>
+												<span style="font-size: 13px; color: lightgray;">
+													No hay propiedades para el tipo de equipo seleccionado.
+												</span>
+											<?php } ?>
+											</div> <!-- ibox-content -->
+
 										</div>
 									</div>
 									<!-- Fin, Propiedades -->
@@ -2662,7 +2688,7 @@ $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*"
 				</div>
 			</div>
 
-			<br><br>
+			<br><br><br><br><br>
 			<div class="form-group">
 				<?php if (PermitirFuncion(1602)) { ?>
 					<div class="col-lg-12">
@@ -2697,6 +2723,31 @@ $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*"
 
 	<script>
 		$(document).ready(function () {
+			// SMM, 23/02/2024
+			$("#id_tipo_equipo").on("change", function () {
+				Swal.fire({
+					title: "¿Desea reiniciar la página para cargar las propiedades del tipo de equipo seleccionado?",
+					icon: "question",
+					showCancelButton: true,
+					confirmButtonText: "Si, confirmo",
+					cancelButtonText: "No"
+				}).then((result) => {
+					if (result.isConfirmed) {
+						// Obtener el valor seleccionado del elemento select
+						let id_tipo_equipo = $(this).val();
+
+						// Obtener la URL actual
+						let currentUrl = new URL(window.location.href);
+						
+						// Modificar el parámetro id_tipo_equipo
+						currentUrl.searchParams.set('id_tipo_equipo', id_tipo_equipo);
+						
+						// Redirigir a la nueva URL
+						window.location.href = currentUrl.href;
+					}
+				});
+			});
+						
 			<?php if ($dt_TE == 1) { ?>
 				$('#ClienteEquipo').trigger('change'); // SMM, 17/02/2022
 			<?php } ?>
