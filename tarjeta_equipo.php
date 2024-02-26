@@ -132,10 +132,10 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
 			"'" . $_POST['CDU_IdMarca'] . "'",
 			"'" . $_POST['CDU_IdLinea'] . "'",
 			"'" . $_POST['CDU_Ano'] . "'",
-			"'" . $_POST['CDU_Concesionario'] . "'",
-			"'" . $_POST['CDU_No_Motor'] . "'",
-			"'" . $_POST['CDU_Color'] . "'",
-			"'" . $_POST['CDU_Cilindraje'] . "'",
+			"'" . ($_POST['CDU_Concesionario'] ?? "") . "'",
+			"'" . ($_POST['CDU_No_Motor'] ?? "") . "'",
+			"'" . ($_POST['CDU_Color'] ?? "") . "'",
+			"'" . ($_POST['CDU_Cilindraje'] ?? "") . "'",
 			strtotime($_POST['CDU_FechaUlt_CambAceite']) ? ("'" . FormatoFecha($_POST['CDU_FechaUlt_CambAceite']) . "'") : "NULL",
 			strtotime($_POST['CDU_FechaProx_CambAceite']) ? ("'" . FormatoFecha($_POST['CDU_FechaProx_CambAceite']) . "'") : "NULL",
 			strtotime($_POST['CDU_FechaUlt_Mant']) ? ("'" . FormatoFecha($_POST['CDU_FechaUlt_Mant']) . "'") : "NULL",
@@ -147,11 +147,11 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
 			strtotime($_POST['CDU_Fecha_Tecno']) ? ("'" . FormatoFecha($_POST['CDU_Fecha_Tecno']) . "'") : "NULL",
 			strtotime($_POST['CDU_FechaUlt_AlinBalan']) ? ("'" . FormatoFecha($_POST['CDU_FechaUlt_AlinBalan']) . "'") : "NULL",
 			strtotime($_POST['CDU_FechaProx_AlinBalan']) ? ("'" . FormatoFecha($_POST['CDU_FechaProx_AlinBalan']) . "'") : "NULL",
-			"'" . $_POST['CDU_TipoServicio'] . "'",
-			"'" . $_POST['TelefonoCliente'] . "'",
-			"'" . ($_POST['CDU_Novedad'] ?? '') . "'", // SMM, 23/06/2022
-			"'" . ($_POST['CDU_IdTipoVehiculo'] ?? '') . "'", // SMM, 28/06/2023
-			"'" . ($_POST['CDU_IdTipoRin'] ?? '') . "'", // SMM, 28/06/2023
+			"'" . ($_POST['CDU_TipoServicio'] ?? "") . "'",
+			"'" . ($_POST['TelefonoCliente'] ?? "") . "'",
+			"'" . ($_POST['CDU_Novedad'] ?? "") . "'",
+			"'" . ($_POST['CDU_IdTipoVehiculo'] ?? "") . "'",
+			"'" . ($_POST['CDU_IdTipoRin'] ?? "") . "'",
 			// SMM, 23/02/2024
 			"'" . ($_POST['id_tipo_equipo'] ?? "") . "'",
 			"'" . ($_POST['id_unidad_medida_equipo'] ?? "") . "'",
@@ -261,18 +261,16 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
 				"CDU_id_marca" => $_POST['CDU_IdMarca'],
 				"CDU_id_linea" => $_POST['CDU_IdLinea'],
 				"CDU_annio" => $_POST['CDU_Ano'],
-				"CDU_id_concesionario" => $_POST['CDU_Concesionario'],
-				"CDU_id_color" => $_POST['CDU_Color'],
-				"CDU_id_cilindraje" => $_POST['CDU_Cilindraje'],
-				"CDU_id_tipo_servicio" => $_POST['CDU_TipoServicio'],
-				"CDU_no_motor" => $_POST['CDU_No_Motor'],
-				"CDU_id_novedad" => ($_POST['CDU_Novedad'] ?? ''),
-				"CDU_IdTipoVehiculo" => ($_POST['CDU_IdTipoVehiculo'] ?? ''),
-				"CDU_IdTipoRin" => ($_POST['CDU_IdTipoRin'] ?? ''),
+				"CDU_id_concesionario" => ($_POST['CDU_Concesionario'] ?? ""),
+				"CDU_id_color" => ($_POST['CDU_Color'] ?? ""),
+				"CDU_id_cilindraje" => ($_POST['CDU_Cilindraje'] ?? ""),
+				"CDU_id_tipo_servicio" => ($_POST['CDU_TipoServicio'] ?? ""),
+				"CDU_no_motor" => ($_POST['CDU_No_Motor'] ?? ""),
+				"CDU_id_novedad" => ($_POST['CDU_Novedad'] ?? ""),
+				"CDU_IdTipoVehiculo" => ($_POST['CDU_IdTipoVehiculo'] ?? ""),
+				"CDU_IdTipoRin" => ($_POST['CDU_IdTipoRin'] ?? ""),
 				"anexos" => (count($Anexos) > 0) ? $Anexos : null,
 			);
-
-			// Posiblemente, CDU_fecha_factura =>
 
 			// Agregar fechas, inicio.
 			if (isset($row_json['CDU_FechaMatricula'])) {
@@ -471,6 +469,9 @@ $SQL_TipoRines = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_TipoRines', '*');
 
 // Novedades en la tarjeta de equipo, SMM, 23/06/2022
 $SQL_Novedades = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_Novedades', '*');
+
+// SMM, 26/02/2024
+$SQL_Fabricante = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_Fabricante', '*');
 
 // Stiven Muñoz Murillo, 08/02/2022
 if (isset($_GET['dt_TE']) && ($_GET['dt_TE']) == 1) { //Verificar que viene de una Tarjeta de Equipo (Datos Tarjeta de Equipo)
@@ -1079,8 +1080,9 @@ $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*"
 								<!-- INICIO, Info. Mantenimiento -->
 								<div class="ibox">
 									<div class="ibox-title bg-success">
-										<h5 class="collapse-link"><i class="fa fa-wrench"></i> Información de
-											mantenimiento</h5>
+										<h5 class="collapse-link">
+											<i class="fa fa-wrench"></i> Información del equipo
+										</h5>
 										<a class="collapse-link pull-right">
 											<i class="fa fa-chevron-up"></i>
 										</a>
@@ -1153,6 +1155,51 @@ $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*"
 
 											<div class="col-lg-4">
 												<label class="control-label">
+													Marca del equipo <span class="text-danger">*</span>
+												</label>
+												
+												<select <?php if (!PermitirFuncion(1602)) {
+													echo "disabled";
+												} ?>
+													name="CDU_IdMarca" class="form-control select2" required
+													id="CDU_IdMarca">
+													<option value="" disabled selected>Seleccione...</option>
+													<?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) { ?>
+														<option value="<?php echo $row_MarcaVehiculo['IdMarcaVehiculo']; ?>"
+															<?php if ((isset($row['CDU_IdMarca'])) && (strcmp($row_MarcaVehiculo['IdMarcaVehiculo'], $row['CDU_IdMarca']) == 0)) {
+																echo "selected";
+															} ?>>
+															<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
+														</option>
+													<?php } ?>
+												</select>
+											</div>
+
+											<div class="col-lg-4">
+												<label class="control-label">
+													Línea del equipo <span class="text-danger">*</span>
+												</label>
+												
+												<select <?php if (!PermitirFuncion(1602)) {
+													echo "disabled";
+												} ?>
+													name="CDU_IdLinea" class="form-control select2" required
+													id="CDU_IdLinea">
+													<option value="" disabled selected>Seleccione...</option>
+													<?php while ($row_LineaVehiculo = sqlsrv_fetch_array($SQL_LineaVehiculo)) { ?>
+														<option
+															value="<?php echo $row_LineaVehiculo['IdLineaModeloVehiculo']; ?>"
+															<?php if ((isset($row['CDU_IdLinea'])) && (strcmp($row_LineaVehiculo['IdLineaModeloVehiculo'], $row['CDU_IdLinea']) == 0)) {
+																echo "selected";
+															} ?>>
+															<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; ?>
+														</option>
+													<?php } ?>
+												</select>
+											</div>
+
+											<div class="col-lg-4">
+												<label class="control-label">
 													Contador / Horómetro <span class="text-danger">*</span>
 												</label>
 
@@ -1162,6 +1209,52 @@ $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*"
 													autocomplete="off" name="contador_horometro" id="contador_horometro"
 													type="number" class="form-control"
 													value="<?php echo $row['contador_horometro'] ?? ""; ?>" required>
+											</div>
+
+											<div class="col-lg-4">
+												<label class="control-label">
+													Fabricante del equipo <span class="text-danger">*</span>
+												</label>
+												
+												<select <?php if (!PermitirFuncion(1602)) {
+													echo "disabled";
+												} ?> id="CDU_Fabricante"
+													name="CDU_Fabricante" class="form-control select2" required>
+													<option value="" disabled selected>Seleccione...</option>
+													
+													<?php while ($row_Fabricante = sqlsrv_fetch_array($SQL_Fabricante)) { ?>
+														<option
+															value="<?php echo $row_Fabricante['IdFabricante']; ?>"
+															<?php if (isset($row['CDU_Fabricante']) && ($row_Fabricante['IdFabricante'] ==  $row['CDU_Fabricante'])) {
+																echo "selected";
+															} ?>>
+															<?php echo $row_Fabricante['Fabricante']; ?>
+														</option>
+													<?php } ?>
+												</select>
+											</div>
+
+											<div class="col-lg-4">
+												<label class="control-label">
+													Año del equipo <span class="text-danger">*</span>
+												</label>
+												
+												<select <?php if (!PermitirFuncion(1602)) {
+													echo "disabled";
+												} ?>
+													name="CDU_Ano" class="form-control select2" required
+													id="CDU_Ano">
+													<option value="" disabled selected>Seleccione...</option>
+													<?php while ($row_ModeloVehiculo = sqlsrv_fetch_array($SQL_ModeloVehiculo)) { ?>
+														<option
+															value="<?php echo $row_ModeloVehiculo['CodigoModeloVehiculo']; ?>"
+															<?php if (isset($row['CDU_Ano']) && ((strcmp($row_ModeloVehiculo['CodigoModeloVehiculo'], $row['CDU_Ano']) == 0) || (strcmp($row_ModeloVehiculo['AñoModeloVehiculo'], $row['CDU_Ano']) == 0))) {
+																echo "selected";
+															} ?>>
+															<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; ?>
+														</option>
+													<?php } ?>
+												</select>
 											</div>
 										</div>
 
@@ -1290,7 +1383,7 @@ $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*"
 								<!-- FIN, Info. Mantenimiento -->
 
 								<!-- INICIO, información del vehículo y de la cita -->
-								<div class="ibox">
+								<div class="ibox" style="<?php if(!PermitirFuncion(1606)) { echo "display: none"; } ?>">
 									<div class="ibox-title bg-success">
 										<h5 class="collapse-link"><i class="fa fa-info-circle"></i> Información del
 											vehículo y del mantenimiento</h5>
@@ -1319,67 +1412,6 @@ $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*"
 													value="<?php if (isset($row['CDU_No_Motor'])) {
 														echo $row['CDU_No_Motor'];
 													} ?>">
-											</div>
-										</div>
-										<div class="form-group">
-											<div class="col-lg-4">
-												<label class="control-label">Marca del vehículo <span
-														class="text-danger">*</span></label>
-												<select <?php if (!PermitirFuncion(1602)) {
-													echo "disabled";
-												} ?>
-													name="CDU_IdMarca" class="form-control select2" required
-													id="CDU_IdMarca">
-													<option value="" disabled selected>Seleccione...</option>
-													<?php while ($row_MarcaVehiculo = sqlsrv_fetch_array($SQL_MarcaVehiculo)) { ?>
-														<option value="<?php echo $row_MarcaVehiculo['IdMarcaVehiculo']; ?>"
-															<?php if ((isset($row['CDU_IdMarca'])) && (strcmp($row_MarcaVehiculo['IdMarcaVehiculo'], $row['CDU_IdMarca']) == 0)) {
-																echo "selected";
-															} ?>>
-															<?php echo $row_MarcaVehiculo['DeMarcaVehiculo']; ?>
-														</option>
-													<?php } ?>
-												</select>
-											</div>
-											<div class="col-lg-4">
-												<label class="control-label">Línea del vehículo <span
-														class="text-danger">*</span></label>
-												<select <?php if (!PermitirFuncion(1602)) {
-													echo "disabled";
-												} ?>
-													name="CDU_IdLinea" class="form-control select2" required
-													id="CDU_IdLinea">
-													<option value="" disabled selected>Seleccione...</option>
-													<?php while ($row_LineaVehiculo = sqlsrv_fetch_array($SQL_LineaVehiculo)) { ?>
-														<option
-															value="<?php echo $row_LineaVehiculo['IdLineaModeloVehiculo']; ?>"
-															<?php if ((isset($row['CDU_IdLinea'])) && (strcmp($row_LineaVehiculo['IdLineaModeloVehiculo'], $row['CDU_IdLinea']) == 0)) {
-																echo "selected";
-															} ?>>
-															<?php echo $row_LineaVehiculo['DeLineaModeloVehiculo']; ?>
-														</option>
-													<?php } ?>
-												</select>
-											</div>
-											<div class="col-lg-4">
-												<label class="control-label">Modelo del vehículo <span
-														class="text-danger">*</span></label>
-												<select <?php if (!PermitirFuncion(1602)) {
-													echo "disabled";
-												} ?>
-													name="CDU_Ano" class="form-control select2" required
-													id="CDU_Ano">
-													<option value="" disabled selected>Seleccione...</option>
-													<?php while ($row_ModeloVehiculo = sqlsrv_fetch_array($SQL_ModeloVehiculo)) { ?>
-														<option
-															value="<?php echo $row_ModeloVehiculo['CodigoModeloVehiculo']; ?>"
-															<?php if (isset($row['CDU_Ano']) && ((strcmp($row_ModeloVehiculo['CodigoModeloVehiculo'], $row['CDU_Ano']) == 0) || (strcmp($row_ModeloVehiculo['AñoModeloVehiculo'], $row['CDU_Ano']) == 0))) {
-																echo "selected";
-															} ?>>
-															<?php echo $row_ModeloVehiculo['AñoModeloVehiculo']; ?>
-														</option>
-													<?php } ?>
-												</select>
 											</div>
 										</div>
 										<div class="form-group">
@@ -2553,12 +2585,12 @@ $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*"
 																	<?php } ?>
 																</label>
 
-																<div class="input-group">
+																<div class="input-group date">
 																	<span class="input-group-addon">
 																		<i class="fa fa-calendar"></i>
 																	</span>
 																	
-																	<input autocomplete="off" type="text" class="form-control date"
+																	<input autocomplete="off" type="text" class="form-control"
 																		id="propiedad_<?php echo $row_Propiedad['id_propiedad']; ?>"
 																		name="propiedad_<?php echo $row_Propiedad['id_propiedad']; ?>" <?php if ($row_Propiedad['obligatorio'] == "Y") { 
 																			echo "required";
