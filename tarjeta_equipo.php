@@ -176,6 +176,38 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
 			$IdTarjetaEquipo = $row_CabeceraTarjetaEquipo[0]; // Nuevo ID de TE
 			// echo "<script> console.log($IdTarjetaEquipo); </script>";
 
+			// SMM, 26/02/2024
+			$Param_Propiedades = array(
+				3, // Eliminar
+				"'$IdTarjetaEquipo'",
+			);
+			EjecutarSP("sp_tbl_TarjetaEquipo_Propiedades", $Param_Propiedades);
+
+			// Inicio, insertar propiedades dinámicamente.
+			foreach ($_POST as $ClavePropiedad => $ValorPropiedad) {
+				if (strpos($ClavePropiedad, 'propiedad_') === 0) {
+					// Obtener el ID correspondiente
+					$IdPropiedad = substr($ClavePropiedad, strlen('propiedad_'));
+			
+					// echo "ID: $IdPropiedad, $ClavePropiedad: $ValorPropiedad <br>";
+					$Usuario = "'" . ($_SESSION['CodUser'] ?? "") . "'";
+
+					$Param_Propiedades = array(
+						1, // Crear
+						"'$IdTarjetaEquipo'",
+						"'$IdPropiedad'",
+						"'$ValorPropiedad'",
+						$Usuario, // Usuario de creación
+					);
+
+					$SQL_Propiedades = EjecutarSP("sp_tbl_TarjetaEquipo_Propiedades", $Param_Propiedades);
+				}
+			}
+			// Fin, inserción en la tabla de propiedades.
+
+			// SMM, 26/02/2024
+			// exit();
+
 			try {
 				//Mover los anexos a la carpeta de archivos de SAP
 				$j = 0;
@@ -233,7 +265,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
 			// Inicio, Insertar en WebService
 
 			//Consultar cabecera
-			$SQL_json = Seleccionar("tbl_TarjetaEquipo", '*', "ID_Equipo=" . $IdTarjetaEquipo);
+			$SQL_json = Seleccionar("tbl_TarjetaEquipo", "*", "ID_Equipo = $IdTarjetaEquipo");
 			$row_json = sqlsrv_fetch_array($SQL_json);
 
 			$Cabecera = array(
@@ -313,12 +345,12 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
 			}
 			// Agregar campos de actualización, fin.
 
-			//Enviar datos al WebServices
+			// Enviar datos al WebServices
 			try {
-				if ($Metodo == 1) { //Creando
+				if ($Metodo == 1) { // Creando
 					$Metodo = "TarjetaEquipos";
 					$Resultado = EnviarWebServiceSAP($Metodo, $Cabecera, true, true);
-				} else { //Editando
+				} else { // Editando
 					$Metodo = "TarjetaEquipos/" . base64_decode($_POST['ID_TarjetaEquipo']);
 					$Resultado = EnviarWebServiceSAP($Metodo, $Cabecera, true, true, "PUT");
 				}
@@ -327,8 +359,8 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
 					$sw_error = 1;
 					$msg_error = $Resultado->Mensaje;
 					$Cabecera_json = json_encode($Cabecera);
-					//header("Location:tarjeta_equipo.php?id=$IdTarjetaEquipo&swError=1&a=" . base64_encode($Msg));
-					//echo "<script>alert('$msg_error'); location = 'tarjeta_equipo.php';</script>";
+					// header("Location:tarjeta_equipo.php?id=$IdTarjetaEquipo&swError=1&a=" . base64_encode($Msg));
+					// echo "<script>alert('$msg_error'); location = 'tarjeta_equipo.php';</script>";
 				} else {
 					$Msg = ($_POST['tl'] == 1) ? "OK_TarjetaEquipoUpdate" : "OK_TarjetaEquipoAdd";
 
