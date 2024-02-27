@@ -2846,7 +2846,43 @@ $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*"
 
 	<script>
 		$(document).ready(function () {
-			// SMM, 23/02/2024
+			// Obtener los parámetros de la URL
+			const urlParams = new URLSearchParams(window.location.search);
+
+			// Si el parámetro "id_tipo_equipo" está presente
+			if (urlParams.get("id_tipo_equipo")) {
+				// Obtener los datos del formulario almacenados en sessionStorage
+				const formData = JSON.parse(sessionStorage.getItem('formDataTE'));
+
+				// Buscar y asignar los valores de los campos en los datos del formulario
+				const valorTipoEquipo = formData.find(field => field.name === 'TipoEquipo');
+				$('#TipoEquipo').val(valorTipoEquipo.value);
+				const valorSerialInterno = formData.find(field => field.name === 'SerialInterno');
+				$('#SerialInterno').val(valorSerialInterno.value);
+				const valorSerialFabricante = formData.find(field => field.name === 'SerialFabricante');
+				$('#SerialFabricante').val(valorSerialFabricante.value);
+				const valorItemCode = formData.find(field => field.name === 'ItemCode');
+				$('#ItemCode').val(valorItemCode.value);
+				const valorItemName = formData.find(field => field.name === 'ItemName');
+				$('#ItemName').val(valorItemName.value);
+				const valorCodEstado = formData.find(field => field.name === 'CodEstado');
+				$('#CodEstado').val(valorCodEstado.value);
+				const valorSerieAnterior = formData.find(field => field.name === 'SerieAnterior');
+				$('#SerieAnterior').val(valorSerieAnterior.value);
+				const valorSerieNueva = formData.find(field => field.name === 'SerieNueva');
+				$('#SerieNueva').val(valorSerieNueva.value);
+				const valorClienteEquipo = formData.find(field => field.name === 'ClienteEquipo');
+				$('#ClienteEquipo').val(valorClienteEquipo.value);
+				$('#ClienteEquipo').change();
+				const valorNombreClienteEquipo = formData.find(field => field.name === 'NombreClienteEquipo');
+				$('#NombreClienteEquipo').val(valorNombreClienteEquipo.value);
+				const valorIdTecnico = formData.find(field => field.name === 'IdTecnico');
+				$('#IdTecnico').val(valorIdTecnico.value);
+				const valorIdTerritorio = formData.find(field => field.name === 'IdTerritorio');
+				$('#IdTerritorio').val(valorIdTerritorio.value);
+			}
+
+			// SMM, 27/02/2024
 			$("#IdTipoEquipoPropiedad").on("change", function () {
 				Swal.fire({
 					title: "¿Desea reiniciar la página para cargar las propiedades del tipo de equipo seleccionado?",
@@ -2856,6 +2892,9 @@ $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*"
 					cancelButtonText: "No"
 				}).then((result) => {
 					if (result.isConfirmed) {
+						// Serializar el formulario y almacenar los datos en sessionStorage
+						sessionStorage.setItem('formDataTE', JSON.stringify($("#CrearTarjetaEquipo").serializeArray()));
+
 						// Obtener el valor seleccionado del elemento select
 						let id_tipo_equipo = $(this).val();
 
