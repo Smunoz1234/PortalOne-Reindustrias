@@ -153,19 +153,19 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
 			"'" . ($_POST['CDU_IdTipoVehiculo'] ?? "") . "'",
 			"'" . ($_POST['CDU_IdTipoRin'] ?? "") . "'",
 			// SMM, 23/02/2024
-			"'" . ($_POST['id_tipo_equipo'] ?? "") . "'",
-			"'" . ($_POST['id_unidad_medida_equipo'] ?? "") . "'",
-			strtotime($_POST['fecha_operacion']) ? ("'" . FormatoFecha($_POST['fecha_operacion']) . "'") : "NULL",
-			"'" . ($_POST['contador_horometro'] ?? "") . "'",
-			"'" . ($_POST['id_jerarquia_1'] ?? "") . "'",
-			"'" . ($_POST['id_jerarquia_2'] ?? "") . "'",
-			"'" . ($_POST['id_ubicacion_equipo'] ?? "") . "'",
-			"'" . ($_POST['id_dimension_1'] ?? "") . "'",
-			"'" . ($_POST['id_dimension_2'] ?? "") . "'",
-			"'" . ($_POST['id_dimension_3'] ?? "") . "'",
-			"'" . ($_POST['id_dimension_4'] ?? "") . "'",
-			"'" . ($_POST['id_dimension_5'] ?? "") . "'",
-			"'" . ($_POST['id_proyecto'] ?? "") . "'",
+			"'" . ($_POST['IdTipoEquipoPropiedad'] ?? "") . "'",
+			"'" . ($_POST['IdUnidadMedidaEquipo'] ?? "") . "'",
+			strtotime($_POST['FechaOperacionEquipo']) ? ("'" . FormatoFecha($_POST['fecha_operacion']) . "'") : "NULL",
+			"'" . ($_POST['IdFabricante'] ?? "") . "'",
+			"'" . ($_POST['IdJerarquia1'] ?? "") . "'",
+			"'" . ($_POST['IdJerarquia2'] ?? "") . "'",
+			"'" . ($_POST['IdUbicacion'] ?? "") . "'",
+			"'" . ($_POST['IdDimension1'] ?? "") . "'",
+			"'" . ($_POST['IdDimension2'] ?? "") . "'",
+			"'" . ($_POST['IdDimension3'] ?? "") . "'",
+			"'" . ($_POST['IdDimension4'] ?? "") . "'",
+			"'" . ($_POST['IdDimension5'] ?? "") . "'",
+			"'" . ($_POST['IdProyecto'] ?? "") . "'",
 		);
 
 		// Insertar a la tabla de PortalOne
@@ -264,8 +264,8 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
 
 			// Inicio, Insertar en WebService
 
-			//Consultar cabecera
-			$SQL_json = Seleccionar("tbl_TarjetaEquipo", "*", "ID_Equipo = $IdTarjetaEquipo");
+			// Consultar cabecera
+			$SQL_json = Seleccionar("uvw_tbl_TarjetaEquipo", "*", "ID_Equipo = $IdTarjetaEquipo");
 			$row_json = sqlsrv_fetch_array($SQL_json);
 
 			$Cabecera = array(
