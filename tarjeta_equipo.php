@@ -302,6 +302,19 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
 				"CDU_IdTipoVehiculo" => ($_POST['CDU_IdTipoVehiculo'] ?? ""),
 				"CDU_IdTipoRin" => ($_POST['CDU_IdTipoRin'] ?? ""),
 				"anexos" => (count($Anexos) > 0) ? $Anexos : null,
+				// SMM, 27/02/2024
+				"id_tipo_equipo_propiedad" => ($_POST['IdTipoEquipoPropiedad'] ?? ""),
+				"id_unidad_medida_equipo" => ($_POST['IdUnidadMedidaEquipo'] ?? ""),
+				"fecha_operacion_equipo" => ($_POST['FechaOperacionEquipo'] ?? ""),
+				"id_jerarquia_1" => ($_POST['IdJerarquia1'] ?? ""),
+				"id_jerarquia_2" => ($_POST['IdJerarquia2'] ?? ""),
+				"id_ubicacion" => ($_POST['IdUbicacion'] ?? ""),
+				"id_dimension_1" => ($_POST['IdDimension1'] ?? ""),
+				"id_dimension_2" => ($_POST['IdDimension2'] ?? ""),
+				"id_dimension_3" => ($_POST['IdDimension3'] ?? ""),
+				"id_dimension_4" => ($_POST['IdDimension4'] ?? ""),
+				"id_dimension_5" => ($_POST['IdDimension5'] ?? ""),
+				"id_proyecto" => ($_POST['IdProyecto'] ?? ""),
 			);
 
 			// Agregar fechas, inicio.
@@ -433,8 +446,8 @@ if ($edit == 1 && $sw_error == 0) { // Editando la tarjeta de equipo
 }
 
 if ($sw_error == 1) {
-	//Si ocurre un error, vuelvo a consultar los datos insertados desde la base de datos.
-	$SQL = Seleccionar('tbl_TarjetaEquipo', '*', "ID_Equipo='$IdTarjetaEquipo'");
+	// Si ocurre un error, vuelvo a consultar los datos insertados desde la base de datos.
+	$SQL = Seleccionar("uvw_tbl_TarjetaEquipo", "*", "ID_Equipo='$IdTarjetaEquipo'");
 	$row = sqlsrv_fetch_array($SQL);
 
 	$CardCode = $row['CardCode'] ?? "";
@@ -540,7 +553,7 @@ $SQL_UbicacionEquipo = Seleccionar("uvw_tbl_TarjetaEquipo_Ubicaciones", "*");
 $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 
 // SMM, 23/02/2024
-$id_tipo_equipo = isset($_GET["id_tipo_equipo"]) ? $_GET["id_tipo_equipo"] : ($row["id_tipo_equipo"] ?? ""); 
+$id_tipo_equipo = isset($_GET["id_tipo_equipo"]) ? $_GET["id_tipo_equipo"] : ($row["IdTipoEquipoPropiedad"] ?? ""); 
 $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*","id_tipo_equipo = $id_tipo_equipo");
 ?>
 
@@ -1109,7 +1122,7 @@ $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*"
 								</div>
 								<!-- FIN, InfoSN -->
 
-								<!-- INICIO, Info. Mantenimiento -->
+								<!-- INICIO, Info. Equipo -->
 								<div class="ibox">
 									<div class="ibox-title bg-success">
 										<h5 class="collapse-link">
@@ -1121,6 +1134,14 @@ $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*"
 									</div>
 									<div class="ibox-content">
 										<div class="form-group">
+											<div class="col-lg-6 border-bottom ">
+												<label class="control-label text-danger">
+													Información general del equipo
+												</label>
+											</div>
+										</div>
+
+										<div class="form-group">
 											<div class="col-lg-4">
 												<label class="control-label">
 													Tipo equipo <span class="text-danger">*</span>
@@ -1129,7 +1150,7 @@ $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*"
 												<select <?php if (!PermitirFuncion(1602)) {
 													echo "disabled";
 												} ?>
-													name="id_tipo_equipo" id="id_tipo_equipo"
+													name="IdTipoEquipoPropiedad" id="IdTipoEquipoPropiedad"
 													class="form-control select2" required>
 													<option value="" disabled selected>Seleccione...</option>
 
@@ -1152,14 +1173,14 @@ $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*"
 												<select <?php if (!PermitirFuncion(1602)) {
 													echo "disabled";
 												} ?>
-													name="id_unidad_medida_equipo" id="id_unidad_medida_equipo"
+													name="IdUnidadMedidaEquipo" id="IdUnidadMedidaEquipo"
 													class="form-control select2" required>
 													<option value="" disabled selected>Seleccione...</option>
 
 													<?php while ($row_UnidadMedida = sqlsrv_fetch_array($SQL_UnidadMedida)) { ?>
 														<option
 															value="<?php echo $row_UnidadMedida['id_unidad_medida_equipo']; ?>"
-															<?php if ((isset($row['id_unidad_medida_equipo'])) && ($row_UnidadMedida['id_unidad_medida_equipo'] == $row['id_unidad_medida_equipo'])) {
+															<?php if ((isset($row['IdUnidadMedidaEquipo'])) && ($row_UnidadMedida['id_unidad_medida_equipo'] == $row['IdUnidadMedidaEquipo'])) {
 																echo "selected";
 															} ?>>
 															<?php echo $row_UnidadMedida['unidad_medida_equipo']; ?>
@@ -1178,9 +1199,9 @@ $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*"
 															class="fa fa-calendar"></i></span>
 													<input autocomplete="off" <?php if (!PermitirFuncion(1602)) {
 														echo "readonly";
-													} ?> name="fecha_operacion" id="fecha_operacion"
-														type="text" class="form-control" placeholder="YYYY-MM-DD" value="<?php if (isset($row['fecha_operacion'])) {
-															echo date_format($row['fecha_operacion'], 'Y-m-d');
+													} ?> name="FechaOperacionEquipo" id="FechaOperacionEquipo"
+														type="text" class="form-control" placeholder="YYYY-MM-DD" value="<?php if (isset($row['FechaOperacionEquipo'])) {
+															echo date_format($row['FechaOperacionEquipo'], 'Y-m-d');
 														} // else { echo 'AAAA-mm-dd'; }   ?>" required>
 												</div>
 											</div>
@@ -1238,9 +1259,9 @@ $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*"
 												<input <?php if (!PermitirFuncion(1602)) {
 													echo "readonly";
 												} ?>
-													autocomplete="off" name="contador_horometro" id="contador_horometro"
+													autocomplete="off" name="ContadorHorometro" id="ContadorHorometro"
 													type="number" class="form-control"
-													value="<?php echo $row['contador_horometro'] ?? ""; ?>" required>
+													value="<?php echo $row['ContadorHorometro'] ?? ""; ?>" required>
 											</div>
 
 											<div class="col-lg-4">
@@ -1250,14 +1271,14 @@ $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*"
 												
 												<select <?php if (!PermitirFuncion(1602)) {
 													echo "disabled";
-												} ?> id="CDU_Fabricante"
-													name="CDU_Fabricante" class="form-control select2" required>
+												} ?> id="IdFabricante"
+													name="IdFabricante" class="form-control select2" required>
 													<option value="" disabled selected>Seleccione...</option>
 													
 													<?php while ($row_Fabricante = sqlsrv_fetch_array($SQL_Fabricante)) { ?>
 														<option
 															value="<?php echo $row_Fabricante['IdFabricante']; ?>"
-															<?php if (isset($row['CDU_Fabricante']) && ($row_Fabricante['IdFabricante'] ==  $row['CDU_Fabricante'])) {
+															<?php if (isset($row['IdFabricante']) && ($row_Fabricante['IdFabricante'] ==  $row['IdFabricante'])) {
 																echo "selected";
 															} ?>>
 															<?php echo $row_Fabricante['Fabricante']; ?>
@@ -1306,8 +1327,8 @@ $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*"
 													</label>
 
 													<?php $DimJCode = intval($dimJ['id_dimension_jerarquia'] ?? 0); ?>
-													<select name="id_jerarquia_<?php echo $DimJCode; ?>"
-														id="id_jerarquia_<?php echo $DimJCode; ?>"
+													<select name="IdJerarquia<?php echo $DimJCode; ?>"
+														id="IdJerarquia<?php echo $DimJCode; ?>"
 														class="form-control select2" <?php if (!PermitirFuncion(1602)) {
 															echo "disabled";
 														} ?> required>
@@ -1315,7 +1336,7 @@ $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*"
 
 														<?php $SQL_DimJ = Seleccionar("tbl_TarjetaEquipo_Jerarquias", "*", "id_dimension_jerarquia = $DimJCode"); ?>
 														<?php while ($row_DimJ = sqlsrv_fetch_array($SQL_DimJ)) { ?>
-															<option value="<?php echo $row_DimJ['id_jerarquia']; ?>" <?php if ((isset($row["id_jerarquia_$DimJCode"]) && ($row["id_jerarquia_$DimJCode"] != "")) && ($row_DimJ['id_jerarquia'] == $row["id_jerarquia_$DimJCode"])) {
+															<option value="<?php echo $row_DimJ['id_jerarquia']; ?>" <?php if ((isset($row["IdJerarquia$DimJCode"]) && ($row["IdJerarquia$DimJCode"] != "")) && ($row_DimJ['id_jerarquia'] == $row["IdJerarquia$DimJCode"])) {
 																   echo "selected";
 															   } ?>>
 																<?php echo $row_DimJ['jerarquia']; ?>
@@ -1333,14 +1354,14 @@ $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*"
 												<select <?php if (!PermitirFuncion(1602)) {
 													echo "disabled";
 												} ?>
-													name="id_ubicacion_equipo" id="id_ubicacion_equipo"
+													name="IdUbicacion" id="IdUbicacion"
 													class="form-control select2" required>
 													<option value="" disabled selected>Seleccione...</option>
 
 													<?php while ($row_UbicacionEquipo = sqlsrv_fetch_array($SQL_UbicacionEquipo)) { ?>
 														<option
 															value="<?php echo $row_UbicacionEquipo['id_ubicacion_equipo']; ?>"
-															<?php if ((isset($row['id_ubicacion_equipo'])) && ($row_UbicacionEquipo['id_ubicacion_equipo'] == $row['id_ubicacion_equipo'])) {
+															<?php if ((isset($row['IdUbicacion'])) && ($row_UbicacionEquipo['id_ubicacion_equipo'] == $row['IdUbicacion'])) {
 																echo "selected";
 															} ?>>
 															<?php echo $row_UbicacionEquipo['ubicacion_equipo']; ?>
@@ -1367,8 +1388,8 @@ $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*"
 													</label>
 
 													<?php $DimCode = intval($dim['DimCode'] ?? 0); ?>
-													<select name="id_dimension_<?php echo $DimCode; ?>"
-														id="id_dimension_<?php echo $DimCode; ?>"
+													<select name="IdDimension<?php echo $DimCode; ?>"
+														id="IdDimension<?php echo $DimCode; ?>"
 														class="form-control select2" <?php if (!PermitirFuncion(1602)) {
 															echo "disabled";
 														} ?> required>
@@ -1377,7 +1398,7 @@ $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*"
 														<?php $SQL_Dim = Seleccionar('uvw_Sap_tbl_DimensionesReparto', '*', 'DimCode=' . $dim['DimCode']); ?>
 														<?php while ($row_Dim = sqlsrv_fetch_array($SQL_Dim)) { ?>
 
-															<option value="<?php echo $row_Dim['OcrCode']; ?>" <?php if ((isset($row["id_dimension_$DimCode"]) && ($row["id_dimension_$DimCode"] != "")) && ($row_Dim['OcrCode'] == $row["id_dimension_$DimCode"])) {
+															<option value="<?php echo $row_Dim['OcrCode']; ?>" <?php if ((isset($row["IdDimension$DimCode"]) && ($row["IdDimension$DimCode"] != "")) && ($row_Dim['OcrCode'] == $row["IdDimension$DimCode"])) {
 																   echo "selected";
 															   } ?>>
 																<?php echo $row_Dim['OcrName']; ?>
@@ -1395,12 +1416,12 @@ $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*"
 												<select <?php if (!PermitirFuncion(1602)) {
 													echo "disabled";
 												} ?>
-													name="id_proyecto" id="id_proyecto" class="form-control select2"
+													name="IdProyecto" id="IdProyecto" class="form-control select2"
 													required>
 													<option value="" disabled selected>Seleccione...</option>
 
 													<?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) { ?>
-														<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if ((isset($row['id_proyecto'])) && ($row_Proyecto['IdProyecto'] == $row['id_proyecto'])) {
+														<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if ((isset($row['IdProyecto'])) && ($row_Proyecto['IdProyecto'] == $row['IdProyecto'])) {
 															   echo "selected";
 														   } ?>>
 															<?php echo $row_Proyecto['DeProyecto']; ?>
