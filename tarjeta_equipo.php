@@ -155,7 +155,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
 			// SMM, 23/02/2024
 			"'" . ($_POST['IdTipoEquipoPropiedad'] ?? "") . "'",
 			"'" . ($_POST['IdUnidadMedidaEquipo'] ?? "") . "'",
-			strtotime($_POST['FechaOperacionEquipo']) ? ("'" . FormatoFecha($_POST['fecha_operacion']) . "'") : "NULL",
+			strtotime($_POST['FechaOperacionEquipo']) ? ("'" . FormatoFecha($_POST['FechaOperacionEquipo']) . "'") : "NULL",
 			"'" . ($_POST['IdFabricante'] ?? "") . "'",
 			"'" . ($_POST['IdJerarquia1'] ?? "") . "'",
 			"'" . ($_POST['IdJerarquia2'] ?? "") . "'",
@@ -175,38 +175,6 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
 
 			$IdTarjetaEquipo = $row_CabeceraTarjetaEquipo[0]; // Nuevo ID de TE
 			// echo "<script> console.log($IdTarjetaEquipo); </script>";
-
-			// SMM, 26/02/2024
-			$Param_Propiedades = array(
-				3, // Eliminar
-				"'$IdTarjetaEquipo'",
-			);
-			EjecutarSP("sp_tbl_TarjetaEquipo_Propiedades", $Param_Propiedades);
-
-			// Inicio, insertar propiedades dinámicamente.
-			foreach ($_POST as $ClavePropiedad => $ValorPropiedad) {
-				if (strpos($ClavePropiedad, 'propiedad_') === 0) {
-					// Obtener el ID correspondiente
-					$IdPropiedad = substr($ClavePropiedad, strlen('propiedad_'));
-			
-					// echo "ID: $IdPropiedad, $ClavePropiedad: $ValorPropiedad <br>";
-					$Usuario = "'" . ($_SESSION['CodUser'] ?? "") . "'";
-
-					$Param_Propiedades = array(
-						1, // Crear
-						"'$IdTarjetaEquipo'",
-						"'$IdPropiedad'",
-						"'$ValorPropiedad'",
-						$Usuario, // Usuario de creación
-					);
-
-					$SQL_Propiedades = EjecutarSP("sp_tbl_TarjetaEquipo_Propiedades", $Param_Propiedades);
-				}
-			}
-			// Fin, inserción en la tabla de propiedades.
-
-			// SMM, 26/02/2024
-			// exit();
 
 			try {
 				//Mover los anexos a la carpeta de archivos de SAP
@@ -375,14 +343,50 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
 					// header("Location:tarjeta_equipo.php?id=$IdTarjetaEquipo&swError=1&a=" . base64_encode($Msg));
 					// echo "<script>alert('$msg_error'); location = 'tarjeta_equipo.php';</script>";
 				} else {
+					// Solo se utiliza en la creación.
+					$SQL_ID = Seleccionar("uvw_Sap_tbl_TarjetasEquipos", "IdTarjetaEquipo", "SerialInterno='" . ($row_json["SerialInterno"] ?? "") . "'");
+					$row_ID = sqlsrv_fetch_array($SQL_ID);
+					
+					// SMM, 27/02/2024
+					$ID_TarjetaEquipo = ($_POST['tl'] == 1) ? base64_decode($_POST['ID_TarjetaEquipo']) : ($row_ID['IdTarjetaEquipo'] ?? "");
+					
+					$Param_Propiedades = array(
+						3, // Eliminar
+						"'$ID_TarjetaEquipo'",
+					);
+					EjecutarSP("sp_tbl_TarjetaEquipo_Propiedades", $Param_Propiedades);
+
+					// Inicio, insertar propiedades dinámicamente.
+					foreach ($_POST as $ClavePropiedad => $ValorPropiedad) {
+						if (strpos($ClavePropiedad, 'propiedad_') === 0) {
+							// Obtener el ID correspondiente
+							$IdPropiedad = substr($ClavePropiedad, strlen('propiedad_'));
+					
+							// echo "ID: $IdPropiedad, $ClavePropiedad: $ValorPropiedad <br>";
+							$Usuario = "'" . ($_SESSION['CodUser'] ?? "") . "'";
+
+							$Param_Propiedades = array(
+								1, // Crear
+								"'$ID_TarjetaEquipo'",
+								"'$IdPropiedad'",
+								"'$ValorPropiedad'",
+								$Usuario, // Usuario de creación
+							);
+
+							$SQL_Propiedades = EjecutarSP("sp_tbl_TarjetaEquipo_Propiedades", $Param_Propiedades);
+						}
+					}
+					// Fin, inserción en la tabla de propiedades.
+
+					// SMM, 27/02/2024
+					// exit();
+
+					// Redirección según el tipo de operación.
 					$Msg = ($_POST['tl'] == 1) ? "OK_TarjetaEquipoUpdate" : "OK_TarjetaEquipoAdd";
 
 					if ($_POST['tl'] == 1) {
 						header('Location:tarjeta_equipo.php?id=' . $_POST['ID_TarjetaEquipo'] . '&tl=1&a=' . base64_encode($Msg));
 					} else {
-						$SQL_ID = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', 'IdTarjetaEquipo', "SerialInterno='" . $row_json['SerialInterno'] . "'");
-						$row_ID = sqlsrv_fetch_array($SQL_ID);
-
 						header('Location:tarjeta_equipo.php?id=' . base64_encode($row_ID['IdTarjetaEquipo']) . '&tl=1&a=' . base64_encode($Msg));
 					}
 
@@ -1253,15 +1257,13 @@ $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*"
 
 											<div class="col-lg-4">
 												<label class="control-label">
-													Contador / Horómetro <span class="text-danger">*</span>
+													Contador / Horómetro
 												</label>
 
-												<input <?php if (!PermitirFuncion(1602)) {
-													echo "readonly";
-												} ?>
+												<input readonly
 													autocomplete="off" name="ContadorHorometro" id="ContadorHorometro"
 													type="number" class="form-control"
-													value="<?php echo $row['ContadorHorometro'] ?? ""; ?>" required>
+													value="<?php echo $row['ContadorHorometro'] ?? ""; ?>">
 											</div>
 
 											<div class="col-lg-4">
@@ -2845,7 +2847,7 @@ $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*"
 	<script>
 		$(document).ready(function () {
 			// SMM, 23/02/2024
-			$("#id_tipo_equipo").on("change", function () {
+			$("#IdTipoEquipoPropiedad").on("change", function () {
 				Swal.fire({
 					title: "¿Desea reiniciar la página para cargar las propiedades del tipo de equipo seleccionado?",
 					icon: "question",
