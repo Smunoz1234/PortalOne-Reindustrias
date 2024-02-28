@@ -19,10 +19,10 @@ while ($row_Dimension = sqlsrv_fetch_array($SQL_Dimensiones)) {
 	array_push($array_Dimensiones, $row_Dimension);
 }
 
-$encode_Dimensiones = json_encode($array_Dimensiones);
-$cadena_Dimensiones = "JSON.parse('$encode_Dimensiones'.replace(/\\n|\\r/g, ''))";
-echo "<script> console.log('cadena_Dimensiones'); </script>";
-echo "<script> console.log($cadena_Dimensiones); </script>";
+// $encode_Dimensiones = json_encode($array_Dimensiones);
+// $cadena_Dimensiones = "JSON.parse('$encode_Dimensiones'.replace(/\\n|\\r/g, ''))";
+// echo "<script> console.log('cadena_Dimensiones'); </script>";
+// echo "<script> console.log($cadena_Dimensiones); </script>";
 // Hasta aquí, SMM 21/02/2024
 
 // Jerarquias, SMM 22/02/2024
@@ -283,6 +283,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
 				"id_dimension_4" => ($_POST['IdDimension4'] ?? ""),
 				"id_dimension_5" => ($_POST['IdDimension5'] ?? ""),
 				"id_proyecto" => ($_POST['IdProyecto'] ?? ""),
+				"id_fabricante_equipo " => ($_POST['IdFabricante'] ?? ""),
 			);
 
 			// Agregar fechas, inicio.
@@ -350,36 +351,39 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
 					// SMM, 27/02/2024
 					$ID_TarjetaEquipo = ($_POST['tl'] == 1) ? base64_decode($_POST['ID_TarjetaEquipo']) : ($row_ID['IdTarjetaEquipo'] ?? "");
 					
-					$Param_Propiedades = array(
-						3, // Eliminar
-						"'$ID_TarjetaEquipo'",
-					);
-					EjecutarSP("sp_tbl_TarjetaEquipo_Propiedades", $Param_Propiedades);
-
-					// Inicio, insertar propiedades dinámicamente.
-					foreach ($_POST as $ClavePropiedad => $ValorPropiedad) {
-						if (strpos($ClavePropiedad, 'propiedad_') === 0) {
-							// Obtener el ID correspondiente
-							$IdPropiedad = substr($ClavePropiedad, strlen('propiedad_'));
-					
-							// echo "ID: $IdPropiedad, $ClavePropiedad: $ValorPropiedad <br>";
-							$Usuario = "'" . ($_SESSION['CodUser'] ?? "") . "'";
-
-							$Param_Propiedades = array(
-								1, // Crear
-								"'$ID_TarjetaEquipo'",
-								"'$IdPropiedad'",
-								"'$ValorPropiedad'",
-								$Usuario, // Usuario de creación
-							);
-
-							$SQL_Propiedades = EjecutarSP("sp_tbl_TarjetaEquipo_Propiedades", $Param_Propiedades);
+					// Las propiedades solo se pueden modificar en la Actualización.
+					if($_POST['tl'] == 1) {
+						$Param_Propiedades = array(
+							3, // Eliminar
+							"'$ID_TarjetaEquipo'",
+						);
+						EjecutarSP("sp_tbl_TarjetaEquipo_Propiedades", $Param_Propiedades);
+	
+						// Inicio, insertar propiedades dinámicamente.
+						foreach ($_POST as $ClavePropiedad => $ValorPropiedad) {
+							if (strpos($ClavePropiedad, 'propiedad_') === 0) {
+								// Obtener el ID correspondiente
+								$IdPropiedad = substr($ClavePropiedad, strlen('propiedad_'));
+						
+								// echo "ID: $IdPropiedad, $ClavePropiedad: $ValorPropiedad <br>";
+								$Usuario = "'" . ($_SESSION['CodUser'] ?? "") . "'";
+	
+								$Param_Propiedades = array(
+									1, // Crear
+									"'$ID_TarjetaEquipo'",
+									"'$IdPropiedad'",
+									"'$ValorPropiedad'",
+									$Usuario, // Usuario de creación
+								);
+	
+								$SQL_Propiedades = EjecutarSP("sp_tbl_TarjetaEquipo_Propiedades", $Param_Propiedades);
+							}
 						}
+						// Fin, inserción en la tabla de propiedades.
+	
+						// SMM, 27/02/2024
+						// exit();
 					}
-					// Fin, inserción en la tabla de propiedades.
-
-					// SMM, 27/02/2024
-					// exit();
 
 					// Redirección según el tipo de operación.
 					$Msg = ($_POST['tl'] == 1) ? "OK_TarjetaEquipoUpdate" : "OK_TarjetaEquipoAdd";
@@ -568,6 +572,17 @@ $lenTexto = $row_Campo["precision"] ?? 50;
 $SQL_Campo = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Campos", "*","id_tipo_equipo_campo = 2");
 $row_Campo = sqlsrv_fetch_array($SQL_Campo);
 $lenComentarios = $row_Campo["precision"] ?? 300;
+
+// SMM, 28/02/2024
+$SQL_ValoresPropiedades = Seleccionar("tbl_TarjetaEquipo_Propiedades", "*","id_tarjeta_equipo = $IdTarjetaEquipo");
+
+$array_ValoresPropiedades = [];
+while ($row_ValPropiedad = sqlsrv_fetch_array($SQL_ValoresPropiedades)) {
+	array_push($array_ValoresPropiedades, $row_ValPropiedad);
+}
+
+// print_r($array_ValoresPropiedades);
+// exit();
 ?>
 
 <!DOCTYPE html>
@@ -1872,7 +1887,7 @@ $lenComentarios = $row_Campo["precision"] ?? 300;
 											</a>
 										</li>
 
-										<li id="nav-properties">
+										<li id="nav-properties" style="<?php if($edit != 1) { echo "display: none"; } ?>">
 											<a data-toggle="tab" href="#tab-properties">
 												<i class="fa fa-cogs"></i> Propiedades
 											</a>
@@ -2602,7 +2617,7 @@ $lenComentarios = $row_Campo["precision"] ?? 300;
 										<!-- Fin Gestión CRM, SMM 01/07/2022 -->
 
 										<!-- Inicio, Propiedades -->
-										<div id="tab-properties" class="tab-pane">
+										<div id="tab-properties" class="tab-pane" style="<?php if($edit != 1) { echo "display: none"; } ?>">
 											<div class="row">
 												<div class="ibox-content">
 												<?php if (isset($SQL_Propiedades) && $SQL_Propiedades && sqlsrv_has_rows($SQL_Propiedades)) { ?>
@@ -2855,6 +2870,14 @@ $lenComentarios = $row_Campo["precision"] ?? 300;
 
 	<script>
 		$(document).ready(function () {
+			// Inicio, cargando Propiedades.
+			var idProp = "";
+			<?php foreach ($array_ValoresPropiedades as &$valProp) { ?>
+				idProp = "propiedad_<?php echo $valProp["id_propiedad"]; ?>";
+				$(`#${idProp}`).val("<?php echo $valProp["propiedad"]; ?>");
+			<?php } ?>			
+			// Fin, cargando Propiedades.
+
 			// Obtener los parámetros de la URL
 			const urlParams = new URLSearchParams(window.location.search);
 
