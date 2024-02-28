@@ -559,6 +559,15 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 // SMM, 23/02/2024
 $id_tipo_equipo = isset($_GET["id_tipo_equipo"]) ? $_GET["id_tipo_equipo"] : ($row["IdTipoEquipoPropiedad"] ?? ""); 
 $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*","id_tipo_equipo = $id_tipo_equipo");
+
+// SMM, 28/02/2024
+$SQL_Campo = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Campos", "*","id_tipo_equipo_campo = 1");
+$row_Campo = sqlsrv_fetch_array($SQL_Campo);
+$lenTexto = $row_Campo["precision"] ?? 50;
+
+$SQL_Campo = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Campos", "*","id_tipo_equipo_campo = 2");
+$row_Campo = sqlsrv_fetch_array($SQL_Campo);
+$lenComentarios = $row_Campo["precision"] ?? 300;
 ?>
 
 <!DOCTYPE html>
@@ -2614,7 +2623,7 @@ $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*"
 																	id="propiedad_<?php echo $row_Propiedad['id_propiedad']; ?>"
 																	type="text" class="form-control" <?php if ($row_Propiedad['obligatorio'] == "Y") { 
 																			echo "required";
-																		} ?> value="">
+																		} ?> value="" maxlength="<?php echo $lenTexto; ?>">
 															</div>
 														<?php } elseif ($row_Propiedad['id_tipo_equipo_campo'] == 2) { ?>
 															<div class="col-lg-4">
@@ -2629,7 +2638,7 @@ $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*"
 																	name="propiedad_<?php echo $row_Propiedad['id_propiedad']; ?>"
 																	id="propiedad_<?php echo $row_Propiedad['id_propiedad']; ?>" <?php if ($row_Propiedad['obligatorio'] == "Y") { 
 																			echo "required";
-																		} ?>></textarea>
+																		} ?> maxlength="<?php echo $lenComentarios; ?>"></textarea>
 															</div>
 														<?php } elseif ($row_Propiedad['id_tipo_equipo_campo'] == 3) { ?>
 															<div class="col-lg-4 input-group">
