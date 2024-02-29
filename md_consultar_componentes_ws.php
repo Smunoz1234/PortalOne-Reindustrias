@@ -1,4 +1,16 @@
 <?php require_once "includes/conexion.php";
+/* JSON de ejemplo (también pueden llegar vacios ""):
+{
+Cliente: "CL-1054994729",
+FechaFinal: "2022-08-04",
+FechaInicial: "2022-07-20",
+IDTicket: "111000047",
+NombreCliente: "Stiven Muñoz Murillo",
+Series: "142",
+Sucursal: "CHINCHINA"
+}
+ */
+
 // Dimensiones. SMM, 29/05/2023
 $SQL_Dimensiones = Seleccionar('uvw_Sap_tbl_Dimensiones', '*', "DimActive='Y'");
 
@@ -8,147 +20,137 @@ while ($row_Dimension = sqlsrv_fetch_array($SQL_Dimensiones)) {
 }
 // Hasta aquí, SMM 29/05/2023
 
-// Realizar consulta con filtros. SMM, 24/05/2023
-$DatoBuscar = $_POST['BuscarItem'] ?? 0;
-$WhsCode = $_POST['Almacen'] ?? 0;
+$Filtro = "TipoEquipo <> ''";
 
-$TipoDoc = $_POST['tipodoc'] ?? 1;
-// @TipoDoc: 1 COMPRA, 2 VENTA, 3 INVENTARIO
-
-$TodosArticulos = $_POST['todosart'] ?? 0;
-
-$SoloStock = $_POST['chkStock'] ?? 2;
-$IdListaPrecio = $_POST['ListaPrecio'] ?? "";
-
-$Usuario = "'" . $_SESSION['CodUser'] . "'";
-$SQL_GruposArticulos = Seleccionar("uvw_tbl_UsuariosGruposArticulos", "ID_Usuario", "ID_Usuario=$Usuario");
-
-if (!sqlsrv_has_rows($SQL_GruposArticulos)) {
-    $Usuario = "NULL";
+$ItemCode = $_POST["ItemCode"] ?? "";
+if ($ItemCode != "") {
+    $Filtro .= " AND ItemCode='$ItemCode'";
 }
 
-$Param = array(
-    "'$DatoBuscar'",
-    "'$WhsCode'",
-    "'$TipoDoc'",
-    "'$SoloStock'",
-    "'$TodosArticulos'",
-    "'$IdListaPrecio'",
-    $Usuario,
-);
+$SerialEquipo = $_POST["SerialEquipo"] ?? "";
+if ($SerialEquipo != "") {
+    $Filtro .= " AND (SerialFabricante LIKE '%$SerialEquipo%' OR SerialInterno LIKE '%$SerialEquipo%')";
+}
 
-$SQL = EjecutarSP('sp_ConsultarArticulos_ListaPrecios', $Param);
+$EstadoEquipo = $_POST["EstadoEquipo"] ?? "";
+if ($EstadoEquipo != "") {
+    $Filtro .= " AND CodEstado='$EstadoEquipo'";
+}
+
+$Cliente = $_POST["Cliente"] ?? "";
+if ($Cliente != "") {
+    $Filtro .= " AND CardCode = '$Cliente'";
+}
+
+$BuscarDato = $_POST['BuscarDato'] ?? "";
+if ($BuscarDato != "") {
+    $Filtro .= " AND (Calle LIKE '%$BuscarDato%' OR CodigoPostal LIKE '%$BuscarDato%' OR Barrio LIKE '%$BuscarDato%' OR Ciudad LIKE '%$BuscarDato%' OR Distrito LIKE '%$BuscarDato%' OR SerialFabricante LIKE '%$BuscarDato%' OR SerialInterno LIKE '%$BuscarDato%' OR IdTarjetaEquipo LIKE '%$BuscarDato%')";
+}
+
+// Realizar consulta con filtros
+$Where = "$Filtro ORDER BY IdTarjetaEquipo DESC";
+$Cons_TE = "SELECT TOP 1000 * FROM uvw_Sap_tbl_TarjetasEquipos WHERE $Where";
+$SQL = sqlsrv_query($conexion, $Cons_TE);
+
+// SMM, 21/11/2023
+// if (!$SQL) {
+    echo $Cons_TE;
+// }
 ?>
 
 <table id="footableOne" class="table" data-paging="true" data-sorting="true">
     <thead>
         <tr>
-            <th>Nombre</th>
-            <th>Stock</th>
-            <th>Precio Con IVA</th>
+            <th>Código cliente</th>
+            <th>Cliente</th>
+            <th>Serial fabricante</th>
+
             <th>Acciones</th>
-            <th data-breakpoints="all">Cod. Lista Precios</th>
-            <th data-breakpoints="all">Lista Precios</th>
-            <th data-breakpoints="all">Cod. Proveedor</th>
-            <th data-breakpoints="all">Unidad Medida</th>
-            <th data-breakpoints="all">Precio Sin IVA</th> 
-            <th data-breakpoints="all">Cod. Almacen</th>
-            <th data-breakpoints="all">Nombre Almacen</th>
-            <th data-breakpoints="all">Maneja Serial</th>
-            <th data-breakpoints="all">Maneja Lote</th>
-            <th data-breakpoints="all">Stock General</th>
-            <th data-breakpoints="all">Grupo Artículos</th>
+
+            <th>Serial interno</th>
+            <th>Núm.</th>
+            <th data-breakpoints="all">Código de artículo</th>
+            <th data-breakpoints="all">Artículo</th>
+            
             <?php foreach ($array_Dimensiones as &$dim) { ?>
                 <th data-breakpoints="all">
                     <?php echo $dim['IdPortalOne']; ?>
                 </th>
             <?php } ?>
-            <th data-breakpoints="all">EmpVentas</th>
-            <th data-breakpoints="all">PrjCode</th>
-
-            <th data-breakpoints="all">Tipo OT</th>
-            <th data-breakpoints="all">Sede Empresa</th>
-            <th data-breakpoints="all">Tipo Cargo</th>
-            <th data-breakpoints="all">Tipo Problema</th>
-            <th data-breakpoints="all">Tipo Preventivo</th>
+            
+            <th data-breakpoints="all">Tipo de equipo</th>
+            <th data-breakpoints="all">Estado</th>
+            <th data-breakpoints="all">Acciones</th>
         </tr>
     </thead>
     <tbody>
-        <?php while ($row = sql_fetch_array($SQL)) { ?>
+        <?php while ($row = sqlsrv_fetch_array($SQL)) { ?>
             <tr id="<?php echo $row['IdArticulo']; ?>">
                 <td>
-                    <?php echo $row['NombreBuscarArticulo']; ?>
+                    <?php echo $row['CardCode']; ?>
                 </td>
                 <td>
-                    <?php echo $row['StockAlmacen']; ?>
+                    <?php echo $row['CardName']; ?>
                 </td>
                 <td>
-                    <?php echo $row['PrecioConIVA']; ?>
+                    <?php echo $row['SerialFabricante']; ?>
                 </td>
+
                 <td>
                     <button class="btn btn-success btn-xs"
                         onclick="AgregarArticulo('<?php echo $row['IdArticulo']; ?>');"><i class="fa fa-plus"></i>
                         Agregar</a>
                 </td>
-                <td class="PriceList">
-                    <?php echo $row['PriceList']; ?>
+
+                <td>
+                    <?php echo $row['SerialInterno']; ?>
                 </td>
                 <td>
-                    <?php echo $row['ListaPrecio']; ?>
+                    <a type="button" class="btn btn-success btn-xs" title="Adicionar o cambiar TE"
+                        onclick="cambiarTE('<?php echo $row['IdTarjetaEquipo']; ?>', '<?php echo 'SN Fabricante: ' . $row['SerialFabricante'] . ' - Núm. Serie: ' . $row['SerialInterno']; ?>', '<?php echo $row['SerialInterno']; ?>')">
+                        <b>
+                            <?php echo $row['IdTarjetaEquipo']; ?>
+                        </b>
+                    </a>
                 </td>
                 <td>
-                    <?php echo $row['CodArticuloProveedor'] ?? "--"; ?>
+                    <?php echo $row['ItemCode']; ?>
                 </td>
                 <td>
-                    <?php echo $row['UndMedida']; ?>
+                    <?php echo $row['ItemName']; ?>
                 </td>
-                <td>
-                    <?php echo $row['PrecioSinIVA']; ?>
-                </td>
-                <td class="WhsCode">
-                    <?php echo $row['CodAlmacen']; ?>
-                </td>
-                <td>
-                    <?php echo $row['Almacen']; ?>
-                </td>
-                <td>
-                    <?php echo $row['ManejaSerial']; ?>
-                </td>
-                <td>
-                    <?php echo $row['ManejaLote']; ?>
-                </td>
-                <td>
-                    <?php echo $row['StockGeneral']; ?>
-                </td>
-                <td>
-                    <?php echo $row['ItmsGrpCod']; ?>
-                </td>
+
                 <?php foreach ($array_Dimensiones as &$dim) { ?>
                     <td class="<?php echo $dim['IdPortalOne']; ?>">
                         <?php echo $_POST[$dim['IdPortalOne']] ?? ""; ?>
                     </td>
                 <?php } ?>
-                <td class="EmpVentas">
-                    <?php echo $_POST['EmpVentas'] ?? ""; ?>
-                </td>
-                <td class="PrjCode">
-                    <?php echo $_POST['Proyecto'] ?? ""; ?>
-                </td>
 
-                <td class="IdTipoOT">
-                    <?php echo $_POST['IdTipoOT'] ?? ""; ?>
+                <td>
+                    <?php if ($row['TipoEquipo'] === 'P') {
+                        echo 'Compras';
+                    } elseif ($row['TipoEquipo'] === 'R') {
+                        echo 'Ventas';
+                    } ?>
                 </td>
-                <td class="IdSedeEmpresa">
-                    <?php echo $_POST['IdSedeEmpresa'] ?? ""; ?>
+                <td>
+                    <?php if ($row['CodEstado'] == 'A') { ?>
+                        <span class='label label-info'>Activo</span>
+                    <?php } elseif ($row['CodEstado'] == 'R') { ?>
+                        <span class='label label-danger'>Devuelto</span>
+                    <?php } elseif ($row['CodEstado'] == 'T') { ?>
+                        <span class='label label-success'>Finalizado</span>
+                    <?php } elseif ($row['CodEstado'] == 'L') { ?>
+                        <span class='label label-secondary'>Concedido en préstamo</span>
+                    <?php } elseif ($row['CodEstado'] == 'I') { ?>
+                        <span class='label label-warning'>En laboratorio de reparación</span>
+                    <?php } ?>
                 </td>
-                <td class="IdTipoCargo">
-                    <?php echo $_POST['IdTipoCargo'] ?? ""; ?>
-                </td>
-                <td class="IdTipoProblema">
-                    <?php echo $_POST['IdTipoProblema'] ?? ""; ?>
-                </td>
-                <td class="IdTipoPreventivo">
-                    <?php echo $_POST['IdTipoPreventivo'] ?? ""; ?>
+                <td>
+                    <a href="tarjeta_equipo.php?id=<?php echo base64_encode($row['IdTarjetaEquipo']); ?>&tl=1"
+                        class="btn btn-success btn-xs" target="_blank">
+                        <i class="fa fa-folder-open-o"></i> Abrir
+                    </a>
                 </td>
             </tr>
         <?php } ?>

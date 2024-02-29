@@ -250,7 +250,7 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 											<?php echo $dim['DescPortalOne']; ?> <span class="text-danger">*</span>
 										</label>
 
-										<select name="<?php echo $dim['IdPortalOne'] ?>" required
+										<select name="<?php echo $dim['IdPortalOne'] ?>" <?php //required ?>
 											id="<?php echo $dim['IdPortalOne'] ?>" class="form-control select2">
 											<option value="">Seleccione...</option>
 
@@ -441,7 +441,7 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 
 				// Inicio, AJAX
 				$.ajax({
-					url: 'md_consultar_articulos_ws.php',
+					url: 'md_consultar_componentes_ws.php',
 					type: 'POST',
 					data: formData,
 					processData: false,  // tell jQuery not to process the data
