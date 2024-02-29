@@ -1292,7 +1292,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 										<div class="col-lg-5">
 											<select class="form-control select2" id="ContactoCliente"
 												name="ContactoCliente" required <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
-													echo "disabled='disabled'";
+													echo "disabled";
 												} ?>>
 												<option value="">Seleccione...</option>
 												<?php
@@ -1300,7 +1300,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 													while ($row_ContactoCliente = sqlsrv_fetch_array($SQL_ContactoCliente)) { ?>
 														<option value="<?php echo $row_ContactoCliente['CodigoContacto']; ?>"
 															<?php if ((isset($row['CodigoContacto'])) && (strcmp($row_ContactoCliente['CodigoContacto'], $row['CodigoContacto']) == 0)) {
-																echo "selected=\"selected\"";
+																echo "selected";
 															} ?>><?php echo $row_ContactoCliente['ID_Contacto']; ?></option>
 													<?php }
 												} ?>
@@ -1495,11 +1495,11 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 										<label class="col-lg-5">Estado <span class="text-danger">*</span></label>
 										<div class="col-lg-7">
 											<select class="form-control select2" name="EstadoDoc" id="EstadoDoc" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
-												echo "disabled='disabled'";
+												echo "disabled";
 											} ?>>
 												<?php while ($row_EstadoDoc = sqlsrv_fetch_array($SQL_EstadoDoc)) { ?>
 													<option value="<?php echo $row_EstadoDoc['Cod_Estado']; ?>" <?php if (($edit == 1) && (isset($row['Cod_Estado'])) && (strcmp($row_EstadoDoc['Cod_Estado'], $row['Cod_Estado']) == 0)) {
-														   echo "selected=\"selected\"";
+														   echo "selected";
 													   } ?>><?php echo $row_EstadoDoc['NombreEstado']; ?></option>
 												<?php } ?>
 											</select>
@@ -1517,7 +1517,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 											class="text-danger">*</span></label>
 									<div class="col-lg-3">
 										<select class="form-control select2" name="Serie" id="Serie" required <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
-											echo "disabled='disabled'";
+											echo "disabled";
 										} ?>>
 											<!-- SMM, 01/05/2022 -->
 											<?php if (sqlsrv_num_rows($SQL_Series) > 1) { ?>
@@ -1526,9 +1526,9 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 
 											<?php while ($row_Series = sqlsrv_fetch_array($SQL_Series)) { ?>
 												<option value="<?php echo $row_Series['IdSeries']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['IdSeries'])) && (strcmp($row_Series['IdSeries'], $row['IdSeries']) == 0)) {
-													   echo "selected=\"selected\"";
+													   echo "selected";
 												   } elseif (isset($_GET['Serie']) && (strcmp($row_Series['IdSeries'], base64_decode($_GET['Serie'])) == 0)) {
-													   echo "selected=\"selected\"";
+													   echo "selected";
 												   } ?>><?php echo $row_Series['DeSeries']; ?></option>
 											<?php } ?>
 										</select>
@@ -1546,16 +1546,16 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 									<div class="col-lg-3">
 										<select class="form-control select2" name="CondicionPago" id="CondicionPago"
 											required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
-												echo "disabled='disabled'";
+												echo "disabled";
 											} ?>>
 											<option value="">Seleccione...</option>
 											<?php while ($row_CondicionPago = sqlsrv_fetch_array($SQL_CondicionPago)) { ?>
 												<option value="<?php echo $row_CondicionPago['IdCondicionPago']; ?>" <?php if ($edit == 1 || $sw_error == 1) {
 													   if (($row['IdCondicionPago'] != "") && (strcmp($row_CondicionPago['IdCondicionPago'], $row['IdCondicionPago']) == 0)) {
-														   echo "selected=\"selected\"";
+														   echo "selected";
 													   }
 												   } elseif ((isset($_GET['CondicionPago'])) && (strcmp($row_CondicionPago['IdCondicionPago'], base64_decode($_GET['CondicionPago'])) == 0)) {
-													   echo "selected=\"selected\"";
+													   echo "selected";
 												   } ?>><?php echo $row_CondicionPago['NombreCondicion']; ?></option>
 											<?php } ?>
 										</select>
@@ -1572,7 +1572,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 									</label>
 									<div class="col-lg-3">
 										<select class="form-control select2" name="Autorizacion" id="Autorizacion" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
-											echo "disabled='disabled'";
+											echo "disabled";
 										} ?>>
 											<?php while ($row_EstadoAuth = sqlsrv_fetch_array($SQL_EstadoAuth)) { ?>
 												<option value="<?php echo $row_EstadoAuth['IdAuth']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['AuthPortal'])) && (strcmp($row_EstadoAuth['IdAuth'], $row['AuthPortal']) == 0)) {
@@ -1763,18 +1763,18 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 								<div class="col-lg-5">
 									<select class="form-control select2" name="EmpleadoVentas" id="EmpleadoVentas"
 										form="CrearOrdenVenta" required <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
-											echo "disabled='disabled'";
+											echo "disabled";
 										} ?>>
 										<?php while ($row_EmpleadosVentas = sqlsrv_fetch_array($SQL_EmpleadosVentas)) { ?>
 											<option value="<?php echo $row_EmpleadosVentas['ID_EmpVentas']; ?>" <?php if ($edit == 0 && $sw_error == 0) {
 												   if (isset($_GET['Empleado']) && (strcmp($row_EmpleadosVentas['ID_EmpVentas'], base64_decode($_GET['Empleado'])) == 0)) {
-													   echo "selected=\"selected\"";
+													   echo "selected";
 												   } elseif (($_SESSION['CodigoEmpVentas'] != "") && (!isset($_GET['Empleado'])) && (strcmp($row_EmpleadosVentas['ID_EmpVentas'], $_SESSION['CodigoEmpVentas']) == 0)) {
-													   echo "selected=\"selected\"";
+													   echo "selected";
 												   }
 											   } elseif ($edit == 1 || $sw_error == 1) {
 												   if (($row['SlpCode'] != "") && (strcmp($row_EmpleadosVentas['ID_EmpVentas'], $row['SlpCode']) == 0)) {
-													   echo "selected=\"selected\"";
+													   echo "selected";
 												   }
 											   } ?>><?php echo $row_EmpleadosVentas['DE_EmpVentas']; ?></option>
 										<?php } ?>
