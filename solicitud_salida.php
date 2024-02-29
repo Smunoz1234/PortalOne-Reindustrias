@@ -353,8 +353,8 @@ if ($edit == 1 && $sw_error == 0) {
 	$SQL_IdEvento = sqlsrv_fetch_array($LimpiarSolSalida);
 	$IdEvento = $SQL_IdEvento[0];
 
-	//Solicitud de salida
-	$Cons = "Select * From uvw_tbl_SolicitudSalida Where DocEntry='" . $IdSolSalida . "' AND IdEvento='" . $IdEvento . "'";
+	// Solicitud de salida
+	$Cons = "SELECT * FROM uvw_tbl_SolicitudSalida WHERE DocEntry='$IdSolSalida' AND IdEvento='$IdEvento'";
 	$SQL = sqlsrv_query($conexion, $Cons);
 	$row = sqlsrv_fetch_array($SQL);
 

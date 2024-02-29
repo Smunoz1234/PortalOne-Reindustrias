@@ -404,7 +404,7 @@ if ($edit == 1 && $sw_error == 0) {
 	$IdEvento = $SQL_IdEvento[0];
 
 	//Solicitud de salida
-	$Cons = "Select * From uvw_tbl_SolicitudSalida_Borrador Where DocEntry='$IdSolSalida' AND IdEvento='$IdEvento'";
+	$Cons = "SELECT * FROM uvw_tbl_SolicitudSalida_Borrador WHERE DocEntry='$IdSolSalida' AND IdEvento='$IdEvento'";
 	$SQL = sqlsrv_query($conexion, $Cons);
 
 	// echo $Cons;
@@ -440,7 +440,7 @@ if ($edit == 1 && $sw_error == 0) {
 if ($sw_error == 1) {
 
 	//Solicitud salida
-	$Cons = "Select * From uvw_tbl_SolicitudSalida_Borrador Where ID_SolSalida='" . $IdSolSalida . "' AND IdEvento='" . $IdEvento . "'";
+	$Cons = "SELECT * FROM uvw_tbl_SolicitudSalida_Borrador WHERE ID_SolSalida='$IdSolSalida' AND IdEvento='$IdEvento'";
 	$SQL = sqlsrv_query($conexion, $Cons);
 	$row = sqlsrv_fetch_array($SQL);
 
