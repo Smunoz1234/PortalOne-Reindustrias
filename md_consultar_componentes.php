@@ -3,17 +3,20 @@
 $DimSeries = intval(ObtenerVariable("DimensionSeries"));
 $SQL_Dimensiones = Seleccionar('uvw_Sap_tbl_Dimensiones', '*', "DimActive='Y'");
 
-// Pruebas, SMM 29/05/2023
-// $SQL_Dimensiones = Seleccionar('uvw_Sap_tbl_Dimensiones', '*', 'DimCode IN (1,2,3,4,5)');
-
 $array_Dimensiones = [];
 while ($row_Dimension = sqlsrv_fetch_array($SQL_Dimensiones)) {
 	array_push($array_Dimensiones, $row_Dimension);
 }
-
-$encode_Dimensiones = json_encode($array_Dimensiones);
-$cadena_Dimensiones = "JSON.parse('$encode_Dimensiones'.replace(/\\n|\\r/g, ''))";
 // Hasta aquí, SMM 24/05/2023
+
+// Jerarquias, SMM 29/02/2024
+$SQL_Jerarquias = Seleccionar("tbl_TarjetaEquipo_DimensionJerarquias", "*", "estado_dimension_jerarquia = 'Y'");
+
+$array_Jerarquias = [];
+while ($row_Jerarquia = sqlsrv_fetch_array($SQL_Jerarquias)) {
+	array_push($array_Jerarquias, $row_Jerarquia);
+}
+// Hasta aquí, SMM 29/02/2024
 
 $OT = $_POST['OT'] ?? "";
 $ObjType = $_POST['ObjType'];
@@ -103,35 +106,14 @@ $SQL_Sucursales = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'IdSuc
 $SQL_ListaPrecios = Seleccionar('uvw_Sap_tbl_ListaPrecios', '*');
 $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', "Estado = 'Y'", 'DE_EmpVentas');
 
-// SMM, 05/06/2023
-$SQL_OT_ORIGEN = Seleccionar('uvw_Sap_tbl_OT_Origen', 'IdOT_Origen "IdTipoOT", OT_Origen "TipoOT"', '', 'IdOT_Origen');
-$SQL_OT_SEDE_EMPRESA = Seleccionar('uvw_Sap_tbl_OT_SedeEmpresa', 'IdOT_SedeEmpresa "IdSedeEmpresa", OT_SedeEmpresa "SedeEmpresa"', '', 'IdOT_SedeEmpresa');
-$SQL_OT_TIPOCARGO = Seleccionar('uvw_Sap_tbl_OT_TipoLlamada', 'IdOT_TipoLlamada "IdTipoCargo", OT_TipoLlamada "TipoCargo"', '', 'IdOT_TipoLlamada');
-$SQL_OT_TIPOPROBLEMA = Seleccionar('uvw_Sap_tbl_OT_TipoProblema', 'IdOT_TipoProblema "IdTipoProblema", OT_TipoProblema "TipoProblema"', '', 'IdOT_TipoProblema');
-$SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPreventivo "IdTipoPreventivo", OT_TipoPreventivo "TipoPreventivo"', '', 'IdOT_TipoPreventivo');
+// SMM, 29/02/2024
+$SQL_TipoEquipo = Seleccionar("tbl_TarjetaEquipo_TiposEquipos", "*", "estado_tipo_equipo = 'Y'");
+$SQL_Ubicacion = Seleccionar("uvw_tbl_TarjetaEquipo_Ubicaciones", "*");
+$SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 
 // Datos de dimensiones del usuario actual, 31/05/2023
 $SQL_DatosEmpleados = Seleccionar("uvw_tbl_Usuarios", "*", "ID_Usuario='" . $_SESSION['CodUser'] . "'");
 $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
-
-// Filtrar conceptos de salida.
-$Where_Conceptos = "ID_Usuario='" . $_SESSION['CodUser'] . "'";
-$SQL_Conceptos = Seleccionar('uvw_tbl_UsuariosConceptos', '*', $Where_Conceptos);
-
-$Conceptos = array();
-while ($Concepto = sqlsrv_fetch_array($SQL_Conceptos)) {
-	$Conceptos[] = ("'" . $Concepto['IdConcepto'] . "'");
-}
-
-$Filtro_Conceptos = "Estado = 'Y'";
-if (count($Conceptos) > 0 && ($edit == 0)) {
-	$Filtro_Conceptos .= " AND id_concepto_salida IN (";
-	$Filtro_Conceptos .= implode(",", $Conceptos);
-	$Filtro_Conceptos .= ")";
-}
-
-$SQL_ConceptoSalida = Seleccionar('tbl_SalidaInventario_Conceptos', '*', $Filtro_Conceptos, 'id_concepto_salida');
-// Hasta aquí, 20/12/2023
 ?>
 
 <style>
@@ -171,31 +153,74 @@ $SQL_ConceptoSalida = Seleccionar('tbl_SalidaInventario_Conceptos', '*', $Filtro
 						<div class="col-lg-4">
 							<div class="form-group">
 								<div class="col-xs-12" style="margin-bottom: 10px;">
-									<label class="control-label">Almacén origen <span
-											class="text-danger">*</span></label>
+									<label class="control-label">ID servicio (IdArticulo)</label>
+									
+									<input name="ItemCode" type="text" class="form-control" id="ItemCode"
+										maxlength="100" placeholder="ID del articulo o servicio">
+								</div> <!-- col-xs-12 -->
 
-									<select name="Almacen" id="Almacen" class="form-control select2" required>
+								<div class="col-xs-12" style="margin-bottom: 10px;">
+									<label class="control-label">Serial</label>
+									
+									<input name="SerialEquipo" type="text" class="form-control" id="SerialEquipo"
+										maxlength="100" placeholder="Serial fabricante o interno">
+								</div> <!-- col-xs-12 -->
+
+								<div class="col-xs-12" style="margin-bottom: 10px;">
+									<label class="control-label">Buscar dato</label>
+									
+									<input name="BuscarDato" type="text" class="form-control" id="BuscarDato"
+										placeholder="Digite un dato completo, o una parte del mismo...">
+								</div> <!-- col-xs-12 -->
+							</div> <!-- form-group -->
+						</div> <!-- col-lg-4 -->
+
+						<div class="col-lg-4">
+							<div class="form-group">
+								<div class="col-xs-12" style="margin-bottom: 10px;">
+									<label class="control-label">Tipo equipo</label>
+
+									<select name="id_tipo_equipo" id="id_tipo_equipo" class="form-control select2">
 										<option value="">Seleccione...</option>
 
-										<?php while ($row_Almacen = sqlsrv_fetch_array($SQL_Almacen)) { ?>
-											<option <?php if ($row_DatosEmpleados["AlmacenOrigen"] == $row_Almacen['WhsCode']) {
-												echo "selected";
-											} ?> value="<?php echo $row_Almacen['WhsCode']; ?>"><?php echo $row_Almacen['WhsCode'] . " - " . $row_Almacen['WhsName']; ?></option>
+										<?php while ($row_TipoEquipo = sqlsrv_fetch_array($SQL_TipoEquipo)) { ?>
+											<option value="<?php echo $row_TipoEquipo['id_tipo_equipo']; ?>">
+												<?php echo $row_TipoEquipo['tipo_equipo']; ?>
+											</option>
 										<?php } ?>
 									</select>
 								</div> <!-- col-xs-12 -->
 
-								<div class="col-xs-12" style="margin-bottom: 10px;">
-									<label class="control-label">Almacén destino</label>
+								<?php foreach ($array_Jerarquias as &$dimJ) { ?>
+									<div class="col-xs-12" style="margin-bottom: 10px;">
+										<label class="control-label">
+											<?php echo $dimJ['dimension_jerarquia']; ?> <span class="text-danger">*</span>
+										</label>
 
-									<select name="AlmacenDestino" id="AlmacenDestino" class="form-control select2" <?php if($Inventario == "") {
-										echo "disabled";
-									} ?>>
+										<?php $DimJCode = intval($dimJ['id_dimension_jerarquia'] ?? 0); ?>
+										<select name="IdJerarquia<?php echo $DimJCode; ?>" required
+											id="IdJerarquia<?php echo $DimJCode; ?>" class="form-control select2">
+											<option value="">Seleccione...</option>
+
+											<?php $SQL_DimJ = Seleccionar("tbl_TarjetaEquipo_Jerarquias", "*", "id_dimension_jerarquia = $DimJCode"); ?>
+											<?php while ($row_DimJ = sqlsrv_fetch_array($SQL_DimJ)) { ?>
+												<option value="<?php echo $row_DimJ['id_jerarquia']; ?>">
+													<?php echo $row_DimJ['jerarquia']; ?>
+												</option>
+											<?php } ?>
+										</select>
+									</div> <!-- col-xs-12 -->
+								<?php } ?>
+
+								<div class="col-xs-12" style="margin-bottom: 10px;">
+									<label class="control-label">Ubicación</label>
+
+									<select name="id_ubicacion_equipo" id="id_ubicacion_equipo" class="form-control select2">
 										<option value="">Seleccione...</option>
 
-										<?php while ($row_AlmacenDestino = sqlsrv_fetch_array($SQL_AlmacenDestino)) { ?>
-											<option value="<?php echo $row_AlmacenDestino['ToWhsCode']; ?>">
-												<?php echo $row_AlmacenDestino['ToWhsCode'] . " - " . $row_AlmacenDestino['ToWhsName']; ?>
+										<?php while ($row_Ubicacion = sqlsrv_fetch_array($SQL_Ubicacion)) { ?>
+											<option value="<?php echo $row_Ubicacion['id_ubicacion_equipo']; ?>">
+												<?php echo $row_Ubicacion['ubicacion_equipo']; ?>
 											</option>
 										<?php } ?>
 									</select>
@@ -204,157 +229,12 @@ $SQL_ConceptoSalida = Seleccionar('tbl_SalidaInventario_Conceptos', '*', $Filtro
 								<div class="col-xs-12" style="margin-bottom: 10px;">
 									<label class="control-label">Proyecto</label>
 
-									<select id="Proyecto" name="Proyecto" class="form-control select2">
-										<option value="">(NINGUNO)</option>
+									<select name="Proyecto" id="Proyecto" class="form-control select2">
+										<option value="">Seleccione...</option>
 
 										<?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) { ?>
-											<option <?php if ($Proyecto == $row_Proyecto['IdProyecto']) {
-												echo "selected";
-											} ?> value="<?php echo $row_Proyecto['IdProyecto']; ?>">
-												<?php echo $row_Proyecto['IdProyecto'] . " - " . $row_Proyecto['DeProyecto']; ?>
-											</option>
-										<?php } ?>
-									</select>
-								</div> <!-- col-xs-12 -->
-
-								<div class="col-xs-12" style="margin-bottom: 10px;">
-									<label class="control-label">Lista Precios <span
-											class="text-danger">*</span></label>
-
-									<select name="ListaPrecio" id="ListaPrecio" class="form-control select2" required>
-										<option value="">Seleccione...</option>
-
-										<?php while ($row_ListaPrecio = sqlsrv_fetch_array($SQL_ListaPrecios)) { ?>
-											<option <?php if ($ListaPrecio == $row_ListaPrecio['IdListaPrecio']) {
-												echo "selected";
-											} ?> value="<?php echo $row_ListaPrecio['IdListaPrecio']; ?>">
-
-												<?php echo $row_ListaPrecio['IdListaPrecio'] . " - " . $row_ListaPrecio['DeListaPrecio']; ?>
-
-											</option>
-										<?php } ?>
-									</select>
-								</div> <!-- col-xs-12 -->
-
-								<div class="col-xs-12" style="margin-bottom: 10px;">
-									<label class="control-label">Empleado de ventas <span
-											class="text-danger">*</span></label>
-
-									<select name="EmpVentas" id="EmpVentas" class="form-control select2" required>
-										<option value="">Seleccione...</option>
-
-										<?php while ($row_EmpleadosVentas = sqlsrv_fetch_array($SQL_EmpleadosVentas)) { ?>
-											<option <?php if ($IdEmpleado == $row_EmpleadosVentas['ID_EmpVentas']) {
-												echo "selected";
-											} ?> value="<?php echo $row_EmpleadosVentas['ID_EmpVentas']; ?>"><?php echo $row_EmpleadosVentas['ID_EmpVentas'] . " - " . $row_EmpleadosVentas['DE_EmpVentas']; ?></option>
-										<?php } ?>
-									</select>
-								</div> <!-- col-xs-12 -->
-
-								<div class="col-xs-12" style="margin-bottom: 10px;">
-									<label class="control-label">
-										Concepto Salida
-									</label>
-									
-									<select name="ConceptoSalida" id="ConceptoSalida" class="form-control select2" <?php if($Inventario == "") {
-										echo "disabled";
-									} ?>>
-										<option value="">Seleccione...</option>
-											
-										<?php while ($row_ConceptoSalida = sqlsrv_fetch_array($SQL_ConceptoSalida)) { ?>
-											<option value="<?php echo $row_ConceptoSalida['id_concepto_salida']; ?>">
-												<?php echo $row_ConceptoSalida['id_concepto_salida'] . "-" . $row_ConceptoSalida['concepto_salida']; ?>
-											</option>
-										<?php } ?>
-									</select>
-								</div> <!-- col-xs-12 -->
-							</div> <!-- form-group -->
-						</div> <!-- col-lg-4 -->
-
-						<div class="col-lg-4">
-							<div class="form-group">
-								<div class="col-xs-12" style="margin-bottom: 10px;">
-									<label class="control-label">Tipo OT (Origen Llamada) <span
-											class="text-danger">*</span></label>
-
-									<select name="IdTipoOT" id="IdTipoOT" class="form-control select2" required>
-										<option value="">Seleccione...</option>
-
-										<?php while ($row_ORIGEN = sqlsrv_fetch_array($SQL_OT_ORIGEN)) { ?>
-											<option <?php if ($OrigenLlamada == $row_ORIGEN['IdTipoOT']) {
-												echo "selected";
-											} ?> value="<?php echo $row_ORIGEN['IdTipoOT']; ?>">
-												<?php echo $row_ORIGEN['IdTipoOT'] . " - " . $row_ORIGEN['TipoOT']; ?>
-											</option>
-										<?php } ?>
-									</select>
-								</div> <!-- col-xs-12 -->
-
-								<div class="col-xs-12" style="margin-bottom: 10px;">
-									<label class="control-label">Tipo Problema <span
-											class="text-danger">*</span></label>
-
-									<select name="IdTipoProblema" id="IdTipoProblema" class="form-control select2"
-										required>
-										<option value="">Seleccione...</option>
-
-										<?php while ($row_TIPOPROBLEMA = sqlsrv_fetch_array($SQL_OT_TIPOPROBLEMA)) { ?>
-											<option <?php if ($TipoProblemaLlamada == $row_TIPOPROBLEMA['IdTipoProblema']) {
-												echo "selected";
-											} ?> value="<?php echo $row_TIPOPROBLEMA['IdTipoProblema']; ?>">
-												<?php echo $row_TIPOPROBLEMA['IdTipoProblema'] . " - " . $row_TIPOPROBLEMA['TipoProblema']; ?>
-											</option>
-										<?php } ?>
-									</select>
-								</div> <!-- col-xs-12 -->
-
-								<div class="col-xs-12" style="margin-bottom: 10px;">
-									<label class="control-label">Sede Empresa <span class="text-danger">*</span></label>
-
-									<select name="IdSedeEmpresa" id="IdSedeEmpresa" class="form-control select2"
-										required>
-										<option value="">Seleccione...</option>
-
-										<?php while ($row_SEDE_EMPRESA = sqlsrv_fetch_array($SQL_OT_SEDE_EMPRESA)) { ?>
-											<option <?php if ($SedeEmpresa == $row_SEDE_EMPRESA['IdSedeEmpresa']) {
-												echo "selected";
-											} ?> value="<?php echo $row_SEDE_EMPRESA['IdSedeEmpresa']; ?>">
-												<?php echo $row_SEDE_EMPRESA['IdSedeEmpresa'] . " - " . $row_SEDE_EMPRESA['SedeEmpresa']; ?>
-											</option>
-										<?php } ?>
-									</select>
-								</div> <!-- col-xs-12 -->
-
-								<div class="col-xs-12" style="margin-bottom: 10px;">
-									<label class="control-label">Tipo Cargo (Tipo Llamada) <span
-											class="text-danger">*</span></label>
-
-									<select name="IdTipoCargo" id="IdTipoCargo" class="form-control select2" required>
-										<option value="">Seleccione...</option>
-
-										<?php while ($row_TIPOCARGO = sqlsrv_fetch_array($SQL_OT_TIPOCARGO)) { ?>
-											<option <?php if ($TipoLlamada == $row_TIPOCARGO['IdTipoCargo']) {
-												echo "selected";
-											} ?> value="<?php echo $row_TIPOCARGO['IdTipoCargo']; ?>">
-												<?php echo $row_TIPOCARGO['IdTipoCargo'] . " - " . $row_TIPOCARGO['TipoCargo']; ?>
-											</option>
-										<?php } ?>
-									</select>
-								</div> <!-- col-xs-12 -->
-
-								<div class="col-xs-12" style="margin-bottom: 10px;">
-									<label class="control-label">Tipo Preventivo <span
-											class="text-danger">*</span></label>
-
-									<select name="IdTipoPreventivo" id="IdTipoPreventivo" class="form-control select2"
-										required>
-										<option value="">Seleccione...</option>
-
-										<?php while ($row_TIPOPREVENTI = sqlsrv_fetch_array($SQL_OT_TIPOPREVENTI)) { ?>
-											<option <?php if ($TipoPreventivo == $row_TIPOPREVENTI['IdTipoPreventivo']) {
-												echo "selected";
-											} ?> value="<?php echo $row_TIPOPREVENTI['IdTipoPreventivo']; ?>">
-												<?php echo $row_TIPOPREVENTI['IdTipoPreventivo'] . " - " . $row_TIPOPREVENTI['TipoPreventivo']; ?>
+											<option value="<?php echo $row_Proyecto['IdProyecto']; ?>">
+												<?php echo $row_Proyecto['DeProyecto']; ?>
 											</option>
 										<?php } ?>
 									</select>
@@ -399,22 +279,10 @@ $SQL_ConceptoSalida = Seleccionar('tbl_SalidaInventario_Conceptos', '*', $Filtro
 				</div> <!-- row -->
 
 				<div class="row">
-					<div class="col-lg-6">
-						<label class="control-label">Buscar artículo <span class="text-danger">*</span></label>
-
-						<input name="BuscarItem" id="BuscarItem" type="text" class="form-control"
-							placeholder="Escriba para buscar..." required>
-					</div>
-
-					<div class="col-lg-4" style="margin-top: 20px;">
-						<label class="checkbox-inline i-checks"><input name="chkStock" type="checkbox" id="chkStock"
-								value="1" checked="checked"> Mostrar solo los artículos con
-							stock</label>
-					</div>
-
-					<div class="col-lg-2" style="margin-top: 20px;">
-						<button type="submit" class="btn btn-outline btn-success pull-right"><i
-								class="fa fa-search"></i> Buscar</button>
+					<div class="col-lg-12" style="margin-top: 20px;">
+						<button type="submit" class="btn btn-outline btn-success pull-right">
+							<i class="fa fa-search"></i> Buscar
+						</button>
 					</div>
 				</div> <!-- row -->
 			</form>

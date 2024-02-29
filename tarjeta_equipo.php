@@ -848,6 +848,10 @@ while ($row_ValPropiedad = sqlsrv_fetch_array($SQL_ValoresPropiedades)) {
 				</div>
 				<!-- Fin, myModal -->
 
+				<!-- SMM, 29/02/2024 -->
+				<div class="modal inmodal fade" id="mdComponents" tabindex="1" role="dialog" aria-hidden="true"
+					data-backdrop="static" data-keyboard="false"></div>
+
 				<?php if ($edit == 1) { ?>
 					<div class="ibox-content">
 						<?php include "includes/spinner.php"; ?>
@@ -1887,6 +1891,12 @@ while ($row_ValPropiedad = sqlsrv_fetch_array($SQL_ValoresPropiedades)) {
 											</a>
 										</li>
 
+										<li id="nav-components" style="<?php if($edit != 1) { echo "display: none"; } ?>">
+											<a data-toggle="tab" href="#tab-components">
+												<i class="fa fa-cogs"></i> Componentes
+											</a>
+										</li>
+
 										<li id="nav-properties" style="<?php if($edit != 1) { echo "display: none"; } ?>">
 											<a data-toggle="tab" href="#tab-properties">
 												<i class="fa fa-cogs"></i> Propiedades
@@ -2616,6 +2626,95 @@ while ($row_ValPropiedad = sqlsrv_fetch_array($SQL_ValoresPropiedades)) {
 										</div>
 										<!-- Fin Gestión CRM, SMM 01/07/2022 -->
 
+										<!-- Inicio, Componentes -->
+										<div id="tab-components" class="tab-pane" style="<?php if($edit != 1) { echo "display: none"; } ?>">
+											<div class="panel-body">
+												<div class="row">
+													<div class="col-lg-12 m-4">
+														<button type="button" onclick="AddComponents()" class="alkin btn btn-primary"><i class="fa fa-plus-circle"></i> Agregar Componente</button>
+													</div>
+												</div>
+
+												<br>
+												<div class="row">
+													<div class="col-lg-12 text-center">
+														<?php if (isset($SQL_HistGestion) && sqlsrv_has_rows($SQL_HistGestion)) { ?>
+															<div class="table-responsive"
+																style="max-height: 230px; overflow: hidden; overflow-y: auto;">
+																<table
+																	class="table table-striped table-bordered table-hover dataTables-example">
+																	<thead>
+																		<tr>
+																			<th>Tipo gestión</th>
+																			<th>Destino</th>
+																			<th>Evento</th>
+																			<th>Resultado</th>
+																			<th>Comentario</th>
+																			<th>Causa no pago</th>
+																			<th>Acuerdo de pago</th>
+																			<th>Fecha registro</th>
+																			<th>Usuario</th>
+																			<th>Sucursal</th>
+																		</tr>
+																	</thead>
+																	<tbody>
+																		<?php while ($row_HistGestion = sqlsrv_fetch_array($SQL_HistGestion)) { ?>
+																			<?php if (false || (isset($row['SerialInterno']) && ($row_HistGestion['NumeroSerie'] == $row['SerialInterno']))) { ?>
+																				<tr class="gradeX">
+																					<td>
+																						<?php echo $row_HistGestion['TipoGestion']; ?>
+																					</td>
+																					<td>
+																						<?php echo $row_HistGestion['Destino']; ?>
+																					</td>
+																					<td>
+																						<?php echo $row_HistGestion['NombreEvento']; ?>
+																					</td>
+																					<td>
+																						<?php echo $row_HistGestion['ResultadoGestion']; ?>
+																					</td>
+																					<td>
+																						<?php echo $row_HistGestion['Comentarios']; ?>
+																					</td>
+																					<td>
+																						<?php echo $row_HistGestion['CausaNoPago']; ?>
+																					</td>
+																					<td>
+																						<?php if ($row_HistGestion['AcuerdoPago'] == 1) {
+																							echo "SI";
+																						} else {
+																							echo "NO";
+																						} ?>
+																					</td>
+																					<td>
+																						<?php echo $row_HistGestion['FechaRegistro']->format('Y-m-d H:i'); ?>
+																					</td>
+																					<td>
+																						<?php echo $row_HistGestion['Usuario']; ?>
+																					</td>
+																					<td>
+																						<?php echo $row_HistGestion['SucursalCliente']; ?>
+																					</td>
+																				</tr>
+																			<?php } ?>
+																		<?php } ?>
+																	</tbody>
+																</table>
+															</div>
+														<?php } else { ?>
+															<br>
+															<i class="fa fa-search"	style="font-size: 18px; color: lightgray;"></i>
+															<span style="font-size: 13px; color: lightgray;">
+																No hay componentes para mostrar
+															</span>
+														<?php } ?>
+													</div>
+												</div>
+											</div>
+											<!-- /.panel-body -->
+										</div>
+										<!-- Fin, Componentes -->
+
 										<!-- Inicio, Propiedades -->
 										<div id="tab-properties" class="tab-pane" style="<?php if($edit != 1) { echo "display: none"; } ?>">
 											<div class="row">
@@ -3062,6 +3161,48 @@ while ($row_ValPropiedad = sqlsrv_fetch_array($SQL_ValoresPropiedades)) {
 			} else {
 				vP.value = P;
 				txtNotas.removeAttribute("required");
+			}
+		}
+
+		// SMM, 29/02/2024
+		function AddComponents() {
+			let ordenServicio = $("#OrdenServicioCliente").val();
+
+			let serie = $("#Serie").val();
+			let proyecto = $("#PrjCode").val();
+			let cardCode = $("#CardCode").val();
+			let listaPrecio = $("#IdListaPrecio").val();
+			let empleado = $("#EmpleadoVentas").val();
+
+			if (((cardCode != "") && (serie != ""))) {
+				$.ajax({
+					type: "POST",
+					url: "md_consultar_componentes.php",
+					data: {
+						ObjType: 17,
+						OT: ordenServicio,
+						Edit: <?php echo $edit; ?>,
+						DocType: "<?php echo ($edit == 0) ? 1 : 2; ?>",
+						DocId: "<?php echo $row['ID_OrdenVenta'] ?? 0; ?>",
+						DocEvent: "<?php echo $row['IdEvento'] ?? 0; ?>",
+						CardCode: cardCode,
+						IdSeries: serie,
+						IdProyecto: proyecto,
+						ListaPrecio: listaPrecio,
+						IdEmpleado: empleado
+					},
+					success: function (response) {
+						$('#mdComponents').html(response);
+						$("#mdComponents").modal("show");
+					}
+				});
+			} else {
+				Swal.fire({
+					title: "¡Advertencia!",
+					text: "Debe seleccionar un Cliente y una Serie.",
+					icon: "warning",
+					confirmButtonText: "OK"
+				});
 			}
 		}
 	</script>
