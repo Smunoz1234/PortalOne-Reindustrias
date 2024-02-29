@@ -246,9 +246,9 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Grabar Solicitud de compras
 						//Registrar archivo en la BD
 						$ParamInsAnex = array(
 							"'$IdTipoDocumento'",
-							"'" . $IdSolicitudCompra . "'",
-							"'" . $OnlyName . "'",
-							"'" . $Ext . "'",
+							"'$IdSolicitudCompra'",
+							"'$OnlyName'",
+							"'$Ext'",
 							"1",
 							"'" . $_SESSION['CodUser'] . "'",
 							"1",
@@ -278,7 +278,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Grabar Solicitud de compras
 				// Enviar datos al WebServices
 				try {
 					$Parametros = array(
-						'id_documento' => intval($IdSolSalida),
+						'id_documento' => intval($IdSolicitudCompra),
 						'id_evento' => intval($IdEvento),
 					);
 					$Metodo = "SolicitudesCompras";

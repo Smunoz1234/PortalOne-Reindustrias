@@ -271,9 +271,9 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Grabar Solicitud de compras
 						//Registrar archivo en la BD
 						$ParamInsAnex = array(
 							"'$IdTipoDocumento'", // SMM, 02/02/2024
-							"'" . $IdSolicitudCompra . "'",
-							"'" . $OnlyName . "'",
-							"'" . $Ext . "'",
+							"'$IdSolicitudCompra'",
+							"'$OnlyName'",
+							"'$Ext'",
 							"1",
 							"'" . $_SESSION['CodUser'] . "'",
 							"1",
