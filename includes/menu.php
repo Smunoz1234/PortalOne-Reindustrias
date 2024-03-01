@@ -651,6 +651,16 @@ if (!isset($_COOKIE["banderaMenu"])) {
 				</ul>
 			</li>
 			<?php }?>
+
+			<!-- SMM, 01/03/2024 -->
+			<?php if(PermitirFuncion(1901)){?>
+				<li>
+                    <a href="#"><i class="fa fa-bank"></i> <span class="nav-label">Gestión de bancos</span><span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+						<?php if(PermitirFuncion(1901)){?><li><a class="alnk" href="archivo_pago_banco.php">Archivo para pagos</a></li><?php }?>
+                    </ul>
+                </li>
+			<?php }?>
 		</ul>
 	</div> <!-- Aquí termina -->
 

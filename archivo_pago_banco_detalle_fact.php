@@ -1,6 +1,6 @@
 <?php  
 require_once("includes/conexion.php");
-PermitirAcceso(1801);
+PermitirAcceso(1901);
 
 $Total=0;
 
