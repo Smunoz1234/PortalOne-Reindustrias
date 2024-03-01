@@ -21,10 +21,11 @@ $SQL=Seleccionar('uvw_Sap_tbl_AsistentePagosDetalle','*',"IdEntry='".$_POST['id'
 						<div class="col-lg-3">
 							<select name="Banco" class="form-control" id="Banco">
 								<option value="Bancolombia">Bancolombia</option>
+								<option value="BBVA">BBVA</option>
 							</select>
 						</div>
 						<div class="col-lg-1">
-							<a href="exportar_excel.php?exp=16&Cons=<?php echo base64_encode($_POST['id']);?>&sp=<?php echo base64_encode("sp_AsistentePagosDetalle_Bancolombia");?>" class="btn btn-outline btn-primary"><i class="fa fa-file-excel-o"></i> Descargar archivo</a>
+							<a id="excelBanco" href="exportar_excel.php?exp=16&Cons=<?php echo base64_encode($_POST['id']);?>&sp=<?php echo base64_encode("sp_AsistentePagosDetalle_Bancolombia");?>" class="btn btn-outline btn-primary"><i class="fa fa-file-excel-o"></i> Descargar archivo</a>
 						</div>			
 					</div>
 				</div>
@@ -74,6 +75,15 @@ $SQL=Seleccionar('uvw_Sap_tbl_AsistentePagosDetalle','*',"IdEntry='".$_POST['id'
 	</div>
 <script>
  $(document).ready(function(){
+	$("#Banco").on("change", function() {
+		let banco = $("#Banco").val();
+		
+		let excelB1 = "exportar_excel.php?exp=16&Cons=<?php echo base64_encode($_POST['id']);?>&sp=<?php echo base64_encode("sp_AsistentePagosDetalle_Bancolombia");?>";
+		let excelB2 = "exportar_excel.php?exp=22&Cons=<?php echo base64_encode($_POST['id']);?>&sp=<?php echo base64_encode("sp_AsistentePagosDetalle_BBVA");?>";
+		
+		let hrefExcel = (banco === "Bancolombia") ? excelB1 : excelB2;
+		$("#excelBanco").attr("href", hrefExcel);
+	});
 	 
 	var table = $('.dataTables-Details').DataTable({
 		pageLength: 10,
