@@ -1,7 +1,6 @@
 <?php require_once "includes/conexion.php";
-
-print_r($_POST);
-exit();
+// print_r($_POST);
+// exit();
 
 // Dimensiones. SMM, 29/05/2023
 $SQL_Dimensiones = Seleccionar('uvw_Sap_tbl_Dimensiones', '*', "DimActive='Y'");
@@ -14,29 +13,69 @@ while ($row_Dimension = sqlsrv_fetch_array($SQL_Dimensiones)) {
 
 $Filtro = "TipoEquipo <> ''";
 
-$ItemCode = $_POST["ItemCode"] ?? "";
+$ItemCode = $_POST["item_code"] ?? "";
 if ($ItemCode != "") {
     $Filtro .= " AND ItemCode='$ItemCode'";
 }
 
-$SerialEquipo = $_POST["SerialEquipo"] ?? "";
+$SerialEquipo = $_POST["serial_equipo"] ?? "";
 if ($SerialEquipo != "") {
     $Filtro .= " AND (SerialFabricante LIKE '%$SerialEquipo%' OR SerialInterno LIKE '%$SerialEquipo%')";
 }
 
-$EstadoEquipo = $_POST["EstadoEquipo"] ?? "";
-if ($EstadoEquipo != "") {
-    $Filtro .= " AND CodEstado='$EstadoEquipo'";
-}
-
-$Cliente = $_POST["Cliente"] ?? "";
-if ($Cliente != "") {
-    $Filtro .= " AND CardCode = '$Cliente'";
-}
-
-$BuscarDato = $_POST['BuscarDato'] ?? "";
+$BuscarDato = $_POST['buscar_dato'] ?? "";
 if ($BuscarDato != "") {
     $Filtro .= " AND (Calle LIKE '%$BuscarDato%' OR CodigoPostal LIKE '%$BuscarDato%' OR Barrio LIKE '%$BuscarDato%' OR Ciudad LIKE '%$BuscarDato%' OR Distrito LIKE '%$BuscarDato%' OR SerialFabricante LIKE '%$BuscarDato%' OR SerialInterno LIKE '%$BuscarDato%' OR IdTarjetaEquipo LIKE '%$BuscarDato%')";
+}
+
+$TipoEquipo = $_POST["id_tipo_equipo"] ?? "";
+if ($TipoEquipo != "") {
+    $Filtro .= " AND IdTipoEquipoPropiedad='$TipoEquipo'";
+}
+
+$UbicacionEquipo = $_POST["id_ubicacion_equipo"] ?? "";
+if ($UbicacionEquipo != "") {
+    $Filtro .= " AND IdUbicacion = '$UbicacionEquipo'";
+}
+
+$IdJerarquia1 = $_POST["id_jerarquia_1"] ?? "";
+if ($IdJerarquia1 != "") {
+    $Filtro .= " AND IdJerarquia1 = '$IdJerarquia1'";
+}
+
+$IdJerarquia2 = $_POST["id_jerarquia_2"] ?? "";
+if ($IdJerarquia2 != "") {
+    $Filtro .= " AND IdJerarquia2 = '$IdJerarquia2'";
+}
+
+$IdProyecto = $_POST["id_proyecto"] ?? "";
+if ($IdProyecto != "") {
+    $Filtro .= " AND IdProyecto = '$IdProyecto'";
+}
+
+$IdDimension1 = $_POST["id_dimension_1"] ?? "";
+if ($IdDimension1 != "") {
+    $Filtro .= " AND IdDimension1 = '$IdDimension1'";
+}
+
+$IdDimension2 = $_POST["id_dimension_2"] ?? "";
+if ($IdDimension2 != "") {
+    $Filtro .= " AND IdDimension2 = '$IdDimension2'";
+}
+
+$IdDimension3 = $_POST["id_dimension_3"] ?? "";
+if ($IdDimension3 != "") {
+    $Filtro .= " AND IdDimension3 = '$IdDimension3'";
+}
+
+$IdDimension4 = $_POST["id_dimension_4"] ?? "";
+if ($IdDimension4 != "") {
+    $Filtro .= " AND IdDimension4 = '$IdDimension4'";
+}
+
+$IdDimension5 = $_POST["id_dimension_5"] ?? "";
+if ($IdDimension5 != "") {
+    $Filtro .= " AND IdDimension5 = '$IdDimension5'";
 }
 
 // Realizar consulta con filtros
@@ -44,25 +83,29 @@ $Where = "$Filtro ORDER BY IdTarjetaEquipo DESC";
 $Cons_TE = "SELECT TOP 1000 * FROM uvw_Sap_tbl_TarjetasEquipos WHERE $Where";
 $SQL = sqlsrv_query($conexion, $Cons_TE);
 
-// SMM, 21/11/2023
-// if (!$SQL) {
+// SMM, 04/03/2024
+if (!$SQL) {
     echo $Cons_TE;
-// }
+}
 ?>
 
 <table id="footableOne" class="table" data-paging="true" data-sorting="true">
     <thead>
         <tr>
-            <th>Código cliente</th>
-            <th>Cliente</th>
-            <th>Serial fabricante</th>
-
+            <th>Código Artículo</th>
+            <th>Artículo</th>
+            <th>Serial Interno</th>
+            <th>Serial Fabricante</th>
             <th>Acciones</th>
 
-            <th>Serial interno</th>
-            <th>Núm.</th>
-            <th data-breakpoints="all">Código de artículo</th>
-            <th data-breakpoints="all">Artículo</th>
+            <th data-breakpoints="all">ID Tarjeta Equipo</th>
+            <th data-breakpoints="all">Tipo Equipo Propiedad</th>
+            <th data-breakpoints="all">Ubicación</th>
+            
+            <th data-breakpoints="all">Jerarquia 1</th>
+            <th data-breakpoints="all">Jerarquia 2</th>
+
+            <th data-breakpoints="all">Proyecto</th>
             
             <?php foreach ($array_Dimensiones as &$dim) { ?>
                 <th data-breakpoints="all">
@@ -70,19 +113,25 @@ $SQL = sqlsrv_query($conexion, $Cons_TE);
                 </th>
             <?php } ?>
             
-            <th data-breakpoints="all">Tipo de equipo</th>
+            <th data-breakpoints="all">Código Cliente</th>
+            <th data-breakpoints="all">Cliente</th>
+            <th data-breakpoints="all">Tipo Equipo</th>
             <th data-breakpoints="all">Estado</th>
-            <th data-breakpoints="all">Acciones</th>
+            <th data-breakpoints="all">Otras Acciones</th>
         </tr>
     </thead>
     <tbody>
         <?php while ($row = sqlsrv_fetch_array($SQL)) { ?>
-            <tr id="<?php echo $row['IdArticulo']; ?>">
+            <tr id="<?php echo $row['IdTarjetaEquipo']; ?>">
                 <td>
-                    <?php echo $row['CardCode']; ?>
+                    <?php echo $row['ItemCode']; ?>
                 </td>
                 <td>
-                    <?php echo $row['CardName']; ?>
+                    <?php echo $row['ItemName']; ?>
+                </td>
+                
+                <td>
+                    <?php echo $row['SerialInterno']; ?>
                 </td>
                 <td>
                     <?php echo $row['SerialFabricante']; ?>
@@ -90,26 +139,29 @@ $SQL = sqlsrv_query($conexion, $Cons_TE);
 
                 <td>
                     <button class="btn btn-success btn-xs"
-                        onclick="AgregarArticulo('<?php echo $row['IdArticulo']; ?>');"><i class="fa fa-plus"></i>
+                        onclick="AgregarArticulo('<?php echo $row['IdTarjetaEquipo']; ?>');"><i class="fa fa-plus"></i>
                         Agregar</a>
                 </td>
 
                 <td>
-                    <?php echo $row['SerialInterno']; ?>
+                    <?php echo $row['IdTarjetaEquipo']; ?>
                 </td>
                 <td>
-                    <a type="button" class="btn btn-success btn-xs" title="Adicionar o cambiar TE"
-                        onclick="cambiarTE('<?php echo $row['IdTarjetaEquipo']; ?>', '<?php echo 'SN Fabricante: ' . $row['SerialFabricante'] . ' - Núm. Serie: ' . $row['SerialInterno']; ?>', '<?php echo $row['SerialInterno']; ?>')">
-                        <b>
-                            <?php echo $row['IdTarjetaEquipo']; ?>
-                        </b>
-                    </a>
+                    <?php echo $row['IdTipoEquipoPropiedad']; ?>
                 </td>
                 <td>
-                    <?php echo $row['ItemCode']; ?>
+                    <?php echo $row['IdUbicacion']; ?>
+                </td>
+
+                <td>
+                    <?php echo $row["IdJerarquia1"] ?? ""; ?>
                 </td>
                 <td>
-                    <?php echo $row['ItemName']; ?>
+                    <?php echo $row["IdJerarquia2"] ?? ""; ?>
+                </td>
+
+                <td>
+                    <?php echo $row['IdProyecto']; ?>
                 </td>
 
                 <?php foreach ($array_Dimensiones as &$dim) { ?>
@@ -118,6 +170,12 @@ $SQL = sqlsrv_query($conexion, $Cons_TE);
                     </td>
                 <?php } ?>
 
+                <td>
+                    <?php echo $row['CardCode']; ?>
+                </td>
+                <td>
+                    <?php echo $row['CardName']; ?>
+                </td>
                 <td>
                     <?php if ($row['TipoEquipo'] === 'P') {
                         echo 'Compras';

@@ -118,7 +118,7 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 
 <style>
 	.select2-dropdown {
-		z-index: 9000;
+		z-index: 900;
 	}
 
 	.ibox-title {
@@ -132,6 +132,10 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 
 	.collapse-link:hover {
 		cursor: pointer;
+	}
+
+	.swal2-container {
+    	z-index: 9000;
 	}
 </style>
 
@@ -156,7 +160,7 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 									<label class="control-label">ID Articulo</label>
 									
 									<input name="item_code" type="text" class="form-control" id="item_code"
-										maxlength="100" placeholder="ID del articulo o servicio">
+										maxlength="100" placeholder="ID del articulo">
 								</div> <!-- col-xs-12 -->
 
 								<div class="col-xs-12" style="margin-bottom: 10px;">
@@ -194,11 +198,11 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 								<?php foreach ($array_Jerarquias as &$dimJ) { ?>
 									<div class="col-xs-12" style="margin-bottom: 10px;">
 										<label class="control-label">
-											<?php echo $dimJ['dimension_jerarquia']; ?> <span class="text-danger">*</span>
+											<?php echo $dimJ['dimension_jerarquia']; ?> <!-- span class="text-danger">*</span -->
 										</label>
 
 										<?php $DimJCode = intval($dimJ['id_dimension_jerarquia'] ?? 0); ?>
-										<select name="id_jerarquia_<?php echo $DimJCode; ?>" required
+										<select name="id_jerarquia_<?php echo $DimJCode; ?>" <?php // required ?>
 											id="id_jerarquia_<?php echo $DimJCode; ?>" class="form-control select2">
 											<option value="">Seleccione...</option>
 
@@ -247,27 +251,22 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 								<?php foreach ($array_Dimensiones as &$dim) { ?>
 									<div class="col-xs-12" style="margin-bottom: 10px;">
 										<label class="control-label">
-											<?php echo $dim['DescPortalOne']; ?> <span class="text-danger">*</span>
+											<?php echo $dim['DescPortalOne']; ?> <!-- span class="text-danger">*</span -->
 										</label>
 
-										<select name="<?php echo $dim['IdPortalOne'] ?>" <?php //required ?>
-											id="<?php echo $dim['IdPortalOne'] ?>" class="form-control select2">
+										<?php $DimCode = intval($dim['DimCode'] ?? 0); ?>
+										<select name="id_dimension<?php echo $DimCode; ?>"
+											id="id_dimension<?php echo $DimCode; ?>"
+											class="form-control select2" <?php // required ?>>
 											<option value="">Seleccione...</option>
 
 											<?php $SQL_Dim = Seleccionar('uvw_Sap_tbl_DimensionesReparto', '*', 'DimCode=' . $dim['DimCode']); ?>
-
-											<?php if ($dim['DimCode'] == $DimSeries) { ?>
-												<?php $SQL_Dim = $SQL_Sucursales; ?>
-											<?php } ?>
-
 											<?php while ($row_Dim = sqlsrv_fetch_array($SQL_Dim)) { ?>
-												<?php $DimCode = intval($dim['DimCode']); ?>
-												<?php $OcrId = ($DimCode == 1) ? "" : $DimCode; ?>
 
-												<option <?php if ($row_DatosEmpleados["CentroCosto$DimCode"] == $row_Dim['OcrCode']) {
+												<option <?php /* if ($row_DatosEmpleados["CentroCosto$DimCode"] == $row_Dim['OcrCode']) {
 													echo "selected";
-												} ?> value="<?php echo $row_Dim['OcrCode']; ?>">
-													<?php echo $row_Dim['OcrCode'] . " - " . $row_Dim['OcrName']; ?>
+												} */ ?> value="<?php echo $row_Dim['OcrCode']; ?>">
+													<?php echo $row_Dim['OcrName']; ?>
 												</option>
 											<?php } ?>
 										</select>
@@ -433,8 +432,7 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 
 				// Ejemplo de como agregar nuevos campos.
 				// formData.append("Dim1", $("#Dim1").val() || "");
-
-				formData.append("tipodoc", "<?php echo $_POST["TipoDoc"] ?? 2; ?>");
+				// formData.append("tipodoc", "<?php echo $_POST["TipoDoc"] ?? 2; ?>");
 
 				let json = Object.fromEntries(formData);
 				console.log("Line 340", json);
