@@ -3166,42 +3166,27 @@ while ($row_ValPropiedad = sqlsrv_fetch_array($SQL_ValoresPropiedades)) {
 
 		// SMM, 29/02/2024
 		function AddComponents() {
-			let ordenServicio = $("#OrdenServicioCliente").val();
+			let SI = $("#SerialInterno").val();
+			let SF = $("#SerialFabricante").val();
 
-			let serie = $("#Serie").val();
-			let proyecto = $("#PrjCode").val();
-			let cardCode = $("#CardCode").val();
-			let listaPrecio = $("#IdListaPrecio").val();
-			let empleado = $("#EmpleadoVentas").val();
-
-			if (((cardCode != "") && (serie != ""))) {
+			if (((SI == "") && (SF == ""))) {
+				Swal.fire({
+					title: "¡Advertencia!",
+					text: "Debe existir un Serial.",
+					icon: "warning",
+					confirmButtonText: "OK"
+				});
+			} else {
 				$.ajax({
 					type: "POST",
 					url: "md_consultar_componentes.php",
 					data: {
-						ObjType: 17,
-						OT: ordenServicio,
-						Edit: <?php echo $edit; ?>,
-						DocType: "<?php echo ($edit == 0) ? 1 : 2; ?>",
-						DocId: "<?php echo $row['ID_OrdenVenta'] ?? 0; ?>",
-						DocEvent: "<?php echo $row['IdEvento'] ?? 0; ?>",
-						CardCode: cardCode,
-						IdSeries: serie,
-						IdProyecto: proyecto,
-						ListaPrecio: listaPrecio,
-						IdEmpleado: empleado
+						DocId: "<?php echo $IdTarjetaEquipo; ?>"
 					},
 					success: function (response) {
 						$('#mdComponents').html(response);
 						$("#mdComponents").modal("show");
 					}
-				});
-			} else {
-				Swal.fire({
-					title: "¡Advertencia!",
-					text: "Debe seleccionar un Cliente y una Serie.",
-					icon: "warning",
-					confirmButtonText: "OK"
 				});
 			}
 		}

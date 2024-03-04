@@ -1,13 +1,12 @@
 <?php require_once "includes/conexion.php";
-// Dimensiones. SMM, 24/05/2023
-$DimSeries = intval(ObtenerVariable("DimensionSeries"));
-$SQL_Dimensiones = Seleccionar('uvw_Sap_tbl_Dimensiones', '*', "DimActive='Y'");
+$DocId = $_POST["DocId"] ?? "";
+$SQL_Doc = Seleccionar('uvw_Sap_tbl_TarjetasEquipos', '*', "IdTarjetaEquipo='$DocId'");
+$row_Doc = sqlsrv_fetch_array($SQL_Doc);
 
-$array_Dimensiones = [];
-while ($row_Dimension = sqlsrv_fetch_array($SQL_Dimensiones)) {
-	array_push($array_Dimensiones, $row_Dimension);
-}
-// Hasta aquí, SMM 24/05/2023
+// SMM, 29/02/2024
+$SQL_TipoEquipo = Seleccionar("tbl_TarjetaEquipo_TiposEquipos", "*", "estado_tipo_equipo = 'Y'");
+$SQL_Ubicacion = Seleccionar("uvw_tbl_TarjetaEquipo_Ubicaciones", "*");
+$SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 
 // Jerarquias, SMM 29/02/2024
 $SQL_Jerarquias = Seleccionar("tbl_TarjetaEquipo_DimensionJerarquias", "*", "estado_dimension_jerarquia = 'Y'");
@@ -18,98 +17,15 @@ while ($row_Jerarquia = sqlsrv_fetch_array($SQL_Jerarquias)) {
 }
 // Hasta aquí, SMM 29/02/2024
 
-$OT = $_POST['OT'] ?? "";
-$ObjType = $_POST['ObjType'];
-$Edit = $_POST['Edit'];
-$Borrador = $_POST['Borrador'] ?? "0";
-$DocType = $_POST['DocType'];
-$DocId = $_POST['DocId'];
-$DocEvent = $_POST['DocEvent'];
-$CardCode = $_POST['CardCode'] ?? "";
-$IdSeries = $_POST['IdSeries'] ?? "";
-$Proyecto = $_POST['IdProyecto'] ?? "";
-$IdEmpleado = $_POST['IdEmpleado'] ?? "";
-$ListaPrecio = $_POST['ListaPrecio'] ?? "";
+// Dimensiones. SMM, 24/05/2023
+$DimSeries = intval(ObtenerVariable("DimensionSeries"));
+$SQL_Dimensiones = Seleccionar('uvw_Sap_tbl_Dimensiones', '*', "DimActive='Y'");
 
-// SMM, 14/10/2023
-$Solicitud_OT = $_POST['Solicitud'] ?? "";
-
-// SMM, 20/12/2023
-$Inventario = $_POST['Inventario'] ?? "";
-
-// Valores predeterminados en los campos de documentos del usuario según el tipo.
-$OrigenLlamada = ObtenerValorDefecto($ObjType, "OrigenLlamada", false);
-$SedeEmpresa = ObtenerValorDefecto($ObjType, "SedeEmpresa", false);
-$TipoPreventivo = ObtenerValorDefecto($ObjType, "TipoPreventivo", false);
-$TipoProblemaLlamada = ObtenerValorDefecto($ObjType, "TipoProblemaLlamada", false);
-$TipoLlamada = ObtenerValorDefecto($ObjType, "TipoLlamada", false);
-
-// Orden de trabajo (Llamada de servicio). SMM, 28/06/2023
-$SQL_OT = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "[ID_LlamadaServicio]='$OT'");
-
-$row_OT = array();
-if(sqlsrv_has_rows($SQL_OT)) {
-	$row_OT = sqlsrv_fetch_array($SQL_OT);
-} else {
-	// Buscar parámetros en la solicitud. SMM, 14/10/2023
-	$SQL_OT = Seleccionar('uvw_tbl_SolicitudLlamadasServicios', '*', "[ID_SolicitudLlamadaServicio]='$Solicitud_OT'");
-	$row_OT = sqlsrv_fetch_array($SQL_OT);
+$array_Dimensiones = [];
+while ($row_Dimension = sqlsrv_fetch_array($SQL_Dimensiones)) {
+	array_push($array_Dimensiones, $row_Dimension);
 }
-
-if (isset($row_OT["IdOrigenLlamada"]) && ($row_OT["IdOrigenLlamada"] != "")) {
-	$IdOrigenLlamada = $row_OT["IdOrigenLlamada"];
-
-	$SQL_Origen = Seleccionar("uvw_Sap_tbl_LlamadasServiciosOrigen", '*', "IdOrigenLlamada='$IdOrigenLlamada'");
-	$row_Origen = sqlsrv_fetch_array($SQL_Origen);
-	
-	$OrigenLlamada = $row_Origen["IdRelacionMarketing"] ?? "";
-}
-
-if (isset($row_OT["CDU_TipoPreventivo"]) && ($row_OT["CDU_TipoPreventivo"] != "")) {
-	$CDU_TipoPreventivo = $row_OT["CDU_TipoPreventivo"];
-
-	$SQL_TipoPreventivo = Seleccionar("uvw_Sap_tbl_LlamadasServicios_TipoPreventivo", '*', "CodigoTipoPreventivo='$CDU_TipoPreventivo'");
-	$row_TipoPreventivo = sqlsrv_fetch_array($SQL_TipoPreventivo);
-	
-	$TipoPreventivo = $row_TipoPreventivo["IdRelacionMarketing"] ?? "";
-}
-
-if (isset($row_OT["IdTipoProblemaLlamada"]) && ($row_OT["IdTipoProblemaLlamada"] != "")) {
-	$IdTipoProblemaLlamada = $row_OT["IdTipoProblemaLlamada"];
-
-	$SQL_TipoProblema = Seleccionar("uvw_Sap_tbl_TipoProblemasLlamadas", '*', "IdTipoProblemaLlamada='$IdTipoProblemaLlamada'");
-	$row_TipoProblema = sqlsrv_fetch_array($SQL_TipoProblema);
-	
-	$TipoProblemaLlamada = $row_TipoProblema["IdRelacionMarketing"] ?? "";
-}
-
-if (isset($row_OT["IdTipoLlamada"]) && ($row_OT["IdTipoLlamada"] != "")) {
-	$IdTipoLlamada = $row_OT["IdTipoLlamada"];
-
-	$SQL_TipoLlamada = Seleccionar("uvw_Sap_tbl_TipoLlamadas", '*', "IdTipoLlamada='$IdTipoLlamada'");
-	$row_TipoLlamada = sqlsrv_fetch_array($SQL_TipoLlamada);
-	
-	$TipoLlamada = $row_TipoLlamada["IdRelacionMarketing"] ?? "";
-}
-
-// Proyectos. SMM, 24/05/2023
-$SQL_Proyecto = Seleccionar('uvw_Sap_tbl_Proyectos', '*', '', 'DeProyecto');
-
-// Almacenes. SMM, 24/05/2023
-$SQL_Almacen = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'WhsCode, WhsName', "IdSeries='$IdSeries'", "WhsCode, WhsName", 'WhsName');
-$SQL_AlmacenDestino = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'ToWhsCode, ToWhsName', "IdSeries='$IdSeries'", "ToWhsCode, ToWhsName", 'ToWhsName');
-
-// Sucursales. SMM, 26/05/2023
-$SQL_Sucursales = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'IdSucursal "OcrCode", DeSucursal "OcrName"', "IdSeries='$IdSeries'", "IdSucursal, DeSucursal", 'DeSucursal');
-
-// Lista de precios, 29/05/2023
-$SQL_ListaPrecios = Seleccionar('uvw_Sap_tbl_ListaPrecios', '*');
-$SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', "Estado = 'Y'", 'DE_EmpVentas');
-
-// SMM, 29/02/2024
-$SQL_TipoEquipo = Seleccionar("tbl_TarjetaEquipo_TiposEquipos", "*", "estado_tipo_equipo = 'Y'");
-$SQL_Ubicacion = Seleccionar("uvw_tbl_TarjetaEquipo_Ubicaciones", "*");
-$SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
+// Hasta aquí, SMM 24/05/2023
 
 // Datos de dimensiones del usuario actual, 31/05/2023
 $SQL_DatosEmpleados = Seleccionar("uvw_tbl_Usuarios", "*", "ID_Usuario='" . $_SESSION['CodUser'] . "'");
@@ -147,7 +63,11 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 				<div class="row">
 					<!-- data-toggle="collapse" data-target="#filtros" -->
 					<div class="ibox-title bg-success">
-						<h5 class="collapse-link"><i class="fa fa-filter"></i> Datos para filtrar</h5>
+						<h5 class="collapse-link">
+							<i class="fa fa-filter"></i> Datos para filtrar
+							(<?php echo $row_Doc["ItemCode"] ?? ""; ?> -
+							<?php echo $row_Doc["ItemName"] ?? ""; ?>)
+						</h5>
 						<a class="collapse-link pull-right">
 							<i class="fa fa-chevron-up"></i>
 						</a>
@@ -395,11 +315,6 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 	}
 
 	$(document).ready(function () {
-		console.log("<?php echo $row_OT["IdOrigenLlamada"] ?? ""; ?>");
-		console.log("<?php echo $row_OT["CDU_TipoPreventivo"] ?? ""; ?>");
-		console.log("<?php echo $row_OT["IdTipoProblemaLlamada"] ?? ""; ?>");
-		console.log("<?php echo $row_OT["IdTipoLlamada"] ?? ""; ?>");
-		
 		$(".select2").select2();
 		$('#footableOne').footable();
 
@@ -470,12 +385,6 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 		});
 
 		$("#btnAceptar").on("click", function () {
-			let dt = <?php echo $DocType; ?>;
-			let did = <?php echo $DocId; ?>;
-			let dev = <?php echo $DocEvent; ?>;
-			let cc = "<?php echo $CardCode; ?>";
-			let db = <?php echo $Borrador; ?>; // SMM, 03/02/2024
-
 			var totalArticulos = $("#footableTwo tbody tr").length; // Obtener el total de artículos
 			var contadorArticulos = 0; // Inicializar el contador de artículos
 
@@ -501,12 +410,6 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 
 				let articulo = {
 					P: 35,
-					doctype: dt,
-					borrador: db,
-					id: did,
-					evento: dev,
-					cardcode: cc,
-					item: idArticulo,
 					whscode: whsCode.trim(),
 					dim1: dim1.trim(),
 					dim2: dim2.trim(),
@@ -544,21 +447,15 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 							// Crea un objeto URL a partir del atributo 'src'
 							let url = new URL(dataGrid.src);
 
-							// SMM, 23/06/2023
-							let edit = <?php echo $Edit; ?>;
+							// SMM, 04/03/2024
+							console.log("url.search", url.search);
 
-							if (edit == 1) {
-								// Elimina todos los parámetros existentes
-								url.search = '';
+							// Elimina todos los parámetros existentes
+							url.search = '';
 
-								// ?id&evento&type=2
-								url.searchParams.set('id', '<?php echo base64_encode($DocId); ?>');
-								url.searchParams.set('evento', '<?php echo base64_encode($DocEvent); ?>');
-								url.searchParams.set('type', '2');
-							} else {
-								// ?id=0&type=1&usr&cardcode
-								console.log("url.search", url.search);
-							}
+							// ?id=$DocID
+							url.searchParams.set('id', '<?php echo base64_encode($DocId); ?>');
+
 
 							// Asigna la nueva URL al atributo 'src' del elemento
 							dataGrid.src = url.href;
@@ -577,30 +474,6 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 				// Fin AJAX
 			}); // Fin Loop Articulos
 		}); // Fin Evento CLICK
-
-		// SMM, 15/06/2023
-		$("#IdTipoOT").change(function () {
-			$.ajax({
-				type: "POST",
-				url: `ajx_cbo_select.php?type=45&id=${$(this).val()}`,
-				success: function (response) {
-					$('#IdTipoProblema').html(response).fadeIn();
-					$('#IdTipoProblema').trigger('change');
-				}
-			});
-		});
-
-		// SMM, 24/07/2023
-		$("#IdTipoProblema").change(function () {
-			$.ajax({
-				type: "POST",
-				url: `ajx_cbo_select.php?type=48&id=${$(this).val()}`,
-				success: function (response) {
-					$('#IdTipoCargo').html(response).fadeIn();
-					$('#IdTipoCargo').trigger('change');
-				}
-			});
-		});
 
 		// SMM, 30/08/2023
 		$(".select2").on("change", function() {
