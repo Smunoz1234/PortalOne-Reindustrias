@@ -153,23 +153,23 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 						<div class="col-lg-4">
 							<div class="form-group">
 								<div class="col-xs-12" style="margin-bottom: 10px;">
-									<label class="control-label">ID servicio (IdArticulo)</label>
+									<label class="control-label">ID Articulo</label>
 									
-									<input name="ItemCode" type="text" class="form-control" id="ItemCode"
+									<input name="item_code" type="text" class="form-control" id="item_code"
 										maxlength="100" placeholder="ID del articulo o servicio">
 								</div> <!-- col-xs-12 -->
 
 								<div class="col-xs-12" style="margin-bottom: 10px;">
 									<label class="control-label">Serial</label>
 									
-									<input name="SerialEquipo" type="text" class="form-control" id="SerialEquipo"
+									<input name="serial_equipo" type="text" class="form-control" id="serial_equipo"
 										maxlength="100" placeholder="Serial fabricante o interno">
 								</div> <!-- col-xs-12 -->
 
 								<div class="col-xs-12" style="margin-bottom: 10px;">
 									<label class="control-label">Buscar dato</label>
 									
-									<input name="BuscarDato" type="text" class="form-control" id="BuscarDato"
+									<input name="buscar_dato" type="text" class="form-control" id="buscar_dato"
 										placeholder="Digite un dato completo, o una parte del mismo...">
 								</div> <!-- col-xs-12 -->
 							</div> <!-- form-group -->
@@ -198,8 +198,8 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 										</label>
 
 										<?php $DimJCode = intval($dimJ['id_dimension_jerarquia'] ?? 0); ?>
-										<select name="IdJerarquia<?php echo $DimJCode; ?>" required
-											id="IdJerarquia<?php echo $DimJCode; ?>" class="form-control select2">
+										<select name="id_jerarquia_<?php echo $DimJCode; ?>" required
+											id="id_jerarquia_<?php echo $DimJCode; ?>" class="form-control select2">
 											<option value="">Seleccione...</option>
 
 											<?php $SQL_DimJ = Seleccionar("tbl_TarjetaEquipo_Jerarquias", "*", "id_dimension_jerarquia = $DimJCode"); ?>
@@ -229,7 +229,7 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 								<div class="col-xs-12" style="margin-bottom: 10px;">
 									<label class="control-label">Proyecto</label>
 
-									<select name="Proyecto" id="Proyecto" class="form-control select2">
+									<select name="id_proyecto" id="id_proyecto" class="form-control select2">
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) { ?>

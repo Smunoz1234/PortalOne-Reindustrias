@@ -1,15 +1,7 @@
 <?php require_once "includes/conexion.php";
-/* JSON de ejemplo (también pueden llegar vacios ""):
-{
-Cliente: "CL-1054994729",
-FechaFinal: "2022-08-04",
-FechaInicial: "2022-07-20",
-IDTicket: "111000047",
-NombreCliente: "Stiven Muñoz Murillo",
-Series: "142",
-Sucursal: "CHINCHINA"
-}
- */
+
+print_r($_POST);
+exit();
 
 // Dimensiones. SMM, 29/05/2023
 $SQL_Dimensiones = Seleccionar('uvw_Sap_tbl_Dimensiones', '*', "DimActive='Y'");
