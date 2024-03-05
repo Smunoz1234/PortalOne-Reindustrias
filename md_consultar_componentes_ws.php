@@ -11,7 +11,9 @@ while ($row_Dimension = sqlsrv_fetch_array($SQL_Dimensiones)) {
 }
 // Hasta aquí, SMM 29/05/2023
 
-$Filtro = "TipoEquipo <> ''";
+// SMM, 05/03/2024
+$IdDoc = $_POST["id_doc"] ?? "";
+$Filtro = "TipoEquipo <> '' AND PadreComponente='No Asignado' AND IdTarjetaEquipo<>'$IdDoc'";
 
 $ItemCode = $_POST["item_code"] ?? "";
 if ($ItemCode != "") {
@@ -150,7 +152,7 @@ if (!$SQL) {
                         Agregar</a>
                 </td>
 
-                <td>
+                <td class="IdTarjetaEquipo">
                     <?php echo $row['IdTarjetaEquipo']; ?>
                 </td>
                 <td>

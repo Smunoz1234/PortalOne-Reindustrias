@@ -30,6 +30,58 @@ while ($row_Dimension = sqlsrv_fetch_array($SQL_Dimensiones)) {
 // Datos de dimensiones del usuario actual, 31/05/2023
 $SQL_DatosEmpleados = Seleccionar("uvw_tbl_Usuarios", "*", "ID_Usuario='" . $_SESSION['CodUser'] . "'");
 $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
+
+// SMM, 25/02/2023
+$msg_error = "";
+$parametros = array();
+
+$coduser = $_SESSION['CodUser'];
+$id_usuario = "'$coduser'";
+
+$type = $_POST['type'] ?? 0;
+$id_padre = $_POST['id_padre'] ?? "";
+$id_hijo = $_POST['id_hijo'] ?? "";
+
+if ($type == 1) {
+    $msg_error = "No se pudo crear el registro.";
+
+    $parametros = array(
+        $type,
+        $id_padre,
+        $id_hijo,
+        $id_usuario,
+    );
+
+} elseif ($type == 3) {
+    $msg_error = "No se pudo eliminar el registro.";
+
+    $parametros = array(
+        $type,
+        $id_padre,
+        $id_hijo,
+        $id_usuario,
+    );
+}
+
+if ($type != 0) {
+    $SQL_Operacion = EjecutarSP("sp_tbl_TarjetaEquipo_Componentes", $parametros);
+
+    if (!$SQL_Operacion) {
+        echo $msg_error;
+    } else {
+        $row = sqlsrv_fetch_array($SQL_Operacion);
+
+        if (isset($row['Error']) && ($row['Error'] != "")) {
+            echo "$msg_error ";
+            echo "(" . $row['Error'] . ")";
+        } else {
+            echo "OK";
+        }
+    }
+
+    // Mostrar mensajes AJAX.
+    exit();
+}
 ?>
 
 <style>
@@ -347,10 +399,12 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 
 				// Ejemplo de como agregar nuevos campos.
 				// formData.append("Dim1", $("#Dim1").val() || "");
-				// formData.append("tipodoc", "<?php echo $_POST["TipoDoc"] ?? 2; ?>");
+				
+				// SMM, 05/03/2024
+				formData.append("id_doc", "<?php echo $DocId; ?>");
 
 				let json = Object.fromEntries(formData);
-				console.log("Line 340", json);
+				console.log("Line 400", json);
 
 				// Inicio, AJAX
 				$.ajax({
@@ -386,61 +440,32 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 
 		$("#btnAceptar").on("click", function () {
 			var totalArticulos = $("#footableTwo tbody tr").length; // Obtener el total de artículos
-			var contadorArticulos = 0; // Inicializar el contador de artículos
+			var contadorTE = 0; // Inicializar el contador de artículos
 
 			$("#footableTwo tbody tr").each(function () {
-				let idArticulo = $(this).attr("id");
-				let whsCode = $(this).find('.WhsCode').text();
+				let IdTarjetaEquipo = $(this).find('.IdTarjetaEquipo').text();
 
-				let dim1 = $(this).find('.Dim1').length ? $(this).find('.Dim1').text() : "";
-				let dim2 = $(this).find('.Dim2').length ? $(this).find('.Dim2').text() : "";
-				let dim3 = $(this).find('.Dim3').length ? $(this).find('.Dim3').text() : "";
-				let dim4 = $(this).find('.Dim4').length ? $(this).find('.Dim4').text() : "";
-				let dim5 = $(this).find('.Dim5').length ? $(this).find('.Dim5').text() : "";
-
-				let prjCode = $(this).find('.PrjCode').text();
-				let priceList = $(this).find('.PriceList').text();
-				let empVentas = $(this).find('.EmpVentas').text();
-
-				let IdTipoOT = $(this).find('.IdTipoOT').text();
-				let IdSedeEmpresa = $(this).find('.IdSedeEmpresa').text();
-				let IdTipoCargo = $(this).find('.IdTipoCargo').text();
-				let IdTipoProblema = $(this).find('.IdTipoProblema').text();
-				let IdTipoPreventivo = $(this).find('.IdTipoPreventivo').text();
-
-				let articulo = {
-					P: 35,
-					whscode: whsCode.trim(),
-					dim1: dim1.trim(),
-					dim2: dim2.trim(),
-					dim3: dim3.trim(),
-					dim4: dim4.trim(),
-					dim5: dim5.trim(),
-					prjcode: prjCode.trim(),
-					pricelist: priceList.trim(),
-					empventas: empVentas.trim(),
-					IdTipoOT: IdTipoOT.trim(),
-					IdSedeEmpresa: IdSedeEmpresa.trim(),
-					IdTipoCargo: IdTipoCargo.trim(),
-					IdTipoProblema: IdTipoProblema.trim(),
-					IdTipoPreventivo: IdTipoPreventivo.trim()
+				let componente = {
+					type: 1,
+					id_padre: "<?php echo $DocId; ?>",
+					id_hijo: IdTarjetaEquipo.trim()
 				};
 
-				// Articulo que se esta enviando a registro.
-				console.log(articulo);
+				// JSON que se esta enviando a registro.
+				console.log(componente);
 
 				// Envio AJAX del Articulo.
 				$.ajax({
-					url: "registro.php",
+					url: "md_consultar_componentes.php",
 					type: "POST",
-					data: articulo,
+					data: componente,
 					success: function (response) {
 						// Manejar la respuesta del servidor
 						// console.log("Respuesta:", response);
-						contadorArticulos++; // Incrementar el contador de artículos
+						contadorTE++;
 
 						// Verificar si todas las solicitudes AJAX han finalizado
-						if (contadorArticulos === totalArticulos) {
+						if (contadorTE === totalArticulos) {
 							// Obtén el elemento con el ID 'DataGrid'
 							let dataGrid = document.getElementById('DataGrid');
 
@@ -461,7 +486,7 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 							dataGrid.src = url.href;
 
 							// Cerrar el modal al finalizar la lógica
-							$("#mdArticulos").modal("hide");
+							$("#mdComponents").modal("hide");
 						}
 					},
 					error: function (error) {
