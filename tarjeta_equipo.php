@@ -3045,6 +3045,11 @@ while ($row_ValPropiedad = sqlsrv_fetch_array($SQL_ValoresPropiedades)) {
 				$('#ClienteEquipo').trigger('change'); // SMM, 17/02/2022
 			<?php } ?>
 
+			// SMM, 05/03/2024
+			<?php if(isset($_GET["tab"])) { ?>
+				VerTAB("<?php echo $_GET["tab"]; ?>");
+			<?php } ?>
+
 			// SMM, 07/06/2022
 			<?php if ((($edit == 0) && (!PermitirFuncion(1603))) || (($edit == 1) && (!PermitirFuncion(1604)))) { ?>
 				let CDU_Concesionario_Options = $('#CDU_Concesionario').find('option');
@@ -3053,28 +3058,9 @@ while ($row_ValPropiedad = sqlsrv_fetch_array($SQL_ValoresPropiedades)) {
 				});
 			<?php } ?>
 
-			// SMM, 23/02/2024
+			// Abrir pestaña de "properties" para ver sus "required". SMM, 23/02/2024
 			$("#Crear, #Actualizar").on("click", function () {
-				// Basado en VerTAB(), de la Llamada de Servicio.
-				let id = "properties";
-
-				// Eliminar la clase "active" de todos los títulos dentro de nav-tabs
-				var tituloTabs = document.querySelectorAll('.nav-tabs li');
-				tituloTabs.forEach(function (titulo) {
-					titulo.classList.remove('active');
-				});
-
-				// Eliminar la clase "active" de todas las pestañas dentro de tab-content
-				var tabs = document.querySelectorAll('.tab-content .tab-pane');
-				tabs.forEach(function (tab) {
-					tab.classList.remove('active');
-				});
-
-				// Agregar la clase "active" a la pestaña tab-"id" y su título
-				let tab = document.querySelector(`.nav-tabs #nav-${id}`);
-				let tabContenido = document.querySelector(`.tab-content #tab-${id}`);
-				tab.classList.add('active');
-				tabContenido.classList.add('active');
+				VerTAB("properties");
 			});
 
 			$("#CrearTarjetaEquipo").validate({
@@ -3189,6 +3175,30 @@ while ($row_ValPropiedad = sqlsrv_fetch_array($SQL_ValoresPropiedades)) {
 					}
 				});
 			}
+		}
+
+		// SMM, 05/03/2024
+		function VerTAB(id) {
+			// Hacer scroll hasta el final de la página
+			window.scrollTo(0, document.body.scrollHeight);
+
+			// Eliminar la clase "active" de todos los títulos dentro de nav-tabs
+			var tituloTabs = document.querySelectorAll('.nav-tabs li');
+			tituloTabs.forEach(function (titulo) {
+				titulo.classList.remove('active');
+			});
+
+			// Eliminar la clase "active" de todas las pestañas dentro de tab-content
+			var tabs = document.querySelectorAll('.tab-content .tab-pane');
+			tabs.forEach(function (tab) {
+				tab.classList.remove('active');
+			});
+
+			// Agregar la clase "active" a la pestaña tab-"id" y su título
+			let tab = document.querySelector(`.nav-tabs #nav-${id}`);
+			let tabContenido = document.querySelector(`.tab-content #tab-${id}`);
+			tab.classList.add('active');
+			tabContenido.classList.add('active');
 		}
 	</script>
 

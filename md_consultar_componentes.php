@@ -439,8 +439,8 @@ if ($type != 0) {
 		});
 
 		$("#btnAceptar").on("click", function () {
-			var totalArticulos = $("#footableTwo tbody tr").length; // Obtener el total de artículos
-			var contadorTE = 0; // Inicializar el contador de artículos
+			var totalTE = $("#footableTwo tbody tr").length; // Obtener el total.
+			var contadorTE = 0; // Inicializar el contador.
 
 			$("#footableTwo tbody tr").each(function () {
 				let IdTarjetaEquipo = $(this).find('.IdTarjetaEquipo').text();
@@ -465,28 +465,16 @@ if ($type != 0) {
 						contadorTE++;
 
 						// Verificar si todas las solicitudes AJAX han finalizado
-						if (contadorTE === totalArticulos) {
-							// Obtén el elemento con el ID 'DataGrid'
-							let dataGrid = document.getElementById('DataGrid');
-
-							// Crea un objeto URL a partir del atributo 'src'
-							let url = new URL(dataGrid.src);
-
-							// SMM, 04/03/2024
-							console.log("url.search", url.search);
-
-							// Elimina todos los parámetros existentes
-							url.search = '';
-
-							// ?id=$DocID
-							url.searchParams.set('id', '<?php echo base64_encode($DocId); ?>');
-
-
-							// Asigna la nueva URL al atributo 'src' del elemento
-							dataGrid.src = url.href;
-
-							// Cerrar el modal al finalizar la lógica
-							$("#mdComponents").modal("hide");
+						if (contadorTE === totalTE) {
+							// Obtener la URL actual
+							let currentUrl = new URL(window.location.href);
+							console.log(currentUrl);
+							
+							// Modificar o crear parámetro
+							currentUrl.searchParams.set("tab", "components");
+							
+							// Redirigir a la nueva URL
+							window.location.href = currentUrl.href;
 						}
 					},
 					error: function (error) {
