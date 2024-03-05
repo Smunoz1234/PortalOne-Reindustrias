@@ -34,7 +34,7 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 
 <style>
 	.select2-dropdown {
-		z-index: 900;
+		z-index: 9009;
 	}
 
 	.ibox-title {
@@ -55,7 +55,7 @@ $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
 	}
 </style>
 
-<div class="modal-dialog modal-lg" style="width: 75% !important;">
+<div class="modal-dialog modal-lg" style="width: 80% !important;">
 	<div class="modal-content">
 		<div class="modal-body">
 			<!-- Inicio, filtros -->

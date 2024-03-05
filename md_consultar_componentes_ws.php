@@ -94,16 +94,19 @@ if (!$SQL) {
         <tr>
             <th>Código Artículo</th>
             <th>Artículo</th>
-            <th>Serial Interno</th>
-            <th>Serial Fabricante</th>
+            
+            <th>Jerarquia 1</th>
+            <th>Jerarquia 2</th>
+            
+            <th>Ubicación</th>
+            
             <th>Acciones</th>
 
             <th data-breakpoints="all">ID Tarjeta Equipo</th>
             <th data-breakpoints="all">Tipo Equipo Propiedad</th>
-            <th data-breakpoints="all">Ubicación</th>
             
-            <th data-breakpoints="all">Jerarquia 1</th>
-            <th data-breakpoints="all">Jerarquia 2</th>
+            <th data-breakpoints="all">Serial Interno</th>
+            <th data-breakpoints="all">Serial Fabricante</th>
 
             <th data-breakpoints="all">Proyecto</th>
             
@@ -115,7 +118,7 @@ if (!$SQL) {
             
             <th data-breakpoints="all">Código Cliente</th>
             <th data-breakpoints="all">Cliente</th>
-            <th data-breakpoints="all">Tipo Equipo</th>
+            <th data-breakpoints="all">Tipo Proceso</th>
             <th data-breakpoints="all">Estado</th>
             <th data-breakpoints="all">Otras Acciones</th>
         </tr>
@@ -129,12 +132,16 @@ if (!$SQL) {
                 <td>
                     <?php echo $row['ItemName']; ?>
                 </td>
-                
+
                 <td>
-                    <?php echo $row['SerialInterno']; ?>
+                    <?php echo $row["Jerarquia1"] ?? ""; ?>
                 </td>
                 <td>
-                    <?php echo $row['SerialFabricante']; ?>
+                    <?php echo $row["Jerarquia2"] ?? ""; ?>
+                </td>
+
+                <td>
+                    <?php echo $row['Ubicacion']; ?>
                 </td>
 
                 <td>
@@ -147,21 +154,18 @@ if (!$SQL) {
                     <?php echo $row['IdTarjetaEquipo']; ?>
                 </td>
                 <td>
-                    <?php echo $row['IdTipoEquipoPropiedad']; ?>
-                </td>
-                <td>
-                    <?php echo $row['IdUbicacion']; ?>
+                    <?php echo $row['TipoEquipoPropiedad']; ?>
                 </td>
 
                 <td>
-                    <?php echo $row["IdJerarquia1"] ?? ""; ?>
+                    <?php echo $row['SerialInterno']; ?>
                 </td>
                 <td>
-                    <?php echo $row["IdJerarquia2"] ?? ""; ?>
+                    <?php echo $row['SerialFabricante']; ?>
                 </td>
 
                 <td>
-                    <?php echo $row['IdProyecto']; ?>
+                    <?php echo $row['Proyecto']; ?>
                 </td>
 
                 <?php foreach ($array_Dimensiones as &$dim) { ?>
