@@ -2638,6 +2638,10 @@ while ($row_ValPropiedad = sqlsrv_fetch_array($SQL_ValoresPropiedades)) {
 												<br>
 												<div class="row">
 													<div class="col-lg-12 text-center">
+
+														<!-- Inicio, Algo -->
+														<?php include_once "jerarquias_equipos.php"; ?>
+
 														<?php if (isset($SQL_HistGestion) && sqlsrv_has_rows($SQL_HistGestion)) { ?>
 															<div class="table-responsive"
 																style="max-height: 230px; overflow: hidden; overflow-y: auto;">
@@ -2647,14 +2651,6 @@ while ($row_ValPropiedad = sqlsrv_fetch_array($SQL_ValoresPropiedades)) {
 																		<tr>
 																			<th>Tipo gestión</th>
 																			<th>Destino</th>
-																			<th>Evento</th>
-																			<th>Resultado</th>
-																			<th>Comentario</th>
-																			<th>Causa no pago</th>
-																			<th>Acuerdo de pago</th>
-																			<th>Fecha registro</th>
-																			<th>Usuario</th>
-																			<th>Sucursal</th>
 																		</tr>
 																	</thead>
 																	<tbody>
@@ -2666,34 +2662,6 @@ while ($row_ValPropiedad = sqlsrv_fetch_array($SQL_ValoresPropiedades)) {
 																					</td>
 																					<td>
 																						<?php echo $row_HistGestion['Destino']; ?>
-																					</td>
-																					<td>
-																						<?php echo $row_HistGestion['NombreEvento']; ?>
-																					</td>
-																					<td>
-																						<?php echo $row_HistGestion['ResultadoGestion']; ?>
-																					</td>
-																					<td>
-																						<?php echo $row_HistGestion['Comentarios']; ?>
-																					</td>
-																					<td>
-																						<?php echo $row_HistGestion['CausaNoPago']; ?>
-																					</td>
-																					<td>
-																						<?php if ($row_HistGestion['AcuerdoPago'] == 1) {
-																							echo "SI";
-																						} else {
-																							echo "NO";
-																						} ?>
-																					</td>
-																					<td>
-																						<?php echo $row_HistGestion['FechaRegistro']->format('Y-m-d H:i'); ?>
-																					</td>
-																					<td>
-																						<?php echo $row_HistGestion['Usuario']; ?>
-																					</td>
-																					<td>
-																						<?php echo $row_HistGestion['SucursalCliente']; ?>
 																					</td>
 																				</tr>
 																			<?php } ?>
