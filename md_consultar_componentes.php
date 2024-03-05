@@ -286,7 +286,7 @@ if ($type != 0) {
 		<div class="modal-footer">
 			<button type="button" class="btn btn-success m-t-md" id="btnAceptar"><i class="fa fa-check"></i>
 				Aceptar</button>
-			<button type="button" class="btn btn-danger m-t-md" data-dismiss="modal"><i class="fa fa-times"></i>
+			<button type="button" class="btn btn-danger m-t-md" id="btnCerrar"><i class="fa fa-times"></i>
 				Cerrar</button>
 		</div>
 	</div> <!-- modal-content -->
@@ -436,6 +436,11 @@ if ($type != 0) {
 		$('.i-checks').iCheck({
 			checkboxClass: 'icheckbox_square-green',
 			radioClass: 'iradio_square-green',
+		});
+
+		$("#btnCerrar").on("click", function () {
+			$("#mdComponents").modal("hide");
+			$('.ibox-content').toggleClass('sk-loading', false);
 		});
 
 		$("#btnAceptar").on("click", function () {
