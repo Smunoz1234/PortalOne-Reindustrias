@@ -14,6 +14,7 @@ while ($row_Componente = sqlsrv_fetch_array($SQL_Componentes_TE)) {
 // SMM, 06/03/2024
 $SQL_Padre = Seleccionar("uvw_Sap_tbl_TarjetasEquipos", "*", "IdTarjetaEquipo = $IdTarjetaEquipo");
 $row_Padre = sqlsrv_fetch_array($SQL_Padre);
+$idPadre = "$IdTarjetaEquipo";
 $textPadre = ($row_Padre["ItemCode"] ?? "") . " - " . ($row_Padre["ItemName"] ?? "");
 ?>
 
@@ -33,18 +34,22 @@ $textPadre = ($row_Padre["ItemCode"] ?? "") . " - " . ($row_Padre["ItemName"] ??
 		});
 
 		$("#jstree_components").jstree({
-			"core": {
+			"get_selected": true
+			, "plugins": ["themes", "icons"]
+			, "core": {
 				"strings": {
 					"Loading ...": "Cargando..."
 				},
 				"multiple": false,
 				"data": [
 					{
+						"id": "<?php echo $idPadre; ?>",
 						"text": "<?php echo $textPadre; ?>",
 						"icon": "fa fa-sitemap",
 						"children": [
 							<?php foreach ($array_Componentes as &$component) { ?>
 								{
+									"id": "<?php echo $component["id_tarjeta_equipo_hijo"]; ?>",
 									"text": "<?php echo $component["id_articulo_hijo"] . " - " . $component["articulo_hijo"]; ?>",
 									"icon": "fa fa-cubes"
 								
@@ -61,17 +66,14 @@ $textPadre = ($row_Padre["ItemCode"] ?? "") . " - " . ($row_Padre["ItemName"] ??
 						]
 					}
 				]
-		},
-			'get_selected': true
-			, "plugins": ["themes", "icons"]
-		})
-		.bind('select_node.jstree', function (e, data) {
+			}
+		}).bind("select_node.jstree", function (event, data) {
 			Seleccionar(data.node.id);
 		});
 	});
 
 	// SMM, 06/03/2024
 	function Seleccionar(id) {
-		alert(`Has seleccionado el nodo "${id}"`);
+		console.log(`Has seleccionado el nodo "${id}"`);
 	}
 </script>
