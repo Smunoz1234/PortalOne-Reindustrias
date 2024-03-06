@@ -10,6 +10,9 @@ while($row_Menu=sqlsrv_fetch_array($SQL_Menu)){
 	$json=$json."{'id':'".$row_Menu['ID_Categoria']."', 'parent': '".$row_Menu['ID_Padre']."', 'text': '".$row_Menu['NombreCategoria']."', 'state': { 'opened': false}},";
 }
 //echo $json;
+
+// SMM, 06/03/2024
+$SQL_Componentes_TE = Seleccionar("uvw_tbl_TarjetaEquipo_Componentes", "*","id_tarjeta_equipo_padre = $IdTarjetaEquipo");
 ?>
     <div class="row">
            <div class="col-lg-12">
@@ -56,21 +59,21 @@ $(document).ready(function(){
 				'data': [
 					{
 						"text" : "PLANTA VALORES",
-						"icon" : "fa fa-map-marker",
+						"icon" : "fa fa-sitemap",
 						"children" : [
 							{
 								"text" : "UKITA 1",
-								"icon" : "fa fa-car",
+								"icon" : "fa fa-cubes",
 								"children" : [
 									{
 										"text" : "TORRE 1",
-										"icon" : "fa fa-car"
+										"icon" : "fa fa-cube"
 									}
 								]
 							},
 							{
 								"text" : "UKITA 2",
-								"icon" : "fa fa-wrench"
+								"icon" : "fa fa-cube"
 							}
 						]
 					}
