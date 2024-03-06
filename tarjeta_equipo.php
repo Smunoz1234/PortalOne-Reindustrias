@@ -656,6 +656,11 @@ while ($row_ValPropiedad = sqlsrv_fetch_array($SQL_ValoresPropiedades)) {
 		.collapse-link:hover {
 			cursor: pointer;
 		}
+
+		/* SMM, 06/03/2024 */
+		.highlighted {
+			background-color: #f0f0f0; /* Cambiar el color de fondo */
+		}
 	</style>
 	<script type="text/javascript">
 		$(document).ready(function () {//Cargar los combos dependiendo de otros
@@ -2675,7 +2680,7 @@ while ($row_ValPropiedad = sqlsrv_fetch_array($SQL_ValoresPropiedades)) {
 																</thead>
 																<tbody>
 																	<?php while ($row_Componente = sqlsrv_fetch_array($SQL_Componentes)) { ?>
-																		<tr id="<?php echo $row_Componente['id_tarjeta_equipo_hijo']; ?>">
+																		<tr id="component<?php echo $row_Componente['id_tarjeta_equipo_hijo']; ?>">
 																			<td>
 																				<?php echo $row_Componente['id_articulo_hijo']; ?>
 																			</td>
