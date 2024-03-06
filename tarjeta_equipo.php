@@ -2641,7 +2641,7 @@ while ($row_ValPropiedad = sqlsrv_fetch_array($SQL_ValoresPropiedades)) {
 												<br>
 												<div class="row">
 													<div class="col-lg-6">
-														<?php include_once "jerarquias_equipos.php"; ?>
+														<?php include_once "jerarquias_componentes.php"; ?>
 													</div>
 
 													<div class="col-lg-6 text-center">
