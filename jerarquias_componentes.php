@@ -46,6 +46,9 @@ $textPadre = ($row_Padre["ItemCode"] ?? "") . " - " . ($row_Padre["ItemName"] ??
 						"id": "<?php echo $idPadre; ?>",
 						"text": "<?php echo $textPadre; ?>",
 						"icon": "fa fa-sitemap",
+						"state": {
+							"opened": true
+						},
 						"children": [
 							<?php foreach ($array_Componentes as &$component) { ?>
 								{
@@ -75,5 +78,6 @@ $textPadre = ($row_Padre["ItemCode"] ?? "") . " - " . ($row_Padre["ItemName"] ??
 	// SMM, 06/03/2024
 	function Seleccionar(id) {
 		console.log(`Has seleccionado el nodo "${id}"`);
+		console.log($("#footableComponents").data("footable"));
 	}
 </script>

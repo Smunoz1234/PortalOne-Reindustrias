@@ -171,8 +171,9 @@ if (!$SQL) {
                 </td>
 
                 <?php foreach ($array_Dimensiones as &$dim) { ?>
-                    <td class="<?php echo $dim['IdPortalOne']; ?>">
-                        <?php echo $_POST[$dim['IdPortalOne']] ?? ""; ?>
+                    <td>
+                        <?php $DimCode = intval($dim['DimCode'] ?? 0); ?>
+                        <?php echo $row["IdDimension$DimCode"]; ?>
                     </td>
                 <?php } ?>
 

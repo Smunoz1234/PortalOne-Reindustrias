@@ -2646,30 +2646,110 @@ while ($row_ValPropiedad = sqlsrv_fetch_array($SQL_ValoresPropiedades)) {
 
 													<div class="col-lg-6 text-center">
 														<?php if (isset($SQL_Componentes) && sqlsrv_has_rows($SQL_Componentes)) { ?>
-															<div class="table-responsive"
-																style="max-height: 230px; overflow: hidden; overflow-y: auto;">
-																<table
-																	class="table table-striped table-bordered table-hover dataTables-example">
-																	<thead>
-																		<tr>
-																			<th>ID Padre</th>
-																			<th>ID Hijo</th>
-																		</tr>
-																	</thead>
-																	<tbody>
-																		<?php while ($row_Componentes = sqlsrv_fetch_array($SQL_Componentes)) { ?>
-																			<tr class="gradeX">
-																				<td>
-																					<?php echo $row_Componentes["id_tarjeta_equipo_padre"] ?? ""; ?>
-																				</td>
-																				<td>
-																					<?php echo $row_Componentes["id_tarjeta_equipo_hijo"] ?? ""; ?>
-																				</td>
-																			</tr>
+															<table id="footableComponents" class="table" data-paging="true" data-sorting="true">
+																<thead>
+																	<tr>
+																		<th>Código Artículo</th>
+																		<th>Artículo</th>
+																		
+																		<th>Unidad Medida</th>
+																		<th>Ubicación</th>
+																		
+																		<th>Acciones</th>
+																		<th data-breakpoints="all">ID Tarjeta Equipo</th>
+																		
+																		<th data-breakpoints="all">Fecha Operación</th>
+																		<th data-breakpoints="all">Contador/Horómetro</th>
+
+																		<?php foreach ($array_Dimensiones as &$dim) { ?>
+																			<th data-breakpoints="all">
+																				<?php echo $dim['IdPortalOne']; ?>
+																			</th>
 																		<?php } ?>
-																	</tbody>
-																</table>
-															</div>
+
+																		<th data-breakpoints="all">Proyecto</th>
+																		<th data-breakpoints="all">Estado</th>
+
+																		<th data-breakpoints="all">Otras Acciones</th>
+																	</tr>
+																</thead>
+																<tbody>
+																	<?php while ($row_Componente = sqlsrv_fetch_array($SQL_Componentes)) { ?>
+																		<tr id="<?php echo $row_Componente['id_tarjeta_equipo_hijo']; ?>">
+																			<td>
+																				<?php echo $row_Componente['id_articulo_hijo']; ?>
+																			</td>
+																			<td>
+																				<?php echo $row_Componente['articulo_hijo']; ?>
+																			</td>
+																			
+																			<td>
+																				<?php echo $row_Componente['unidad_hijo']; ?>
+																			</td>
+																			<td>
+																				<?php echo $row_Componente['ubicacion_hijo']; ?>
+																			</td>
+
+																			<td>
+																				<button class="btn btn-danger btn-xs"
+																					onclick="DeleteComponent('<?php echo $row_Componente['id_tarjeta_equipo_hijo']; ?>');">
+																					<i class="fa fa-trash"></i> Eliminar
+																				</a>
+																			</td>
+																			<td>
+																				<?php echo $row_Componente['id_tarjeta_equipo_hijo']; ?>
+																			</td>
+
+																			<td>
+																				<?php echo $row_Componente['fecha_operacion_hijo']; ?>
+																			</td>
+																			<td>
+																				<?php echo $row_Componente['contador_hijo']; ?>
+																			</td>
+																			
+																			<?php foreach ($array_Dimensiones as &$dim) { ?>
+																				<td>
+																					<?php $DimCode = intval($dim['DimCode'] ?? 0); ?>
+                        															<?php echo $row_Componente["IdDimension$DimCode"]; ?>
+																				</td>
+																			<?php } ?>
+
+																			<td>
+																				<?php echo $row_Componente['proyecto_hijo']; ?>
+																			</td>
+																			<td>
+																				<?php if ($row_Componente['id_estado_hijo'] == 'A') { ?>
+																					<span class='label label-info'>
+																						<?php echo $row_Componente['estado_hijo']; ?>
+																					</span>
+																				<?php } elseif ($row_Componente['id_estado_hijo'] == 'R') { ?>
+																					<span class='label label-danger'>
+																						<?php echo $row_Componente['estado_hijo']; ?>
+																					</span>
+																				<?php } elseif ($row_Componente['id_estado_hijo'] == 'T') { ?>
+																					<span class='label label-success'>
+																						<?php echo $row_Componente['estado_hijo']; ?>
+																					</span>
+																				<?php } elseif ($row_Componente['id_estado_hijo'] == 'L') { ?>
+																					<span class='label label-secondary'>
+																						<?php echo $row_Componente['estado_hijo']; ?>
+																					</span>
+																				<?php } elseif ($row_Componente['id_estado_hijo'] == 'I') { ?>
+																					<span class='label label-warning'>
+																						<?php echo $row_Componente['estado_hijo']; ?>
+																					</span>
+																				<?php } ?>
+																			</td>
+																			<td>
+																				<a href="tarjeta_equipo.php?id=<?php echo base64_encode($row_Componente['id_tarjeta_equipo_hijo']); ?>&tl=1"
+																					class="btn btn-success btn-xs" target="_blank">
+																					<i class="fa fa-folder-open-o"></i> Abrir
+																				</a>
+																			</td>
+																		</tr>
+																	<?php } ?>
+																</tbody>
+															</table>
 														<?php } else { ?>
 															<br>
 															<i class="fa fa-search"	style="font-size: 18px; color: lightgray;"></i>
@@ -3105,6 +3185,8 @@ while ($row_ValPropiedad = sqlsrv_fetch_array($SQL_ValoresPropiedades)) {
 			$("#NombreClienteEquipo").easyAutocomplete(options);
 			$("#ItemCode").easyAutocomplete(optionsArticulos);
 
+			// SMM, 06/03/2024
+			$("#footableComponents").footable();
 		});
 
 		function EnviarFrm(P = 29) {
