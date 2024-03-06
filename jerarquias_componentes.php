@@ -61,7 +61,7 @@ $textPadre = ($row_Padre["ItemCode"] ?? "") . " - " . ($row_Padre["ItemName"] ??
 						]
 					}
 				]
-			},
+		},
 			'get_selected': true
 			, "plugins": ["themes", "icons"]
 		})
