@@ -564,6 +564,9 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 $id_tipo_equipo = isset($_GET["id_tipo_equipo"]) ? $_GET["id_tipo_equipo"] : ($row["IdTipoEquipoPropiedad"] ?? ""); 
 $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*","id_tipo_equipo = $id_tipo_equipo");
 
+// SMM, 06/03/2024
+$SQL_Componentes = Seleccionar("uvw_tbl_TarjetaEquipo_Componentes", "*","id_tarjeta_equipo_padre = $IdTarjetaEquipo");
+
 // SMM, 28/02/2024
 $SQL_Campo = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Campos", "*","id_tipo_equipo_campo = 1");
 $row_Campo = sqlsrv_fetch_array($SQL_Campo);
@@ -2637,34 +2640,32 @@ while ($row_ValPropiedad = sqlsrv_fetch_array($SQL_ValoresPropiedades)) {
 
 												<br>
 												<div class="row">
-													<div class="col-lg-12 text-center">
-
-														<!-- Inicio, Algo -->
+													<div class="col-lg-6">
 														<?php include_once "jerarquias_equipos.php"; ?>
+													</div>
 
-														<?php if (isset($SQL_HistGestion) && sqlsrv_has_rows($SQL_HistGestion)) { ?>
+													<div class="col-lg-6 text-center">
+														<?php if (isset($SQL_Componentes) && sqlsrv_has_rows($SQL_Componentes)) { ?>
 															<div class="table-responsive"
 																style="max-height: 230px; overflow: hidden; overflow-y: auto;">
 																<table
 																	class="table table-striped table-bordered table-hover dataTables-example">
 																	<thead>
 																		<tr>
-																			<th>Tipo gestión</th>
-																			<th>Destino</th>
+																			<th>ID Padre</th>
+																			<th>ID Hijo</th>
 																		</tr>
 																	</thead>
 																	<tbody>
-																		<?php while ($row_HistGestion = sqlsrv_fetch_array($SQL_HistGestion)) { ?>
-																			<?php if (false || (isset($row['SerialInterno']) && ($row_HistGestion['NumeroSerie'] == $row['SerialInterno']))) { ?>
-																				<tr class="gradeX">
-																					<td>
-																						<?php echo $row_HistGestion['TipoGestion']; ?>
-																					</td>
-																					<td>
-																						<?php echo $row_HistGestion['Destino']; ?>
-																					</td>
-																				</tr>
-																			<?php } ?>
+																		<?php while ($row_Componentes = sqlsrv_fetch_array($SQL_Componentes)) { ?>
+																			<tr class="gradeX">
+																				<td>
+																					<?php echo $row_Componentes["id_tarjeta_equipo_padre"] ?? ""; ?>
+																				</td>
+																				<td>
+																					<?php echo $row_Componentes["id_tarjeta_equipo_hijo"] ?? ""; ?>
+																				</td>
+																			</tr>
 																		<?php } ?>
 																	</tbody>
 																</table>
