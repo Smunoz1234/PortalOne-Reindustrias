@@ -15,7 +15,7 @@ while ($row_Menu = sqlsrv_fetch_array($SQL_Menu)) {
 $SQL_Componentes_TE = Seleccionar("uvw_tbl_TarjetaEquipo_Componentes", "*", "id_tarjeta_equipo_padre = $IdTarjetaEquipo");
 
 $array_Componentes = [];
-while ($row_Componente = sqlsrv_fetch_array($SQL_Componentes)) {
+while ($row_Componente = sqlsrv_fetch_array($SQL_Componentes_TE)) {
 	array_push($array_Componentes, $row_Componente);
 }
 
@@ -76,20 +76,21 @@ $textPadre = ($row_Padre["ItemCode"] ?? "") . " - " . ($row_Padre["ItemName"] ??
 							"text": "<?php echo $textPadre; ?>",
 							"icon": "fa fa-sitemap",
 							"children": [
-								{
-									"text": "UKITA 1",
-									"icon": "fa fa-cubes",
-									"children": [
-										{
-											"text": "TORRE 1",
-											"icon": "fa fa-cube"
-										}
-									]
-								},
-								{
-									"text": "UKITA 2",
-									"icon": "fa fa-cube"
-								}
+								<?php foreach ($array_Componentes as &$component) { ?>
+									{
+										"text": "<?php echo $component["id_articulo_hijo"] . " - " . $component["articulo_hijo"]; ?>",
+										"icon": "fa fa-cubes"
+									
+										<?php /* ?>
+											, "children": [
+												{
+													"text": "Nieto",
+													"icon": "fa fa-cube"
+												}
+											]
+										<?php */ ?>
+									},
+								<?php } ?>
 							]
 						}
 					]
