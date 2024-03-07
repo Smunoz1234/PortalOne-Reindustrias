@@ -144,6 +144,8 @@ $Campos = "
       ,[CDU_Novedad]
       ,[CDU_FechaAgenda]
       ,[CDU_SedeVenta]
+      ,[TipoEquipoPropiedad]
+      ,[PadreComponente]
       ,[UsuarioCreacion]
       ,[FechaCreacion]
       ,[HoraCreacion]
@@ -291,14 +293,16 @@ $Cons2 = "SELECT $Campos FROM uvw_Sap_tbl_TarjetasEquipos WHERE $Filtro ORDER BY
                     <thead>
                     <tr>
 						<th>Núm.</th>
-						<th>Código cliente</th>
 						<th>Cliente</th>
 						<th>Serial fabricante</th>
                         <th>Serial interno</th>
                         <th>Código de artículo</th>
 						<th>Artículo</th>
-						<th>Tipo de equipo</th>
-						<th>Estado</th>
+						
+                        <th>Nombre Tipo Equipo</th>
+                        <th>Activo Padre/Componente</th>
+						
+                        <th>Estado</th>
 						<th>Acciones</th>
                     </tr>
                     </thead>
@@ -306,15 +310,23 @@ $Cons2 = "SELECT $Campos FROM uvw_Sap_tbl_TarjetasEquipos WHERE $Filtro ORDER BY
                     <?php while ($row = sqlsrv_fetch_array($SQL)) {?>
 						 <tr class="gradeX tooltip-demo">
 							<td><?php echo $row['IdTarjetaEquipo']; ?></td>
-							<td><?php echo $row['CardCode']; ?></td>
-							<td><?php echo $row['CardName']; ?></td>
-							<td><?php echo $row['SerialFabricante']; ?></td>
+
+							<td>
+                                <?php echo $row['CardCode'] . " (" . $row['CardName'] . ")"; ?>
+                            </td>
+							
+                            <td><?php echo $row['SerialFabricante']; ?></td>
 							<td><?php echo $row['SerialInterno']; ?></td>
 							<td><?php echo $row['ItemCode']; ?></td>
 							<td><?php echo $row['ItemName']; ?></td>
-							<td>
-								<?php if ($row['TipoEquipo'] === 'P') {echo 'Compras';} elseif ($row['TipoEquipo'] === 'R') {echo 'Ventas';}?>
-							</td>
+							
+                            <td>
+                                <?php echo $row['TipoEquipoPropiedad'] ?? ""; ?>
+                            </td>
+                            <td>
+                                <?php echo $row['PadreComponente'] ?? ""; ?>
+                            </td>
+                            
 							<td>
 								<?php if ($row['CodEstado'] == 'A') {?>
 									<span  class='label label-info'>Activo</span>
