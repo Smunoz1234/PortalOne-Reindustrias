@@ -2697,7 +2697,7 @@ while ($row_ValPropiedad = sqlsrv_fetch_array($SQL_ValoresPropiedades)) {
 
 																			<td>
 																				<button class="btn btn-danger btn-xs"
-																					onclick="DeleteComponent('<?php echo $row_Componente['id_tarjeta_equipo_hijo']; ?>');">
+																					onclick="DeleteComponent('<?php echo $row_Componente['id_tarjeta_equipo_padre']; ?>', '<?php echo $row_Componente['id_tarjeta_equipo_hijo']; ?>');">
 																					<i class="fa fa-trash"></i> Eliminar
 																				</a>
 																			</td>
@@ -3231,6 +3231,58 @@ while ($row_ValPropiedad = sqlsrv_fetch_array($SQL_ValoresPropiedades)) {
 					}
 				});
 			}
+		}
+
+		// SMM, 07/03/2024
+		function DeleteComponent(idPadre, idHijo) {
+			let componente = {
+				type: 3,
+				id_padre: idPadre,
+				id_hijo: idHijo
+			};
+
+			// JSON que se esta enviando a eliminar.
+			console.log(componente);
+
+			Swal.fire({
+				title: "¿Está seguro que desea eliminar el componente?",
+				icon: "question",
+				showCancelButton: true,
+				confirmButtonText: "Si, confirmo",
+				cancelButtonText: "No"
+			}).then((result) => {
+				if (result.isConfirmed) {
+					$('.ibox-content').toggleClass('sk-loading',true);
+					
+					// Envio AJAX del Articulo.
+					$.ajax({
+						url: "md_consultar_componentes.php",
+						type: "POST",
+						data: componente,
+						success: function (response) {
+							// Manejar la respuesta del servidor
+							// console.log("Respuesta:", response);
+
+							// Obtener la URL actual
+							let currentUrl = new URL(window.location.href);
+							console.log(currentUrl);
+							
+							// Modificar o crear parámetro
+							currentUrl.searchParams.set("tab", "components");
+							
+							// Redirigir a la nueva URL
+							window.location.href = currentUrl.href;
+						},
+						error: function (error) {
+							// Manejar el error de la petición AJAX
+							console.log("Error eliminación:", error);
+
+							// alert("Ocurrio un error al eliminar los articulos, se recomienda repetir el procedimiento o consultar al administrador");
+						}
+					});
+					// Fin AJAX
+				}
+			});
 		}
 
 		// SMM, 05/03/2024
