@@ -2715,7 +2715,7 @@ while ($row_ValPropiedad = sqlsrv_fetch_array($SQL_ValoresPropiedades)) {
 																			<?php foreach ($array_Dimensiones as &$dim) { ?>
 																				<td>
 																					<?php $DimCode = intval($dim['DimCode'] ?? 0); ?>
-                        															<?php echo $row_Componente["IdDimension$DimCode"]; ?>
+                        															<?php echo $row_Componente["dimension_$DimCode"]; ?>
 																				</td>
 																			<?php } ?>
 
