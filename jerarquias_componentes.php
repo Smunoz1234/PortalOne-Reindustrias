@@ -78,8 +78,16 @@ $textPadre = ($row_Padre["ItemCode"] ?? "") . " - " . ($row_Padre["ItemName"] ??
 	// SMM, 06/03/2024
 	function Seleccionar(id) {
 		console.log(`Has seleccionado el nodo "${id}"`);
-		$("#footableComponents tbody tr").removeClass('highlighted');
-		$(`#component${id}`).addClass('highlighted');
+		
+		// Resaltar con la clase personalizada "highlighted".
+		// $("#footableComponents tbody tr").removeClass("highlighted");
+		// $(`#component${id}`).addClass("highlighted");
+
+		// Expandir componente seleccionado.
+		$("#footableComponents tbody tr").data('expanded', false);
 		$(`#component${id}`).data('expanded', true);
+
+		// Re-renderizar Footable.
+		$('#footableComponents').footable();
 	}
 </script>
