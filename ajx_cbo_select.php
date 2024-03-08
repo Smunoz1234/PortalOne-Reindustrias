@@ -1286,5 +1286,26 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
         }
     }
 
+    elseif ($_GET['type'] == 50) { // Modelos de autorización según el tipo de documento.
+        $IdTarjetaEquipo = $_GET["id"] ?? "";
+        $SQL_TE_Componente = Seleccionar("uvw_tbl_TarjetaEquipo_Componentes", "*", "id_tarjeta_equipo_padre = $IdTarjetaEquipo");
+        $Num = sqlsrv_num_rows($SQL_TE_Componente);
+
+        if ($Num > 0) {
+            while ($row = sqlsrv_fetch_array($SQL_TE_Componente)) {
+                $id_tarjeta_equipo_hijo = $row["id_tarjeta_equipo_hijo"] ?? "";
+                $id_articulo_hijo = $row["id_articulo_hijo"] ?? "";
+                $articulo_hijo = $row["articulo_hijo"] ?? "";
+                $serial_fabricante_hijo = $row["serial_fabricante_hijo"] ?? "";
+                $serial_interno_hijo = $row["serial_interno_hijo"] ?? "";
+
+                $descripcion_te = "SN Fabricante: $serial_fabricante_hijo - Núm. Serie: $serial_interno_hijo"; 
+                echo "<option value='$id_tarjeta_equipo_hijo' data-articulo='$articulo_hijo' data-idarticulo='$id_articulo_hijo'>$descripcion_te</option>";
+            }
+        } else {
+            echo "<option value=''>Seleccione...</option>";
+        }
+    }
+
     sqlsrv_close($conexion);
 }

@@ -943,6 +943,10 @@ $SQL_ContratosLlamada = Seleccionar('uvw_Sap_tbl_LlamadasServicios_Contratos_TBU
 // Asesores (Empleados de venta) en la llamada de servicio
 // $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*');
 
+// SMM, 08/03/2024
+$IdTarjetaEquipo = $row["IdTarjetaEquipo"] ?? "";
+$SQL_TE_Componente = Seleccionar("uvw_tbl_TarjetaEquipo_Componentes", "*", "id_tarjeta_equipo_padre = $IdTarjetaEquipo");
+
 // Stiven Muñoz Murillo, 04/03/2022
 if ($testMode) {
 	echo $Cons;
@@ -2346,8 +2350,11 @@ function AgregarEsto(contenedorID, valorElemento) {
 										ID servicio componente
 									</label>
 
-									<input type="text" class="form-control" name="SerialInterno" id="SerialInterno"
-										value="<?php echo $row_NumeroSerie['SerialInterno'] ?? ""; ?>" readonly>
+									<input type="hidden" class="form-control" name="IdArticuloComponente" id="IdArticuloComponente"
+										value="<?php echo $row["IdArticuloComponente"] ?? ""; ?>" readonly>
+
+									<input type="text" class="form-control" name="ArticuloComponente" id="ArticuloComponente" readonly
+										value="<?php echo ($row_Articulo_Componente["id_articulo_hijo"] ?? "") . " - " . ($row_Articulo_Componente["articulo_hijo"] ?? ""); ?>">
 								</div>
 
 								<div class="col-lg-4">
@@ -2357,16 +2364,17 @@ function AgregarEsto(contenedorID, valorElemento) {
 										Tarjeta de equipo componente
 									</label>
 
-									<select id="CDU_ListaMateriales" name="CDU_ListaMateriales" class="form-control select2" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
+									<select id="IdTarjetaEquipoComponente" name="IdTarjetaEquipoComponente" class="form-control select2" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 										echo "disabled";
 									} ?>>
 										<option value="">Seleccione...</option>
 										
-										<?php while ($row_ListaMateriales = sqlsrv_fetch_array($SQL_ListaMateriales)) { ?>
-											<option value="<?php echo $row_ListaMateriales['ItemCode']; ?>" <?php if (isset($row['CDU_ListaMateriales']) && ($row_ListaMateriales['ItemCode'] == $row['CDU_ListaMateriales'])) {
+										<?php while ($row_TE_Componente = sqlsrv_fetch_array($SQL_TE_Componente)) { ?>
+											<option value="<?php echo $row_TE_Componente["id_tarjeta_equipo_hijo"]; ?>" <?php if (isset($row["IdTarjetaEquipoComponente"]) && ($row_TE_Componente["id_tarjeta_equipo_hijo"] == $row["IdTarjetaEquipoComponente"])) {
 												echo "selected";
-											} ?>>
-												<?php echo $row_ListaMateriales['ItemName']; ?>
+											} ?> data-articulo="<?php echo $row_TE_Componente["articulo_hijo"] ?? ""; ?>"
+											data-idarticulo="<?php echo $row_TE_Componente["id_articulo_hijo"] ?? ""; ?>">
+												<?php echo "SN Fabricante: " . ($row_TE_Componente["serial_fabricante_hijo"] ?? "") . " - Núm. Serie: " . ($row_TE_Componente["serial_interno_hijo"] ?? ""); ?>
 											</option>
 										<?php } ?>
 									</select>
@@ -2438,7 +2446,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 					<div class="ibox-content">
 						<div class="form-group">
 							<label class="col-lg-1 control-label">
-							<?php if (($edit == 1) && ($row['IdSolicitudLlamadaServicio'] != 0)) { ?><a
+							<?php if (($edit == 1) && isset($row['IdSolicitudLlamadaServicio']) && ($row['IdSolicitudLlamadaServicio'] != 0)) { ?><a
 										href="solicitud_llamada.php?id=<?php echo base64_encode($row['IdSolicitudLlamadaServicio']); ?>&tl=1"
 										target="_blank" title="Consultar Solicitud de Llamada de servicio"
 										class="btn-xs btn-success fa fa-search"></a>
@@ -3783,6 +3791,36 @@ function AgregarEsto(contenedorID, valorElemento) {
 <!-- InstanceBeginEditable name="EditRegion4" -->
 <script>
 $(document).ready(function () {
+	// SMM, 08/03/2024
+	$("#IdTarjetaEquipoComponente").on("change", function() {
+		let IdArticulo = $(this).find(":selected").data("idarticulo");
+		let Articulo = $(this).find(":selected").data("articulo");
+
+		$("#IdArticuloComponente").val(IdArticulo);
+		$("#ArticuloComponente").val(`${IdArticulo} - ${Articulo}`);
+	});
+
+	// SMM, 08/03/2024
+	$("#NumeroSerie").on("change", function() {
+		let id_tarjeta_equipo = $(this).val();
+
+		$.ajax({
+			type: "POST",
+			url: `ajx_cbo_select.php?type=50&id=${id_tarjeta_equipo}`,
+			success: function (response) {
+				console.log("ajx_buscar_datos_json(50)", response);
+
+				$("#IdTarjetaEquipoComponente").html(response).fadeIn();
+				$("#IdTarjetaEquipoComponente").trigger("change");
+			},
+			error: function(error) {
+				console.log("error (3835), ", error);
+
+				$('.ibox-content').toggleClass('sk-loading', false);
+			}
+		});
+	});
+
 	// Hacer llamado al botón de Car Advisor con validación de marca.
 	$("#btnCarAdvisor").on("click", function() {
 		// Evitar el comportamiento predeterminado del enlace
