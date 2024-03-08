@@ -54,7 +54,7 @@ $textPadre = ($row_Padre["ItemCode"] ?? "") . " - " . ($row_Padre["ItemName"] ??
 												{
 													"id": "<?php echo $row_N3["id_tarjeta_equipo_hijo"]; ?>",
 													"text": "<?php echo $row_N3["id_articulo_hijo"] . " - " . $row_N3["articulo_hijo"]; ?>",
-													"icon": "fa fa-tag"
+													"icon": "fa fa-rocket"
 												},
 											<?php } ?>
 										]
@@ -83,6 +83,16 @@ $textPadre = ($row_Padre["ItemCode"] ?? "") . " - " . ($row_Padre["ItemName"] ??
 			}
 		}).bind("select_node.jstree", function (event, data) {
 			Seleccionar(data.node.id);
+		});
+
+		// Función para expandir todo el árbol
+		$('#btnExpandir').on('click', function() {
+			$('#jstree_components').jstree('open_all');
+		});
+
+		// Función para contraer todo el árbol
+		$('#btnContraer').on('click', function() {
+			$('#jstree_components').jstree('close_all');
 		});
 	});
 

@@ -2638,18 +2638,28 @@ while ($row_ValPropiedad = sqlsrv_fetch_array($SQL_ValoresPropiedades)) {
 										<div id="tab-components" class="tab-pane" style="<?php if($edit != 1) { echo "display: none"; } ?>">
 											<div class="panel-body">
 												<div class="row">
-													<div class="col-lg-12 m-4">
+													<div class="col-lg-3">
 														<button type="button" onclick="AddComponents()" class="alkin btn btn-primary"><i class="fa fa-plus-circle"></i> Agregar Componente</button>
+													</div>
+													<div class="col-lg-3">
+														<button type="button" id="btnExpandir" class="alkin btn btn-info"><i class="fa fa-plus-circle"></i> Expandir</button>
+														<button type="button" id="btnContraer" class="alkin btn btn-warning"><i class="fa fa-minus-circle"></i> Comprimir</button>
 													</div>
 												</div>
 
 												<br>
 												<div class="row">
 													<div class="col-lg-6">
+														<label class="control-label text-danger">
+															Árbol de componentes
+														</label>
 														<?php include_once "jerarquias_componentes.php"; ?>
 													</div>
 
-													<div class="col-lg-6 text-center">
+													<div class="col-lg-6">
+														<label class="control-label text-danger col-lg-10 border-bottom" style="text-align: left;">
+															Información de los componentes
+														</label>
 														<?php if (isset($SQL_Componentes) && sqlsrv_has_rows($SQL_Componentes)) { ?>
 															<table id="footableComponents" class="table" data-paging="true" data-sorting="true">
 																<thead>
@@ -2674,8 +2684,6 @@ while ($row_ValPropiedad = sqlsrv_fetch_array($SQL_ValoresPropiedades)) {
 
 																		<th data-breakpoints="all">Proyecto</th>
 																		<th data-breakpoints="all">Estado</th>
-
-																		<th data-breakpoints="all">Otras Acciones</th>
 																	</tr>
 																</thead>
 																<tbody>
@@ -2696,10 +2704,14 @@ while ($row_ValPropiedad = sqlsrv_fetch_array($SQL_ValoresPropiedades)) {
 																			</td>
 
 																			<td>
+																				<a href="tarjeta_equipo.php?id=<?php echo base64_encode($row_Componente['id_tarjeta_equipo_hijo']); ?>&tl=1"
+																					class="btn btn-success btn-xs" target="_blank">
+																					<i class="fa fa-folder-open-o"></i> Abrir
+																				</a>
 																				<button class="btn btn-danger btn-xs"
 																					onclick="DeleteComponent('<?php echo $row_Componente['id_tarjeta_equipo_padre']; ?>', '<?php echo $row_Componente['id_tarjeta_equipo_hijo']; ?>');">
 																					<i class="fa fa-trash"></i> Eliminar
-																				</a>
+																				</button>
 																			</td>
 																			<td>
 																				<?php echo $row_Componente['id_tarjeta_equipo_hijo']; ?>
@@ -2744,12 +2756,6 @@ while ($row_ValPropiedad = sqlsrv_fetch_array($SQL_ValoresPropiedades)) {
 																						<?php echo $row_Componente['estado_hijo']; ?>
 																					</span>
 																				<?php } ?>
-																			</td>
-																			<td>
-																				<a href="tarjeta_equipo.php?id=<?php echo base64_encode($row_Componente['id_tarjeta_equipo_hijo']); ?>&tl=1"
-																					class="btn btn-success btn-xs" target="_blank">
-																					<i class="fa fa-folder-open-o"></i> Abrir
-																				</a>
 																			</td>
 																		</tr>
 																	<?php } ?>
