@@ -3136,44 +3136,148 @@ function AgregarEsto(contenedorID, valorElemento) {
 							<i class="fa fa-chevron-up"></i>
 						</a>
 					</div>
+
 					<div class="ibox-content">
-						<div class="form-group">
-							<div class="col-lg-8">
-								<label class="control-label">Resolución de llamada</label>
-								<textarea name="ResolucionLlamada" rows="5" maxlength="3000" type="text" class="form-control" id="ResolucionLlamada" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
-									echo "readonly";
-								} ?>><?php if (($edit == 1) || ($sw_error == 1 || ($dt_SLS == 1))) {
-									 echo $row['ResolucionLlamada'];
-								 } ?></textarea>
-							</div>
-						</div>
-						<div class="form-group">
-							<div class="col-lg-4">
-								<label class="control-label">Fecha de cierre <span class="text-danger">*</span></label>
-								<div class="input-group date">
-									 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaCierre" type="text" required="required" class="form-control" id="FechaCierre" value="<?php if (($edit == 1) && ($row['FechaCierreLLamada']) != "") {
-										 echo $row['FechaCierreLLamada'];
-									 } else {
-										 echo date('Y-m-d');
-									 } ?>" readonly>
+						<div class="row">
+							<div class="col-lg-6">
+								<div class="form-group">
+									<div class="col-lg-10 border-bottom m-r-sm">
+										<label class="control-label text-danger">Información de cierre</label>
+									</div>	
+								</div>
+
+								<div class="form-group">
+									<div class="col-lg-12">
+										<label class="control-label">Resolución de llamada</label>
+										<textarea name="ResolucionLlamada" rows="5" maxlength="3000" type="text" class="form-control" id="ResolucionLlamada" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
+											echo "readonly";
+										} ?>><?php if (($edit == 1) || ($sw_error == 1 || ($dt_SLS == 1))) {
+											echo $row['ResolucionLlamada'];
+										} ?></textarea>
+									</div>
+								</div>
+
+								<div class="form-group">
+									<div class="col-lg-6">
+										<label class="control-label">Fecha de cierre <span class="text-danger">*</span></label>
+										<div class="input-group date">
+											<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="FechaCierre" type="text" required="required" class="form-control" id="FechaCierre" value="<?php if (($edit == 1) && ($row['FechaCierreLLamada']) != "") {
+												echo $row['FechaCierreLLamada'];
+											} else {
+												echo date('Y-m-d');
+											} ?>" readonly>
+										</div>
+									</div>
+									<div class="col-lg-6">
+										<label class="control-label">Hora de cierre <span class="text-danger">*</span></label>
+										<div class="input-group clockpicker" data-autoclose="true">
+											<input name="HoraCierre" id="HoraCierre" type="text" class="form-control" value="<?php if (($edit == 1) && ($row['FechaCierreLLamada']) != "") {
+												echo $row['FechaHoraCierreLLamada']->format('H:i');
+											} else {
+												echo date('H:i');
+											} ?>" required="required" readonly>
+											<span class="input-group-addon">
+												<span class="fa fa-clock-o"></span>
+											</span>
+										</div>
+									</div>
+								</div>
+
+								<br>
+								<div class="form-group">
+									<div class="col-lg-10 border-bottom m-r-sm">
+										<label class="control-label text-danger">Información de horómetro/contador</label>
+									</div>	
+								</div>
+
+								<div class="form-group">
+									<div class="col-lg-6">
+										<label class="control-label">Contador/horómetro</label>
+										
+										<input type="text" class="form-control" name="ContadorHorometro" id="ContadorHorometro"
+											value="<?php echo $row["ContadorHorometro"] ?? ""; ?>">
+									</div>
+
+									<div class="col-lg-6">
+										<label class="control-label">Unidad de medida</label>
+										
+										<select id="IdUnidadMedidaEquipo" name="IdUnidadMedidaEquipo" class="form-control select2" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
+											echo "disabled";
+										} ?>>
+											<option value="">Seleccione...</option>
+											
+											<?php while ($row_UnidadMedida = sqlsrv_fetch_array($SQL_UnidadMedida)) { ?>
+												<option value="<?php echo $row_UnidadMedida["id_tarjeta_equipo_hijo"]; ?>" <?php if (isset($row["IdUnidadMedidaEquipo"]) && ($row_UnidadMedida["id_tarjeta_equipo_hijo"] == $row["IdUnidadMedidaEquipo"])) {
+													echo "selected";
+												} ?>>
+													<?php echo $row_UnidadMedida["serial_fabricante_hijo"] ?? ""; ?>
+												</option>
+											<?php } ?>
+										</select>
+									</div>
 								</div>
 							</div>
-							<div class="col-lg-4">
-								<label class="control-label">Hora de cierre <span class="text-danger">*</span></label>
-								<div class="input-group clockpicker" data-autoclose="true">
-									<input name="HoraCierre" id="HoraCierre" type="text" class="form-control" value="<?php if (($edit == 1) && ($row['FechaCierreLLamada']) != "") {
-										echo $row['FechaHoraCierreLLamada']->format('H:i');
-									} else {
-										echo date('H:i');
-									} ?>" required="required" readonly>
-									<span class="input-group-addon">
-										<span class="fa fa-clock-o"></span>
-									</span>
+							<!-- /.col-lg-6 -->
+
+							<div class="col-lg-6">
+								<div class="form-group">
+									<div class="col-lg-10 border-bottom m-r-sm">
+										<label class="control-label text-danger">Ubicación GPS</label>
+									</div>	
+								</div>
+
+								<br>
+								<div class="form-group">
+									<div class="col-lg-10 border-bottom m-r-sm">
+										<label class="control-label text-danger">Información del contacto en sitio</label>
+									</div>	
+								</div>
+
+								<div class="form-group">
+									<div class="col-lg-6">
+										<label class="control-label">Ciudad</label>
+											
+										<select id="IdCiudadCierre" name="IdCiudadCierre" class="form-control select2" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
+											echo "disabled";
+										} ?>>
+											<option value="">Seleccione...</option>
+											
+											<?php while ($row_Ciudad = sqlsrv_fetch_array($SQL_Ciudad)) { ?>
+												<option value="<?php echo $row_Ciudad["id_tarjeta_equipo_hijo"]; ?>" <?php if (isset($row["IdCiudadCierre"]) && ($row_Ciudad["id_tarjeta_equipo_hijo"] == $row["IdCiudadCierre"])) {
+													echo "selected";
+												} ?>>
+													<?php echo $row_Ciudad["serial_fabricante_hijo"] ?? ""; ?>
+												</option>
+											<?php } ?>
+										</select>
+									</div>
+									
+									<div class="col-lg-6">
+										<label class="control-label">País</label>
+										
+										<select id="IdPaisCierre" name="IdPaisCierre" class="form-control select2" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
+											echo "disabled";
+										} ?>>
+											<option value="">Seleccione...</option>
+											
+											<?php while ($row_Pais = sqlsrv_fetch_array($SQL_Pais)) { ?>
+												<option value="<?php echo $row_Pais["id_tarjeta_equipo_hijo"]; ?>" <?php if (isset($row["IdPaisCierre"]) && ($row_Pais["id_tarjeta_equipo_hijo"] == $row["IdPaisCierre"])) {
+													echo "selected";
+												} ?>>
+													<?php echo $row_Pais["serial_fabricante_hijo"] ?? ""; ?>
+												</option>
+											<?php } ?>
+										</select>
+									</div>
 								</div>
 							</div>
+							<!-- /.col-lg-6 -->
 						</div>
+						<!-- /.row -->
 					</div>
+					<!-- /.ibox-content -->
 				</div>
+				<!-- /.ibox -->
 
 				<!-- SMM, 16/09/2022 -->
 				<?php if ($edit == 1) { ?>
