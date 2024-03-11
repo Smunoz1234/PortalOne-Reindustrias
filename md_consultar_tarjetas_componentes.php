@@ -3,7 +3,7 @@ $Cons_TarjetasEquipos = "SELECT TOP 100 * FROM uvw_Sap_tbl_TarjetasEquipos WHERE
 $SQL_TE = sqlsrv_query($conexion, $Cons_TarjetasEquipos);
 ?>
 
-<div class="modal inmodal fade" id="mdTE" tabindex="1" role="dialog" aria-hidden="true">
+<div class="modal inmodal fade" id="mdTE_Componente" tabindex="1" role="dialog" aria-hidden="true">
 	<div class="modal-dialog modal-lg" style="width: 60% !important;">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -238,7 +238,7 @@ $SQL_TE = sqlsrv_query($conexion, $Cons_TarjetasEquipos);
 
 				// Inicio, AJAX
 				$.ajax({
-					url: 'md_consultar_tarjetas_equipos_ws.php',
+					url: 'md_consultar_tarjetas_componentes_ws.php',
 					type: 'POST',
 					data: formData,
 					processData: false,  // tell jQuery not to process the data
@@ -283,18 +283,18 @@ $SQL_TE = sqlsrv_query($conexion, $Cons_TarjetasEquipos);
 		};
 		$("#NombreCliente").easyAutocomplete(options);
 
-		$("#mdTE").on("show.bs.modal", function (e) {
-			console.log('El modal mdTE se está mostrando');
+		$("#mdTE_Componente").on("show.bs.modal", function (e) {
+			console.log('El modal mdTE_Componente se está mostrando');
 			
 			let ClienteLlamada = $("#ClienteLlamada").val() || "";
 			let NombreClienteLlamada = $("#NombreClienteLlamada").val() || "";
 
 			let IdArticuloLlamada = $("#IdArticuloLlamada").val() || "";
 			
-			$("#mdTE #Cliente").val(ClienteLlamada);
-			$("#mdTE #NombreCliente").val(NombreClienteLlamada);
+			$("#mdTE_Componente #Cliente").val(ClienteLlamada);
+			$("#mdTE_Componente #NombreCliente").val(NombreClienteLlamada);
 
-			$("#mdTE #ItemCode").val(IdArticuloLlamada);
+			$("#mdTE_Componente #ItemCode").val(IdArticuloLlamada);
 
 			if((ClienteLlamada =! "") || (IdArticuloLlamada != "")) {
 				$('#formBuscar').submit();
