@@ -66,7 +66,7 @@ echo $dataString;
 
 <!--?php /* -->
 <!-- Devolver respuesta como tabla -->
-<table id="footable" class="table" data-paging="true" data-sorting="true">
+<table id="footable_Componente" class="table" data-paging="true" data-sorting="true">
     <thead>
         <tr>
             <th>Código cliente</th>
@@ -98,7 +98,7 @@ echo $dataString;
                 </td>
                 <td>
                     <a type="button" class="btn btn-success btn-xs" title="Adicionar o cambiar TE"
-                        onclick="cambiarTE('<?php echo $row['IdTarjetaEquipo']; ?>', '<?php echo 'SN Fabricante: ' . $row['SerialFabricante'] . ' - Núm. Serie: ' . $row['SerialInterno']; ?>', '<?php echo $row['SerialInterno']; ?>')">
+                        onclick="cambiarTE_Componente('<?php echo $row['IdTarjetaEquipo']; ?>', '<?php echo 'SN Fabricante: ' . $row['SerialFabricante'] . ' - Núm. Serie: ' . $row['SerialInterno']; ?>')">
                         <b>
                             <?php echo $row['IdTarjetaEquipo']; ?>
                         </b>

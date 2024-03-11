@@ -8,7 +8,7 @@ $SQL_TE = sqlsrv_query($conexion, $Cons_TarjetasEquipos);
 		<div class="modal-content">
 			<div class="modal-header">
 				<h4 class="modal-title">
-					Consultar tarjetas de equipo
+					Consultar componentes
 				</h4>
 			</div>
 
@@ -86,8 +86,8 @@ $SQL_TE = sqlsrv_query($conexion, $Cons_TarjetasEquipos);
 					<div class="row">
 						<div class="col-lg-12">
 							<div class="ibox-content">
-								<div class="table-responsive" id="tableContainer">
-									<table id="footable" class="table" data-paging="true" data-sorting="true">
+								<div class="table-responsive" id="tableContainer_Componente">
+									<table id="footable_Componente" class="table" data-paging="true" data-sorting="true">
 										<thead>
 											<tr>
 												<th>Código cliente</th>
@@ -120,7 +120,7 @@ $SQL_TE = sqlsrv_query($conexion, $Cons_TarjetasEquipos);
 													<td>
 														<a type="button" class="btn btn-success btn-xs"
 															title="Adicionar o cambiar TE"
-															onclick="cambiarTE('<?php echo $row_TE['IdTarjetaEquipo']; ?>', '<?php echo 'SN Fabricante: ' . $row_TE['SerialFabricante'] . ' - Núm. Serie: ' . $row_TE['SerialInterno']; ?>', '<?php echo $row['SerialInterno']; ?>')">
+															onclick="cambiarTE_Componente('<?php echo $row_TE['IdTarjetaEquipo']; ?>', '<?php echo 'SN Fabricante: ' . $row_TE['SerialFabricante'] . ' - Núm. Serie: ' . $row_TE['SerialInterno']; ?>')">
 															<b>
 																<?php echo $row_TE['IdTarjetaEquipo']; ?>
 															</b>
@@ -183,20 +183,20 @@ $SQL_TE = sqlsrv_query($conexion, $Cons_TarjetasEquipos);
 </div>
 
 <script>
-	function cambiarTE(tarjeta_equipo, descripcion_te, serial_interno) {
-		$("#NumeroSerie").val(tarjeta_equipo);
-		$("#Desc_NumeroSerie").val(descripcion_te);
-		$("#SerialInterno").val(serial_interno);
+	function cambiarTE_Componente(tarjeta_equipo, descripcion_te) {
+		console.log("Ejecutando, cambiarTE_Componente()");
 
-		$("#NumeroSerie").change();
-		$("#Desc_NumeroSerie").change();
-		$("#SerialInterno").change();
+		$("#IdTarjetaEquipoComponente").val(tarjeta_equipo);
+		$("#DeTarjetaEquipoComponente").val(descripcion_te);
 
-		$('#mdTE').modal('hide');
+		$("#IdTarjetaEquipoComponente").change();
+		$("#DeTarjetaEquipoComponente").change();
+
+		$('#mdTE_Componente').modal('hide');
 	}
 
 	$(document).ready(function () {
-		$('#footable').footable();
+		$('#footable_Componente').footable();
 
 		// Inicio, cambio asincrono de sucursal en base al cliente.
 		$("#NombreCliente").on("change", function () {
@@ -246,8 +246,8 @@ $SQL_TE = sqlsrv_query($conexion, $Cons_TarjetasEquipos);
 					success: function (response) {
 						// console.log("Line 290", response);
 
-						$("#tableContainer").html(response);
-						$('#footable').footable();
+						$("#tableContainer_Componente").html(response);
+						$('#footable_Componente').footable();
 
 						$('.ibox-content').toggleClass('sk-loading', false); // Carga terminada.
 					},

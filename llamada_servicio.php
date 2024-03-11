@@ -3903,11 +3903,11 @@ function AgregarEsto(contenedorID, valorElemento) {
 $(document).ready(function () {
 	// SMM, 08/03/2024
 	$("#IdTarjetaEquipoComponente").on("change", function() {
-		let IdArticulo = $(this).find(":selected").data("idarticulo");
-		let Articulo = $(this).find(":selected").data("articulo");
+		// let IdArticulo = $(this).find(":selected").data("idarticulo");
+		// let Articulo = $(this).find(":selected").data("articulo");
 
-		$("#IdArticuloComponente").val(IdArticulo);
-		$("#ArticuloComponente").val(`${IdArticulo} - ${Articulo}`);
+		// $("#IdArticuloComponente").val(IdArticulo);
+		// $("#ArticuloComponente").val(`${IdArticulo} - ${Articulo}`);
 	});
 
 	// SMM, 08/03/2024
@@ -3918,10 +3918,10 @@ $(document).ready(function () {
 			type: "POST",
 			url: `ajx_cbo_select.php?type=50&id=${id_tarjeta_equipo}`,
 			success: function (response) {
-				console.log("ajx_buscar_datos_json(50)", response);
+				// console.log("ajx_buscar_datos_json(50)", response);
 
-				$("#IdTarjetaEquipoComponente").html(response).fadeIn();
-				$("#IdTarjetaEquipoComponente").trigger("change");
+				// $("#IdTarjetaEquipoComponente").html(response).fadeIn();
+				// $("#IdTarjetaEquipoComponente").trigger("change");
 			},
 			error: function(error) {
 				console.log("error (3835), ", error);
