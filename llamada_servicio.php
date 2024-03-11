@@ -1833,6 +1833,9 @@ function AgregarEsto(contenedorID, valorElemento) {
 			<!-- SMM, 20/11/2023 -->
 			<?php include_once 'md_consultar_tarjetas_equipos.php'; ?>
 
+			<!-- SMM, 11/03/2024 -->
+			<?php include_once 'md_consultar_tarjetas_componentes.php'; ?>
+
 			<!-- SMM, 18/01/2024 -->
 			<?php include_once 'md_consultar_llamadas_servicios.php'; ?>
 
