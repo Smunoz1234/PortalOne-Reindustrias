@@ -24,7 +24,7 @@ $textPadre = ($row_Padre["ItemCode"] ?? "") . " - " . ($row_Padre["ItemName"] ??
 		// SMM, 07/03/2024
 		var dataTree = [
 			{
-				"id": "N0_<?php echo $idPadre; ?>",
+				"id": "ROOT",
 				"text": "<?php echo $textPadre; ?>",
 				"icon": "fa fa-sitemap",
 				"state": {
@@ -90,9 +90,12 @@ $textPadre = ($row_Padre["ItemCode"] ?? "") . " - " . ($row_Padre["ItemName"] ??
 			$('#jstree_components').jstree('open_all');
 		});
 
-		// Función para contraer todo el árbol
+		// Función para contraer todo el árbol manteniendo el primer nivel abierto
 		$('#btnContraer').on('click', function() {
 			$('#jstree_components').jstree('close_all');
+
+			// Expandir el primer nivel
+			$('#jstree_components').jstree('open_node', 'ROOT');
 		});
 	});
 
