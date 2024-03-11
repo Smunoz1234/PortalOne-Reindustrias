@@ -3229,17 +3229,19 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<div class="form-group">
 									<div class="col-lg-10 border-bottom m-r-sm">
 										<label class="control-label text-danger">Ubicación GPS</label>
-									</div>	
-
-									<div class="form-group">
-										<div class="col-lg-12">
-											<p><p class="btn btn-outline btn-link"><i class="fa fa-map-marker"></i> Coordenadas GPS: </p><span id="CoordGPS">4.570868,-74.297333</span></p>
-										</div>
 									</div>
 									
 									<div class="form-group">
 										<div class="col-lg-12">
-											<iframe id="mapFrame" width="100%" class="google-map mapGoogle" src="maps_coordenadas.php" frameborder="0" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+											<input type="hidden" id="latGPS" value="<?php echo $row["LatitudGPSCierre"] ?? ""; ?>">
+											<input type="hidden" id="lngGPS" value="<?php echo $row["LongitudGPSCierre"] ?? ""; ?>">
+
+											<br>
+											<p><b><i class="fa fa-map-marker"></i> Coordenadas GPS: </b><span id="coordGPS">Sin seleccionar</span></p>
+										</div>
+
+										<div class="col-lg-12">
+											<iframe id="mapFrame" width="100%" height="420" src="maps_coordenadas.php" frameborder="0"></iframe>
 										</div>
 									</div>
 								</div>

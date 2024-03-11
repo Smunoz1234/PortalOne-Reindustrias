@@ -53,8 +53,13 @@
 
             // Evento cuando se mueve el marcador
             google.maps.event.addListener(marker, 'dragend', function (event) {
-                parent.document.getElementById('lat').value = event.latLng.lat();
-                parent.document.getElementById('lng').value = event.latLng.lng();
+                let lat = event.latLng.lat();
+                let lng = event.latLng.lng();
+
+                parent.document.getElementById('latGPS').value = lat;
+                parent.document.getElementById('lngGPS').value = lng;
+
+                parent.document.getElementById('coordGPS').innerText = `${lat}, ${lng}`;
             });
         }
     </script>
