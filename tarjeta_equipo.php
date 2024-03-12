@@ -166,6 +166,8 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
 			"'" . ($_POST['IdDimension4'] ?? "") . "'",
 			"'" . ($_POST['IdDimension5'] ?? "") . "'",
 			"'" . ($_POST['IdProyecto'] ?? "") . "'",
+			"'" . ($_POST['latGPS'] ?? "") . "'",
+			"'" . ($_POST['lngGPS'] ?? "") . "'",
 		);
 
 		// Insertar a la tabla de PortalOne
@@ -284,6 +286,8 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
 				"id_dimension_5" => ($_POST['IdDimension5'] ?? ""),
 				"id_proyecto" => ($_POST['IdProyecto'] ?? ""),
 				"id_fabricante_equipo " => ($_POST['IdFabricante'] ?? ""),
+				"latitud_gps_ubicacion " => ($_POST['latGPS'] ?? ""),
+				"longitud_gps_ubicacion" => ($_POST['lngGPS'] ?? ""),
 			);
 
 			// Agregar fechas, inicio.
@@ -2018,8 +2022,8 @@ while ($row_ValPropiedad = sqlsrv_fetch_array($SQL_ValoresPropiedades)) {
 															
 														<div class="form-group">
 															<div class="col-lg-12">
-																<input type="hidden" id="latGPS" value="<?php echo $row["LatitudGPSCierre"] ?? ""; ?>">
-																<input type="hidden" id="lngGPS" value="<?php echo $row["LongitudGPSCierre"] ?? ""; ?>">
+																<input type="hidden" id="latGPS" name="latGPS" value="<?php echo $row["LatitudGPSUbicacion"] ?? ""; ?>">
+																<input type="hidden" id="lngGPS" name="lngGPS" value="<?php echo $row["LongitudGPSUbicacion"] ?? ""; ?>">
 
 																<p><b><i class="fa fa-map-marker"></i> Coordenadas GPS: </b><span id="coordGPS">Sin seleccionar</span></p>
 															</div>
