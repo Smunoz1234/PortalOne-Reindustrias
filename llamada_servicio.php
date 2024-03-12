@@ -3230,23 +3230,23 @@ function AgregarEsto(contenedorID, valorElemento) {
 									<div class="col-lg-10 border-bottom m-r-sm">
 										<label class="control-label text-danger">Ubicación GPS</label>
 									</div>
+								</div>
 									
-									<div class="form-group">
-										<div class="col-lg-12">
-											<input type="hidden" id="latGPS" value="<?php echo $row["LatitudGPSCierre"] ?? ""; ?>">
-											<input type="hidden" id="lngGPS" value="<?php echo $row["LongitudGPSCierre"] ?? ""; ?>">
+								<div class="form-group">
+									<div class="col-lg-12">
+										<input type="hidden" id="latGPS" value="<?php echo $row["LatitudGPSCierre"] ?? ""; ?>">
+										<input type="hidden" id="lngGPS" value="<?php echo $row["LongitudGPSCierre"] ?? ""; ?>">
 
-											<br>
-											<p><b><i class="fa fa-map-marker"></i> Coordenadas GPS: </b><span id="coordGPS">Sin seleccionar</span></p>
-										</div>
-
-										<div class="col-lg-12">
-											<iframe id="mapFrame" width="100%" height="420" src="maps_coordenadas.php" frameborder="0"></iframe>
-										</div>
+										<p><b><i class="fa fa-map-marker"></i> Coordenadas GPS: </b><span id="coordGPS">Sin seleccionar</span></p>
 									</div>
 								</div>
 
-								<br>
+								<div class="form-group">
+									<div class="col-lg-12">
+										<iframe id="mapFrame" width="100%" height="420" src="maps_coordenadas.php" frameborder="0"></iframe>
+									</div>
+								</div>
+
 								<div class="form-group">
 									<div class="col-lg-10 border-bottom m-r-sm">
 										<label class="control-label text-danger">Información del contacto en sitio</label>

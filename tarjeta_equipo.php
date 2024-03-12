@@ -1923,69 +1923,115 @@ while ($row_ValPropiedad = sqlsrv_fetch_array($SQL_ValoresPropiedades)) {
 										<div id="tab-address" class="tab-pane active">
 											<div class="row">
 												<div class="ibox-content">
-													<div class="form-group">
-														<label class="col-lg-1 control-label">Calle</label>
-														<div class="col-lg-3">
-															<input <?php if (!PermitirFuncion(1602)) {
-																echo "readonly";
-															} ?> autocomplete="off" name="Calle" type="text"
-																required class="form-control" id="Calle"
-																maxlength="150" value="<?php if (isset($row['Calle'])) {
-																	echo $row['Calle'];
-																} ?>">
+													<div class="col-lg-6">
+														<div class="form-group">
+															<div class="col-lg-10 border-bottom m-r-sm">
+																<label class="control-label text-danger">
+																	Información del contacto en sitio
+																</label>
+															</div>
 														</div>
-														<label class="col-lg-1 control-label">Código postal</label>
-														<div class="col-lg-3">
-															<input <?php if (!PermitirFuncion(1602)) {
-																echo "readonly";
-															} ?> autocomplete="off" name="CodigoPostal" type="text"
-																required class="form-control"
-																id="CodigoPostal" maxlength="150" value="<?php if (isset($row['CodigoPostal'])) {
-																	echo $row['CodigoPostal'];
-																} ?>">
-														</div>
-														<label class="col-lg-1 control-label">Ciudad</label>
-														<div class="col-lg-3">
-															<input <?php if (!PermitirFuncion(1602)) {
-																echo "readonly";
-															} ?> autocomplete="off" name="Ciudad" type="text"
-																required class="form-control" id="Ciudad"
-																maxlength="150" value="<?php if (isset($row['Ciudad'])) {
-																	echo $row['Ciudad'];
-																} ?>">
-														</div>
-													</div>
 
-													<div class="form-group">
-														<input <?php if (!PermitirFuncion(1602)) {
-															echo "readonly";
-														} ?>
-															type="hidden" name="EstadoPais" id="EstadoPais" value="<?php if (isset($row['EstadoPais'])) {
-																echo $row['EstadoPais'];
-															} ?>" />
-														<label class="col-lg-1 control-label">Distrito</label>
-														<div class="col-lg-3">
+														<div class="form-group">
+															<div class="col-lg-6">
+																<label class="control-label">Calle</label>
+
+																<input <?php if (!PermitirFuncion(1602)) {
+																	echo "readonly";
+																} ?> autocomplete="off" name="Calle" type="text"
+																	required class="form-control" id="Calle"
+																	maxlength="150" value="<?php if (isset($row['Calle'])) {
+																		echo $row['Calle'];
+																	} ?>">
+															</div>
+															
+															<div class="col-lg-6">
+																<label class="control-label">Código postal</label>
+
+																<input <?php if (!PermitirFuncion(1602)) {
+																	echo "readonly";
+																} ?> autocomplete="off" name="CodigoPostal" type="text"
+																	required class="form-control"
+																	id="CodigoPostal" maxlength="150" value="<?php if (isset($row['CodigoPostal'])) {
+																		echo $row['CodigoPostal'];
+																	} ?>">
+															</div>
+														</div>
+
+														<div class="form-group">
+															<div class="col-lg-6">
+																<label class="control-label">Ciudad</label>
+																
+																<input <?php if (!PermitirFuncion(1602)) {
+																	echo "readonly";
+																} ?> autocomplete="off" name="Ciudad" type="text"
+																	required class="form-control" id="Ciudad"
+																	maxlength="150" value="<?php if (isset($row['Ciudad'])) {
+																		echo $row['Ciudad'];
+																	} ?>">
+															</div>
+
+															<div class="col-lg-6">
+																<label class="control-label">Distrito</label>
+
+																<input <?php if (!PermitirFuncion(1602)) {
+																	echo "readonly";
+																} ?> autocomplete="off" name="Distrito" type="text"
+																	required class="form-control" id="Distrito"
+																	maxlength="150" value="<?php if (isset($row['Distrito'])) {
+																		echo $row['Distrito'];
+																	} ?>">
+															</div>
+														</div>
+
+														<div class="form-group">
 															<input <?php if (!PermitirFuncion(1602)) {
 																echo "readonly";
-															} ?> autocomplete="off" name="Distrito" type="text"
-																required class="form-control" id="Distrito"
-																maxlength="150" value="<?php if (isset($row['Distrito'])) {
-																	echo $row['Distrito'];
-																} ?>">
-														</div>
-														<label class="col-lg-1 control-label">País</label>
-														<div class="col-lg-3">
-															<select <?php if (!PermitirFuncion(1602)) {
-																echo "disabled";
-															} ?> name="Pais" class="form-control" id="Pais"
-																required>
-																<option value="">(Ninguno)</option>
-																<option value="CO" <?php if ((isset($row['Pais'])) && (strcmp("CO", $row['Pais']) == 0)) {
-																	echo "selected";
-																} ?>>Colombia</option>
-															</select>
+															} ?>
+																type="hidden" name="EstadoPais" id="EstadoPais" value="<?php if (isset($row['EstadoPais'])) {
+																	echo $row['EstadoPais'];
+																} ?>" />
+															
+															<div class="col-lg-6">
+																<label class="control-label">País</label>
+
+																<select <?php if (!PermitirFuncion(1602)) {
+																	echo "disabled";
+																} ?> name="Pais" class="form-control" id="Pais"
+																	required>
+																	<option value="">(Ninguno)</option>
+																	<option value="CO" <?php if ((isset($row['Pais'])) && (strcmp("CO", $row['Pais']) == 0)) {
+																		echo "selected";
+																	} ?>>Colombia</option>
+																</select>
+															</div>
 														</div>
 													</div>
+													<!-- /.col-lg-6 -->
+
+													<div class="col-lg-6">
+														<div class="form-group">
+															<div class="col-lg-10 border-bottom m-r-sm">
+																<label class="control-label text-danger">Ubicación GPS</label>
+															</div>
+														</div>
+															
+														<div class="form-group">
+															<div class="col-lg-12">
+																<input type="hidden" id="latGPS" value="<?php echo $row["LatitudGPSCierre"] ?? ""; ?>">
+																<input type="hidden" id="lngGPS" value="<?php echo $row["LongitudGPSCierre"] ?? ""; ?>">
+
+																<p><b><i class="fa fa-map-marker"></i> Coordenadas GPS: </b><span id="coordGPS">Sin seleccionar</span></p>
+															</div>
+														</div>
+
+														<div class="form-group">
+															<div class="col-lg-12">
+																<iframe id="mapFrame" width="100%" height="420" src="maps_coordenadas.php" frameborder="0"></iframe>
+															</div>
+														</div>
+													</div>
+													<!-- /.col-lg-6 -->
 												</div>
 											</div>
 										</div>
