@@ -35,10 +35,13 @@
             // Si se encuentran las coordenadas en la URL, usarlas
             const mapCoords = lat && lng ? { lat: parseFloat(lat), lng: parseFloat(lng) } : defaultCoords;
 
+            // Determinar el nivel de zoom
+            const zoomLevel = lat && lng ? 10 : 5;
+
             // Opciones del mapa
             const mapOptions = {
                 center: mapCoords,
-                zoom: 10 // Nivel de zoom (En 5 se ve toda Colombia, importante)
+                zoom: zoomLevel // Zoom inicial: 5 muestra Colombia completa, 10 para mayor detalle.
             };
 
             // Crear el mapa
