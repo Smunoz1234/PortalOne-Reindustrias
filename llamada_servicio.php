@@ -947,6 +947,10 @@ $SQL_ContratosLlamada = Seleccionar('uvw_Sap_tbl_LlamadasServicios_Contratos_TBU
 $IdTarjetaEquipo = $row["IdTarjetaEquipo"] ?? "";
 $SQL_TE_Componente = Seleccionar("uvw_tbl_TarjetaEquipo_Componentes", "*", "id_tarjeta_equipo_padre = $IdTarjetaEquipo");
 
+// SMM, 13/03/2024
+$SQL_City = Seleccionar("uvw_Sap_tbl_SN_Municipio", "DISTINCT ID_Municipio, DE_Municipio", "DeDepartamento <> ''", "DE_Municipio");
+$SQL_UnidadMedida = Seleccionar("uvw_tbl_TarjetaEquipo_UnidadMedidas", "*", "estado_unidad_medida_equipo = 'Y'", "unidad_medida_equipo");
+
 // Stiven Muñoz Murillo, 04/03/2022
 if ($testMode) {
 	echo $Cons;
@@ -3213,10 +3217,10 @@ function AgregarEsto(contenedorID, valorElemento) {
 											<option value="">Seleccione...</option>
 											
 											<?php while ($row_UnidadMedida = sqlsrv_fetch_array($SQL_UnidadMedida)) { ?>
-												<option value="<?php echo $row_UnidadMedida["id_tarjeta_equipo_hijo"]; ?>" <?php if (isset($row["IdUnidadMedidaEquipo"]) && ($row_UnidadMedida["id_tarjeta_equipo_hijo"] == $row["IdUnidadMedidaEquipo"])) {
+												<option value="<?php echo $row_UnidadMedida["id_unidad_medida_equipo"]; ?>" <?php if (isset($row["IdUnidadMedidaEquipo"]) && ($row_UnidadMedida["id_unidad_medida_equipo"] == $row["IdUnidadMedidaEquipo"])) {
 													echo "selected";
 												} ?>>
-													<?php echo $row_UnidadMedida["serial_fabricante_hijo"] ?? ""; ?>
+													<?php echo $row_UnidadMedida["unidad_medida_equipo"] ?? ""; ?>
 												</option>
 											<?php } ?>
 										</select>
@@ -3231,38 +3235,34 @@ function AgregarEsto(contenedorID, valorElemento) {
 
 								<div class="form-group">
 									<div class="col-lg-6">
-										<label class="control-label">Ciudad</label>
-											
-										<select id="IdCiudadCierre" name="IdCiudadCierre" class="form-control select2" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
+									<label class="control-label">Ciudad</label>
+									
+									<select id="IdCiudadCierre" name="IdCiudadCierre" class="form-control select2" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 											echo "disabled";
 										} ?>>
-											<option value="">Seleccione...</option>
-											
-											<?php while ($row_Ciudad = sqlsrv_fetch_array($SQL_Ciudad)) { ?>
-												<option value="<?php echo $row_Ciudad["id_tarjeta_equipo_hijo"]; ?>" <?php if (isset($row["IdCiudadCierre"]) && ($row_Ciudad["id_tarjeta_equipo_hijo"] == $row["IdCiudadCierre"])) {
+										<option value="">Seleccione...</option>
+										
+										<?php while ($row_City = sqlsrv_fetch_array($SQL_City)) { ?>
+											<option value="<?php echo $row_City["ID_Municipio"]; ?>" <?php if (isset($row["IdCiudadCierre"]) && ($row_City["ID_Municipio"] == $row["IdCiudadCierre"])) {
 													echo "selected";
 												} ?>>
-													<?php echo $row_Ciudad["serial_fabricante_hijo"] ?? ""; ?>
-												</option>
-											<?php } ?>
-										</select>
+												<?php echo $row_City["DE_Municipio"] ?? ""; ?>
+											</option>
+										<?php } ?>
+									</select>
 									</div>
 									
 									<div class="col-lg-6">
 										<label class="control-label">País</label>
-										
-										<select id="IdPaisCierre" name="IdPaisCierre" class="form-control select2" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
+
+										<select id="IdPaisCierre" name="IdPaisCierre" class="form-control" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 											echo "disabled";
 										} ?>>
-											<option value="">Seleccione...</option>
-											
-											<?php while ($row_Pais = sqlsrv_fetch_array($SQL_Pais)) { ?>
-												<option value="<?php echo $row_Pais["id_tarjeta_equipo_hijo"]; ?>" <?php if (isset($row["IdPaisCierre"]) && ($row_Pais["id_tarjeta_equipo_hijo"] == $row["IdPaisCierre"])) {
-													echo "selected";
-												} ?>>
-													<?php echo $row_Pais["serial_fabricante_hijo"] ?? ""; ?>
-												</option>
-											<?php } ?>
+											<option value="">(Ninguno)</option>
+
+											<option value="CO" <?php if (isset($row["IdPaisCierre"]) && ("CO" == $row["IdPaisCierre"])) {
+												echo "selected";
+											} ?>>Colombia</option>
 										</select>
 									</div>
 								</div>
