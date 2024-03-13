@@ -53,7 +53,7 @@ $SQL_Ubicacion = Seleccionar("uvw_tbl_TarjetaEquipo_Ubicaciones", "*");
 				<div class="row">
 					<div class="col-lg-12">
 						<div class="ibox-content">
-							<form id="formBuscar" class="form-horizontal">
+							<form id="formBuscar_Componente" class="form-horizontal">
 								<div class="form-group row">
 									<div class="col-lg-6">	
 										<label class="control-label">ID servicio (IdArticulo)</label>
@@ -290,36 +290,14 @@ $SQL_Ubicacion = Seleccionar("uvw_tbl_TarjetaEquipo_Ubicaciones", "*");
 	$(document).ready(function () {
 		$('#footable_Componente').footable();
 
-		// Inicio, cambio asincrono de sucursal en base al cliente.
-		$("#NombreCliente").on("change", function () {
-			var NomCliente = document.getElementById("NombreCliente");
-			var Cliente = document.getElementById("Cliente");
-
-			if (NomCliente.value == "") {
-				Cliente.value = "";
-				$("#Cliente").trigger("change");
-			}
-		});
-
-		$("#Cliente").change(function () {
-			var Cliente = document.getElementById("Cliente");
-
-			$.ajax({
-				type: "POST",
-				url: "ajx_cbo_sucursales_clientes_simple.php?CardCode=" + Cliente.value,
-				success: function (response) {
-					$('#Sucursal').html(response).fadeIn();
-				}
-			});
-		});
-		// Fin, cambio asincrono de sucursal en base al cliente.
-
-		$("#formBuscar").on("submit", function (event) {
-			// Stiven Muñoz Murillo, 04/08/2022
+		// Stiven Muñoz Murillo, 04/08/2022
+		$("#formBuscar_Componente").on("submit", function (event) {
+			
 			event.preventDefault();
 		});
 
-		$("#formBuscar").validate({
+		// Stiven Muñoz Murillo, 13/03/2024
+		$("#formBuscar_Componente").validate({
 			submitHandler: function (form) {
 				$('.ibox-content').toggleClass('sk-loading');
 
@@ -356,41 +334,9 @@ $SQL_Ubicacion = Seleccionar("uvw_tbl_TarjetaEquipo_Ubicaciones", "*");
 		// Error con cabecera_new
 		// $('.chosen-select').chosen({ width: "100%" });
 
-		let options = {
-			adjustWidth: false,
-			url: function (phrase) {
-				return "ajx_buscar_datos_json.php?type=7&id=" + phrase;
-			},
-			getValue: "NombreBuscarCliente",
-			requestDelay: 400,
-			list: {
-				match: {
-					enabled: true
-				},
-				onClickEvent: function () {
-					var value = $("#NombreCliente").getSelectedItemData().CodigoCliente;
-					$("#Cliente").val(value).trigger("change");
-				}
-			}
-		};
-		$("#NombreCliente").easyAutocomplete(options);
-
 		$("#mdTE_Componente").on("show.bs.modal", function (e) {
 			console.log('El modal mdTE_Componente se está mostrando');
-			
-			let ClienteLlamada = $("#ClienteLlamada").val() || "";
-			let NombreClienteLlamada = $("#NombreClienteLlamada").val() || "";
-
-			let IdArticuloLlamada = $("#IdArticuloLlamada").val() || "";
-			
-			$("#mdTE_Componente #Cliente").val(ClienteLlamada);
-			$("#mdTE_Componente #NombreCliente").val(NombreClienteLlamada);
-
-			$("#mdTE_Componente #ItemCode").val(IdArticuloLlamada);
-
-			if((ClienteLlamada =! "") || (IdArticuloLlamada != "")) {
-				$('#formBuscar').submit();
-			}
+			// $('#formBuscar_Componente').submit();
 		});
 	});
 </script>

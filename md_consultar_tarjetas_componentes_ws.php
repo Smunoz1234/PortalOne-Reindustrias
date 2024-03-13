@@ -11,7 +11,8 @@ while ($row_Dimension = sqlsrv_fetch_array($SQL_Dimensiones)) {
 }
 // Hasta aquí, SMM 29/05/2023
 
-$Filtro = "TipoEquipo <> ''";
+// SMM, 13/03/2024
+$Filtro = "[id_tarjeta_equipo_padre] <> ''";
 
 $ItemCode = $_POST["ItemCode"] ?? "";
 if ($ItemCode != "") {
@@ -45,12 +46,12 @@ if ($UbicacionEquipo != "") {
 
 // Realizar consulta con filtros
 $Where = "$Filtro ORDER BY [id_tarjeta_equipo_hijo] DESC";
-$Cons_TE_componentes = "SELECT TOP 1000 * FROM [uvw_tbl_TarjetaEquipo_Componentes] WHERE $Where";
-$SQL = sqlsrv_query($conexion, $Cons_TE);
+$Cons_TE_Componentes = "SELECT TOP 1000 * FROM [uvw_tbl_TarjetaEquipo_Componentes] WHERE $Where";
+$SQL = sqlsrv_query($conexion, $Cons_TE_Componentes);
 
 // SMM, 21/11/2023
 if (!$SQL) {
-    echo $Cons_TE;
+    echo $Cons_TE_Componentes;
 }
 
 // Devolver respuesta en formato JSON
