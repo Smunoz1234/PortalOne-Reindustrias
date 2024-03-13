@@ -229,7 +229,7 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { // Crear llamada de servicio
 			isset($_POST['OrdenServicioCliente']) && ($_POST['OrdenServicioCliente'] != "") ? $_POST['OrdenServicioCliente'] : 0, // IdLlamadaServicioPadre (int)
 			"'" . ($_POST["IdArticuloComponente"] ?? "") . "'",
 			"'" . ($_POST["IdTarjetaEquipoComponente"] ?? "") . "'",
-			"'" . ($_POST["ContadorHorometro"] ?? 0) . "'", // numeric(19, 6)
+			"'" . (isset($_POST['ContadorHorometro']) && ($_POST['ContadorHorometro'] != "")  ? $_POST['ContadorHorometro'] : 0) . "'", // numeric(19, 6)
 			"'" . ($_POST["IdUnidadMedidaEquipo"] ?? "") . "'",
 			"'" . ($_POST["latGPS"] ?? "") . "'",
 			"'" . ($_POST["lngGPS"] ?? "") . "'",
@@ -488,7 +488,7 @@ if (isset($_POST['P']) && ($_POST['P'] == 33)) { //Actualizar llamada de servici
 			isset($_POST['OrdenServicioCliente']) && ($_POST['OrdenServicioCliente'] != "") ? $_POST['OrdenServicioCliente'] : 0, // IdLlamadaServicioPadre (int)
 			"'" . ($_POST["IdArticuloComponente"] ?? "") . "'",
 			"'" . ($_POST["IdTarjetaEquipoComponente"] ?? "") . "'",
-			"'" . ($_POST["ContadorHorometro"] ?? 0) . "'", // numeric(19, 6)
+			"'" . (isset($_POST['ContadorHorometro']) && ($_POST['ContadorHorometro'] != "")  ? $_POST['ContadorHorometro'] : 0) . "'", // numeric(19, 6)
 			"'" . ($_POST["IdUnidadMedidaEquipo"] ?? "") . "'",
 			"'" . ($_POST["latGPS"] ?? "") . "'",
 			"'" . ($_POST["lngGPS"] ?? "") . "'",
@@ -3220,7 +3220,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 									<div class="col-lg-6">
 										<label class="control-label">Contador/horómetro</label>
 										
-										<input type="number" class="form-control" name="ContadorHorometro" id="ContadorHorometro"
+										<input type="text" class="form-control" name="ContadorHorometro" id="ContadorHorometro"
 											value="<?php echo $row["ContadorHorometro"] ?? ""; ?>">
 									</div>
 
@@ -3294,8 +3294,8 @@ function AgregarEsto(contenedorID, valorElemento) {
 									
 								<div class="form-group">
 									<div class="col-lg-12">
-										<input type="hidden" id="latGPS" value="<?php echo $row["LatitudGPSCierre"] ?? ""; ?>">
-										<input type="hidden" id="lngGPS" value="<?php echo $row["LongitudGPSCierre"] ?? ""; ?>">
+										<input type="hidden" id="latGPS" name="latGPS" value="<?php echo $row["LatitudGPSCierre"] ?? ""; ?>">
+										<input type="hidden" id="lngGPS" name="lngGPS" value="<?php echo $row["LongitudGPSCierre"] ?? ""; ?>">
 
 										<p><b><i class="fa fa-map-marker"></i> Coordenadas GPS: </b><span id="coordGPS">Sin seleccionar</span></p>
 									</div>
