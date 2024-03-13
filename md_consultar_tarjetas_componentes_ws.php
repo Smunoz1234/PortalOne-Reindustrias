@@ -23,19 +23,24 @@ if ($SerialEquipo != "") {
     $Filtro .= " AND (SerialFabricante LIKE '%$SerialEquipo%' OR SerialInterno LIKE '%$SerialEquipo%')";
 }
 
-$EstadoEquipo = $_POST["EstadoEquipo"] ?? "";
-if ($EstadoEquipo != "") {
-    $Filtro .= " AND CodEstado='$EstadoEquipo'";
-}
-
-$Cliente = $_POST["Cliente"] ?? "";
-if ($Cliente != "") {
-    $Filtro .= " AND CardCode = '$Cliente'";
-}
-
 $BuscarDato = $_POST['BuscarDato'] ?? "";
 if ($BuscarDato != "") {
     $Filtro .= " AND (Calle LIKE '%$BuscarDato%' OR CodigoPostal LIKE '%$BuscarDato%' OR Barrio LIKE '%$BuscarDato%' OR Ciudad LIKE '%$BuscarDato%' OR Distrito LIKE '%$BuscarDato%' OR SerialFabricante LIKE '%$BuscarDato%' OR SerialInterno LIKE '%$BuscarDato%' OR IdTarjetaEquipo LIKE '%$BuscarDato%')";
+}
+
+$IdJerarquia1 = $_POST["id_jerarquia_1"] ?? "";
+if ($IdJerarquia1 != "") {
+    $Filtro .= " AND IdJerarquia1 = '$IdJerarquia1'";
+}
+
+$IdJerarquia2 = $_POST["id_jerarquia_2"] ?? "";
+if ($IdJerarquia2 != "") {
+    $Filtro .= " AND IdJerarquia2 = '$IdJerarquia2'";
+}
+
+$UbicacionEquipo = $_POST["id_ubicacion_equipo"] ?? "";
+if ($UbicacionEquipo != "") {
+    $Filtro .= " AND IdUbicacion = '$UbicacionEquipo'";
 }
 
 // Realizar consulta con filtros
@@ -98,7 +103,7 @@ echo $dataString;
                 </td>
                 <td>
                     <a type="button" class="btn btn-success btn-xs" title="Adicionar o cambiar TE"
-                        onclick="cambiarTE_Componente('<?php echo $row['IdTarjetaEquipo']; ?>', '<?php echo 'SN Fabricante: ' . $row['SerialFabricante'] . ' - Núm. Serie: ' . $row['SerialInterno']; ?>')">
+                        onclick="cambiarTE_Componente('<?php echo $row['IdTarjetaEquipo']; ?>', '<?php echo 'SN Fabricante: ' . $row['SerialFabricante'] . ' - Núm. Serie: ' . $row['SerialInterno']; ?>', '<?php echo $row['ItemCode']; ?>', '<?php echo $row['ItemName']; ?>')">
                         <b>
                             <?php echo $row['IdTarjetaEquipo']; ?>
                         </b>

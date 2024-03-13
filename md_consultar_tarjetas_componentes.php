@@ -1,7 +1,33 @@
 <?php
 $Cons_TarjetasEquipos = "SELECT TOP 100 * FROM uvw_Sap_tbl_TarjetasEquipos WHERE TipoEquipo <> '' ORDER BY IdTarjetaEquipo DESC";
 $SQL_TE = sqlsrv_query($conexion, $Cons_TarjetasEquipos);
+
+// SMM, 13/03/2024
+$SQL_Ubicacion = Seleccionar("uvw_tbl_TarjetaEquipo_Ubicaciones", "*");
 ?>
+
+<style>
+	.select2-dropdown {
+		z-index: 9009;
+	}
+
+	.ibox-title {
+		border-radius: 5px;
+		margin-bottom: 10px;
+	}
+
+	.ibox-title a {
+		color: inherit !important;
+	}
+
+	.collapse-link:hover {
+		cursor: pointer;
+	}
+
+	.swal2-container {
+    	z-index: 9000;
+	}
+</style>
 
 <div class="modal inmodal fade" id="mdTE_Componente" tabindex="1" role="dialog" aria-hidden="true">
 	<div class="modal-dialog modal-lg" style="width: 60% !important;">
@@ -28,33 +54,42 @@ $SQL_TE = sqlsrv_query($conexion, $Cons_TarjetasEquipos);
 									</div>
 
 									<div class="col-lg-6">
-										<label class="control-label">Serial</label>
-									
-										<input name="SerialEquipo" type="text" class="form-control" id="SerialEquipo"
-											maxlength="100" placeholder="Serial fabricante o interno">
+										<label class="control-label">Jerarquia 1 (Sistema)</label>
+
+										<select name="id_jerarquia_1" id="id_jerarquia_1" class="form-control select2">
+											<option value="">Seleccione...</option>
+
+											<?php $SQL_DimJ = Seleccionar("tbl_TarjetaEquipo_Jerarquias", "*", "id_dimension_jerarquia = 1"); ?>
+											<?php while ($row_DimJ = sqlsrv_fetch_array($SQL_DimJ)) { ?>
+												<option value="<?php echo $row_DimJ['id_jerarquia']; ?>">
+													<?php echo $row_DimJ['jerarquia']; ?>
+												</option>
+											<?php } ?>
+										</select>
 									</div>
 								</div>
 
 								<div class="form-group row">
 									<div class="col-lg-6">
-										<label class="control-label">Estado de equipo</label>
+										<label class="control-label">Serial</label>
 									
-										<select name="EstadoEquipo" class="form-control" id="EstadoEquipo">
-											<option value="">(Todos)</option>
-											<option value="A">Activo</option>
-											<option value="R">Devuelto</option>
-											<option value="T">Finalizado</option>
-											<option value="L">Concedido en prestamo</option>
-											<option value="I">En laboratorio de reparación</option>
-										</select>
+										<input name="SerialEquipo" type="text" class="form-control" id="SerialEquipo"
+											maxlength="100" placeholder="Serial fabricante o interno">
 									</div>
 
 									<div class="col-lg-6">
-										<label class="control-label">Cliente</label>
-									
-										<input name="Cliente" type="hidden" id="Cliente">
-										<input name="NombreCliente" type="text" class="form-control" id="NombreCliente"
-											placeholder="Para TODOS, dejar vacio...">
+										<label class="control-label">Jerarquia 2 (SubSistema)</label>
+
+										<select name="id_jerarquia_2" id="id_jerarquia_2" class="form-control select2">
+											<option value="">Seleccione...</option>
+
+											<?php $SQL_DimJ = Seleccionar("tbl_TarjetaEquipo_Jerarquias", "*", "id_dimension_jerarquia = 2"); ?>
+											<?php while ($row_DimJ = sqlsrv_fetch_array($SQL_DimJ)) { ?>
+												<option value="<?php echo $row_DimJ['id_jerarquia']; ?>">
+													<?php echo $row_DimJ['jerarquia']; ?>
+												</option>
+											<?php } ?>
+										</select>
 									</div>
 								</div>
 
@@ -67,6 +102,22 @@ $SQL_TE = sqlsrv_query($conexion, $Cons_TarjetasEquipos);
 									</div>
 
 									<div class="col-lg-6">
+										<label class="control-label">Ubicación</label>
+
+										<select name="id_ubicacion_equipo" id="id_ubicacion_equipo" class="form-control select2">
+											<option value="">Seleccione...</option>
+
+											<?php while ($row_Ubicacion = sqlsrv_fetch_array($SQL_Ubicacion)) { ?>
+												<option value="<?php echo $row_Ubicacion['id_ubicacion_equipo']; ?>">
+													<?php echo $row_Ubicacion['ubicacion_equipo']; ?>
+												</option>
+											<?php } ?>
+										</select>
+									</div>
+								</div>
+
+								<div class="form-group">
+									<div class="col-lg-12">
 										<br>
 										<button type="submit" class="btn btn-outline btn-success pull-right">
 											<i class="fa fa-search"></i> Buscar
@@ -120,7 +171,7 @@ $SQL_TE = sqlsrv_query($conexion, $Cons_TarjetasEquipos);
 													<td>
 														<a type="button" class="btn btn-success btn-xs"
 															title="Adicionar o cambiar TE"
-															onclick="cambiarTE_Componente('<?php echo $row_TE['IdTarjetaEquipo']; ?>', '<?php echo 'SN Fabricante: ' . $row_TE['SerialFabricante'] . ' - Núm. Serie: ' . $row_TE['SerialInterno']; ?>')">
+															onclick="cambiarTE_Componente('<?php echo $row_TE['IdTarjetaEquipo']; ?>', '<?php echo 'SN Fabricante: ' . $row_TE['SerialFabricante'] . ' - Núm. Serie: ' . $row_TE['SerialInterno']; ?>', '<?php echo $row_TE['ItemCode']; ?>', '<?php echo $row_TE['ItemName']; ?>')">
 															<b>
 																<?php echo $row_TE['IdTarjetaEquipo']; ?>
 															</b>
@@ -183,7 +234,7 @@ $SQL_TE = sqlsrv_query($conexion, $Cons_TarjetasEquipos);
 </div>
 
 <script>
-	function cambiarTE_Componente(tarjeta_equipo, descripcion_te) {
+	function cambiarTE_Componente(tarjeta_equipo, descripcion_te, id_articulo, de_articulo) {
 		console.log("Ejecutando, cambiarTE_Componente()");
 
 		$("#IdTarjetaEquipoComponente").val(tarjeta_equipo);
@@ -191,6 +242,12 @@ $SQL_TE = sqlsrv_query($conexion, $Cons_TarjetasEquipos);
 
 		$("#IdTarjetaEquipoComponente").change();
 		$("#DeTarjetaEquipoComponente").change();
+
+		$("#IdArticuloComponente").val(id_articulo);
+		$("#ArticuloComponente").val(de_articulo);
+
+		$("#IdArticuloComponente").change();
+		$("#ArticuloComponente").change();
 
 		$('#mdTE_Componente').modal('hide');
 	}
