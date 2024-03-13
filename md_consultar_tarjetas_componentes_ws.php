@@ -1,15 +1,15 @@
 <?php require_once "includes/conexion.php";
-/* JSON de ejemplo (también pueden llegar vacios ""):
-{
-Cliente: "CL-1054994729",
-FechaFinal: "2022-08-04",
-FechaInicial: "2022-07-20",
-IDTicket: "111000047",
-NombreCliente: "Stiven Muñoz Murillo",
-Series: "142",
-Sucursal: "CHINCHINA"
+// print_r($_POST);
+// exit();
+
+// Dimensiones. SMM, 29/05/2023
+$SQL_Dimensiones = Seleccionar('uvw_Sap_tbl_Dimensiones', '*', "DimActive='Y'");
+
+$array_Dimensiones = [];
+while ($row_Dimension = sqlsrv_fetch_array($SQL_Dimensiones)) {
+    array_push($array_Dimensiones, $row_Dimension);
 }
- */
+// Hasta aquí, SMM 29/05/2023
 
 $Filtro = "TipoEquipo <> ''";
 
@@ -74,14 +74,27 @@ echo $dataString;
 <table id="footable_Componente" class="table" data-paging="true" data-sorting="true">
     <thead>
         <tr>
-            <th>Código cliente</th>
-            <th>Cliente</th>
-            <th>Serial fabricante</th>
-            <th>Serial interno</th>
+            <th>Código Artículo</th>
+            <th>Artículo</th>
+
+            <th>Unidad Medida</th>
+            <th>Jerarquía 1</th>
+            <th>Jerarquía 2</th>
+            <th>Ubicación</th>
+            
             <th>Núm.</th>
-            <th data-breakpoints="all">Código de artículo</th>
-            <th data-breakpoints="all">Artículo</th>
-            <th data-breakpoints="all">Tipo de equipo</th>
+            
+            <th data-breakpoints="all">Fecha Operación</th>
+            <th data-breakpoints="all">Contador/Horómetro</th>
+
+            <?php foreach ($array_Dimensiones as &$dim) { ?>
+                <th data-breakpoints="all">
+                    <?php echo $dim['IdPortalOne']; ?>
+                </th>
+            <?php } ?>
+
+            <th data-breakpoints="all">Proyecto</th>
+
             <th data-breakpoints="all">Estado</th>
             <th data-breakpoints="all">Acciones</th>
         </tr>
@@ -90,17 +103,25 @@ echo $dataString;
         <?php while ($row = sqlsrv_fetch_array($SQL)) { ?>
             <tr>
                 <td>
-                    <?php echo $row['CardCode']; ?>
+                    <?php echo $row['id_articulo_hijo']; ?>
                 </td>
                 <td>
-                    <?php echo $row['CardName']; ?>
+                    <?php echo $row['articulo_hijo']; ?>
+                </td>
+                
+                <td>
+                    <?php echo $row['unidad_hijo']; ?>
                 </td>
                 <td>
-                    <?php echo $row['SerialFabricante']; ?>
+                    <?php echo $row['jerarquia_1']; ?>
                 </td>
                 <td>
-                    <?php echo $row['SerialInterno']; ?>
+                    <?php echo $row['jerarquia_2']; ?>
                 </td>
+                <td>
+                    <?php echo $row['ubicacion_hijo']; ?>
+                </td>
+
                 <td>
                     <a type="button" class="btn btn-success btn-xs" title="Adicionar o cambiar TE"
                         onclick="cambiarTE_Componente('<?php echo $row['IdTarjetaEquipo']; ?>', '<?php echo 'SN Fabricante: ' . $row['SerialFabricante'] . ' - Núm. Serie: ' . $row['SerialInterno']; ?>', '<?php echo $row['ItemCode']; ?>', '<?php echo $row['ItemName']; ?>')">
@@ -109,19 +130,25 @@ echo $dataString;
                         </b>
                     </a>
                 </td>
+
                 <td>
-                    <?php echo $row['ItemCode']; ?>
+                    <?php echo $row['fecha_operacion_hijo']; ?>
                 </td>
                 <td>
-                    <?php echo $row['ItemName']; ?>
+                    <?php echo $row['contador_hijo']; ?>
                 </td>
+                
+                <?php foreach ($array_Dimensiones as &$dim) { ?>
+                    <td>
+                        <?php $DimCode = intval($dim['DimCode'] ?? 0); ?>
+                        <?php echo $row["dimension_$DimCode"]; ?>
+                    </td>
+                <?php } ?>
+
                 <td>
-                    <?php if ($row['TipoEquipo'] === 'P') {
-                        echo 'Compras';
-                    } elseif ($row['TipoEquipo'] === 'R') {
-                        echo 'Ventas';
-                    } ?>
+                    <?php echo $row['proyecto_hijo']; ?>
                 </td>
+
                 <td>
                     <?php if ($row['CodEstado'] == 'A') { ?>
                         <span class='label label-info'>Activo</span>
