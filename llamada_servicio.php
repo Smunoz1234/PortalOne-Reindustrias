@@ -227,6 +227,14 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { // Crear llamada de servicio
 			isset($_POST['SolicitudLlamadaCliente']) && ($_POST['SolicitudLlamadaCliente'] != "")  ? $_POST['SolicitudLlamadaCliente'] : 0, // $SLS (int)
 			$Campanas, // SMM, 13/09/2023
 			isset($_POST['OrdenServicioCliente']) && ($_POST['OrdenServicioCliente'] != "") ? $_POST['OrdenServicioCliente'] : 0, // IdLlamadaServicioPadre (int)
+			"'" . ($_POST["IdArticuloComponente"] ?? "") . "'",
+			"'" . ($_POST["IdTarjetaEquipoComponente"] ?? "") . "'",
+			"'" . ($_POST["ContadorHorometro"] ?? 0) . "'", // numeric(19, 6)
+			"'" . ($_POST["IdUnidadMedidaEquipo"] ?? "") . "'",
+			"'" . ($_POST["latGPS"] ?? "") . "'",
+			"'" . ($_POST["lngGPS"] ?? "") . "'",
+			"'" . ($_POST["IdCiudadCierre"] ?? "") . "'",
+			"'" . ($_POST["IdPaisCierre"] ?? "") . "'",
 		);
 
 		$SQL_InsLlamada = EjecutarSP('sp_tbl_LlamadaServicios', $ParamInsLlamada, 32);
@@ -478,6 +486,14 @@ if (isset($_POST['P']) && ($_POST['P'] == 33)) { //Actualizar llamada de servici
 			isset($_POST['SolicitudLlamadaCliente']) && ($_POST['SolicitudLlamadaCliente'] != "")  ? $_POST['SolicitudLlamadaCliente'] : 0, // $SLS (int)
 			"''", // @CampanasAsociadas
 			isset($_POST['OrdenServicioCliente']) && ($_POST['OrdenServicioCliente'] != "") ? $_POST['OrdenServicioCliente'] : 0, // IdLlamadaServicioPadre (int)
+			"'" . ($_POST["IdArticuloComponente"] ?? "") . "'",
+			"'" . ($_POST["IdTarjetaEquipoComponente"] ?? "") . "'",
+			"'" . ($_POST["ContadorHorometro"] ?? 0) . "'", // numeric(19, 6)
+			"'" . ($_POST["IdUnidadMedidaEquipo"] ?? "") . "'",
+			"'" . ($_POST["latGPS"] ?? "") . "'",
+			"'" . ($_POST["lngGPS"] ?? "") . "'",
+			"'" . ($_POST["IdCiudadCierre"] ?? "") . "'",
+			"'" . ($_POST["IdPaisCierre"] ?? "") . "'",
 		);
 
 		// Actualizar la llamada de servicio.
@@ -3204,7 +3220,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 									<div class="col-lg-6">
 										<label class="control-label">Contador/horómetro</label>
 										
-										<input type="text" class="form-control" name="ContadorHorometro" id="ContadorHorometro"
+										<input type="number" class="form-control" name="ContadorHorometro" id="ContadorHorometro"
 											value="<?php echo $row["ContadorHorometro"] ?? ""; ?>">
 									</div>
 
