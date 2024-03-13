@@ -15,37 +15,37 @@ $Filtro = "TipoEquipo <> ''";
 
 $ItemCode = $_POST["ItemCode"] ?? "";
 if ($ItemCode != "") {
-    $Filtro .= " AND ItemCode='$ItemCode'";
+    $Filtro .= " AND [id_articulo_hijo] = '$ItemCode'";
 }
 
 $SerialEquipo = $_POST["SerialEquipo"] ?? "";
 if ($SerialEquipo != "") {
-    $Filtro .= " AND (SerialFabricante LIKE '%$SerialEquipo%' OR SerialInterno LIKE '%$SerialEquipo%')";
+    $Filtro .= " AND ([serial_fabricante_hijo] LIKE '%$SerialEquipo%' OR [serial_interno_hijo] LIKE '%$SerialEquipo%')";
 }
 
 $BuscarDato = $_POST['BuscarDato'] ?? "";
 if ($BuscarDato != "") {
-    $Filtro .= " AND (Calle LIKE '%$BuscarDato%' OR CodigoPostal LIKE '%$BuscarDato%' OR Barrio LIKE '%$BuscarDato%' OR Ciudad LIKE '%$BuscarDato%' OR Distrito LIKE '%$BuscarDato%' OR SerialFabricante LIKE '%$BuscarDato%' OR SerialInterno LIKE '%$BuscarDato%' OR IdTarjetaEquipo LIKE '%$BuscarDato%')";
+    $Filtro .= " AND ([serial_fabricante_hijo] LIKE '%$BuscarDato%' OR [serial_interno_hijo] LIKE '%$BuscarDato%' OR [id_tarjeta_equipo_hijo] LIKE '%$BuscarDato%')";
 }
 
 $IdJerarquia1 = $_POST["id_jerarquia_1"] ?? "";
 if ($IdJerarquia1 != "") {
-    $Filtro .= " AND IdJerarquia1 = '$IdJerarquia1'";
+    $Filtro .= " AND [id_jerarquia_1_hijo] = '$IdJerarquia1'";
 }
 
 $IdJerarquia2 = $_POST["id_jerarquia_2"] ?? "";
 if ($IdJerarquia2 != "") {
-    $Filtro .= " AND IdJerarquia2 = '$IdJerarquia2'";
+    $Filtro .= " AND [id_jerarquia_2_hijo] = '$IdJerarquia2'";
 }
 
 $UbicacionEquipo = $_POST["id_ubicacion_equipo"] ?? "";
 if ($UbicacionEquipo != "") {
-    $Filtro .= " AND IdUbicacion = '$UbicacionEquipo'";
+    $Filtro .= " AND [id_ubicacion_hijo] = '$UbicacionEquipo'";
 }
 
 // Realizar consulta con filtros
-$Where = "$Filtro ORDER BY IdTarjetaEquipo DESC";
-$Cons_TE = "SELECT TOP 1000 * FROM uvw_Sap_tbl_TarjetasEquipos WHERE $Where";
+$Where = "$Filtro ORDER BY [id_tarjeta_equipo_hijo] DESC";
+$Cons_TE_componentes = "SELECT TOP 1000 * FROM [uvw_tbl_TarjetaEquipo_Componentes] WHERE $Where";
 $SQL = sqlsrv_query($conexion, $Cons_TE);
 
 // SMM, 21/11/2023
@@ -103,7 +103,7 @@ echo $dataString;
         <?php while ($row = sqlsrv_fetch_array($SQL)) { ?>
             <tr>
                 <td>
-                    <?php echo $row['id_articulo_hijo']; ?>
+					<?php echo $row['id_articulo_hijo']; ?>
                 </td>
                 <td>
                     <?php echo $row['articulo_hijo']; ?>
@@ -113,10 +113,10 @@ echo $dataString;
                     <?php echo $row['unidad_hijo']; ?>
                 </td>
                 <td>
-                    <?php echo $row['jerarquia_1']; ?>
+                    <?php echo $row['jerarquia_1_hijo']; ?>
                 </td>
                 <td>
-                    <?php echo $row['jerarquia_2']; ?>
+                    <?php echo $row['jerarquia_2_hijo']; ?>
                 </td>
                 <td>
                     <?php echo $row['ubicacion_hijo']; ?>
@@ -124,9 +124,9 @@ echo $dataString;
 
                 <td>
                     <a type="button" class="btn btn-success btn-xs" title="Adicionar o cambiar TE"
-                        onclick="cambiarTE_Componente('<?php echo $row['IdTarjetaEquipo']; ?>', '<?php echo 'SN Fabricante: ' . $row['SerialFabricante'] . ' - Núm. Serie: ' . $row['SerialInterno']; ?>', '<?php echo $row['ItemCode']; ?>', '<?php echo $row['ItemName']; ?>')">
+                        onclick="cambiarTE_Componente('<?php echo $row['id_tarjeta_equipo_hijo']; ?>', '<?php echo 'SN Fabricante: ' . $row['SerialFabricante'] . ' - Núm. Serie: ' . $row['SerialInterno']; ?>', '<?php echo $row['ItemCode']; ?>', '<?php echo $row['ItemName']; ?>')">
                         <b>
-                            <?php echo $row['IdTarjetaEquipo']; ?>
+                            <?php echo $row['id_tarjeta_equipo_hijo']; ?>
                         </b>
                     </a>
                 </td>
@@ -150,20 +150,20 @@ echo $dataString;
                 </td>
 
                 <td>
-                    <?php if ($row['CodEstado'] == 'A') { ?>
+                    <?php if ($row['id_estado_hijo'] == 'A') { ?>
                         <span class='label label-info'>Activo</span>
-                    <?php } elseif ($row['CodEstado'] == 'R') { ?>
+                    <?php } elseif ($row['id_estado_hijo'] == 'R') { ?>
                         <span class='label label-danger'>Devuelto</span>
-                    <?php } elseif ($row['CodEstado'] == 'T') { ?>
+                    <?php } elseif ($row['id_estado_hijo'] == 'T') { ?>
                         <span class='label label-success'>Finalizado</span>
-                    <?php } elseif ($row['CodEstado'] == 'L') { ?>
+                    <?php } elseif ($row['id_estado_hijo'] == 'L') { ?>
                         <span class='label label-secondary'>Concedido en préstamo</span>
-                    <?php } elseif ($row['CodEstado'] == 'I') { ?>
+                    <?php } elseif ($row['id_estado_hijo'] == 'I') { ?>
                         <span class='label label-warning'>En laboratorio de reparación</span>
                     <?php } ?>
                 </td>
                 <td>
-                    <a href="tarjeta_equipo.php?id=<?php echo base64_encode($row['IdTarjetaEquipo']); ?>&tl=1"
+                    <a href="tarjeta_equipo.php?id=<?php echo base64_encode($row['id_tarjeta_equipo_hijo']); ?>&tl=1"
                         class="btn btn-success btn-xs" target="_blank">
                         <i class="fa fa-folder-open-o"></i> Abrir
                     </a>

@@ -1,6 +1,15 @@
 <?php
-$Cons_TarjetasEquipos = "SELECT TOP 100 * FROM uvw_Sap_tbl_TarjetasEquipos WHERE TipoEquipo <> '' ORDER BY IdTarjetaEquipo DESC";
-$SQL_TE = sqlsrv_query($conexion, $Cons_TarjetasEquipos);
+// Dimensiones. SMM, 29/05/2023
+$SQL_Dimensiones = Seleccionar('uvw_Sap_tbl_Dimensiones', '*', "DimActive='Y'");
+
+$array_Dimensiones = [];
+while ($row_Dimension = sqlsrv_fetch_array($SQL_Dimensiones)) {
+    array_push($array_Dimensiones, $row_Dimension);
+}
+// Hasta aquí, SMM 29/05/2023
+
+$Cons_TE_componentes = "SELECT TOP 1000 * FROM [uvw_tbl_TarjetaEquipo_Componentes] ORDER BY [id_tarjeta_equipo_hijo] DESC";
+$SQL_TE_Componentes = sqlsrv_query($conexion, $Cons_TE_componentes);
 
 // SMM, 13/03/2024
 $SQL_Ubicacion = Seleccionar("uvw_tbl_TarjetaEquipo_Ubicaciones", "*");
@@ -141,70 +150,96 @@ $SQL_Ubicacion = Seleccionar("uvw_tbl_TarjetaEquipo_Ubicaciones", "*");
 									<table id="footable_Componente" class="table" data-paging="true" data-sorting="true">
 										<thead>
 											<tr>
-												<th>Código cliente</th>
-												<th>Cliente</th>
-												<th>Serial fabricante</th>
-												<th>Serial interno</th>
+												<th>Código Artículo</th>
+												<th>Artículo</th>
+
+												<th>Unidad Medida</th>
+												<th>Jerarquía 1</th>
+												<th>Jerarquía 2</th>
+												<th>Ubicación</th>
+												
 												<th>Núm.</th>
-												<th data-breakpoints="all">Código de artículo</th>
-												<th data-breakpoints="all">Artículo</th>
-												<th data-breakpoints="all">Tipo de equipo</th>
+												
+												<th data-breakpoints="all">Fecha Operación</th>
+												<th data-breakpoints="all">Contador/Horómetro</th>
+
+												<?php foreach ($array_Dimensiones as &$dim) { ?>
+													<th data-breakpoints="all">
+														<?php echo $dim['IdPortalOne']; ?>
+													</th>
+												<?php } ?>
+
+												<th data-breakpoints="all">Proyecto</th>
+
 												<th data-breakpoints="all">Estado</th>
 												<th data-breakpoints="all">Acciones</th>
 											</tr>
 										</thead>
 										<tbody>
-											<?php while ($row_TE = sqlsrv_fetch_array($SQL_TE)) { ?>
+											<?php while ($row_TE_Componente = sqlsrv_fetch_array($SQL_TE_Componentes)) { ?>
 												<tr>
 													<td>
-														<?php echo $row_TE['CardCode']; ?>
+														<?php echo $row_TE_Componente['id_articulo_hijo']; ?>
 													</td>
 													<td>
-														<?php echo $row_TE['CardName']; ?>
+														<?php echo $row_TE_Componente['articulo_hijo']; ?>
+													</td>
+													
+													<td>
+														<?php echo $row_TE_Componente['unidad_hijo']; ?>
 													</td>
 													<td>
-														<?php echo $row_TE['SerialFabricante']; ?>
+														<?php echo $row_TE_Componente['jerarquia_1_hijo']; ?>
 													</td>
 													<td>
-														<?php echo $row_TE['SerialInterno']; ?>
+														<?php echo $row_TE_Componente['jerarquia_2_hijo']; ?>
 													</td>
 													<td>
-														<a type="button" class="btn btn-success btn-xs"
-															title="Adicionar o cambiar TE"
-															onclick="cambiarTE_Componente('<?php echo $row_TE['IdTarjetaEquipo']; ?>', '<?php echo 'SN Fabricante: ' . $row_TE['SerialFabricante'] . ' - Núm. Serie: ' . $row_TE['SerialInterno']; ?>', '<?php echo $row_TE['ItemCode']; ?>', '<?php echo $row_TE['ItemName']; ?>')">
+														<?php echo $row_TE_Componente['ubicacion_hijo']; ?>
+													</td>
+
+													<td>
+														<a type="button" class="btn btn-success btn-xs" title="Adicionar o cambiar TE"
+															onclick="cambiarTE_Componente('<?php echo $row_TE_Componente['id_tarjeta_equipo_hijo']; ?>', '<?php echo 'SN Fabricante: ' . $row_TE_Componente['SerialFabricante'] . ' - Núm. Serie: ' . $row_TE_Componente['SerialInterno']; ?>', '<?php echo $row_TE_Componente['ItemCode']; ?>', '<?php echo $row_TE_Componente['ItemName']; ?>')">
 															<b>
-																<?php echo $row_TE['IdTarjetaEquipo']; ?>
+																<?php echo $row_TE_Componente['id_tarjeta_equipo_hijo']; ?>
 															</b>
 														</a>
 													</td>
+
 													<td>
-														<?php echo $row_TE['ItemCode']; ?>
+														<?php echo $row_TE_Componente['fecha_operacion_hijo']; ?>
 													</td>
 													<td>
-														<?php echo $row_TE['ItemName']; ?>
+														<?php echo $row_TE_Componente['contador_hijo']; ?>
 													</td>
+													
+													<?php foreach ($array_Dimensiones as &$dim) { ?>
+														<td>
+															<?php $DimCode = intval($dim['DimCode'] ?? 0); ?>
+															<?php echo $row_TE_Componente["dimension_$DimCode"]; ?>
+														</td>
+													<?php } ?>
+
 													<td>
-														<?php if ($row_TE['TipoEquipo'] === 'P') {
-															echo 'Compras';
-														} elseif ($row_TE['TipoEquipo'] === 'R') {
-															echo 'Ventas';
-														} ?>
+														<?php echo $row_TE_Componente['proyecto_hijo']; ?>
 													</td>
+
 													<td>
-														<?php if ($row_TE['CodEstado'] == 'A') { ?>
+														<?php if ($row_TE_Componente['id_estado_hijo'] == 'A') { ?>
 															<span class='label label-info'>Activo</span>
-														<?php } elseif ($row_TE['CodEstado'] == 'R') { ?>
+														<?php } elseif ($row_TE_Componente['id_estado_hijo'] == 'R') { ?>
 															<span class='label label-danger'>Devuelto</span>
-														<?php } elseif ($row_TE['CodEstado'] == 'T') { ?>
+														<?php } elseif ($row_TE_Componente['id_estado_hijo'] == 'T') { ?>
 															<span class='label label-success'>Finalizado</span>
-														<?php } elseif ($row_TE['CodEstado'] == 'L') { ?>
+														<?php } elseif ($row_TE_Componente['id_estado_hijo'] == 'L') { ?>
 															<span class='label label-secondary'>Concedido en préstamo</span>
-														<?php } elseif ($row_TE['CodEstado'] == 'I') { ?>
+														<?php } elseif ($row_TE_Componente['id_estado_hijo'] == 'I') { ?>
 															<span class='label label-warning'>En laboratorio de reparación</span>
 														<?php } ?>
 													</td>
 													<td>
-														<a href="tarjeta_equipo.php?id=<?php echo base64_encode($row_TE['IdTarjetaEquipo']); ?>&tl=1"
+														<a href="tarjeta_equipo.php?id=<?php echo base64_encode($row_TE_Componente['id_tarjeta_equipo_hijo']); ?>&tl=1"
 															class="btn btn-success btn-xs" target="_blank">
 															<i class="fa fa-folder-open-o"></i> Abrir
 														</a>
