@@ -43,7 +43,8 @@ $SQL_Ubicacion = Seleccionar("uvw_tbl_TarjetaEquipo_Ubicaciones", "*");
 		<div class="modal-content">
 			<div class="modal-header">
 				<h4 class="modal-title">
-					Consultar componentes
+					CONSULTAR COMPONENTES ARTICULO PADRE
+					<p id="DeArticuloPadre_Componente">()</p>
 				</h4>
 			</div>
 
@@ -56,10 +57,10 @@ $SQL_Ubicacion = Seleccionar("uvw_tbl_TarjetaEquipo_Ubicaciones", "*");
 							<form id="formBuscar_Componente" class="form-horizontal">
 								<div class="form-group row">
 									<div class="col-lg-6">	
-										<label class="control-label">ID servicio (IdArticulo)</label>
+										<label class="control-label">ID tarjeta equipo (Padre)</label>
 									
-										<input name="ItemCode" type="text" class="form-control" id="ItemCode"
-											maxlength="100" placeholder="ID del articulo o servicio">
+										<input name="id_tarjeta_equipo_padre" id="id_tarjeta_equipo_padre" type="text" class="form-control"
+											maxlength="100" placeholder="ID de la Tarjeta de Equipo Padre" readonly>
 									</div>
 
 									<div class="col-lg-6">
@@ -79,11 +80,11 @@ $SQL_Ubicacion = Seleccionar("uvw_tbl_TarjetaEquipo_Ubicaciones", "*");
 								</div>
 
 								<div class="form-group row">
-									<div class="col-lg-6">
-										<label class="control-label">Serial</label>
+									<div class="col-lg-6">	
+										<label class="control-label">ID servicio (IdArticulo)</label>
 									
-										<input name="SerialEquipo" type="text" class="form-control" id="SerialEquipo"
-											maxlength="100" placeholder="Serial fabricante o interno">
+										<input name="ItemCode" type="text" class="form-control" id="ItemCode"
+											maxlength="100" placeholder="ID del articulo o servicio">
 									</div>
 
 									<div class="col-lg-6">
@@ -104,10 +105,10 @@ $SQL_Ubicacion = Seleccionar("uvw_tbl_TarjetaEquipo_Ubicaciones", "*");
 
 								<div class="form-group row">
 									<div class="col-lg-6">
-										<label class="control-label">Buscar dato</label>
+										<label class="control-label">Serial</label>
 									
-										<input name="BuscarDato" type="text" class="form-control" id="BuscarDato"
-											placeholder="Digite un dato completo, o una parte del mismo...">
+										<input name="SerialEquipo" type="text" class="form-control" id="SerialEquipo"
+											maxlength="100" placeholder="Serial fabricante o interno">
 									</div>
 
 									<div class="col-lg-6">
@@ -126,7 +127,14 @@ $SQL_Ubicacion = Seleccionar("uvw_tbl_TarjetaEquipo_Ubicaciones", "*");
 								</div>
 
 								<div class="form-group">
-									<div class="col-lg-12">
+									<div class="col-lg-6">
+										<label class="control-label">Buscar dato</label>
+									
+										<input name="BuscarDato" type="text" class="form-control" id="BuscarDato"
+											placeholder="Digite un dato completo, o una parte del mismo...">
+									</div>
+
+									<div class="col-lg-6">
 										<br>
 										<button type="submit" class="btn btn-outline btn-success pull-right">
 											<i class="fa fa-search"></i> Buscar
@@ -200,7 +208,7 @@ $SQL_Ubicacion = Seleccionar("uvw_tbl_TarjetaEquipo_Ubicaciones", "*");
 
 													<td>
 														<a type="button" class="btn btn-success btn-xs" title="Adicionar o cambiar TE"
-															onclick="cambiarTE_Componente('<?php echo $row_TE_Componente['id_tarjeta_equipo_hijo']; ?>', '<?php echo 'SN Fabricante: ' . $row_TE_Componente['SerialFabricante'] . ' - Núm. Serie: ' . $row_TE_Componente['SerialInterno']; ?>', '<?php echo $row_TE_Componente['ItemCode']; ?>', '<?php echo $row_TE_Componente['ItemName']; ?>')">
+															onclick="cambiarTE_Componente('<?php echo $row_TE_Componente['id_tarjeta_equipo_hijo']; ?>', '<?php echo 'SN Fabricante: ' . $row_TE_Componente['serial_fabricante_hijo'] . ' - Núm. Serie: ' . $row_TE_Componente['serial_interno_hijo']; ?>', '<?php echo $row_TE_Componente['id_articulo_hijo']; ?>', '<?php echo $row_TE_Componente['articulo_hijo']; ?>')">
 															<b>
 																<?php echo $row_TE_Componente['id_tarjeta_equipo_hijo']; ?>
 															</b>
@@ -336,7 +344,16 @@ $SQL_Ubicacion = Seleccionar("uvw_tbl_TarjetaEquipo_Ubicaciones", "*");
 
 		$("#mdTE_Componente").on("show.bs.modal", function (e) {
 			console.log('El modal mdTE_Componente se está mostrando');
-			// $('#formBuscar_Componente').submit();
+
+			let DeArticuloLlamada = $("#DeArticuloLlamada").val() || "";
+			$("#mdTE_Componente #DeArticuloPadre_Componente").text(`(${DeArticuloLlamada})`);
+
+			let IdTarjetaEquipo_Padre = $("#NumeroSerie").val() || "";
+			$("#mdTE_Componente #id_tarjeta_equipo_padre").val(IdTarjetaEquipo_Padre);
+
+			if(IdTarjetaEquipo_Padre =! "") {
+				$('#formBuscar_Componente').submit();
+			}
 		});
 	});
 </script>

@@ -12,7 +12,8 @@ while ($row_Dimension = sqlsrv_fetch_array($SQL_Dimensiones)) {
 // Hasta aquí, SMM 29/05/2023
 
 // SMM, 13/03/2024
-$Filtro = "[id_tarjeta_equipo_padre] <> ''";
+$id_tarjeta_equipo_padre = $_POST["id_tarjeta_equipo_padre"] ?? "";
+$Filtro = "[id_tarjeta_equipo_padre] = '$id_tarjeta_equipo_padre'";
 
 $ItemCode = $_POST["ItemCode"] ?? "";
 if ($ItemCode != "") {
@@ -125,7 +126,7 @@ echo $dataString;
 
                 <td>
                     <a type="button" class="btn btn-success btn-xs" title="Adicionar o cambiar TE"
-                        onclick="cambiarTE_Componente('<?php echo $row['id_tarjeta_equipo_hijo']; ?>', '<?php echo 'SN Fabricante: ' . $row['SerialFabricante'] . ' - Núm. Serie: ' . $row['SerialInterno']; ?>', '<?php echo $row['ItemCode']; ?>', '<?php echo $row['ItemName']; ?>')">
+                        onclick="cambiarTE_Componente('<?php echo $row['id_tarjeta_equipo_hijo']; ?>', '<?php echo 'SN Fabricante: ' . $row['serial_fabricante_hijo'] . ' - Núm. Serie: ' . $row['serial_interno_hijo']; ?>', '<?php echo $row['id_articulo_hijo']; ?>', '<?php echo $row['articulo_hijo']; ?>')">
                         <b>
                             <?php echo $row['id_tarjeta_equipo_hijo']; ?>
                         </b>
