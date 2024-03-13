@@ -3222,30 +3222,6 @@ function AgregarEsto(contenedorID, valorElemento) {
 										</select>
 									</div>
 								</div>
-							</div>
-							<!-- /.col-lg-6 -->
-
-							<div class="col-lg-6">
-								<div class="form-group">
-									<div class="col-lg-10 border-bottom m-r-sm">
-										<label class="control-label text-danger">Ubicación GPS</label>
-									</div>
-								</div>
-									
-								<div class="form-group">
-									<div class="col-lg-12">
-										<input type="hidden" id="latGPS" value="<?php echo $row["LatitudGPSCierre"] ?? ""; ?>">
-										<input type="hidden" id="lngGPS" value="<?php echo $row["LongitudGPSCierre"] ?? ""; ?>">
-
-										<p><b><i class="fa fa-map-marker"></i> Coordenadas GPS: </b><span id="coordGPS">Sin seleccionar</span></p>
-									</div>
-								</div>
-
-								<div class="form-group">
-									<div class="col-lg-12">
-										<iframe id="mapFrame" width="100%" height="420" src="maps_coordenadas.php" frameborder="0"></iframe>
-									</div>
-								</div>
 
 								<div class="form-group">
 									<div class="col-lg-10 border-bottom m-r-sm">
@@ -3288,6 +3264,30 @@ function AgregarEsto(contenedorID, valorElemento) {
 												</option>
 											<?php } ?>
 										</select>
+									</div>
+								</div>
+							</div>
+							<!-- /.col-lg-6 -->
+
+							<div class="col-lg-6">
+								<div class="form-group">
+									<div class="col-lg-10 border-bottom m-r-sm">
+										<label class="control-label text-danger">Ubicación GPS</label>
+									</div>
+								</div>
+									
+								<div class="form-group">
+									<div class="col-lg-12">
+										<input type="hidden" id="latGPS" value="<?php echo $row["LatitudGPSCierre"] ?? ""; ?>">
+										<input type="hidden" id="lngGPS" value="<?php echo $row["LongitudGPSCierre"] ?? ""; ?>">
+
+										<p><b><i class="fa fa-map-marker"></i> Coordenadas GPS: </b><span id="coordGPS">Sin seleccionar</span></p>
+									</div>
+								</div>
+
+								<div class="form-group">
+									<div class="col-lg-12">
+										<iframe id="mapFrame" width="100%" height="420" src="maps_coordenadas.php" frameborder="0"></iframe>
 									</div>
 								</div>
 							</div>
