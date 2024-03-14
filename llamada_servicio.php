@@ -1675,23 +1675,27 @@ function ConsultarDatosCliente() {
 		remote.focus();
 	}
 }
-function ConsultarArticulo() {
-	var Articulo = document.getElementById('IdArticuloLlamada');
-	console.log(Articulo.value);
-	if (Articulo.value != "") {
+function ConsultarArticulo(componente = false) {
+	let IdArticulo = $("#IdArticuloLlamada").val() || "";
+	let IdArticuloComponente = $("#IdArticuloComponente").val() || "";
+
+	let selectedIndex = (componente) ? IdArticuloComponente : IdArticulo;
+	if (selectedIndex != "") {
 		self.name = 'opener';
-		remote = open('articulos.php?id=' + Base64.encode(Articulo.value) + '&ext=1&tl=1', 'remote', 'location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
+		remote = open('articulos.php?id=' + Base64.encode(selectedIndex) + '&ext=1&tl=1', 'remote', 'location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
 		remote.focus();
 	}
 }
 
 // SMM, 22/11/2023
-function ConsultarEquipo() {
+function ConsultarEquipo(componente = false) {
 	let IdTarjetaEquipo = $("#NumeroSerie").val() || "";
+	let IdTarjetaEquipoComponente = $("#IdTarjetaEquipoComponente").val() || "";
 
-	if (IdTarjetaEquipo != "") {
+	let selectedIndex = (componente) ? IdTarjetaEquipoComponente : IdTarjetaEquipo;
+	if (selectedIndex != "") {
 		self.name = 'opener';
-		remote = open(`tarjeta_equipo.php?id='${Base64.encode(IdTarjetaEquipo)}'&ext=1&tl=1`, 'remote', 'location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
+		remote = open(`tarjeta_equipo.php?id='${Base64.encode(selectedIndex)}'&ext=1&tl=1`, 'remote', 'location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
 		remote.focus();
 	}
 }
@@ -2377,7 +2381,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 							<div class="form-group">
 								<div class="col-lg-8">
 									<label class="control-label">
-										<i onclick="ConsultarArticulo();" title="Consultar Tarjeta Equipo"
+										<i onclick="ConsultarArticulo(true);" title="Consultar Articulo Componente"
 											style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i>
 										ID servicio componente
 									</label>
@@ -2391,7 +2395,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 
 								<div class="col-lg-3">
 									<label class="control-label">
-										<i onclick="ConsultarEquipo();" title="Consultar Tarjeta Equipo"
+										<i onclick="ConsultarEquipo(true);" title="Consultar Tarjeta Equipo Componente"
 											style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i>
 										Tarjeta de equipo componente
 									</label>
