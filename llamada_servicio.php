@@ -1003,8 +1003,8 @@ $Cons_TE_Componente_Encabezado = "SELECT * FROM [uvw_tbl_TarjetaEquipo_Component
 $SQL_TE_Componente_Encabezado = sqlsrv_query($conexion, $Cons_TE_Componente_Encabezado);
 
 $row_TE_Componente_Encabezado = sqlsrv_fetch_array($SQL_TE_Componente_Encabezado);
-$descripcion_te_encabezado = 'SN Fabricante: ' . $row_TE_Componente_Encabezado['serial_fabricante_hijo'] . ' - Núm. Serie: ' . $row_TE_Componente_Encabezado['serial_interno_hijo'];
-$de_articulo_encabezado = $row_TE_Componente_Encabezado['id_articulo_hijo'] . ' - ' . $row_TE_Componente_Encabezado['articulo_hijo'] . ' (' . $row_TE_Componente_Encabezado['jerarquia_1_hijo'] . ') (' . $row_TE_Componente_Encabezado['jerarquia_2_hijo'] . ')';
+$descripcion_te_encabezado = 'SN Fabricante: ' . ($row_TE_Componente_Encabezado['serial_fabricante_hijo'] ?? "") . ' - Núm. Serie: ' . ($row_TE_Componente_Encabezado['serial_interno_hijo'] ?? "");
+$de_articulo_encabezado = ($row_TE_Componente_Encabezado['id_articulo_hijo'] ?? "") . ' - ' . ($row_TE_Componente_Encabezado['articulo_hijo'] ?? "") . ' (' . ($row_TE_Componente_Encabezado['jerarquia_1_hijo'] ?? "") . ') (' . ($row_TE_Componente_Encabezado['jerarquia_2_hijo'] ?? "") . ')';
 ?>
 
 <!DOCTYPE html>
