@@ -125,8 +125,10 @@ echo $dataString;
                 </td>
 
                 <td>
+                    <?php $descripcion_te = 'SN Fabricante: ' . $row['serial_fabricante_hijo'] . ' - Núm. Serie: ' . $row['serial_interno_hijo']; ?>
+                    <?php $de_articulo = $row['id_articulo_hijo'] . ' - ' . $row['articulo_hijo'] . ' (' . $row['jerarquia_1_hijo'] . ') (' . $row['jerarquia_2_hijo'] . ')'; ?>
                     <a type="button" class="btn btn-success btn-xs" title="Adicionar o cambiar TE"
-                        onclick="cambiarTE_Componente('<?php echo $row['id_tarjeta_equipo_hijo']; ?>', '<?php echo 'SN Fabricante: ' . $row['serial_fabricante_hijo'] . ' - Núm. Serie: ' . $row['serial_interno_hijo']; ?>', '<?php echo $row['id_articulo_hijo']; ?>', '<?php echo $row['articulo_hijo']; ?>')">
+                        onclick="cambiarTE_Componente('<?php echo $row['id_tarjeta_equipo_hijo']; ?>', '<?php echo $descripcion_te; ?>', '<?php echo $row['id_articulo_hijo']; ?>', '<?php echo $de_articulo; ?>')">
                         <b>
                             <?php echo $row['id_tarjeta_equipo_hijo']; ?>
                         </b>

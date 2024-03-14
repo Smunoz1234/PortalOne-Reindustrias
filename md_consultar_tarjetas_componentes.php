@@ -207,8 +207,10 @@ $SQL_Ubicacion = Seleccionar("uvw_tbl_TarjetaEquipo_Ubicaciones", "*");
 													</td>
 
 													<td>
+														<?php $descripcion_te = 'SN Fabricante: ' . $row_TE_Componente['serial_fabricante_hijo'] . ' - Núm. Serie: ' . $row_TE_Componente['serial_interno_hijo']; ?>
+                    									<?php $de_articulo = $row_TE_Componente['id_articulo_hijo'] . ' - ' . $row_TE_Componente['articulo_hijo'] . ' (' . $row_TE_Componente['jerarquia_1_hijo'] . ') (' . $row_TE_Componente['jerarquia_2_hijo'] . ')'; ?>
 														<a type="button" class="btn btn-success btn-xs" title="Adicionar o cambiar TE"
-															onclick="cambiarTE_Componente('<?php echo $row_TE_Componente['id_tarjeta_equipo_hijo']; ?>', '<?php echo 'SN Fabricante: ' . $row_TE_Componente['serial_fabricante_hijo'] . ' - Núm. Serie: ' . $row_TE_Componente['serial_interno_hijo']; ?>', '<?php echo $row_TE_Componente['id_articulo_hijo']; ?>', '<?php echo $row_TE_Componente['articulo_hijo']; ?>')">
+															onclick="cambiarTE_Componente('<?php echo $row_TE_Componente['id_tarjeta_equipo_hijo']; ?>', '<?php echo $descripcion_te; ?>', '<?php echo $row_TE_Componente['id_articulo_hijo']; ?>', '<?php echo $de_articulo; ?>')">
 															<b>
 																<?php echo $row_TE_Componente['id_tarjeta_equipo_hijo']; ?>
 															</b>
