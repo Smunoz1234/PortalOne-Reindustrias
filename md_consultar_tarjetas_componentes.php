@@ -8,8 +8,8 @@ while ($row_Dimension = sqlsrv_fetch_array($SQL_Dimensiones)) {
 }
 // Hasta aquí, SMM 29/05/2023
 
-$Cons_TE_componentes = "SELECT TOP 1000 * FROM [uvw_tbl_TarjetaEquipo_Componentes] ORDER BY [id_tarjeta_equipo_hijo] DESC";
-$SQL_TE_Componentes = sqlsrv_query($conexion, $Cons_TE_componentes);
+$Cons_TE_Componentes = "SELECT TOP 1000 * FROM [uvw_tbl_TarjetaEquipo_Componentes] ORDER BY [id_tarjeta_equipo_hijo] DESC";
+$SQL_TE_Componentes = sqlsrv_query($conexion, $Cons_TE_Componentes);
 
 // SMM, 13/03/2024
 $SQL_Ubicacion = Seleccionar("uvw_tbl_TarjetaEquipo_Ubicaciones", "*");

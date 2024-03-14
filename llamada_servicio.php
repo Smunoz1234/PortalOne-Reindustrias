@@ -996,6 +996,15 @@ $Cons_Marca_CA = "SELECT dbo.[FN_NDG_PARAMETRO_CARADVISOR]('id_marca') AS marca_
 $SQL_Marca_CA = sqlsrv_query($conexion, $Cons_Marca_CA);
 $row_Marca_CA = sqlsrv_fetch_array($SQL_Marca_CA);
 $marca_ca = $row_Marca_CA["marca_ca"] ?? "";
+
+// SMM, 14/03/2024
+$id_tarjeta_equipo_hijo = $row["IdTarjetaEquipoComponente"] ?? "";
+$Cons_TE_Componente_Encabezado = "SELECT * FROM [uvw_tbl_TarjetaEquipo_Componentes] WHERE [id_tarjeta_equipo_hijo] = '$id_tarjeta_equipo_hijo'";
+$SQL_TE_Componente_Encabezado = sqlsrv_query($conexion, $Cons_TE_Componente_Encabezado);
+
+$row_TE_Componente_Encabezado = sqlsrv_fetch_array($SQL_TE_Componente_Encabezado);
+$descripcion_te_encabezado = 'SN Fabricante: ' . $row_TE_Componente_Encabezado['serial_fabricante_hijo'] . ' - Núm. Serie: ' . $row_TE_Componente_Encabezado['serial_interno_hijo'];
+$de_articulo_encabezado = $row_TE_Componente_Encabezado['id_articulo_hijo'] . ' - ' . $row_TE_Componente_Encabezado['articulo_hijo'] . ' (' . $row_TE_Componente_Encabezado['jerarquia_1_hijo'] . ') (' . $row_TE_Componente_Encabezado['jerarquia_2_hijo'] . ')';
 ?>
 
 <!DOCTYPE html>
@@ -2377,7 +2386,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 										value="<?php echo $row["IdArticuloComponente"] ?? ""; ?>" readonly>
 
 									<input type="text" class="form-control" name="ArticuloComponente" id="ArticuloComponente" readonly
-										value="<?php echo ($row_Articulo_Componente["id_articulo_hijo"] ?? "") . " - " . ($row_Articulo_Componente["articulo_hijo"] ?? ""); ?>">
+										value="<?php echo ($id_tarjeta_equipo_hijo == "") ? "" : $de_articulo_encabezado; ?>">
 								</div>
 
 								<div class="col-lg-3">
@@ -2388,15 +2397,12 @@ function AgregarEsto(contenedorID, valorElemento) {
 									</label>
 
 									<input type="hidden" class="form-control" name="IdTarjetaEquipoComponente" id="IdTarjetaEquipoComponente"
-										value="<?php if (isset($row_TE_Componente['id_tarjeta_equipo_hijo']) && ($row_TE_Componente['id_tarjeta_equipo_hijo'] != 0)) {
-											echo $row_TE_Componente['id_tarjeta_equipo_hijo'];
-										} ?>">
+										value="<?php echo $row["IdTarjetaEquipoComponente"] ?? ""; ?>" readonly>
+
 									<input readonly type="text" class="form-control"
 										name="DeTarjetaEquipoComponente" id="DeTarjetaEquipoComponente"
 										placeholder="Haga clic en el botón"
-										value="<?php if (isset($row_TE_Componente['id_tarjeta_equipo_hijo']) && ($row_TE_Componente['id_tarjeta_equipo_hijo'] != 0)) {
-											echo "SN Fabricante: " . ($row_TE_Componente['serial_fabricante_hijo'] ?? "") . " - Núm. Serie: " . ($row_TE_Componente['serial_interno_hijo'] ?? "");
-										} ?>">
+										value="<?php echo ($id_tarjeta_equipo_hijo == "") ? "" : $descripcion_te_encabezado; ?>">
 								</div>
 								<!-- /#NumeroSerie -->
 
@@ -3220,7 +3226,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 									<div class="col-lg-6">
 										<label class="control-label">Contador/horómetro</label>
 										
-										<input type="text" class="form-control" name="ContadorHorometro" id="ContadorHorometro"
+										<input type="number" class="form-control" name="ContadorHorometro" id="ContadorHorometro"
 											value="<?php echo $row["ContadorHorometro"] ?? ""; ?>">
 									</div>
 
