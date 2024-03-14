@@ -3300,16 +3300,23 @@ function AgregarEsto(contenedorID, valorElemento) {
 									
 								<div class="form-group">
 									<div class="col-lg-12">
-										<input type="hidden" id="latGPS" name="latGPS" value="<?php echo $row["LatitudGPSCierre"] ?? ""; ?>">
-										<input type="hidden" id="lngGPS" name="lngGPS" value="<?php echo $row["LongitudGPSCierre"] ?? ""; ?>">
+										<?php $map_lat = $row["LatitudGPSCierre"] ?? ""; ?>
+										<input type="hidden" id="latGPS" name="latGPS" value="<?php echo $map_lat; ?>">
+										
+										<?php $map_lng = $row["LongitudGPSCierre"] ?? ""; ?>
+										<input type="hidden" id="lngGPS" name="lngGPS" value="<?php echo $map_lng; ?>">
 
-										<p><b><i class="fa fa-map-marker"></i> Coordenadas GPS: </b><span id="coordGPS">Sin seleccionar</span></p>
+										<p>
+											<?php $map_coord = (($map_lat != "") && ($map_lng != "") ? "$map_lat, $map_lng" : "Sin seleccionar"); ?>
+											<b><i class="fa fa-map-marker"></i> Coordenadas GPS: </b><span id="coordGPS"><?php echo $map_coord; ?></span>
+										</p>
 									</div>
 								</div>
 
 								<div class="form-group">
 									<div class="col-lg-12">
-										<iframe id="mapFrame" width="100%" height="420" src="maps_coordenadas.php" frameborder="0"></iframe>
+										<?php $map_params = (($map_lat != "") && ($map_lng != "") ? "lat=$map_lat&lng=$map_lng" : ""); ?>
+										<iframe id="mapFrame" width="100%" height="420" src="maps_coordenadas.php?<?php echo $map_params; ?>" frameborder="0"></iframe>
 									</div>
 								</div>
 							</div>
