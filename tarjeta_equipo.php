@@ -285,8 +285,8 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
 				"id_dimension_4" => ($_POST['IdDimension4'] ?? ""),
 				"id_dimension_5" => ($_POST['IdDimension5'] ?? ""),
 				"id_proyecto" => ($_POST['IdProyecto'] ?? ""),
-				"id_fabricante_equipo " => ($_POST['IdFabricante'] ?? ""),
-				"latitud_gps_ubicacion " => ($_POST['latGPS'] ?? ""),
+				"id_fabricante_equipo" => ($_POST['IdFabricante'] ?? ""),
+				"latitud_gps_ubicacion" => ($_POST['latGPS'] ?? ""),
 				"longitud_gps_ubicacion" => ($_POST['lngGPS'] ?? ""),
 			);
 
