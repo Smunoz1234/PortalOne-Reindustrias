@@ -194,7 +194,9 @@ $SQL_ConceptoSalida = Seleccionar('tbl_SalidaInventario_Conceptos', '*', $Filtro
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_AlmacenDestino = sqlsrv_fetch_array($SQL_AlmacenDestino)) { ?>
-											<option value="<?php echo $row_AlmacenDestino['ToWhsCode']; ?>">
+											<option  <?php if ($row_DatosEmpleados["AlmacenDestino"] == $row_AlmacenDestino['ToWhsCode']) {
+												echo "selected";
+											} ?> value="<?php echo $row_AlmacenDestino['ToWhsCode']; ?>">
 												<?php echo $row_AlmacenDestino['ToWhsCode'] . " - " . $row_AlmacenDestino['ToWhsName']; ?>
 											</option>
 										<?php } ?>
