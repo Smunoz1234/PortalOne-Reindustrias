@@ -317,7 +317,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Grabar Solicitud de compras
 					}
 
 					// SMM, 25/01/2024
-					$Metodo = "SolicitudesCompras/$end_point";
+					$Metodo = "SolicitudCompras/$end_point";
 					$Resultado = EnviarWebServiceSAP($Metodo, $Parametros, true, true);
 
 					if ($Resultado->Success == 0) {

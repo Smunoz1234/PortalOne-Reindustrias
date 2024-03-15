@@ -281,7 +281,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Grabar Solicitud de compras
 						'id_documento' => intval($IdSolicitudCompra),
 						'id_evento' => intval($IdEvento),
 					);
-					$Metodo = "SolicitudesCompras";
+					$Metodo = "SolicitudCompras";
 					$Resultado = EnviarWebServiceSAP($Metodo, $Parametros, true, true);
 
 					if ($Resultado->Success == 0) {
