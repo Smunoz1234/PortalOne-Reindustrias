@@ -147,8 +147,8 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Solicitud de salida
 			"'" . $_POST['SucursalDestino'] . "'",
 			"'" . $_POST['DireccionDestino'] . "'",
 			"'" . $_POST['CondicionPago'] . "'",
-			"'" . $_POST['Almacen'] . "'",
-			"'" . $_POST['AlmacenDestino'] . "'", // SMM, 29/11/2022
+			"''", // Almacen
+			"''", // AlmacenDestino
 
 			// Se eliminaron las dimensiones, SMM 29/08/2022
 
@@ -174,7 +174,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Solicitud de salida
 			"'" . ($_POST['ComentarioAutorizacionPO'] ?? "") . "'",
 
 			// SMM, 23/12/2022
-			"'" . $_POST['ConceptoSalida'] . "'",
+			"''", // ConceptoSalida
 		);
 
 		$SQL_CabeceraSolSalida = EjecutarSP('sp_tbl_SolicitudSalida', $ParametrosCabSolSalida, $_POST['P']);

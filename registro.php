@@ -2240,9 +2240,9 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
             } elseif ($type == 7) { //Solicitud de salida
                 //Insertar el registro en la BD
                 $ParametrosInsert = array(
-                    "'" . $Item . "'",
-                    "'" . $WhsCode . "'",
-                    "'" . $CardCode . "'",
+                    "'$Item'",
+                    "'$WhsCode'",
+                    "'$CardCode'",
                     "'" . $_SESSION['CodUser'] . "'",
                     "'$dim1'",
                     "'$dim2'",
@@ -2256,8 +2256,8 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                 $SQL_Insert = EjecutarSP('sp_tbl_SolicitudSalidaDetalleCarritoInsert', $ParametrosInsert, 35);
                 if ($SQL_Insert) {
                     $ParametrosCount = array(
-                        "'" . $WhsCode . "'",
-                        "'" . $CardCode . "'",
+                        "'$WhsCode'",
+                        "'$CardCode'",
                         "'" . $_SESSION['CodUser'] . "'",
                     );
                     $SQL_ConCount = EjecutarSP('sp_tbl_SolicitudSalidaDetalleCarritoInsert_Count', $ParametrosCount, 35);
@@ -2272,10 +2272,10 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
             } elseif ($type == 8) { //Solicitud de salida editar
                 //Insertar el registro en la BD
                 $ParametrosInsert = array(
-                    "'" . $Item . "'",
-                    "'" . $WhsCode . "'",
-                    "'" . $id . "'",
-                    "'" . $evento . "'",
+                    "'$Item'",
+                    "'$WhsCode'",
+                    "'$id'",
+                    "'$evento'",
                     "'" . $_SESSION['CodUser'] . "'",
                     "'$dim1'",
                     "'$dim2'",
