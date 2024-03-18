@@ -11,7 +11,8 @@ Sucursal: "CHINCHINA"
 }
  */
 
-$Filtro = "TipoEquipo <> ''";
+// SMM, 18/03/2024
+$Filtro = "[TipoEquipo] <> '' AND [PadreComponente] <> 'Activo Componente'";
 
 $ItemCode = $_POST["ItemCode"] ?? "";
 if ($ItemCode != "") {

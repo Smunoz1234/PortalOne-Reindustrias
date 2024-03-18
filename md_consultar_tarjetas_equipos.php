@@ -1,5 +1,8 @@
 <?php
-$Cons_TarjetasEquipos = "SELECT TOP 100 * FROM uvw_Sap_tbl_TarjetasEquipos WHERE TipoEquipo <> '' ORDER BY IdTarjetaEquipo DESC";
+// SMM, 18/03/2024
+$Filtro_TE = "[TipoEquipo] <> '' AND [PadreComponente] <> 'Activo Componente'";
+
+$Cons_TarjetasEquipos = "SELECT TOP 100 * FROM uvw_Sap_tbl_TarjetasEquipos WHERE $Filtro_TE ORDER BY IdTarjetaEquipo DESC";
 $SQL_TE = sqlsrv_query($conexion, $Cons_TarjetasEquipos);
 ?>
 

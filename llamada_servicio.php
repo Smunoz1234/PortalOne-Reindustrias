@@ -2774,7 +2774,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								</select>
 							</div>
 
-							<div class="col-lg-4">
+							<div class="col-lg-4" <?php if (!PermitirFuncion(327)) { ?> style="display: none;" <?php } ?>>
 								<label class="control-label">Contrato/Campaña <span class="text-danger">*</span></label>
 								
 								<select name="CDU_Contrato" class="form-control select2" id="CDU_Contrato" required
