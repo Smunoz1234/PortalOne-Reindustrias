@@ -2745,7 +2745,7 @@ while ($row_ValPropiedad = sqlsrv_fetch_array($SQL_ValoresPropiedades)) {
 															Información de los componentes
 														</label>
 														<?php if (isset($SQL_Componentes) && sqlsrv_has_rows($SQL_Componentes)) { ?>
-															<table id="footableComponents" class="table" data-paging="true" data-sorting="true">
+															<table id="footableComponents" class="table" data-paging="true" data-sorting="true" data-filtering="true">
 																<thead>
 																	<tr>
 																		<th>Código Artículo</th>
