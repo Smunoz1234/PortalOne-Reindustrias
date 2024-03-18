@@ -3092,6 +3092,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 				</div>
 				<!-- FIN, información del vehículo y de la cita -->
 
+				<!-- Inicio, información adicional -->
 				<div class="ibox">
 					<div class="ibox-title bg-success">
 						<h5 class="collapse-link"><i class="fa fa-edit"></i> Información adicional</h5>
@@ -3162,6 +3163,8 @@ function AgregarEsto(contenedorID, valorElemento) {
 						</div>
 					</div>
 				</div>
+				<!-- Fin, información adicional -->
+
 				<div class="ibox">
 					<div class="ibox-title bg-success">
 						<h5 class="collapse-link"><i class="fa fa-check-circle"></i> Cierre de llamada de servicio</h5>

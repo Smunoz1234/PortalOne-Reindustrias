@@ -654,7 +654,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 </style>
 
 <script type="text/javascript">
-	function ActualizarAsunto() {
+function ActualizarAsunto() {
 	let f333 = <?php echo PermitirFuncion(333) ? 'true' : 'false'; ?>;
 	if (f333) {
 		let AsuntoLlamada = $('#AsuntoLlamada').val();
@@ -748,26 +748,26 @@ $(document).ready(function () {
 		});
 
 		<?php if ($IncluirCamposAdicionales) { ?>
-					$.ajax({
-						type: "POST",
-						url: "ajx_cbo_select.php?type=29&id=" + Cliente,
-						success: function (response) {
-							$('#ContratoServicio').html(response).fadeIn();
-							$('#ContratoServicio').trigger('change');
-							$('.ibox-content').toggleClass('sk-loading', false);
-						}
-					});
+				$.ajax({
+					type: "POST",
+					url: "ajx_cbo_select.php?type=29&id=" + Cliente,
+					success: function (response) {
+						$('#ContratoServicio').html(response).fadeIn();
+						$('#ContratoServicio').trigger('change');
+						$('.ibox-content').toggleClass('sk-loading', false);
+					}
+				});
 
-					$.ajax({
-						type: "POST",
-						url: "ajx_cbo_select.php?type=30&id=" + Cliente,
-						success: function (response) {
-							$('#Proyecto').html(response).fadeIn();
-							$('#Proyecto').trigger('change');
+				$.ajax({
+					type: "POST",
+					url: "ajx_cbo_select.php?type=30&id=" + Cliente,
+					success: function (response) {
+						$('#Proyecto').html(response).fadeIn();
+						$('#Proyecto').trigger('change');
 
-							$('.ibox-content').toggleClass('sk-loading', false);
-						}
-					});
+						$('.ibox-content').toggleClass('sk-loading', false);
+					}
+				});
 		<?php } ?>
 	});
 	$("#SucursalCliente").change(function () {
@@ -849,7 +849,7 @@ $(document).ready(function () {
 		
 		var ID = document.getElementById('IdArticuloLlamada').value;
 		var Cliente = document.getElementById('ClienteLlamada').value;
-
+		
 		if (ID != "") {
 			$.ajax({
 				url: "ajx_buscar_datos_json.php",
@@ -858,6 +858,7 @@ $(document).ready(function () {
 				success: function (data) {
 					document.getElementById('CDU_Servicios').value = data.Servicios;
 					document.getElementById('CDU_Areas').value = data.Areas;
+
 					$('.ibox-content').toggleClass('sk-loading', false);
 				}
 			});
@@ -900,167 +901,170 @@ $(document).ready(function () {
 			//HabilitarCampos(1);
 		}
 	});
-	<?php if ($edit == 0 && $sw_error == 0) { ?>
-				// SMM, 12/07/2023
-				$("#Series").change(function () {
-					$('.ibox-content').toggleClass('sk-loading', true);
 
-					let Series = document.getElementById('Series').value;
-					if (Series !== "") {
-						$.ajax({
-							url: "ajx_buscar_datos_json.php",
-							data: {
-								type: 30,
-								id: Series
-							},
-							dataType: 'json',
-							success: function (data) {
-								console.log(data);
+	// Para impedir que se borre la información que esta en el $row. SMM, 22/09/2023
+	<?php if (($edit == 0) && ($sw_error == 0)) { ?>
+			// SMM, 12/07/2023
+			$("#Series").change(function () {
+				$('.ibox-content').toggleClass('sk-loading', true);
 
-								$('#OrigenLlamada').val(data.OrigenLlamada || '""');
-								$('#OrigenLlamada').trigger('change');
-
-								$('#TipoProblema').val(data.TipoProblemaLlamada || '""');
-								$('#TipoProblema').trigger('change');
-							
-								$('#TipoLlamada').val(data.TipoLlamada || '""');
-								$('#TipoLlamada').trigger('change');
-
-								let AsuntoLlamada = (data.AsuntoLlamada || '""');
-								let f333 = <?php echo PermitirFuncion(333) ? 'true' : 'false'; ?>;
-								if (f333) {
-									let OrigenLlamada = trim($("#OrigenLlamada option:selected").text());
-									let TipoProblema = trim($("#TipoProblema option:selected").text());
-
-									AsuntoLlamada = `${AsuntoLlamada} (${OrigenLlamada}) (${TipoProblema})`;
-								}
-								$('#AsuntoLlamada').val(AsuntoLlamada);
-								
-								$('.ibox-content').toggleClass('sk-loading', false);
-							},
-							error: function (error) {
-								console.log("AJAX error:", error);
-
-								$('.ibox-content').toggleClass('sk-loading', false);
-							}
-						});
-					} else {
-						$('.ibox-content').toggleClass('sk-loading', false);
-					}
-				});
-
-				// Stiven Muñoz Murillo, 07/02/2022
-				$("#CDU_ListaMateriales").change(function () {
-					$('.ibox-content').toggleClass('sk-loading', true);
-					let listaMaterial = document.getElementById('CDU_ListaMateriales').value;
-
-					if (listaMaterial != "") {
-						$.ajax({
-							url: "ajx_buscar_datos_json.php",
-							data: {
-								type: 47,
-								id: listaMaterial
-							},
-							dataType: 'json',
-							success: function (data) {
-								// console.log(data);
-
-								document.getElementById('CDU_TiempoTarea').value = data.tiempoTarea;
-								$('.ibox-content').toggleClass('sk-loading', false);
-							},
-							error: function (error) {
-								console.error(error.responseText);
-								$('.ibox-content').toggleClass('sk-loading', false);
-							}
-						});
-					}
-				});
-
-				// Stiven Muñoz Murillo, 20/12/2021
-				$("#CDU_Marca").change(function () {
-					$('.ibox-content').toggleClass('sk-loading', true);
-					var marcaVehiculo = document.getElementById('CDU_Marca').value;
+				let Series = document.getElementById('Series').value;
+				if (Series !== "") {
 					$.ajax({
-						type: "POST",
-						url: "ajx_cbo_select.php?type=39&id=" + marcaVehiculo,
-						success: function (response) {
-							// console.log(response);
+						url: "ajx_buscar_datos_json.php",
+						data: {
+							type: 30,
+							id: Series
+						},
+						dataType: 'json',
+						success: function (data) {
+							console.log("ajx_buscar_datos_json(30)", data);
 
-							if (borrarLineaModeloVehiculo) {
-								$('#CDU_Linea').html(response).fadeIn();
-								$('#CDU_Linea').trigger('change');
-							} else {
-								borrarLineaModeloVehiculo = true;
+							$('#OrigenLlamada').val(data.OrigenLlamada || '""');
+							$('#OrigenLlamada').trigger('change');
+
+							$('#TipoProblema').val(data.TipoProblemaLlamada || '""');
+							$('#TipoProblema').trigger('change');
+							
+							$('#TipoLlamada').val(data.TipoLlamada || '""');
+							$('#TipoLlamada').trigger('change');
+							
+							let AsuntoLlamada = (data.AsuntoLlamada || '""');
+							let f333 = <?php echo PermitirFuncion(333) ? 'true' : 'false'; ?>;
+							if (f333) {
+								let OrigenLlamada = trim($("#OrigenLlamada option:selected").text());
+								let TipoProblema = trim($("#TipoProblema option:selected").text());
+
+								AsuntoLlamada = `${AsuntoLlamada} (${OrigenLlamada}) (${TipoProblema})`;
 							}
+							$('#AsuntoLlamada').val(AsuntoLlamada);
+			
+							$('.ibox-content').toggleClass('sk-loading', false);
+						},
+						error: function (error) {
+							console.log("AJAX error:", error);
 
 							$('.ibox-content').toggleClass('sk-loading', false);
 						}
 					});
-				});
-
-				// SMM, 27/11/2023
-				$("#NumeroSerie").on("change", function () {
-					$('.ibox-content').toggleClass('sk-loading', true);
-
-					let Cliente = $("#ClienteLlamada").val();
-					let IdTarjetaEquipo = $("#NumeroSerie").val() || "";
-
-					if (IdTarjetaEquipo != "") {
-						$.ajax({
-							url: "ajx_buscar_datos_json.php",
-							data: {
-								type: 44,
-								id: IdTarjetaEquipo,
-								clt: Cliente
-							},
-							dataType: 'json',
-							success: function (data) {
-								console.log("ajx_buscar_datos_json(44)", data);
-
-								document.getElementById('IdArticuloLlamada').value = data.IdArticuloLlamada;
-								document.getElementById('DeArticuloLlamada').value = data.DeArticuloLlamada;
-								// $('#IdArticuloLlamada').trigger('change');
-								// $('#DeArticuloLlamada').trigger('change');
-
-								document.getElementById('CDU_Marca').value = data.CDU_IdMarca;
-								$('#CDU_Marca').trigger('change');
-
-								borrarLineaModeloVehiculo = false;
-								document.getElementById('CDU_Linea').value = data.CDU_IdLinea;
-								$('#CDU_Linea').trigger('change');
-
-								document.getElementById('CDU_Ano').value = data.CDU_Ano;
-								$('#CDU_Ano').trigger('change');
-
-								document.getElementById('CDU_Concesionario').value = data.CDU_Concesionario;
-								$('#CDU_Concesionario').trigger('change');
-
-								document.getElementById('CDU_TipoServicio').value = (data.CDU_TipoServicio != null) ? data.CDU_TipoServicio : "";
-								$('#CDU_TipoServicio').trigger('change');
-
-								$('.ibox-content').toggleClass('sk-loading', false);
-							},
-							error: function (data) {
-								console.error("Line 1530", data.responseText);
-							}
-						});
-						$.ajax({
-							type: "POST",
-							url: `ajx_cbo_select.php?type=40&id=${IdTarjetaEquipo}`,
-							success: function (response) {
-								console.log("ajx_buscar_datos_json(40)", response);
-
-								$('#CDU_ListaMateriales').html(response).fadeIn();
-								$('#CDU_ListaMateriales').trigger('change');
-
-								$('.ibox-content').toggleClass('sk-loading', false);
-							}
-						});
-					}
+				} else {
 					$('.ibox-content').toggleClass('sk-loading', false);
-				});
+				}
+			});
 
-				$('#Series').trigger('change');
+			// Stiven Muñoz Murillo, 07/02/2022
+			$("#CDU_ListaMateriales").change(function () {
+				$('.ibox-content').toggleClass('sk-loading', true);
+				let listaMaterial = document.getElementById('CDU_ListaMateriales').value;
+
+				if (listaMaterial != "") {
+					$.ajax({
+						url: "ajx_buscar_datos_json.php",
+						data: {
+							type: 47,
+							id: listaMaterial
+						},
+						dataType: 'json',
+						success: function (data) {
+							// console.log(data);
+
+							document.getElementById('CDU_TiempoTarea').value = data.tiempoTarea;
+							$('.ibox-content').toggleClass('sk-loading', false);
+						},
+						error: function (error) {
+							console.error(error.responseText);
+							$('.ibox-content').toggleClass('sk-loading', false);
+						}
+					});
+				}
+			});
+
+			// Stiven Muñoz Murillo, 20/12/2021
+			$("#CDU_Marca").change(function () {
+				$('.ibox-content').toggleClass('sk-loading', true);
+				
+				var marcaVehiculo = document.getElementById('CDU_Marca').value;
+				$.ajax({
+					type: "POST",
+					url: "ajx_cbo_select.php?type=39&id=" + marcaVehiculo,
+					success: function (response) {
+						// console.log(response);
+
+						if (borrarLineaModeloVehiculo) {
+							$('#CDU_Linea').html(response).fadeIn();
+							$('#CDU_Linea').trigger('change');
+						} else {
+							borrarLineaModeloVehiculo = true;
+						}
+
+						$('.ibox-content').toggleClass('sk-loading', false);
+					}
+				});
+			});
+
+			// SMM, 27/11/2023
+			$("#NumeroSerie").on("change", function () {
+				$('.ibox-content').toggleClass('sk-loading', true);
+
+				let Cliente = $("#ClienteLlamada").val();
+				let IdTarjetaEquipo = $("#NumeroSerie").val() || "";
+
+				if (IdTarjetaEquipo != "") {
+					$.ajax({
+						url: "ajx_buscar_datos_json.php",
+						data: {
+							type: 44,
+							id: IdTarjetaEquipo,
+							clt: Cliente
+						},
+						dataType: 'json',
+						success: function (data) {
+							console.log("ajx_buscar_datos_json(44)", data);
+
+							document.getElementById('IdArticuloLlamada').value = data.IdArticuloLlamada;
+							document.getElementById('DeArticuloLlamada').value = data.DeArticuloLlamada;
+							// $('#IdArticuloLlamada').trigger('change');
+							// $('#DeArticuloLlamada').trigger('change');
+
+							document.getElementById('CDU_Marca').value = data.CDU_IdMarca;
+							$('#CDU_Marca').trigger('change');
+
+							borrarLineaModeloVehiculo = false;
+							document.getElementById('CDU_Linea').value = data.CDU_IdLinea;
+							$('#CDU_Linea').trigger('change');
+
+							document.getElementById('CDU_Ano').value = data.CDU_Ano;
+							$('#CDU_Ano').trigger('change');
+
+							document.getElementById('CDU_Concesionario').value = data.CDU_Concesionario;
+							$('#CDU_Concesionario').trigger('change');
+
+							document.getElementById('CDU_TipoServicio').value = (data.CDU_TipoServicio != null) ? data.CDU_TipoServicio : "";
+							$('#CDU_TipoServicio').trigger('change');
+
+							$('.ibox-content').toggleClass('sk-loading', false);
+						},
+						error: function (data) {
+							console.error("Line 1530", data.responseText);
+						}
+					});
+					$.ajax({
+						type: "POST",
+						url: `ajx_cbo_select.php?type=40&id=${IdTarjetaEquipo}`,
+						success: function (response) {
+							console.log("ajx_cbo_select(40)", response);
+
+							$('#CDU_ListaMateriales').html(response).fadeIn();
+							$('#CDU_ListaMateriales').trigger('change');
+
+							$('.ibox-content').toggleClass('sk-loading', false);
+						}
+					});
+				}
+				$('.ibox-content').toggleClass('sk-loading', false);
+			});
+
+			$('#Series').trigger('change');
 	<?php } ?>
 
 		$("#EstadoLlamada").on("change", function () {
@@ -1075,16 +1079,16 @@ $(document).ready(function () {
 
 			// SMM, 14/10/2022
 			<?php if ($sw_error == 0) { ?>
-					$("#NombreContactoFirma").val($("#CDU_NombreContacto").val());
-					$("#CorreosDestinatarios").html("");
-					$("#TelefonosDestinatarios").html("");
-				
-					AgregarEsto("CorreosDestinatarios", $("#CDU_CorreoContacto").val());
-					AgregarEsto("TelefonosDestinatarios", $("#CDU_TelefonoContacto").val());
+						$("#NombreContactoFirma").val($("#CDU_NombreContacto").val());
+						$("#CorreosDestinatarios").html("");
+						$("#TelefonosDestinatarios").html("");
+
+						AgregarEsto("CorreosDestinatarios", $("#CDU_CorreoContacto").val());
+						AgregarEsto("TelefonosDestinatarios", $("#CDU_TelefonoContacto").val());
 			<?php } ?>
 
-				// SMM, 28/06/2023
-				$("#ContactoCierreContainer").removeClass('collapsed');
+					// SMM, 28/06/2023
+					$("#ContactoCierreContainer").removeClass('collapsed');
 			} else {
 				console.log("cambio el estado de la llamada, diferente a cerrado.");
 
@@ -1115,36 +1119,40 @@ function ConsultarDatosCliente() {
 		remote.focus();
 	}
 }
-function ConsultarArticulo() {
-	var Articulo = document.getElementById('IdArticuloLlamada');
-	console.log(Articulo.value);
-	if (Articulo.value != "") {
+function ConsultarArticulo(componente = false) {
+	let IdArticulo = $("#IdArticuloLlamada").val() || "";
+	let IdArticuloComponente = $("#IdArticuloComponente").val() || "";
+
+	let selectedIndex = (componente) ? IdArticuloComponente : IdArticulo;
+	if (selectedIndex != "") {
 		self.name = 'opener';
-		remote = open('articulos.php?id=' + Base64.encode(Articulo.value) + '&ext=1&tl=1', 'remote', 'location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
+		remote = open('articulos.php?id=' + Base64.encode(selectedIndex) + '&ext=1&tl=1', 'remote', 'location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
 		remote.focus();
 	}
 }
 
 // SMM, 22/11/2023
-function ConsultarEquipo() {
+function ConsultarEquipo(componente = false) {
 	let IdTarjetaEquipo = $("#NumeroSerie").val() || "";
+	let IdTarjetaEquipoComponente = $("#IdTarjetaEquipoComponente").val() || "";
 
-	if (IdTarjetaEquipo != "") {
+	let selectedIndex = (componente) ? IdTarjetaEquipoComponente : IdTarjetaEquipo;
+	if (selectedIndex != "") {
 		self.name = 'opener';
-		remote = open(`tarjeta_equipo.php?id='${Base64.encode(IdTarjetaEquipo)}'&ext=1&tl=1`, 'remote', 'location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
+		remote = open(`tarjeta_equipo.php?id='${Base64.encode(selectedIndex)}'&ext=1&tl=1`, 'remote', 'location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
 		remote.focus();
 	}
 }
 
 <?php if ($IncluirCamposAdicionales) { ?>
-			function ConsultarContrato() {
-				var Contrato = document.getElementById('ContratoServicio');
-				if (Contrato.value != "") {
-					self.name = 'opener';
-					remote = open('contratos.php?id=' + btoa(Contrato.value) + '&ext=1&tl=1', 'remote', 'location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
-					remote.focus();
-				}
+		function ConsultarContrato() {
+			var Contrato = document.getElementById('ContratoServicio');
+			if (Contrato.value != "") {
+				self.name = 'opener';
+				remote = open('contratos.php?id=' + btoa(Contrato.value) + '&ext=1&tl=1', 'remote', 'location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
+				remote.focus();
 			}
+		}
 	<?php } ?>
 
 		// Stiven Muñoz Murillo, 30/12/2021
@@ -1302,6 +1310,15 @@ function AgregarEsto(contenedorID, valorElemento) {
 			<!-- SMM, 27/11/2023 -->
 			<?php include_once 'md_consultar_tarjetas_equipos.php'; ?>
 
+			<!-- SMM, 11/03/2024 -->
+			<?php include_once 'md_consultar_tarjetas_componentes.php'; ?>
+
+			<!-- SMM, 18/01/2024 -->
+			<?php include_once 'md_consultar_llamadas_servicios.php'; ?>
+
+			<!-- SMM, 18/01/2024 -->
+			<?php include_once 'md_consultar_solicitudes_llamadas.php'; ?>
+
 			<!-- Inicio, modalSN -->
 			<div class="modal inmodal fade" id="modalSN" tabindex="-1" role="dialog" aria-hidden="true">
 				<div class="modal-dialog modal-lg" style="width: 70% !important;">
@@ -1355,6 +1372,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 				</div>
 			</div>
 			<!-- Fin, modalSN -->
+
 			<!-- Inicio, modalFactSN -->
 			<div class="modal inmodal fade" id="modalFactSN" tabindex="-1" role="dialog" aria-hidden="true">
 				<div class="modal-dialog modal-lg" style="width: 70% !important;">
@@ -1413,56 +1431,56 @@ function AgregarEsto(contenedorID, valorElemento) {
 
 			<!-- Inicio, modalCorreo. SMM, 13/10/2022 -->
 			<?php if (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] == '-1')) { ?>
-					<div class="modal inmodal fade" id="modalCorreo" tabindex="-1" role="dialog" aria-hidden="true">
-						<div class="modal-dialog modal-lg" style="width: 70% !important;">
-							<div class="modal-content">
-								<div class="modal-header">
-									<h4 class="modal-title">Envío de llamada de servicio No.<?php echo $row['DocNum']; ?></h4>
+							<div class="modal inmodal fade" id="modalCorreo" tabindex="-1" role="dialog" aria-hidden="true">
+								<div class="modal-dialog modal-lg" style="width: 70% !important;">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h4 class="modal-title">Envío de llamada de servicio No.<?php echo $row['DocNum']; ?></h4>
+										</div>
+
+										<!-- form id="formCambiarSN" -->
+											<div class="modal-body">
+												<div class="row">
+													<div class="col-lg-1"></div>
+													<div class="col-lg-10">
+														<div class="form-group">
+															<label class="control-label">Para</label>
+															<input placeholder="Ingrese un nuevo correo y utilice la tecla [ESP] para agregar" onKeyUp="ValidarCorreo(event, this, 'CorreosPara')" autocomplete="off" name="EmailPara" type="text" class="form-control" id="EmailPara" maxlength="50" value="">
+															<input type="hidden" id="CorreosContactosFirma" name="CorreosContactosFirma">
+
+															<div id="CorreosPara"></div>
+														</div>
+													</div>
+													<div class="col-lg-1"></div>
+												</div>
+												<div class="row">
+													<div class="col-lg-1"></div>
+													<div class="col-lg-10">
+														<div class="form-group">
+															<label class="control-label">Con copia a</label>
+															<input placeholder="Ingrese un nuevo correo y utilice la tecla [ESP] para agregar" onKeyUp="ValidarCorreo(event, this, 'CorreosCC')" autocomplete="off" name="EmailCC" type="text" class="form-control" id="CorreoContactoFirma" maxlength="50" value="">
+															<input type="hidden" id="CorreosContactosFirma" name="CorreosContactosFirma">
+
+															<div id="CorreosCC"></div>
+														</div>
+													</div>
+													<div class="col-lg-1"></div>
+												</div>
+											</div>
+
+											<div class="modal-footer">
+												<button type="submit" class="btn btn-success m-t-md"><i class="fa fa-check"></i> Aceptar</button>
+												<button type="button" class="btn btn-secondary m-t-md CancelarSN" data-dismiss="modal"><i class="fa fa-times"></i> Cancelar</button>
+											</div>
+										<!-- /form -->
+									</div>
 								</div>
-
-								<!-- form id="formCambiarSN" -->
-									<div class="modal-body">
-										<div class="row">
-											<div class="col-lg-1"></div>
-											<div class="col-lg-10">
-												<div class="form-group">
-													<label class="control-label">Para</label>
-													<input placeholder="Ingrese un nuevo correo y utilice la tecla [ESP] para agregar" onKeyUp="ValidarCorreo(event, this, 'CorreosPara')" autocomplete="off" name="EmailPara" type="text" class="form-control" id="EmailPara" maxlength="50" value="">
-													<input type="hidden" id="CorreosContactosFirma" name="CorreosContactosFirma">
-
-													<div id="CorreosPara"></div>
-												</div>
-											</div>
-											<div class="col-lg-1"></div>
-										</div>
-										<div class="row">
-											<div class="col-lg-1"></div>
-											<div class="col-lg-10">
-												<div class="form-group">
-													<label class="control-label">Con copia a</label>
-													<input placeholder="Ingrese un nuevo correo y utilice la tecla [ESP] para agregar" onKeyUp="ValidarCorreo(event, this, 'CorreosCC')" autocomplete="off" name="EmailCC" type="text" class="form-control" id="CorreoContactoFirma" maxlength="50" value="">
-													<input type="hidden" id="CorreosContactosFirma" name="CorreosContactosFirma">
-
-													<div id="CorreosCC"></div>
-												</div>
-											</div>
-											<div class="col-lg-1"></div>
-										</div>
-									</div>
-
-									<div class="modal-footer">
-										<button type="submit" class="btn btn-success m-t-md"><i class="fa fa-check"></i> Aceptar</button>
-										<button type="button" class="btn btn-secondary m-t-md CancelarSN" data-dismiss="modal"><i class="fa fa-times"></i> Cancelar</button>
-									</div>
-								<!-- /form -->
 							</div>
-						</div>
-					</div>
 			<?php } ?>
 			<!-- Fin, modalCorreo -->
 
 			<?php if ($edit == 1) { ?>
-					<div class="row">
+				<div class="row">
 						<div class="col-lg-4">
 							<div class="ibox ">
 								<div class="ibox-title">
@@ -1524,27 +1542,38 @@ function AgregarEsto(contenedorID, valorElemento) {
 								</div>
 								<div class="ibox-content">
 									<div class="form-group">
-									<div class="col-lg-6">
+										<div class="col-lg-6">
 											<?php if ($edit == 1) { ?>
-						
+
 													<div class="btn-group">
-														<button data-toggle="dropdown" class="btn btn-outline btn-success dropdown-toggle"><i class="fa fa-download"></i> Descargar formato <i class="fa fa-caret-down"></i></button>
-														<ul class="dropdown-menu">
-															<?php $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=20008 AND VerEnDocumento='Y'"); ?>
-														
-															<?php while ($row_Formato = sqlsrv_fetch_array($SQL_Formato)) { ?>
+														<!-- SMM, 23/01/2024 -->
+														<div class="btn-group">
+															<button data-toggle="dropdown"
+																class="btn btn-outline btn-success dropdown-toggle"><i
+																	class="fa fa-download"></i> Descargar formato <i
+																	class="fa fa-caret-down"></i></button>
+															<ul class="dropdown-menu">
+																<?php $SQL_Formato = Seleccionar('uvw_tbl_FormatosSAP', '*', "ID_Objeto=20008 AND VerEnDocumento='Y'"); ?>
+																
+																<?php while ($row_Formato = sqlsrv_fetch_array($SQL_Formato)) { ?>
 																	<li>
-																		<a class="dropdown-item" target="_blank" href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row['ID_SolicitudLlamadaServicio']); ?>&ObType=<?php echo base64_encode('191'); ?>&IdFrm=<?php echo base64_encode($row_Formato['IdFormato']); ?>&IdReg=<?php echo base64_encode($row_Formato['ID']); ?>"><?php echo $row_Formato['NombreVisualizar']; ?></a>
+																		<a class="dropdown-item" target="_blank"
+																			href="formatdownload.php?DocKey=<?php echo $row['ID_LlamadaServicio'] ?? ""; ?>&ObType=<?php echo $row_Formato['ID_Objeto'] ?? ""; ?>&IdFrm=<?php echo $row_Formato['IdFormato'] ?? ""; ?>&IdReg=<?php echo $row_Formato['ID'] ?? ""; ?>">
+																			<?php echo $row_Formato['NombreVisualizar'] ?? ""; ?>
+																		</a>
 																	</li>
-															<?php } ?>
-														</ul>
+																<?php } ?>
+															</ul>
+														</div>
+														<!-- Hasta aquí, 23/01/2024 -->
+
+														<!-- Espacio para más botones -->
 													</div>
-												
 											<?php } elseif (PermitirFuncion(508)) { ?>
-												
-													<button onClick="CrearLead();" class="btn btn-outline btn-primary"><i class="fa fa-user-circle"></i> Crear Prospecto</button>
-													<a href="tarjeta_equipo.php" class="btn btn-outline btn-info" target="_blank"><i class="fa fa-plus-circle"></i> Crear nueva tarjeta de equipo</a>
-											
+
+														<button onclick="CrearLead();" class="btn btn-outline btn-primary"><i class="fa fa-user-circle"></i> Crear Prospecto</button>
+														<a href="tarjeta_equipo.php" class="btn btn-outline btn-info" target="_blank"><i class="fa fa-plus-circle"></i> Crear nueva tarjeta de equipo</a>
+														
 											<?php } ?>
 										</div>
 										<!-- /.col-lg-6 -->
@@ -1574,65 +1603,65 @@ function AgregarEsto(contenedorID, valorElemento) {
 		   <div class="col-lg-12">
 			  <form action="solicitud_llamada.php" method="post" class="form-horizontal" enctype="multipart/form-data" id="CrearLlamada">
 				<div id="DatosCliente" <?php //if($row['TipoTarea']=='Interna'){ echo 'style="display: none;"';}?>>
-				<div class="ibox">
-					<div class="ibox-title bg-success">
-						<h5 class="collapse-link"><i class="fa fa-group"></i> Información de cliente</h5>
-						 <a class="collapse-link pull-right">
-							<i class="fa fa-chevron-up"></i>
-						</a>
-					</div>
-					<div class="ibox-content">
-						<div class="form-group">
-							<div class="col-lg-4">
-								<label class="control-label"><i onClick="ConsultarDatosCliente();" title="Consultar cliente" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Cliente <span class="text-danger">*</span></label>
-								<input name="ClienteLlamada" type="hidden" id="ClienteLlamada" value="<?php if (($edit == 1) || ($sw_error == 1)) {
-									echo $row['ID_CodigoCliente'];
-								} elseif ($dt_LS == 1) {
-									echo $row_Cliente['CodigoCliente'];
-								} ?>">
-								<input name="NombreClienteLlamada" type="text" required class="form-control" id="NombreClienteLlamada" placeholder="Digite para buscar..." <?php if (($edit == 1) && ((!$ActualizarSolicitud) || ($row['IdEstadoLlamada'] == '-1') || ($row['TipoTarea'] == 'Interna')) || ($dt_LS == 1) || ($edit == 1)) {
-									echo "readonly";
-								} ?> value="<?php if (($edit == 1) || ($sw_error == 1)) {
-									  echo $row['NombreClienteLlamada'];
-								  } elseif ($dt_LS == 1) {
-									  echo $row_Cliente['NombreCliente'];
-								  } ?>">
-							</div>
-							<div class="col-lg-4">
-								<label class="control-label">Contacto</label>
-								<select name="ContactoCliente" class="form-control" id="ContactoCliente">
-									  <?php if (($edit == 0) || ($sw_error == 1)) { ?>
-											<option value="">Seleccione...</option>
-									<?php } ?>
-									  
-									<?php if (($edit == 1) || ($sw_error == 1)) { ?>
-										  	<?php while ($row_ContactoCliente = sqlsrv_fetch_array($SQL_ContactoCliente)) { ?>
-													<option value="<?php echo $row_ContactoCliente['CodigoContacto']; ?>" <?php if ((isset($row['IdContactoLLamada'])) && (strcmp($row_ContactoCliente['CodigoContacto'], $row['IdContactoLLamada']) == 0)) {
-														   echo "selected";
-													   } ?>><?php echo $row_ContactoCliente['ID_Contacto']; ?></option>
-											<?php } ?>
-									  <?php } ?>
-								</select>
-							</div>
-							<div class="col-lg-4">
-								<label class="control-label">Sucursal <span class="text-danger">*</span></label>
-								<select name="SucursalCliente" class="form-control select2" id="SucursalCliente" required>
-									  <?php if (($edit == 0) || ($sw_error == 1)) { ?><option value="">Seleccione...</option><?php } ?>
-									  
-									<?php if (($edit == 1) || ($sw_error == 1)) { ?>
-										 	<?php while ($row_SucursalCliente = sqlsrv_fetch_array($SQL_SucursalCliente)) { ?>
-													<option value="<?php echo $row_SucursalCliente['NombreSucursal']; ?>" <?php if (isset($row['NombreSucursal']) && (strcmp($row_SucursalCliente['NombreSucursal'], $row['NombreSucursal']) == 0)) {
-														   echo "selected";
-													   } elseif (isset($row['NombreSucursal']) && (strcmp($row_SucursalCliente['NumeroLinea'], $row['IdNombreSucursal']) == 0)) {
-														   echo "selected";
-														   $sw_valDir = 1;
-													   } ?>><?php echo $row_SucursalCliente['NombreSucursal']; ?></option>
-											<?php } ?>
-									  <?php } ?>
-								</select>
-							</div>
+					<div class="ibox">
+						<div class="ibox-title bg-success">
+							<h5 class="collapse-link"><i class="fa fa-group"></i> Información de cliente</h5>
+							<a class="collapse-link pull-right">
+								<i class="fa fa-chevron-up"></i>
+							</a>
 						</div>
-						<div class="form-group">
+						<div class="ibox-content">
+							<div class="form-group">
+								<div class="col-lg-4">
+									<label class="control-label"><i onClick="ConsultarDatosCliente();" title="Consultar cliente" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Cliente <span class="text-danger">*</span></label>
+									<input name="ClienteLlamada" type="hidden" id="ClienteLlamada" value="<?php if (($edit == 1) || ($sw_error == 1)) {
+										echo $row['ID_CodigoCliente'];
+									} elseif ($dt_LS == 1) {
+										echo $row_Cliente['CodigoCliente'];
+									} ?>">
+									<input name="NombreClienteLlamada" type="text" required class="form-control" id="NombreClienteLlamada" placeholder="Digite para buscar..." <?php if (($edit == 1) && ((!$ActualizarSolicitud) || ($row['IdEstadoLlamada'] == '-1') || ($row['TipoTarea'] == 'Interna')) || ($dt_LS == 1) || ($edit == 1)) {
+										echo "readonly";
+									} ?> value="<?php if (($edit == 1) || ($sw_error == 1)) {
+										echo $row['NombreClienteLlamada'];
+									} elseif ($dt_LS == 1) {
+										echo $row_Cliente['NombreCliente'];
+									} ?>">
+								</div>
+								<div class="col-lg-4">
+									<label class="control-label">Contacto</label>
+									<select name="ContactoCliente" class="form-control" id="ContactoCliente">
+										<?php if (($edit == 0) || ($sw_error == 1)) { ?>
+												<option value="">Seleccione...</option>
+										<?php } ?>
+										
+										<?php if (($edit == 1) || ($sw_error == 1)) { ?>
+												<?php while ($row_ContactoCliente = sqlsrv_fetch_array($SQL_ContactoCliente)) { ?>
+														<option value="<?php echo $row_ContactoCliente['CodigoContacto']; ?>" <?php if ((isset($row['IdContactoLLamada'])) && (strcmp($row_ContactoCliente['CodigoContacto'], $row['IdContactoLLamada']) == 0)) {
+															echo "selected";
+														} ?>><?php echo $row_ContactoCliente['ID_Contacto']; ?></option>
+												<?php } ?>
+										<?php } ?>
+									</select>
+								</div>
+								<div class="col-lg-4">
+									<label class="control-label">Sucursal <span class="text-danger">*</span></label>
+									<select name="SucursalCliente" class="form-control select2" id="SucursalCliente" required>
+										<?php if (($edit == 0) || ($sw_error == 1)) { ?><option value="">Seleccione...</option><?php } ?>
+										
+										<?php if (($edit == 1) || ($sw_error == 1)) { ?>
+												<?php while ($row_SucursalCliente = sqlsrv_fetch_array($SQL_SucursalCliente)) { ?>
+														<option value="<?php echo $row_SucursalCliente['NombreSucursal']; ?>" <?php if (isset($row['NombreSucursal']) && (strcmp($row_SucursalCliente['NombreSucursal'], $row['NombreSucursal']) == 0)) {
+															echo "selected";
+														} elseif (isset($row['NombreSucursal']) && (strcmp($row_SucursalCliente['NumeroLinea'], $row['IdNombreSucursal']) == 0)) {
+															echo "selected";
+															$sw_valDir = 1;
+														} ?>><?php echo $row_SucursalCliente['NombreSucursal']; ?></option>
+												<?php } ?>
+										<?php } ?>
+									</select>
+								</div>
+							</div>
+							<div class="form-group">
 							<div class="col-lg-4">
 								<label class="control-label">Dirección <span class="text-danger">*</span></label>
 								<input name="DireccionLlamada" type="text" required class="form-control" id="DireccionLlamada" maxlength="100" value="<?php if (($edit == 1) || ($sw_error == 1)) {
@@ -1666,127 +1695,174 @@ function AgregarEsto(contenedorID, valorElemento) {
 								} ?>">
 							</div>
 						</div>
-						
-						<div class="form-group">
-							<div class="col-lg-8 border-bottom">
-								<label class="control-label text-danger">Información del servicio</label>
-							</div>
-						</div>
-
-						<div class="form-group">
-							<div class="col-lg-8">
-								<label class="control-label">
-									<i onclick="ConsultarArticulo();" title="Consultar ID Servicio" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> ID servicio <span class="text-danger">*</span>
-								</label>
-								
-								<input name="IdArticuloLlamada" type="hidden" id="IdArticuloLlamada" value="<?php if (($edit == 1) || ($sw_error == 1)) {
-									echo $row['IdArticuloLlamada'];
-								} elseif ($dt_LS == 1 && isset($row_Articulo['ItemCode'])) {
-									echo $row_Articulo['ItemCode'];
-								} ?>">
-
-								<!-- Descripción del Item -->
-								<input name="DeArticuloLlamada" type="text" required class="form-control" id="DeArticuloLlamada" placeholder="Digite para buscar..."
-								
-								value="<?php if (($edit == 1 || $sw_error == 1 || $dt_LS == 1) && isset($row_Articulo['ItemCode'])) {
-									echo $row_Articulo['ItemCode'] . " - " . $row_Articulo['ItemName'];
-								} ?>" <?php if(PermitirFuncion(346)) { echo "readonly"; } ?>>
-							</div>
 							
-							<div class="col-lg-3">
-								<label class="control-label">
-									<i onclick="ConsultarEquipo();" title="Consultar Tarjeta Equipo"
-										style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Tarjeta de equipo 
-										<?php if(PermitirFuncion(347)) { ?><span class="text-danger">*</span><?php } ?>
-								</label>
-
-								<!-- Se necesita el SerialInterno para el llamado al WebService. SMM, 27/11/2023 -->
-								<input type="hidden" class="form-control" name="SerialInterno" id="SerialInterno"
-									value="<?php echo $row_NumeroSerie['SerialInterno'] ?? ""; ?>">
-
-								<input type="hidden" class="form-control" name="NumeroSerie" id="NumeroSerie"
-									value="<?php if (isset($row_NumeroSerie['IdTarjetaEquipo']) && ($row_NumeroSerie['IdTarjetaEquipo'] != 0)) {
-										echo $row_NumeroSerie['IdTarjetaEquipo'];
-									} ?>">
-								<input readonly type="text" class="form-control" <?php if(PermitirFuncion(347)) { echo "required"; } ?>
-									name="Desc_NumeroSerie" id="Desc_NumeroSerie"
-									placeholder="Haga clic en el botón"
-									value="<?php if (isset($row_NumeroSerie['IdTarjetaEquipo']) && ($row_NumeroSerie['IdTarjetaEquipo'] != 0)) {
-										echo "SN Fabricante: " . ($row_NumeroSerie['SerialFabricante'] ?? "") . " - Núm. Serie: " . ($row_NumeroSerie['SerialInterno'] ?? "");
-									} ?>">
+							<div class="form-group">
+								<div class="col-lg-8 border-bottom">
+									<label class="control-label text-danger">Información del servicio/equipo/articulo padre</label>
+								</div>
 							</div>
-							<!-- /#NumeroSerie -->
 
-							<br>
-							<button type="button" class="btn btn-sm btn-success btn-circle" title="Cambiar Tarjeta Equipo"
-								onclick="$('#mdTE').modal('show');">
-								<i class="fa fa-refresh"></i>
-							</button>
-							<button type="button" id="AddCampana" class="btn btn-sm btn-info btn-circle" title="Adicionar Campaña" disabled <?php if ($edit == 1) {
+							<div class="form-group">
+								<div class="col-lg-8">
+									<label class="control-label">
+										<i onclick="ConsultarArticulo();" title="Consultar ID Servicio" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> ID servicio padre <span class="text-danger">*</span>
+									</label>
+
+									<input name="IdArticuloLlamada" type="hidden" id="IdArticuloLlamada" value="<?php if (($edit == 1) || ($sw_error == 1)) {
+										echo $row['IdArticuloLlamada'];
+									} elseif ($dt_LS == 1 && isset($row_Articulo['ItemCode'])) {
+										echo $row_Articulo['ItemCode'];
+									} ?>">
+
+									<!-- Descripción del Item -->
+									<input name="DeArticuloLlamada" type="text" required class="form-control" id="DeArticuloLlamada" placeholder="Digite para buscar..."
+								
+									value="<?php if (($edit == 1 || $sw_error == 1 || $dt_LS == 1) && isset($row_Articulo['ItemCode'])) {
+										echo $row_Articulo['ItemCode'] . " - " . $row_Articulo['ItemName'];
+									} ?>" <?php if(PermitirFuncion(346)) { echo "readonly"; } ?>>
+								</div>
+								
+								<div class="col-lg-3">
+									<label class="control-label">
+										<i onclick="ConsultarEquipo();" title="Consultar Tarjeta Equipo"
+											style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Tarjeta de equipo padre
+											<?php if(PermitirFuncion(347)) { ?><span class="text-danger">*</span><?php } ?>
+									</label>
+
+									<!-- Se necesita el SerialInterno para el llamado al WebService. SMM, 27/11/2023 -->
+									<input type="hidden" class="form-control" name="SerialInterno" id="SerialInterno"
+										value="<?php echo $row_NumeroSerie['SerialInterno'] ?? ""; ?>">
+
+									<input type="hidden" class="form-control" name="NumeroSerie" id="NumeroSerie"
+										value="<?php if (isset($row_NumeroSerie['IdTarjetaEquipo']) && ($row_NumeroSerie['IdTarjetaEquipo'] != 0)) {
+											echo $row_NumeroSerie['IdTarjetaEquipo'];
+										} ?>">
+									<input readonly type="text" class="form-control" <?php if(PermitirFuncion(347)) { echo "required"; } ?>
+										name="Desc_NumeroSerie" id="Desc_NumeroSerie"
+										placeholder="Haga clic en el botón"
+										value="<?php if (isset($row_NumeroSerie['IdTarjetaEquipo']) && ($row_NumeroSerie['IdTarjetaEquipo'] != 0)) {
+											echo "SN Fabricante: " . ($row_NumeroSerie['SerialFabricante'] ?? "") . " - Núm. Serie: " . ($row_NumeroSerie['SerialInterno'] ?? "");
+										} ?>">
+								</div>
+								<!-- /#NumeroSerie -->
+
+								<br>
+								<button type="button" class="btn btn-sm btn-success btn-circle" title="Cambiar Tarjeta Equipo"
+									onclick="$('#mdTE').modal('show');">
+									<i class="fa fa-refresh"></i>
+								</button>
+								<button type="button" id="AddCampana" class="btn btn-sm btn-info btn-circle" title="Adicionar Campaña" disabled <?php if ($edit == 1) {
+									echo "style='display: none;'";
+								} ?>>
+									<i class="fa fa-bell"></i>
+								</button>
+							</div>
+
+							<div class="form-group" <?php if ($edit == 1) {
 								echo "style='display: none;'";
 							} ?>>
-								<i class="fa fa-bell"></i>
-							</button>
-						</div>
+								<div class="col-lg-8">
+									<label class="control-label">Campañas Asociadas</label>
 
-						<div class="form-group" <?php if ($edit == 1) {
-							echo "style='display: none;'";
-						} ?>>
-							<div class="col-lg-8">
-								<label class="control-label">Campañas Asociadas</label>
+									<select name="Campanas[]" id="Campanas" class="form-control select2" data-placeholder="Debe seleccionar las campañas que desea asociar con la Solicitud de Llamada de servicio." multiple>
+										<!-- Generadas por JS -->
+									</select>
+								</div>
+							</div>
+							<!-- /#CampanasAsociadas -->
 
-								<select name="Campanas[]" id="Campanas" class="form-control select2" data-placeholder="Debe seleccionar las campañas que desea asociar con la Solicitud de Llamada de servicio." multiple>
-									<!-- Generadas por JS -->
-								</select>
+							<div class="form-group">
+								<div class="col-lg-8 border-bottom">
+									<label class="control-label text-danger">Información del servicio/equipo/articulo componente</label>
+								</div>
 							</div>
-						</div>
-						<!-- /#CampanasAsociadas -->
+							
+							<div class="form-group">
+								<div class="col-lg-8">
+									<label class="control-label">
+										<i onclick="ConsultarArticulo(true);" title="Consultar Articulo Componente"
+											style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i>
+										ID servicio componente
+									</label>
 
-						<div class="form-group">
-							<div class="col-lg-4" <?php if (!$IncluirCamposAdicionales) { ?> style="display: none;" <?php } ?>>
-								<label class="control-label">Cantidad artículo</label>
-							<input name="CantArticulo" type="text" class="form-control" id="CantArticulo" maxlength="50" value="<?php if (($edit == 1) || ($sw_error == 1)) {
-								echo number_format($row['CDU_CantArticulo'], 2);
-							} ?>" onkeypress="return justNumbers(event,this.value);" onkeyup="revisaCadena(this);">
-							</div>
-							<div class="col-lg-4" <?php if (!$IncluirCamposAdicionales) { ?> style="display: none;" <?php } ?>>
-								<label class="control-label">Precio artículo</label>
-							<input name="PrecioArticulo" type="text" class="form-control" id="PrecioArticulo" maxlength="50" value="<?php if (($edit == 1) || ($sw_error == 1)) {
-								echo number_format($row['CDU_PrecioArticulo'], 2);
-							} ?>" onkeypress="return justNumbers(event,this.value);" onkeyup="revisaCadena(this);">
-							</div>
-						</div>
-						<div class="form-group">
-							<div class="col-lg-8 border-bottom">
-								<label class="control-label text-danger">Información de la lista de materiales</label>
-							</div>
-						</div>
-						<div class="form-group">
-							<div class="col-lg-8">
-								<label class="control-label"><i onClick="ConsultarMateriales();" title="Consultar Lista de Materiales" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> ID lista de materiales</label>
-								<select name="CDU_ListaMateriales" class="form-control select2" id="CDU_ListaMateriales">
-										<option value="">Seleccione...</option>
-										
-										<?php if (($edit == 1) || ($sw_error == 1)) { ?>
-												<?php while ($row_ListaMateriales = sqlsrv_fetch_array($SQL_ListaMateriales)) { ?>
-														<option value="<?php echo $row_ListaMateriales['ItemCode']; ?>" <?php if ((isset($row['CDU_ListaMateriales'])) && (strcmp($row_ListaMateriales['ItemCode'], $row['CDU_ListaMateriales']) == 0)) {
-															   echo "selected";
-														   } ?>><?php echo $row_ListaMateriales['ItemName']; ?></option>
-												<?php } ?>
-										<?php } ?>
-								</select>
+									<input type="hidden" class="form-control" name="IdArticuloComponente" id="IdArticuloComponente"
+										value="<?php echo $row["IdArticuloComponente"] ?? ""; ?>" readonly>
+
+									<input type="text" class="form-control" name="ArticuloComponente" id="ArticuloComponente" readonly
+										value="<?php echo ($id_tarjeta_equipo_hijo == "") ? "" : $de_articulo_encabezado; ?>">
+								</div>
+
+								<div class="col-lg-3">
+									<label class="control-label">
+										<i onclick="ConsultarEquipo(true);" title="Consultar Tarjeta Equipo Componente"
+											style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i>
+										Tarjeta de equipo componente
+									</label>
+
+									<input type="hidden" class="form-control" name="IdTarjetaEquipoComponente" id="IdTarjetaEquipoComponente"
+										value="<?php echo $row["IdTarjetaEquipoComponente"] ?? ""; ?>" readonly>
+
+									<input readonly type="text" class="form-control"
+										name="DeTarjetaEquipoComponente" id="DeTarjetaEquipoComponente"
+										placeholder="Haga clic en el botón"
+										value="<?php echo ($id_tarjeta_equipo_hijo == "") ? "" : $descripcion_te_encabezado; ?>">
+								</div>
+								<!-- /#NumeroSerie -->
+
+								<br>
+								<button type="button" class="btn btn-sm btn-success btn-circle" title="Cambiar Tarjeta Equipo Componente"
+									onclick="$('#mdTE_Componente').modal('show');">
+									<i class="fa fa-refresh"></i>
+								</button>
 							</div>
 
-							<div class="col-lg-3">
-								<label class="control-label">Tiempo tarea (Minutos) <span class="text-danger">*</span></label>
-								<input name="CDU_TiempoTarea" type="number" class="form-control" id="CDU_TiempoTarea" required value="<?php if (($edit == 1) || ($sw_error == 1)) {
-									echo $row['CDU_TiempoTarea'];
-								} ?>">
+							<div class="form-group">
+								<div class="col-lg-4" <?php if (!$IncluirCamposAdicionales) { ?> style="display: none;" <?php } ?>>
+									<label class="control-label">Cantidad artículo</label>
+								<input name="CantArticulo" type="text" class="form-control" id="CantArticulo" maxlength="50" value="<?php if (($edit == 1) || ($sw_error == 1)) {
+									echo number_format($row['CDU_CantArticulo'], 2);
+								} ?>" onkeypress="return justNumbers(event,this.value);" onkeyup="revisaCadena(this);">
+								</div>
+								<div class="col-lg-4" <?php if (!$IncluirCamposAdicionales) { ?> style="display: none;" <?php } ?>>
+									<label class="control-label">Precio artículo</label>
+								<input name="PrecioArticulo" type="text" class="form-control" id="PrecioArticulo" maxlength="50" value="<?php if (($edit == 1) || ($sw_error == 1)) {
+									echo number_format($row['CDU_PrecioArticulo'], 2);
+								} ?>" onkeypress="return justNumbers(event,this.value);" onkeyup="revisaCadena(this);">
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="col-lg-8 border-bottom">
+									<label class="control-label text-danger">Información de la lista de materiales</label>
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="col-lg-8">
+									<label class="control-label"><i onClick="ConsultarMateriales();" title="Consultar Lista de Materiales" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> ID lista de materiales</label>
+									<select name="CDU_ListaMateriales" class="form-control select2" id="CDU_ListaMateriales">
+											<option value="">Seleccione...</option>
+											
+											<?php if (($edit == 1) || ($sw_error == 1)) { ?>
+													<?php while ($row_ListaMateriales = sqlsrv_fetch_array($SQL_ListaMateriales)) { ?>
+															<option value="<?php echo $row_ListaMateriales['ItemCode']; ?>" <?php if ((isset($row['CDU_ListaMateriales'])) && (strcmp($row_ListaMateriales['ItemCode'], $row['CDU_ListaMateriales']) == 0)) {
+																echo "selected";
+															} ?>><?php echo $row_ListaMateriales['ItemName']; ?></option>
+													<?php } ?>
+											<?php } ?>
+									</select>
+								</div>
+
+								<div class="col-lg-3">
+									<label class="control-label">Tiempo tarea (Minutos) <span class="text-danger">*</span></label>
+									<input name="CDU_TiempoTarea" type="number" class="form-control" id="CDU_TiempoTarea" required value="<?php if (($edit == 1) || ($sw_error == 1)) {
+										echo $row['CDU_TiempoTarea'];
+									} ?>">
+								</div>
 							</div>
 						</div>
-					</div>
+					</div>	
 				</div>
-				</div>
+				<!-- /# DatosCliente -->
+
 				<div class="ibox">
 					<div class="ibox-title bg-success">
 						<h5 class="collapse-link"><i class="fa fa-info-circle"></i> Información de servicio</h5>
@@ -1822,7 +1898,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								</select>
 							</div>
 							<!-- /.col-lg-4 -->
-							
+
 							<div class="col-lg-2">
 								<label class="control-label">Número de llamada</label>
 								<input autocomplete="off" name="Ticket" type="text" class="form-control" id="Ticket" maxlength="50" readonly="readonly" value="<?php if (($edit == 1) || ($sw_error == 1)) {
@@ -2021,7 +2097,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								</select>
 							</div>
 
-							<div class="col-lg-4">
+							<div class="col-lg-4" <?php if (!PermitirFuncion(327)) { ?> style="display: none;" <?php } ?>>
 								<label class="control-label">Contrato/Campaña <span class="text-danger">*</span></label>
 								
 								<select name="CDU_Contrato" class="form-control select2" id="CDU_Contrato" required>
@@ -2250,11 +2326,12 @@ function AgregarEsto(contenedorID, valorElemento) {
 							</div>							
 						</div>
 						<!-- /.form-group -->
-					</div>
+						</div>
 				</div>
-
-				<!-- INICIO, información del vehículo y de la cita -->
-				<div class="ibox">
+				
+				
+	<!-- INICIO, información del vehículo y de la cita -->
+	<div class="ibox" <?php if(!PermitirFuncion(327)) { echo "style='display: none'"; } ?>>
 					<div class="ibox-title bg-success">
 						<h5 class="collapse-link"><i class="fa fa-info-circle"></i> Información del vehículo y de la cita</h5>
 						 <a class="collapse-link pull-right">
@@ -2449,7 +2526,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 					</div>
 				</div>
 				<!-- Fin, información adicional -->
-
+				
 				<div class="ibox">
 					<div class="ibox-title bg-success">
 						<h5 class="collapse-link"><i class="fa fa-paperclip"></i> Anexos</h5>
@@ -2483,9 +2560,9 @@ function AgregarEsto(contenedorID, valorElemento) {
 												<?php } ?>
 											</div>
 										</div>
-								<?php } else { ?>
-										<p>Sin anexos.</p>
-								<?php } ?>
+							<?php } else { ?>
+								<p>Sin anexos.</p>
+							<?php } ?>
 						<?php } ?>
 						<!-- Fin, cargar anexos -->
 
@@ -2530,17 +2607,17 @@ function AgregarEsto(contenedorID, valorElemento) {
 						</form>
 
 						<!-- Inicio, agregar anexos -->
-						<?php if (($edit == 0) || (($edit == 1) && ($row['IdEstadoLlamada'] != '-1'))) { ?>
-								<div class="row">
-									<form action="upload.php" class="dropzone" id="dropzoneForm" name="dropzoneForm">
-										<?php if ($sw_error == 0) {
-											LimpiarDirTemp();
-										} ?>
-										<div class="fallback">
-											<input name="File" id="File" type="file" form="dropzoneForm" />
-										</div>
+					   <?php if (($edit == 0) || (($edit == 1) && ($row['IdEstadoLlamada'] != '-1'))) { ?>
+							<div class="row">
+								<form action="upload.php" class="dropzone" id="dropzoneForm" name="dropzoneForm">
+									<?php if ($sw_error == 0) {
+										LimpiarDirTemp();
+									} ?>
+									<div class="fallback">
+										<input name="File" id="File" type="file" form="dropzoneForm" />
+									</div>
 									</form>
-								</div>
+							</div>
 						<?php } ?>
 						<!-- Fin, agregar anexos -->
 					</div>
@@ -2572,24 +2649,24 @@ function AgregarEsto(contenedorID, valorElemento) {
 					</div>
 					
 					<br><br><br>
-					   <?php if ($edit == 1) { ?>
-							<div class="ibox">
-								<div class="ibox-title bg-success">
-									<h5 class="collapse-link"><i class="fa fa-pencil-square-o"></i> Seguimiento de la Solicitud de Llamada</h5>
-									<a class="collapse-link pull-right">
-										<i class="fa fa-chevron-up"></i>
-									</a>
-								</div>
+				   <?php if ($edit == 1) { ?>
+						<div class="ibox">
+							<div class="ibox-title bg-success">
+								<h5 class="collapse-link"><i class="fa fa-pencil-square-o"></i> Seguimiento de la Solicitud de Llamada</h5>
+								<a class="collapse-link pull-right">
+									<i class="fa fa-chevron-up"></i>
+								</a>
+							</div>
 
-								<div class="ibox-content">
-									<div class="tabs-container">
-										<ul class="nav nav-tabs">
-											<li class="active" id="nav-1"><a data-toggle="tab" href="#tab-1"><i class="fa fa-clipboard"></i> Anotaciones</a></li>
-											<li id="nav-2"><a data-toggle="tab" href="#tab-2"><i class="fa fa-tags"></i> Documentos relacionados</a></li>
-											<li id="nav-4"><a data-toggle="tab" href="#tab-4"><i class="fa fa-bell"></i> Campañas</a></li>
-										</ul>
+							<div class="ibox-content">
+								<div class="tabs-container">
+									<ul class="nav nav-tabs">
+										<li class="active" id="nav-1"><a data-toggle="tab" href="#tab-1"><i class="fa fa-clipboard"></i> Anotaciones</a></li>
+										<li id="nav-2"><a data-toggle="tab" href="#tab-2"><i class="fa fa-tags"></i> Documentos relacionados</a></li>
+										<li id="nav-4"><a data-toggle="tab" href="#tab-4"><i class="fa fa-bell"></i> Campañas</a></li>
+									</ul>
 
-										<div class="tab-content">
+									<div class="tab-content">
 											<div id="tab-1" class="tab-pane active">
 												<div class="panel-body">
 													<div class="row">
@@ -2645,8 +2722,8 @@ function AgregarEsto(contenedorID, valorElemento) {
 																					<?php } ?>
 																				</tbody>
 																			</table>
-																		</div>
-																<?php } else { ?>
+																		</div>	
+																	<?php } else { ?>
 																		<i class="fa fa-search" style="font-size: 18px; color: lightgray;"></i>
 																		<span style="font-size: 13px; color: lightgray;">No hay Anotaciones para mostrar</span>
 																<?php } ?>
@@ -2660,50 +2737,50 @@ function AgregarEsto(contenedorID, valorElemento) {
 											</div>
 											<!-- /#tab-1 -->
 
-											<div id="tab-2" class="tab-pane">
-												<div class="panel-body">
-													<!-- Agregar documento, Inicio -->
-													<div class="row">
-														<div class="col-lg-9">
-															<?php if ($CrearSolicitud && ($row['IdEstadoLlamada'] != '-1')) { ?>
-																	<?php if (PermitirFuncion([401, 402, 404, 409])) { ?>
-																			<div class="btn-group">
-																				<button data-toggle="dropdown" class="btn btn-outline btn-success dropdown-toggle"><i class="fa fa-plus-circle"></i> Agregar documento <i class="fa fa-caret-down"></i></button>
-																				<ul class="dropdown-menu">
-																					<?php if (PermitirFuncion(401)) { ?>
-																							<li><a class="dropdown-item alkin d-venta" href="oferta_venta.php?dt_SLS=1&dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&SLS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>">Oferta de venta con LMT</a></li>
-																							<li><a class="dropdown-item alkin d-venta" href="oferta_venta.php?dt_SLS=1&dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&SLS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>&LMT=false">Oferta de venta sin LMT</a></li>
-																					<?php } ?>
-																				</ul>
-																			</div>
-																	<?php } ?>
-															<?php } ?>
-														</div>
-														<div class="col-lg-3">
-															<div class="row">
-																<!-- Espacio para botones -->
-															</div>
+										<div id="tab-2" class="tab-pane">
+											<div class="panel-body">
+												<!-- Agregar documento, Inicio -->
+												<div class="row">
+													<div class="col-lg-9">
+														<?php if ($CrearSolicitud && ($row['IdEstadoLlamada'] != '-1')) { ?>
+																<?php if (PermitirFuncion([401, 402, 404, 409])) { ?>
+																		<div class="btn-group">
+																			<button data-toggle="dropdown" class="btn btn-outline btn-success dropdown-toggle"><i class="fa fa-plus-circle"></i> Agregar documento <i class="fa fa-caret-down"></i></button>
+																			<ul class="dropdown-menu">
+																				<?php if (PermitirFuncion(401)) { ?>
+																						<li><a class="dropdown-item alkin d-venta" href="oferta_venta.php?dt_SLS=1&dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&SLS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>">Oferta de venta con LMT</a></li>
+																						<li><a class="dropdown-item alkin d-venta" href="oferta_venta.php?dt_SLS=1&dt_LS=1&Cardcode=<?php echo base64_encode($row['ID_CodigoCliente']); ?>&Contacto=<?php echo base64_encode($row['IdContactoLLamada']); ?>&Sucursal=<?php echo base64_encode($row['NombreSucursal']); ?>&Direccion=<?php echo base64_encode($row['DireccionLlamada']); ?>&TipoLlamada=<?php echo base64_encode($row['IdTipoLlamada']); ?>&ItemCode=<?php echo base64_encode($row['CDU_ListaMateriales']); ?>&SLS=<?php echo base64_encode($IdSolicitud); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>&LMT=false">Oferta de venta sin LMT</a></li>
+																				<?php } ?>
+																			</ul>
+																		</div>
+																<?php } ?>
+														<?php } ?>
+													</div>
+													<div class="col-lg-3">
+														<div class="row">
+															<!-- Espacio para botones -->
 														</div>
 													</div>
-													<br>
-													<!-- Agregar documento, Fin -->
-													<div class="table-responsive">
-														<table class="table table-striped table-bordered table-hover dataTables-example" >
-															<thead>
-															<tr>
-																<th>Nombre cliente</th>
-																<th>Tipo de documento</th>
-																<th>Número de documento</th>
-																<th>Fecha de documento</th>
-																<th>Autorización</th>
-																<th>Estado de documento</th>
-																<th>Creado por</th>
-																<th>Artículos/Costos</th>
-																<th>Acciones</th>
-															</tr>
-															</thead>
-															<tbody>
-															<?php while ($row_DocRel = sqlsrv_fetch_array($SQL_DocRel)) { ?>
+												</div>
+												<br>
+												<!-- Agregar documento, Fin -->
+												<div class="table-responsive">
+													<table class="table table-striped table-bordered table-hover dataTables-example" >
+														<thead>
+														<tr>
+															<th>Nombre cliente</th>
+															<th>Tipo de documento</th>
+															<th>Número de documento</th>
+															<th>Fecha de documento</th>
+															<th>Autorización</th>
+															<th>Estado de documento</th>
+															<th>Creado por</th>
+															<th>Artículos/Costos</th>
+															<th>Acciones</th>
+														</tr>
+														</thead>
+														<tbody>
+													<?php while ($row_DocRel = sqlsrv_fetch_array($SQL_DocRel)) { ?>
 																		<tr class="gradeX">
 																			<td><?php echo $row_DocRel['NombreCliente']; ?></td>
 																			<td><?php echo $row_DocRel['DeObjeto']; ?></td>
@@ -2720,95 +2797,97 @@ function AgregarEsto(contenedorID, valorElemento) {
 																				<a class="btn btn-primary btn-xs" id="btnPreCostos" name="btnPreCostos" onClick="MostrarCostos_Documentos('<?php echo $row_DocRel['DocNum']; ?>', '<?php echo $row_DocRel['IdObjeto']; ?>', '<?php echo $row_DocRel['DeObjeto']; ?>');"><i class="fa fa-money"></i> Previsualizar Precios</a>
 																			</td>
 																			<td>
-																			<?php if ($row_DocRel['Link'] != "") { ?>
-																						<a href="<?php echo $row_DocRel['Link']; ?>.php?id=<?php echo base64_encode($row_DocRel['DocEntry']); ?>&id_portal=<?php echo base64_encode($row_DocRel['IdPortal']); ?>&tl=1&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i> Abrir</a>
-																			<?php } ?>
-																			<?php if ($row_DocRel['Descargar'] != "") { ?>
-																						<a href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row_DocRel['DocEntry']); ?>&ObType=<?php echo base64_encode($row_DocRel['IdObjeto']); ?>&IdFrm=<?php echo base64_encode($row_DocRel['IdSeries']); ?>" target="_blank" class="btn btn-warning btn-xs"><i class="fa fa-download"></i> Descargar</a>
-																			<?php } ?>
+																		<?php if ($row_DocRel['Link'] != "") { ?>
+																			<a href="<?php echo $row_DocRel['Link']; ?>.php?id=<?php echo base64_encode($row_DocRel['DocEntry']); ?>&id_portal=<?php echo base64_encode($row_DocRel['IdPortal']); ?>&tl=1&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_llamada.php'); ?>" class="alkin btn btn-success btn-xs"><i class="fa fa-folder-open-o"></i> Abrir</a>
+																		<?php } ?>
+																		<?php if ($row_DocRel['Descargar'] != "") { ?>
+																			<a href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row_DocRel['DocEntry']); ?>&ObType=<?php echo base64_encode($row_DocRel['IdObjeto']); ?>&IdFrm=<?php echo base64_encode($row_DocRel['IdSeries']); ?>" target="_blank" class="btn btn-warning btn-xs"><i class="fa fa-download"></i> Descargar</a>
+																		<?php } ?>
 																			</td>
 																		</tr>
-															<?php } ?>
-															</tbody>
-														</table>
-													</div>
+													<?php } ?>
+														</tbody>
+													</table>
 												</div>
 											</div>
-											<!-- /#tab-2 -->
-									
-											<!-- Campanas -->
-											<div id="tab-4" class="tab-pane">
-												<div class="panel-body">
-													<div class="row">
-														<?php if (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] != "-1")) { ?>
-																<button type="button" onclick="AdicionarCampana()" class="alkin btn btn-primary btn-xs"><i class="fa fa-plus-circle"></i> Adicionar Campaña</button>
-														<?php } ?>
-													</div>
-													<br>
-													<!-- Table Campanas -->
-													<div class="row">
-														<div class="col-12 text-center">
-															<div class="ibox-content">
-																<?php if ($hasRowsCampanas) { ?>
-																		<div class="table-responsive">
-																			<table class="table table-striped table-bordered table-hover dataTables-example">
-																				<thead>
-																					<tr>
-																						<th>ID Campaña</th> 
-																						<th>Campaña</th> 
-																						<th>VIN</th>
-																						<th>Acciones</th>
-																					</tr>
-																				</thead>
-																				<tbody>
-																					<?php while ($row_Campana = sqlsrv_fetch_array($SQL_Campanas)) { ?>
-																							<tr class="gradeX">
-																								<td>
-																									<a href="campanas_vehiculo.php?id=<?php echo $row_Campana['id_campana']; ?>&edit=1" class="btn btn-success btn-xs" target="_blank">
-																										<i class="fa fa-folder-open-o"></i> <?php echo $row_Campana['id_campana']; ?>
-																									</a>
-																								</td>
-
-																								<td><?php echo $row_Campana['campana']; ?></td>
-																								<td><?php echo $row_Campana['VIN']; ?></td>
-
-																								<td>
-																									<?php if (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] != "-1")) { ?>
-																											<button type="button"
-																												id="btnDelete<?php echo $row_Campana['id_campana']; ?>"
-																												class="btn btn-danger btn-xs"
-																												onclick="EliminarCampana('<?php echo $row_Campana['id_campana']; ?>');"><i
-																													class="fa fa-trash"></i>
-																												Eliminar
-																											</button>
-																									<?php } ?>
-																								</td>
-																							</tr>
-																					<?php } ?>
-																				</tbody>
-																			</table>
-																		</div>
-																<?php } else { ?>
-																		<i class="fa fa-search" style="font-size: 18px; color: lightgray;"></i>
-																		<span style="font-size: 13px; color: lightgray;">No hay registros de Campañas de Vehículo</span>
-																<?php } ?>
-															</div>
-															<!-- /.ibox-content -->
-														</div>
-													</div>
-													<!-- End Table Campanas -->
-												</div>
-												<!-- /.panel-body -->
-											</div>
-											<!-- End Campanas -->	   
 										</div>
-										<!-- /.tab-content -->
+										<!-- /#tab-2 -->
+
+										<!-- Campanas -->
+										<div id="tab-4" class="tab-pane">
+											<div class="panel-body">
+												<div class="row">
+													<?php if (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] != "-1")) { ?>
+															<button type="button" onclick="AdicionarCampana()" class="alkin btn btn-primary btn-xs"><i class="fa fa-plus-circle"></i> Adicionar Campaña</button>
+													<?php } ?>
+												</div>
+												<br>
+												<!-- Table Campanas -->
+												<div class="row">
+													<div class="col-12 text-center">
+														<div class="ibox-content">
+															<?php if ($hasRowsCampanas) { ?>
+																	<div class="table-responsive">
+																		<table class="table table-striped table-bordered table-hover dataTables-example">
+																			<thead>
+																				<tr>
+																					<th>ID Campaña</th> 
+
+																					<th>Campaña</th> 
+																					<th>VIN</th>
+
+																					<th>Acciones</th>
+																				</tr>
+																			</thead>
+																			<tbody>
+																				<?php while ($row_Campana = sqlsrv_fetch_array($SQL_Campanas)) { ?>
+																						<tr class="gradeX">
+																							<td>
+																								<a href="campanas_vehiculo.php?id=<?php echo $row_Campana['id_campana']; ?>&edit=1" class="btn btn-success btn-xs" target="_blank">
+																									<i class="fa fa-folder-open-o"></i> <?php echo $row_Campana['id_campana']; ?>
+																								</a>
+																							</td>
+
+																							<td><?php echo $row_Campana['campana']; ?></td>
+																							<td><?php echo $row_Campana['VIN']; ?></td>
+
+																							<td>
+																								<?php if (isset($row['IdEstadoLlamada']) && ($row['IdEstadoLlamada'] != "-1")) { ?>
+																										<button type="button"
+																											id="btnDelete<?php echo $row_Campana['id_campana']; ?>"
+																											class="btn btn-danger btn-xs"
+																											onclick="EliminarCampana('<?php echo $row_Campana['id_campana']; ?>');"><i
+																												class="fa fa-trash"></i>
+																											Eliminar
+																										</button>
+																								<?php } ?>
+																							</td>
+																						</tr>
+																				<?php } ?>
+																			</tbody>
+																		</table>
+																	</div>
+															<?php } else { ?>
+																	<i class="fa fa-search" style="font-size: 18px; color: lightgray;"></i>
+																	<span style="font-size: 13px; color: lightgray;">No hay registros de Campañas de Vehículo</span>
+															<?php } ?>
+														</div>
+														<!-- /.ibox-content -->
+													</div>
+												</div>
+												<!-- End Table Campanas -->
+											</div>
+											<!-- /.panel-body -->
+										</div>
+										<!-- End Campanas -->	   
 									</div>
-									<!-- /.tabs-container -->
+									<!-- /.tab-content -->
 								</div>
-								<!-- /.ibox-content -->
+								<!-- /.tabs-container -->
 							</div>
-							<!-- /.ibox -->
+							<!-- /.ibox-content -->
+						</div>
+						<!-- /.ibox -->
 				   <?php } ?>
 		   </div>
 			</div>
@@ -2828,7 +2907,7 @@ $(document).ready(function () {
 		$('#NumeroSerie').trigger('change');
 	<?php } ?>
 	// SMM, 07/12/2023
-	
+
 	// SMM, 07/11/2023
 	<?php if (PermitirFuncion(342)) { ?>
 			$(".fecha, .hora").on("change", function() {
@@ -2851,68 +2930,68 @@ $(document).ready(function () {
 			$('form [required]').removeAttr('required');
 	<?php } ?>
 
-		$("#CrearLlamada").validate({
-			submitHandler: function (form) {
-				if (Validar() && ValidarFechas()) {
-					let vP = document.getElementById('P');
-					let msg = (vP.value == '40') ? "¿Está seguro que desea reabrir la llamada?" : "¿Está seguro que desea guardar los datos?";
-					let sw_ValDir =<?php echo $sw_valDir; ?>;
+	$("#CrearLlamada").validate({
+		submitHandler: function (form) {
+			if (Validar() && ValidarFechas()) {
+				let vP = document.getElementById('P');
+				let msg = (vP.value == '40') ? "¿Está seguro que desea reabrir la llamada?" : "¿Está seguro que desea guardar los datos?";
+				let sw_ValDir =<?php echo $sw_valDir; ?>;
 
-					if (sw_ValDir == 1) {
-						let dirAnterior = '<?php echo isset($row['NombreSucursal']) ? $row['NombreSucursal'] : ""; ?>';
-						let combo = document.getElementById("SucursalCliente");
-						let dirActual = combo.options[combo.selectedIndex].text;
+				if (sw_ValDir == 1) {
+					let dirAnterior = '<?php echo isset($row['NombreSucursal']) ? $row['NombreSucursal'] : ""; ?>';
+					let combo = document.getElementById("SucursalCliente");
+					let dirActual = combo.options[combo.selectedIndex].text;
 
-						Swal.fire({
-							title: '¡Advertencia!',
-							html: 'La sucursal <strong>' + dirAnterior + '</strong> ha cambiado de nombre por <strong>' + dirActual + '</strong>. Se actualizará en la llamada de servicio.',
-							icon: 'warning',
-							showCancelButton: true,
-							confirmButtonText: "Entendido",
-							cancelButtonText: "Cancelar"
-						}).then((des) => {
-							if (des.isConfirmed) {
-								Swal.fire({
-									title: msg,
-									icon: "info",
-									showCancelButton: true,
-									confirmButtonText: "Si, confirmo",
-									cancelButtonText: "No"
-								}).then((result) => {
-									if (result.isConfirmed) {
-										$('.ibox-content').toggleClass('sk-loading', true);
-										form.submit();
-									}
-								});
-							}
-						});
-					} else {
-						Swal.fire({
-							title: msg,
-							icon: "info",
-							showCancelButton: true,
-							confirmButtonText: "Si, confirmo",
-							cancelButtonText: "No"
-						}).then((result) => {
-							if (result.isConfirmed) {
-								$('.ibox-content').toggleClass('sk-loading', true);
-								form.submit();
-							}
-						});
-					}
-
+					Swal.fire({
+						title: '¡Advertencia!',
+						html: 'La sucursal <strong>' + dirAnterior + '</strong> ha cambiado de nombre por <strong>' + dirActual + '</strong>. Se actualizará en la llamada de servicio.',
+						icon: 'warning',
+						showCancelButton: true,
+						confirmButtonText: "Entendido",
+						cancelButtonText: "Cancelar"
+					}).then((des) => {
+						if (des.isConfirmed) {
+							Swal.fire({
+								title: msg,
+								icon: "info",
+								showCancelButton: true,
+								confirmButtonText: "Si, confirmo",
+								cancelButtonText: "No"
+							}).then((result) => {
+								if (result.isConfirmed) {
+									$('.ibox-content').toggleClass('sk-loading', true);
+									form.submit();
+								}
+							});
+						}
+					});
 				} else {
-					$('.ibox-content').toggleClass('sk-loading', false);
+					Swal.fire({
+						title: msg,
+						icon: "info",
+						showCancelButton: true,
+						confirmButtonText: "Si, confirmo",
+						cancelButtonText: "No"
+					}).then((result) => {
+						if (result.isConfirmed) {
+							$('.ibox-content').toggleClass('sk-loading', true);
+							form.submit();
+						}
+					});
 				}
+
+			} else {
+				$('.ibox-content').toggleClass('sk-loading', false);
 			}
-		});
+		}
+	});
 
 	maxLength('ComentarioLlamada');
 
 	maxLength('CDU_Servicios'); // SMM, 02/03/2022
 	maxLength('CDU_Areas'); // SMM, 02/03/2022
 
-	 <?php if (($edit == 0) || (($edit == 1) && ($CrearSolicitud && ($row['IdEstadoLlamada'] != '-1')))) { ?>
+	<?php if (($edit == 0) || (($edit == 1) && ($CrearSolicitud && ($row['IdEstadoLlamada'] != '-1')))) { ?>
 		$(".fechaAgenda").datepicker({
 			todayBtn: "linked",
 			keyboardNavigation: false,
@@ -2956,7 +3035,7 @@ $(document).ready(function () {
 			endDate: '<?php echo date('Y- m - d'); ?>'
 		});
 	<?php } ?>
-
+	
 	$(".select2").select2();
 
 var options = {
@@ -3016,23 +3095,23 @@ var options3 = {
 };
 
 	<?php if ($edit == 0) { ?>
-			$("#NombreClienteLlamada").easyAutocomplete(options);
+		$("#NombreClienteLlamada").easyAutocomplete(options);
 	<?php } ?>
-	
+
 	$("#CiudadLlamada").easyAutocomplete(options2);
 
-// Stiven Muñoz Murillo, 24/01/2022
-$("#DeArticuloLlamada").easyAutocomplete(options3);
+	// Stiven Muñoz Murillo, 24/01/2022
+	$("#DeArticuloLlamada").easyAutocomplete(options3);
 
 	<?php if ($dt_LS == 1) { ?>
-			$('#ClienteLlamada').trigger('change');
+		$('#ClienteLlamada').trigger('change');
 
-			// Stiven Muñoz Murillo, 24/01/2022
-			$('#IdArticuloLlamada').trigger('change');
+		// Stiven Muñoz Murillo, 24/01/2022
+		$('#IdArticuloLlamada').trigger('change');
 	 <?php } ?>
 
 	<?php if ($edit == 1) { ?>
-			$('#Series option:not(:selected)').attr('disabled', true);
+		$('#Series option:not(:selected)').attr('disabled', true);
 	<?php } ?>
 
 	$('.dataTables-example').DataTable({
@@ -3062,7 +3141,7 @@ $("#DeArticuloLlamada").easyAutocomplete(options3);
 				"sortDescending": ": Activar para ordenar la columna descendente"
 			}
 		},
-		buttons: []
+		buttons: []	
 	});
 
 	// SMM, 18/10/2023
@@ -3166,28 +3245,28 @@ $(function () {
 
 	$(".d-venta").on("click", function (event) {
 		<?php if (PermitirFuncion(419)) { ?>
-					event.preventDefault(); // Evitar redirección del ancla
-					console.log(event);
+				event.preventDefault(); // Evitar redirección del ancla
+				console.log(event);
 
-					Swal.fire({
-						title: "¿Desea cambiar de socio de negocio?",
-						icon: "question",
-						showCancelButton: true,
-						confirmButtonText: "Si, confirmo",
-						cancelButtonText: "No"
-					}).then((result) => {
-						if (result.isConfirmed) {
-							let qs = "";
-							[url, qs] = $(this).attr('href').split('?');
-							params = Object.fromEntries(new URLSearchParams(qs));
+				Swal.fire({
+					title: "¿Desea cambiar de socio de negocio?",
+					icon: "question",
+					showCancelButton: true,
+					confirmButtonText: "Si, confirmo",
+					cancelButtonText: "No"
+				}).then((result) => {
+					if (result.isConfirmed) {
+						let qs = "";
+						[url, qs] = $(this).attr('href').split('?');
+						params = Object.fromEntries(new URLSearchParams(qs));
 
-							$('#modalSN').modal("show");
-						} else {
-							location.href = $(this).attr('href');
-						}
-					});
+						$('#modalSN').modal("show");
+					} else {
+						location.href = $(this).attr('href');
+					}
+				});
 		<?php } else { ?>
-					console.log("Permiso 419, no esta activo");
+				console.log("Permiso 419, no esta activo");
 		<?php } ?>
 	});
 
@@ -3400,8 +3479,8 @@ $(function () {
 	});
 	// SMM, 08/09/2023
 
-	// SMM, 13/09/2023
-	<?php if (isset($_GET["active"])) { ?>
+		// SMM, 13/09/2023
+		<?php if (isset($_GET["active"])) { ?>
 			VerTAB(<?php echo $_GET["active"]; ?>);
 	<?php } ?>
 	
