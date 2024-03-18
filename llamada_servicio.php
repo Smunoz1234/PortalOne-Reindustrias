@@ -198,16 +198,15 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { // Crear llamada de servicio
 			(isset($_POST['PrecioArticulo']) && ($_POST['PrecioArticulo'] != "")) ? LSiqmlValorDecimal($_POST['PrecioArticulo']) : 0,
 			"1", // Tipo de SP
 			// Campos nuevos
-			"'" . $_POST['CDU_Marca'] . "'",
-			"'" . $_POST['CDU_Linea'] . "'",
-			"'" . $_POST['CDU_Ano'] . "'",
-			"'" . $_POST['CDU_Concesionario'] . "'",
-			"'" . ($_POST['CDU_Aseguradora'] ?? "") . "'", // SMM, 29/06/2023
-			"'" . $_POST['CDU_TipoPreventivo'] . "'", // SMM, 14/09/2022
-			"'" . $_POST['CDU_TipoServicio'] . "'",
+			"'" . ($_POST['CDU_Marca'] ?? "") . "'",
+			"'" . ($_POST['CDU_Linea'] ?? "") . "'",
+			"'" . ($_POST['CDU_Ano'] ?? "") . "'",
+			"'" . ($_POST['CDU_Concesionario'] ?? "") . "'",
+			"'" . ($_POST['CDU_Aseguradora'] ?? "") . "'",
+			"'" . ($_POST['CDU_TipoPreventivo'] ?? "") . "'",
+			"'" . ($_POST['CDU_TipoServicio'] ?? "") . "'",
 			isset($_POST['CDU_Kilometros']) ? $_POST['CDU_Kilometros'] : 0, // int
 			"'" . ($_POST['CDU_Contrato'] ?? "") . "'",
-			// SMM, 29/06/2023
 			"NULL", // CDU_Asesor
 			"'" . $_POST['CDU_ListaMateriales'] . "'",
 			isset($_POST['CDU_TiempoTarea']) ? $_POST['CDU_TiempoTarea'] : 0, // int
@@ -457,17 +456,15 @@ if (isset($_POST['P']) && ($_POST['P'] == 33)) { //Actualizar llamada de servici
 			(isset($_POST['PrecioArticulo']) && ($_POST['PrecioArticulo'] != "")) ? LSiqmlValorDecimal($_POST['PrecioArticulo']) : 0,
 			"$Type",
 			// Campos nuevos
-			"'" . $_POST['CDU_Marca'] . "'",
-			"'" . $_POST['CDU_Linea'] . "'",
-			"'" . $_POST['CDU_Ano'] . "'",
-			"'" . $_POST['CDU_Concesionario'] . "'",
+			"'" . ($_POST['CDU_Marca'] ?? "") . "'",
+			"'" . ($_POST['CDU_Linea'] ?? "") . "'",
+			"'" . ($_POST['CDU_Ano'] ?? "") . "'",
+			"'" . ($_POST['CDU_Concesionario'] ?? "") . "'",
 			"'" . ($_POST['CDU_Aseguradora'] ?? "") . "'",
-			// SMM, 29/06/2023
 			"NULL",
-			"'" . $_POST['CDU_TipoServicio'] . "'",
+			"'" . ($_POST['CDU_TipoServicio'] ?? "") . "'",
 			isset($_POST['CDU_Kilometros']) ? $_POST['CDU_Kilometros'] : 0, // int
 			"'" . ($_POST['CDU_Contrato'] ?? "") . "'",
-			// SMM, 29/06/2023
 			"NULL",
 			"'" . $_POST['CDU_ListaMateriales'] . "'",
 			isset($_POST['CDU_TiempoTarea']) ? $_POST['CDU_TiempoTarea'] : 0, // int
@@ -2953,7 +2950,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 				</div>
 
 				<!-- INICIO, información del vehículo y de la cita -->
-				<div class="ibox">
+				<div class="ibox" <?php if(!PermitirFuncion(327)) { echo "style='display: none'"; } ?>>
 					<div class="ibox-title bg-success">
 						<h5 class="collapse-link"><i class="fa fa-info-circle"></i> Información del vehículo y de la cita</h5>
 						 <a class="collapse-link pull-right">
@@ -4171,8 +4168,8 @@ var options3 = {
 	<?php } ?>
 	$("#CiudadLlamada").easyAutocomplete(options2);
 
-// Stiven Muñoz Murillo, 24/01/2022
-$("#DeArticuloLlamada").easyAutocomplete(options3);
+	// Stiven Muñoz Murillo, 24/01/2022
+	$("#DeArticuloLlamada").easyAutocomplete(options3);
 
 	<?php if ($dt_LS == 1) { ?>
 		$('#ClienteLlamada').trigger('change');
