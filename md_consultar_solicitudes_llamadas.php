@@ -104,7 +104,7 @@ $SQL_SolicitudesLlamadas = Seleccionar('uvw_tbl_SolicitudLlamadasServicios', 'TO
 								<div class="form-group">
 									<label class="col-lg-1 control-label">Serie</label>
 									<div class="col-lg-5">
-										<select name="Series" class="form-control" id="Series">
+										<select name="SeriesSLS" class="form-control" id="SeriesSLS">
 											<option value="">(Todos)</option>
 											<?php while ($row_Series = sqlsrv_fetch_array($SQL_SeriesLlamada)) { ?>
 												<option value="<?php echo $row_Series['IdSeries']; ?>"><?php echo $row_Series['DeSeries']; ?></option>

@@ -51,8 +51,8 @@ $Filtro .= " AND [Series] IN (" . $FilSerie . ")";
 $SQL_SeriesLlamada = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 
 // Filtrar serie seleccionada
-if (isset($_POST['Series']) && $_POST['Series'] != "") {
-    $Filtro .= " and [Series]='" . $_POST['Series'] . "'";
+if (isset($_POST['SeriesOT']) && $_POST['SeriesOT'] != "") {
+    $Filtro .= " AND [Series]='" . $_POST['SeriesOT'] . "'";
 }
 
 // Filtrar cliente

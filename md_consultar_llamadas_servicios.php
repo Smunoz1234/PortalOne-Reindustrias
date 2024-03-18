@@ -94,7 +94,7 @@ $SQL_Llamadas = Seleccionar('uvw_Sap_tbl_LlamadasServicios', 'TOP 100 *', $Where
 								<div class="form-group">
 									<label class="col-lg-1 control-label">Serie</label>
 									<div class="col-lg-5">
-										<select name="Series" class="form-control" id="Series">
+										<select name="SeriesOT" class="form-control" id="SeriesOT">
 											<option value="">(Todos)</option>
 											<?php while ($row_Series = sqlsrv_fetch_array($SQL_SeriesLlamada)) {?>
 												<option value="<?php echo $row_Series['IdSeries']; ?>"><?php echo $row_Series['DeSeries']; ?></option>
