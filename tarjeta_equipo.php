@@ -530,6 +530,9 @@ $SQL_Novedades = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_Novedades', '*');
 // SMM, 26/02/2024
 $SQL_Fabricante = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_Fabricante', '*');
 
+// SMM, 26/02/2024
+$SQL_ActivoFijo = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_ActivoFijo', '*');
+
 // Stiven Muñoz Murillo, 08/02/2022
 if (isset($_GET['dt_TE']) && ($_GET['dt_TE']) == 1) { //Verificar que viene de una Tarjeta de Equipo (Datos Tarjeta de Equipo)
 	$dt_TE = 1;
@@ -1351,6 +1354,30 @@ while ($row_ValPropiedad = sqlsrv_fetch_array($SQL_ValoresPropiedades)) {
 													<?php } ?>
 												</select>
 											</div>
+
+											<div class="col-lg-4">
+												<label class="control-label">
+													Activo Fijo <span class="text-danger">*</span>
+												</label>
+												
+												<select <?php if (!PermitirFuncion(1602)) {
+													echo "disabled";
+												} ?>
+													name="id_articulo_activo_fijo " class="form-control select2" required
+													id="id_articulo_activo_fijo ">
+													<option value="" disabled selected>Seleccione...</option>
+													
+													<?php while ($row_ActivoFijo = sqlsrv_fetch_array($SQL_ActivoFijo)) { ?>
+														<option value="<?php echo $row_ActivoFijo['IdActivoFijo']; ?>"
+															<?php if (isset($row['id_articulo_activo_fijo ']) && ($row['id_articulo_activo_fijo '] == $row_ActivoFijo['IdActivoFijo'])) {
+																echo "selected";
+															} ?>>
+															<?php echo $row_ActivoFijo['DeActivoFijo']; ?>
+														</option>
+													<?php } ?>
+												</select>
+											</div>
+											<!-- /#id_articulo_activo_fijo -->
 										</div>
 
 										<!-- Jerarquías dinámicas, SMM 22/02/2024 -->
