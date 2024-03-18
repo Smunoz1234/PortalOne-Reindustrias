@@ -69,13 +69,13 @@ echo $dataString;
 <table id="footable" class="table" data-paging="true" data-sorting="true">
     <thead>
         <tr>
-            <th>Código cliente</th>
             <th>Cliente</th>
+            <th>Articulo</th>
             <th>Serial fabricante</th>
             <th>Serial interno</th>
             <th>Núm.</th>
-            <th data-breakpoints="all">Código de artículo</th>
-            <th data-breakpoints="all">Artículo</th>
+            <th data-breakpoints="all">Unidad de medida</th>
+			<th data-breakpoints="all">Ubicación</th>
             <th data-breakpoints="all">Tipo de equipo</th>
             <th data-breakpoints="all">Estado</th>
             <th data-breakpoints="all">Acciones</th>
@@ -85,10 +85,10 @@ echo $dataString;
         <?php while ($row = sqlsrv_fetch_array($SQL)) { ?>
             <tr>
                 <td>
-                    <?php echo $row['CardCode']; ?>
+                    <?php echo $row['CardCode'] . " (" . $row['CardName'] . ")"; ?>
                 </td>
                 <td>
-                    <?php echo $row['CardName']; ?>
+                    <?php echo $row['ItemCode'] . " (" . $row['ItemName'] . ")"; ?>
                 </td>
                 <td>
                     <?php echo $row['SerialFabricante']; ?>
@@ -111,11 +111,7 @@ echo $dataString;
                     <?php echo $row['ItemName']; ?>
                 </td>
                 <td>
-                    <?php if ($row['TipoEquipo'] === 'P') {
-                        echo 'Compras';
-                    } elseif ($row['TipoEquipo'] === 'R') {
-                        echo 'Ventas';
-                    } ?>
+                    <?php echo $row['TipoEquipoPropiedad']; ?>
                 </td>
                 <td>
                     <?php if ($row['CodEstado'] == 'A') { ?>

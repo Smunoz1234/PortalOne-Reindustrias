@@ -236,8 +236,8 @@ $Cons2 = "SELECT $Campos FROM uvw_Sap_tbl_TarjetasEquipos WHERE $Filtro ORDER BY
 							<div class="col-lg-3">
 								<select name="TipoEquipo" class="form-control" id="TipoEquipo">
 									<option value="">(Todos)</option>
-									<option value="P" <?php if ((isset($_GET['TipoEquipo'])) && (strcmp("P", $_GET['TipoEquipo']) == 0)) {echo "selected=\"selected\"";}?>>Compras</option>
-									<option value="R" <?php if ((isset($_GET['TipoEquipo'])) && (strcmp("R", $_GET['TipoEquipo']) == 0)) {echo "selected=\"selected\"";}?>>Ventas</option>
+									<option value="P" <?php if ((isset($_GET['TipoEquipo'])) && (strcmp("P", $_GET['TipoEquipo']) == 0)) {echo "selected";}?>>Compras</option>
+									<option value="R" <?php if ((isset($_GET['TipoEquipo'])) && (strcmp("R", $_GET['TipoEquipo']) == 0)) {echo "selected";}?>>Ventas</option>
 								</select>
                	  			</div>
 							<label class="col-lg-1 control-label">Serial</label>
@@ -248,11 +248,11 @@ $Cons2 = "SELECT $Campos FROM uvw_Sap_tbl_TarjetasEquipos WHERE $Filtro ORDER BY
 							<div class="col-lg-3">
 								<select name="EstadoEquipo" class="form-control" id="EstadoEquipo">
 									<option value="">(Todos)</option>
-									<option value="A" <?php if ((isset($_GET['EstadoEquipo'])) && (strcmp("A", $_GET['EstadoEquipo']) == 0)) {echo "selected=\"selected\"";}?>>Activo</option>
-									<option value="R" <?php if ((isset($_GET['EstadoEquipo'])) && (strcmp("R", $_GET['EstadoEquipo']) == 0)) {echo "selected=\"selected\"";}?>>Devuelto</option>
-									<option value="T" <?php if ((isset($_GET['EstadoEquipo'])) && (strcmp("T", $_GET['EstadoEquipo']) == 0)) {echo "selected=\"selected\"";}?>>Finalizado</option>
-									<option value="L" <?php if ((isset($_GET['EstadoEquipo'])) && (strcmp("L", $_GET['EstadoEquipo']) == 0)) {echo "selected=\"selected\"";}?>>Concedido en prestamo</option>
-									<option value="I" <?php if ((isset($_GET['EstadoEquipo'])) && (strcmp("I", $_GET['EstadoEquipo']) == 0)) {echo "selected=\"selected\"";}?>>En laboratorio de reparación</option>
+									<option value="A" <?php if ((isset($_GET['EstadoEquipo'])) && (strcmp("A", $_GET['EstadoEquipo']) == 0)) {echo "selected";}?>>Activo</option>
+									<option value="R" <?php if ((isset($_GET['EstadoEquipo'])) && (strcmp("R", $_GET['EstadoEquipo']) == 0)) {echo "selected";}?>>Devuelto</option>
+									<option value="T" <?php if ((isset($_GET['EstadoEquipo'])) && (strcmp("T", $_GET['EstadoEquipo']) == 0)) {echo "selected";}?>>Finalizado</option>
+									<option value="L" <?php if ((isset($_GET['EstadoEquipo'])) && (strcmp("L", $_GET['EstadoEquipo']) == 0)) {echo "selected";}?>>Concedido en prestamo</option>
+									<option value="I" <?php if ((isset($_GET['EstadoEquipo'])) && (strcmp("I", $_GET['EstadoEquipo']) == 0)) {echo "selected";}?>>En laboratorio de reparación</option>
 								</select>
 							</div>
 						</div>

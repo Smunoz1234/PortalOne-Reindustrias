@@ -90,13 +90,13 @@ $SQL_TE = sqlsrv_query($conexion, $Cons_TarjetasEquipos);
 									<table id="footable" class="table" data-paging="true" data-sorting="true">
 										<thead>
 											<tr>
-												<th>Código cliente</th>
 												<th>Cliente</th>
+												<th>Articulo</th>
 												<th>Serial fabricante</th>
 												<th>Serial interno</th>
 												<th>Núm.</th>
-												<th data-breakpoints="all">Código de artículo</th>
-												<th data-breakpoints="all">Artículo</th>
+												<th data-breakpoints="all">Unidad de medida</th>
+												<th data-breakpoints="all">Ubicación</th>
 												<th data-breakpoints="all">Tipo de equipo</th>
 												<th data-breakpoints="all">Estado</th>
 												<th data-breakpoints="all">Acciones</th>
@@ -106,10 +106,10 @@ $SQL_TE = sqlsrv_query($conexion, $Cons_TarjetasEquipos);
 											<?php while ($row_TE = sqlsrv_fetch_array($SQL_TE)) { ?>
 												<tr>
 													<td>
-														<?php echo $row_TE['CardCode']; ?>
+														<?php echo $row_TE['CardCode'] . " (" . $row_TE['CardName'] . ")"; ?>
 													</td>
 													<td>
-														<?php echo $row_TE['CardName']; ?>
+														<?php echo $row_TE['ItemCode'] . " (" . $row_TE['ItemName'] . ")"; ?>
 													</td>
 													<td>
 														<?php echo $row_TE['SerialFabricante']; ?>
@@ -127,17 +127,13 @@ $SQL_TE = sqlsrv_query($conexion, $Cons_TarjetasEquipos);
 														</a>
 													</td>
 													<td>
-														<?php echo $row_TE['ItemCode']; ?>
+														<?php echo $row_TE['UnidadMedidaEquipo']; ?>
 													</td>
 													<td>
-														<?php echo $row_TE['ItemName']; ?>
+														<?php echo $row_TE['Ubicacion']; ?>
 													</td>
 													<td>
-														<?php if ($row_TE['TipoEquipo'] === 'P') {
-															echo 'Compras';
-														} elseif ($row_TE['TipoEquipo'] === 'R') {
-															echo 'Ventas';
-														} ?>
+														<?php echo $row_TE['TipoEquipoPropiedad']; ?>
 													</td>
 													<td>
 														<?php if ($row_TE['CodEstado'] == 'A') { ?>
