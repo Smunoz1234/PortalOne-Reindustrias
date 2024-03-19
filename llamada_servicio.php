@@ -205,7 +205,7 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { // Crear llamada de servicio
 			"'" . ($_POST['CDU_Aseguradora'] ?? "") . "'",
 			"'" . ($_POST['CDU_TipoPreventivo'] ?? "") . "'",
 			"'" . ($_POST['CDU_TipoServicio'] ?? "") . "'",
-			isset($_POST['CDU_Kilometros']) ? $_POST['CDU_Kilometros'] : 0, // int
+			isset($_POST['CDU_Kilometros']) && ($_POST['CDU_Kilometros'] != "") ? $_POST['CDU_Kilometros'] : 0, // int
 			"'" . ($_POST['CDU_Contrato'] ?? "") . "'",
 			"NULL", // CDU_Asesor
 			"'" . $_POST['CDU_ListaMateriales'] . "'",
@@ -463,7 +463,7 @@ if (isset($_POST['P']) && ($_POST['P'] == 33)) { //Actualizar llamada de servici
 			"'" . ($_POST['CDU_Aseguradora'] ?? "") . "'",
 			"NULL",
 			"'" . ($_POST['CDU_TipoServicio'] ?? "") . "'",
-			isset($_POST['CDU_Kilometros']) ? $_POST['CDU_Kilometros'] : 0, // int
+			isset($_POST['CDU_Kilometros']) && ($_POST['CDU_Kilometros'] != "") ? $_POST['CDU_Kilometros'] : 0, // int
 			"'" . ($_POST['CDU_Contrato'] ?? "") . "'",
 			"NULL",
 			"'" . $_POST['CDU_ListaMateriales'] . "'",
@@ -1612,6 +1612,9 @@ $(document).ready(function () {
 							$('#CDU_ListaMateriales').trigger('change');
 
 							$('.ibox-content').toggleClass('sk-loading', false);
+						},
+						error: function (data) {
+							console.error("Line 1620", data.responseText);
 						}
 					});
 				}

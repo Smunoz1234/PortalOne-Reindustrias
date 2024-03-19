@@ -991,20 +991,22 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
         if (!isset($_GET['id']) || ($_GET['id'] == "")) {
             echo "<option value=''>Seleccione...</option>";
         } else {
-            $SerialInterno = "'" . $_GET['id'] . "'";
-            $SQL = Seleccionar("uvw_Sap_tbl_TarjetasEquipos", "CDU_IdMarca,CDU_IdLinea", "SerialInterno=" . $SerialInterno);
+            $SerialInterno = "'" . ($_GET['id'] ?? "") . "'";
+            $SQL = Seleccionar("uvw_Sap_tbl_TarjetasEquipos", "CDU_IdMarca,CDU_IdLinea", "SerialInterno=$SerialInterno");
             $row = sqlsrv_fetch_array($SQL);
 
-            $marca = $row['CDU_IdMarca'];
-            $linea = $row['CDU_IdLinea'];
+            $marca = $row['CDU_IdMarca'] ?? "";
+            $linea = $row['CDU_IdLinea'] ?? "";
 
-            $SQL = Seleccionar('uvw_Sap_tbl_ListaMateriales', '*', "CDU_IdMarca=$marca AND CDU_IdLinea=$linea"); // SMM, 14/02/2022
+            $SQL = Seleccionar('uvw_Sap_tbl_ListaMateriales', '*', "CDU_IdMarca='$marca' AND CDU_IdLinea='$linea'"); // SMM, 14/02/2022
             // $SQL = Seleccionar('uvw_Sap_tbl_ListaMateriales', '*', "CDU_IdMarca=$marca AND CDU_IdLinea=$linea AND OcrCode2='" . $_SESSION['CentroCosto2'] . "'");
+            
             $Num = sqlsrv_num_rows($SQL);
             if ($Num) {
                 echo "<option value=''>Seleccione...</option>";
+
                 while ($row = sqlsrv_fetch_array($SQL)) {
-                    echo "<option value=\"" . $row['ItemCode'] . "\">" . $row['ItemName'] . "</option>";
+                    echo "<option value='" . ($row['ItemCode'] ?? "") . "'>" . ($row['ItemName'] ?? "") . "</option>";
                 }
             } else {
                 echo "<option value=''>Seleccione...</option>";

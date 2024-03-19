@@ -631,10 +631,11 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
             $IdTarjetaEquipo = "'$IdTarjetaEquipo'";
         }
 
-        if ($Cliente == "''") {
+        // $Cliente == "''"
+        if (true) {
             $SQL = Seleccionar("uvw_Sap_tbl_TarjetasEquipos", "*", "IdTarjetaEquipo=$IdTarjetaEquipo");
         } else {
-            $SQL = Seleccionar("uvw_Sap_tbl_TarjetasEquipos", "*", "IdTarjetaEquipo=$IdTarjetaEquipo AND CardCode=$Cliente");
+            // $SQL = Seleccionar("uvw_Sap_tbl_TarjetasEquipos", "*", "IdTarjetaEquipo=$IdTarjetaEquipo AND CardCode=$Cliente");
         }
 
         $row = sqlsrv_fetch_array($SQL);

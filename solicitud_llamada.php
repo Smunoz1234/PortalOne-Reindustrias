@@ -194,7 +194,7 @@ if (isset($_POST['P'])) {
 			"'" . ($_POST['CDU_Aseguradora'] ?? "") . "'",
 			"'" . ($_POST['CDU_TipoPreventivo'] ?? "") . "'",
 			"'" . ($_POST['CDU_TipoServicio'] ?? "") . "'",
-			$_POST['CDU_Kilometros'] ?? "0",
+			isset($_POST['CDU_Kilometros']) && ($_POST['CDU_Kilometros'] != "") ? $_POST['CDU_Kilometros'] : 0, // int
 			"'" . ($_POST['CDU_Contrato'] ?? "") . "'",
 			"''", // @CDU_Asesor
 			"'" . ($_POST['CDU_ListaMateriales'] ?? "") . "'",
@@ -214,6 +214,8 @@ if (isset($_POST['P'])) {
 			"0", // @FormatoCierreLlamada
 			"'" . ($_POST['NumeroSerie'] ?? "") . "'", // SMM, 04/12/2023
 			$Campanas, // SMM, 15/09/2023
+			"'" . ($_POST["IdArticuloComponente"] ?? "") . "'", // SMM, 19/03/2024
+			"'" . ($_POST["IdTarjetaEquipoComponente"] ?? "") . "'", // SMM, 19/03/2024
 		);
 
 		$SQL_Llamada = EjecutarSP('sp_tbl_SolicitudLlamadaServicios', $ParamLlamada, $_POST['P']);
@@ -526,6 +528,18 @@ $ValorHoraFinAgenda = (isset($row["HoraFinAgenda"]) && ($row["HoraFinAgenda"] in
 $IdTarjetaEquipo = ($_GET["IdTE"] ?? ($row['IdTarjetaEquipo'] ?? ""));
 $SQL_NumeroSerie = Seleccionar("uvw_Sap_tbl_TarjetasEquipos", "*", "IdTarjetaEquipo='$IdTarjetaEquipo'");
 $row_NumeroSerie = sqlsrv_fetch_array($SQL_NumeroSerie);
+
+// SMM, 19/03/2024
+$IdTarjetaEquipo = $row["IdTarjetaEquipo"] ?? "";
+$SQL_TE_Componente = Seleccionar("uvw_tbl_TarjetaEquipo_Componentes", "*", "id_tarjeta_equipo_padre = $IdTarjetaEquipo");
+
+$id_tarjeta_equipo_hijo = $row["IdTarjetaEquipoComponente"] ?? "";
+$Cons_TE_Componente_Encabezado = "SELECT * FROM [uvw_tbl_TarjetaEquipo_Componentes] WHERE [id_tarjeta_equipo_hijo] = '$id_tarjeta_equipo_hijo'";
+$SQL_TE_Componente_Encabezado = sqlsrv_query($conexion, $Cons_TE_Componente_Encabezado);
+
+$row_TE_Componente_Encabezado = sqlsrv_fetch_array($SQL_TE_Componente_Encabezado);
+$descripcion_te_encabezado = 'SN Fabricante: ' . ($row_TE_Componente_Encabezado['serial_fabricante_hijo'] ?? "") . ' - Núm. Serie: ' . ($row_TE_Componente_Encabezado['serial_interno_hijo'] ?? "");
+$de_articulo_encabezado = ($row_TE_Componente_Encabezado['id_articulo_hijo'] ?? "") . ' - ' . ($row_TE_Componente_Encabezado['articulo_hijo'] ?? "") . ' (' . ($row_TE_Componente_Encabezado['jerarquia_1_hijo'] ?? "") . ') (' . ($row_TE_Componente_Encabezado['jerarquia_2_hijo'] ?? "") . ')';
 ?>
 
 <!DOCTYPE html>

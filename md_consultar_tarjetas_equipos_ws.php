@@ -106,10 +106,10 @@ echo $dataString;
                     </a>
                 </td>
                 <td>
-                    <?php echo $row['ItemCode']; ?>
+                    <?php echo $row['UnidadMedidaEquipo']; ?>
                 </td>
                 <td>
-                    <?php echo $row['ItemName']; ?>
+                    <?php echo $row['Ubicacion']; ?>
                 </td>
                 <td>
                     <?php echo $row['TipoEquipoPropiedad']; ?>
