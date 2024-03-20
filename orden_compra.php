@@ -876,19 +876,22 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 					// En la llamada no hay condición de pago, por lo que se carga desde el cliente.
 				<?php } ?>
 
-				<?php if ($edit == 0) { ?>
-					if (carcode != "") {
-						frame.src = "detalle_orden_compra.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode=" + carcode;
-					} else {
-						frame.src = "detalle_orden_compra.php";
-					}
-				<?php } else { ?>
-					if (carcode != "") {
-						frame.src = "detalle_orden_compra.php?id=<?php echo base64_encode($row['ID_OrdenCompra']); ?>&evento=<?php echo base64_encode($row['IdEvento']); ?>&type=2";
-					} else {
-						frame.src = "detalle_orden_compra.php";
-					}
-				<?php } ?>
+				// Se debe esperar a que se elimine la información de la tabla temporal antes de cargar el detalle. 20/02/2024
+				setTimeout(() => {
+					<?php if ($edit == 0) { ?>
+						if (carcode != "") {
+							frame.src = "detalle_orden_compra.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode=" + carcode;
+						} else {
+							frame.src = "detalle_orden_compra.php";
+						}
+					<?php } else { ?>
+						if (carcode != "") {
+							frame.src = "detalle_orden_compra.php?id=<?php echo base64_encode($row['ID_OrdenCompra']); ?>&evento=<?php echo base64_encode($row['IdEvento']); ?>&type=2";
+						} else {
+							frame.src = "detalle_orden_compra.php";
+						}
+					<?php } ?>
+				}, 500);
 
 				$('.ibox-content').toggleClass('sk-loading', false);
 			});
