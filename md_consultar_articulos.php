@@ -239,7 +239,7 @@ $SQL_ConceptoSalida = Seleccionar('tbl_SalidaInventario_Conceptos', '*', $Filtro
 								</div> <!-- col-xs-12 -->
 
 								<div class="col-xs-12" style="margin-bottom: 10px;">
-									<label class="control-label">Empleado de ventas <span
+									<label class="control-label">Empleado de ventas/compras <span
 											class="text-danger">*</span></label>
 
 									<select name="EmpVentas" id="EmpVentas" class="form-control select2" required>

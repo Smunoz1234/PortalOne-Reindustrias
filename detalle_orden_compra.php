@@ -68,7 +68,7 @@ if (isset($_GET['id']) && ($_GET['id'] != "")) {
 	}
 }
 
-//Empleado de ventas, SMM 22/02/2022
+// Empleado de ventas/compras, SMM 22/02/2022
 $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', '', 'DE_EmpVentas');
 
 //Servicios
@@ -629,7 +629,7 @@ $sMillares = $row_DatosBase["CaracterSeparadorMillares"] ?? ",";
 											<option value="">(NINGUNO)</option>
 											<?php while ($row_Almacen = sqlsrv_fetch_array($SQL_Almacen)) { ?>
 												<option value="<?php echo $row_Almacen['WhsCode']; ?>" <?php if ((isset($row['WhsCode'])) && (strcmp($row_Almacen['WhsCode'], $row['WhsCode']) == 0)) {
-													   echo "selected=\"selected\"";
+													   echo "selected";
 												   } ?>>
 													<?php echo $row_Almacen['WhsName']; ?>
 												</option>
@@ -666,7 +666,7 @@ $sMillares = $row_DatosBase["CaracterSeparadorMillares"] ?? ",";
 												<?php $SQL_Dim = Seleccionar('uvw_Sap_tbl_DimensionesReparto', '*', "DimCode=$DimCode"); ?>
 												<?php while ($row_Dim = sqlsrv_fetch_array($SQL_Dim)) { ?>
 													<option value="<?php echo $row_Dim['OcrCode']; ?>" <?php if ((isset($row["OcrCode$OcrId"])) && (strcmp($row_Dim['OcrCode'], $row["OcrCode$OcrId"]) == 0)) {
-														   echo "selected=\"selected\"";
+														   echo "selected";
 													   } ?>>
 														<?php echo $row_Dim['OcrName']; ?>
 													</option>
@@ -685,7 +685,7 @@ $sMillares = $row_DatosBase["CaracterSeparadorMillares"] ?? ",";
 											<option value="">(NINGUNO)</option>
 											<?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) { ?>
 												<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if ((isset($row['PrjCode'])) && (strcmp($row_Proyecto['IdProyecto'], $row['PrjCode']) == 0)) {
-													   echo "selected=\"selected\"";
+													   echo "selected";
 												   } ?>>
 													<?php echo $row_Proyecto['DeProyecto']; ?>
 												</option>
@@ -695,14 +695,14 @@ $sMillares = $row_DatosBase["CaracterSeparadorMillares"] ?? ",";
 
 									<td> <!-- SMM, 22/02/2022 -->
 										<select id="EmpVentas<?php echo $i; ?>" name="EmpVentas[]" class="form-control select2"
-											onChange="ActualizarDatos('EmpVentas',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);"
+											onChange="ActualizarDatos('EmpCompras',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);"
 											<?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(702))) {
 												echo "disabled='disabled'";
 											} ?>>
 											<option value="">(NINGUNO)</option>
 											<?php while ($row_EmpleadosVentas = sqlsrv_fetch_array($SQL_EmpleadosVentas)) { ?>
-												<option value="<?php echo $row_EmpleadosVentas['ID_EmpVentas']; ?>" <?php if ((isset($row['EmpVentas'])) && (strcmp($row_EmpleadosVentas['ID_EmpVentas'], $row['EmpVentas']) == 0)) {
-													   echo "selected=\"selected\"";
+												<option value="<?php echo $row_EmpleadosVentas['ID_EmpVentas']; ?>" <?php if (isset($row['EmpCompras']) && ($row['EmpCompras'] == $row_EmpleadosVentas['ID_EmpVentas'])) {
+													   echo "selected";
 												   } ?>>
 													<?php echo $row_EmpleadosVentas['DE_EmpVentas']; ?>
 												</option>
@@ -721,7 +721,7 @@ $sMillares = $row_DatosBase["CaracterSeparadorMillares"] ?? ",";
 												<option value="">(NINGUNO)</option>
 												<?php while ($row_Servicios = sqlsrv_fetch_array($SQL_Servicios)) { ?>
 													<option value="<?php echo $row_Servicios['IdServicio']; ?>" <?php if ((isset($row['CDU_IdServicio'])) && (strcmp($row_Servicios['IdServicio'], $row['CDU_IdServicio']) == 0)) {
-														   echo "selected=\"selected\"";
+														   echo "selected";
 													   } ?>>
 														<?php echo $row_Servicios['DeServicio']; ?>
 													</option>
@@ -740,7 +740,7 @@ $sMillares = $row_DatosBase["CaracterSeparadorMillares"] ?? ",";
 												<option value="">(NINGUNO)</option>
 												<?php while ($row_MetodoAplicacion = sqlsrv_fetch_array($SQL_MetodoAplicacion)) { ?>
 													<option value="<?php echo $row_MetodoAplicacion['IdMetodoAplicacion']; ?>" <?php if ((isset($row['CDU_IdMetodoAplicacion'])) && (strcmp($row_MetodoAplicacion['IdMetodoAplicacion'], $row['CDU_IdMetodoAplicacion']) == 0)) {
-														   echo "selected=\"selected\"";
+														   echo "selected";
 													   } ?>>
 														<?php echo $row_MetodoAplicacion['DeMetodoAplicacion']; ?>
 													</option>
@@ -759,7 +759,7 @@ $sMillares = $row_DatosBase["CaracterSeparadorMillares"] ?? ",";
 												<option value="">(NINGUNO)</option>
 												<?php while ($row_TipoPlaga = sqlsrv_fetch_array($SQL_TipoPlaga)) { ?>
 													<option value="<?php echo $row_TipoPlaga['IdTipoPlagas']; ?>" <?php if ((isset($row['CDU_IdTipoPlagas'])) && (strcmp($row_TipoPlaga['IdTipoPlagas'], $row['CDU_IdTipoPlagas']) == 0)) {
-														   echo "selected=\"selected\"";
+														   echo "selected";
 													   } ?>>
 														<?php echo $row_TipoPlaga['DeTipoPlagas']; ?>
 													</option>

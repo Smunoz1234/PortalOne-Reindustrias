@@ -3,7 +3,7 @@
 if (isset($_GET['type']) && $_GET['type'] != "") {
     require_once 'conexion.php';
     if ($_GET['type'] == 1) { //Consultar si existe el usuario ha agregar
-        $Cons = "Select Usuario From tbl_Usuarios Where Usuario='" . $_GET['Usuario'] . "'";
+        $Cons = "Select Usuario From tbl_Usuarios WHERE Usuario='" . $_GET['Usuario'] . "'";
         $SQL_Cons = sqlsrv_query($conexion, $Cons);
         $row_Cons = sqlsrv_fetch_array($SQL_Cons);
         if (isset($row_Cons['Usuario']) && $row_Cons['Usuario'] != "") {
@@ -12,17 +12,17 @@ if (isset($_GET['type']) && $_GET['type'] != "") {
             echo "<p class='text-info'><i class='fa fa-thumbs-up'></i> Disponible</p>";
         }
     } elseif ($_GET['type'] == 2) { //Activar o Inactivar Usuario
-        $Cons = "Select Estado From tbl_Usuarios Where ID_Usuario='" . $_GET['ID_Usuario'] . "'";
+        $Cons = "Select Estado From tbl_Usuarios WHERE ID_Usuario='" . $_GET['ID_Usuario'] . "'";
         $SQL_Cons = sqlsrv_query($conexion, $Cons);
         $row_Cons = sqlsrv_fetch_array($SQL_Cons);
         if ($row_Cons['Estado'] == 1) {
-            $Upd = "Update tbl_Usuarios Set Estado=2 Where ID_Usuario='" . $_GET['ID_Usuario'] . "'";
+            $Upd = "Update tbl_Usuarios Set Estado=2 WHERE ID_Usuario='" . $_GET['ID_Usuario'] . "'";
             $SQL_Upd = sqlsrv_query($conexion, $Upd);
             if ($SQL_Upd) {
                 echo "2";
             }
         } else {
-            $Upd = "Update tbl_Usuarios Set Estado=1 Where ID_Usuario='" . $_GET['ID_Usuario'] . "'";
+            $Upd = "Update tbl_Usuarios Set Estado=1 WHERE ID_Usuario='" . $_GET['ID_Usuario'] . "'";
             $SQL_Upd = sqlsrv_query($conexion, $Upd);
             if ($SQL_Upd) {
                 echo "1";
@@ -73,7 +73,7 @@ if (isset($_GET['type']) && $_GET['type'] != "") {
             }
         }
     } elseif ($_GET['type'] == 5) { //Consultar si ya existe el archivo de productos cargado en esa categoria
-        $Cons = "Select ID_Producto From uvw_tbl_Productos Where ItemCode='" . $_GET['Cod'] . "' AND ID_CategoriaProductos='" . $_GET['Cat'] . "'";
+        $Cons = "Select ID_Producto From uvw_tbl_Productos WHERE ItemCode='" . $_GET['Cod'] . "' AND ID_CategoriaProductos='" . $_GET['Cat'] . "'";
         $SQL_Cons = sqlsrv_query($conexion, $Cons);
         $row_Cons = sqlsrv_fetch_array($SQL_Cons);
         if ($row_Cons['ID_Producto'] != "") {
@@ -111,28 +111,28 @@ if (isset($_GET['type']) && $_GET['type'] != "") {
         }
     } elseif ($_GET['type'] == 7) { //Limpiar carrito cuando estan creando un documento y selecciona el cliente
         //Limpiar salida de lotes
-        $ConsLote = "Delete From tbl_LotesDocSAP Where CardCode='" . $_GET['cardcode'] . "' And Usuario='" . $_SESSION['CodUser'] . "'";
+        $ConsLote = "DELETE FROM tbl_LotesDocSAP WHERE CardCode='" . $_GET['cardcode'] . "' AND Usuario='" . $_SESSION['CodUser'] . "'";
         $SQL_ConsLote = sqlsrv_query($conexion, $ConsLote);
 
         //Limpiar salida de seriales
-        $ConsSerial = "Delete From tbl_SerialesDocSAP Where CardCode='" . $_GET['cardcode'] . "' And Usuario='" . $_SESSION['CodUser'] . "'";
+        $ConsSerial = "DELETE FROM tbl_SerialesDocSAP WHERE CardCode='" . $_GET['cardcode'] . "' AND Usuario='" . $_SESSION['CodUser'] . "'";
         $SQL_ConsSerial = sqlsrv_query($conexion, $ConsSerial);
 
         if ($_GET['objtype'] == "23") { //Oferta de venta
-            $Cons = "Delete From tbl_OfertaVentaDetalleCarrito Where CardCode='" . $_GET['cardcode'] . "' And Usuario='" . $_SESSION['CodUser'] . "'";
+            $Cons = "DELETE FROM tbl_OfertaVentaDetalleCarrito WHERE CardCode='" . $_GET['cardcode'] . "' AND Usuario='" . $_SESSION['CodUser'] . "'";
             $SQL_Cons = sqlsrv_query($conexion, $Cons);
             if ($SQL_Cons) {
                 echo "*Ok*";
             }
         } elseif ($_GET['objtype'] == "17") { //Orden de venta
-            $Cons = "Delete From tbl_OrdenVentaDetalleCarrito Where CardCode='" . $_GET['cardcode'] . "' And Usuario='" . $_SESSION['CodUser'] . "'";
+            $Cons = "DELETE FROM tbl_OrdenVentaDetalleCarrito WHERE CardCode='" . $_GET['cardcode'] . "' AND Usuario='" . $_SESSION['CodUser'] . "'";
             $SQL_Cons = sqlsrv_query($conexion, $Cons);
             if ($SQL_Cons) {
                 echo "*Ok*";
             }
         } elseif ($_GET['objtype'] == "15") { //Entrega ventas
             //Limpiar carrito
-            $Cons = "Delete From tbl_EntregaVentaDetalleCarrito Where CardCode='" . $_GET['cardcode'] . "' And Usuario='" . $_SESSION['CodUser'] . "'";
+            $Cons = "DELETE FROM tbl_EntregaVentaDetalleCarrito WHERE CardCode='" . $_GET['cardcode'] . "' AND Usuario='" . $_SESSION['CodUser'] . "'";
             $SQL_Cons = sqlsrv_query($conexion, $Cons);
 
             if ($SQL_Cons) {
@@ -140,7 +140,7 @@ if (isset($_GET['type']) && $_GET['type'] != "") {
             }
         } elseif ($_GET['objtype'] == "16") { //Devolucion ventas
             //Limpiar carrito
-            $Cons = "Delete From tbl_DevolucionVentaDetalleCarrito Where CardCode='" . $_GET['cardcode'] . "' And Usuario='" . $_SESSION['CodUser'] . "'";
+            $Cons = "DELETE FROM tbl_DevolucionVentaDetalleCarrito WHERE CardCode='" . $_GET['cardcode'] . "' AND Usuario='" . $_SESSION['CodUser'] . "'";
             $SQL_Cons = sqlsrv_query($conexion, $Cons);
 
             if ($SQL_Cons) {
@@ -148,7 +148,7 @@ if (isset($_GET['type']) && $_GET['type'] != "") {
             }
         } elseif ($_GET['objtype'] == "67") { //Trasferencia de inventario
             //Limpiar carrito
-            $Cons = "Delete From tbl_TrasladoInventarioDetalleCarrito Where CardCode='" . $_GET['cardcode'] . "' And Usuario='" . $_SESSION['CodUser'] . "'";
+            $Cons = "DELETE FROM tbl_TrasladoInventarioDetalleCarrito WHERE CardCode='" . $_GET['cardcode'] . "' AND Usuario='" . $_SESSION['CodUser'] . "'";
             $SQL_Cons = sqlsrv_query($conexion, $Cons);
 
             if ($SQL_Cons) {
@@ -156,7 +156,7 @@ if (isset($_GET['type']) && $_GET['type'] != "") {
             }
         } elseif ($_GET['objtype'] == "13") { //Factura de venta
             //Limpiar carrito
-            $Cons = "Delete From tbl_FacturaVentaDetalleCarrito Where CardCode='" . $_GET['cardcode'] . "' And Usuario='" . $_SESSION['CodUser'] . "'";
+            $Cons = "DELETE FROM tbl_FacturaVentaDetalleCarrito WHERE CardCode='" . $_GET['cardcode'] . "' AND Usuario='" . $_SESSION['CodUser'] . "'";
             $SQL_Cons = sqlsrv_query($conexion, $Cons);
 
             if ($SQL_Cons) {
@@ -164,7 +164,7 @@ if (isset($_GET['type']) && $_GET['type'] != "") {
             }
         } elseif ($_GET['objtype'] == "20") { //Entrada de compras
             //Limpiar carrito
-            $Cons = "Delete From tbl_EntradaCompraDetalleCarrito Where CardCode='" . $_GET['cardcode'] . "' And Usuario='" . $_SESSION['CodUser'] . "'";
+            $Cons = "DELETE FROM tbl_EntradaCompraDetalleCarrito WHERE CardCode='" . $_GET['cardcode'] . "' AND Usuario='" . $_SESSION['CodUser'] . "'";
             $SQL_Cons = sqlsrv_query($conexion, $Cons);
 
             if ($SQL_Cons) {
@@ -172,7 +172,7 @@ if (isset($_GET['type']) && $_GET['type'] != "") {
             }
         } elseif ($_GET['objtype'] == "1470000113") { //Solicitud de compras
             //Limpiar carrito
-            $Cons = "Delete From tbl_SolicitudCompraDetalleCarrito Where CardCode='" . $_GET['cardcode'] . "' And Usuario='" . $_SESSION['CodUser'] . "'";
+            $Cons = "DELETE FROM tbl_SolicitudCompraDetalleCarrito WHERE CardCode='" . $_GET['cardcode'] . "' AND Usuario='" . $_SESSION['CodUser'] . "'";
             $SQL_Cons = sqlsrv_query($conexion, $Cons);
 
             if ($SQL_Cons) {
@@ -180,7 +180,7 @@ if (isset($_GET['type']) && $_GET['type'] != "") {
             }
         } elseif ($_GET['objtype'] == "18") { //Factura de compras
             //Limpiar carrito
-            $Cons = "Delete From tbl_FacturaCompraDetalleCarrito Where CardCode='" . $_GET['cardcode'] . "' And Usuario='" . $_SESSION['CodUser'] . "'";
+            $Cons = "DELETE FROM tbl_FacturaCompraDetalleCarrito WHERE CardCode='" . $_GET['cardcode'] . "' AND Usuario='" . $_SESSION['CodUser'] . "'";
             $SQL_Cons = sqlsrv_query($conexion, $Cons);
 
             if ($SQL_Cons) {
@@ -188,7 +188,7 @@ if (isset($_GET['type']) && $_GET['type'] != "") {
             }
         } elseif ($_GET['objtype'] == "67") { //Traslado de inventario
             //Limpiar carrito
-            $Cons = "Delete From tbl_TrasladoInventarioDetalleCarrito Where CardCode='" . $_GET['cardcode'] . "' And Usuario='" . $_SESSION['CodUser'] . "'";
+            $Cons = "DELETE FROM tbl_TrasladoInventarioDetalleCarrito WHERE CardCode='" . $_GET['cardcode'] . "' AND Usuario='" . $_SESSION['CodUser'] . "'";
             $SQL_Cons = sqlsrv_query($conexion, $Cons);
 
             if ($SQL_Cons) {
@@ -196,7 +196,7 @@ if (isset($_GET['type']) && $_GET['type'] != "") {
             }
         } elseif ($_GET['objtype'] == "21") { //Devolucion de compras
             //Limpiar carrito
-            $Cons = "Delete From tbl_DevolucionCompraDetalleCarrito Where CardCode='" . $_GET['cardcode'] . "' And Usuario='" . $_SESSION['CodUser'] . "'";
+            $Cons = "DELETE FROM tbl_DevolucionCompraDetalleCarrito WHERE CardCode='" . $_GET['cardcode'] . "' AND Usuario='" . $_SESSION['CodUser'] . "'";
             $SQL_Cons = sqlsrv_query($conexion, $Cons);
 
             if ($SQL_Cons) {
@@ -206,8 +206,8 @@ if (isset($_GET['type']) && $_GET['type'] != "") {
 
         // Orden de compra
         elseif ($_GET['objtype'] == "22") {
-            //Limpiar carrito
-            $Cons = "Delete From tbl_OrdenCompraDetalleCarrito Where CardCode='" . $_GET['cardcode'] . "' And Usuario='" . $_SESSION['CodUser'] . "'";
+            // Limpiar carrito
+            $Cons = "DELETE FROM tbl_OrdenCompraDetalleCarrito WHERE CardCode='" . $_GET['cardcode'] . "' AND Usuario='" . $_SESSION['CodUser'] . "'";
             $SQL_Cons = sqlsrv_query($conexion, $Cons);
 
             if ($SQL_Cons) {
@@ -218,7 +218,7 @@ if (isset($_GET['type']) && $_GET['type'] != "") {
         // Solicitud de salida
         elseif ($_GET['objtype'] == "1250000001") {
             //Limpiar carrito
-            $Cons = "DELETE FROM tbl_SolicitudSalidaDetalleCarrito WHERE CardCode='" . $_GET['cardcode'] . "' And Usuario='" . $_SESSION['CodUser'] . "'";
+            $Cons = "DELETE FROM tbl_SolicitudSalidaDetalleCarrito WHERE CardCode='" . $_GET['cardcode'] . "' AND Usuario='" . $_SESSION['CodUser'] . "'";
             $SQL_Cons = sqlsrv_query($conexion, $Cons);
 
             if ($SQL_Cons) {
@@ -229,7 +229,7 @@ if (isset($_GET['type']) && $_GET['type'] != "") {
         // Salida inventario
         elseif ($_GET['objtype'] == "60") {
             //Limpiar carrito
-            $Cons = "DELETE FROM tbl_SalidaInventarioDetalleCarrito WHERE CardCode='" . $_GET['cardcode'] . "' And Usuario='" . $_SESSION['CodUser'] . "'";
+            $Cons = "DELETE FROM tbl_SalidaInventarioDetalleCarrito WHERE CardCode='" . $_GET['cardcode'] . "' AND Usuario='" . $_SESSION['CodUser'] . "'";
             $SQL_Cons = sqlsrv_query($conexion, $Cons);
 
             if ($SQL_Cons) {
@@ -416,7 +416,7 @@ if (isset($_GET['type']) && $_GET['type'] != "") {
             }
         }
     } elseif ($_GET['type'] == 16) { //Consultar si existe el Socio de negocio (por cedula al crear)
-        $Cons = "Select CodigoCliente From uvw_Sap_tbl_Clientes Where LicTradNum = '" . $_GET['id'] . "'";
+        $Cons = "Select CodigoCliente From uvw_Sap_tbl_Clientes WHERE LicTradNum = '" . $_GET['id'] . "'";
         $SQL_Cons = sqlsrv_query($conexion, $Cons);
         $row_Cons = sqlsrv_fetch_array($SQL_Cons);
         if (isset($row_Cons['CodigoCliente']) && $row_Cons['CodigoCliente'] != "") {
@@ -783,7 +783,7 @@ if (isset($_GET['type']) && $_GET['type'] != "") {
         }
     } elseif ($_GET['type'] == 39) { //Eliminar una linea del carrito en la Factura de compras
         if ($_GET['edit'] == 1) {
-            $Cons = "Delete From tbl_FacturaCompraDetalleCarrito Where LineNum='" . $_GET['linenum'] . "' And CardCode='" . $_GET['cardcode'] . "' And Usuario='" . $_SESSION['CodUser'] . "'";
+            $Cons = "DELETE FROM tbl_FacturaCompraDetalleCarrito WHERE LineNum='" . $_GET['linenum'] . "' AND CardCode='" . $_GET['cardcode'] . "' AND Usuario='" . $_SESSION['CodUser'] . "'";
             $SQL_Cons = sqlsrv_query($conexion, $Cons);
             if ($SQL_Cons) {
                 echo "*Ok*";
