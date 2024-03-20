@@ -812,7 +812,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 					},
 					dataType: 'json',
 					success: function (data) {
-						console.log("Line 554", data);
+						console.log("Line 891", data);
 
 						document.getElementById('IdListaPrecio').value = data.IdListaPrecio;
 						$('#IdListaPrecio').trigger('change');

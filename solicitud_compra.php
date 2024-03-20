@@ -693,13 +693,16 @@ if ($edit == 0) {
 
 	if (ObtenerVariable("NITProveedorDefault") != "") {
 		$ClienteDefault = ObtenerVariable("NITProveedorDefault");
+		
+		// echo $ClienteDefault;
+		// exit();
 
 		$SQL_ClienteDefault = Seleccionar('uvw_Sap_tbl_Proveedores', '*', "CodigoCliente='$ClienteDefault'");
 		$row_ClienteDefault = sqlsrv_fetch_array($SQL_ClienteDefault);
 
 		$NombreClienteDefault = $row_ClienteDefault["NombreBuscarCliente"]; // NombreCliente
-		$SucursalDestinoDefault = "DITAR S.A.";
-		$SucursalFacturacionDefault = "DITAR S.A.";
+		$SucursalDestinoDefault = "NEIVA";
+		$SucursalFacturacionDefault = "NEIVA";
 	}
 }
 
@@ -889,7 +892,7 @@ function CrearArticulo(){
 					},
 					dataType: 'json',
 					success: function (data) {
-						console.log("Line 554", data);
+						console.log("Line 891", data);
 
 						document.getElementById('IdListaPrecio').value = data.IdListaPrecio;
 						$('#IdListaPrecio').trigger('change');
@@ -1141,7 +1144,7 @@ function CrearArticulo(){
 										<input type="hidden" id="ClienteSN" name="ClienteSN">
 										<input type="text" class="form-control" id="NombreClienteSN"
 											name="NombreClienteSN" placeholder="Digite para buscar..."
-											required="required">
+											required>
 									</div>
 									<div class="col-lg-5">
 										<label class="control-label">Contacto</label>
@@ -1497,25 +1500,26 @@ function CrearArticulo(){
 
 				<div class="col-lg-8">
 					<div class="form-group">
-						<label class="col-lg-1 control-label"><i onClick="ConsultarDatosCliente();"
-								title="Consultar cliente" style="cursor: pointer"
-								class="btn-xs btn-success fa fa-search"></i> Proveedor <span
-								class="text-danger">*</span></label>
+						<label class="col-lg-1 control-label"><i onClick="ConsultarDatosCliente();" title="Consultar cliente" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Cliente</label>
 						<div class="col-lg-9">
 							<input name="CardCode" type="hidden" id="CardCode" value="<?php if (($edit == 1) || ($sw_error == 1)) {
 								echo $row['CardCode'];
 							} elseif ($dt_LS == 1 || $dt_OF == 1) {
 								echo $row_Cliente['CodigoCliente'];
+							} elseif (($edit == 0) && ($ClienteDefault != "")) {
+								echo $ClienteDefault;
 							} ?>">
 
-							<input name="CardName" type="text" required="required" class="form-control"
-								id="CardName" placeholder="Digite para buscar..." value="<?php if (($edit == 1) || ($sw_error == 1)) {
-									echo $row['NombreCliente'];
-								} elseif ($dt_LS == 1 || $dt_OF == 1) {
-									echo $row_Cliente['NombreCliente'];
-								} ?>" <?php if ($dt_LS == 1 || $dt_OF == 1 || $edit == 1) {
-									 echo "readonly";
-								 } ?>>
+							<input autocomplete="off" name="CardName" type="text" required class="form-control" 
+							id="CardName" placeholder="Digite para buscar..." value="<?php if (($edit == 1) || ($sw_error == 1)) {
+								echo $row['NombreCliente'];
+							} elseif ($dt_LS == 1 || $dt_OF == 1) {
+								echo $row_Cliente['NombreCliente'];
+							} elseif (($edit == 0) && ($ClienteDefault != "")) {
+								echo $NombreClienteDefault;
+							} ?>" <?php if ($dt_LS == 1 || $dt_OF == 1 || $edit == 1) {
+								echo "readonly";
+							} ?>>
 						</div>
 						<div class="col-lg-2">
 							<input type="hidden" id="Exento" name="Exento" class="form-control"
@@ -1569,7 +1573,7 @@ function CrearArticulo(){
 								class="text-danger">*</span></label>
 						<div class="col-lg-5">
 							<select class="form-control select2" name="SucursalDestino"
-								id="SucursalDestino" required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
+								id="SucursalDestino" required <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
 									echo "disabled";
 								} ?>>
 								<option value="">Seleccione...</option>
