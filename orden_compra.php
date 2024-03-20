@@ -639,8 +639,8 @@ if ($edit == 0) {
 		$row_ClienteDefault = sqlsrv_fetch_array($SQL_ClienteDefault);
 
 		$NombreClienteDefault = $row_ClienteDefault["NombreBuscarCliente"]; // NombreCliente
-		$SucursalDestinoDefault = "DITAR S.A.";
-		$SucursalFacturacionDefault = "DITAR S.A.";
+		$SucursalDestinoDefault = "NEIVA";
+		$SucursalFacturacionDefault = "NEIVA";
 	}
 }
 

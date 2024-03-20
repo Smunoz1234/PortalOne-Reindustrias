@@ -702,8 +702,8 @@ if ($edit == 0) {
 		$row_ClienteDefault = sqlsrv_fetch_array($SQL_ClienteDefault);
 
 		$NombreClienteDefault = $row_ClienteDefault["NombreBuscarCliente"]; // NombreCliente
-		$SucursalDestinoDefault = "DITAR S.A.";
-		$SucursalFacturacionDefault = "DITAR S.A.";
+		$SucursalDestinoDefault = "NEIVA";
+		$SucursalFacturacionDefault = "NEIVA";
 	}
 }
 
@@ -887,11 +887,6 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 							url: "ajx_cbo_select.php?type=3&tdir=S&id=" + carcode + "&pv=1",
 							success: function (response) {
 								$('#SucursalDestino').html(response).fadeIn();
-
-								<?php if (($edit == 0) && ($ClienteDefault != "")) { ?>
-										$("#SucursalDestino").val("<?php echo $SucursalDestinoDefault; ?>");
-								<?php } ?>
-
 								$('#SucursalDestino').trigger('change');
 							},
 							error: function (error) {
@@ -904,11 +899,6 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 							url: "ajx_cbo_select.php?type=3&tdir=B&id=" + carcode + "&pv=1",
 							success: function (response) {
 								$('#SucursalFacturacion').html(response).fadeIn();
-							
-								<?php if (($edit == 0) && ($ClienteDefault != "")) { ?>
-										$("#SucursalFacturacion").val("<?php echo $SucursalFacturacionDefault; ?>");
-								<?php } ?>
-
 								$('#SucursalFacturacion').trigger('change');
 							},
 							error: function (error) {
@@ -2082,6 +2072,10 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 	<!-- InstanceBeginEditable name="EditRegion4" -->
 	<script>
 		$(document).ready(function () {
+			<?php if (($edit == 0) && ($ClienteDefault != "")) { ?>
+				$("#CardCode").change();
+			<?php } ?>
+
 			$("#CrearEntradaCompra").validate({
 				submitHandler: function (form) {
 					if (Validar()) {
