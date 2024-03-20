@@ -2515,9 +2515,9 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
             } elseif ($type == 18) { // Orden de compra
                 //Insertar el registro en la BD
                 $ParametrosInsert = array(
-                    "'" . $Item . "'",
-                    "'" . $WhsCode . "'",
-                    "'" . $CardCode . "'",
+                    "'$Item'",
+                    "'$WhsCode'",
+                    "'$CardCode'",
                     "'" . $_SESSION['CodUser'] . "'",
                     "'$dim1'",
                     "'$dim2'",
@@ -2525,14 +2525,14 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     "'$dim4'",
                     "'$dim5'",
                     "'" . $_REQUEST['prjcode'] . "'",
-                    // "'" . $_REQUEST['pricelist'] . "'",
-                    // "'" . $_REQUEST['empventas'] . "'",
+                    "'" . ($_REQUEST['pricelist'] ?? "") . "'",
+                    "'" . ($_REQUEST['empventas'] ?? "") . "'",
                 );
                 $SQL_Insert = EjecutarSP('sp_tbl_OrdenCompraDetalleCarritoInsert', $ParametrosInsert, 35);
                 if ($SQL_Insert) {
                     $ParametrosCount = array(
-                        "'" . $WhsCode . "'",
-                        "'" . $CardCode . "'",
+                        "'$WhsCode'",
+                        "'$CardCode'",
                         "'" . $_SESSION['CodUser'] . "'",
                     );
                     $SQL_ConCount = EjecutarSP('sp_tbl_OrdenCompraDetalleCarritoInsert_Count', $ParametrosCount, 35);
@@ -2547,10 +2547,10 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
             } elseif ($type == 19) { // Orden de compra - Editar
                 //Insertar el registro en la BD
                 $ParametrosInsert = array(
-                    "'" . $Item . "'",
-                    "'" . $WhsCode . "'",
-                    "'" . $id . "'",
-                    "'" . $evento . "'",
+                    "'$Item'",
+                    "'$WhsCode'",
+                    "'$id'",
+                    "'$evento'",
                     "'" . $_SESSION['CodUser'] . "'",
                     "'$dim1'",
                     "'$dim2'",
@@ -2558,14 +2558,14 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     "'$dim4'",
                     "'$dim5'",
                     "'" . $_REQUEST['prjcode'] . "'",
-                    // "'" . $_REQUEST['pricelist'] . "'",
-                    // "'" . $_REQUEST['empventas'] . "'",
+                    "'" . ($_REQUEST['pricelist'] ?? "") . "'",
+                    "'" . ($_REQUEST['empventas'] ?? "") . "'",
                 );
                 $SQL_Insert = EjecutarSP('sp_tbl_OrdenCompraDetalleInsert', $ParametrosInsert, 35);
                 if ($SQL_Insert) {
                     $ParametrosCount = array(
-                        "'" . $id . "'",
-                        "'" . $evento . "'",
+                        "'$id'",
+                        "'$evento'",
                     );
                     $SQL_ConCount = EjecutarSP('sp_tbl_OrdenCompraDetalleInsert_Count', $ParametrosCount, 35);
                     $row_ConCount = sqlsrv_fetch_array($SQL_ConCount);
@@ -2576,12 +2576,12 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     sqlsrv_close($conexion);
                     exit();
                 }
-            } elseif ($type == 20) { //Entrada de compra
+            } elseif ($type == 20) { // Entrada de compra
                 //Insertar el registro en la BD
                 $ParametrosInsert = array(
-                    "'" . $Item . "'",
-                    "'" . $WhsCode . "'",
-                    "'" . $CardCode . "'",
+                    "'$Item'",
+                    "'$WhsCode'",
+                    "'$CardCode'",
                     "'" . $_SESSION['CodUser'] . "'",
                     "'$dim1'",
                     "'$dim2'",
@@ -2589,14 +2589,14 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     "'$dim4'",
                     "'$dim5'",
                     "'" . $_REQUEST['prjcode'] . "'",
-                    // "'" . $_REQUEST['pricelist'] . "'",
-                    // "'" . $_REQUEST['empventas'] . "'",
+                    "'" . ($_REQUEST['pricelist'] ?? "") . "'",
+                    "'" . ($_REQUEST['empventas'] ?? "") . "'",
                 );
                 $SQL_Insert = EjecutarSP('sp_tbl_EntradaCompraDetalleCarritoInsert', $ParametrosInsert, 35);
                 if ($SQL_Insert) {
                     $ParametrosCount = array(
-                        "'" . $WhsCode . "'",
-                        "'" . $CardCode . "'",
+                        "'$WhsCode'",
+                        "'$CardCode'",
                         "'" . $_SESSION['CodUser'] . "'",
                     );
                     $SQL_ConCount = EjecutarSP('sp_tbl_EntradaCompraDetalleCarritoInsert_Count', $ParametrosCount, 35);
@@ -2608,13 +2608,13 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     sqlsrv_close($conexion);
                     exit();
                 }
-            } elseif ($type == 21) { //Entrada de compra editar
+            } elseif ($type == 21) { // Entrada de compra editar
                 //Insertar el registro en la BD
                 $ParametrosInsert = array(
-                    "'" . $Item . "'",
-                    "'" . $WhsCode . "'",
-                    "'" . $id . "'",
-                    "'" . $evento . "'",
+                    "'$Item'",
+                    "'$WhsCode'",
+                    "'$id'",
+                    "'$evento'",
                     "'" . $_SESSION['CodUser'] . "'",
                     "'$dim1'",
                     "'$dim2'",
@@ -2622,14 +2622,14 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     "'$dim4'",
                     "'$dim5'",
                     "'" . $_REQUEST['prjcode'] . "'",
-                    // "'" . $_REQUEST['pricelist'] . "'",
-                    // "'" . $_REQUEST['empventas'] . "'",
+                    "'" . ($_REQUEST['pricelist'] ?? "") . "'",
+                    "'" . ($_REQUEST['empventas'] ?? "") . "'",
                 );
                 $SQL_Insert = EjecutarSP('sp_tbl_EntradaCompraDetalleInsert', $ParametrosInsert, 35);
                 if ($SQL_Insert) {
                     $ParametrosCount = array(
-                        "'" . $id . "'",
-                        "'" . $evento . "'",
+                        "'$id'",
+                        "'$evento'",
                     );
                     $SQL_ConCount = EjecutarSP('sp_tbl_EntradaCompraDetalleInsert_Count', $ParametrosCount, 35);
                     $row_ConCount = sqlsrv_fetch_array($SQL_ConCount);
@@ -2640,7 +2640,7 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     sqlsrv_close($conexion);
                     exit();
                 }
-            } elseif ($type == 22) { //Solicitud de compra
+            } elseif ($type == 22) { // Solicitud de compra
                 //Insertar el registro en la BD
                 $ParametrosInsert = array(
                     "'$Item'",
@@ -2654,14 +2654,14 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     "'$dim5'",
                     "'" . $_REQUEST['prjcode'] . "'",
                     "'" . $_REQUEST['reqdate'] . "'", // SMM, 13/02/2023
-                    // "'" . $_REQUEST['pricelist'] . "'",
-                    // "'" . $_REQUEST['empventas'] . "'",
+                    "'" . ($_REQUEST['pricelist'] ?? "") . "'",
+                    "'" . ($_REQUEST['empventas'] ?? "") . "'",
                 );
                 $SQL_Insert = EjecutarSP('sp_tbl_SolicitudCompraDetalleCarritoInsert', $ParametrosInsert, 35);
                 if ($SQL_Insert) {
                     $ParametrosCount = array(
-                        "'" . $WhsCode . "'",
-                        "'" . $CardCode . "'",
+                        "'$WhsCode'",
+                        "'$CardCode'",
                         "'" . $_SESSION['CodUser'] . "'",
                     );
                     $SQL_ConCount = EjecutarSP('sp_tbl_SolicitudCompraDetalleCarritoInsert_Count', $ParametrosCount, 35);
@@ -2688,8 +2688,8 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     "'$dim5'",
                     "'" . $_REQUEST['reqdate'] . "'", // SMM, 13/02/2023
                     "'" . $_REQUEST['prjcode'] . "'",
-                    // "'" . $_REQUEST['pricelist'] . "'",
-                    // "'" . $_REQUEST['empventas'] . "'",
+                    "'" . ($_REQUEST['pricelist'] ?? "") . "'",
+                    "'" . ($_REQUEST['empventas'] ?? "") . "'",
                 );
 
                 // SMM, 03/02/2024
@@ -2701,8 +2701,8 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                 $SQL_Insert = EjecutarSP("sp_tbl_SolicitudCompraDetalleInsert$borrador", $ParametrosInsert, 35);
                 if ($SQL_Insert) {
                     $ParametrosCount = array(
-                        "'" . $id . "'",
-                        "'" . $evento . "'",
+                        "'$id'",
+                        "'$evento'",
                     );
                     $SQL_ConCount = EjecutarSP("sp_tbl_SolicitudCompraDetalleInsert_Count$borrador", $ParametrosCount, 35);
                     $row_ConCount = sqlsrv_fetch_array($SQL_ConCount);
@@ -2716,9 +2716,9 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
             } elseif ($type == 24) { //factura de compra
                 //Insertar el registro en la BD
                 $ParametrosInsert = array(
-                    "'" . $Item . "'",
-                    "'" . $WhsCode . "'",
-                    "'" . $CardCode . "'",
+                    "'$Item'",
+                    "'$WhsCode'",
+                    "'$CardCode'",
                     "'" . $_SESSION['CodUser'] . "'",
                     "'$dim1'",
                     "'$dim2'",
@@ -2730,8 +2730,8 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                 $SQL_Insert = EjecutarSP('sp_tbl_FacturaCompraDetalleCarritoInsert', $ParametrosInsert, 35);
                 if ($SQL_Insert) {
                     $ParametrosCount = array(
-                        "'" . $WhsCode . "'",
-                        "'" . $CardCode . "'",
+                        "'$WhsCode'",
+                        "'$CardCode'",
                         "'" . $_SESSION['CodUser'] . "'",
                     );
                     $SQL_ConCount = EjecutarSP('sp_tbl_FacturaCompraDetalleCarritoInsert_Count', $ParametrosCount, 35);
@@ -2746,10 +2746,10 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
             } elseif ($type == 25) { //factura de compra editar
                 //Insertar el registro en la BD
                 $ParametrosInsert = array(
-                    "'" . $Item . "'",
-                    "'" . $WhsCode . "'",
-                    "'" . $id . "'",
-                    "'" . $evento . "'",
+                    "'$Item'",
+                    "'$WhsCode'",
+                    "'$id'",
+                    "'$evento'",
                     "'" . $_SESSION['CodUser'] . "'",
                     "'$dim1'",
                     "'$dim2'",
@@ -2761,8 +2761,8 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                 $SQL_Insert = EjecutarSP('sp_tbl_FacturaCompraDetalleInsert', $ParametrosInsert, 35);
                 if ($SQL_Insert) {
                     $ParametrosCount = array(
-                        "'" . $id . "'",
-                        "'" . $evento . "'",
+                        "'$id'",
+                        "'$evento'",
                     );
                     $SQL_ConCount = EjecutarSP('sp_tbl_FacturaCompraDetalleInsert_Count', $ParametrosCount, 35);
                     $row_ConCount = sqlsrv_fetch_array($SQL_ConCount);
@@ -2773,12 +2773,12 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     sqlsrv_close($conexion);
                     exit();
                 }
-            } elseif ($type == 26) { //Devolucion de compra
+            } elseif ($type == 26) { // Devolucion de compra
                 //Insertar el registro en la BD
                 $ParametrosInsert = array(
-                    "'" . $Item . "'",
-                    "'" . $WhsCode . "'",
-                    "'" . $CardCode . "'",
+                    "'$Item'",
+                    "'$WhsCode'",
+                    "'$CardCode'",
                     "'" . $_SESSION['CodUser'] . "'",
                     "'$dim1'",
                     "'$dim2'",
@@ -2786,14 +2786,14 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     "'$dim4'",
                     "'$dim5'",
                     "'" . $_REQUEST['prjcode'] . "'",
-                    // "'" . $_REQUEST['pricelist'] . "'",
-                    // "'" . $_REQUEST['empventas'] . "'",
+                    "'" . ($_REQUEST['pricelist'] ?? "") . "'",
+                    "'" . ($_REQUEST['empventas'] ?? "") . "'",
                 );
                 $SQL_Insert = EjecutarSP('sp_tbl_DevolucionCompraDetalleCarritoInsert', $ParametrosInsert, 35);
                 if ($SQL_Insert) {
                     $ParametrosCount = array(
-                        "'" . $WhsCode . "'",
-                        "'" . $CardCode . "'",
+                        "'$WhsCode'",
+                        "'$CardCode'",
                         "'" . $_SESSION['CodUser'] . "'",
                     );
                     $SQL_ConCount = EjecutarSP('sp_tbl_DevolucionCompraDetalleCarritoInsert_Count', $ParametrosCount, 35);
@@ -2805,13 +2805,13 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     sqlsrv_close($conexion);
                     exit();
                 }
-            } elseif ($type == 27) { //Devolucion de compra editar
+            } elseif ($type == 27) { // Devolucion de compra editar
                 //Insertar el registro en la BD
                 $ParametrosInsert = array(
-                    "'" . $Item . "'",
-                    "'" . $WhsCode . "'",
-                    "'" . $id . "'",
-                    "'" . $evento . "'",
+                    "'$Item'",
+                    "'$WhsCode'",
+                    "'$id'",
+                    "'$evento'",
                     "'" . $_SESSION['CodUser'] . "'",
                     "'$dim1'",
                     "'$dim2'",
@@ -2819,14 +2819,14 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     "'$dim4'",
                     "'$dim5'",
                     "'" . $_REQUEST['prjcode'] . "'",
-                    // "'" . $_REQUEST['pricelist'] . "'",
-                    // "'" . $_REQUEST['empventas'] . "'",
+                    "'" . ($_REQUEST['pricelist'] ?? "") . "'",
+                    "'" . ($_REQUEST['empventas'] ?? "") . "'",
                 );
                 $SQL_Insert = EjecutarSP('sp_tbl_DevolucionCompraDetalleInsert', $ParametrosInsert, 35);
                 if ($SQL_Insert) {
                     $ParametrosCount = array(
-                        "'" . $id . "'",
-                        "'" . $evento . "'",
+                        "'$id'",
+                        "'$evento'",
                     );
                     $SQL_ConCount = EjecutarSP('sp_tbl_DevolucionCompraDetalleInsert_Count', $ParametrosCount, 35);
                     $row_ConCount = sqlsrv_fetch_array($SQL_ConCount);
