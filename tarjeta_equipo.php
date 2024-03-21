@@ -2742,116 +2742,107 @@ while ($row_ValPropiedad = sqlsrv_fetch_array($SQL_ValoresPropiedades)) {
 
 													<div class="col-lg-6">
 														<label class="control-label text-danger col-lg-10 border-bottom" style="text-align: left;">
-															Información de los componentes
+															Información del componente
 														</label>
-														<?php if (isset($SQL_Componentes) && sqlsrv_has_rows($SQL_Componentes)) { ?>
-															<table id="footableComponents" class="table" data-paging="true" data-sorting="true" data-filtering="true">
-																<thead>
-																	<tr>
-																		<th>Código Artículo</th>
-																		<th>Artículo</th>
-																		
-																		<th>Unidad Medida</th>
-																		<th>Ubicación</th>
-																		
-																		<th>Acciones</th>
-																		<th data-breakpoints="all">ID Tarjeta Equipo</th>
-																		
-																		<th data-breakpoints="all">Fecha Operación</th>
-																		<th data-breakpoints="all">Contador/Horómetro</th>
 
-																		<?php foreach ($array_Dimensiones as &$dim) { ?>
-																			<th data-breakpoints="all">
-																				<?php echo $dim['IdPortalOne']; ?>
-																			</th>
-																		<?php } ?>
+														<div class="form-group">
+															<div class="col-lg-6">
+																<label class="control-label">Código Artículo</label>
+																<input type="text" class="form-control" id="id_articulo_hijo" value="" readonly>
+															</div>
+														
+															<div class="col-lg-6">
+																<label class="control-label">Artículo</label>
+																<input type="text" class="form-control" id="articulo_hijo" value="" readonly>
+															</div>
+														</div>
 
-																		<th data-breakpoints="all">Proyecto</th>
-																		<th data-breakpoints="all">Estado</th>
-																	</tr>
-																</thead>
-																<tbody>
-																	<?php while ($row_Componente = sqlsrv_fetch_array($SQL_Componentes)) { ?>
-																		<tr id="component<?php echo $row_Componente['id_tarjeta_equipo_hijo']; ?>">
-																			<td>
-																				<?php echo $row_Componente['id_articulo_hijo']; ?>
-																			</td>
-																			<td>
-																				<?php echo $row_Componente['articulo_hijo']; ?>
-																			</td>
-																			
-																			<td>
-																				<?php echo $row_Componente['unidad_hijo']; ?>
-																			</td>
-																			<td>
-																				<?php echo $row_Componente['ubicacion_hijo']; ?>
-																			</td>
+														<div class="form-group">
+															<div class="col-lg-6">
+																<label class="control-label">Unidad Medida</label>
+																<input type="text" class="form-control" id="unidad_hijo" value="" readonly>
+															</div>
+														
+															<div class="col-lg-6">
+																<label class="control-label">Ubicación</label>
+																<input type="text" class="form-control" id="ubicacion_hijo" value="" readonly>
+															</div>
+														</div>
 
-																			<td>
-																				<a href="tarjeta_equipo.php?id=<?php echo base64_encode($row_Componente['id_tarjeta_equipo_hijo']); ?>&tl=1"
-																					class="btn btn-success btn-xs" target="_blank">
-																					<i class="fa fa-folder-open-o"></i> Abrir
-																				</a>
-																				<button class="btn btn-danger btn-xs"
-																					onclick="DeleteComponent('<?php echo $row_Componente['id_tarjeta_equipo_padre']; ?>', '<?php echo $row_Componente['id_tarjeta_equipo_hijo']; ?>');">
-																					<i class="fa fa-trash"></i> Eliminar
-																				</button>
-																			</td>
-																			<td>
-																				<?php echo $row_Componente['id_tarjeta_equipo_hijo']; ?>
-																			</td>
+														<div class="form-group">
+															<div class="col-lg-6">
+																<label class="control-label">Acciones</label>
+																<!-- td>
+																	<a href="tarjeta_equipo.php?id=<?php echo base64_encode($row_Componente['id_tarjeta_equipo_hijo']); ?>&tl=1"
+																		class="btn btn-success btn-xs" target="_blank">
+																		<i class="fa fa-folder-open-o"></i> Abrir
+																	</a>
+																	<button class="btn btn-danger btn-xs"
+																		onclick="DeleteComponent('<?php echo $row_Componente['id_tarjeta_equipo_padre']; ?>', '<?php echo $row_Componente['id_tarjeta_equipo_hijo']; ?>');">
+																		<i class="fa fa-trash"></i> Eliminar
+																	</button>
+																</td -->
+															</div>
+														
+															<div class="col-lg-6">
+																<label class="control-label">ID Tarjeta Equipo</label>
+																<input type="text" class="form-control" id="id_tarjeta_equipo_hijo" value="" readonly>
+															</div>
+														</div>
 
-																			<td>
-																				<?php echo $row_Componente['fecha_operacion_hijo']; ?>
-																			</td>
-																			<td>
-																				<?php echo $row_Componente['contador_hijo']; ?>
-																			</td>
-																			
-																			<?php foreach ($array_Dimensiones as &$dim) { ?>
-																				<td>
-																					<?php $DimCode = intval($dim['DimCode'] ?? 0); ?>
-                        															<?php echo $row_Componente["dimension_$DimCode"]; ?>
-																				</td>
-																			<?php } ?>
+														<div class="form-group">
+															<div class="col-lg-6">
+																<label class="control-label">Fecha Operación</label>
+																<input type="text" class="form-control" id="fecha_operacion_hijo" value="" readonly>
+															</div>
+														
+															<div class="col-lg-6">
+																<label class="control-label">Contador/Horómetro</label>
+																<input type="text" class="form-control" id="contador_hijo" value="" readonly>
+															</div>
+														</div>
 
-																			<td>
-																				<?php echo $row_Componente['proyecto_hijo']; ?>
-																			</td>
-																			<td>
-																				<?php if ($row_Componente['id_estado_hijo'] == 'A') { ?>
-																					<span class='label label-info'>
-																						<?php echo $row_Componente['estado_hijo']; ?>
-																					</span>
-																				<?php } elseif ($row_Componente['id_estado_hijo'] == 'R') { ?>
-																					<span class='label label-danger'>
-																						<?php echo $row_Componente['estado_hijo']; ?>
-																					</span>
-																				<?php } elseif ($row_Componente['id_estado_hijo'] == 'T') { ?>
-																					<span class='label label-success'>
-																						<?php echo $row_Componente['estado_hijo']; ?>
-																					</span>
-																				<?php } elseif ($row_Componente['id_estado_hijo'] == 'L') { ?>
-																					<span class='label label-secondary'>
-																						<?php echo $row_Componente['estado_hijo']; ?>
-																					</span>
-																				<?php } elseif ($row_Componente['id_estado_hijo'] == 'I') { ?>
-																					<span class='label label-warning'>
-																						<?php echo $row_Componente['estado_hijo']; ?>
-																					</span>
-																				<?php } ?>
-																			</td>
-																		</tr>
+														<?php /*foreach ($array_Dimensiones as &$dim) { ?>
+															<th data-breakpoints="all">
+																<?php echo $dim['IdPortalOne']; ?>
+															</th>
+														<?php } */ ?>
+
+														<div class="form-group">
+															<div class="col-lg-6">
+																<label class="control-label">Proyecto</label>
+																<input type="text" class="form-control" id="proyecto_hijo" value="" readonly>
+															</div>
+														
+															<div class="col-lg-6">
+																<label class="control-label">Estado</label>
+																<input type="text" class="form-control" id="CardCodeCompras" value="" readonly>
+
+																<!-- td>
+																	<?php if ($row_Componente['id_estado_hijo'] == 'A') { ?>
+																		<span class='label label-info'>
+																			<?php echo $row_Componente['estado_hijo']; ?>
+																		</span>
+																	<?php } elseif ($row_Componente['id_estado_hijo'] == 'R') { ?>
+																		<span class='label label-danger'>
+																			<?php echo $row_Componente['estado_hijo']; ?>
+																		</span>
+																	<?php } elseif ($row_Componente['id_estado_hijo'] == 'T') { ?>
+																		<span class='label label-success'>
+																			<?php echo $row_Componente['estado_hijo']; ?>
+																		</span>
+																	<?php } elseif ($row_Componente['id_estado_hijo'] == 'L') { ?>
+																		<span class='label label-secondary'>
+																			<?php echo $row_Componente['estado_hijo']; ?>
+																		</span>
+																	<?php } elseif ($row_Componente['id_estado_hijo'] == 'I') { ?>
+																		<span class='label label-warning'>
+																			<?php echo $row_Componente['estado_hijo']; ?>
+																		</span>
 																	<?php } ?>
-																</tbody>
-															</table>
-														<?php } else { ?>
-															<br>
-															<i class="fa fa-search"	style="font-size: 18px; color: lightgray;"></i>
-															<span style="font-size: 13px; color: lightgray;">
-																No hay componentes para mostrar
-															</span>
-														<?php } ?>
+																</td -->
+															</div>
+														</div>
 													</div>
 												</div>
 											</div>
@@ -3279,9 +3270,6 @@ while ($row_ValPropiedad = sqlsrv_fetch_array($SQL_ValoresPropiedades)) {
 			};
 			$("#NombreClienteEquipo").easyAutocomplete(options);
 			$("#ItemCode").easyAutocomplete(optionsArticulos);
-
-			// SMM, 06/03/2024
-			$("#footableComponents").footable();
 		});
 
 		function EnviarFrm(P = 29) {
