@@ -619,8 +619,9 @@ $SQL_ConceptoSalida = Seleccionar('tbl_SalidaInventario_Conceptos', '*', $Filtro
 				let idArticulo = $(this).attr("id");
 				let whsCode = $(this).find('.WhsCode').text();
 
-				// SMM, 15/03/2024
-				let almacenDestino = $(this).find('.AlmacenDestino').length ? $(this).find('.Dim1').text() : "";
+				// SMM, 21/03/2024
+				let almacenDestino = $(this).find('.AlmacenDestino').length ? $(this).find('.AlmacenDestino').text() : "";
+				let conceptoSalida = $(this).find('.ConceptoSalida').length ? $(this).find('.ConceptoSalida').text() : "";
 
 				let dim1 = $(this).find('.Dim1').length ? $(this).find('.Dim1').text() : "";
 				let dim2 = $(this).find('.Dim2').length ? $(this).find('.Dim2').text() : "";
@@ -648,6 +649,7 @@ $SQL_ConceptoSalida = Seleccionar('tbl_SalidaInventario_Conceptos', '*', $Filtro
 					item: idArticulo,
 					whscode: whsCode.trim(),
 					towhscode: almacenDestino.trim(),
+					concepto: conceptoSalida.trim(),
 					dim1: dim1.trim(),
 					dim2: dim2.trim(),
 					dim3: dim3.trim(),
