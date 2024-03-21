@@ -126,9 +126,8 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Salida de inventario
 			"'" . $_POST['DireccionFacturacion'] . "'",
 			"'" . $_POST['SucursalDestino'] . "'",
 			"'" . $_POST['DireccionDestino'] . "'",
-			"'" . $_POST['CondicionPago'] . "'",
-
-			// Se eliminaron las dimensiones, SMM 23/11/2022
+			
+			"'" . ($_POST['CondicionPago'] ?? "") . "'",
 
 			"NULL",
 			"'N'",
@@ -136,14 +135,16 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Salida de inventario
 			$AnioEntrega,
 			$EntregaDescont,
 			$ValorCuotaDesc,
-			"'" . $_POST['Almacen'] . "'",
+			
+			"'" . ($_POST['Almacen'] ?? "") . "'",
+			
 			"'" . $_POST['Empleado'] . "'",
 			"'" . $_SESSION['CodUser'] . "'",
 			"'" . $_SESSION['CodUser'] . "'",
 			"$Type",
 
 			// SMM, 23/12/2022
-			"'" . $_POST['ConceptoSalida'] . "'",
+			"'" . ($_POST['ConceptoSalida'] ?? "") . "'",
 		);
 
 		$SQL_CabeceraSalidaInv = EjecutarSP('sp_tbl_SalidaInventario', $ParametrosCabSalidaInv, $_POST['P']);

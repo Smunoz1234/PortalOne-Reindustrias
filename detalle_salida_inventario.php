@@ -75,7 +75,7 @@ $ParamAlmacen = array(
     "'" . $_SESSION['CodUser'] . "'",
     "'60'", // Tipo de Documento, debe estar parámetrizado en la gestión de series.
 );
-if (isset($_GET['dt_TI']) && ($_GET['dt_TI'] != "")) {
+if ($dt_TI) {
     array_push($ParamAlmacen, "2");
 }
 $SQL_Almacen = EjecutarSP('sp_ConsultarAlmacenesUsuario', $ParamAlmacen);
@@ -415,10 +415,10 @@ if ($sw == 1) {
 				<select id="WhsCode<?php echo $i; ?>" name="WhsCode[]" class="form-control" onChange="ActualizarDatos('WhsCode',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);ActStockAlmacen('WhsCode',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if (($row['LineStatus'] == 'C') || ($type == 2) || ($Estado == 2)) {echo "readonly";}?>>
 				  <option value="">Seleccione...</option>
 				  <?php while ($row_Almacen = sqlsrv_fetch_array($SQL_Almacen)) {?>
-						<?php $CodigoAlmacen = (($dt_TI == 0) && ($type == 1)) ? $row_Almacen['WhsCode'] : $row_Almacen['ToWhsCode'];?>
-						<?php $NombreAlmacen = (($dt_TI == 0) && ($type == 1)) ? $row_Almacen['WhsName'] : $row_Almacen['ToWhsName'];?>
+						<?php $CodigoAlmacen = (($dt_TI == 0) && ($type == 1)) ? ($row_Almacen['WhsCode'] ?? "") : ($row_Almacen['ToWhsCode'] ?? "");?>
+						<?php $NombreAlmacen = (($dt_TI == 0) && ($type == 1)) ? ($row_Almacen['WhsName'] ?? "") : ($row_Almacen['ToWhsName'] ?? "");?>
 						<!-- option><?php //print_r($row_Almacen);?></option-->
-						<option value="<?php echo $CodigoAlmacen; ?>" <?php if ((isset($row['WhsCode'])) && (strcmp($CodigoAlmacen, $row['WhsCode']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $NombreAlmacen; ?></option>
+						<option value="<?php echo $CodigoAlmacen; ?>" <?php if ((isset($row['WhsCode'])) && (strcmp($CodigoAlmacen, $row['WhsCode']) == 0)) {echo "selected";}?>><?php echo $NombreAlmacen; ?></option>
 				  <?php }?>
 				</select>
 			</td>
