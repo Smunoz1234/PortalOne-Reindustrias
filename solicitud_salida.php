@@ -507,10 +507,16 @@ if ($edit == 0) {
 		$row_ClienteDefault = sqlsrv_fetch_array($SQL_ClienteDefault);
 
 		$NombreClienteDefault = $row_ClienteDefault["NombreBuscarCliente"]; // NombreCliente
-		$SucursalDestinoDefault = "DITAR S.A";
-		$SucursalFacturacionDefault = "DITAR S.A.";
+		$SucursalDestinoDefault = "NEIVA";
+		$SucursalFacturacionDefault = "NEIVA";
 	}
 }
+
+// SMM, 21/03/2024
+$SQL_ListaPrecios = Seleccionar('uvw_Sap_tbl_ListaPrecios', '*');
+
+// Empleado de ventas. SMM, 21/03/2024 
+$SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', "Estado = 'Y'", 'DE_EmpVentas');
 
 // SMM, 14/10/2023
 $FiltroPrj = "";
@@ -667,6 +673,34 @@ function verAutorizacion() {
 				}
 			});
 
+			// Inicio, buscar lista precio SN.
+			let cardcode = carcode;
+			document.cookie = `cardcode=${cardcode}`;
+
+			$.ajax({
+				url: "ajx_buscar_datos_json.php",
+				data: {
+					type: 45,
+					id: cardcode
+				},
+				dataType: 'json',
+				success: function (data) {
+					console.log("Line 891", data);
+
+					document.getElementById('IdListaPrecio').value = data.IdListaPrecio;
+					$('#IdListaPrecio').trigger('change');
+
+					// document.getElementById('Exento').value = data.SujetoImpuesto;
+				},
+				error: function (error) {
+					// console.log("Linea 693", error.responseText);
+					console.log("El cliente no tiene IdListaPrecio");
+
+					$('.ibox-content').toggleClass('sk-loading', false);
+				}
+			});
+			// Fin, buscar lista precio SN.
+
 			// || isset($_GET['a'])
 			<?php if (($edit == 0) && ($sw_error == 0)) { // Limpiar carrito detalle. ?>
 				$.ajax({
@@ -731,24 +765,26 @@ function verAutorizacion() {
 			<?php if (isset($_GET['a'])) { ?>
 					frame.src="detalle_solicitud_salida.php";
 			<?php } else { ?>
-					// SMM, 27/03/2023
-					let serie = document.getElementById('Serie').value;
+					// Se debe esperar a que se elimine la información de la tabla temporal antes de cargar el detalle. 20/02/2024
+					setTimeout(() => {
+						let serie = document.getElementById('Serie').value;
 
-					// Antiguo fragmento de código
-					<?php if ($edit == 0) { ?>
-							if(carcode!="") {
-								frame.src=`detalle_solicitud_salida.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode=${carcode}&serie=${serie}`;
-							}else{
-								frame.src="detalle_solicitud_salida.php";
-							}
-					<?php } else { ?>
-							if(carcode!="") {
-								frame.src="detalle_solicitud_salida.php?id=<?php echo base64_encode($row['ID_SolSalida']); ?>&evento=<?php echo base64_encode($row['IdEvento']); ?>&type=2";
-							}else{
-								frame.src="detalle_solicitud_salida.php";
-							}
-					<?php } ?>
-					// Hasta aquí
+						// Antiguo fragmento de código
+						<?php if ($edit == 0) { ?>
+								if(carcode!="") {
+									frame.src=`detalle_solicitud_salida.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode=${carcode}&serie=${serie}`;
+								}else{
+									frame.src="detalle_solicitud_salida.php";
+								}
+						<?php } else { ?>
+								if(carcode!="") {
+									frame.src="detalle_solicitud_salida.php?id=<?php echo base64_encode($row['ID_SolSalida']); ?>&evento=<?php echo base64_encode($row['IdEvento']); ?>&type=2";
+								}else{
+									frame.src="detalle_solicitud_salida.php";
+								}
+						<?php } ?>
+						// Hasta aquí
+					}, 500);
 			<?php } ?>
 
 
@@ -1730,13 +1766,26 @@ function verAutorizacion() {
 				<div class="form-group">&nbsp;</div>
 				<div class="col-lg-8">
 					<div class="form-group">
-						<label class="col-lg-2">Empleado de ventas</label>
+						<label class="col-lg-2">Empleado de ventas <span class="text-danger">*</span></label>
 						<div class="col-lg-5">
-							<input type="text" name="EmpleadoVentas" form="CrearSolicitudSalida" class="form-control" id="EmpleadoVentas" value="<?php if ($edit == 1) {
-								echo $row['NombreEmpleado'];
-							} else {
-								echo $_SESSION['NomUser'];
-							} ?>" readonly>
+							<select class="form-control select2" name="EmpleadoVentas" id="EmpleadoVentas"
+								form="CrearSolicitudSalida" required <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
+									echo "disabled";
+								} ?>>
+								<?php while ($row_EmpleadosVentas = sqlsrv_fetch_array($SQL_EmpleadosVentas)) { ?>
+									<option value="<?php echo $row_EmpleadosVentas['ID_EmpVentas']; ?>" <?php if ($edit == 0 && $sw_error == 0) {
+											if (isset($_GET['Empleado']) && (strcmp($row_EmpleadosVentas['ID_EmpVentas'], base64_decode($_GET['Empleado'])) == 0)) {
+												echo "selected";
+											} elseif (($_SESSION['CodigoEmpVentas'] != "") && (!isset($_GET['Empleado'])) && (strcmp($row_EmpleadosVentas['ID_EmpVentas'], $_SESSION['CodigoEmpVentas']) == 0)) {
+												echo "selected";
+											}
+										} elseif ($edit == 1 || $sw_error == 1) {
+											if (($row['SlpCode'] != "") && (strcmp($row_EmpleadosVentas['ID_EmpVentas'], $row['SlpCode']) == 0)) {
+												echo "selected";
+											}
+										} ?>><?php echo $row_EmpleadosVentas['DE_EmpVentas']; ?></option>
+								<?php } ?>
+							</select>
 						</div>
 					</div>
 					<div class="form-group">

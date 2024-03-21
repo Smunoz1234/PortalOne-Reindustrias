@@ -54,7 +54,10 @@ $SQL = EjecutarSP('sp_ConsultarArticulos_ListaPrecios', $Param);
             <th data-breakpoints="all">Precio Sin IVA</th> 
             <th data-breakpoints="all">Cod. Almacen</th>
             <th data-breakpoints="all">Nombre Almacen</th>
+
             <th data-breakpoints="all">Almacen Destino</th>
+            <th data-breakpoints="all">Concepto Salida</th>
+            
             <th data-breakpoints="all">Maneja Serial</th>
             <th data-breakpoints="all">Maneja Lote</th>
             <th data-breakpoints="all">Stock General</th>
@@ -114,6 +117,9 @@ $SQL = EjecutarSP('sp_ConsultarArticulos_ListaPrecios', $Param);
                 </td>
                 <td class="AlmacenDestino">
                     <?php echo $_POST['AlmacenDestino'] ?? ""; ?>
+                </td>
+                <td class="ConceptoSalida">
+                    <?php echo $_POST['ConceptoSalida'] ?? ""; ?>
                 </td>
                 <td>
                     <?php echo $row['ManejaSerial']; ?>

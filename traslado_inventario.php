@@ -744,9 +744,6 @@ $SQL_EstadoDoc = Seleccionar('uvw_tbl_EstadoDocSAP', '*');
 //Estado autorizacion
 $SQL_EstadoAuth = Seleccionar('uvw_Sap_tbl_EstadosAuth', '*');
 
-//Empleado de ventas
-$SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', '', 'DE_EmpVentas');
-
 //Series de documento
 $ParamSerie = array(
 	"'" . $_SESSION['CodUser'] . "'",
@@ -814,10 +811,16 @@ if ($edit == 0) {
 		$row_ClienteDefault = sqlsrv_fetch_array($SQL_ClienteDefault);
 
 		$NombreClienteDefault = $row_ClienteDefault["NombreBuscarCliente"]; // NombreCliente
-		$SucursalDestinoDefault = "DITAR S.A";
-		$SucursalFacturacionDefault = "DITAR S.A.";
+		$SucursalDestinoDefault = "NEIVA";
+		$SucursalFacturacionDefault = "NEIVA";
 	}
 }
+
+// SMM, 21/03/2024
+$SQL_ListaPrecios = Seleccionar('uvw_Sap_tbl_ListaPrecios', '*');
+
+// Empleado de ventas. SMM, 21/03/2024 
+$SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', "Estado = 'Y'", 'DE_EmpVentas');
 
 // Stiven Muñoz Murillo, 29/08/2022
 $row_encode = isset($row) ? json_encode($row) : "";
@@ -928,6 +931,34 @@ function verAutorizacion() {
 			var frame=document.getElementById('DataGrid');
 			var carcode=document.getElementById('CardCode').value;
 
+			// Inicio, buscar lista precio SN.
+			let cardcode = carcode;
+			document.cookie = `cardcode=${cardcode}`;
+
+			$.ajax({
+				url: "ajx_buscar_datos_json.php",
+				data: {
+					type: 45,
+					id: cardcode
+				},
+				dataType: 'json',
+				success: function (data) {
+					console.log("Line 891", data);
+
+					document.getElementById('IdListaPrecio').value = data.IdListaPrecio;
+					$('#IdListaPrecio').trigger('change');
+
+					// document.getElementById('Exento').value = data.SujetoImpuesto;
+				},
+				error: function (error) {
+					// console.log("Linea 693", error.responseText);
+					console.log("El cliente no tiene IdListaPrecio");
+
+					$('.ibox-content').toggleClass('sk-loading', false);
+				}
+			});
+			// Fin, buscar lista precio SN.
+
 			<?php if ($edit == 0 && $dt_DR == 0 && $dt_SS == 0 && $sw_error == 0) { ?>
 				$.ajax({
 					type: "POST",
@@ -998,21 +1029,24 @@ function verAutorizacion() {
 			<?php if (isset($_GET['a'])) { ?>
 					frame.src="detalle_traslado_inventario.php";
 			<?php } else { ?>
-					// Antiguo fragmento de código
-					<?php if ($edit == 0) { ?>
+					// Se debe esperar a que se elimine la información de la tabla temporal antes de cargar el detalle. 20/02/2024
+					setTimeout(() => {
+						// Antiguo fragmento de código
+						<?php if ($edit == 0) { ?>
 							if(carcode!="") {
 								frame.src="detalle_traslado_inventario.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode="+carcode;
 							}else{
 								frame.src="detalle_traslado_inventario.php";
 							}
-					<?php } else { ?>
+						<?php } else { ?>
 							if(carcode!="") {
 								frame.src="detalle_traslado_inventario.php?id=<?php echo base64_encode($row['ID_TrasladoInv']); ?>&evento=<?php echo base64_encode($row['IdEvento']); ?>&docentry=<?php echo base64_encode($row['DocEntry']); ?>&type=2";
 							}else{
 								frame.src="detalle_traslado_inventario.php";
 							}
-					<?php } ?>
-					// Hasta aquí
+						<?php } ?>
+						// Hasta aquí
+					}, 500);
 			<?php } ?>
 
 			$('.ibox-content').toggleClass('sk-loading',false);
