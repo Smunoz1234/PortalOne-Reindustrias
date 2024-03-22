@@ -571,9 +571,6 @@ $SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*");
 $id_tipo_equipo = isset($_GET["id_tipo_equipo"]) ? $_GET["id_tipo_equipo"] : ($row["IdTipoEquipoPropiedad"] ?? ""); 
 $SQL_Propiedades = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Propiedades", "*","id_tipo_equipo = $id_tipo_equipo");
 
-// SMM, 06/03/2024
-$SQL_Componentes = Seleccionar("uvw_tbl_TarjetaEquipo_Componentes", "*","id_tarjeta_equipo_padre = $IdTarjetaEquipo");
-
 // SMM, 28/02/2024
 $SQL_Campo = Seleccionar("tbl_TarjetaEquipo_TiposEquipos_Campos", "*","id_tipo_equipo_campo = 1");
 $row_Campo = sqlsrv_fetch_array($SQL_Campo);

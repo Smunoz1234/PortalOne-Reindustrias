@@ -105,8 +105,28 @@ $textPadre = ($row_Padre["ItemCode"] ?? "") . " - " . ($row_Padre["ItemName"] ??
 		
 		if (node.children.length === 0) {
 			console.log(`El nodo "${node.id}" es una hoja.`);
-
 			$("#id_tarjeta_equipo_hijo").text(node.id);
+
+			$.ajax({
+				url: "ajx_buscar_datos_json.php",
+				data: { type: 55, id: node.id, padre: <?php echo $idPadre; ?> },
+				dataType: 'json',
+				success: function (data) {
+					console.log("Line 115", data);
+
+					document.getElementById('id_articulo_hijo').value = data.id_articulo_hijo;
+					document.getElementById('articulo_hijo').value = data.articulo_hijo;
+					document.getElementById('unidad_hijo').value = data.unidad_hijo;
+					document.getElementById('ubicacion_hijo').value = data.ubicacion_hijo;
+					document.getElementById('fecha_operacion_hijo').value = data.fecha_operacion_hijo;
+					document.getElementById('contador_hijo').value = data.contador_hijo;
+					document.getElementById('proyecto_hijo').value = data.proyecto_hijo;
+					document.getElementById('estado_hijo').value = data.estado_hijo;
+				},
+				error: function (data) {
+					console.error("Line 130", data);
+				}
+			});
 		}
 	}
 </script>

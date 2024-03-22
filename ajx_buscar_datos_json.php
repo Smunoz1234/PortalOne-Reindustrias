@@ -838,6 +838,27 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
         echo json_encode($records);
     }
 
+    // SMM, 22/03/2024
+    elseif ($type == 55) { // Consultar un componente de TE en particular.
+        $IdTarjetaEquipo = $_GET["padre"] ?? "";
+        $IdComponente = $_GET["id"] ?? "";
+        
+        $SQL = Seleccionar("uvw_tbl_TarjetaEquipo_Componentes", "*", "id_tarjeta_equipo_padre = '$IdTarjetaEquipo' AND id_tarjeta_equipo_hijo = '$IdComponente'");
+        $row = sqlsrv_fetch_array($SQL);
+        
+        $records = array(
+            "id_articulo_hijo" => $row["id_articulo_hijo"],
+            "articulo_hijo" => $row["articulo_hijo"],
+            "unidad_hijo" => $row["unidad_hijo"],
+            "ubicacion_hijo" => $row["ubicacion_hijo"],
+            "fecha_operacion_hijo" => $row["fecha_operacion_hijo"],
+            "contador_hijo" => $row["contador_hijo"],
+            "proyecto_hijo" => $row["proyecto_hijo"],
+            "estado_hijo" => $row["estado_hijo"],
+        );
+        echo json_encode($records);
+    }
+
     // Después de los condicionales
     // Se cierra la conexión a la BD
     sqlsrv_close($conexion);
