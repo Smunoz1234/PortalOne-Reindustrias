@@ -1162,7 +1162,7 @@ function verAutorizacion() {
 										<input type="hidden" id="ClienteSN" name="ClienteSN">
 										<input type="text" class="form-control" id="NombreClienteSN"
 											name="NombreClienteSN" placeholder="Digite para buscar..."
-											required="required">
+											required>
 									</div>
 									<div class="col-lg-5">
 										<label class="control-label">Contacto</label>
@@ -1447,7 +1447,7 @@ function verAutorizacion() {
 								echo $ClienteDefault;
 							} ?>">
 
-							<input autocomplete="off" name="CardName" type="text" required="required" class="form-control" id="CardName" placeholder="Digite para buscar..." value="<?php if (($edit == 1) || ($sw_error == 1)) {
+							<input autocomplete="off" name="CardName" type="text" required class="form-control" id="CardName" placeholder="Digite para buscar..." value="<?php if (($edit == 1) || ($sw_error == 1)) {
 								echo $row['NombreCliente'];
 							} elseif ($dt_SS == 1) {
 								echo $row_Cliente['NombreCliente'];
@@ -1502,7 +1502,7 @@ function verAutorizacion() {
 								class="text-danger">*</span></label>
 						<div class="col-lg-5">
 							<select class="form-control select2" name="SucursalDestino"
-								id="SucursalDestino" required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
+								id="SucursalDestino" required <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
 									echo "disabled";
 								} ?>>
 								<?php if (($edit == 0) && ($dt_SS == 0)) { ?>
@@ -1616,7 +1616,7 @@ function verAutorizacion() {
 					<div class="form-group">
 						<label class="col-lg-5">Fecha de contabilización <span class="text-danger">*</span></label>
 						<div class="col-lg-7 input-group date">
-							 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="DocDate" type="text" required="required" class="form-control" id="DocDate" value="<?php if ($edit == 1 || $sw_error == 1) {
+							 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="DocDate" type="text" required class="form-control" id="DocDate" value="<?php if ($edit == 1 || $sw_error == 1) {
 								 echo $row['DocDate'];
 							 } else {
 								 echo date('Y-m-d');
@@ -1628,7 +1628,7 @@ function verAutorizacion() {
 					<div class="form-group">
 						<label class="col-lg-5">Fecha de requerida salida <span class="text-danger">*</span></label>
 						<div class="col-lg-7 input-group date">
-							 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="DocDueDate" type="text" required="required" class="form-control" id="DocDueDate" value="<?php if ($edit == 1 || $sw_error == 1) {
+							 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="DocDueDate" type="text" required class="form-control" id="DocDueDate" value="<?php if ($edit == 1 || $sw_error == 1) {
 								 echo $row['DocDueDate'];
 							 } else {
 								 echo date('Y-m-d');
@@ -1640,7 +1640,7 @@ function verAutorizacion() {
 					<div class="form-group">
 						<label class="col-lg-5">Fecha del documento <span class="text-danger">*</span></label>
 						<div class="col-lg-7 input-group date">
-							 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="TaxDate" type="text" required="required" class="form-control" id="TaxDate" value="<?php if ($edit == 1 || $sw_error == 1) {
+							 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="TaxDate" type="text" required class="form-control" id="TaxDate" value="<?php if ($edit == 1 || $sw_error == 1) {
 								 echo $row['TaxDate'];
 							 } else {
 								 echo date('Y-m-d');
@@ -1713,7 +1713,7 @@ function verAutorizacion() {
 					<!-- Inicio, Empleado -->
 					<label class="col-lg-1 control-label">Solicitado para</label>
 					<div class="col-lg-3">
-						<select name="Empleado" class="form-control" id="Empleado" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
+						<select name="Empleado" class="form-control select2" id="Empleado" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
 							echo "disabled";
 						} ?>>
 							<option value="">Seleccione...</option>
@@ -1767,7 +1767,7 @@ function verAutorizacion() {
 					<!-- Inicio, Proyecto -->
 					<label class="col-lg-1 control-label">Proyecto <span class="text-danger">*</span></label>
 					<div class="col-lg-3">
-						<select id="PrjCode" name="PrjCode" class="form-control select2" required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
+						<select id="PrjCode" name="PrjCode" class="form-control select2" required <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
 							echo "disabled";
 						} ?>>
 								<option value="">(NINGUNO)</option>
@@ -1945,7 +1945,7 @@ function verAutorizacion() {
 					<div class="form-group">
 						<label class="col-lg-2">Encargado del departamento <span class="text-danger">*</span></label>
 						<div class="col-lg-5">
-							<select name="EmpleadoVentas" class="form-control" id="EmpleadoVentas" form="CrearTrasladoInventario" required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
+							<select name="EmpleadoVentas" class="form-control" id="EmpleadoVentas" form="CrearTrasladoInventario" required <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
 								echo "disabled";
 							} ?>>
 							  <?php while ($row_EmpleadosVentas = sqlsrv_fetch_array($SQL_EmpleadosVentas)) { ?>
