@@ -549,7 +549,7 @@ if ($edit == 1 && $sw_error == 0) {
 	$SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', '', 'DE_EmpVentas');
 
 	// Solicitud de compra
-	$Cons = "SELECT * FROM uvw_tbl_SolicitudCompra_Borrador WHERE DocEntry='$IdSolicitudCompra' AND IdEvento='$IdEvento'";
+	$Cons = "SELECT * FROM uvw_tbl_SolicitudCompra WHERE DocEntry='$IdSolicitudCompra' AND IdEvento='$IdEvento'";
 	$SQL = sqlsrv_query($conexion, $Cons);
 	$row = sqlsrv_fetch_array($SQL);
 

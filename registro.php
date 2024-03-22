@@ -3340,10 +3340,14 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     sqlsrv_close($conexion);
                     exit();
                 }
-            } elseif ($_GET['doctype'] == 16) { //Orden de compra
+            } elseif ($_GET['doctype'] == 16) { // Orden de compra
+                $nameCampo = $_GET['name'] ?? "";
+                $nameCampo = ($nameCampo == "EmpVentas") ? "EmpCompras" : $nameCampo;
+                $nameCampo = "'$nameCampo'";
+                
                 if ($_GET['type'] == 1) { //Actualiza campos en carrito
                     $Parametros = array(
-                        "'" . $_GET['name'] . "'",
+                        $nameCampo,
                         $valor,
                         "'" . $_GET['line'] . "'",
                         "'" . $_GET['cardcode'] . "'",
@@ -3363,7 +3367,7 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                 }
                 if ($_GET['type'] == 2) { //Actualiza campos en detalle editando
                     $Parametros = array(
-                        "'" . $_GET['name'] . "'",
+                        $nameCampo,
                         $valor,
                         "'" . $_GET['line'] . "'",
                         "'" . $_GET['id'] . "'",

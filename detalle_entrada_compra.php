@@ -544,7 +544,7 @@ function ConsultarArticulo(articulo){
 				<!-- Dimensiones dinámicas, hasta aquí -->
 
 				<th>Proyecto</th>
-				<th>Empleado de ventas</th>
+				<th>Encargado de compras</th>
 				
 				<th>Texto libre</th>
 				<th>Precio</th>
