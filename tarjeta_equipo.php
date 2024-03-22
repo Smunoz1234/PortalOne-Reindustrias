@@ -2722,12 +2722,17 @@ while ($row_ValPropiedad = sqlsrv_fetch_array($SQL_ValoresPropiedades)) {
 										<div id="tab-components" class="tab-pane" style="<?php if($edit != 1) { echo "display: none"; } ?>">
 											<div class="panel-body">
 												<div class="row">
-													<div class="col-lg-3">
+													<div class="col-lg-2">
 														<button type="button" onclick="AddComponents()" class="alkin btn btn-primary"><i class="fa fa-plus-circle"></i> Agregar Componente</button>
 													</div>
-													<div class="col-lg-3">
-														<button type="button" id="btnExpandir" class="alkin btn btn-info"><i class="fa fa-plus-circle"></i> Expandir</button>
-														<button type="button" id="btnContraer" class="alkin btn btn-warning"><i class="fa fa-minus-circle"></i> Comprimir</button>
+													<div class="col-lg-4" style="text-align: right;">
+														<button type="button" id="btnExpandir" class="btn btn-info"><i class="fa fa-plus-circle"></i> Expandir</button>
+														<button type="button" id="btnContraer" class="btn btn-warning"><i class="fa fa-minus-circle"></i> Comprimir</button>
+													</div>
+
+													<div class="col-lg-6" style="text-align: right;">
+														<button type="button" onclick="OpenComponent()" class="btn btn-success"><i class="fa fa-plus-circle"></i> Abrir Componente</button>
+														<button type="button" onclick="DeleteComponent()" class="btn btn-danger"><i class="fa fa-minus-circle"></i> Eliminar Componente</button>
 													</div>
 												</div>
 
@@ -2742,7 +2747,7 @@ while ($row_ValPropiedad = sqlsrv_fetch_array($SQL_ValoresPropiedades)) {
 
 													<div class="col-lg-6">
 														<label class="control-label text-danger col-lg-10 border-bottom" style="text-align: left;">
-															Información del componente
+															Información del componente <span id="id_tarjeta_equipo_hijo" style="visibility: hidden;"></span>
 														</label>
 
 														<div class="form-group">
@@ -2771,27 +2776,6 @@ while ($row_ValPropiedad = sqlsrv_fetch_array($SQL_ValoresPropiedades)) {
 
 														<div class="form-group">
 															<div class="col-lg-6">
-																<label class="control-label">Acciones</label>
-																<!-- td>
-																	<a href="tarjeta_equipo.php?id=<?php echo base64_encode($row_Componente['id_tarjeta_equipo_hijo']); ?>&tl=1"
-																		class="btn btn-success btn-xs" target="_blank">
-																		<i class="fa fa-folder-open-o"></i> Abrir
-																	</a>
-																	<button class="btn btn-danger btn-xs"
-																		onclick="DeleteComponent('<?php echo $row_Componente['id_tarjeta_equipo_padre']; ?>', '<?php echo $row_Componente['id_tarjeta_equipo_hijo']; ?>');">
-																		<i class="fa fa-trash"></i> Eliminar
-																	</button>
-																</td -->
-															</div>
-														
-															<div class="col-lg-6">
-																<label class="control-label">ID Tarjeta Equipo</label>
-																<input type="text" class="form-control" id="id_tarjeta_equipo_hijo" value="" readonly>
-															</div>
-														</div>
-
-														<div class="form-group">
-															<div class="col-lg-6">
 																<label class="control-label">Fecha Operación</label>
 																<input type="text" class="form-control" id="fecha_operacion_hijo" value="" readonly>
 															</div>
@@ -2802,12 +2786,6 @@ while ($row_ValPropiedad = sqlsrv_fetch_array($SQL_ValoresPropiedades)) {
 															</div>
 														</div>
 
-														<?php /*foreach ($array_Dimensiones as &$dim) { ?>
-															<th data-breakpoints="all">
-																<?php echo $dim['IdPortalOne']; ?>
-															</th>
-														<?php } */ ?>
-
 														<div class="form-group">
 															<div class="col-lg-6">
 																<label class="control-label">Proyecto</label>
@@ -2816,31 +2794,7 @@ while ($row_ValPropiedad = sqlsrv_fetch_array($SQL_ValoresPropiedades)) {
 														
 															<div class="col-lg-6">
 																<label class="control-label">Estado</label>
-																<input type="text" class="form-control" id="CardCodeCompras" value="" readonly>
-
-																<!-- td>
-																	<?php if ($row_Componente['id_estado_hijo'] == 'A') { ?>
-																		<span class='label label-info'>
-																			<?php echo $row_Componente['estado_hijo']; ?>
-																		</span>
-																	<?php } elseif ($row_Componente['id_estado_hijo'] == 'R') { ?>
-																		<span class='label label-danger'>
-																			<?php echo $row_Componente['estado_hijo']; ?>
-																		</span>
-																	<?php } elseif ($row_Componente['id_estado_hijo'] == 'T') { ?>
-																		<span class='label label-success'>
-																			<?php echo $row_Componente['estado_hijo']; ?>
-																		</span>
-																	<?php } elseif ($row_Componente['id_estado_hijo'] == 'L') { ?>
-																		<span class='label label-secondary'>
-																			<?php echo $row_Componente['estado_hijo']; ?>
-																		</span>
-																	<?php } elseif ($row_Componente['id_estado_hijo'] == 'I') { ?>
-																		<span class='label label-warning'>
-																			<?php echo $row_Componente['estado_hijo']; ?>
-																		</span>
-																	<?php } ?>
-																</td -->
+																<input type="text" class="form-control" id="estado_hijo" value="" readonly>
 															</div>
 														</div>
 													</div>
@@ -3311,13 +3265,30 @@ while ($row_ValPropiedad = sqlsrv_fetch_array($SQL_ValoresPropiedades)) {
 			}
 		}
 
+		// SMM, 22/03/2024
+		function OpenComponent() {
+			let IdTarjetaEquipoComponente = $("#id_tarjeta_equipo_hijo").text() || "";
+
+			if (IdTarjetaEquipoComponente != "") {
+				self.name = 'opener';
+				remote = open(`tarjeta_equipo.php?id='${Base64.encode(IdTarjetaEquipoComponente)}'&ext=1&tl=1`, 'remote', 'location=no,scrollbar=yes,menubars=no,toolbars=no,resizable=yes,fullscreen=yes,status=yes');
+				remote.focus();
+			}
+		}
+
 		// SMM, 07/03/2024
-		function DeleteComponent(idPadre, idHijo) {
-			let componente = {
-				type: 3,
-				id_padre: idPadre,
-				id_hijo: idHijo
-			};
+		function DeleteComponent() {
+			let idPadre = "<?php echo $IdTarjetaEquipo ?? ""; ?>";
+			let idHijo = $("#id_tarjeta_equipo_hijo").text() || "";
+
+			let componente = {};
+			if (idHijo != "") {
+				componente = {
+					type: 3,
+					id_padre: idPadre,
+					id_hijo: idHijo
+				};
+			}
 
 			// JSON que se esta enviando a eliminar.
 			console.log(componente);

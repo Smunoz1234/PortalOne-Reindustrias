@@ -82,7 +82,7 @@ $textPadre = ($row_Padre["ItemCode"] ?? "") . " - " . ($row_Padre["ItemName"] ??
 				"data": dataTree
 			}
 		}).bind("select_node.jstree", function (event, data) {
-			Seleccionar(data.node.id);
+			Seleccionar(data.node);
 		});
 
 		// Función para expandir todo el árbol
@@ -100,18 +100,13 @@ $textPadre = ($row_Padre["ItemCode"] ?? "") . " - " . ($row_Padre["ItemName"] ??
 	});
 
 	// SMM, 06/03/2024
-	function Seleccionar(id) {
-		console.log(`Has seleccionado el nodo "${id}"`);
+	function Seleccionar(node) {
+		console.log(`Has seleccionado el nodo "${node.id}"`);
 		
-		// Resaltar con la clase personalizada "highlighted".
-		// $("#footableComponents tbody tr").removeClass("highlighted");
-		// $(`#component${id}`).addClass("highlighted");
+		if (node.children.length === 0) {
+			console.log(`El nodo "${node.id}" es una hoja.`);
 
-		// Expandir componente seleccionado.
-		$("#footableComponents tbody tr").data('expanded', false);
-		$(`#component${id}`).data('expanded', true);
-
-		// Re-renderizar Footable.
-		$('#footableComponents').footable();
+			$("#id_tarjeta_equipo_hijo").text(node.id);
+		}
 	}
 </script>
