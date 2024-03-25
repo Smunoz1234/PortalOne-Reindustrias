@@ -1125,7 +1125,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 														} ?> form="CrearSolicitudCompra"
 															class="form-control required" name="ComentariosAutor"
 															id="ComentariosAutor" type="text" maxlength="250" rows="4"><?php if ($edit == 1 || $sw_error == 1) {
-																echo $row['ComentariosAutor'];
+																echo $row['ComentariosAutor'] ?? "";
 															} elseif (isset($_GET['ComentariosAutor'])) {
 																echo base64_decode($_GET['ComentariosAutor']);
 															} ?></textarea>
