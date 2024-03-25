@@ -323,8 +323,8 @@ if (isset($_GET['dt_LS']) && ($_GET['dt_LS']) == 1) { //Verificar que viene de u
 	$row_Cliente = sqlsrv_fetch_array($SQL_Cliente);
 
 	// SMM, 29/09/2023
-	$BillToDef = $row_Cliente["BillToDef"];
-	$ShipToDef = $row_Cliente["ShipToDef"];
+	$BillToDef = $row_Cliente["BillToDef"] ?? "";
+	$ShipToDef = $row_Cliente["ShipToDef"] ?? "";
 
 	//Contacto cliente
 	$SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ProveedorContactos', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreContacto');
@@ -377,8 +377,8 @@ if (isset($_GET['dt_OV']) && ($_GET['dt_OV']) == 1) { // Verificar que viene de 
 	$row_Cliente = sqlsrv_fetch_array($SQL_Cliente);
 
 	// SMM, 29/09/2023
-	$BillToDef = $row_Cliente["BillToDef"];
-	$ShipToDef = $row_Cliente["ShipToDef"];
+	$BillToDef = $row_Cliente["BillToDef"] ?? "";
+	$ShipToDef = $row_Cliente["ShipToDef"] ?? "";
 
 	//Contacto cliente
 	$SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreContacto');
@@ -424,8 +424,8 @@ if (isset($_GET['dt_OF']) && ($_GET['dt_OF']) == 1) { //Verificar que viene de u
 	$row_Cliente = sqlsrv_fetch_array($SQL_Cliente);
 
 	// SMM, 29/09/2023
-	$BillToDef = $row_Cliente["BillToDef"];
-	$ShipToDef = $row_Cliente["ShipToDef"];
+	$BillToDef = $row_Cliente["BillToDef"] ?? "";
+	$ShipToDef = $row_Cliente["ShipToDef"] ?? "";
 
 	//Contacto cliente
 	$SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ProveedorContactos', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreContacto');
@@ -460,8 +460,8 @@ if (isset($_GET['dt_FC']) && ($_GET['dt_FC']) == 1) { //Verificar que viene de u
 	$row_Cliente = sqlsrv_fetch_array($SQL_Cliente);
 
 	// SMM, 29/09/2023
-	$BillToDef = $row_Cliente["BillToDef"];
-	$ShipToDef = $row_Cliente["ShipToDef"];
+	$BillToDef = $row_Cliente["BillToDef"] ?? "";
+	$ShipToDef = $row_Cliente["ShipToDef"] ?? "";
 
 	if (!$SQL_CopiarFactToOrden) {
 		echo "<script>
