@@ -245,10 +245,10 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Entrada de compras
 			$SQL_Det = Seleccionar("uvw_tbl_EntradaCompraDetalle", '*', "ID_EntradaCompra='" . $IdEntradaCompra . "' and IdEvento='" . $IdEvento . "'");
 
 			//Consultar anexos
-			$SQL_Anx = Seleccionar("uvw_tbl_DocumentosSAP_Anexos", '*', "ID_Documento='" . $IdEntradaCompra . "' and TipoDocumento='20' and Metodo=1");
+			$SQL_Anx = Seleccionar("uvw_tbl_DocumentosSAP_Anexos", '*', "ID_Documento='$IdEntradaCompra' and TipoDocumento='20' and Metodo=1");
 
 			//Consultar Lotes
-			$SQL_Lotes = Seleccionar("uvw_tbl_LotesDocSAP", '*', "DocEntry='" . $IdEntradaCompra . "' and IdEvento='" . $IdEvento . "' and ObjType='20'");
+			$SQL_Lotes = Seleccionar("uvw_tbl_LotesDocSAP", '*', "DocEntry='$IdEntradaCompra' and IdEvento='$IdEvento' and ObjType='20'");
 
 			$Detalle = array();
 			$Anexos = array();
@@ -1609,18 +1609,6 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 												} ?>" readonly="readonly" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
 													 echo "readonly";
 												 } ?>>
-										</div>
-									</div>
-									<div class="form-group">
-										<label class="col-lg-5">Fecha necesaria <span class="text-danger">*</span></label>
-										<div class="col-lg-7 input-group date">
-											<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="ReqDate" type="text" required="required" class="form-control" id="ReqDate" value="<?php if ($edit == 1 || $sw_error == 1) {
-												echo $row['ReqDate'];
-											} else {
-												echo date('Y-m-d');
-											} ?>" readonly="readonly" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
-												 echo "readonly";
-											 } ?>>
 										</div>
 									</div>
 									

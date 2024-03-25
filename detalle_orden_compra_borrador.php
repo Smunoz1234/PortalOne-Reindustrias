@@ -600,7 +600,7 @@ if ($sw == 1) {
 				<select id="WhsCode<?php echo $i; ?>" name="WhsCode[]" class="form-control select2" onChange="ActualizarDatos('WhsCode',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);ActStockAlmacen('WhsCode',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if (($row['LineStatus'] == 'C') || $bandera_autorizacion || (!PermitirFuncion(702))) {echo "disabled='disabled'";}?>>
 				  <option value="">(NINGUNO)</option>
 				  <?php while ($row_Almacen = sqlsrv_fetch_array($SQL_Almacen)) {?>
-						<option value="<?php echo $row_Almacen['WhsCode']; ?>" <?php if ((isset($row['WhsCode'])) && (strcmp($row_Almacen['WhsCode'], $row['WhsCode']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Almacen['WhsName']; ?></option>
+						<option value="<?php echo $row_Almacen['WhsCode']; ?>" <?php if ((isset($row['WhsCode'])) && (strcmp($row_Almacen['WhsCode'], $row['WhsCode']) == 0)) {echo "selected";}?>><?php echo $row_Almacen['WhsName']; ?></option>
 				  <?php }?>
 				</select>
 			</td>
@@ -707,7 +707,7 @@ if ($sw == 1) {
 
 						<?php $SQL_Dim = Seleccionar('uvw_Sap_tbl_DimensionesReparto', '*', "DimCode=$DimCode");?>
 						<?php while ($row_Dim = sqlsrv_fetch_array($SQL_Dim)) {?>
-							<option value="<?php echo $row_Dim['OcrCode']; ?>" <?php if ((isset($row["OcrCode$OcrId"])) && (strcmp($row_Dim['OcrCode'], $row["OcrCode$OcrId"]) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Dim['OcrName']; ?></option>
+							<option value="<?php echo $row_Dim['OcrCode']; ?>" <?php if ((isset($row["OcrCode$OcrId"])) && (strcmp($row_Dim['OcrCode'], $row["OcrCode$OcrId"]) == 0)) {echo "selected";}?>><?php echo $row_Dim['OcrName']; ?></option>
 						<?php }?>
 					</select>
 				</td>
@@ -718,7 +718,7 @@ if ($sw == 1) {
 				<select id="PrjCode<?php echo $i; ?>" name="PrjCode[]" class="form-control select2" onChange="ActualizarDatos('PrjCode',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if (($row['LineStatus'] == 'C') || $bandera_autorizacion || (!PermitirFuncion(702))) {echo "disabled='disabled'";}?>>
 					<option value="">(NINGUNO)</option>
 				  	<?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) {?>
-						<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if ((isset($row['PrjCode'])) && (strcmp($row_Proyecto['IdProyecto'], $row['PrjCode']) == 0)) {echo "selected=\"selected\"";}?>>
+						<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if ((isset($row['PrjCode'])) && (strcmp($row_Proyecto['IdProyecto'], $row['PrjCode']) == 0)) {echo "selected";}?>>
 							<?php echo $row_Proyecto['DeProyecto']; ?>
 						</option>
 				  	<?php }?>
@@ -729,7 +729,7 @@ if ($sw == 1) {
 				<select id="EmpVentas<?php echo $i; ?>" name="EmpVentas[]" class="form-control select2" onChange="ActualizarDatos('EmpVentas',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" <?php if (($row['LineStatus'] == 'C') || $bandera_autorizacion || (!PermitirFuncion(702))) {echo "disabled='disabled'";}?>>
 						<option value="">(NINGUNO)</option>
 					<?php while ($row_EmpleadosVentas = sqlsrv_fetch_array($SQL_EmpleadosVentas)) {?>
-						<option value="<?php echo $row_EmpleadosVentas['ID_EmpVentas']; ?>" <?php if ((isset($row['EmpVentas'])) && (strcmp($row_EmpleadosVentas['ID_EmpVentas'], $row['EmpVentas']) == 0)) {echo "selected=\"selected\"";}?>>
+						<option value="<?php echo $row_EmpleadosVentas['ID_EmpVentas']; ?>" <?php if (isset($row['EmpCompras']) && ($row['EmpCompras'] == $row_EmpleadosVentas['ID_EmpVentas'])) {echo "selected";}?>>
 							<?php echo $row_EmpleadosVentas['DE_EmpVentas']; ?>
 						</option>
 					<?php }?>
