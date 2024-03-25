@@ -190,13 +190,15 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Grabar Solicitud de compras
 				$IdSolicitudCompra = $row_CabeceraSolicitudCompra[0];
 				$IdEvento = $row_CabeceraSolicitudCompra[1];
 
-				// Comprobar procesos de autorización en la creación, SMM 20/08/2022
+				// Comprobar procesos de autorización en la creación, SMM 30/11/2022
 				while ($row_Proceso = sqlsrv_fetch_array($SQL_Procesos)) {
 					$ids_perfiles = ($row_Proceso['Perfiles'] != "") ? explode(";", $row_Proceso['Perfiles']) : [];
 
 					if (in_array($_SESSION['Perfil'], $ids_perfiles) || (count($ids_perfiles) == 0)) {
 						$sql = $row_Proceso['Condiciones'] ?? '';
+						$autorizaSAP = $row_Proceso['AutorizacionSAP'] ?? ''; // SMM, 30/11/2022
 
+						// Aquí se debe reemplazar por el ID del documento.
 						$sql = str_replace("[IdDocumento]", $IdSolicitudCompra, $sql);
 						$sql = str_replace("[IdEvento]", $IdEvento, $sql);
 
@@ -226,10 +228,14 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Grabar Solicitud de compras
 					}
 				}
 
-				// Consultar el motivo de autorización según el id, SMM 20/08/2022
-				$SQL_Motivos = Seleccionar("uvw_tbl_Autorizaciones_Motivos", "*", "IdMotivoAutorizacion = '$IdMotivo'");
-				$row_MotivoAutorizacion = sqlsrv_fetch_array($SQL_Motivos);
+				// Consultar el motivo de autorización según el ID.
+				if ($IdMotivo != "") {
+					$SQL_Motivos = Seleccionar("uvw_tbl_Autorizaciones_Motivos", "*", "IdMotivoAutorizacion = '$IdMotivo'");
+					$row_MotivoAutorizacion = sqlsrv_fetch_array($SQL_Motivos);
+				}
+
 				$motivoAutorizacion = $row_MotivoAutorizacion['MotivoAutorizacion'] ?? "";
+				// Hasta aquí, 30/11/2022
 			} else {
 				$IdSolicitudCompra = base64_decode($_POST['IdSolicitudCompra']); //Lo coloco otra vez solo para saber que tiene ese valor
 				$IdEvento = base64_decode($_POST['IdEvento']);
