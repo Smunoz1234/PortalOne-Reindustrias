@@ -1354,7 +1354,7 @@ $("#<?php echo $dim['IdPortalOne']; ?>").change(function() {
 															} ?>" placeholder="YYYY-MM-DD">
 														</div>
 														<div class="col-lg-6 input-group clockpicker" data-autoclose="true">
-															<input readonly name="HoraAutorizacionPO" form="CrearSolicitudCompra" id="HoraAutorizacionPO" type="text" autocomplete="off" class="form-control" value="<?php if (isset($row_Autorizaciones['HoraAutorizacion_SAPB1'])) {
+															<input readonly name="HoraAutorizacionPO" form="CrearOrdenCompra" id="HoraAutorizacionPO" type="text" autocomplete="off" class="form-control" value="<?php if (isset($row_Autorizaciones['HoraAutorizacion_SAPB1'])) {
 																echo $row_Autorizaciones['HoraAutorizacion_SAPB1'];
 															} elseif (($row['AuthPortal']) != "P") {
 																echo isset($row['HoraAutorizacion_PortalOne']) ? $row['HoraAutorizacion_PortalOne']->format('H:i') : date('H:i');

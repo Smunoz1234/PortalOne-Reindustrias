@@ -1073,7 +1073,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 												<div class="form-group">
 													<label class="control-label col-lg-2">Autorización <span class="text-danger">*</span></label>
 													<div class="col-lg-10">
-														<select readonly form="CrearSolicitudCompra" class="form-control" id="AutorizacionSAP" name="AutorizacionSAP" style="color: black; font-weight: bold;">
+														<select readonly form="CrearOrdenCompra" class="form-control" id="AutorizacionSAP" name="AutorizacionSAP" style="color: black; font-weight: bold;">
 															<option value="" <?php if ($autorizaSAP == "") {
 																echo "selected";
 															} elseif (!isset($row['AutorizacionSAP']) || ($row['AutorizacionSAP'] == "")) {
@@ -1097,7 +1097,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 												<div class="form-group">
 													<label class="col-lg-2">Motivo <span class="text-danger">*</span></label>
 													<div class="col-lg-10">
-														<input required type="hidden" form="CrearSolicitudCompra" class="form-control"
+														<input required type="hidden" form="CrearOrdenCompra" class="form-control"
 															name="IdMotivoAutorizacion" id="IdMotivoAutorizacion"
 															value="<?php echo $IdMotivo; ?>">
 														<input readonly type="text" style="color: black; font-weight: bold;"
@@ -1110,7 +1110,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 												<div class="form-group">
 													<label class="col-lg-2">Mensaje proceso</label>
 													<div class="col-lg-10">
-														<textarea readonly form="CrearSolicitudCompra"
+														<textarea readonly form="CrearOrdenCompra"
 														style="color: black; font-weight: bold;" class="form-control"
 														name="MensajeProceso" id="MensajeProceso" type="text" maxlength="250"
 														rows="4"><?php if ($mensajeProceso != "") {
@@ -1128,7 +1128,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 													<div class="col-lg-10">
 														<textarea <?php if ($edit == 1) {
 															echo "readonly";
-														} ?> form="CrearSolicitudCompra"
+														} ?> form="CrearOrdenCompra"
 															class="form-control required" name="ComentariosAutor"
 															id="ComentariosAutor" type="text" maxlength="250" rows="4"><?php if ($edit == 1 || $sw_error == 1) {
 																echo $row['ComentariosAutor'] ?? "";
