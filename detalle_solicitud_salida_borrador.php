@@ -581,29 +581,26 @@ if ($sw == 1) {
     echo "<script> Totalizar(" . ($i - 1) . ", false); </script>";
 }
 ?>
-		<?php if (($Estado == 1) || ($Estado == 2 && !$BloquearDocumento)) {?>
-		<tr>
-			<td>&nbsp;</td>
-			<td><input size="20" type="text" id="ItemCodeNew" name="ItemCodeNew" class="form-control"></td>
-			<td><input size="50" type="text" id="ItemNameNew" name="ItemNameNew" class="form-control"></td>
-			<td><input size="15" type="text" id="UnitMsrNew" name="UnitMsrNew" class="form-control"></td>
-			<td><input size="15" type="text" id="QuantityNew" name="QuantityNew" class="form-control"></td>
-			<td><input size="15" type="text" id="CantInicialNew" name="CantInicialNew" class="form-control"></td>
+			<!-- SMM, 25/03/2024 -->
+			<tr>
+				<td>&nbsp;</td>
 
-			<!-- SMM, 28/11/2022 -->
-			<td><input size="20" type="text" id="WhsCodeNew" name="WhsCodeNew" class="form-control"></td>
-			<td><input size="20" type="text" id="ToWhsCodeNew" name="ToWhsCodeNew" class="form-control"></td>
+				<td><input size="20" class="form-control"></td>
+				<td><input size="50" class="form-control"></td>
 
-			<td><input size="15" type="text" id="OpenQtyNew" name="OpenQtyNew" class="form-control"></td>
-			<td><input size="15" type="text" id="OnHandNew" name="OnHandNew" class="form-control"></td>
-			<td><input size="50" type="text" id="FreeTxtNew" name="FreeTxtNew" class="form-control"></td>
-			<td><input size="15" type="text" id="PriceNew" name="PriceNew" class="form-control"></td>
-			<td><input size="15" type="text" id="PriceTaxNew" name="PriceTaxNew" class="form-control"></td>
-			<td><input size="15" type="text" id="DiscPrcntNew" name="DiscPrcntNew" class="form-control"></td>
-			<td><input size="15" type="text" id="LineTotalNew" name="LineTotalNew" class="form-control"></td>
-			<td>&nbsp;</td>
-		</tr>
-		<?php }?>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>
 		</tbody>
 	</table>
 	</div>

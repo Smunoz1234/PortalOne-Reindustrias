@@ -979,45 +979,27 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 
 					} // Termina el "if ($sw == 1)"
 					?>
-					<?php if ($Estado == 1) { ?>
-						<tr>
-							<td>&nbsp;</td>
-							<td><input size="20" type="text" id="ItemCodeNew" name="ItemCodeNew" class="form-control"></td>
-							<td><input size="50" type="text" id="ItemNameNew" name="ItemNameNew" class="form-control"></td>
-							<td><input size="15" type="text" id="UnitMsrNew" name="UnitMsrNew" class="form-control"></td>
-							<td><input size="15" type="text" id="QuantityNew" name="QuantityNew" class="form-control"></td>
-							<td><input size="15" type="text" id="CantInicialNew" name="CantInicialNew" class="form-control">
-							</td>
-							<td><input size="15" type="text" id="CDU_CantLitrosNew" name="CDU_CantLitrosNew"
-									class="form-control"></td>
-							<td><input size="20" type="text" id="WhsCodeNew" name="WhsCodeNew" class="form-control"></td>
-							<td><input size="15" type="text" id="CDU_DosificacionNew" name="CDU_DosificacionNew"
-									class="form-control"></td>
-							<td><input size="15" type="text" id="OnHandNew" name="OnHandNew" class="form-control"></td>
+					
+					<!-- SMM, 25/03/2024 -->
+					<tr>
+						<td>&nbsp;</td>
 
-							<td><input size="20" type="text" id="OcrCodeNew" name="OcrCodeNew" class="form-control"></td>
-							<td><input size="20" type="text" id="OcrCode2New" name="OcrCode2New" class="form-control"></td>
-							<td><input size="20" type="text" id="OcrCode3New" name="OcrCode3New" class="form-control"></td>
-							<td><input size="70" type="text" id="ProyectoNew" name="ProyectoNew" class="form-control"></td>
+						<td><input size="20" class="form-control"></td>
+						<td><input size="50" class="form-control"></td>
 
-							<td><input size="43" type="text" id="CDU_IdServicioNew" name="CDU_IdServicioNew"
-									class="form-control"></td>
-							<td><input size="30" type="text" id="CDU_IdMetodoAplicacionNew" name="CDU_IdMetodoAplicacionNew"
-									class="form-control"></td>
-							<td><input size="30" type="text" id="CDU_IdTipoPlagasNew" name="CDU_IdTipoPlagasNew"
-									class="form-control"></td>
-							<td><input size="50" type="text" id="CDU_AreasControladasNew" name="CDU_AreasControladasNew"
-									class="form-control"></td>
-							<td><input size="50" type="text" id="FreeTxtNew" name="FreeTxtNew" class="form-control"></td>
-							<td><input size="15" type="text" id="PriceNew" name="PriceNew" class="form-control"></td>
-							<td><input size="15" type="text" id="PriceTaxNew" name="PriceTaxNew" class="form-control"></td>
-							<td><input size="15" type="text" id="DiscPrcntNew" name="DiscPrcntNew" class="form-control">
-							</td>
-							<td><input size="15" type="text" id="LineTotalNew" name="LineTotalNew" class="form-control">
-							</td>
-							<td>&nbsp;</td>
-						</tr>
-					<?php } ?>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+					</tr>
 				</tbody>
 			</table>
 		</div>
