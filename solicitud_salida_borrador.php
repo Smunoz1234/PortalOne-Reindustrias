@@ -2034,7 +2034,7 @@ function verAutorizacion() {
 					<div class="col-lg-9">
 
 						<?php if ($edit == 0 && PermitirFuncion(1201)) { ?>
-								<button class="btn btn-primary" type="submit" form="CrearSolicitudSalida" id="Crear"><i class="fa fa-check"></i> Crear Solicitud de salida</button>
+							<button class="btn btn-primary" type="submit" form="CrearSolicitudSalida" id="Crear"><i class="fa fa-check"></i> Crear Solicitud de salida</button>
 						<?php } elseif ($row['Cod_Estado'] == "O" && PermitirFuncion(1201)) { ?>
 
 								<!-- SMM, 20/12/2022 -->

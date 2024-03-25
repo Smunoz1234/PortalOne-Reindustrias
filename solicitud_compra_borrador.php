@@ -2144,9 +2144,9 @@ function CrearArticulo(){
 						<div class="form-group">
 							<div class="col-lg-9">
 
-								<?php if ($edit == 0 && PermitirFuncion(716)) { ?>
-									<!-- button class="btn btn-primary" type="submit" form="CrearSolicitudCompra" id="Crear"><i class="fa fa-check"></i> Crear Orden de compra</button -->
-								<?php } elseif ($row['Cod_Estado'] == "O" && PermitirFuncion(716)) { ?>
+								<?php if ($edit == 0 && PermitirFuncion(701)) { ?>
+									<button class="btn btn-primary" type="submit" form="CrearSolicitudCompra" id="Crear"><i class="fa fa-check"></i> Crear Orden de compra</button>
+								<?php } elseif ($row['Cod_Estado'] == "O" && PermitirFuncion(701)) { ?>
 
 										<!-- SMM, 20/12/2022 -->
 										<?php if ((strtoupper($_SESSION["User"]) != strtoupper($row['Usuario'])) || $serAutorizador) { ?>
