@@ -2,6 +2,9 @@
 require_once "includes/conexion.php";
 PermitirAcceso(706);
 
+// Permiso para ver los campos de control de plagas. SMM, 20/03/2024
+$ControlPlagas = !PermitirFuncion(720);
+
 // Dimensiones, SMM 22/08/2022
 $DimSeries = intval(ObtenerVariable("DimensionSeries"));
 $SQL_Dimensiones = Seleccionar('uvw_Sap_tbl_Dimensiones', '*', "DimActive='Y'");
@@ -494,32 +497,44 @@ function ConsultarArticulo(articulo){
 		<thead>
 			<tr>
 				<th class="text-center form-inline w-150">
-					<div class="checkbox checkbox-success"><input type="checkbox" id="chkAll" value="" onChange="SeleccionarTodos();" title="Seleccionar todos"><label></label></div>
-					<button type="button" id="btnBorrarLineas" title="Borrar lineas" class="btn btn-danger btn-xs" disabled onClick="BorrarLinea();"><i class="fa fa-trash"></i></button>
-					<button type="button" id="btnDuplicarLineas" title="Duplicar lineas" class="btn btn-success btn-xs" disabled onClick="DuplicarLinea();"><i class="fa fa-copy"></i></button>
+					<div class="checkbox checkbox-success"><input type="checkbox" id="chkAll" value=""
+							onChange="SeleccionarTodos();" title="Seleccionar todos"><label></label></div>
+					<button type="button" id="btnBorrarLineas" title="Borrar lineas"
+						class="btn btn-danger btn-xs" disabled onClick="BorrarLinea();"><i
+							class="fa fa-trash"></i></button>
+					<button type="button" id="btnDuplicarLineas" title="Duplicar lineas"
+						class="btn btn-success btn-xs" disabled onClick="DuplicarLinea();"><i
+							class="fa fa-copy"></i></button>
 				</th>
 				<th>Código artículo</th>
 				<th>Nombre artículo</th>
 				<th>Unidad</th>
 				<th>Cantidad</th>
 				<th>Cant. Pendiente</th>
-				<th>Cant. Litros</th>
+
 				<th>Almacén</th>
-				<th>Dosificación</th>
 				<th>Stock almacén</th>
 
+				<?php if ($ControlPlagas) { ?>
+					<th>Cant. Litros</th>
+					<th>Dosificación</th>
+					<th>Servicio</th>
+					<th>Método aplicación</th>
+					<th>Tipo plaga</th>
+					<th>Áreas controladas</th>
+				<?php } ?>
+
 				<!-- Dimensiones dinámicas, SMM 22/08/2022 -->
-				<?php foreach ($array_Dimensiones as &$dim) {?>
-					<th><?php echo $dim["DimDesc"]; ?></th>
-				<?php }?>
+				<?php foreach ($array_Dimensiones as &$dim) { ?>
+					<th>
+						<?php echo $dim["DimDesc"]; ?>
+					</th>
+				<?php } ?>
 				<!-- Dimensiones dinámicas, hasta aquí -->
 
 				<th>Proyecto</th>
 				<th>Encargado de compras</th>
-				<th>Servicio</th>
-				<th>Método aplicación</th>
-				<th>Tipo plaga</th>
-				<th>Áreas controladas</th>
+
 				<th>Texto libre</th>
 				<th>Precio</th>
 				<th>Precio con IVA</th>
@@ -595,6 +610,95 @@ if ($sw == 1) {
 			<td><input size="15" type="text" id="CDU_Dosificacion<?php echo $i; ?>" name="CDU_Dosificacion[]" class="form-control" value="<?php echo number_format($row['CDU_Dosificacion'], $dCantidades, $sDecimal, $sMillares); ?>" onChange="ActualizarDatos('CDU_Dosificacion',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if (($row['LineStatus'] == 'C') || $bandera_autorizacion) {echo "readonly";}?>></td>
 			<td><input size="15" type="text" id="OnHand<?php echo $i; ?>" name="OnHand[]" class="form-control" value="<?php echo number_format($row['OnHand'], $dCantidades, $sDecimal, $sMillares); ?>" readonly></td>
 
+			<?php if ($ControlPlagas) { ?>
+				<td>
+					<input size="15" type="text" autocomplete="off" id="CDU_CantLitros<?php echo $i; ?>"
+						name="CDU_CantLitros[]" class="form-control"
+						value="<?php echo number_format($row['CDU_CantLitros'], $dCantidades, $sDecimal, $sMillares); ?>"
+						onChange="ActualizarDatos('CDU_CantLitros',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);"
+						onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(702))) {
+							echo "readonly";
+						} ?>>
+				</td>
+
+				<td>
+					<input size="15" type="text" autocomplete="off" id="CDU_Dosificacion<?php echo $i; ?>"
+						name="CDU_Dosificacion[]" class="form-control"
+						value="<?php echo number_format($row['CDU_Dosificacion'], $dCantidades, $sDecimal, $sMillares); ?>"
+						onChange="ActualizarDatos('CDU_Dosificacion',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);"
+						onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if ($row['LineStatus'] == 'C') {
+							echo "readonly";
+						} ?>>
+				</td>
+
+				<td>
+					<?php if (($row['TreeType'] != "T") || (($row['TreeType'] == "T") && ($row['LineNum'] != 0))) { ?>
+						<select id="CDU_IdServicio<?php echo $i; ?>" name="CDU_IdServicio[]"
+							class="form-control select2"
+							onChange="ActualizarDatos('CDU_IdServicio',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);"
+							<?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(702))) {
+								echo "disabled";
+							} ?>>
+							<option value="">(NINGUNO)</option>
+							<?php while ($row_Servicios = sqlsrv_fetch_array($SQL_Servicios)) { ?>
+								<option value="<?php echo $row_Servicios['IdServicio']; ?>" <?php if ((isset($row['CDU_IdServicio'])) && (strcmp($row_Servicios['IdServicio'], $row['CDU_IdServicio']) == 0)) {
+									echo "selected";
+								} ?>><?php echo $row_Servicios['DeServicio']; ?></option>
+							<?php } ?>
+						</select>
+					<?php } ?>
+				</td>
+
+				<td>
+					<?php if (($row['TreeType'] != "T") || (($row['TreeType'] == "T") && ($row['LineNum'] != 0))) { ?>
+						<select id="CDU_IdMetodoAplicacion<?php echo $i; ?>" name="CDU_IdMetodoAplicacion[]"
+							class="form-control select2"
+							onChange="ActualizarDatos('CDU_IdMetodoAplicacion',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);"
+							<?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(702))) {
+								echo "disabled";
+							} ?>>
+							<option value="">(NINGUNO)</option>
+							<?php while ($row_MetodoAplicacion = sqlsrv_fetch_array($SQL_MetodoAplicacion)) { ?>
+								<option value="<?php echo $row_MetodoAplicacion['IdMetodoAplicacion']; ?>" <?php if ((isset($row['CDU_IdMetodoAplicacion'])) && (strcmp($row_MetodoAplicacion['IdMetodoAplicacion'], $row['CDU_IdMetodoAplicacion']) == 0)) {
+									echo "selected";
+								} ?>><?php echo $row_MetodoAplicacion['DeMetodoAplicacion']; ?></option>
+							<?php } ?>
+						</select>
+					<?php } ?>
+				</td>
+
+				<td>
+					<?php if (($row['TreeType'] != "T") || (($row['TreeType'] == "T") && ($row['LineNum'] != 0))) { ?>
+						<select id="CDU_IdTipoPlagas<?php echo $i; ?>" name="CDU_IdTipoPlagas[]"
+							class="form-control select2"
+							onChange="ActualizarDatos('CDU_IdTipoPlagas',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);"
+							<?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(702))) {
+								echo "disabled";
+							} ?>>
+							<option value="">(NINGUNO)</option>
+							<?php while ($row_TipoPlaga = sqlsrv_fetch_array($SQL_TipoPlaga)) { ?>
+								<option value="<?php echo $row_TipoPlaga['IdTipoPlagas']; ?>" <?php if ((isset($row['CDU_IdTipoPlagas'])) && (strcmp($row_TipoPlaga['IdTipoPlagas'], $row['CDU_IdTipoPlagas']) == 0)) {
+									echo "selected";
+								} ?>><?php echo $row_TipoPlaga['DeTipoPlagas']; ?></option>
+							<?php } ?>
+						</select>
+					<?php } ?>
+				</td>
+
+				<td>
+					<?php if (($row['TreeType'] != "T") || (($row['TreeType'] == "T") && ($row['LineNum'] != 0))) { ?>
+						<input size="50" type="text" id="CDU_AreasControladas<?php echo $i; ?>"
+							name="CDU_AreasControladas[]" class="form-control"
+							value="<?php echo $row['CDU_AreasControladas']; ?>"
+							onChange="ActualizarDatos('CDU_AreasControladas',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);"
+							<?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(702))) {
+								echo "readonly";
+							} ?>>
+					<?php } ?>
+				</td>
+			<?php } ?>
+			<!-- SMM, 20/03/2024 -->
+			
 			<!-- Dimensiones dinámicas, SMM 22/08/2022 -->
 			<?php foreach ($array_Dimensiones as &$dim) {?>
 				<?php $DimCode = intval($dim['DimCode']);?>
