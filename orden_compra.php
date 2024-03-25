@@ -138,6 +138,12 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Grabar Orden de compra
 			"'" . ($_POST['IdMotivoAutorizacion'] ?? "") . "'",
 			"'" . ($_POST['ComentariosAutor'] ?? "") . "'",
 			"'" . ($_POST['MensajeProceso'] ?? "") . "'",
+			// SMM, 25/03/2024
+			"'" . ($_POST['AutorizacionSAP'] ?? "") . "'",
+			$_POST['FechaAutorizacionPO'] ?? "NULL",
+			$_POST['HoraAutorizacionPO'] ?? "NULL",
+			"'" . ($_POST['UsuarioAutorizacionPO'] ?? "") . "'",
+			"'" . ($_POST['ComentarioAutorizacionPO'] ?? "") . "'",
 		);
 
 		$SQL_CabeceraOrdenCompra = EjecutarSP('sp_tbl_OrdenCompra', $ParametrosCabOrdenCompra, $_POST['P']);
