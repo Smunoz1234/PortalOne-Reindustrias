@@ -237,12 +237,12 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Entrada de compras
 			// Inicio, Envio WebService
 			// SMM, 31/02/2023
 
-			//Consultar cabecera
-			$SQL_Cab = Seleccionar("uvw_tbl_EntradaCompra", '*', "ID_EntradaCompra='" . $IdEntradaCompra . "' and IdEvento='" . $IdEvento . "'");
+			// Consultar cabecera
+			$SQL_Cab = Seleccionar("uvw_tbl_EntradaCompra", '*', "ID_EntradaCompra='$IdEntradaCompra' and IdEvento='$IdEvento'");
 			$row_Cab = sqlsrv_fetch_array($SQL_Cab);
 
-			//Consultar detalle
-			$SQL_Det = Seleccionar("uvw_tbl_EntradaCompraDetalle", '*', "ID_EntradaCompra='" . $IdEntradaCompra . "' and IdEvento='" . $IdEvento . "'");
+			// Consultar detalle
+			$SQL_Det = Seleccionar("uvw_tbl_EntradaCompraDetalle", '*', "ID_EntradaCompra='$IdEntradaCompra' and IdEvento='$IdEvento'");
 
 			//Consultar anexos
 			$SQL_Anx = Seleccionar("uvw_tbl_DocumentosSAP_Anexos", '*', "ID_Documento='$IdEntradaCompra' and TipoDocumento='20' and Metodo=1");
