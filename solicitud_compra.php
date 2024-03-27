@@ -722,17 +722,6 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 		});
 		</script>";
 	}
-	if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_ActAdd"))) {
-		echo "<script>
-		$(document).ready(function() {
-			Swal.fire({
-                title: '¡Listo!',
-                text: 'La actividad ha sido agregada exitosamente.',
-                icon: 'success'
-            });
-		});
-		</script>";
-	}
 
 	// SMM, 16/08/2022
 	if (isset($sw_error) && ($sw_error == 1)) {
@@ -1442,12 +1431,6 @@ function CrearArticulo(){
 												target="_blank" class="btn btn-outline btn-primary pull-right">Ir a documento
 												destino <i class="fa fa-external-link"></i></a>
 									<?php } ?>
-									<?php if ($row['Cod_Estado'] != 'C') { ?>
-											<button type="button"
-												onClick="javascript:location.href='actividad.php?dt_DM=1&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&DM_type=<?php echo base64_encode('22'); ?>&DM=<?php echo base64_encode($row['DocEntry']); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('solicitud_compra.php'); ?>'"
-												class="alkin btn btn-outline btn-primary pull-right m-l-xs"><i
-													class="fa fa-plus-circle"></i> Agregar actividad</button>
-									<?php } ?>
 								</div>
 							</div>
 						</div>
@@ -1993,10 +1976,6 @@ function CrearArticulo(){
 					<ul class="nav nav-tabs">
 						<li class="active"><a data-toggle="tab" href="#tab-1"><i class="fa fa-list"></i>
 								Contenido</a></li>
-						<?php if ($edit == 1) { ?>
-								<li><a data-toggle="tab" href="#tab-2" onClick="ConsultarTab('2');"><i
-											class="fa fa-calendar"></i> Actividades</a></li>
-						<?php } ?>
 						<li><a data-toggle="tab" href="#tab-3"><i class="fa fa-paperclip"></i>
 								Anexos</a></li>
 						<li><span class="TimeAct">
@@ -2017,13 +1996,6 @@ function CrearArticulo(){
 									echo "detalle_solicitud_compra.php?id=" . base64_encode($row['ID_SolicitudCompra']) . "&evento=" . base64_encode($row['IdEvento']) . "&docentry=" . base64_encode($row['DocEntry']) . "&type=2&status=" . base64_encode($row['Cod_Estado']);
 								} ?>"></iframe>
 						</div>
-						<?php if ($edit == 1) { ?>
-								<div id="tab-2" class="tab-pane">
-									<div id="dv_actividades" class="panel-body">
-
-									</div>
-								</div>
-						<?php } ?>
 			</form>
 						
 						<!-- Limpiar directorio temporal antes de copiar los anexos de SAP, 01/10/2022 -->
@@ -2587,30 +2559,6 @@ function CrearArticulo(){
 				$('#SucursalFacturacion').trigger('change');
 		<?php } ?>
 	});
-</script>
-
-<script>
-//Variables de tab
-var tab_2 = 0;
-
-function ConsultarTab(type) {
-	if (type == 2) {//Actividades
-		if (tab_2 == 0) {
-			$('.ibox-content').toggleClass('sk-loading', true);
-			$.ajax({
-				type: "POST",
-				url: "dm_actividades.php?id=<?php if ($edit == 1) {
-					echo base64_encode($row['DocEntry']);
-				} ?>&objtype=22",
-				success: function (response) {
-					$('#dv_actividades').html(response).fadeIn();
-					$('.ibox-content').toggleClass('sk-loading', false);
-					tab_2 = 1;
-				}
-			});
-		}
-	}
-}
 </script>
 
 <script>
