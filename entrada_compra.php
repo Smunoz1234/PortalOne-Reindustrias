@@ -259,9 +259,9 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Entrada de compras
 			while ($row_Det = sqlsrv_fetch_array($SQL_Det)) {
 
 				array_push($Detalle, array(
-					"base_type" => (($row_Det['BaseType'] === "") || ($row_Det['BaseType'] === 0)) ? null : intval($row_Det['BaseType']),
-					"base_entry" => (($row_Det['BaseEntry'] === "") || ($row_Det['BaseEntry'] === 0)) ? null : intval($row_Det['BaseEntry']),
-					"base_line" => (($row_Det['BaseLine'] === "") || ($row_Det['BaseEntry'] === 0)) ? null : intval($row_Det['BaseLine']),
+					"base_type" => (($row_Det['BaseType'] === "") || (intval($row_Det['BaseType']) === 0)) ? null : intval($row_Det['BaseType']),
+					"base_entry" => (($row_Det['BaseEntry'] === "") || (intval($row_Det['BaseEntry']) === 0)) ? null : intval($row_Det['BaseEntry']),
+					"base_line" => (($row_Det['BaseLine'] === "") || (intval($row_Det['BaseEntry']) === 0)) ? null : intval($row_Det['BaseLine']),
 					"line_num" => intval($row_Det['LineNum']),
 					"id_tipo_articulo" => "",
 					"tipo_articulo" => 0,
@@ -287,6 +287,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Entrada de compras
 					"CDU_areas_controladas" => $row_Det['CDU_AreasControladas'],
 					"CDU_cant_litros" => intval($row_Det['CDU_CantLitros']),
 					"CDU_dosificacion" => intval($row_Det['CDU_Dosificacion']),
+					"id_empleado_ventas" => (($row_Det['EmpVentas'] === "") || (intval($row_Det['EmpVentas']) === 0)) ? null : intval($row_Det['EmpVentas']),
 				));
 			}
 
