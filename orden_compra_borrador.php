@@ -172,14 +172,6 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Orden de compra
 			"'" . ($_POST['ComentariosAutorizacionPO'] ?? "") . "'",
 		);
 
-		// Enviar el valor de la dimensiones dinámicamente al SP.
-		foreach ($array_Dimensiones as &$dim) {
-			$Dim_PostValue = $_POST[strval($dim['IdPortalOne'])];
-
-			// El nombre de los parámetros es diferente en cada documento.
-			array_push($ParametrosCabOrdenCompra, "'$Dim_PostValue'");
-		} // SMM, 22/08/2022
-
 		$SQL_CabeceraOrdenCompra = EjecutarSP('sp_tbl_OrdenCompra_Borrador', $ParametrosCabOrdenCompra, $_POST['P']);
 		if ($SQL_CabeceraOrdenCompra) {
 			if ($Type == 1) {
