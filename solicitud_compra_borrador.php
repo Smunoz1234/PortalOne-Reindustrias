@@ -294,7 +294,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Grabar Solicitud de compras
 			// SMM, 16/01/2024
 			if ($debug_Condiciones && ($success == 1)) {
 				$success = 0;
-				echo 'La bandera "$success" cambio de 1 a 0, en el modo de depuración';
+				// echo 'La bandera "$success" cambio de 1 a 0, en el modo de depuración';
 			}
 
 			// Verificar que el documento cumpla las Condiciones o este Pendiente de Autorización.
