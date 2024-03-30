@@ -451,9 +451,9 @@ if (isset($_GET['dt_LS']) && ($_GET['dt_LS']) == 1) { // Verificar que viene de 
 	$SQL_Cliente = Seleccionar('uvw_Sap_tbl_Proveedores', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreCliente');
 	$row_Cliente = sqlsrv_fetch_array($SQL_Cliente);
 
-	// SMM, 29/09/2023
-	$BillToDef = $row_Cliente["BillToDef"];
-	$ShipToDef = $row_Cliente["ShipToDef"];
+	// SMM, 30/03/2024
+	$BillToDef = $row_Cliente["BillToDef"] ?? "";
+	$ShipToDef = $row_Cliente["ShipToDef"] ?? "";
 
 	//Contacto cliente
 	$SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ProveedorContactos', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreContacto');
