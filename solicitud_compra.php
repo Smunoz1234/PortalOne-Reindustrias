@@ -1843,22 +1843,24 @@ function CrearArticulo(){
 						 } ?>>
 						 </div>
 
-					<!-- SMM, 29/08/2022 -->
+					<!-- SMM, 01/04/2024 -->
 					<label class="col-lg-1 control-label">Condición de pago</label>
 					<div class="col-lg-3">
 						<select name="CondicionPago" class="form-control" id="CondicionPago" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
-							echo "disabled";
-						} ?>>
+								echo "disabled";
+							} ?>>
 							<option value="">Seleccione...</option>
-						  <?php while ($row_CondicionPago = sqlsrv_fetch_array($SQL_CondicionPago)) { ?>
-										<option value="<?php echo $row_CondicionPago['IdCondicionPago']; ?>" <?php if ($edit == 1 || $sw_error) {
-											   if (isset($row['IdCondicionPago']) && ($row['IdCondicionPago'] != "") && (strcmp($row_CondicionPago['IdCondicionPago'], $row['IdCondicionPago']) == 0)) {
-												   echo "selected";
-											   }
-										   } ?>><?php echo $row_CondicionPago['NombreCondicion']; ?></option>
-						  <?php } ?>
+							<?php while ($row_CondicionPago = sqlsrv_fetch_array($SQL_CondicionPago)) { ?>
+									<option value="<?php echo $row_CondicionPago['IdCondicionPago']; ?>" <?php if ($edit == 1 || $sw_error == 1) {
+										if (isset($row['IdCondicionPago']) && ($row['IdCondicionPago'] != "") && ($row['IdCondicionPago'] == $row_CondicionPago['IdCondicionPago'])) {
+											echo "selected";
+										} elseif (isset($_GET['CondicionPago']) && ($_GET['CondicionPago'] == $row_CondicionPago['IdCondicionPago'])) {
+											echo "selected";
+										} 
+									} ?>><?php echo $row_CondicionPago['NombreCondicion']; ?></option>
+							<?php } ?>
 						</select>
-					  </div>
+					</div>
 					<!-- Hasta aquí -->
 				</div>
 
@@ -1894,25 +1896,24 @@ function CrearArticulo(){
 					
 					<!-- Inicio, Proyecto -->
 					<label class="col-lg-1 control-label">Proyecto <span 
-					class="text-danger">*</span></label>
-					
+						class="text-danger">*</span></label>
 					<div class="col-lg-3">
 						<select id="PrjCode" name="PrjCode" class="form-control select2" 
 						form="CrearSolicitudCompra" required <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
 							echo "disabled";
-						} ?>>
+							} ?>>
 								<option value="">(NINGUNO)</option>
 
 								<?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) { ?>
-										<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if ((isset($row['PrjCode']) && (!isset($_GET['Proyecto']))) && ($row_Proyecto['IdProyecto'] == $row['PrjCode'])) {
-											   echo "selected";
-										   } elseif (isset($_GET['Proyecto']) && ($row_Proyecto['IdProyecto'] == base64_decode($_GET['Proyecto']))) {
-											   echo "selected";
-										   } elseif (((!isset($row['PrjCode'])) && (!isset($_GET['Proyecto']))) && ($FiltroPrj == $row_Proyecto['IdProyecto'])) {
-											   echo "selected";
-										   } ?>>
-										<?php echo $row_Proyecto['DeProyecto']; ?>
-									</option>
+									<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if ((isset($row['PrjCode']) && (!isset($_GET['Proyecto']))) && ($row_Proyecto['IdProyecto'] == $row['PrjCode'])) {
+										echo "selected";
+									} elseif (isset($_GET['Proyecto']) && ($row_Proyecto['IdProyecto'] == base64_decode($_GET['Proyecto']))) {
+										echo "selected";
+									} elseif (((!isset($row['PrjCode'])) && (!isset($_GET['Proyecto']))) && ($FiltroPrj == $row_Proyecto['IdProyecto'])) { 
+										echo "selected"; 
+									} ?>>
+									<?php echo $row_Proyecto['DeProyecto']; ?>
+								</option>
 							<?php } ?>
 						</select>
 					</div>
@@ -2185,7 +2186,7 @@ function CrearArticulo(){
 										<div class="btn-group dropup pull-right">
 											<button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i class="fa fa-mail-forward"></i> Copiar a <i class="fa fa-caret-up"></i></button>
 											<ul class="dropdown-menu">
-												<li><a class="alkin dropdown-item" href="orden_compra.php?dt_OF=1&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Dim1=<?php echo base64_encode($row['OcrCode']); ?>&Dim2=<?php echo base64_encode($row['OcrCode2']); ?>&Dim3=<?php echo base64_encode($row['OcrCode3']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&SucursalFact=<?php echo base64_encode($row['SucursalFacturacion']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&OF=<?php echo base64_encode($row['ID_SolicitudCompra']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&IdLlamada=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>">Orden de compra</a></li>
+												<li><a class="alkin dropdown-item" href="orden_compra.php?dt_OF=1&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Dim1=<?php echo base64_encode($row['OcrCode']); ?>&Dim2=<?php echo base64_encode($row['OcrCode2']); ?>&Dim3=<?php echo base64_encode($row['OcrCode3']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&SucursalFact=<?php echo base64_encode($row['SucursalFacturacion']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&OF=<?php echo base64_encode($row['ID_SolicitudCompra']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&IdLlamada=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>&CondicionPago=<?php echo $row['IdCondicionPago'] ?? ""; ?>">Orden de compra</a></li>
 												<li><a class="alkin dropdown-item d-compra" href="solicitud_compra.php?dt_OV=1&OV=<?php echo base64_encode($row['ID_SolicitudCompra']); ?>&pag=<?php echo $_GET['pag']; ?>&return=<?php echo $_GET['return']; ?>&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Dim1=<?php echo base64_encode($row['OcrCode']); ?>&Dim2=<?php echo base64_encode($row['OcrCode2']); ?>&Dim3=<?php echo base64_encode($row['OcrCode3']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&SucursalFact=<?php echo base64_encode($row['SucursalFacturacion']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&LS=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>&CondicionPago=<?php echo base64_encode($row['IdCondicionPago']); ?>&Serie=<?php echo base64_encode($row['IdSeries']); ?>">Solicitud de compra (Duplicar)</a></li>
 											</ul>
 										</div>

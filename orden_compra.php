@@ -1664,25 +1664,24 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 										 } ?>>
 									</div>
 									
-									<label class="col-lg-1 control-label">Condición de pago <span
-											class="text-danger">*</span></label>
+									<!-- SMM, 01/04/2024 -->
+									<label class="col-lg-1 control-label">Condición de pago</label>
 									<div class="col-lg-3">
-										<select class="form-control select2" name="CondicionPago" id="CondicionPago"
-											required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
+										<select name="CondicionPago" class="form-control" id="CondicionPago" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
 												echo "disabled";
 											} ?>>
 											<option value="">Seleccione...</option>
 											<?php while ($row_CondicionPago = sqlsrv_fetch_array($SQL_CondicionPago)) { ?>
-												<option value="<?php echo $row_CondicionPago['IdCondicionPago']; ?>" <?php if ($edit == 1 || $sw_error == 1) {
-													   if (($row['IdCondicionPago'] != "") && (strcmp($row_CondicionPago['IdCondicionPago'], $row['IdCondicionPago']) == 0)) {
-														   echo "selected";
-													   }
-												   } elseif ((isset($_GET['CondicionPago'])) && (strcmp($row_CondicionPago['IdCondicionPago'], base64_decode($_GET['CondicionPago'])) == 0)) {
-													   echo "selected";
-												   } ?>><?php echo $row_CondicionPago['NombreCondicion']; ?></option>
+													<option value="<?php echo $row_CondicionPago['IdCondicionPago']; ?>" 
+													<?php if (isset($row['IdCondicionPago']) && ($row['IdCondicionPago'] != "") && ($row['IdCondicionPago'] == $row_CondicionPago['IdCondicionPago'])) {
+															echo "selected";
+														} elseif (isset($_GET['CondicionPago']) && ($_GET['CondicionPago'] == $row_CondicionPago['IdCondicionPago'])) {
+															echo "selected";
+														} ?>><?php echo $row_CondicionPago['NombreCondicion'] ?? ""; ?></option>
 											<?php } ?>
 										</select>
 									</div>
+									<!-- Hasta aquí -->
 								</div>
 
 								<div class="form-group">
@@ -1717,7 +1716,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 
 									<!-- Inicio, Proyecto -->
 									<label class="col-lg-1 control-label">Proyecto <span 
-									class="text-danger">*</span></label>
+										class="text-danger">*</span></label>
 									<div class="col-lg-3">
 										<select id="PrjCode" name="PrjCode" class="form-control select2" 
 										form="CrearOrdenCompra" required <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
