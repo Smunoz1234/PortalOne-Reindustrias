@@ -2258,8 +2258,9 @@ function verAutorizacion() {
 			// $('#Autorizacion option:not(:selected)').attr('disabled',true);
 		<?php } ?>
 
-		// SMM, 03/04/2023
-		$('#Autorizacion option:not(:selected)').attr('disabled',true);
+		// SMM, 01/04/2024
+		$('#Autorizacion option:not(:selected)').attr('disabled', true);
+		$('#AutorizacionSAP option:not(:selected)').attr('disabled', true);
 	});
 </script>
 

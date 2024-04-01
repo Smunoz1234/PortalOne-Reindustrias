@@ -2440,8 +2440,9 @@ function CrearArticulo(){
 			// $('#Autorizacion option:not(:selected)').attr('disabled',true);
 		<?php } ?>
 
-		// SMM, 02/02/2024
-		$('#Autorizacion option:not(:selected)').attr('disabled',true);
+		// SMM, 01/04/2024
+		$('#Autorizacion option:not(:selected)').attr('disabled', true);
+		$('#AutorizacionSAP option:not(:selected)').attr('disabled', true);
 	});
 </script>
 
