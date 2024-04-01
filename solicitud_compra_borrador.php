@@ -194,7 +194,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Grabar Solicitud de compras
 			"'" . ($_POST['ComentariosAutorizacionPO'] ?? "") . "'",
 		);
 
-		$SQL_CabeceraSolicitudCompra = EjecutarSP('sp_tbl_SolicitudCompra', $ParametrosCabSolicitudCompra, $_POST['P']);
+		$SQL_CabeceraSolicitudCompra = EjecutarSP('sp_tbl_SolicitudCompra_Borrador', $ParametrosCabSolicitudCompra, $_POST['P']);
 		if ($SQL_CabeceraSolicitudCompra) {
 			if ($Type == 1) {
 				$row_CabeceraSolicitudCompra = sqlsrv_fetch_array($SQL_CabeceraSolicitudCompra);
