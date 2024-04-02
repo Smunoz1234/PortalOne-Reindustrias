@@ -1331,17 +1331,17 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 									<!-- Inicio, Empleado -->
 									<label class="col-lg-1 control-label">Solicitado para</label>
 									<div class="col-lg-3">
-										<select name="Empleado" class="form-control" id="Empleado" <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || ($dt_TI == 1)) {
+										<select name="Empleado" class="form-control select2" id="Empleado" <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || ($dt_TI == 1)) {
 											echo "readonly";
 										} ?>>
 											<option value="">Seleccione...</option>
 
 											<?php while ($row_Empleado = sqlsrv_fetch_array($SQL_Empleado)) { ?>
 												<option value="<?php echo $row_Empleado['ID_Empleado']; ?>" <?php if ((isset($row['CodEmpleado'])) && (strcmp($row_Empleado['ID_Empleado'], $row['CodEmpleado']) == 0)) {
-													   echo "selected";
-												   } elseif (isset($_GET['Empleado']) && (strcmp($row_Empleado['ID_Empleado'], base64_decode($_GET['Empleado'])) == 0)) {
-													   echo "selected";
-												   } ?>>
+														echo "selected";
+												   	} elseif (isset($_GET['Empleado']) && (strcmp($row_Empleado['ID_Empleado'], base64_decode($_GET['Empleado'])) == 0)) {
+													   	echo "selected";
+												   	} ?>>
 													<?php echo $row_Empleado['NombreEmpleado']; ?>
 												</option>
 											<?php } ?>
@@ -1351,16 +1351,16 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 
 									<label class="col-lg-1 control-label">Tipo entrega</label>
 									<div class="col-lg-3">
-										<select name="TipoEntrega" class="form-control" id="TipoEntrega" <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || ($dt_TI == 1)) {
+										<select name="TipoEntrega" class="form-control select2" id="TipoEntrega" <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || ($dt_TI == 1)) {
 											echo "readonly";
 										} ?>>
 											<option value="">Seleccione...</option>
 											<?php while ($row_TipoEntrega = sqlsrv_fetch_array($SQL_TipoEntrega)) { ?>
 												<option value="<?php echo $row_TipoEntrega['IdTipoEntrega']; ?>" <?php if ((isset($row['IdTipoEntrega'])) && (strcmp($row_TipoEntrega['IdTipoEntrega'], $row['IdTipoEntrega']) == 0)) {
-													   echo "selected";
-												   } elseif (isset($_GET['TipoEntrega']) && (strcmp($row_TipoEntrega['IdTipoEntrega'], base64_decode($_GET['TipoEntrega'])) == 0)) {
-													   echo "selected";
-												   } ?>>
+													   	echo "selected";
+												   	} elseif (isset($_GET['TipoEntrega']) && (strcmp($row_TipoEntrega['IdTipoEntrega'], base64_decode($_GET['TipoEntrega'])) == 0)) {
+													   	echo "selected";
+												   	} ?>>
 													<?php echo $row_TipoEntrega['DeTipoEntrega']; ?>
 												</option>
 											<?php } ?>

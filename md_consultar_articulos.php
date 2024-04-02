@@ -188,7 +188,7 @@ $SQL_ConceptoSalida = Seleccionar('tbl_SalidaInventario_Conceptos', '*', $Filtro
 								<div class="col-xs-12" style="margin-bottom: 10px;">
 									<label class="control-label">Almacén destino</label>
 
-									<select name="AlmacenDestino" id="AlmacenDestino" class="form-control select2" <?php if($Inventario == "") {
+									<select name="AlmacenDestino" id="AlmacenDestino" class="form-control select2" <?php if(($Inventario == "") || ($Inventario == "Salida")) {
 										echo "disabled";
 									} ?>>
 										<option value="">Seleccione...</option>

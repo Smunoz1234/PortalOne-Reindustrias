@@ -1536,11 +1536,12 @@ function verAutorizacion() {
 						<select name="Empleado" class="form-control select2" id="Empleado" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
 							echo "disabled";
 						} ?>>
-								<option value="">Seleccione...</option>
+							<option value="">Seleccione...</option>
+							
 							<?php while ($row_Empleado = sqlsrv_fetch_array($SQL_Empleado)) { ?>
-									<option value="<?php echo $row_Empleado['ID_Empleado']; ?>" <?php if ((isset($row['CodEmpleado'])) && (strcmp($row_Empleado['ID_Empleado'], $row['CodEmpleado']) == 0)) {
-										   echo "selected";
-									   } ?>><?php echo $row_Empleado['NombreEmpleado']; ?></option>
+								<option value="<?php echo $row_Empleado['ID_Empleado']; ?>" <?php if ((isset($row['CodEmpleado'])) && (strcmp($row_Empleado['ID_Empleado'], $row['CodEmpleado']) == 0)) {
+									echo "selected";
+								} ?>><?php echo $row_Empleado['NombreEmpleado']; ?></option>
 							<?php } ?>
 						</select>
 					</div>
@@ -1549,17 +1550,18 @@ function verAutorizacion() {
 					<!-- Inicio, TipoEntrega -->
 					<label class="col-lg-1 control-label">Tipo entrega <span class="text-danger">*</span></label>
 					<div class="col-lg-3">
-						<select name="TipoEntrega" class="form-control" id="TipoEntrega" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
+						<select name="TipoEntrega" class="form-control select2" id="TipoEntrega" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
 							echo "disabled";
 						} ?> required>
-								<option value="">Seleccione...</option>
-						  <?php while ($row_TipoEntrega = sqlsrv_fetch_array($SQL_TipoEntrega)) { ?>
-									<option value="<?php echo $row_TipoEntrega['IdTipoEntrega']; ?>" <?php if ((isset($row['IdTipoEntrega'])) && (strcmp($row_TipoEntrega['IdTipoEntrega'], $row['IdTipoEntrega']) == 0)) {
-										   echo "selected";
-									   } ?>><?php echo $row_TipoEntrega['DeTipoEntrega']; ?></option>
-						  <?php } ?>
+							<option value="">Seleccione...</option>
+						  	
+							<?php while ($row_TipoEntrega = sqlsrv_fetch_array($SQL_TipoEntrega)) { ?>
+								<option value="<?php echo $row_TipoEntrega['IdTipoEntrega']; ?>" <?php if ((isset($row['IdTipoEntrega'])) && (strcmp($row_TipoEntrega['IdTipoEntrega'], $row['IdTipoEntrega']) == 0)) {
+									echo "selected";
+								} ?>><?php echo $row_TipoEntrega['DeTipoEntrega']; ?></option>
+						 	<?php } ?>
 						</select>
-						 </div>
+					</div>
 					<!-- Hasta aquí -->
 
 					<!-- Inicio, Proyecto -->
@@ -2034,8 +2036,10 @@ function verAutorizacion() {
 					 startDate: '<?php echo date('Y-m-d'); ?>'
 				});
 		  <?php } ?>
-		 //$('.chosen-select').chosen({width: "100%"});
-		 $(".select2").select2();
+		 
+		//$('.chosen-select').chosen({width: "100%"});
+		$(".select2").select2();
+		 
 		 $('.i-checks').iCheck({
 			 checkboxClass: 'icheckbox_square-green',
 			 radioClass: 'iradio_square-green',
