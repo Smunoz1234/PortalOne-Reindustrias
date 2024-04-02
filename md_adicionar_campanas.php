@@ -190,6 +190,7 @@ $hasRowsCampanas_Modal = ($SQL_Campanas_Modal) ? sqlsrv_has_rows($SQL_Campanas_M
 												<th>Campaña</th>
 												<th>Descripción</th>
 												<th>Estado Campaña</th>
+												<th>Estado Vigencia</th>
 												<th>Fecha Vigencia</th>
 
 												<th class="text-center">
@@ -203,6 +204,9 @@ $hasRowsCampanas_Modal = ($SQL_Campanas_Modal) ? sqlsrv_has_rows($SQL_Campanas_M
 										</thead>
 										<tbody>
 											<?php while ($row_Campana_Modal = sqlsrv_fetch_array($SQL_Campanas_Modal)) { ?>
+												<?php $limiteVigencia = (isset($row_Campana_Modal["fecha_limite_vigencia"]) && ($row_Campana_Modal["fecha_limite_vigencia"] != "")) ? $row_Campana_Modal['fecha_limite_vigencia'] : null; ?>
+												<?php $fechaActual = new DateTime(); ?>
+
 												<tr class="gradeX">
 													<td>
 														<a href="campanas_vehiculo.php?id=<?php echo $row_Campana_Modal['id_campana']; ?>&edit=1"
@@ -224,14 +228,20 @@ $hasRowsCampanas_Modal = ($SQL_Campanas_Modal) ? sqlsrv_has_rows($SQL_Campanas_M
 															<span class='label label-danger'>Inactiva</span>
 														<?php } ?>
 													</td>
+
+													<td class="text-center">
+														<?php if (($row_Campana_Modal['estado'] == 'Y') && ($limiteVigencia !== null) && ($limiteVigencia >= $fechaActual)) { ?>
+															<span class='label label-info'>Vigente</span>
+														<?php } else { ?>
+															<span class='label label-danger'>No Vigente</span>
+														<?php } ?>
+													</td>
+
 													<td>
 														<?php echo (isset($row_Campana_Modal["fecha_limite_vigencia"]) && ($row_Campana_Modal["fecha_limite_vigencia"] != "")) ? $row_Campana_Modal['fecha_limite_vigencia']->format("Y-m-d") : ""; ?>
 													</td>
 
 													<td class="text-center">
-														<?php $limiteVigencia = (isset($row_Campana_Modal["fecha_limite_vigencia"]) && ($row_Campana_Modal["fecha_limite_vigencia"] != "")) ? $row_Campana_Modal['fecha_limite_vigencia'] : null; ?>
-														<?php $fechaActual = new DateTime(); ?>
-
 														<?php if (($row_Campana_Modal['estado'] == 'Y') && ($limiteVigencia !== null) && ($limiteVigencia >= $fechaActual)) { ?>
 															<div class="checkbox checkbox-success"
 																id="dvChkSel<?php echo $row_Campana_Modal['id_campana']; ?>">
