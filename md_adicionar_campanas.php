@@ -206,8 +206,9 @@ $hasRowsCampanas_Modal = ($SQL_Campanas_Modal) ? sqlsrv_has_rows($SQL_Campanas_M
 											<?php while ($row_Campana_Modal = sqlsrv_fetch_array($SQL_Campanas_Modal)) { ?>
 												<?php $limiteVigencia = (isset($row_Campana_Modal["fecha_limite_vigencia"]) && ($row_Campana_Modal["fecha_limite_vigencia"] != "")) ? $row_Campana_Modal['fecha_limite_vigencia'] : null; ?>
 												<?php $fechaActual = new DateTime(); ?>
+												<?php $esVigente = ($row_Campana_Modal['estado'] == 'Y') && ($limiteVigencia !== null) && ($limiteVigencia >= $fechaActual); ?>
 
-												<tr class="gradeX">
+												<tr class="gradeX" <?php if(!$esVigente) { echo "style='display: none'"; } ?>>
 													<td>
 														<a href="campanas_vehiculo.php?id=<?php echo $row_Campana_Modal['id_campana']; ?>&edit=1"
 															class="btn btn-success btn-xs" target="_blank">
@@ -230,7 +231,7 @@ $hasRowsCampanas_Modal = ($SQL_Campanas_Modal) ? sqlsrv_has_rows($SQL_Campanas_M
 													</td>
 
 													<td class="text-center">
-														<?php if (($row_Campana_Modal['estado'] == 'Y') && ($limiteVigencia !== null) && ($limiteVigencia >= $fechaActual)) { ?>
+														<?php if ($esVigente) { ?>
 															<span class='label label-info'>Vigente</span>
 														<?php } else { ?>
 															<span class='label label-danger'>No Vigente</span>
@@ -242,7 +243,7 @@ $hasRowsCampanas_Modal = ($SQL_Campanas_Modal) ? sqlsrv_has_rows($SQL_Campanas_M
 													</td>
 
 													<td class="text-center">
-														<?php if (($row_Campana_Modal['estado'] == 'Y') && ($limiteVigencia !== null) && ($limiteVigencia >= $fechaActual)) { ?>
+														<?php if ($esVigente) { ?>
 															<div class="checkbox checkbox-success"
 																id="dvChkSel<?php echo $row_Campana_Modal['id_campana']; ?>">
 																<input type="checkbox" class="chkSelOT"
