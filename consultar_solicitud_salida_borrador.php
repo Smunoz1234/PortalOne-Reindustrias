@@ -70,8 +70,7 @@ if (isset($_GET['AutorizacionSAP']) && $_GET['AutorizacionSAP'] != "") {
 }
 // Hasta aquí, 10/12/2022
 
-// Filtrar por perfil. SMM, 23/12/2022
-/*
+// Filtrar por perfil. SMM, 01/04/2024
 $Where_PerfilesAutorizador = "ID_Usuario='" . $_SESSION['CodUser'] . "'";
 $SQL_Perfiles = Seleccionar('uvw_tbl_UsuariosPerfilesAsignados', '*', $Where_PerfilesAutorizador);
 
@@ -96,8 +95,7 @@ if (isset($_GET['PerfilAutor'])) {
 		$SQL_Perfiles = Seleccionar('uvw_tbl_UsuariosPerfilesAsignados', '*', $Where_PerfilesAutorizador);
 	}
 }
-*/
-// Hasta aquí, 23/12/2022
+// Hasta aquí, 01/04/2024
 
 if (isset($_GET['Cliente']) && $_GET['Cliente'] != "") {
 	$Filtro .= " and CardCode='" . $_GET['Cliente'] . "'";
