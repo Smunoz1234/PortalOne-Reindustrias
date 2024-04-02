@@ -192,6 +192,8 @@ $hasRowsCampanas_Modal = ($SQL_Campanas_Modal) ? sqlsrv_has_rows($SQL_Campanas_M
 												<th>Estado Campaña</th>
 												<th>Estado Vigencia</th>
 												<th>Fecha Vigencia</th>
+												<th>Tipo Campaña</th>
+												<th>Valor Bono</th>
 
 												<th class="text-center">
 													<div class="checkbox checkbox-success">
@@ -222,6 +224,7 @@ $hasRowsCampanas_Modal = ($SQL_Campanas_Modal) ? sqlsrv_has_rows($SQL_Campanas_M
 													<td>
 														<?php echo $row_Campana_Modal['descripcion_campana'] ?? ""; ?>
 													</td>
+
 													<td>
 														<?php if ($row_Campana_Modal['estado'] == 'Y') { ?>
 															<span class='label label-info'>Activa</span>
@@ -240,6 +243,18 @@ $hasRowsCampanas_Modal = ($SQL_Campanas_Modal) ? sqlsrv_has_rows($SQL_Campanas_M
 
 													<td>
 														<?php echo (isset($row_Campana_Modal["fecha_limite_vigencia"]) && ($row_Campana_Modal["fecha_limite_vigencia"] != "")) ? $row_Campana_Modal['fecha_limite_vigencia']->format("Y-m-d") : ""; ?>
+													</td>
+
+													<td>
+														<?php if ($row_Campana_Modal['tipo_campana'] == '1') { ?>
+															<span>Garantía</span>
+														<?php } elseif ($row_Campana_Modal['tipo_campana'] == '2') { ?>
+															<span>Comercial</span>
+														<?php } ?>
+													</td>
+
+													<td>
+														<?php echo isset($row_Campana_Modal['valor_campana']) ? ("$" . $row_Campana_Modal['valor_campana']) : ""; ?>
 													</td>
 
 													<td class="text-center">
