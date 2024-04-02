@@ -1565,18 +1565,21 @@ function verAutorizacion() {
 					<!-- Inicio, Proyecto -->
 					<label class="col-lg-1 control-label">Proyecto <span class="text-danger">*</span></label>
 					<div class="col-lg-3">
-						<select id="PrjCode" name="PrjCode" class="form-control select2" required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
+						<select id="PrjCode" name="PrjCode" class="form-control select2" required <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
 							echo "disabled";
 						} ?>>
-								<option value="">(NINGUNO)</option>
+							<option value="">(NINGUNO)</option>
+							
 							<?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) { ?>
-									<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if ((isset($row['PrjCode'])) && (strcmp($row_Proyecto['IdProyecto'], $row['PrjCode']) == 0)) {
-										   echo "selected";
-									   } elseif ((isset($_GET['Proyecto'])) && (strcmp($row_Proyecto['IdProyecto'], base64_decode($_GET['Proyecto'])) == 0)) {
-										   echo "selected";
-									   } ?>>
-										<?php echo $row_Proyecto['IdProyecto'] . "-" . $row_Proyecto['DeProyecto']; ?>
-									</option>
+								<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if (isset($row['PrjCode']) && ($row['PrjCode'] == $row_Proyecto['IdProyecto'])) {
+										echo "selected";
+									} elseif ((isset($_GET['Proyecto'])) && ($row_Proyecto['IdProyecto'] == base64_decode($_GET['Proyecto']))) {
+										echo "selected";
+									} elseif ($FiltroPrj == $row_Proyecto['IdProyecto']) {
+										echo "selected";
+									} ?>>
+									<?php echo $row_Proyecto['IdProyecto'] . "-" . $row_Proyecto['DeProyecto']; ?>
+								</option>
 							<?php } ?>
 						</select>
 					</div>

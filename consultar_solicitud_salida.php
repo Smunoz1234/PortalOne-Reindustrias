@@ -25,8 +25,9 @@ $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 //Estado autorizacion
 $SQL_EstadoAuth = Seleccionar('uvw_Sap_tbl_EstadosAuth', '*');
 
-// Empleados. SMM, 22/02/2023
-if (PermitirFuncion(1215)) {
+// Empleados. SMM, 02/04/2024
+$VerEmpleados = PermitirFuncion(1215) || true;
+if ($VerEmpleados) {
     $SQL_Empleado = Seleccionar('uvw_Sap_tbl_EmpleadosSN', '*', '', 'NombreEmpleado');
 } else {
     $SQL_Empleado = Seleccionar('uvw_Sap_tbl_EmpleadosSN', '*', "CodSAP='" . $_SESSION['CodigoSAP'] . "'", 'NombreEmpleado');
@@ -283,7 +284,7 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_SolSalUpd"))) {
 								<select name="Estado" class="form-control" id="Estado">
 										<option value="">(Todos)</option>
 								  <?php while ($row_Estado = sqlsrv_fetch_array($SQL_Estado)) {?>
-										<option value="<?php echo $row_Estado['Cod_Estado']; ?>" <?php if ((isset($_GET['Estado'])) && (strcmp($row_Estado['Cod_Estado'], $_GET['Estado']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Estado['NombreEstado']; ?></option>
+										<option value="<?php echo $row_Estado['Cod_Estado']; ?>" <?php if ((isset($_GET['Estado'])) && (strcmp($row_Estado['Cod_Estado'], $_GET['Estado']) == 0)) {echo "selected";}?>><?php echo $row_Estado['NombreEstado']; ?></option>
 								  <?php }?>
 								</select>
 							</div>
@@ -292,7 +293,7 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_SolSalUpd"))) {
 								<select name="Series" class="form-control" id="Series">
 										<option value="">(Todos)</option>
 								  <?php while ($row_Series = sqlsrv_fetch_array($SQL_Series)) {?>
-										<option value="<?php echo $row_Series['IdSeries']; ?>" <?php if ((isset($_GET['Series'])) && (strcmp($row_Series['IdSeries'], $_GET['Series']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Series['DeSeries']; ?></option>
+										<option value="<?php echo $row_Series['IdSeries']; ?>" <?php if ((isset($_GET['Series'])) && (strcmp($row_Series['IdSeries'], $_GET['Series']) == 0)) {echo "selected";}?>><?php echo $row_Series['DeSeries']; ?></option>
 								  <?php }?>
 								</select>
 							</div>
@@ -310,7 +311,7 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_SolSalUpd"))) {
 									<option value="">(Todos)</option>
 								  	<?php if (isset($_GET['Series']) && ($_GET['Series'] != "")) {?>
     									<?php while ($row_Sucursal = sqlsrv_fetch_array($SQL_Sucursal)) {?>
-											<option value="<?php echo $row_Sucursal['IdSucursal']; ?>" <?php if (isset($_GET['Sucursal']) && (strcmp($row_Sucursal['IdSucursal'], $_GET['Sucursal']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Sucursal['DeSucursal']; ?></option>
+											<option value="<?php echo $row_Sucursal['IdSucursal']; ?>" <?php if (isset($_GET['Sucursal']) && (strcmp($row_Sucursal['IdSucursal'], $_GET['Sucursal']) == 0)) {echo "selected";}?>><?php echo $row_Sucursal['DeSucursal']; ?></option>
 										<?php }?>
 									<?php }?>
 								</select>
@@ -326,10 +327,10 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_SolSalUpd"))) {
 							<label class="col-lg-1 control-label">Empleado</label>
 							<div class="col-lg-3">
 								<select name="Empleado" class="form-control select2" id="Empleado">
-									<?php if (PermitirFuncion(1215)) {?><option value="">(Todos)</option><?php }?>
+									<?php if ($VerEmpleados) {?><option value="">(Todos)</option><?php }?>
 
 									<?php while ($row_Empleado = sqlsrv_fetch_array($SQL_Empleado)) {?>
-										<option value="<?php echo $row_Empleado['ID_Empleado']; ?>" <?php if ((isset($_GET['Empleado'])) && (strcmp($row_Empleado['ID_Empleado'], $_GET['Empleado']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Empleado['NombreEmpleado']; ?></option>
+										<option value="<?php echo $row_Empleado['ID_Empleado']; ?>" <?php if (isset($_GET['Empleado']) && ($row_Empleado['ID_Empleado'] == $_GET['Empleado'])) {echo "selected";}?>><?php echo $row_Empleado['NombreEmpleado']; ?></option>
 								  	<?php }?>
 								</select>
 							</div>
@@ -338,7 +339,7 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_SolSalUpd"))) {
 								<select name="TipoEntrega" class="form-control" id="TipoEntrega">
 										<option value="">(Todos)</option>
 								  <?php while ($row_TipoEntrega = sqlsrv_fetch_array($SQL_TipoEntrega)) {?>
-										<option value="<?php echo $row_TipoEntrega['IdTipoEntrega']; ?>" <?php if ((isset($_GET['TipoEntrega'])) && (strcmp($row_TipoEntrega['IdTipoEntrega'], $_GET['TipoEntrega']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_TipoEntrega['DeTipoEntrega']; ?></option>
+										<option value="<?php echo $row_TipoEntrega['IdTipoEntrega']; ?>" <?php if ((isset($_GET['TipoEntrega'])) && (strcmp($row_TipoEntrega['IdTipoEntrega'], $_GET['TipoEntrega']) == 0)) {echo "selected";}?>><?php echo $row_TipoEntrega['DeTipoEntrega']; ?></option>
 								  <?php }?>
 								</select>
 							</div>
@@ -348,7 +349,7 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_SolSalUpd"))) {
 									<select name="AnioEntrega" class="form-control" id="AnioEntrega">
 										<option value="">(Todos)</option>
 									<?php while ($row_AnioEntrega = sqlsrv_fetch_array($SQL_AnioEntrega)) {?>
-											<option value="<?php echo $row_AnioEntrega['IdAnioEntrega']; ?>" <?php if ((isset($_GET['AnioEntrega'])) && (strcmp($row_AnioEntrega['IdAnioEntrega'], $_GET['AnioEntrega']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_AnioEntrega['DeAnioEntrega']; ?></option>
+											<option value="<?php echo $row_AnioEntrega['IdAnioEntrega']; ?>" <?php if ((isset($_GET['AnioEntrega'])) && (strcmp($row_AnioEntrega['IdAnioEntrega'], $_GET['AnioEntrega']) == 0)) {echo "selected";}?>><?php echo $row_AnioEntrega['DeAnioEntrega']; ?></option>
 									<?php }?>
 									</select>
 								</div>
@@ -358,8 +359,8 @@ if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_SolSalUpd"))) {
 								<div class="col-lg-2">
 									<select name="EntregaDescont" class="form-control" id="EntregaDescont">
 										<option value="">(Todos)</option>
-										<option value="NO" <?php if ((isset($_GET['EntregaDescont'])) && ($_GET['EntregaDescont'] == "NO")) {echo "selected=\"selected\"";}?>>NO</option>
-										<option value="SI" <?php if ((isset($_GET['EntregaDescont'])) && ($_GET['EntregaDescont'] == "SI")) {echo "selected=\"selected\"";}?>>SI</option>
+										<option value="NO" <?php if ((isset($_GET['EntregaDescont'])) && ($_GET['EntregaDescont'] == "NO")) {echo "selected";}?>>NO</option>
+										<option value="SI" <?php if ((isset($_GET['EntregaDescont'])) && ($_GET['EntregaDescont'] == "SI")) {echo "selected";}?>>SI</option>
 									</select>
 								</div>
 							</div>
