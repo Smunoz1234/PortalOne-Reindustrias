@@ -342,7 +342,33 @@ if ($sw_error == 1) {
 
 }
 
-// Se eliminaron las dimensiones en esta parte, SMM 31/08/2022
+// SMM, 30/06/2023
+$FiltroPrj = "";
+$FiltrarDest = 0;
+$FiltrarFact = 0;
+if ($edit == 0) {
+	// Filtrar proyectos asignados
+	$Where_Proyectos = "ID_Usuario='" . $_SESSION['CodUser'] . "'";
+	$SQL_Proyectos = Seleccionar('uvw_tbl_UsuariosProyectos', '*', $Where_Proyectos);
+
+	$Proyectos = array();
+	while ($Proyecto = sqlsrv_fetch_array($SQL_Proyectos)) {
+		$Proyectos[] = $Proyecto['IdProyecto'];
+	}
+
+	if (count($Proyectos) == 1) {
+		$FiltroPrj = $Proyectos[0];
+	}
+
+	// Filtrar sucursales
+	if (isset($SQL_SucursalDestino) && (sqlsrv_num_rows($SQL_SucursalDestino) == 1)) {
+		$FiltrarDest = 1;
+	}
+
+	if (isset($SQL_SucursalFacturacion) && (sqlsrv_num_rows($SQL_SucursalFacturacion) == 1)) {
+		$FiltrarFact = 1;
+	}
+}
 
 //Condiciones de pago
 $SQL_CondicionPago = Seleccionar('uvw_Sap_tbl_CondicionPago', '*', '', 'IdCondicionPago');
