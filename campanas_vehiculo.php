@@ -17,6 +17,7 @@ $Estado = $row_Encabezado['estado'] ?? "";
 $Tipo = $row_Encabezado['tipo_campana'] ?? "";
 
 $TiempoMeses = number_format(($row_Encabezado['tiempo_campana_meses'] ?? 0), 2);
+$ValorCampana = number_format(($row_Encabezado['valor_campana'] ?? 0), 2, ".", "");
 
 // SMM, 24/11/2023
 $IdMarca = $row_Encabezado['id_marca'] ?? "";
@@ -85,6 +86,7 @@ $fecha_limite_vigencia = isset($_POST['fecha_limite_vigencia']) ? FormatoFecha($
 $id_marca = $_POST['Marca'] ?? "";
 $tipo_campana = $_POST['tipo'] ?? "";
 $estado_campana = $_POST['estado'] ?? "";
+$valor_campana = $_POST['valor_campana'] ?? "NULL";
 $id_usuario_creacion = "'$coduser'";
 $fecha_creacion = "'$datetime'";
 $hora_creacion = "'$datetime'";
@@ -110,6 +112,7 @@ if ($type == 1) {
 		"'$id_marca'",
 		"'$tipo_campana'",
 		"'$estado_campana'",
+		$valor_campana,
 		$id_usuario_actualizacion,
 		$fecha_actualizacion,
 		$hora_actualizacion,
@@ -136,6 +139,7 @@ if ($type == 1) {
 		"'$id_marca'",
 		"'$tipo_campana'",
 		"'$estado_campana'",
+		$valor_campana,
 		$id_usuario_actualizacion,
 		$fecha_actualizacion,
 		$hora_actualizacion,
@@ -433,8 +437,8 @@ if ($type != 0) {
 									<div class="col-lg-3">
 										<input name="tiempo_campana_meses" type="number" class="form-control"
 											id="tiempo_campana_meses" value="<?php echo $TiempoMeses; ?>" required <?php if ($CampanasAplicadas == true) {
-												   echo "readonly";
-											   } ?>>
+												echo "readonly";
+											} ?>>
 									</div>
 									
 									<label class="col-lg-1 control-label">
@@ -465,8 +469,20 @@ if ($type != 0) {
 											type="text"><?php echo $Comentario; ?></textarea>
 									</div>
 
-									<div class="col-lg-4">
-										<br>
+									<label class="col-lg-1 control-label">
+										Valor Campaña <span class="text-danger">*</span>
+									</label>
+									<div class="col-lg-3">
+										<input name="valor_campana" type="number" class="form-control"
+											id="valor_campana" value="<?php echo $ValorCampana; ?>" required <?php if ($CampanasAplicadas == true) {
+												echo "readonly";
+											} ?>>
+									</div>
+								</div>
+								<!-- /.form-group -->
+
+								<div class="form-group">
+									<div class="col-lg-12">
 										<div class="btn-group pull-right">
 											<button type="submit" class="btn btn-outline btn-primary">
 												<i
