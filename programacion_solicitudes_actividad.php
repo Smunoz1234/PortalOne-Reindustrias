@@ -24,7 +24,7 @@ if($edit) {
 	$SQL_Actividad = Seleccionar("uvw_tbl_SolicitudLlamadasServicios_Calendario", "*", $Where);
 	$row = sqlsrv_fetch_array($SQL_Actividad);
 } elseif($hora != "") {
-	$hora_final = DateTime::createFromFormat('H:i', $hora)->modify('+1 hour')->format('H:i');
+	$hora_final = DateTime::createFromFormat('H:i', $hora)->modify('+30 minutes')->format('H:i');
 }
 
 // SMM, 30/10/2023
@@ -37,7 +37,7 @@ if ($edit && isset($row["ID_CodigoCliente"])) {
 
 // Fechas. SMM, 27/10/2023
 $ValorFechaCreacion = (isset($row["FechaCreacion"]) && ($row["FechaCreacion"] instanceof DateTime)) ? $row["FechaCreacion"]->format("Y-m-d") : date("Y-m-d");
-$ValorFechaFinCreacion = (isset($row["FechaFinCreacion"]) && ($row["FechaCreacion"] instanceof DateTime)) ? $row["FechaCreacion"]->format("Y-m-d") : date("Y-m-d");
+$ValorFechaFinCreacion = (isset($row["FechaFinCreacion"]) && ($row["FechaFinCreacion"] instanceof DateTime)) ? $row["FechaFinCreacion"]->format("Y-m-d") : date("Y-m-d");
 $ValorFechaAgenda = (isset($row["FechaAgenda"]) && ($row["FechaAgenda"] instanceof DateTime)) ? $row["FechaAgenda"]->format("Y-m-d") : date("Y-m-d");
 $ValorFechaFinAgenda = (isset($row["FechaFinAgenda"]) && ($row["FechaFinAgenda"] instanceof DateTime)) ? $row["FechaFinAgenda"]->format("Y-m-d") : date("Y-m-d");
 $ValorHoraCreacion = (isset($row["HoraCreacion"]) && ($row["HoraCreacion"] instanceof DateTime)) ? $row["HoraCreacion"]->format("H:i") : date("H:i");
