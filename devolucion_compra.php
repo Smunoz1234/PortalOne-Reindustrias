@@ -13,185 +13,468 @@ $BillToDef = ""; // Sucursal de Facturación por Defecto.
 $ShipToDef = ""; // Sucursal de Destino por Defecto.
 
 if (isset($_GET['id']) && ($_GET['id'] != "")) { //ID de la Devolucion de compra (DocEntry)
-	$IdDevolucion = base64_decode($_GET['id']);
+    $IdDevolucion = base64_decode($_GET['id']);
 }
 
 if (isset($_GET['id_portal']) && ($_GET['id_portal'] != "")) { //Id del portal de compra (ID interno)
-	$IdPortal = base64_decode($_GET['id_portal']);
+    $IdPortal = base64_decode($_GET['id_portal']);
 }
 
 if (isset($_POST['IdDevolucionCompra']) && ($_POST['IdDevolucionCompra'] != "")) { //Tambien el Id interno, pero lo envío cuando mando el formulario
-	$IdDevolucionCompra = base64_decode($_POST['IdDevolucionCompra']);
-	$IdEvento = base64_decode($_POST['IdEvento']);
+    $IdDevolucionCompra = base64_decode($_POST['IdDevolucionCompra']);
+    $IdEvento = base64_decode($_POST['IdEvento']);
 }
 
 if (isset($_POST['swError']) && ($_POST['swError'] != "")) { //Para saber si ha ocurrido un error.
-	$sw_error = $_POST['swError'];
+    $sw_error = $_POST['swError'];
 } else {
-	$sw_error = 0;
+    $sw_error = 0;
 }
 
 if (isset($_REQUEST['tl']) && ($_REQUEST['tl'] != "")) { //0 Si se está creando. 1 Se se está editando.
-	$edit = $_REQUEST['tl'];
+    $edit = $_REQUEST['tl'];
 } else {
-	$edit = 0;
+    $edit = 0;
 }
 
 // Inicio, Grabar Devolución de Compra
 if (isset($_POST['P']) && ($_POST['P'] != "")) {
-	//*** Carpeta temporal ***
-	$i = 0; //Archivos
-	$RutaAttachSAP = ObtenerDirAttach();
-	$dir = CrearObtenerDirTemp();
-	$dir_firma = CrearObtenerDirTempFirma();
-	$dir_new = CrearObtenerDirAnx("devolucioncompra");
+    //*** Carpeta temporal ***
+    $i = 0; //Archivos
+    $RutaAttachSAP = ObtenerDirAttach();
+    $dir = CrearObtenerDirTemp();
+    $dir_firma = CrearObtenerDirTempFirma();
+    $dir_new = CrearObtenerDirAnx("devolucioncompra");
 
-	// SMM, 17/02/2022
-	if ((isset($_POST['SigRecibe'])) && ($_POST['SigRecibe'] != "")) {
-		$NombreFileFirma = base64_decode($_POST['SigRecibe']);
-		$Nombre_Archivo = "Sig_" . $NombreFileFirma;
-		if (!copy($dir_firma . $NombreFileFirma, $dir . $Nombre_Archivo)) {
-			$sw_error = 1;
-			$msg_error = "No se pudo mover la firma";
-		}
-	}
+    // SMM, 17/02/2022
+    if ((isset($_POST['SigRecibe'])) && ($_POST['SigRecibe'] != "")) {
+        $NombreFileFirma = base64_decode($_POST['SigRecibe']);
+        $Nombre_Archivo = "Sig_" . $NombreFileFirma;
+        if (!copy($dir_firma . $NombreFileFirma, $dir . $Nombre_Archivo)) {
+            $sw_error = 1;
+            $msg_error = "No se pudo mover la firma";
+        }
+    }
 
-	$route = opendir($dir);
-	$DocFiles = array();
-	while ($archivo = readdir($route)) { //obtenemos un archivo y luego otro sucesivamente
-		if (($archivo == ".") || ($archivo == "..")) {
-			continue;
-		}
+    $route = opendir($dir);
+    $DocFiles = array();
+    while ($archivo = readdir($route)) { //obtenemos un archivo y luego otro sucesivamente
+        if (($archivo == ".") || ($archivo == "..")) {
+            continue;
+        }
 
-		if (!is_dir($archivo)) { //verificamos si es o no un directorio
-			$DocFiles[$i] = $archivo;
-			$i++;
-		}
-	}
-	closedir($route);
-	$CantFiles = count($DocFiles);
+        if (!is_dir($archivo)) { //verificamos si es o no un directorio
+            $DocFiles[$i] = $archivo;
+            $i++;
+        }
+    }
+    closedir($route);
+    $CantFiles = count($DocFiles);
 
-	try {
-		if ($_POST['tl'] == 1) { //Actualizar
-			$IdDevolucionCompra = base64_decode($_POST['IdDevolucionCompra']);
-			$IdEvento = base64_decode($_POST['IdEvento']);
-			$Type = 2;
-			if (!PermitirFuncion(721)) { //Permiso para autorizar Devolucion de compras
-				$_POST['Autorizacion'] = 'P'; //Si no tengo el permiso, la Devolucion queda pendiente
-			}
-		} else { //Crear
-			$IdDevolucionCompra = "NULL";
-			$IdEvento = "0";
-			$Type = 1;
-		}
-		$ParametrosCabDevolucionCompra = array(
-			$IdDevolucionCompra,
-			$IdEvento,
-			"NULL",
-			"NULL",
-			"'" . $_POST['Serie'] . "'",
-			"'" . $_POST['EstadoDoc'] . "'",
-			"'" . FormatoFecha($_POST['DocDate']) . "'",
-			"'" . FormatoFecha($_POST['DocDueDate']) . "'",
-			"'" . FormatoFecha($_POST['TaxDate']) . "'",
-			"'" . $_POST['CardCode'] . "'",
-			"'" . $_POST['ContactoCliente'] . "'",
-			"'" . $_POST['OrdenServicioCliente'] . "'",
-			"'" . $_POST['Referencia'] . "'",
-			"'" . $_POST['EmpleadoVentas'] . "'",
-			"'" . LSiqmlObs($_POST['Comentarios']) . "'",
-			"'" . str_replace(',', '', $_POST['SubTotal']) . "'",
-			"'" . str_replace(',', '', $_POST['Descuentos']) . "'",
-			"NULL",
-			"'" . str_replace(',', '', $_POST['Impuestos']) . "'",
-			"'" . str_replace(',', '', $_POST['TotalDevolucion']) . "'",
-			"'" . $_POST['SucursalFacturacion'] . "'",
-			"'" . $_POST['DireccionFacturacion'] . "'",
-			"'" . $_POST['SucursalDestino'] . "'",
-			"'" . $_POST['DireccionDestino'] . "'",
-			"'" . $_POST['CondicionPago'] . "'",
-			"'" . $_POST['PrjCode'] . "'",
-			"'" . $_POST['Autorizacion'] . "'",
-			"'" . ($_POST['Almacen'] ?? "") . "'",
-			"'" . $_SESSION['CodUser'] . "'",
-			"'" . $_SESSION['CodUser'] . "'",
-			"$Type",
-		);
+    try {
+        if ($_POST['tl'] == 1) { //Actualizar
+            $IdDevolucionCompra = base64_decode($_POST['IdDevolucionCompra']);
+            $IdEvento = base64_decode($_POST['IdEvento']);
+            $Type = 2;
+            if (!PermitirFuncion(721)) { //Permiso para autorizar Devolucion de compras
+                $_POST['Autorizacion'] = 'P'; //Si no tengo el permiso, la Devolucion queda pendiente
+            }
+        } else { //Crear
+            $IdDevolucionCompra = "NULL";
+            $IdEvento = "0";
+            $Type = 1;
+        }
+        $ParametrosCabDevolucionCompra = array(
+            $IdDevolucionCompra,
+            $IdEvento,
+            "NULL",
+            "NULL",
+            "'" . $_POST['Serie'] . "'",
+            "'" . $_POST['EstadoDoc'] . "'",
+            "'" . FormatoFecha($_POST['DocDate']) . "'",
+            "'" . FormatoFecha($_POST['DocDueDate']) . "'",
+            "'" . FormatoFecha($_POST['TaxDate']) . "'",
+            "'" . $_POST['CardCode'] . "'",
+            "'" . $_POST['ContactoCliente'] . "'",
+            "'" . $_POST['OrdenServicioCliente'] . "'",
+            "'" . $_POST['Referencia'] . "'",
+            "'" . ($_POST['EmpleadoVentas'] ?? "") . "'",
+            "'" . LSiqmlObs($_POST['Comentarios']) . "'",
+            "'" . str_replace(',', '', $_POST['SubTotal']) . "'",
+            "'" . str_replace(',', '', $_POST['Descuentos']) . "'",
+            "NULL",
+            "'" . str_replace(',', '', $_POST['Impuestos']) . "'",
+            "'" . str_replace(',', '', $_POST['TotalDevolucion']) . "'",
+            "'" . $_POST['SucursalFacturacion'] . "'",
+            "'" . $_POST['DireccionFacturacion'] . "'",
+            "'" . $_POST['SucursalDestino'] . "'",
+            "'" . $_POST['DireccionDestino'] . "'",
+            "'" . $_POST['CondicionPago'] . "'",
+            "'" . $_POST['PrjCode'] . "'",
+            "'" . $_POST['Autorizacion'] . "'",
+            "'" . ($_POST['Almacen'] ?? "") . "'",
+            "'" . $_SESSION['CodUser'] . "'",
+            "'" . $_SESSION['CodUser'] . "'",
+            "$Type",
+        );
 
-		$SQL_CabeceraDevolucionCompra = EjecutarSP('sp_tbl_DevolucionCompra', $ParametrosCabDevolucionCompra, $_POST['P']);
-		if ($SQL_CabeceraDevolucionCompra) {
-			if ($Type == 1) {
-				$row_CabeceraDevolucionCompra = sqlsrv_fetch_array($SQL_CabeceraDevolucionCompra);
-				$IdDevolucionCompra = $row_CabeceraDevolucionCompra[0];
-				$IdEvento = $row_CabeceraDevolucionCompra[1];
-			} else {
-				$IdDevolucionCompra = base64_decode($_POST['IdDevolucionCompra']); //Lo coloco otra vez solo para saber que tiene ese valor
-				$IdEvento = base64_decode($_POST['IdEvento']);
-			}
+        $SQL_CabeceraDevolucionCompra = EjecutarSP('sp_tbl_DevolucionCompra', $ParametrosCabDevolucionCompra, $_POST['P']);
+        if ($SQL_CabeceraDevolucionCompra) {
+            if ($Type == 1) {
+                $row_CabeceraDevolucionCompra = sqlsrv_fetch_array($SQL_CabeceraDevolucionCompra);
+                $IdDevolucionCompra = $row_CabeceraDevolucionCompra[0];
+                $IdEvento = $row_CabeceraDevolucionCompra[1];
+            } else {
+                $IdDevolucionCompra = base64_decode($_POST['IdDevolucionCompra']); //Lo coloco otra vez solo para saber que tiene ese valor
+                $IdEvento = base64_decode($_POST['IdEvento']);
+            }
 
-			try {
-				//Mover los anexos a la carpeta de archivos de SAP
-				$j = 0;
-				while ($j < $CantFiles) {
-					$Archivo = FormatoNombreAnexo($DocFiles[$j]);
-					$NuevoNombre = $Archivo[0];
-					$OnlyName = $Archivo[1];
-					$Ext = $Archivo[2];
+            try {
+                //Mover los anexos a la carpeta de archivos de SAP
+                $j = 0;
+                while ($j < $CantFiles) {
+                    $Archivo = FormatoNombreAnexo($DocFiles[$j]);
+                    $NuevoNombre = $Archivo[0];
+                    $OnlyName = $Archivo[1];
+                    $Ext = $Archivo[2];
 
-					if (file_exists($dir_new)) {
-						copy($dir . $DocFiles[$j], $dir_new . $NuevoNombre);
-						//move_uploaded_file($_FILES['FileArchivo']['tmp_name'],$dir_new.$NuevoNombre);
-						copy($dir_new . $NuevoNombre, $RutaAttachSAP[0] . $NuevoNombre);
+                    if (file_exists($dir_new)) {
+                        copy($dir . $DocFiles[$j], $dir_new . $NuevoNombre);
+                        //move_uploaded_file($_FILES['FileArchivo']['tmp_name'],$dir_new.$NuevoNombre);
+                        copy($dir_new . $NuevoNombre, $RutaAttachSAP[0] . $NuevoNombre);
 
-						//Registrar archivo en la BD
-						$ParamInsAnex = array(
-							"'21'",
-							"'" . $IdDevolucionCompra . "'",
-							"'" . $OnlyName . "'",
-							"'" . $Ext . "'",
-							"1",
-							"'" . $_SESSION['CodUser'] . "'",
-							"1",
-						);
-						$SQL_InsAnex = EjecutarSP('sp_tbl_DocumentosSAP_Anexos', $ParamInsAnex, $_POST['P']);
-						if (!$SQL_InsAnex) {
-							$sw_error = 1;
-							$msg_error = "Error al insertar los anexos.";
-						}
-					}
-					$j++;
-				}
-			} catch (Exception $e) {
-				echo 'Excepcion capturada: ', $e->getMessage(), "\n";
-			}
+                        //Registrar archivo en la BD
+                        $ParamInsAnex = array(
+                            "'21'",
+                            "'" . $IdDevolucionCompra . "'",
+                            "'" . $OnlyName . "'",
+                            "'" . $Ext . "'",
+                            "1",
+                            "'" . $_SESSION['CodUser'] . "'",
+                            "1",
+                        );
+                        $SQL_InsAnex = EjecutarSP('sp_tbl_DocumentosSAP_Anexos', $ParamInsAnex, $_POST['P']);
+                        if (!$SQL_InsAnex) {
+                            $sw_error = 1;
+                            $msg_error = "Error al insertar los anexos.";
+                        }
+                    }
+                    $j++;
+                }
+            } catch (Exception $e) {
+                echo 'Excepcion capturada: ', $e->getMessage(), "\n";
+            }
 
-			/*sqlsrv_close($conexion);
+			/*
+			sqlsrv_close($conexion);
 			if($_POST['tl']==0){//Creando Devolucion
 			header('Location:'.base64_decode($_POST['return']).'&a='.base64_encode("OK_EVenAdd"));
 			}else{//Actualizando Devolucion
 			header('Location:'.base64_decode($_POST['return']).'&a='.base64_encode("OK_EVenUpd"));
-			}*/
+			}
+			*/
 
-			//Enviar datos al WebServices
-			try {
-				$Parametros = array(
-					'id_documento' => intval($IdDevolucionCompra),
-					'id_evento' => intval($IdEvento),
-				);
-				$Metodo = "DevolucionesCompras";
-				$Resultado = EnviarWebServiceSAP($Metodo, $Parametros, true, true);
+            if ($_POST['tl'] == 0) { //Creando
 
-				if ($Resultado->Success == 0) {
-					//InsertarLog(1, 0, 'Error al generar el informe');
-					//throw new Exception('Error al generar el informe. Error de WebServices');
-					$sw_error = 1;
-					$msg_error = $Resultado->Mensaje;
-				} else {
-					if ($_POST['tl'] == 0) { //Creando Devolucion
-						//Consultar ID creado para cargar el documento
-						$SQL_ConsID = Seleccionar('uvw_Sap_tbl_DevolucionesCompras', 'ID_DevolucionCompra', "IdDocPortal='" . $IdDevolucionCompra . "'");
-						$row_ConsID = sqlsrv_fetch_array($SQL_ConsID);
-						sqlsrv_close($conexion);
+                //Consultar cabecera
+                $SQL_Cab = Seleccionar("uvw_tbl_DevolucionCompra", '*', "ID_DevolucionCompra='" . $IdDevolucionCompra . "' and IdEvento='" . $IdEvento . "'");
+                $row_Cab = sqlsrv_fetch_array($SQL_Cab);
+
+                //Consultar detalle
+                $SQL_Det = Seleccionar("uvw_tbl_DevolucionCompraDetalle", '*', "ID_DevolucionCompra='" . $IdDevolucionCompra . "' and IdEvento='" . $IdEvento . "'");
+
+                //Consultar anexos
+                $SQL_Anx = Seleccionar("uvw_tbl_DocumentosSAP_Anexos", '*', "ID_Documento='" . $IdDevolucionCompra . "' and TipoDocumento='21' and Metodo=1");
+
+                //Consultar Lotes
+                $SQL_Lotes = Seleccionar("uvw_tbl_LotesDocSAP", '*', "DocEntry='" . $IdDevolucionCompra . "' and IdEvento='" . $IdEvento . "' and ObjType='21'");
+
+                $Detalle = array();
+                $Anexos = array();
+                $Lotes = array();
+                $Seriales = array();
+
+                //Detalle
+                while ($row_Det = sqlsrv_fetch_array($SQL_Det)) {
+
+                    array_push($Detalle, array(
+                        "base_type" => ($row_Det['BaseType'] === "") ? null : intval($row_Det['BaseType']),
+                        "base_entry" => ($row_Det['BaseEntry'] === "") ? null : intval($row_Det['BaseEntry']),
+                        "base_line" => ($row_Det['BaseLine'] === "") ? null : intval($row_Det['BaseLine']),
+                        "line_num" => intval($row_Det['LineNum']),
+                        "id_tipo_articulo" => "",
+                        "tipo_articulo" => 0,
+                        "id_articulo" => $row_Det['ItemCode'],
+                        "articulo" => $row_Det['ItemName'],
+                        "unidad_medida" => $row_Det['UnitMsr'],
+                        "texto_libre" => $row_Det['FreeTxt'],
+                        "id_bodega" => $row_Det['WhsCode'],
+                        "cant_articulo" => intval($row_Det['Quantity']),
+                        "precio_articulo" => intval($row_Det['Price']),
+                        "dim1" => $row_Det['OcrCode'],
+                        "dim2" => $row_Det['OcrCode2'],
+                        "dim3" => $row_Det['OcrCode3'],
+                        "dim4" => $row_Det['OcrCode4'],
+                        "dim5" => $row_Det['OcrCode5'],
+                        "id_proyecto" => $row_Det['PrjCode'],
+                        "metodo_linea" => intval($row_Det['Metodo']),
+                        "maneja_serial" => $row_Det['ManSerNum'],
+                        "maneja_lote" => $row_Det['ManBtchNum'],
+                        "CDU_id_servicio" => $row_Det['CDU_IdServicio'],
+                        "CDU_id_metodo_aplicacion" => $row_Det['CDU_IdMetodoAplicacion'],
+                        "CDU_id_tipo_plagas" => $row_Det['CDU_IdTipoPlagas'],
+                        "CDU_areas_controladas" => $row_Det['CDU_AreasControladas'],
+                        "CDU_cant_litros" => intval($row_Det['CDU_CantLitros']),
+                        "CDU_dosificacion" => intval($row_Det['CDU_Dosificacion']),
+                        "CDU_cant_visita" => 0,
+                        "CDU_codigo_empleado" => "",
+                        "CDU_nombre_empleado" => "",
+                        "CDU_texto_libre" => "",
+                        "CDU_numero_ots" => "",
+                        "CDU_id_direccion_destino" => "",
+                        "estado_linea" => $row_Det['LineStatus'],
+                        "docentry_documento" => intval($row_Det['DocEntry']),
+                    ));
+                }
+
+                //Anexos
+                $i = 0;
+                while ($row_Anx = sqlsrv_fetch_array($SQL_Anx)) {
+
+                    array_push($Anexos, array(
+                        "id_anexo" => $i,
+                        "tipo_documento" => intval($row_Anx['TipoDocumento']),
+                        "id_documento" => intval($row_Anx['ID_Documento']),
+                        "archivo" => $row_Anx['FileName'],
+                        "ext_archivo" => $row_Anx['FileExt'],
+                        "metodo" => intval($row_Anx['Metodo']),
+                        "fecha" => FormatoFechaToSAP($row_Anx['Fecha']->format('Y-m-d')),
+                        "id_usuario" => intval($row_Anx['ID_Usuario']),
+                        "comentarios" => "",
+                    ));
+                    $i++;
+                }
+
+                //Lotes
+                while ($row_Lotes = sqlsrv_fetch_array($SQL_Lotes)) {
+
+                    array_push($Lotes, array(
+                        "id_documento" => intval($row_Lotes['DocEntry']),
+                        "id_linea" => intval($row_Lotes['DocLinea']),
+                        "id_articulo" => $row_Lotes['ItemCode'],
+                        "articulo" => $row_Lotes['ItemName'],
+                        "cantidad" => intval($row_Lotes['Cantidad']),
+                        "serial_lote" => $row_Lotes['DistNumber'],
+                        "id_systema_articulo" => 0,
+                    ));
+                }
+
+                $Cabecera = array(
+                    "id_documento" => 0,
+                    "id_tipo_documento" => "21",
+                    "tipo_documento" => "Devolucion de compras",
+                    "moneda_documento" => "$",
+                    "estado" => $row_Cab['Cod_Estado'],
+                    "id_doc_portal" => "" . $row_Cab['ID_DevolucionCompra'] . "",
+                    "id_series" => intval($row_Cab['IdSeries']),
+                    "id_cliente" => $row_Cab['CardCode'],
+                    "cliente" => $row_Cab['NombreCliente'],
+                    "id_contacto_cliente" => intval($row_Cab['CodigoContacto']),
+                    "contacto_cliente" => $row_Cab['NombreContacto'],
+                    "referencia" => $row_Cab['NumAtCard'],
+                    "id_condicion_pago" => intval($row_Cab['IdCondicionPago']),
+                    "id_direccion_facturacion" => $row_Cab['SucursalFacturacion'],
+                    "id_direccion_destino" => $row_Cab['SucursalDestino'],
+                    "fecha_contabilizacion" => FormatoFechaToSAP($row_Cab['DocDate']),
+                    "fecha_vencimiento" => FormatoFechaToSAP($row_Cab['DocDueDate']),
+                    "fecha_documento" => FormatoFechaToSAP($row_Cab['TaxDate']),
+                    "comentarios" => $row_Cab['Comentarios'],
+                    "usuario" => $row_Cab['Usuario'],
+                    "fecha_creacion" => FormatoFechaToSAP($row_Cab['FechaRegistro']->format('Y-m-d'), $row_Cab['FechaRegistro']->format('H:i:s')),
+                    "hora_creacion" => FormatoFechaToSAP($row_Cab['FechaRegistro']->format('Y-m-d'), $row_Cab['FechaRegistro']->format('H:i:s')),
+                    "id_anexo" => 0,
+                    "docentry_llamada_servicio" => 0,
+                    "docentry_documento" => 0,
+                    "id_llamada_servicio" => 0,
+                    "id_vendedor" => intval($row_Cab['SlpCode']),
+                    "metodo" => intval($row_Cab['Metodo']),
+                    "documento_destino" => "18",
+                    "documento_destino_borrador" => true,
+                    "documentos_Lineas" => $Detalle,
+                    "documentos_Anexos" => $Anexos,
+                    "documentos_Lotes" => $Lotes,
+                    "documentos_Seriales" => $Seriales,
+                );
+
+            } else { //Actualizando
+
+                //Consultar cabecera
+                $SQL_Cab = Seleccionar("uvw_tbl_DevolucionCompra", '*', "ID_DevolucionCompra='" . $IdDevolucionCompra . "' and IdEvento='" . $IdEvento . "'");
+                $row_Cab = sqlsrv_fetch_array($SQL_Cab);
+
+                //Consultar detalle
+                $SQL_Det = Seleccionar("uvw_tbl_DevolucionCompraDetalle", '*', "ID_DevolucionCompra='" . $IdDevolucionCompra . "' and IdEvento='" . $IdEvento . "'");
+
+                //Consultar anexos
+                $SQL_Anx = Seleccionar("uvw_tbl_DocumentosSAP_Anexos", '*', "ID_Documento='" . $IdDevolucionCompra . "' and TipoDocumento='21' and Metodo=1");
+
+                $Detalle = array();
+                $Anexos = array();
+                $Lotes = array();
+                $Seriales = array();
+
+                //Detalle
+                while ($row_Det = sqlsrv_fetch_array($SQL_Det)) {
+
+                    array_push($Detalle, array(
+                        "base_type" => ($row_Det['BaseType'] === "") ? null : intval($row_Det['BaseType']),
+                        "base_entry" => ($row_Det['BaseEntry'] === "") ? null : intval($row_Det['BaseEntry']),
+                        "base_line" => ($row_Det['BaseLine'] === "") ? null : intval($row_Det['BaseLine']),
+                        "line_num" => intval($row_Det['LineNum']),
+                        "id_tipo_articulo" => "",
+                        "tipo_articulo" => 0,
+                        "id_articulo" => $row_Det['ItemCode'],
+                        "articulo" => $row_Det['ItemName'],
+                        "unidad_medida" => $row_Det['UnitMsr'],
+                        "texto_libre" => $row_Det['FreeTxt'],
+                        "id_bodega" => $row_Det['WhsCode'],
+                        "cant_articulo" => intval($row_Det['Quantity']),
+                        "precio_articulo" => intval($row_Det['Price']),
+                        "dim1" => $row_Det['OcrCode'],
+                        "dim2" => $row_Det['OcrCode2'],
+                        "dim3" => $row_Det['OcrCode3'],
+                        "dim4" => $row_Det['OcrCode4'],
+                        "dim5" => $row_Det['OcrCode5'],
+                        "id_proyecto" => $row_Det['PrjCode'],
+                        "metodo_linea" => intval($row_Det['Metodo']),
+                        "maneja_serial" => $row_Det['ManSerNum'],
+                        "maneja_lote" => $row_Det['ManBtchNum'],
+                        "CDU_id_servicio" => $row_Det['CDU_IdServicio'],
+                        "CDU_id_metodo_aplicacion" => $row_Det['CDU_IdMetodoAplicacion'],
+                        "CDU_id_tipo_plagas" => $row_Det['CDU_IdTipoPlagas'],
+                        "CDU_areas_controladas" => $row_Det['CDU_AreasControladas'],
+                        "CDU_cant_litros" => intval($row_Det['CDU_CantLitros']),
+                        "CDU_dosificacion" => intval($row_Det['CDU_Dosificacion']),
+                        "CDU_cant_visita" => 0,
+                        "CDU_codigo_empleado" => "",
+                        "CDU_nombre_empleado" => "",
+                        "CDU_texto_libre" => "",
+                        "CDU_numero_ots" => "",
+                        "CDU_id_direccion_destino" => "",
+                        "estado_linea" => $row_Det['LineStatus'],
+                        "docentry_documento" => intval($row_Det['DocEntry']),
+                    ));
+                }
+
+                //Anexos
+                $i = 0;
+                while ($row_Anx = sqlsrv_fetch_array($SQL_Anx)) {
+
+                    array_push($Anexos, array(
+                        "id_anexo" => $i,
+                        "tipo_documento" => intval($row_Anx['TipoDocumento']),
+                        "id_documento" => intval($row_Anx['ID_Documento']),
+                        "archivo" => $row_Anx['FileName'],
+                        "ext_archivo" => $row_Anx['FileExt'],
+                        "metodo" => intval($row_Anx['Metodo']),
+                        "fecha" => FormatoFechaToSAP($row_Anx['Fecha']->format('Y-m-d')),
+                        "id_usuario" => intval($row_Anx['ID_Usuario']),
+                        "comentarios" => "",
+                    ));
+                    $i++;
+                }
+
+                $Cabecera = array(
+                    "id_documento" => intval($row_Cab['DocNum']),
+                    "id_tipo_documento" => "21",
+                    "tipo_documento" => "Devolucion de compras",
+                    "moneda_documento" => "$",
+                    "estado" => $row_Cab['Cod_Estado'],
+                    "id_doc_portal" => "" . $row_Cab['ID_DevolucionCompra'] . "",
+                    "id_series" => intval($row_Cab['IdSeries']),
+                    "id_cliente" => $row_Cab['CardCode'],
+                    "cliente" => $row_Cab['NombreCliente'],
+                    "id_contacto_cliente" => intval($row_Cab['CodigoContacto']),
+                    "contacto_cliente" => $row_Cab['NombreContacto'],
+                    "referencia" => $row_Cab['NumAtCard'],
+                    "id_condicion_pago" => intval($row_Cab['IdCondicionPago']),
+                    "id_direccion_facturacion" => $row_Cab['SucursalFacturacion'],
+                    "id_direccion_destino" => $row_Cab['SucursalDestino'],
+                    "fecha_contabilizacion" => FormatoFechaToSAP($row_Cab['DocDate']),
+                    "fecha_vencimiento" => FormatoFechaToSAP($row_Cab['DocDueDate']),
+                    "fecha_documento" => FormatoFechaToSAP($row_Cab['TaxDate']),
+                    "comentarios" => $row_Cab['Comentarios'],
+                    "usuario" => $row_Cab['Usuario'],
+                    "usuario_autorizacion" => $row_Cab['Usuario'],
+                    "fecha_actualizacion" => FormatoFechaToSAP($row_Cab['FechaRegistro']->format('Y-m-d'), $row_Cab['FechaRegistro']->format('H:i:s')),
+                    "hora_actualizacion" => FormatoFechaToSAP($row_Cab['FechaRegistro']->format('Y-m-d'), $row_Cab['FechaRegistro']->format('H:i:s')),
+                    "seg_actualizacion" => 0,
+                    "id_anexo" => intval($row_Cab['IdAnexo']),
+                    "metodo" => intval($row_Cab['Metodo']),
+                    "id_llamada_servicio" => 0,
+                    "docentry_llamada_servicio" => 0,
+                    "docentry_documento" => intval($row_Cab['DocEntry']),
+                    "id_vendedor" => intval($row_Cab['SlpCode']),
+                    "id_bodega_origen" => "",
+                    "id_bodega_destino" => "",
+                    "documento_destino" => "18",
+                    "documento_destino_borrador" => true,
+                    "documento_destino" => "",
+                    "documento_destino_borrador" => true,
+                    "CDU_tipo_venta" => "",
+                    "CDU_id_tipo_entrega" => "",
+                    "CDU_id_annio_entrega" => "",
+                    "CDU_entrega_descontable" => "",
+                    "CDU_valor_cuota_descontable" => 0,
+                    "CDU_MedioPago" => "",
+                    "CDU_DocTributario" => "",
+                    "CDU_TipoOperacion" => "",
+                    "CDU_numero_ot" => "",
+                    "CDU_id_creacion_OT_lote" => "",
+                    "documentos_Lineas" => $Detalle,
+                    "documentos_Anexos" => $Anexos,
+                    "documentos_Lotes" => $Lotes,
+                    "documentos_Seriales" => $Seriales,
+                    "id_proyecto" => $row_Cab['PrjCode'], // SMM, 03/02/2023
+                );
+
+            }
+
+            // $Cabecera_json=json_encode($Cabecera);
+            // echo $Cabecera_json;
+            // exit();
+
+            //Enviar datos al WebServices
+            try {
+                if ($_POST['tl'] == 0) { // Creando
+                    $Metodo = "DevolucionesCompras";
+                    $Resultado = EnviarWebServiceSAP($Metodo, $Cabecera, true, true);
+                } else { // Editando
+                    $Metodo = "DevolucionesCompras";
+                    $Resultado = EnviarWebServiceSAP($Metodo, $Cabecera, true, true, "PUT");
+                }
+
+                /*
+                $Parametros = array(
+                'id_documento' => intval($IdDevolucionCompra),
+                'id_evento' => intval($IdEvento),
+                );
+                $Metodo = "DevolucionesCompras";
+                $Resultado = EnviarWebServiceSAP($Metodo, $Parametros, true, true);
+                */
+
+                if ($Resultado->Success == 0) {
+                    //InsertarLog(1, 0, 'Error al generar el informe');
+                    //throw new Exception('Error al generar el informe. Error de WebServices');
+                    $sw_error = 1;
+                    $msg_error = $Resultado->Mensaje;
+                    $Cabecera_json = json_encode($Cabecera);
+                } else {
+                    if ($_POST['tl'] == 0) { //Creando Devolucion
+                        //Consultar ID creado para cargar el documento
+                        $SQL_ConsID = Seleccionar('uvw_Sap_tbl_DevolucionesCompras', 'ID_DevolucionCompra', "IdDocPortal='" . $IdDevolucionCompra . "'");
+                        $row_ConsID = sqlsrv_fetch_array($SQL_ConsID);
+                        sqlsrv_close($conexion);
 
 						/*
                         echo "SELECT ID_DevolucionCompra FROM uvw_Sap_tbl_DevolucionesCompras WHERE IdDocPortal='$IdDevolucionCompra'";
@@ -200,23 +483,31 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
 						exit();
 						*/
 
-						header('Location:devolucion_compra.php?id=' . base64_encode($row_ConsID['ID_DevolucionCompra']) . '&id_portal=' . base64_encode($IdDevolucionCompra) . '&tl=1&a=' . base64_encode("OK_DCompAdd"));
-					} else { //Actualizando Devolucion
-						sqlsrv_close($conexion);
-						header('Location:' . base64_decode($_POST['return']) . '&a=' . base64_encode("OK_DCompUpd"));
-					}
-				}
-			} catch (Exception $e) {
-				echo 'Excepcion capturada: ', $e->getMessage(), "\n";
-			}
+                        header('Location:devolucion_compra.php?id=' . base64_encode($row_ConsID['ID_DevolucionCompra']) . '&id_portal=' . base64_encode($IdDevolucionCompra) . '&tl=1&a=' . base64_encode("OK_DCompAdd"));
+                    } else { //Actualizando Devolucion
+                        sqlsrv_close($conexion);
+                        header('Location:' . base64_decode($_POST['return']) . '&a=' . base64_encode("OK_DCompUpd"));
+                    }
+                }
+            } catch (Exception $e) {
+                echo 'Excepcion capturada: ', $e->getMessage(), "\n";
+            }
 
-		} else {
-			$sw_error = 1;
-			$msg_error = "Ha ocurrido un error al crear la Devolucion de compras";
-		}
-	} catch (Exception $e) {
-		echo 'Excepcion capturada: ', $e->getMessage(), "\n";
-	}
+            /*
+			sqlsrv_close($conexion);
+			if($_POST['tl']==0){//Creando Devolucion
+			header('Location:'.base64_decode($_POST['return']).'&a='.base64_encode("OK_DCompAdd")."&json=".base64_encode(json_encode($Cabecera)));
+			}else{//Actualizando Devolucion
+			header('Location:'.base64_decode($_POST['return']).'&a='.base64_encode("OK_DCompUpd"));
+			}
+			*/
+        } else {
+            $sw_error = 1;
+            $msg_error = "Ha ocurrido un error al crear la Devolucion de compras";
+        }
+    } catch (Exception $e) {
+        echo 'Excepcion capturada: ', $e->getMessage(), "\n";
+    }
 }
 // Fin, Grabar Devolución de Compra
 
@@ -410,9 +701,8 @@ if ($sw_error == 1) {
 	$SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . $row['ID_LlamadaServicio'] . "'");
 	$row_OrdenServicioCliente = sqlsrv_fetch_array($SQL_OrdenServicioCliente);
 
-	//Anexos
+	// Anexos
 	$SQL_Anexo = Seleccionar('uvw_Sap_tbl_DocumentosSAP_Anexos', '*', "AbsEntry='" . $row['IdAnexo'] . "'");
-
 }
 
 // SMM, 14/10/2023
@@ -443,22 +733,22 @@ if($edit == 0) {
 	}
 }
 
-//Condiciones de pago
+// Condiciones de pago
 $SQL_CondicionPago = Seleccionar('uvw_Sap_tbl_CondicionPago', '*', '', 'IdCondicionPago');
 
-//Estado documento
+// Estado documento
 $SQL_EstadoDoc = Seleccionar('uvw_tbl_EstadoDocSAP', '*');
 
-//Estado autorizacion
+// Estado autorizacion
 $SQL_EstadoAuth = Seleccionar('uvw_Sap_tbl_EstadosAuth', '*');
 
-//Empleado de compras
+// Empleado de compras
 $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', '', 'DE_EmpVentas');
 
-//Series de documento
+// Series de documento
 $ParamSerie = array(
-	"'" . $_SESSION['CodUser'] . "'",
-	"'21'",
+    "'" . $_SESSION['CodUser'] . "'",
+    "'21'",
 );
 $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 
@@ -1465,7 +1755,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 							<div class="form-group">
 								<label class="col-lg-2">Empleado de compras <span class="text-danger">*</span></label>
 								<div class="col-lg-5">
-									<select name="EmpleadoCompras" class="form-control" id="EmpleadoCompras"
+									<select name="EmpleadoVentas" class="form-control" id="EmpleadoVentas"
 										form="CrearDevolucionCompra" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
 											echo "disabled='disabled'";
 										} ?>>
@@ -2046,7 +2336,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 			let proyecto = $("#PrjCode").val();
 			let cardCode = $("#CardCode").val();
 			let listaPrecio = $("#IdListaPrecio").val();
-			let empleado = $("#EmpleadoCompras").val();
+			let empleado = $("#EmpleadoVentas").val();
 
 			if (((cardCode != "") && (serie != "")) || probarModal) {
 				$.ajax({
@@ -2089,7 +2379,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 			let proyecto = $("#PrjCode").val();
 			let cardCode = $("#CardCode").val();
 			let listaPrecio = $("#IdListaPrecio").val();
-			let empleado = $("#EmpleadoCompras").val();
+			let empleado = $("#EmpleadoVentas").val();
 
 			if (((cardCode != "") && (serie != "") && (totalItems > 0)) || probarModal) {
 				$.ajax({
