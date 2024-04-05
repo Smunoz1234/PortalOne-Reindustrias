@@ -635,9 +635,9 @@ if (isset($row['IdMotivoAutorizacion']) && ($row['IdMotivoAutorizacion'] != "") 
 	$motivoAutorizacion = $row_MotivoAutorizacion['MotivoAutorizacion'] ?? "";
 }
 
-// Permiso para actualizar la solicitud de compra definitivo. SMM, 16/01/2024
+// Permiso para actualizar la orden de compra definitivo. SMM, 05/04/2024
 $BloquearDocumento = false;
-if (isset($row['AuthPortal']) && ($row['AuthPortal'] == "Y") && (!PermitirFuncion(1212))) {
+if (isset($row['AuthPortal']) && ($row['AuthPortal'] == "Y") && (!PermitirFuncion(725))) {
 	$BloquearDocumento = true;
 }
 

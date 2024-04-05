@@ -714,9 +714,9 @@ if (isset($row['ID_PerfilUsuario']) && ($row['ID_PerfilUsuario'] != "")) {
 	$autorAsignado = sqlsrv_has_rows($SQL_PerfilesAutorizador);
 }
 
-// Permiso para actualizar la solicitud de compra en borrador. SMM, 02/02/2024
+// Permiso para actualizar la solicitud de compra en borrador. SMM, 05/04/2024
 $BloquearDocumento = false;
-if (!PermitirFuncion(1211) && false) {
+if (!PermitirFuncion(722)) {
 	$BloquearDocumento = true;
 }
 

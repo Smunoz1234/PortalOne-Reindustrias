@@ -303,9 +303,9 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Solicitud de salida
 						//Registrar archivo en la BD
 						$ParamInsAnex = array(
 							"'1250000001'",
-							"'" . $IdSolSalida . "'",
-							"'" . $OnlyName . "'",
-							"'" . $Ext . "'",
+							"'$IdSolSalida'",
+							"'$OnlyName'",
+							"'$Ext'",
 							"1",
 							"'" . $_SESSION['CodUser'] . "'",
 							"1",
@@ -1526,7 +1526,7 @@ function verAutorizacion() {
 							if ($edit == 1 || $sw_error == 1) {
 								while ($row_ContactoCliente = sqlsrv_fetch_array($SQL_ContactoCliente)) { ?>
 												<option value="<?php echo $row_ContactoCliente['CodigoContacto']; ?>" <?php if ((isset($row['CodigoContacto'])) && (strcmp($row_ContactoCliente['CodigoContacto'], $row['CodigoContacto']) == 0)) {
-													   echo "selected=\"selected\"";
+													   echo "selected";
 												   } ?>><?php echo $row_ContactoCliente['ID_Contacto']; ?></option>
 							  	<?php }
 							} ?>
@@ -1542,9 +1542,9 @@ function verAutorizacion() {
 							  <?php if (($edit == 1) || ($sw_error == 1)) {
 								  while ($row_SucursalDestino = sqlsrv_fetch_array($SQL_SucursalDestino)) { ?>
 											<option value="<?php echo $row_SucursalDestino['NombreSucursal']; ?>" <?php if ((isset($row['SucursalDestino'])) && (strcmp($row_SucursalDestino['NombreSucursal'], $row['SucursalDestino']) == 0)) {
-												   echo "selected=\"selected\"";
+												   echo "selected";
 											   } elseif (isset($_GET['Sucursal']) && (strcmp($row_SucursalDestino['NombreSucursal'], base64_decode($_GET['Sucursal'])) == 0)) {
-												   echo "selected=\"selected\"";
+												   echo "selected";
 											   } ?>><?php echo $row_SucursalDestino['NombreSucursal']; ?></option>
 							  	<?php }
 							  } ?>
@@ -1557,7 +1557,7 @@ function verAutorizacion() {
 							  <?php if ($edit == 1 || $sw_error == 1) {
 								  while ($row_SucursalFacturacion = sqlsrv_fetch_array($SQL_SucursalFacturacion)) { ?>
 											<option value="<?php echo $row_SucursalFacturacion['NombreSucursal']; ?>" <?php if ((isset($row['SucursalFacturacion'])) && (strcmp($row_SucursalFacturacion['NombreSucursal'], $row['SucursalFacturacion']) == 0)) {
-												   echo "selected=\"selected\"";
+												   echo "selected";
 											   } ?>><?php echo $row_SucursalFacturacion['NombreSucursal']; ?></option>
 							  	<?php }
 							  } ?>
@@ -1653,7 +1653,7 @@ function verAutorizacion() {
 							} ?>>
 							  <?php while ($row_EstadoDoc = sqlsrv_fetch_array($SQL_EstadoDoc)) { ?>
 										<option value="<?php echo $row_EstadoDoc['Cod_Estado']; ?>" <?php if (($edit == 1) && (isset($row['Cod_Estado'])) && (strcmp($row_EstadoDoc['Cod_Estado'], $row['Cod_Estado']) == 0)) {
-											   echo "selected=\"selected\"";
+											   echo "selected";
 										   } ?>><?php echo $row_EstadoDoc['NombreEstado']; ?></option>
 							  <?php } ?>
 							</select>
@@ -1669,7 +1669,7 @@ function verAutorizacion() {
 						<select name="Serie" class="form-control" id="Serie">
 						  <?php while ($row_Series = sqlsrv_fetch_array($SQL_Series)) { ?>
 									<option value="<?php echo $row_Series['IdSeries']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['IdSeries'])) && (strcmp($row_Series['IdSeries'], $row['IdSeries']) == 0)) {
-										   echo "selected=\"selected\"";
+										   echo "selected";
 									   } ?>><?php echo $row_Series['DeSeries']; ?></option>
 						  <?php } ?>
 						</select>
@@ -1690,7 +1690,7 @@ function verAutorizacion() {
 						  <?php while ($row_CondicionPago = sqlsrv_fetch_array($SQL_CondicionPago)) { ?>
 									<option value="<?php echo $row_CondicionPago['IdCondicionPago']; ?>" <?php if ($edit == 1) {
 										   if (($row['IdCondicionPago'] != "") && (strcmp($row_CondicionPago['IdCondicionPago'], $row['IdCondicionPago']) == 0)) {
-											   echo "selected=\"selected\"";
+											   echo "selected";
 										   }
 									   } ?>><?php echo $row_CondicionPago['NombreCondicion']; ?></option>
 						  <?php } ?>
@@ -1714,11 +1714,11 @@ function verAutorizacion() {
 
 										<option value="<?php echo $row_Dim['OcrCode']; ?>"
 										<?php if ((isset($row["OcrCode$OcrId"]) && ($row["OcrCode$OcrId"] != "")) && (strcmp($row_Dim['OcrCode'], $row["OcrCode$OcrId"]) == 0)) {
-											echo "selected=\"selected\"";
+											echo "selected";
 										} elseif (($edit == 0) && (isset($_GET['LMT']) && !isset($_GET[strval($dim['IdPortalOne'])])) && ($row_DatosEmpleados["CentroCosto$DimCode"] != "") && (strcmp($row_DatosEmpleados["CentroCosto$DimCode"], $row_Dim['OcrCode']) == 0)) {
-											echo "selected=\"selected\"";
+											echo "selected";
 										} elseif (isset($_GET[strval($dim['IdPortalOne'])]) && (strcmp($row_Dim['OcrCode'], base64_decode($_GET[strval($dim['IdPortalOne'])])) == 0)) {
-											echo "selected=\"selected\"";
+											echo "selected";
 										} ?>>
 											<?php echo $row_Dim['OcrCode'] . "-" . $row_Dim['OcrName']; ?>
 										</option>
@@ -1738,7 +1738,7 @@ function verAutorizacion() {
 							  <?php if ($edit == 1) { ?>
 									<?php while ($row_Almacen = sqlsrv_fetch_array($SQL_Almacen)) { ?>
 											<option value="<?php echo $row_Almacen['WhsCode']; ?>" <?php if (($edit == 1) && (isset($row['WhsCode'])) && (strcmp($row_Almacen['WhsCode'], $row['WhsCode']) == 0)) {
-												   echo "selected=\"selected\"";
+												   echo "selected";
 											   } ?>><?php echo $row_Almacen['WhsName']; ?></option>
 								  	<?php } ?>
 							<?php } ?>
@@ -1753,7 +1753,7 @@ function verAutorizacion() {
 						  <?php if ($edit == 1) { ?>
 								<?php while ($row_AlmacenDestino = sqlsrv_fetch_array($SQL_AlmacenDestino)) { ?>
 										<option value="<?php echo $row_AlmacenDestino['ToWhsCode']; ?>" <?php if (($edit == 1) && (isset($row['ToWhsCode'])) && (strcmp($row_AlmacenDestino['ToWhsCode'], $row['ToWhsCode']) == 0)) {
-											   echo "selected=\"selected\"";
+											   echo "selected";
 										   } ?>><?php echo $row_AlmacenDestino['ToWhsName']; ?></option>
 							  	<?php } ?>
 						  <?php } ?>
@@ -1768,9 +1768,9 @@ function verAutorizacion() {
 								<option value="">(NINGUNO)</option>
 							<?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) { ?>
 									<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if ((isset($row['PrjCode'])) && (strcmp($row_Proyecto['IdProyecto'], $row['PrjCode']) == 0)) {
-										   echo "selected=\"selected\"";
+										   echo "selected";
 									   } elseif ((isset($_GET['Proyecto'])) && (strcmp($row_Proyecto['IdProyecto'], base64_decode($_GET['Proyecto'])) == 0)) {
-										   echo "selected=\"selected\"";
+										   echo "selected";
 									   } ?>>
 										<?php echo $row_Proyecto['IdProyecto'] . "-" . $row_Proyecto['DeProyecto']; ?>
 									</option>
@@ -1787,7 +1787,7 @@ function verAutorizacion() {
 								<option value="">Seleccione...</option>
 						  <?php while ($row_Empleado = sqlsrv_fetch_array($SQL_Empleado)) { ?>
 									<option value="<?php echo $row_Empleado['ID_Empleado']; ?>" <?php if ((isset($row['CodEmpleado'])) && (strcmp($row_Empleado['ID_Empleado'], $row['CodEmpleado']) == 0)) {
-										   echo "selected=\"selected\"";
+										   echo "selected";
 									   } ?>><?php echo $row_Empleado['NombreEmpleado']; ?></option>
 						  <?php } ?>
 						</select>
@@ -1800,7 +1800,7 @@ function verAutorizacion() {
 								<option value="">Seleccione...</option>
 						  <?php while ($row_TipoEntrega = sqlsrv_fetch_array($SQL_TipoEntrega)) { ?>
 									<option value="<?php echo $row_TipoEntrega['IdTipoEntrega']; ?>" <?php if ((isset($row['IdTipoEntrega'])) && (strcmp($row_TipoEntrega['IdTipoEntrega'], $row['IdTipoEntrega']) == 0)) {
-										   echo "selected=\"selected\"";
+										   echo "selected";
 									   } ?>><?php echo $row_TipoEntrega['DeTipoEntrega']; ?></option>
 						  <?php } ?>
 						</select>
@@ -1821,13 +1821,13 @@ function verAutorizacion() {
 										   echo "disabled";
 									   } ?>
 									<?php if (($edit == 1 || $sw_error == 1) && (isset($row['AuthPortal'])) && (strcmp($row_EstadoAuth['IdAuth'], $row['AuthPortal']) == 0)) {
-										echo "selected=\"selected\"";
+										echo "selected";
 									} elseif (isset($row_Autorizaciones['IdEstadoAutorizacion']) && ($row_Autorizaciones['IdEstadoAutorizacion'] == 'Y') && ($row_EstadoAuth['IdAuth'] == 'Y')) {
-										echo "selected=\"selected\"";
+										echo "selected";
 									} elseif (isset($row_Autorizaciones['IdEstadoAutorizacion']) && ($row_Autorizaciones['IdEstadoAutorizacion'] == 'W') && ($row_EstadoAuth['IdAuth'] == 'P')) {
-										echo "selected=\"selected\"";
+										echo "selected";
 									} elseif (($edit == 0 && $sw_error == 0) && ($row_EstadoAuth['IdAuth'] == 'N')) {
-										echo "selected=\"selected\"";
+										echo "selected";
 									} ?>>
 										<?php echo ($row_EstadoAuth['IdAuth'] == "N") ? "Seleccione..." : $row_EstadoAuth['DeAuth']; ?>
 									</option>
@@ -1864,9 +1864,9 @@ function verAutorizacion() {
 							} ?>>
 							  <?php while ($row_AnioEntrega = sqlsrv_fetch_array($SQL_AnioEntrega)) { ?>
 										<option value="<?php echo $row_AnioEntrega['IdAnioEntrega']; ?>" <?php if ((isset($row['IdAnioEntrega'])) && (strcmp($row_AnioEntrega['IdAnioEntrega'], $row['IdAnioEntrega']) == 0)) {
-											   echo "selected=\"selected\"";
+											   echo "selected";
 										   } elseif (date('Y') == $row_AnioEntrega['DeAnioEntrega']) {
-											   echo "selected=\"selected\"";
+											   echo "selected";
 										   } ?>><?php echo $row_AnioEntrega['DeAnioEntrega']; ?></option>
 							  <?php } ?>
 							</select>
@@ -1879,10 +1879,10 @@ function verAutorizacion() {
 								echo "disabled='disabled'";
 							} ?>>
 								<option value="NO" <?php if (($edit == 1) && ($row['Descontable'] == "NO")) {
-									echo "selected=\"selected\"";
+									echo "selected";
 								} ?>>NO</option>
 								<option value="SI" <?php if (($edit == 1) && ($row['Descontable'] == "SI")) {
-									echo "selected=\"selected\"";
+									echo "selected";
 								} ?>>SI</option>
 							</select>
 						</div>
@@ -2082,18 +2082,7 @@ function verAutorizacion() {
 	}
 } ?>
 <!-- Hasta aquí, 29/08/2022 -->
-
-					<?php if (false && (($edit == 1) && ($row['Cod_Estado'] != 'C'))) { ?>
-						<div class="col-lg-3">
-							<div class="btn-group pull-right">
-								<button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i class="fa fa-mail-forward"></i> Copiar a <i class="fa fa-caret-down"></i></button>
-								<ul class="dropdown-menu">
-									<li><a class="alkin dropdown-item" href="traslado_inventario.php?dt_SS=1&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Dim1=<?php echo base64_encode($row['OcrCode']); ?>&Dim2=<?php echo base64_encode($row['OcrCode2']); ?>&Dim3=<?php echo base64_encode($row['OcrCode3']); ?>&SucursalFact=<?php echo base64_encode($row['SucursalFacturacion']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&AlmacenDestino=<?php echo base64_encode($row['ToWhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['CodEmpleado']); ?>&TipoEntrega=<?php echo base64_encode($row['IdTipoEntrega']); ?>&AnioEntrega=<?php echo base64_encode($row['IdAnioEntrega']); ?>&EntregaDescont=<?php echo base64_encode($row['Descontable']); ?>&ValorCuotaDesc=<?php echo base64_encode($row['ValorCuotaDesc']); ?>&SS=<?php echo base64_encode($row['ID_SolSalida']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>">Traslado de salida</a></li>
-								</ul>
-							</div>
-						</div>
-					<?php } ?>
-				</div>
+	</div>
 				<input type="hidden" form="CrearSolicitudSalida" id="P" name="P" value="50" />
 				<input type="hidden" form="CrearSolicitudSalida" id="IdSolSalida" name="IdSolSalida" value="<?php if ($edit == 1) {
 					echo base64_encode($row['ID_SolSalida']);
