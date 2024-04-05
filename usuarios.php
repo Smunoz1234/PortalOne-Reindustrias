@@ -303,7 +303,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
                 while ($i < $CuentaCliente) {
                     if ($_POST['Cliente'][$i] != "") {
 
-                        //Consultar si ya existe el cliente
+                        // Consultar si ya existe el cliente
                         $SQL_ConsCliente = Seleccionar('uvw_tbl_ClienteUsuario', 'CodigoCliente', "ID_Usuario='$ID' AND CodigoCliente='" . $_POST['Cliente'][$i] . "'");
                         $row_ConsCliente = sqlsrv_fetch_array($SQL_ConsCliente);
 
@@ -328,6 +328,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
                             "'" . $_POST['Sucursal'][$i] . "'",
                             "'" . $_SESSION['CodUser'] . "'",
                             "1",
+							"'" . ($_POST["NumeroLinea"][$i] ?? "0") . "'"
                         );
                         $SQL_InsertSucursal = EjecutarSP('sp_InsertarClienteSucursalUsuario', $ParamInsertSucursal, $_POST['P']);
 
@@ -653,6 +654,12 @@ function BuscarSucursal(id){
 	$('.ibox-content').toggleClass('sk-loading',false);
 }
 
+// SMM, 04/03/2024
+function BuscarNumeroLinea(id){
+	let NumeroLinea = $(`#Sucursal${id}`).find(':selected').data('id');
+	$(`#NumeroLinea${id}`).val(NumeroLinea);
+}
+
 function BuscarSerieDoc(id){
 	$('.ibox-content').toggleClass('sk-loading',true);
 	var TipoDocumento=document.getElementById('TipoDocumento'+id).value;
@@ -956,9 +963,9 @@ if ($edit == 1 && $Num_SeriesUsuario > 0) {
 									 <label class="col-lg-1 control-label">Permiso</label>
 									 <div class="col-lg-2">
 										<select name="PermisoSerie[]" class="form-control" id="PermisoSerie<?php echo $Cont; ?>">
-											<option value="1" <?php if ($row_SeriesUsuario['Permiso'] == 1) {echo "selected";}?>>Solo consulta</option>
-											<option value="2" <?php if ($row_SeriesUsuario['Permiso'] == 2) {echo "selected";}?>>Solo creación</option>
-											<option value="3" <?php if ($row_SeriesUsuario['Permiso'] == 3) {echo "selected";}?>>Creación y consulta</option>
+											<option value="1" <?php if ($row_SeriesUsuario['Permiso'] == 1) {echo "selected=\"selected\"";}?>>Solo consulta</option>
+											<option value="2" <?php if ($row_SeriesUsuario['Permiso'] == 2) {echo "selected=\"selected\"";}?>>Solo creación</option>
+											<option value="3" <?php if ($row_SeriesUsuario['Permiso'] == 3) {echo "selected=\"selected\"";}?>>Creación y consulta</option>
 										</select>
 									 </div>
 									 <div class="col-lg-2">
@@ -1274,6 +1281,11 @@ function addField(btn){//Clonar divDir
 	$newClone.children("div").eq(1).children("select").eq(0).attr('id','Sucursal'+newID);
 
 	$newClone.children("div").eq(0).children("select").eq(0).attr('onChange','BuscarSucursal('+newID+');');
+	
+	// SMM, 04/03/2024
+	$newClone.children("div").eq(1).children("select").eq(0).attr('onchange', `BuscarNumeroLinea('${newID}');`);
+	$newClone.children("input").eq(0).attr('id',`NumeroLinea${newID}`);
+	$newClone.children("input").eq(0).attr('name',`NumeroLinea${newID}`);
 
 	//inputs
 	//$newClone.children("input").eq(0).attr('id','Cliente'+newID);

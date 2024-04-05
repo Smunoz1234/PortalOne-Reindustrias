@@ -1,20 +1,22 @@
 <?php
-require_once ("includes/conexion.php");
+require_once "includes/conexion.php";
 //require_once("includes/conexion_hn.php");
 if (isset($_GET['id']) && $_GET['id'] != "") {
   $IdUsuario = base64_decode($_GET['id']);
 } else {
   $IdUsuario = "";
 }
-//Clientes
-$cons = "Select * From uvw_Sap_tbl_Clientes order by NombreCliente";
+
+// Clientes
+$cons = "SELECT * FROM uvw_Sap_tbl_Clientes ORDER BY NombreCliente";
 $SQL_Cliente = sqlsrv_query($conexion, $cons);
-//$SQL_Cliente=Seleccionar('uvw_Sap_tbl_Clientes','*','','NombreCliente');
+
+// $SQL_Cliente=Seleccionar('uvw_Sap_tbl_Clientes','*','','NombreCliente');
 
 $SQL_ClienteUsuario = Seleccionar('uvw_tbl_ClienteUsuario', 'CodigoCliente, NombreCliente', "ID_Usuario='" . $IdUsuario . "'", 'NombreCliente');
-
 $Cont = 1;
 ?>
+
 <div class="ibox">
   <div class="ibox-title bg-success">
     <h5><i class="fa fa-plus-circle"></i> Agregar nuevas sucursales</h5>
@@ -34,12 +36,16 @@ $Cont = 1;
           <?php } ?>
         </select>
       </div>
+
+      <input type="hidden" name="NumeroLinea[]" id="NumeroLinea<?php echo $Cont; ?>">
       <label class="col-lg-1 control-label">Sucursal</label>
       <div class="col-lg-3">
-        <select name="Sucursal[]" class="form-control" id="Sucursal<?php echo $Cont; ?>">
+        <select name="Sucursal[]" class="form-control" id="Sucursal<?php echo $Cont; ?>"
+          onchange="BuscarNumeroLinea('<?php echo $Cont; ?>');">
           <option value="">Seleccione...</option>
         </select>
       </div>
+
       <div class="col-lg-3">
         <button type="button" id="btnCliente<?php echo $Cont; ?>" class="btn btn-success btn-xs"
           onClick="addField(this);"><i class="fa fa-plus"></i> Añadir otro</button>
