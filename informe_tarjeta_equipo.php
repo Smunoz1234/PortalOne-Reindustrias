@@ -685,7 +685,7 @@ if ($sw == 1) {
 													<td>
 														<div>
 															<a href="tarjeta_equipo.php?id=<?php echo base64_encode($row['IdTarjetaEquipo']); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('informe_tarjeta_equipo.php'); ?>&tl=1"
-																class="alkin btn btn-success btn-xs"><i
+																class="btn btn-success btn-xs" target="_blank"><i
 																	class="fa fa-folder-open-o"></i> Abrir</a>
 															<a target="_blank"
 																href="gestionar_cartera.php?Clt=<?php echo base64_encode($row['CardCode']); ?>&TE=<?php echo base64_encode($row['IdTarjetaEquipo']); ?>"

@@ -453,8 +453,8 @@ if ($edit == 1 && $sw_error == 0) { // Editando la tarjeta de equipo
 	//Contratos de servicio
 	$SQL_ContratosServicio = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_Contratos', '*', "IdTarjetaEquipo='$IdTarjetaEquipo'", 'ID_Contrato');
 
-	//Historico de gestiones, SMM 01/07/2022
-	$SQL_HistGestion = Seleccionar('uvw_tbl_Cartera_Gestion', 'TOP 10 *', "CardCode='$CardCode'", 'FechaRegistro');
+	// Historico de gestiones, SMM 04/04/2024
+	$SQL_HistGestion = Seleccionar("uvw_tbl_Cartera_Gestion", "TOP(50) *", "CardCode = '$CardCode'", "FechaRegistro DESC");
 }
 
 if ($sw_error == 1) {
@@ -484,8 +484,8 @@ if ($sw_error == 1) {
 	//Contratos de servicio
 	$SQL_ContratosServicio = Seleccionar('uvw_Sap_tbl_TarjetasEquipos_Contratos', '*', "IdTarjetaEquipo='$IdTarjetaEquipo'", 'ID_Contrato');
 
-	//Historico de gestiones, SMM 01/07/2022
-	$SQL_HistGestion = Seleccionar('uvw_tbl_Cartera_Gestion', 'TOP 10 *', "CardCode='$IdTarjetaEquipo'", 'FechaRegistro');
+	// Historico de gestiones, SMM 04/04/2024
+	$SQL_HistGestion = Seleccionar("uvw_tbl_Cartera_Gestion", "TOP(50) *", "CardCode = '$CardCode'", "FechaRegistro DESC");
 }
 
 //Tecnicos

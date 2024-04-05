@@ -869,7 +869,10 @@ while ($row_FacturasPendientes = sqlsrv_fetch_array($SQL_FacturasPendientes)) {?
 										</div>
 									</div>
 									<div class="form-group">
-										<label class="col-lg-2 control-label">Destino</label>
+										<label class="col-lg-2 control-label">
+											<i onclick="ConsultarDatosCliente();" title="Consultar cliente" style="cursor: pointer;display: initial;" class="btn-xs btn-success fa fa-search"></i>
+											Destino
+										</label>
 										<div class="col-lg-5">
 											<select name="Destino" class="form-control select2" id="Destino" required>
 													<option value="">Seleccione...</option>
