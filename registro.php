@@ -1553,7 +1553,32 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
             echo 'Excepcion capturada: ', $e->getMessage(), "\n";
         }
 
-    } elseif ($P == 31) { //Actualizar el archivo de acuerdo de confidencialidad
+    }
+
+    /*
+    elseif($P==30){//Insertar notas en la actividad (deprecated)
+    try{
+    //Insertar el registro en la BD
+    $Cons_InsNotaActividad="EXEC sp_tbl_Actividades '".base64_decode($_POST['ID'])."',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'".LSiqmlObs($_POST['NotasActividad'])."',NULL,NULL,NULL,NULL,3";
+    $SQL_InsNotaActividad=sqlsrv_query($conexion,$Cons_InsNotaActividad);
+    if($SQL_InsNotaActividad){
+    InsertarLog(2, 30, $Cons_InsNotaActividad);
+    sqlsrv_close($conexion);
+    header('Location:actividad_edit.php?a='.base64_encode("OK_InsNotAct")."&".base64_decode($_POST['return']));
+    }else{
+    InsertarLog(1, 30, $Cons_InsNotaActividad);
+    throw new Exception('Error al insertar las notas de la actividad');
+    sqlsrv_close($conexion);
+    exit();
+    }
+    }catch (Exception $e) {
+    InsertarLog(1, 30, $Cons_InsNotaActividad);
+    echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
+    }
+    }
+    */
+    
+    elseif ($P == 31) { //Actualizar el archivo de acuerdo de confidencialidad
         try {
             $Nombre_archivo = "contrato_confidencialidad.txt";
             $Archivo = fopen($Nombre_archivo, "w+");
@@ -3209,7 +3234,7 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     if (isset($_GET['custom'])) {
                     array_push($Parametros, "'" . $_GET['custom'] . "'");
                     }
-                     */
+                    */
 
                     $SQL = EjecutarSP('sp_tbl_FacturaVentaDetalleCarritoUpdCampos', $Parametros, 36);
                     if ($SQL) {
@@ -3716,11 +3741,11 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                 header('Location:reportes_orden_venta.php?a=' . base64_encode("OK_OVUPD"));
                 //}
                 /*}else{
-            InsertarLog(1, 39, $Cons_DetalleOrdenVenta);
-            throw new Exception('Ha ocurrido un error al insertar las lineas de la orden de venta');
-            sqlsrv_close($conexion);
-            exit();
-            }*/
+                InsertarLog(1, 39, $Cons_DetalleOrdenVenta);
+                throw new Exception('Ha ocurrido un error al insertar las lineas de la orden de venta');
+                sqlsrv_close($conexion);
+                exit();
+                }*/
             } else {
                 InsertarLog(1, 39, $Cons_UpdCabeceraOrdenVenta);
                 throw new Exception('Ha ocurrido un error al actualizar la orden de venta');
@@ -4019,15 +4044,15 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                             }
                             //Enviar datos al WebServices - Cuotas acuerdos
                             /*try{
-                        require_once("includes/conect_ws.php");
-                        $Parametros=array(
-                        'pIdAcpago' => $row_NewIdAcuerdo[0],
-                        'pLogin'=>$_SESSION['User']
-                        );
-                        $Client->InsertarAcuerdoPagoCuotasPortal($Parametros);
-                        }catch (Exception $e) {
-                        echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
-                        }*/
+                            require_once("includes/conect_ws.php");
+                            $Parametros=array(
+                            'pIdAcpago' => $row_NewIdAcuerdo[0],
+                            'pLogin'=>$_SESSION['User']
+                            );
+                            $Client->InsertarAcuerdoPagoCuotasPortal($Parametros);
+                            }catch (Exception $e) {
+                            echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
+                            }*/
                         }
                     } else {
                         throw new Exception('Ha ocurrido un error al insertar el acuerdo de pago');
@@ -4319,6 +4344,270 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
     } elseif ($P == 56) { //Parametros de Facturación electronica
     } elseif ($P == 57) { //Solicitud de compra
     } elseif ($P == 58) { //Entrada de compra
+    }
+
+    // Insertar nuevos archivos en el Portal de Provedores y Clientes. SMM, 05/04/2024
+    elseif ($P == 59) {
+        try {
+            // SMM, 05/10/2023
+            $CardCode = $_POST['CodigoCliente'] ?? "";
+            $CodUser = $_SESSION['CodUser'];
+
+            $CardType = "Clientes";
+            if ($_POST['type'] == 2) {
+                $CardType = "Proveedores";
+            }
+
+            $i = 0; //Archivos
+            $j = 0; //Cantidad de archivos
+            //*** Carpeta de archivos ***
+            $carp_archivos = ObtenerVariable("RutaArchivos");
+            //*** Carpeta temporal ***
+            $temp = ObtenerVariable("CarpetaTmp");
+            $dir = "$temp/$CodUser/";
+            $route = opendir($dir);
+            //$directorio = opendir("."); //ruta actual
+            $DocFiles = array();
+            while ($archivo = readdir($route)) { //obtenemos un archivo y luego otro sucesivamente
+                if (($archivo == ".") || ($archivo == "..")) {
+                    continue;
+                }
+
+                if (!is_dir($archivo)) { //verificamos si es o no un directorio
+                    $DocFiles[$i] = $archivo;
+                    $i++;
+                }
+            }
+            closedir($route);
+
+            $CantFiles = $_POST['CantFiles'];
+
+            while ($j < $CantFiles) {
+                // SMM, 05/10/2023
+                $CountSuc = isset($_POST["Sucursal$j"]) ? count($_POST["Sucursal$j"]) : 0;
+
+                if ($CountSuc > 0) { //Escogio sucursales
+                    $k = 0; //Cantidad de sucursales
+
+                    while ($k < $CountSuc) {
+
+                        //Sacar la extension del archivo
+                        $exp = explode('.', $DocFiles[$j]);
+                        $Ext = end($exp);
+                        //Sacar el nombre sin la extension
+                        $OnlyName = substr($DocFiles[$j], 0, strlen($DocFiles[$j]) - (strlen($Ext) + 1));
+                        $Prefijo = substr(uniqid(rand()), 0, 3);
+                        $NuevoNombre = LSiqmlObs($OnlyName) . "_" . date('Ymd') . $Prefijo . "." . $Ext;
+
+                        //Insertar el registro en la BD
+                        $SucursalAct = $_POST['Sucursal' . $j][$k];
+                        $CategoriaAct = $_POST['Categoria' . $j];
+                        $FechaAct = $_POST['Fecha' . $j];
+                        $ComentariosAct = LSiqmlObs($_POST['Comentarios' . $j]);
+                        
+                        // SMM, 29/01/2024
+                        $fa = date_create_from_format('d/m/Y', $FechaAct)->format('Y-m-d');
+                        // echo "$FechaAct -> $fa";
+
+                        $Cons_InsArchivo = "EXEC sp_tbl_Portal$CardType" . "_Archivos NULL,'$CardCode','$SucursalAct','$CategoriaAct','$fa','$ComentariosAct','$NuevoNombre','$CodUser',1";
+                        // echo "$Cons_InsArchivo<br>";
+                        
+                        $SQL_InsArchivo = sqlsrv_query($conexion, $Cons_InsArchivo);
+
+                        if ($SQL_InsArchivo) {
+
+                            //Mover archivo a la carpeta real
+                            $SessionBD = $_SESSION['BD'];
+                            $dir_new = "$SessionBD/$carp_archivos/$CardCode/$CategoriaAct/";
+                            if (file_exists($dir_new)) {
+                                copy($dir . $DocFiles[$j], $dir_new . $NuevoNombre);
+                            } else {
+                                mkdir($dir_new, 0777, true);
+                                copy($dir . $DocFiles[$j], $dir_new . $NuevoNombre);
+                            }
+
+                            //Enviar email
+                            $Cons_DatosEmail = "EXEC sp_ConsultarUsuariosSucursalesClientes '$CardCode','$SucursalAct'";
+                            $SQL_DatosEmail = sqlsrv_query($conexion, $Cons_DatosEmail);
+
+                            while ($row_DatosEmail = sqlsrv_fetch_array($SQL_DatosEmail)) {
+                                if ($row_DatosEmail['Email'] != "") { //Validar que exista el email
+                                    EnviarMail($row_DatosEmail['Email'], $row_DatosEmail['NombreUsuario'], 1, "", "", "", "", $CardCode, $SucursalAct, $CategoriaAct, $ComentariosAct, $NuevoNombre);
+                                }
+                            }
+                            //echo $Cons_DatosEmail;
+                            $k++;
+                        } else {
+                            InsertarLog(1, 59, $Cons_InsArchivo);
+                            throw new Exception('Error insertando archivo');
+                            sqlsrv_close($conexion);
+                            exit();
+                        }
+                    }
+                } else { // No escogio sucursales
+                    // Buscar las sucursales asignadas
+                    if (PermitirFuncion(205)) {
+                        $Cons_Sucursal = "SELECT NombreSucursal FROM uvw_Sap_tbl_Clientes_Sucursales WHERE CodigoCliente='$CardCode'";
+                        $SQL_Sucursal = sqlsrv_query($conexion, $Cons_Sucursal);
+                    } else {
+                        $Cons_Sucursal = "SELECT NombreSucursal FROM uvw_tbl_SucursalesClienteUsuario WHERE CodigoCliente='$CardCode' AND ID_Usuario = $CodUser";
+                        $SQL_Sucursal = sqlsrv_query($conexion, $Cons_Sucursal);
+                    }
+                    $ListSucursales = array();
+                    $t = 0; //Cantidad de sucursales
+                    while ($row_Sucursal = sqlsrv_fetch_array($SQL_Sucursal)) {
+                        $ListSucursales[$t] = $row_Sucursal['NombreSucursal'];
+                        $t++;
+                    }
+
+                    // SMM, 05/11/2023
+                    if ($CardCode == "") {
+                        array_push($ListSucursales, "");
+                    }
+
+                    // Si el cliente esta vacio, se añade una sucursal vacia.
+                    $CountSuc = count($ListSucursales);
+
+                    $k = 0; // Cantidad de sucursales
+                    while ($k < $CountSuc) {
+                        //Sacar la extension del archivo
+                        $DocFile = $DocFiles[$j];
+                        $Explode_DocFile = explode('.', $DocFile);
+                        $Ext = end($Explode_DocFile);
+                        //Sacar el nombre sin la extension
+                        $OnlyName = substr($DocFile, 0, strlen($DocFile) - (strlen($Ext) + 1));
+                        $Prefijo = substr(uniqid(rand()), 0, 3);
+                        $NuevoNombre = LSiqmlObs($OnlyName) . "_" . date('Ymd') . $Prefijo . "." . $Ext;
+
+                        //Insertar el registro en la BD
+                        $SucursalAct = $ListSucursales[$k];
+                        $CategoriaAct = $_POST["Categoria$j"];
+                        $FechaAct = $_POST["Fecha$j"];
+                        $ComentariosAct = LSiqmlObs($_POST["Comentarios$j"]);
+
+                        // SMM, 05/10/2023
+                        /*
+                        $Param_InsArchivo = array(
+                            "NULL",
+                            "'$CardCode'",
+                            "'$SucursalAct'",
+                            "'$CategoriaAct'",
+                            "'$FechaAct'",
+                            "'$ComentariosAct'",
+                            "'$NuevoNombre'",
+                            "'$CodUser'",
+                            "1"
+                        );
+                        $SQL_InsArchivo = EjecutarSP("sp_tbl_Portal$CardType" . "_Archivos", $Param_InsArchivo);
+                        */
+
+                        // SMM, 29/01/2024
+                        $fa = date_create_from_format('d/m/Y', $FechaAct)->format('Y-m-d');
+                        // echo "$FechaAct -> $fa";
+
+                        $Cons_InsArchivo = "EXEC sp_tbl_Portal$CardType" . "_Archivos NULL,'$CardCode','$SucursalAct','$CategoriaAct','$fa','$ComentariosAct','$NuevoNombre','$CodUser',1";
+                        // echo "$Cons_InsArchivo<br>";
+                        
+                        $SQL_InsArchivo = sqlsrv_query($conexion, $Cons_InsArchivo);
+
+                        if ($SQL_InsArchivo) {
+                            //Mover archivo a la carpeta real
+                            $SessionBD = $_SESSION['BD'];
+                            $dir_new = "$SessionBD/$carp_archivos/$CardCode/$CategoriaAct/";
+                            if (file_exists($dir_new)) {
+                                copy($dir . $DocFiles[$j], $dir_new . $NuevoNombre);
+                            } else {
+                                mkdir($dir_new, 0777, true);
+                                copy($dir . $DocFiles[$j], $dir_new . $NuevoNombre);
+                            }
+
+                            //Enviar email
+                            $Cons_DatosEmail = "EXEC sp_ConsultarUsuariosSucursalesClientes '$CardCode','$SucursalAct'";
+                            $SQL_DatosEmail = sqlsrv_query($conexion, $Cons_DatosEmail);
+
+                            while ($row_DatosEmail = sqlsrv_fetch_array($SQL_DatosEmail)) {
+                                if ($row_DatosEmail['Email'] != "") { //Validar que exista el email
+                                    EnviarMail($row_DatosEmail['Email'], $row_DatosEmail['NombreUsuario'], 1, "", "", "", "", $CardCode, $SucursalAct, $CategoriaAct, $ComentariosAct, $NuevoNombre);
+                                }
+                            }
+                            //echo $Cons_DatosEmail;
+                            $k++;
+                        } else {
+                            InsertarLog(1, 59, $Cons_InsArchivo);
+                            throw new Exception('Error insertando archivo');
+                            sqlsrv_close($conexion);
+                            exit();
+                        }
+                    }
+                }
+                $j++;
+            }
+            sqlsrv_close($conexion);
+
+            // SMM, 05/11/2023
+            if ($_POST['type'] == 2) {
+                header('Location:gestionar_archivos_proveedores.php?a=' . base64_encode("OK_UpdFile"));
+            } else {
+                header('Location:gestionar_archivos_clientes.php?a=' . base64_encode("OK_UpdFile"));
+            }
+        } catch (Exception $e) {
+            InsertarLog(1, 59, $Cons_InsArchivo);
+            echo 'Excepcion capturada: ', $e->getMessage(), "\n";
+
+            echo "catch";
+            exit();
+        }
+    }
+
+    // Eliminar Archivos Portal Proveedores y Clientes. SMM, 05/10/2023
+    elseif ($P == 60) {
+        // SMM, 05/10/2023
+        $ID = $_GET['id'];
+
+        $CardType = "Clientes";
+        if ($_GET['type'] == 2) {
+            $CardType = "Proveedores";
+        }
+
+        try {
+            // Consultar archivo para eliminarlo fisicamente
+            $Con_BusArchivo = "SELECT * FROM uvw_tbl_Portal$CardType" . "_Archivos WHERE id_archivo='$ID'";
+            $SQL_BusArchivo = sqlsrv_query($conexion, $Con_BusArchivo);
+            $row_BusArchivo = sqlsrv_fetch_array($SQL_BusArchivo);
+
+            //Consultar si el archivo esta en mas de una sucursal
+            $ConsSuc = "SELECT * FROM uvw_tbl_Portal$CardType" . "_Archivos cardcode='" . $row_BusArchivo['cardcode'] . "' AND id_categoria='" . $row_BusArchivo['id_categoria'] . "' AND archivo='" . $row_BusArchivo['archivo'] . "'";
+            $SQLSuc = sqlsrv_query($conexion, $ConsSuc, array(), array("Scrollable" => 'static'));
+            $NumSuc = sqlsrv_num_rows($SQLSuc);
+            if ($NumSuc == 1) { // Si solo esta en un, se elimina fisicamente. Sino, no se elimina fisicamente
+                // echo $NumSuc;
+                $carp_archivos = ObtenerVariable("RutaArchivos");
+                $File = $_SESSION['BD'] . "/" . $carp_archivos . "/" . $row_BusArchivo['cardCode'] . "/" . $row_BusArchivo['id_categoria'] . "/" . $row_BusArchivo['archivo'];
+                if (file_exists($File)) {
+                    unlink($File);
+                }
+            }
+
+            $Cons_DelArchivo = "EXEC sp_tbl_Portal$CardType" . "_Archivos '" . $_GET['id'] . "',NULL,NULL,NULL,NULL,NULL,NULL,NULL,2";
+            if (sqlsrv_query($conexion, $Cons_DelArchivo)) {
+                InsertarLog(2, 13, $Cons_DelArchivo);
+                sqlsrv_close($conexion);
+                if ($_GET['type'] == 2) {
+                    header('Location:gestionar_archivos_proveedores.php?a=' . base64_encode("OK_File_delete"));
+                } else {
+                    header('Location:gestionar_archivos_clientes.php?a=' . base64_encode("OK_File_delete"));
+                }
+
+            } else {
+                InsertarLog(1, 60, $Cons_DelArchivo);
+                throw new Exception('Ha ocurrido un error al eliminar el archivo');
+                sqlsrv_close($conexion);
+            }
+        } catch (Exception $e) {
+            InsertarLog(1, 60, $Cons_DelArchivo);
+            echo 'Excepcion capturada: ', $e->getMessage(), "\n";
+        }
+
     }
 
 }
