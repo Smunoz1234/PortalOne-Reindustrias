@@ -80,11 +80,18 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
             );
             $SQL = EjecutarSP('sp_ConsultarSucursalesClientes', $Parametros);
 
+            // SMM, 05/04/2024
+            $FiltrarSucursales = "";
+            if(isset($SQL) && (sqlsrv_num_rows($SQL) == 1)) {
+                $FiltrarSucursales = "selected";
+            }
+
             //$Cons="Select * From uvw_Sap_tbl_Clientes_Sucursales Where CodigoCliente='".$_GET['id']."' and TipoDireccion='".$type_dir."' Order by TipoDireccion, NombreSucursal";
             //$SQL=sqlsrv_query($conexion,$Cons);
+
             if ($SQL) {
                 echo "<option value=''>Seleccione...</option>";
-
+                
                 $dirDefecto = ""; // SMM, 13/07/2023
                 while ($row = sqlsrv_fetch_array($SQL)) {
                     if (($row['TipoDireccion'] == "B") && ($sw_dirB == 0)) {
@@ -99,18 +106,17 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
                         $dirDefecto = $row['ShipToDef'] ?? "";
                     }
 
+                    // SMM, 05/04/2024
+                    $NumeroLinea = $row['NumeroLinea'] ?? "";
+                    $NombreSucursal = $row['NombreSucursal'] ?? "";
+                    
                     if ($sucline == 0) {
-                        $NombreSucursal = $row['NombreSucursal'];
                         $SucursalDef = ($NombreSucursal == $dirDefecto) ? "selected" : "";
-
                         echo "<option value='$NombreSucursal' $SucursalDef>$NombreSucursal</option>";
                     } else {
-                        // SMM, 24/08/2023
-                        $NumeroLinea = $row['NumeroLinea'];
+                        // echo "<option value='$NombreSucursal' $FiltrarSucursales data-id='$NumeroLinea'>$NombreSucursal</option>";
 
-                        $NombreSucursal = $row['NombreSucursal'];
                         $SucursalDef = ($NombreSucursal == $dirDefecto) ? "selected" : "";
-
                         echo "<option value='$NumeroLinea' $SucursalDef>$NombreSucursal</option>";
                     }
 
@@ -779,7 +785,7 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
                 while ($row = sqlsrv_fetch_array($SQL)) {
                     $SQL_Data = Seleccionar('tbl_Parametros_Asistentes_Detalle', '*', "ID_Campo='" . $row['ID_Campo'] . "' and TipoObjeto='" . $_GET['obj'] . "' and IdSerie='" . $_GET['id'] . "'");
                     $row_Data = sqlsrv_fetch_array($SQL_Data);
-                    $valor = isset($row_Data['Valor']) ? $row_Data['Valor'] : "";
+                    $valor = $row_Data['Valor'] ?? "";
                     echo "<div class='form-group'>
 						<label class='col-lg-2 control-label'>" . $row['LabelCampo'] . "<br><span class='text-muted'>" . $row['NombreCampo'] . "</span></label>
 						<div class='col-lg-3'>
@@ -1090,7 +1096,7 @@ if (!isset($_GET['type']) || ($_GET['type'] == "")) { //Saber que combo voy a co
             }
         }
     }
-
+    
     // SMM, 15/06/2023
     elseif ($_GET['type'] == 45) { // Tipo de problema, dependiendo del tipo origen. Similar al 15.
         if (!isset($_GET['id']) || ($_GET['id'] == "")) {
