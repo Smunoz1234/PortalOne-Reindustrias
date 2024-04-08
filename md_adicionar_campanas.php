@@ -254,7 +254,7 @@ $hasRowsCampanas_Modal = ($SQL_Campanas_Modal) ? sqlsrv_has_rows($SQL_Campanas_M
 													</td>
 
 													<td>
-														<?php echo isset($row_Campana_Modal['valor_campana']) ? ("$" . $row_Campana_Modal['valor_campana']) : ""; ?>
+														<?php echo isset($row_Campana_Modal['valor_campana']) ? ("$" . number_format($row_Campana_Modal['valor_campana'], 2)) : ""; ?>
 													</td>
 
 													<td class="text-center">

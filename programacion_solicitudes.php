@@ -252,7 +252,7 @@ $(function () {
 		<!-- / Event modal -->
 
 		<div class="modal inmodal fade" id="myModal2" tabindex="-1" role="dialog" aria-hidden="true">
-			<div class="modal-dialog modal-lg" style="width: 70% !important;">
+			<div class="modal-dialog modal-xl" style="width: 70% !important;">
 				<div class="modal-content" id="ContenidoModal2">
 					<!-- Contenido generado por JS -->
 				</div>
