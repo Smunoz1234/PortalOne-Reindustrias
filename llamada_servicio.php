@@ -2372,13 +2372,13 @@ function AgregarEsto(contenedorID, valorElemento) {
 							</div>
 							<!-- /#CampanasAsociadas -->
 
-							<div class="form-group">
+							<div class="form-group" <?php if(PermitirFuncion(355)) { echo "style='display: none'"; } ?>>
 								<div class="col-lg-8 border-bottom">
 									<label class="control-label text-danger">Información del servicio/equipo/articulo componente</label>
 								</div>
 							</div>
 							
-							<div class="form-group">
+							<div class="form-group" <?php if(PermitirFuncion(355)) { echo "style='display: none'"; } ?>>
 								<div class="col-lg-8">
 									<label class="control-label">
 										<i onclick="ConsultarArticulo(true);" title="Consultar Articulo Componente"
