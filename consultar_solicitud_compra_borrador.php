@@ -567,7 +567,7 @@ if ($sw == 1) {
 													<td>
 														<?php if (isset($row["DocEntryDocumentoDefinitivo"]) && isset($row["DocNumDocumentoDefinitivo"])) { ?>
 															<a target="_blank"
-																href="orden_compra.php?id=<?php echo base64_encode($row['DocEntryDocumentoDefinitivo']); ?>&id_portal=<?php echo base64_encode($row['DocNumDocumentoDefinitivo']); ?>&tl=1&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('consultar_solicitud_compra_borrador.php'); ?>"
+																href="solicitud_compra.php?id=<?php echo base64_encode($row['DocEntryDocumentoDefinitivo']); ?>&id_portal=<?php echo base64_encode($row['DocNumDocumentoDefinitivo']); ?>&tl=1&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('consultar_solicitud_compra_borrador.php'); ?>"
 																class="Xbtn Xbtn-success Xbtn-xs">
 																<?php echo $row["DocNumDocumentoDefinitivo"]; ?>
 															</a>
