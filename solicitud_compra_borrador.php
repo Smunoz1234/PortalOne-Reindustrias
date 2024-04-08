@@ -1214,8 +1214,8 @@ function CrearArticulo(){
 														<div class="col-lg-6 input-group date">
 															<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input readonly form="CrearSolicitudCompra" name="FechaAutorizacionPO" type="text" autocomplete="off" class="form-control" id="FechaAutorizacionPO" value="<?php if (isset($row_Autorizaciones['FechaAutorizacion_SAPB1']) && ($row_Autorizaciones['FechaAutorizacion_SAPB1']->format('Y-m-d') != "1900-01-01")) {
 																echo $row_Autorizaciones['FechaAutorizacion_SAPB1']->format('Y-m-d');
-															} elseif (($row['AuthPortal']) != "P") {
-																echo isset($row['FechaAutorizacion_PortalOne']) ? $row['FechaAutorizacion_PortalOne']->format('Y-m-d') : date('Y-m-d');
+															} elseif (($row['AuthPortal'] != "P") && (isset($row['FechaAutorizacion_PortalOne']) && ($row['FechaAutorizacion_PortalOne']->format('Y-m-d') != "1900-01-01"))) {
+																echo $row['FechaAutorizacion_PortalOne']->format('Y-m-d');
 															} else {
 																echo date('Y-m-d');
 															} ?>" placeholder="YYYY-MM-DD">
@@ -1223,8 +1223,8 @@ function CrearArticulo(){
 														<div class="col-lg-6 input-group clockpicker" data-autoclose="true">
 															<input readonly name="HoraAutorizacionPO" form="CrearSolicitudCompra" id="HoraAutorizacionPO" type="text" autocomplete="off" class="form-control" value="<?php if (isset($row_Autorizaciones['HoraAutorizacion_SAPB1'])) {
 																echo $row_Autorizaciones['HoraAutorizacion_SAPB1'];
-															} elseif (($row['AuthPortal']) != "P") {
-																echo isset($row['HoraAutorizacion_PortalOne']) ? $row['HoraAutorizacion_PortalOne']->format('H:i') : date('H:i');
+															} elseif (($row['AuthPortal'] != "P") && (isset($row['HoraAutorizacion_PortalOne']) && ($row['HoraAutorizacion_PortalOne']->format('H:i') != "00:00"))) {
+																echo $row['HoraAutorizacion_PortalOne']->format('H:i');
 															} else {
 																echo date('H:i');
 															} ?>" placeholder="hh:mm">

@@ -1075,16 +1075,16 @@ function verAutorizacion() {
 													</div>
 													<div class="row">
 														<div class="col-lg-6 input-group date">
-															<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input readonly name="FechaAutorizacion" type="text" autocomplete="off" class="form-control" id="FechaAutorizacion" value="<?php if (isset($row_Autorizaciones['FechaAutorizacion_SAPB1']) && ($row_Autorizaciones['FechaAutorizacion_SAPB1']->format('Y-m-d') != "1900-01-01")) {
+														<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input readonly name="FechaAutorizacion" type="text" autocomplete="off" class="form-control" id="FechaAutorizacion" value="<?php if (isset($row_Autorizaciones['FechaAutorizacion_SAPB1']) && ($row_Autorizaciones['FechaAutorizacion_SAPB1']->format('Y-m-d') != "1900-01-01")) {
 																echo $row_Autorizaciones['FechaAutorizacion_SAPB1']->format('Y-m-d');
-															} elseif (($row['AuthPortal']) == "Y") {
+															} elseif (($row['AuthPortal'] == "Y") && (isset($row['FechaAutorizacion_PortalOne']) && ($row['FechaAutorizacion_PortalOne']->format('Y-m-d') != "1900-01-01"))) {
 																echo $row['FechaAutorizacion_PortalOne']->format('Y-m-d');
 															} ?>" placeholder="YYYY-MM-DD">
 														</div>
 														<div class="col-lg-6 input-group clockpicker" data-autoclose="true">
 															<input readonly name="HoraAutorizacion" id="HoraAutorizacion" type="text" autocomplete="off" class="form-control" value="<?php if (isset($row_Autorizaciones['HoraAutorizacion_SAPB1'])) {
 																echo $row_Autorizaciones['HoraAutorizacion_SAPB1'];
-															} elseif (($row['AuthPortal']) == "Y") {
+															} elseif (($row['AuthPortal'] == "Y") && (isset($row['HoraAutorizacion_PortalOne']) && ($row['HoraAutorizacion_PortalOne']->format('H:i') != "00:00"))) {
 																echo $row['HoraAutorizacion_PortalOne']->format('H:i');
 															} ?>" placeholder="hh:mm">
 															<span class="input-group-addon">
