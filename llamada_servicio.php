@@ -4475,9 +4475,20 @@ $(function () {
 
 	$(".d-compra").on("click", function (event) {
 		<?php if (PermitirFuncion(419)) { ?>
-			event.preventDefault(); // Evitar redirección del ancla
+			pvSN = 1;
+
+			// Evitar redirección del ancla
+			event.preventDefault(); 
 			console.log(event);
 
+			// Limpiar los campos del formulario
+			$('#formCambiarSN').trigger('reset');
+			$('#ContactoSN').val("");
+			$('#ContactoSN').trigger('change');
+			$('#SucursalSN').val("");
+			$('#SucursalSN').trigger('change');
+			
+			// CambiarSN. SMM, 08/04/2024
 			Swal.fire({
 				title: "¿Desea cambiar de socio de negocio?",
 				icon: "question",
@@ -4487,12 +4498,6 @@ $(function () {
 			}).then((result) => {
 				if (result.isConfirmed) {
 					// SMM, 08/04/2024
-					pvSN=1;
-					$('#formCambiarSN').trigger('reset');
-					$('#ContactoSN').val("");
-					$('#ContactoSN').trigger('change');
-					$('#SucursalSN').trigger('change');
-					
 					let options = {
 						url: function (phrase) {
 							return `ajx_buscar_datos_json.php?type=7&id=${phrase}&pv=${pvSN}`;
@@ -4522,6 +4527,7 @@ $(function () {
 					location.href = $(this).attr('href');
 				}
 			});
+			// CambiarSN. Hasta aquí, 08/04/2024
 		<?php } else { ?>
 			console.log("Permiso 419, no esta activo");
 		<?php } ?>
@@ -4529,9 +4535,20 @@ $(function () {
 
 	$(".d-venta").on("click", function (event) {
 		<?php if (PermitirFuncion(419)) { ?>
-			event.preventDefault(); // Evitar redirección del ancla
+			pvSN = 0;
+
+			// Evitar redirección del ancla
+			event.preventDefault(); 
 			console.log(event);
 
+			// Limpiar los campos del formulario
+			$('#formCambiarSN').trigger('reset');
+			$('#ContactoSN').val("");
+			$('#ContactoSN').trigger('change');
+			$('#SucursalSN').val("");
+			$('#SucursalSN').trigger('change');
+			
+			// CambiarSN. SMM, 08/04/2024
 			Swal.fire({
 				title: "¿Desea cambiar de socio de negocio?",
 				icon: "question",
@@ -4541,16 +4558,9 @@ $(function () {
 			}).then((result) => {
 				if (result.isConfirmed) {
 					// SMM, 08/04/2024
-					pvSN=0;
-					$('#formCambiarSN').trigger('reset');
-					$('#ContactoSN').val("");
-					$('#ContactoSN').trigger('change');
-					
-					$('#SucursalSN').trigger('change');
-
 					let options = {
 						url: function (phrase) {
-							return `ajx_buscar_datos_json.php?type=7&id=${phrase}`;
+							return `ajx_buscar_datos_json.php?type=7&id=${phrase}&pv=${pvSN}`;
 						},
 						adjustWidth: false,
 						getValue: "NombreBuscarCliente",
@@ -4577,6 +4587,7 @@ $(function () {
 					location.href = $(this).attr('href');
 				}
 			});
+			// CambiarSN. Hasta aquí, 08/04/2024
 		<?php } else { ?>
 			console.log("Permiso 419, no esta activo");
 		<?php } ?>
