@@ -8,20 +8,28 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
         $type = $_POST['type'];
     }
 
-    if ($type == 1) { //Buscar direccion y barrio dependiendo de la sucursal
-        $Consulta = "Select * From uvw_Sap_tbl_Clientes_Sucursales Where TipoDireccion='S' And CodigoCliente='" . $_GET['CardCode'] . "' and NombreSucursal='" . $_GET['Sucursal'] . "'";
-        //echo $Consulta;
+    if ($type == 1) { // Buscar direccion y barrio dependiendo de la sucursal
+        $Vista = "uvw_Sap_tbl_Clientes_Sucursales";
+        if (isset($_GET['pv']) && ($_GET['pv'] == 1)) { // Proveedor
+            $Vista = "uvw_Sap_tbl_Proveedores_Sucursales";
+        }
+
+        $CardCode = $_GET['CardCode'] ?? "";
+        $Sucursal = $_GET['Sucursal'] ?? "";
+        $Consulta = "SELECT * FROM $Vista WHERE TipoDireccion = 'S' AND CodigoCliente='$CardCode' AND NombreSucursal='$Sucursal'";
+        // echo $Consulta;
+
         $SQL = sqlsrv_query($conexion, $Consulta);
         $records = array();
         $row = sqlsrv_fetch_array($SQL);
         $records = array(
-            'Direccion' => $row['Direccion'],
-            'Ciudad' => $row['Ciudad'],
-            'Barrio' => $row['Barrio'],
-            'NombreContacto' => $row['NombreContacto'],
-            'TelefonoContacto' => PermitirFuncion(512) ? $row['CelularCliente'] : $row['TelefonoContacto'], // SMM, 23/03/2022
-            'CargoContacto' => $row['CargoContacto'],
-            'CorreoContacto' => $row['CorreoContacto'],
+            'Direccion' => ($row['Direccion'] ?? ""),
+            'Ciudad' => ($row['Ciudad'] ?? ""),
+            'Barrio' => ($row['Barrio'] ?? ""),
+            'NombreContacto' => ($row['NombreContacto'] ?? ""),
+            'TelefonoContacto' => PermitirFuncion(512) ? ($row['CelularCliente'] ?? "") : ($row['TelefonoContacto'] ?? ""),
+            'CargoContacto' => ($row['CargoContacto'] ?? ""),
+            'CorreoContacto' => ($row['CorreoContacto'] ?? ""),
         );
         echo json_encode($records);
     } elseif ($type == 2) { //Buscar datos internos cuando la actividad es de tipo Interna

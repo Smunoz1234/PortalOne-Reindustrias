@@ -4467,57 +4467,120 @@ Dropzone.options.dropzoneForm = {
 $(function () {
 	var url = "";
 	var params = [];
+	var pvSN = 0; // SMM, 08/04/2024
 
 	$(".alkin").on("click", function (event) {
 		$('.ibox-content').toggleClass('sk-loading'); // Cargando...
 	});
 
-	$(".d-venta").on("click", function (event) {
+	$(".d-compra").on("click", function (event) {
 		<?php if (PermitirFuncion(419)) { ?>
-				event.preventDefault(); // Evitar redirección del ancla
-				console.log(event);
+			event.preventDefault(); // Evitar redirección del ancla
+			console.log(event);
 
-				Swal.fire({
-					title: "¿Desea cambiar de socio de negocio?",
-					icon: "question",
-					showCancelButton: true,
-					confirmButtonText: "Si, confirmo",
-					cancelButtonText: "No"
-				}).then((result) => {
-					if (result.isConfirmed) {
-						let qs = "";
-						[url, qs] = $(this).attr('href').split('?');
-						params = Object.fromEntries(new URLSearchParams(qs));
+			Swal.fire({
+				title: "¿Desea cambiar de socio de negocio?",
+				icon: "question",
+				showCancelButton: true,
+				confirmButtonText: "Si, confirmo",
+				cancelButtonText: "No"
+			}).then((result) => {
+				if (result.isConfirmed) {
+					// SMM, 08/04/2024
+					pvSN=1;
+					$('#formCambiarSN').trigger('reset');
+					$('#ContactoSN').val("");
+					$('#ContactoSN').trigger('change');
+					$('#SucursalSN').trigger('change');
+					
+					let options = {
+						url: function (phrase) {
+							return `ajx_buscar_datos_json.php?type=7&id=${phrase}&pv=${pvSN}`;
+						},
+						adjustWidth: false,
+						getValue: "NombreBuscarCliente",
+						requestDelay: 400,
+						list: {
+							match: {
+								enabled: true
+							},
+							onClickEvent: function () {
+								var value = $("#NombreClienteSN").getSelectedItemData().CodigoCliente;
+								$("#ClienteSN").val(value).trigger("change");
+							}
+						}
+					};
+					$("#NombreClienteSN").easyAutocomplete(options);
+					// Hasta aquí, 08/04/2024
 
-						$('#modalSN').modal("show");
-					} else {
-						location.href = $(this).attr('href');
-					}
-				});
+					let qs = "";
+					[url, qs] = $(this).attr('href').split('?');
+					params = Object.fromEntries(new URLSearchParams(qs));
+
+					$('#modalSN').modal("show");
+				} else {
+					location.href = $(this).attr('href');
+				}
+			});
 		<?php } else { ?>
-				console.log("Permiso 419, no esta activo");
+			console.log("Permiso 419, no esta activo");
 		<?php } ?>
 	});
 
-	let options = {
-		url: function (phrase) {
-			return "ajx_buscar_datos_json.php?type=7&id=" + phrase;
-		},
-		adjustWidth: false,
-		getValue: "NombreBuscarCliente",
-		requestDelay: 400,
-		list: {
-			match: {
-				enabled: true
-			},
-			onClickEvent: function () {
-				var value = $("#NombreClienteSN").getSelectedItemData().CodigoCliente;
-				$("#ClienteSN").val(value).trigger("change");
-			}
-		}
-	};
+	$(".d-venta").on("click", function (event) {
+		<?php if (PermitirFuncion(419)) { ?>
+			event.preventDefault(); // Evitar redirección del ancla
+			console.log(event);
 
-	$("#NombreClienteSN").easyAutocomplete(options);
+			Swal.fire({
+				title: "¿Desea cambiar de socio de negocio?",
+				icon: "question",
+				showCancelButton: true,
+				confirmButtonText: "Si, confirmo",
+				cancelButtonText: "No"
+			}).then((result) => {
+				if (result.isConfirmed) {
+					// SMM, 08/04/2024
+					pvSN=0;
+					$('#formCambiarSN').trigger('reset');
+					$('#ContactoSN').val("");
+					$('#ContactoSN').trigger('change');
+					
+					$('#SucursalSN').trigger('change');
+
+					let options = {
+						url: function (phrase) {
+							return `ajx_buscar_datos_json.php?type=7&id=${phrase}`;
+						},
+						adjustWidth: false,
+						getValue: "NombreBuscarCliente",
+						requestDelay: 400,
+						list: {
+							match: {
+								enabled: true
+							},
+							onClickEvent: function () {
+								var value = $("#NombreClienteSN").getSelectedItemData().CodigoCliente;
+								$("#ClienteSN").val(value).trigger("change");
+							}
+						}
+					};
+					$("#NombreClienteSN").easyAutocomplete(options);
+					// Hasta aquí, 08/04/2024
+
+					let qs = "";
+					[url, qs] = $(this).attr('href').split('?');
+					params = Object.fromEntries(new URLSearchParams(qs));
+
+					$('#modalSN').modal("show");
+				} else {
+					location.href = $(this).attr('href');
+				}
+			});
+		<?php } else { ?>
+			console.log("Permiso 419, no esta activo");
+		<?php } ?>
+	});
 
 	$(".CancelarSN").on("click", function () {
 		$('.ibox-content').toggleClass('sk-loading', false);
@@ -4545,7 +4608,7 @@ $(function () {
 
 		$.ajax({
 			type: "POST",
-			url: "ajx_cbo_select.php?type=2&id=" + ClienteSN,
+			url: `ajx_cbo_select.php?type=2&id=${ClienteSN}&pv=${pvSN}`,
 			success: function (response) {
 				$('#ContactoSN').html(response).fadeIn();
 				$('#ContactoSN').trigger('change');
@@ -4556,7 +4619,7 @@ $(function () {
 		});
 		$.ajax({
 			type: "POST",
-			url: "ajx_cbo_select.php?type=3&id=" + ClienteSN,
+			url: `ajx_cbo_select.php?type=3&id=${ClienteSN}&pv=${pvSN}`,
 			success: function (response) {
 				console.log(response);
 
@@ -4579,7 +4642,8 @@ $(function () {
 				data: {
 					type: 1,
 					CardCode: ClienteSN,
-					Sucursal: SucursalSN
+					Sucursal: SucursalSN,
+					pv: pvSN
 				},
 				dataType: 'json',
 				success: function (data) {
