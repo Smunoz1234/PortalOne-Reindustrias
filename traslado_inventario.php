@@ -155,7 +155,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Salida de inventario
 				"'" . FormatoFecha($_POST['TaxDate']) . "'",
 				"'" . $_POST['CardCode'] . "'",
 				"'" . $_POST['ContactoCliente'] . "'",
-				"'" . $_POST['OrdenServicioCliente'] . "'",
+				"'" . ($_POST['OrdenServicioCliente'] ?? "") . "'",
 				"'" . $_POST['Referencia'] . "'",
 				"'" . $_POST['EmpleadoVentas'] . "'",
 				"'" . LSiqmlObs($_POST['Comentarios']) . "'",
@@ -323,9 +323,9 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Salida de inventario
 			while ($row_Det = sqlsrv_fetch_array($SQL_Det)) {
 
 				array_push($Detalle, array(
-					"base_type" => ($row_Det['BaseType'] === "") ? null : intval($row_Det['BaseType']),
-					"base_entry" => ($row_Det['BaseEntry'] === "") ? null : intval($row_Det['BaseEntry']),
-					"base_line" => ($row_Det['BaseLine'] === "") ? null : intval($row_Det['BaseLine']),
+					"base_type" => ($row_Det['BaseType'] === "" || intval($row_Det['BaseType']) === 0) ? null : intval($row_Det['BaseType']),
+                    "base_entry" => ($row_Det['BaseEntry'] === "" || intval($row_Det['BaseEntry']) === 0) ? null : intval($row_Det['BaseEntry']),
+                    "base_line" => ($row_Det['BaseLine'] === "" || intval($row_Det['BaseLine']) === 0) ? null : intval($row_Det['BaseLine']),
 					"line_num" => intval($row_Det['LineNum']),
 					"id_tipo_articulo" => "",
 					"tipo_articulo" => 0,
@@ -434,7 +434,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Salida de inventario
 				"fecha_creacion" => FormatoFechaToSAP($row_Cab['FechaRegistro']->format('Y-m-d'), $row_Cab['FechaRegistro']->format('H:i:s')),
 				"hora_creacion" => FormatoFechaToSAP($row_Cab['FechaRegistro']->format('Y-m-d'), $row_Cab['FechaRegistro']->format('H:i:s')),
 				"id_anexo" => 0,
-				"docentry_llamada_servicio" => 0,
+				"docentry_llamada_servicio" => intval($row_Cab['ID_LlamadaServicio']),
 				"docentry_documento" => $row_Cab['DocEntry'] ?? 0, // SMM, 01/12/2022
 				"id_llamada_servicio" => 0,
 				"id_vendedor" => intval($row_Cab['SlpCode']),
