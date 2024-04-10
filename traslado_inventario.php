@@ -358,6 +358,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Salida de inventario
 					"CDU_numero_ots" => "",
 					"CDU_id_direccion_destino" => "",
 					"estado_linea" => $row_Det['LineStatus'],
+					"CDU_id_concepto_salida" => ($row_Det['ConceptoSalida'] ?? ""),
 				));
 			}
 
