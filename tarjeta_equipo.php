@@ -803,30 +803,30 @@ if($SQL_ValoresPropiedades) {
 				console.log("El campo que se quiere consultar no puede estar vacio");
 			}
 		}
-	</script>
 
-	<script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
-	<script>
-        function generarCodigoQR() {
-            // Abrir una nueva pestaña
-            const nuevaPestana = window.open('', '_blank');
+		// SMM, 10/04/2024
+		function generarQR(tipo) {
+            const newWindow = window.open('', '_blank');
 
-            // Crear un div en la nueva pestaña
-            const nuevoDiv = document.createElement('div');
-            nuevoDiv.id = 'qrcodeNuevo';
+            // Crear un DIV en la nueva pestaña
+            const newDIV = document.createElement('div');
+            newDIV.id = 'qrcode';
 
-            // Agregar el div a la nueva pestaña
-            nuevaPestana.document.body.appendChild(nuevoDiv);
+            // Agregar el DIV a la nueva pestaña
+            newWindow.document.body.appendChild(newDIV);
 
-            // Generar el código QR en el nuevo div
-            const urlActual = window.location.href; // Obtiene la URL actual
-            const qrcodeNuevo = new QRCode(nuevoDiv, {
-                text: urlActual,
+            // Obtiene la URL actual
+            const currentURL = window.location.href;
+            
+			// Generar el código QR en el nuevo DIV
+			const qrcode = new QRCode(newDIV, {
+                text: currentURL,
                 width: 128,
                 height: 128
             });
+			// Nota: La variable no se esta usando.
         }
-    </script>
+	</script>
 	<!-- InstanceEndEditable -->
 
 </head>
@@ -935,9 +935,6 @@ if($SQL_ValoresPropiedades) {
 											</div>
 											<div class="col-lg-6">
 												
-											<div id="qrcode"></div>
-    										<button onclick="generarCodigoQR()">Generar Código QR</button>
-
 												<button data-toggle="dropdown"
 													class="btn btn-success dropdown-toggle pull-right">
 													<i class="fa fa-qrcode"></i> 
@@ -947,13 +944,13 @@ if($SQL_ValoresPropiedades) {
 												<ul class="dropdown-menu pull-right">
 													<li>
 														<a class="dropdown-item" target="_blank"
-															href="#">
+															onclick="generarQR('TE')">
 															Hoja de vida
 														</a>
 													</li>
 													<li>
 														<a class="dropdown-item" target="_blank"
-															href="#">
+															onclick="generarQR('TD')">
 															Tarjeta digital
 														</a>
 													</li>

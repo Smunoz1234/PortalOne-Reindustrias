@@ -280,6 +280,9 @@
 <script src="assets/vendor/libs/vanilla-text-mask/vanilla-text-mask.js"></script>
 <script src="assets/vendor/libs/vanilla-text-mask/text-mask-addons.js"></script>
 
+<!-- QRCode JS. SMM, 10/04/2024 -->
+<script src="js/plugins/qrcodejs/qrcode.min.js"></script>
+
 <!-- ******* FIN JS ******* -->
 <script>
 	PNotify.prototype.options.styling = "fontawesome";
