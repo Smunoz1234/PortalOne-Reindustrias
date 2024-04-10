@@ -1889,7 +1889,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 									<div class="col-lg-1"></div>
 									<div class="col-lg-5">
 										<label class="control-label">
-											<i onClick="ConsultarDatosClienteSN();" title="Consultar cliente" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Cliente <span class="text-danger">*</span>
+											<i onClick="ConsultarDatosClienteSN();" title="Consultar cliente" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Cliente/Proveedor <span class="text-danger">*</span>
 										</label>
 										<input type="hidden" id="ClienteSN" name="ClienteSN" >
 										<input type="text" class="form-control" id="NombreClienteSN" name="NombreClienteSN"  placeholder="Digite para buscar..." required>
@@ -4488,46 +4488,32 @@ $(function () {
 			$('#SucursalSN').val("");
 			$('#SucursalSN').trigger('change');
 			
-			// CambiarSN. SMM, 08/04/2024
-			Swal.fire({
-				title: "¿Desea cambiar de socio de negocio?",
-				icon: "question",
-				showCancelButton: true,
-				confirmButtonText: "Si, confirmo",
-				cancelButtonText: "No"
-			}).then((result) => {
-				if (result.isConfirmed) {
-					// SMM, 08/04/2024
-					let options = {
-						url: function (phrase) {
-							return `ajx_buscar_datos_json.php?type=7&id=${phrase}&pv=${pvSN}`;
-						},
-						adjustWidth: false,
-						getValue: "NombreBuscarCliente",
-						requestDelay: 400,
-						list: {
-							match: {
-								enabled: true
-							},
-							onClickEvent: function () {
-								var value = $("#NombreClienteSN").getSelectedItemData().CodigoCliente;
-								$("#ClienteSN").val(value).trigger("change");
-							}
-						}
-					};
-					$("#NombreClienteSN").easyAutocomplete(options);
-					// Hasta aquí, 08/04/2024
-
-					let qs = "";
-					[url, qs] = $(this).attr('href').split('?');
-					params = Object.fromEntries(new URLSearchParams(qs));
-
-					$('#modalSN').modal("show");
-				} else {
-					location.href = $(this).attr('href');
+			// CambiarSN. SMM, 10/04/2024
+			let options = {
+				url: function (phrase) {
+					return `ajx_buscar_datos_json.php?type=7&id=${phrase}&pv=${pvSN}`;
+				},
+				adjustWidth: false,
+				getValue: "NombreBuscarCliente",
+				requestDelay: 400,
+				list: {
+					match: {
+						enabled: true
+					},
+					onClickEvent: function () {
+						var value = $("#NombreClienteSN").getSelectedItemData().CodigoCliente;
+						$("#ClienteSN").val(value).trigger("change");
+					}
 				}
-			});
-			// CambiarSN. Hasta aquí, 08/04/2024
+			};
+			$("#NombreClienteSN").easyAutocomplete(options);
+
+			let qs = "";
+			[url, qs] = $(this).attr('href').split('?');
+			params = Object.fromEntries(new URLSearchParams(qs));
+
+			$('#modalSN').modal("show");
+			// CambiarSN. Hasta aquí, 10/04/2024
 		<?php } else { ?>
 			console.log("Permiso 419, no esta activo");
 		<?php } ?>
