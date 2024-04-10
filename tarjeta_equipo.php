@@ -584,8 +584,10 @@ $lenComentarios = $row_Campo["precision"] ?? 300;
 $SQL_ValoresPropiedades = Seleccionar("tbl_TarjetaEquipo_Propiedades", "*","id_tarjeta_equipo = $IdTarjetaEquipo");
 
 $array_ValoresPropiedades = [];
-while ($row_ValPropiedad = sqlsrv_fetch_array($SQL_ValoresPropiedades)) {
-	array_push($array_ValoresPropiedades, $row_ValPropiedad);
+if($SQL_ValoresPropiedades) {
+	while ($row_ValPropiedad = sqlsrv_fetch_array($SQL_ValoresPropiedades)) {
+		array_push($array_ValoresPropiedades, $row_ValPropiedad);
+	}
 }
 
 // print_r($array_ValoresPropiedades);
@@ -906,6 +908,30 @@ while ($row_ValPropiedad = sqlsrv_fetch_array($SQL_ValoresPropiedades)) {
 															servicio</a>
 													<?php } ?>
 												</div>
+
+											</div>
+											<div class="col-lg-6">
+
+													<button data-toggle="dropdown"
+														class="btn btn-success dropdown-toggle pull-right">
+														<i class="fa fa-qrcode"></i> 
+														Generar QR 
+														<i class="fa fa-caret-down"></i>
+													</button>
+													<ul class="dropdown-menu pull-right">
+														<li>
+															<a class="dropdown-item" target="_blank"
+																href="#">
+																Hoja de vida
+															</a>
+														</li>
+														<li>
+															<a class="dropdown-item" target="_blank"
+																href="#">
+																Tarjeta digital
+															</a>
+														</li>
+													</ul>
 
 											</div>
 										</div>

@@ -319,13 +319,13 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Salida de inventario
 			$Lotes = array();
 			$Seriales = array();
 
-			//Detalle
+			// Detalle
 			while ($row_Det = sqlsrv_fetch_array($SQL_Det)) {
 
 				array_push($Detalle, array(
 					"base_type" => ($row_Det['BaseType'] === "" || intval($row_Det['BaseType']) === 0) ? null : intval($row_Det['BaseType']),
                     "base_entry" => ($row_Det['BaseEntry'] === "" || intval($row_Det['BaseEntry']) === 0) ? null : intval($row_Det['BaseEntry']),
-                    "base_line" => ($row_Det['BaseLine'] === "" || intval($row_Det['BaseLine']) === 0) ? null : intval($row_Det['BaseLine']),
+                    "base_line" => ($row_Det['BaseType'] === "" || intval($row_Det['BaseType']) === 0) ? null : intval($row_Det['BaseLine']),
 					"line_num" => intval($row_Det['LineNum']),
 					"id_tipo_articulo" => "",
 					"tipo_articulo" => 0,
