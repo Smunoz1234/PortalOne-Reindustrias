@@ -99,12 +99,12 @@ if (!isset($_GET['dato']) || ($_GET['dato'] == "")) {
     // SMM, 25/02/2022
     if ($IdListaPrecio != "") {
         $Param = array(
-            "'" . $Dato . "'", // @DatoBuscar
-            "'" . $Almacen . "'", // @WhsCode
-            "'" . $TipoDoc . "'",
-            "'" . $SoloStock . "'",
-            "'" . $TodosArticulos . "'",
-            "'" . $IdListaPrecio . "'", // @PriceList. NEDUGA, 24/02/2022
+            "'$Dato'", // @DatoBuscar
+            "'$Almacen'", // @WhsCode
+            "'$TipoDoc'",
+            "'$SoloStock'",
+            "'$TodosArticulos'",
+            "'$IdListaPrecio'", // @PriceList. NEDUGA, 24/02/2022
             $Usuario, // SMM, 22/10/2022
         );
         $SQL = EjecutarSP('sp_ConsultarArticulos_ListaPrecios', $Param); // Nuevo

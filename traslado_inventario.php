@@ -2225,6 +2225,7 @@ function AgregarArticulos() {
 				IdSeries: serie,
 				IdProyecto: proyecto,
 				ListaPrecio: listaPrecio,
+				TipoDoc: 3, // Inventario
 				IdEmpleado: empleado,
 				Inventario: "Traslado"
 			},

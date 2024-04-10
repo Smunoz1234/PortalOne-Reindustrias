@@ -12,7 +12,7 @@ while ($row_Dimension = sqlsrv_fetch_array($SQL_Dimensiones)) {
 $DatoBuscar = $_POST['BuscarItem'] ?? 0;
 $WhsCode = $_POST['Almacen'] ?? 0;
 
-$TipoDoc = $_POST['tipodoc'] ?? 1;
+$TipoDoc = $_POST['tipodoc'] ?? 2;
 // @TipoDoc: 1 COMPRA, 2 VENTA, 3 INVENTARIO
 
 $TodosArticulos = $_POST['todosart'] ?? 0;

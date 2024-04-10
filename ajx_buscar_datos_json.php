@@ -198,12 +198,12 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
         $IdListaPrecio = isset($_GET['idlistaprecio']) ? $_GET['idlistaprecio'] : ""; // NEDUGA, 24/02/2022
 
         $Param = array(
-            "'" . $Dato . "'", // @DatoBuscar
-            "'" . $Almacen . "'", // @WhsCode
-            "'" . $TipoDoc . "'",
-            "'" . $SoloStock . "'",
-            "'" . $TodosArticulos . "'",
-            "'" . $IdListaPrecio . "'", // @PriceList. NEDUGA, 24/02/2022
+            "'$Dato'", // @DatoBuscar
+            "'$Almacen'", // @WhsCode
+            "'$TipoDoc'",
+            "'$SoloStock'",
+            "'$TodosArticulos'",
+            "'$IdListaPrecio'", // @PriceList. NEDUGA, 24/02/2022
         );
         //$Param=array("'".$_GET['data']."'","'".$_GET['whscode']."'","'".$_GET['tipodoc']."'");
 

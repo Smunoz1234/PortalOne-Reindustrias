@@ -2631,6 +2631,7 @@ function CrearArticulo(){
 						IdSeries: serie,
 						IdProyecto: proyecto,
 						ListaPrecio: listaPrecio,
+						TipoDoc: 1, // Compras
 						IdEmpleado: empleado
 					},
 					success: function (response) {
