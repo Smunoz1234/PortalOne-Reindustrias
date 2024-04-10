@@ -807,15 +807,26 @@ if($SQL_ValoresPropiedades) {
 
 	<script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
 	<script>
-		function generarCodigoQR() {
-			const urlActual = window.location.href; // Obtiene la URL actual
-			const qrcode = new QRCode(document.getElementById("qrcode"), {
-				text: urlActual,
-				width: 128,
-				height: 128
-			});
-		}
-	</script>
+        function generarCodigoQR() {
+            // Abrir una nueva pestaña
+            const nuevaPestana = window.open('', '_blank');
+
+            // Crear un div en la nueva pestaña
+            const nuevoDiv = document.createElement('div');
+            nuevoDiv.id = 'qrcodeNuevo';
+
+            // Agregar el div a la nueva pestaña
+            nuevaPestana.document.body.appendChild(nuevoDiv);
+
+            // Generar el código QR en el nuevo div
+            const urlActual = window.location.href; // Obtiene la URL actual
+            const qrcodeNuevo = new QRCode(nuevoDiv, {
+                text: urlActual,
+                width: 128,
+                height: 128
+            });
+        }
+    </script>
 	<!-- InstanceEndEditable -->
 
 </head>
