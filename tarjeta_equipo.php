@@ -804,6 +804,18 @@ if($SQL_ValoresPropiedades) {
 			}
 		}
 	</script>
+
+	<script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+	<script>
+		function generarCodigoQR() {
+			const urlActual = window.location.href; // Obtiene la URL actual
+			const qrcode = new QRCode(document.getElementById("qrcode"), {
+				text: urlActual,
+				width: 128,
+				height: 128
+			});
+		}
+	</script>
 	<!-- InstanceEndEditable -->
 
 </head>
@@ -911,27 +923,30 @@ if($SQL_ValoresPropiedades) {
 
 											</div>
 											<div class="col-lg-6">
+												
+											<div id="qrcode"></div>
+    										<button onclick="generarCodigoQR()">Generar Código QR</button>
 
-													<button data-toggle="dropdown"
-														class="btn btn-success dropdown-toggle pull-right">
-														<i class="fa fa-qrcode"></i> 
-														Generar QR 
-														<i class="fa fa-caret-down"></i>
-													</button>
-													<ul class="dropdown-menu pull-right">
-														<li>
-															<a class="dropdown-item" target="_blank"
-																href="#">
-																Hoja de vida
-															</a>
-														</li>
-														<li>
-															<a class="dropdown-item" target="_blank"
-																href="#">
-																Tarjeta digital
-															</a>
-														</li>
-													</ul>
+												<button data-toggle="dropdown"
+													class="btn btn-success dropdown-toggle pull-right">
+													<i class="fa fa-qrcode"></i> 
+													Generar QR 
+													<i class="fa fa-caret-down"></i>
+												</button>
+												<ul class="dropdown-menu pull-right">
+													<li>
+														<a class="dropdown-item" target="_blank"
+															href="#">
+															Hoja de vida
+														</a>
+													</li>
+													<li>
+														<a class="dropdown-item" target="_blank"
+															href="#">
+															Tarjeta digital
+														</a>
+													</li>
+												</ul>
 
 											</div>
 										</div>
