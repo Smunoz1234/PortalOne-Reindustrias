@@ -202,7 +202,9 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Salida de inventario
 
 					if (in_array($_SESSION['Perfil'], $ids_perfiles) || (count($ids_perfiles) == 0)) {
 						$sql = $row_Proceso['Condiciones'] ?? '';
+						$autorizaSAP = $row_Proceso['AutorizacionSAP'] ?? ''; // SMM, 13/12/2022
 
+						// Aquí se debe reemplazar por el ID del documento. SMM, 13/12/2022
 						$sql = str_replace("[IdDocumento]", $IdTrasladoInv, $sql);
 						$sql = str_replace("[IdEvento]", $IdEvento, $sql);
 
@@ -233,8 +235,11 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Salida de inventario
 				}
 
 				// Consultar el motivo de autorización según el ID.
-				$SQL_Motivos = Seleccionar("uvw_tbl_Autorizaciones_Motivos", "*", "IdMotivoAutorizacion = '$IdMotivo'");
-				$row_MotivoAutorizacion = sqlsrv_fetch_array($SQL_Motivos);
+				if ($IdMotivo != "") {
+					$SQL_Motivos = Seleccionar("uvw_tbl_Autorizaciones_Motivos", "*", "IdMotivoAutorizacion = '$IdMotivo'");
+					$row_MotivoAutorizacion = sqlsrv_fetch_array($SQL_Motivos);
+				}
+
 				$motivoAutorizacion = $row_MotivoAutorizacion['MotivoAutorizacion'] ?? "";
 
 				// Hasta aquí, 30/11/2022
@@ -279,178 +284,11 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Salida de inventario
 				echo 'Excepcion capturada: ', $e->getMessage(), "\n";
 			}
 
-			//Consultar cabecera
-			$SQL_Cab = Seleccionar("uvw_tbl_TrasladoInventario", '*', "ID_TrasladoInv='" . $IdTrasladoInv . "' and IdEvento='" . $IdEvento . "'");
-			$row_Cab = sqlsrv_fetch_array($SQL_Cab);
-
-			//Consultar detalle
-			$SQL_Det = Seleccionar("uvw_tbl_TrasladoInventarioDetalle", '*', "ID_TrasladoInv='" . $IdTrasladoInv . "' and IdEvento='" . $IdEvento . "'");
-
-			//Consultar anexos
-			$SQL_Anx = Seleccionar("uvw_tbl_DocumentosSAP_Anexos", '*', "ID_Documento='" . $IdTrasladoInv . "' and TipoDocumento='67' and Metodo=1");
-
-			// SMM, 23/02/2023
-			$ID_Documento = $row_Cab['DocNum'] ?? 0;
-
-			//Consultar Lotes. SMM, 22/02/2023
-			if ($edit == 1) {
-				$SQL_Lotes = Seleccionar("uvw_Sap_tbl_LotesDocSAP", '*', "DocEntry='$ID_Documento' AND ObjType='67' AND Cantidad > 0 AND Sentido = 'IN'");
-				// echo "SELECT * FROM uvw_Sap_tbl_LotesDocSAP WHERE DocEntry='$ID_Documento' AND ObjType='67' AND Cantidad > 0 AND Sentido = 'IN'";
-				// exit();
-			} else {
-				$SQL_Lotes = Seleccionar("uvw_tbl_LotesDocSAP", '*', "DocEntry='$IdTrasladoInv' and IdEvento='$IdEvento' and ObjType='67' and Cantidad > 0");
-				// echo "SELECT * FROM uvw_tbl_LotesDocSAP WHERE DocEntry='$IdTrasladoInv' AND IdEvento='$IdEvento' AND ObjType='67' AND Cantidad > 0";
-				// exit();
+			// SMM, 13/12/2022
+			if ($debug_Condiciones && ($success == 1)) {
+				$success = 0;
+				// echo 'La bandera "$success" cambio de 1 a 0, en el modo de depuración';
 			}
-
-			// Consultar Seriales, 24/11/2022
-			if ($edit == 1) {
-				$SQL_Seriales = Seleccionar("uvw_Sap_tbl_SerialesDocSAP", '*', "DocEntry='$ID_Documento' AND ObjType='67' AND Cantidad > 0 AND Sentido = 'IN'");
-				// echo "SELECT * FROM uvw_Sap_tbl_SerialesDocSAP WHERE DocEntry='$ID_Documento' AND ObjType='67' AND Cantidad > 0 AND Sentido = 'IN'";
-				// exit();
-			} else {
-				$SQL_Seriales = Seleccionar("uvw_tbl_SerialesDocSAP", '*', "DocEntry='$IdTrasladoInv' and IdEvento='$IdEvento' and ObjType='67' and Cantidad > 0");
-				// echo "SELECT * FROM uvw_tbl_SerialesDocSAP WHERE DocEntry='$IdTrasladoInv' AND IdEvento='$IdEvento' AND ObjType='67' AND Cantidad > 0";
-				// exit();
-			}
-
-			$Detalle = array();
-			$Anexos = array();
-			$Lotes = array();
-			$Seriales = array();
-
-			// Detalle
-			while ($row_Det = sqlsrv_fetch_array($SQL_Det)) {
-
-				array_push($Detalle, array(
-					"base_type" => ($row_Det['BaseType'] === "" || intval($row_Det['BaseType']) === 0) ? null : intval($row_Det['BaseType']),
-                    "base_entry" => ($row_Det['BaseEntry'] === "" || intval($row_Det['BaseEntry']) === 0) ? null : intval($row_Det['BaseEntry']),
-                    "base_line" => ($row_Det['BaseType'] === "" || intval($row_Det['BaseType']) === 0) ? null : intval($row_Det['BaseLine']),
-					"line_num" => intval($row_Det['LineNum']),
-					"id_tipo_articulo" => "",
-					"tipo_articulo" => 0,
-					"id_articulo" => $row_Det['ItemCode'],
-					"articulo" => $row_Det['ItemName'],
-					"unidad_medida" => $row_Det['UnitMsr'],
-					"texto_libre" => $row_Det['FreeTxt'],
-					"id_bodega" => $row_Det['WhsCode'],
-					"id_bodega_destino" => $row_Det['ToWhsCode'],
-					"cant_articulo" => doubleval($row_Det['Quantity']),
-					"precio_articulo" => doubleval($row_Det['Price']),
-					"dim1" => $row_Det['OcrCode'],
-					"dim2" => $row_Det['OcrCode2'],
-					"dim3" => $row_Det['OcrCode3'],
-					"dim4" => $row_Det['OcrCode4'],
-					"dim5" => $row_Det['OcrCode5'],
-					"id_proyecto" => $row_Det['PrjCode'],
-					"metodo_linea" => intval($row_Det['Metodo']),
-					"maneja_serial" => $row_Det['ManSerNum'],
-					"maneja_lote" => $row_Det['ManBtchNum'],
-					"CDU_id_servicio" => $row_Det['CDU_IdServicio'],
-					"CDU_id_metodo_aplicacion" => $row_Det['CDU_IdMetodoAplicacion'],
-					"CDU_id_tipo_plagas" => $row_Det['CDU_IdTipoPlagas'],
-					"CDU_areas_controladas" => $row_Det['CDU_AreasControladas'],
-					"CDU_cant_litros" => doubleval($row_Det['CDU_CantLitros']),
-					"CDU_dosificacion" => 0,
-					"CDU_codigo_empleado" => "",
-					"CDU_nombre_empleado" => "",
-					"CDU_texto_libre" => "",
-					"CDU_numero_ots" => "",
-					"CDU_id_direccion_destino" => "",
-					"estado_linea" => $row_Det['LineStatus'],
-					"CDU_id_concepto_salida" => ($row_Det['ConceptoSalida'] ?? ""),
-				));
-			}
-
-			//Anexos
-			$i = 0;
-			while ($row_Anx = sqlsrv_fetch_array($SQL_Anx)) {
-
-				array_push($Anexos, array(
-					"id_anexo" => $i,
-					"tipo_documento" => intval($row_Anx['TipoDocumento']),
-					"id_documento" => intval($row_Anx['ID_Documento']),
-					"archivo" => $row_Anx['FileName'],
-					"ext_archivo" => $row_Anx['FileExt'],
-					"metodo" => intval($row_Anx['Metodo']),
-					"fecha" => FormatoFechaToSAP($row_Anx['Fecha']->format('Y-m-d')),
-					"id_usuario" => intval($row_Anx['ID_Usuario']),
-				));
-				$i++;
-			}
-
-			//Lotes
-			while ($row_Lotes = sqlsrv_fetch_array($SQL_Lotes)) {
-
-				array_push($Lotes, array(
-					"id_documento" => intval($row_Lotes['DocEntry']),
-					"id_linea" => intval($row_Lotes['DocLinea']),
-					"id_articulo" => $row_Lotes['ItemCode'],
-					"articulo" => ($row_Lotes['ItemName'] ?? ""),
-					"cantidad" => intval($row_Lotes['Cantidad']),
-					"serial_lote" => $row_Lotes['DistNumber'],
-					"id_systema_articulo" => intval($row_Lotes['SysNumber']),
-				));
-			}
-
-			// Seriales, 24/11/2022
-			while ($row_Seriales = sqlsrv_fetch_array($SQL_Seriales)) {
-
-				array_push($Seriales, array(
-					"id_documento" => intval($row_Seriales['DocEntry']),
-					"id_linea" => intval($row_Seriales['DocLinea']),
-					"id_articulo" => $row_Seriales['ItemCode'],
-					"articulo" => $row_Seriales['ItemName'],
-					"cantidad" => intval($row_Seriales['Cantidad']),
-					"serial_lote" => $row_Seriales['DistNumber'],
-					"id_systema_articulo" => intval($row_Seriales['SysNumber']),
-				));
-			}
-
-			$Cabecera = array(
-				"crear_salida_inventario" => PermitirFuncion(1214), // SMM, 22/02/2023
-				"id_serie_salida_inventario" => (PermitirFuncion(1214) ? intval(ObtenerVariable("IdSerieSalidaInvPorDefecto")) : null), // SMM, 28/02/2023
-				"CDU_nombre_firma_recibe" => ($row_Cab['NombreRecibeFirma'] ?? ""), // SMM, 20/02/2023
-				"CDU_CC_firma_recibe" => ($row_Cab['CedulaRecibeFirma'] ?? ""), // SMM, 20/02/2023
-				"id_documento" => $ID_Documento, // SMM, 01/12/2022
-				"id_tipo_documento" => "67",
-				"tipo_documento" => "Traslado de inventario",
-				"moneda_documento" => "$",
-				"estado" => $row_Cab['Cod_Estado'],
-				"id_doc_portal" => "" . $row_Cab['ID_TrasladoInv'] . "",
-				"id_series" => intval($row_Cab['IdSeries']),
-				"id_cliente" => $row_Cab['CardCode'],
-				"cliente" => $row_Cab['NombreCliente'],
-				"id_contacto_cliente" => intval($row_Cab['CodigoContacto']),
-				"contacto_cliente" => $row_Cab['NombreContacto'],
-				"referencia" => $row_Cab['NumAtCard'],
-				"id_condicion_pago" => intval($row_Cab['IdCondicionPago']),
-				"id_direccion_facturacion" => $row_Cab['SucursalFacturacion'],
-				"id_direccion_destino" => $row_Cab['SucursalDestino'],
-				"fecha_contabilizacion" => FormatoFechaToSAP($row_Cab['DocDate']),
-				"fecha_vencimiento" => FormatoFechaToSAP($row_Cab['DocDueDate']),
-				"fecha_documento" => FormatoFechaToSAP($row_Cab['TaxDate']),
-				"comentarios" => $row_Cab['Comentarios'],
-				"usuario" => $row_Cab['Usuario'],
-				"fecha_creacion" => FormatoFechaToSAP($row_Cab['FechaRegistro']->format('Y-m-d'), $row_Cab['FechaRegistro']->format('H:i:s')),
-				"hora_creacion" => FormatoFechaToSAP($row_Cab['FechaRegistro']->format('Y-m-d'), $row_Cab['FechaRegistro']->format('H:i:s')),
-				"id_anexo" => 0,
-				"docentry_llamada_servicio" => intval($row_Cab['ID_LlamadaServicio']),
-				"docentry_documento" => $row_Cab['DocEntry'] ?? 0, // SMM, 01/12/2022
-				"id_llamada_servicio" => 0,
-				"id_vendedor" => intval($row_Cab['SlpCode']),
-				"metodo" => intval($row_Cab['Metodo']),
-				"id_bodega_origen" => $row_Cab['WhsCode'],
-				"id_bodega_destino" => $row_Cab['ToWhsCode'],
-				"documentos_Lineas" => $Detalle,
-				"documentos_Anexos" => $Anexos,
-				"documentos_Lotes" => $Lotes,
-				"documentos_Seriales" => $Seriales,
-			);
-
-			$Cabecera_json = json_encode($Cabecera);
-			// echo $Cabecera_json;
-			// exit();
 
 			// Verificar que el documento cumpla las Condiciones o este Pendiente de Autorización.
 			if (($success == 1) || ($_POST['Autorizacion'] == "P")) {
@@ -458,48 +296,47 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Salida de inventario
 
 				// Inicio, Enviar datos al WebServices.
 				try {
-					if ($_POST['tl'] == 0) { //Creando
-						$Metodo = "TrasladosInventarios";
-						$Resultado = EnviarWebServiceSAP($Metodo, $Cabecera, true, true);
-					} else { //Editando
-						$Metodo = "TrasladosInventarios/" . $IdTrasladoInv;
-						$Resultado = EnviarWebServiceSAP($Metodo, $Cabecera, true, true, "PUT");
-					}
+					$Parametros = array(
+						'id_documento' => intval($IdTrasladoInv),
+						'id_evento' => intval($IdEvento),
+					);
+					$Metodo = "TrasladosInventarios";
+					$Resultado = EnviarWebServiceSAP($Metodo, $Parametros, true, true);
 
 					if ($Resultado->Success == 0) {
 						$sw_error = 1;
 						$msg_error = $Resultado->Mensaje;
 					} else {
-						// SMM, 30/11/2022
-						if (isset($_POST['Autorizacion']) && ($_POST['Autorizacion'] == "P")) {
-							$nombreArchivo = "traslado_inventario"; // Ajustar según sea el caso.
-							header("Location:$nombreArchivo.php?a=" . base64_encode("OK_BorradorAdd"));
-						} else {
-							// Inicio, redirección documento autorizado.
-							if ($_POST['tl'] == 0) { //Creando traslado
-								//Consultar ID creado para cargar el documento
-								$SQL_ConsID = Seleccionar('uvw_Sap_tbl_TrasladosInventarios', 'ID_TrasladoInv', "IdDocPortal='" . $IdTrasladoInv . "'");
-								$row_ConsID = sqlsrv_fetch_array($SQL_ConsID);
-								sqlsrv_close($conexion);
-								header('Location:traslado_inventario.php?id=' . base64_encode($row_ConsID['ID_TrasladoInv']) . '&id_portal=' . base64_encode($IdTrasladoInv) . '&tl=1&a=' . base64_encode("OK_TrasInvAdd"));
-							} else { //Actualizando traslado
+							// SMM, 30/11/2022
+							if (isset($_POST['Autorizacion']) && ($_POST['Autorizacion'] == "P")) {
+								$nombreArchivo = "traslado_inventario"; // Ajustar según sea el caso.
+								header("Location:$nombreArchivo.php?a=" . base64_encode("OK_BorradorAdd"));
+							} else {
+								// Inicio, redirección documento autorizado.
+								if ($_POST['tl'] == 0) { //Creando traslado
+									//Consultar ID creado para cargar el documento
+									$SQL_ConsID = Seleccionar('uvw_Sap_tbl_TrasladosInventarios', 'ID_TrasladoInv', "IdDocPortal='" . $IdTrasladoInv . "'");
+									$row_ConsID = sqlsrv_fetch_array($SQL_ConsID);
+									sqlsrv_close($conexion);
+									header('Location:traslado_inventario.php?id=' . base64_encode($row_ConsID['ID_TrasladoInv']) . '&id_portal=' . base64_encode($IdTrasladoInv) . '&tl=1&a=' . base64_encode("OK_TrasInvAdd"));
+								} else { //Actualizando traslado
 
-								// SMM, 17/02/2023
-								$SQL_ConsID = Seleccionar('uvw_Sap_tbl_TrasladosInventarios', 'ID_TrasladoInv', "IdDocPortal='" . $IdTrasladoInv . "'");
-								$row_ConsID = sqlsrv_fetch_array($SQL_ConsID);
-								sqlsrv_close($conexion);
+									// SMM, 17/02/2023
+									$SQL_ConsID = Seleccionar('uvw_Sap_tbl_TrasladosInventarios', 'ID_TrasladoInv', "IdDocPortal='" . $IdTrasladoInv . "'");
+									$row_ConsID = sqlsrv_fetch_array($SQL_ConsID);
+									sqlsrv_close($conexion);
 
-								/*
-								echo "SELECT ID_TrasladoInv FROM uvw_Sap_tbl_TrasladosInventarios WHERE IdDocPortal='$IdTrasladoInv'";
-								echo '<br>traslado_inventario.php?id=' . $row_ConsID['ID_TrasladoInv'] . "&id_portal=$IdTrasladoInv&tl=1&a=OK_TrasInvAdd";
-								echo '<br>traslado_inventario.php?id=' . base64_encode($row_ConsID['ID_TrasladoInv']) . '&id_portal=' . base64_encode($IdTrasladoInv) . '&tl=1&a=' . base64_encode("OK_TrasInvAdd");
-								exit();
-								 */
+									/*
+									echo "SELECT ID_TrasladoInv FROM uvw_Sap_tbl_TrasladosInventarios WHERE IdDocPortal='$IdTrasladoInv'";
+									echo '<br>traslado_inventario.php?id=' . $row_ConsID['ID_TrasladoInv'] . "&id_portal=$IdTrasladoInv&tl=1&a=OK_TrasInvAdd";
+									echo '<br>traslado_inventario.php?id=' . base64_encode($row_ConsID['ID_TrasladoInv']) . '&id_portal=' . base64_encode($IdTrasladoInv) . '&tl=1&a=' . base64_encode("OK_TrasInvAdd");
+									exit();
+									*/
 
-								header('Location:traslado_inventario.php?id=' . base64_encode($row_ConsID['ID_TrasladoInv']) . '&id_portal=' . base64_encode($IdTrasladoInv) . '&tl=1&a=' . base64_encode("OK_TrasInvUpd"));
-								// header('Location:' . base64_decode($_POST['return']) . '&a=' . base64_encode("OK_TrasInvUpd"));
-							}
-							// Fin, redirección documento autorizado.
+									header('Location:traslado_inventario.php?id=' . base64_encode($row_ConsID['ID_TrasladoInv']) . '&id_portal=' . base64_encode($IdTrasladoInv) . '&tl=1&a=' . base64_encode("OK_TrasInvUpd"));
+									// header('Location:' . base64_decode($_POST['return']) . '&a=' . base64_encode("OK_TrasInvUpd"));
+								}
+								// Fin, redirección documento autorizado.
 						}
 					}
 				} catch (Exception $e) {
@@ -512,13 +349,14 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Salida de inventario
 			}
 			// Hasta aquí, 30/11/2022
 
-			//            sqlsrv_close($conexion);
-			//            if($_POST['tl']==0){//Creando Entrada
-			//                header('Location:'.base64_decode($_POST['return']).'&a='.base64_encode("OK_TrasInvAdd"));
-			//            }else{//Actualizando Entrada
-			//                header('Location:'.base64_decode($_POST['return']).'&a='.base64_encode("OK_TrasInvUpd"));
-			//            }
-
+			/*
+			sqlsrv_close($conexion);
+            if($_POST['tl']==0) { // Creando Entrada
+                header('Location:'.base64_decode($_POST['return']).'&a='.base64_encode("OK_TrasInvAdd"));
+            } else { // Actualizando Entrada
+            	header('Location:'.base64_decode($_POST['return']).'&a='.base64_encode("OK_TrasInvUpd"));
+            }
+			*/
 		} else {
 			$sw_error = 1;
 			$msg_error = "Ha ocurrido un error al crear el traslado de inventario";
