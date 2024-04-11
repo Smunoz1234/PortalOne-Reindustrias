@@ -2183,6 +2183,12 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
             $ParametrosEdit = array_merge($ParametrosEdit, $ParametrosDims, $ParametrosOthers);
 
             if ($type == 1) { // Orden de venta
+                $NewParams = array(
+                    "'" . ($_REQUEST['towhscode'] ?? "") . "'",
+                    "'" . ($_REQUEST['concepto'] ?? "") . "'",  
+                );
+                $ParametrosInsert = array_merge($ParametrosInsert, $NewParams);
+
                 $SQL_Insert = EjecutarSP('sp_tbl_OrdenVentaDetalleCarritoInsert' . $borrador, $ParametrosInsert, 35);
 
                 if ($SQL_Insert) {
@@ -2197,6 +2203,12 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     exit();
                 }
             } elseif ($type == 2) { // Orden de venta - Editar
+                $NewParams = array(
+                    "'" . ($_REQUEST['towhscode'] ?? "") . "'",
+                    "'" . ($_REQUEST['concepto'] ?? "") . "'",  
+                );
+                $ParametrosEdit = array_merge($ParametrosEdit, $NewParams);
+
                 $SQL_Insert = EjecutarSP("sp_tbl_OrdenVentaDetalleInsert$borrador", $ParametrosEdit, 35);
 
                 if ($SQL_Insert) {
@@ -2235,6 +2247,12 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     exit();
                 }
             } elseif ($type == 5) { //Entrega de venta
+                $NewParams = array(
+                    "'" . ($_REQUEST['towhscode'] ?? "") . "'",
+                    "'" . ($_REQUEST['concepto'] ?? "") . "'",  
+                );
+                $ParametrosInsert = array_merge($ParametrosInsert, $NewParams);
+
                 $SQL_Insert = EjecutarSP('sp_tbl_EntregaVentaDetalleCarritoInsert' . $borrador, $ParametrosInsert, 35);
 
                 if ($SQL_Insert) {
@@ -2249,6 +2267,12 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     exit();
                 }
             } elseif ($type == 6) { //Entrega de venta editar
+                $NewParams = array(
+                    "'" . ($_REQUEST['towhscode'] ?? "") . "'",
+                    "'" . ($_REQUEST['concepto'] ?? "") . "'",  
+                );
+                $ParametrosEdit = array_merge($ParametrosEdit, $NewParams);
+                
                 $SQL_Insert = EjecutarSP('sp_tbl_EntregaVentaDetalleInsert' . $borrador, $ParametrosEdit, 35);
 
                 if ($SQL_Insert) {

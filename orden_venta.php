@@ -1887,13 +1887,25 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 							<?php if (($edit == 1) && ($row['Cod_Estado'] != 'C')) { ?>
 								<div class="col-lg-3">
 									<div class="btn-group dropup pull-right">
-										<button data-toggle="dropdown" class="btn btn-success dropdown-toggle"><i
-												class="fa fa-mail-forward"></i> Copiar a <i
-												class="fa fa-caret-up"></i></button>
+										<button data-toggle="dropdown" class="btn btn-success dropdown-toggle">
+											<i class="fa fa-mail-forward"></i> Copiar a <i class="fa fa-caret-up"></i>
+										</button>
+										
 										<ul class="dropdown-menu">
-											<li><a class="alkin dropdown-item"
-													href="entrega_venta.php?dt_OV=1&OV=<?php echo base64_encode($row['ID_OrdenVenta']); ?>&Referencia=<?php echo base64_encode($row['NumAtCard']); ?>&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&SucursalFact=<?php echo base64_encode($row['SucursalFacturacion']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&LS=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>&CondicionPago=<?php echo base64_encode($row['IdCondicionPago']); ?>">Entrega
-													de venta</a></li>
+											<li>
+												<a class="alkin dropdown-item"
+													href="solicitud_salida.php?dt_OV=1&OV=<?php echo base64_encode($row['ID_OrdenVenta']); ?>&Referencia=<?php echo base64_encode($row['NumAtCard']); ?>&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&SucursalFact=<?php echo base64_encode($row['SucursalFacturacion']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&LS=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>&CondicionPago=<?php echo base64_encode($row['IdCondicionPago']); ?>">
+													Solicitud de Traslado
+												</a>
+											</li>
+
+											<li>
+												<a class="alkin dropdown-item"
+													href="entrega_venta.php?dt_OV=1&OV=<?php echo base64_encode($row['ID_OrdenVenta']); ?>&Referencia=<?php echo base64_encode($row['NumAtCard']); ?>&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&SucursalFact=<?php echo base64_encode($row['SucursalFacturacion']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&LS=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>&CondicionPago=<?php echo base64_encode($row['IdCondicionPago']); ?>">
+													Entrega de venta
+												</a>
+											</li>
+											
 											<li><a class="alkin dropdown-item d-venta"
 													href="orden_venta.php?dt_OV=1&OV=<?php echo base64_encode($row['ID_OrdenVenta']); ?>&pag=<?php echo $_GET['pag']; ?>&return=<?php echo $_GET['return']; ?>&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&SucursalFact=<?php echo base64_encode($row['SucursalFacturacion']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&Almacen=<?php echo base64_encode($row['WhsCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Empleado=<?php echo base64_encode($row['SlpCode']); ?>&Evento=<?php echo base64_encode($row['IdEvento']); ?>&dt_LS=1&LS=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&Comentarios=<?php echo base64_encode($row['Comentarios']); ?>&Proyecto=<?php echo base64_encode($row['PrjCode']); ?>&CondicionPago=<?php echo base64_encode($row['IdCondicionPago']); ?>&Serie=<?php echo base64_encode($row['IdSeries']); ?>">Orden
 													de venta (Duplicar)</a></li>
@@ -2327,7 +2339,8 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 						IdSeries: serie,
 						IdProyecto: proyecto,
 						ListaPrecio: listaPrecio,
-						IdEmpleado: empleado
+						IdEmpleado: empleado,
+						Inventario: "OrdenVenta"
 					},
 					success: function (response) {
 						$('#mdArticulos').html(response);
@@ -2368,7 +2381,8 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 						IdSeries: serie,
 						IdProyecto: proyecto,
 						ListaPrecio: listaPrecio,
-						IdEmpleado: empleado
+						IdEmpleado: empleado,
+						Inventario: "OrdenVenta"
 					},
 					success: function (response) {
 						$('#mdLoteArticulos').html(response);

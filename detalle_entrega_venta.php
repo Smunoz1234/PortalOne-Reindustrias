@@ -118,6 +118,33 @@ $SQL_Almacen = EjecutarSP('sp_ConsultarAlmacenesUsuario', $ParamSerie);
 //Proyectos
 $SQL_Proyecto = Seleccionar('uvw_Sap_tbl_Proyectos', '*', '', 'DeProyecto');
 
+// Almacenes destino. SMM, 11/04/2024
+$ParamAlmacenDest = array(
+    "'" . $_SESSION['CodUser'] . "'",
+    "'15'", // Tipo de Documento
+    "2", // Tipo de Almacen
+);
+$SQL_ToAlmacen = EjecutarSP('sp_ConsultarAlmacenesUsuario', $ParamAlmacenDest);
+
+// Filtrar conceptos de salida. SMM, 11/04/2024
+$Where_Conceptos = "ID_Usuario='" . $_SESSION['CodUser'] . "'";
+$SQL_Conceptos = Seleccionar('uvw_tbl_UsuariosConceptos', '*', $Where_Conceptos);
+
+$Filtro_Conceptos = "Estado = 'Y'";
+$Conceptos = array();
+while ($Concepto = sqlsrv_fetch_array($SQL_Conceptos)) {
+    $Conceptos[] = ("'" . $Concepto['IdConcepto'] . "'");
+}
+
+if (count($Conceptos) > 0) {
+    $Filtro_Conceptos .= " AND id_concepto_salida IN (";
+    $Filtro_Conceptos .= implode(",", $Conceptos);
+    $Filtro_Conceptos .= ")";
+}
+
+// Conceptos de salida de inventario. SMM, 11/04/2024
+$SQL_ConceptoSalida = Seleccionar('tbl_SalidaInventario_Conceptos', '*', $Filtro_Conceptos, 'id_concepto_salida');
+
 // Base del Redondeo
 $SQL_DatosBase = Seleccionar('uvw_Sap_ConfiguracionSAPB1_DatosBase', '*');
 
@@ -584,6 +611,7 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 						<th>Cant. Pendiente</th>
 
 						<th>Almacén</th>
+						<th>Almacén destino</th> <!-- SMM, 11/04/2024 -->
 						<th>Stock almacén</th>
 
 						<?php if ($ControlPlagas) { ?>
@@ -604,6 +632,7 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 						<!-- Dimensiones dinámicas, hasta aquí -->
 
 						<th>Proyecto</th>
+						<th>Concepto Salida</th> <!-- SMM, 11/04/2024 -->
 						<th>Empleado de ventas</th>
 
 						<!-- Campos basados en la OT -->
@@ -636,7 +665,13 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 							sqlsrv_fetch($SQL_Servicios, SQLSRV_SCROLL_ABSOLUTE, -1);
 							sqlsrv_fetch($SQL_MetodoAplicacion, SQLSRV_SCROLL_ABSOLUTE, -1);
 							sqlsrv_fetch($SQL_TipoPlaga, SQLSRV_SCROLL_ABSOLUTE, -1);
+							
 							sqlsrv_fetch($SQL_Almacen, SQLSRV_SCROLL_ABSOLUTE, -1);
+							sqlsrv_fetch($SQL_ToAlmacen, SQLSRV_SCROLL_ABSOLUTE, -1);
+
+							sqlsrv_fetch($SQL_Proyecto, SQLSRV_SCROLL_ABSOLUTE, -1);
+							sqlsrv_fetch($SQL_ConceptoSalida, SQLSRV_SCROLL_ABSOLUTE, -1);
+							sqlsrv_fetch($SQL_EmpleadosVentas, SQLSRV_SCROLL_ABSOLUTE, -1);
 
 							// SMM, 08/06/2023
 							sqlsrv_fetch($SQL_OT_ORIGEN, SQLSRV_SCROLL_ABSOLUTE, -1);
@@ -644,10 +679,6 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 							sqlsrv_fetch($SQL_OT_TipoLlamada, SQLSRV_SCROLL_ABSOLUTE, -1);
 							sqlsrv_fetch($SQL_OT_TIPOPROBLEMA, SQLSRV_SCROLL_ABSOLUTE, -1);
 							sqlsrv_fetch($SQL_OT_TIPOPREVENTI, SQLSRV_SCROLL_ABSOLUTE, -1);
-
-							// SMM, 22/02/2022
-							sqlsrv_fetch($SQL_Proyecto, SQLSRV_SCROLL_ABSOLUTE, -1);
-							sqlsrv_fetch($SQL_EmpleadosVentas, SQLSRV_SCROLL_ABSOLUTE, -1);
 							?>
 							<tr>
 								<td class="text-center form-inline w-150">
@@ -655,7 +686,7 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 											id="chkSel<?php echo $row['LineNum']; ?>" value=""
 											onChange="Seleccionar('<?php echo $row['LineNum']; ?>');"
 											aria-label="Single checkbox One" <?php if (($row['LineStatus'] == "C") && ($type == 1)) {
-												echo "disabled='disabled'";
+												echo "disabled";
 											} ?>><label></label></div>
 									<button type="button" class="btn btn-success btn-xs"
 										onClick="ConsultarArticulo('<?php echo base64_encode($row['ItemCode']); ?>');"
@@ -703,14 +734,25 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 									<select id="WhsCode<?php echo $i; ?>" name="WhsCode[]" class="form-control select2"
 										onChange="ActualizarDatos('WhsCode',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);ActStockAlmacen('WhsCode',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);"
 										<?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402))) {
-											echo "disabled='disabled'";
+											echo "disabled";
 										} ?>>
 										<option value="">(NINGUNO)</option>
 										<?php while ($row_Almacen = sqlsrv_fetch_array($SQL_Almacen)) { ?>
 											<option value="<?php echo $row_Almacen['WhsCode']; ?>" <?php if ((isset($row['WhsCode'])) && (strcmp($row_Almacen['WhsCode'], $row['WhsCode']) == 0)) {
-												   echo "selected=\"selected\"";
+												   echo "selected";
 											   } ?>><?php echo $row_Almacen['WhsName']; ?></option>
 										<?php } ?>
+									</select>
+								</td>
+
+								<td>
+									<select id="ToWhsCode<?php echo $i; ?>" name="ToWhsCode[]" class="form-control select2" onChange="ActualizarDatos('ToWhsCode',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" 
+										<?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402))) { echo "disabled"; } ?>>
+										<option value="">Seleccione...</option>
+										
+										<?php while ($row_ToAlmacen = sqlsrv_fetch_array($SQL_ToAlmacen)) {?>
+											<option value="<?php echo $row_ToAlmacen['ToWhsCode']; ?>" <?php if ((isset($row['ToWhsCode'])) && (strcmp($row_ToAlmacen['ToWhsCode'], $row['ToWhsCode']) == 0)) {echo "selected";}?>><?php echo $row_ToAlmacen['ToWhsName']; ?></option>
+										<?php }?>
 									</select>
 								</td>
 
@@ -822,14 +864,14 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 											class="form-control select2"
 											onChange="ActualizarDatos('OcrCode<?php echo $OcrId; ?>',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);"
 											<?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402))) {
-												echo "disabled='disabled'";
+												echo "disabled";
 											} ?>>
 											<option value="">(NINGUNO)</option>
 
 											<?php $SQL_Dim = Seleccionar('uvw_Sap_tbl_DimensionesReparto', '*', "DimCode=$DimCode"); ?>
 											<?php while ($row_Dim = sqlsrv_fetch_array($SQL_Dim)) { ?>
 												<option value="<?php echo $row_Dim['OcrCode']; ?>" <?php if ((isset($row["OcrCode$OcrId"])) && (strcmp($row_Dim['OcrCode'], $row["OcrCode$OcrId"]) == 0)) {
-													   echo "selected=\"selected\"";
+													   echo "selected";
 												   } ?>><?php echo $row_Dim['OcrName']; ?></option>
 											<?php } ?>
 										</select>
@@ -841,14 +883,25 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 									<select id="PrjCode<?php echo $i; ?>" name="PrjCode[]" class="form-control select2"
 										onChange="ActualizarDatos('PrjCode',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);"
 										<?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402))) {
-											echo "disabled='disabled'";
+											echo "disabled";
 										} ?>>
 										<option value="">(NINGUNO)</option>
 										<?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) { ?>
 											<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if ((isset($row['PrjCode'])) && (strcmp($row_Proyecto['IdProyecto'], $row['PrjCode']) == 0)) {
-												   echo "selected=\"selected\"";
+												   echo "selected";
 											   } ?>><?php echo $row_Proyecto['DeProyecto']; ?></option>
 										<?php } ?>
+									</select>
+								</td>
+
+								<td>
+									<select id="ConceptoSalida<?php echo $i; ?>" name="ConceptoSalida[]" class="form-control select2" onChange="ActualizarDatos('ConceptoSalida',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" 
+										<?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402))) { echo "disabled"; } ?>>
+										<option value="">(NINGUNO)</option>
+										
+										<?php while ($row_ConceptoSalida = sqlsrv_fetch_array($SQL_ConceptoSalida)) {?>
+											<option value="<?php echo $row_ConceptoSalida['id_concepto_salida']; ?>" <?php if ((isset($row['ConceptoSalida'])) && (strcmp($row_ConceptoSalida['id_concepto_salida'], $row['ConceptoSalida']) == 0)) {echo "selected";}?>><?php echo $row_ConceptoSalida['id_concepto_salida'] . "-" . $row_ConceptoSalida['concepto_salida']; ?></option>
+										<?php }?>
 									</select>
 								</td>
 
@@ -856,12 +909,12 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 									<select id="EmpVentas<?php echo $i; ?>" name="EmpVentas[]" class="form-control select2"
 										onChange="ActualizarDatos('EmpVentas',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);"
 										<?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(402))) {
-											echo "disabled='disabled'";
+											echo "disabled";
 										} ?>>
 										<option value="">(NINGUNO)</option>
 										<?php while ($row_EmpleadosVentas = sqlsrv_fetch_array($SQL_EmpleadosVentas)) { ?>
 											<option value="<?php echo $row_EmpleadosVentas['ID_EmpVentas']; ?>" <?php if ((isset($row['EmpVentas'])) && (strcmp($row_EmpleadosVentas['ID_EmpVentas'], $row['EmpVentas']) == 0)) {
-												   echo "selected=\"selected\"";
+												   echo "selected";
 											   } ?>>
 												<?php echo $row_EmpleadosVentas['DE_EmpVentas']; ?>
 											</option>

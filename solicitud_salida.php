@@ -2,6 +2,10 @@
 PermitirAcceso(1202);
 
 $msg_error = ""; //Mensaje del error
+
+// Para saber si vienen datos de una Orden de Venta.
+$dt_OV = 0; 
+
 $IdSolSalida = 0;
 $IdPortal = 0; //Id del portal para las solicitudes que fueron creadas en el portal, para eliminar el registro antes de cargar al editar
 
@@ -94,9 +98,9 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Solicitud de salida
 			$Type = 2;
 
 			/*
-		if (!PermitirFuncion(403)) { //Permiso para autorizar Solicitud de salida
-		$_POST['Autorizacion'] = 'P'; //Si no tengo el permiso, la Solicitud queda pendiente
-		}*/
+			if (!PermitirFuncion(403)) { //Permiso para autorizar Solicitud de salida
+				$_POST['Autorizacion'] = 'P'; //Si no tengo el permiso, la Solicitud queda pendiente
+			}*/
 		} else { //Crear
 			$IdSolSalida = "NULL";
 			$IdEvento = "0";
@@ -340,6 +344,54 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Solicitud de salida
 	}
 
 }
+
+if (isset($_GET['dt_OV']) && ($_GET['dt_OV']) == 1) { // Verificar que viene de una Orden de venta
+	$dt_OV = 1;
+
+	$CardCode = base64_decode($_GET['Cardcode'] ?? "");
+	$CodUser = $_SESSION['CodUser'] ?? "";
+
+	// Limpiar lotes y seriales. SMM, 23/01/2022
+	$ConsLote = "DELETE FROM tbl_LotesDocSAP WHERE CardCode = '$CardCode' AND Usuario = '$CodUser'";
+	$ConsSerial = "DELETE FROM tbl_SerialesDocSAP WHERE CardCode = '$CardCode' AND Usuario = '$CodUser'";
+	$SQL_ConsLote = sqlsrv_query($conexion, $ConsLote);
+	$SQL_ConsSerial = sqlsrv_query($conexion, $ConsSerial);
+
+	// Clientes
+	$SQL_Cliente = Seleccionar('uvw_Sap_tbl_Clientes', '*', "CodigoCliente='$CardCode'", 'NombreCliente');
+	$row_Cliente = sqlsrv_fetch_array($SQL_Cliente);
+
+	// Sucursales. SMM, 01/12/2022
+	$SQL_SucursalDestino = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', '*', "CodigoCliente='$CardCode' AND NombreSucursal='" . base64_decode($_GET['Sucursal']) . "'");
+
+	if (isset($_GET['SucursalFact'])) {
+		$SQL_SucursalFacturacion = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', '*', "CodigoCliente='$CardCode' AND NombreSucursal='" . base64_decode($_GET['SucursalFact']) . "' AND TipoDireccion='B'", 'NombreSucursal');
+	}
+
+	// Contacto cliente
+	$SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', '*', "CodigoCliente='$CardCode'", 'NombreContacto');
+
+	$ParametrosCopiarOrdenVentaToSolSalida = array(
+		"'" . base64_decode($_GET['OV'] ?? "") . "'",
+		"'" . base64_decode($_GET['Evento'] ?? "") . "'",
+		"'" . base64_decode($_GET['Almacen'] ?? "") . "'",
+		"'$CardCode'",
+		"'$CodUser'",
+	);
+	$SQL_CopiarOrdenVentaToSolSalida = EjecutarSP('sp_tbl_OrdenVentaDet_To_SolSalidaDet', $ParametrosCopiarOrdenVentaToSolSalida);
+	if (!$SQL_CopiarOrdenVentaToSolSalida) {
+		echo "<script>
+		$(document).ready(function() {
+			Swal.fire({
+				title: '¡Ha ocurrido un error!',
+				text: 'No se pudo copiar la Orden en la Solicitud de Traslado.',
+				icon: 'error'
+			});
+		});
+		</script>";
+	}
+}
+// Hasta aquí, 11/04/2024
 
 if ($edit == 1 && $sw_error == 0) {
 
@@ -702,64 +754,67 @@ function verAutorizacion() {
 			// Fin, buscar lista precio SN.
 
 			// || isset($_GET['a'])
-			<?php if (($edit == 0) && ($sw_error == 0)) { // Limpiar carrito detalle. ?>
+			<?php if (($edit == 0) && ($sw_error == 0) && ($dt_OV == 0)) { // Limpiar carrito detalle. ?>
 				$.ajax({
 					type: "POST",
 					url: "includes/procedimientos.php?type=7&objtype=1250000001&cardcode="+carcode
 				});
 			<?php } ?>
 
-			// Recargar sucursales.
-			$.ajax({
-				type: "POST",
-				url: "ajx_cbo_select.php?type=3&tdir=S&id="+carcode,
-				success: function(response){
-					$('#SucursalDestino').html(response).fadeIn();
+			// Para que no recargue las listas cuando vienen de una Orden de venta.
+			<?php if ($dt_OV == 0) { ?>
+				// Recargar sucursales.
+				$.ajax({
+					type: "POST",
+					url: "ajx_cbo_select.php?type=3&tdir=S&id="+carcode,
+					success: function(response){
+						$('#SucursalDestino').html(response).fadeIn();
 
-					<?php if (($edit == 0) && ($ClienteDefault != "")) { ?>
-							$("#SucursalDestino").val("<?php echo $SucursalDestinoDefault; ?>");
-					<?php } ?>
+						<?php if (($edit == 0) && ($ClienteDefault != "")) { ?>
+								$("#SucursalDestino").val("<?php echo $SucursalDestinoDefault; ?>");
+						<?php } ?>
 
-					$('#SucursalDestino').trigger('change');
-				},
-				error: function(error) {
-					console.log("Line 680", error.responseText);
+						$('#SucursalDestino').trigger('change');
+					},
+					error: function(error) {
+						console.log("Line 680", error.responseText);
 
-					$('.ibox-content').toggleClass('sk-loading',false);
-				}
-			});
-			$.ajax({
-				type: "POST",
-				url: "ajx_cbo_select.php?type=3&tdir=B&id="+carcode,
-				success: function(response){
-					$('#SucursalFacturacion').html(response).fadeIn();
+						$('.ibox-content').toggleClass('sk-loading',false);
+					}
+				});
+				$.ajax({
+					type: "POST",
+					url: "ajx_cbo_select.php?type=3&tdir=B&id="+carcode,
+					success: function(response){
+						$('#SucursalFacturacion').html(response).fadeIn();
 
-					<?php if (($edit == 0) && ($ClienteDefault != "")) { ?>
-							$("#SucursalFacturacion").val("<?php echo $SucursalFacturacionDefault; ?>");
-					<?php } ?>
+						<?php if (($edit == 0) && ($ClienteDefault != "")) { ?>
+								$("#SucursalFacturacion").val("<?php echo $SucursalFacturacionDefault; ?>");
+						<?php } ?>
 
-					$('#SucursalFacturacion').trigger('change');
-				},
-				error: function(error) {
-					console.log("Line 693", error.responseText);
+						$('#SucursalFacturacion').trigger('change');
+					},
+					error: function(error) {
+						console.log("Line 693", error.responseText);
 
-					$('.ibox-content').toggleClass('sk-loading',false);
-				}
-			});
+						$('.ibox-content').toggleClass('sk-loading',false);
+					}
+				});
 
-			// Recargar condición de pago.
-			$.ajax({
-				type: "POST",
-				url: "ajx_cbo_select.php?type=7&id="+carcode,
-				success: function(response){
-					$('#CondicionPago').html(response).fadeIn();
-				},
-				error: function(error) {
-					console.log("Line 707", error.responseText);
+				// Recargar condición de pago.
+				$.ajax({
+					type: "POST",
+					url: "ajx_cbo_select.php?type=7&id="+carcode,
+					success: function(response){
+						$('#CondicionPago').html(response).fadeIn();
+					},
+					error: function(error) {
+						console.log("Line 707", error.responseText);
 
-					$('.ibox-content').toggleClass('sk-loading',false);
-				}
-			});
+						$('.ibox-content').toggleClass('sk-loading',false);
+					}
+				});
+			<?php } ?>
 
 			// SMM, 23/01/2023
 			<?php if (isset($_GET['a'])) { ?>

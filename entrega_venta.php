@@ -2476,7 +2476,8 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 						IdSeries: serie,
 						IdProyecto: proyecto,
 						ListaPrecio: listaPrecio,
-						IdEmpleado: empleado
+						IdEmpleado: empleado,
+						Inventario: "EntregaVenta"
 					},
 					success: function (response) {
 						$('#mdArticulos').html(response);
@@ -2517,7 +2518,8 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 						IdSeries: serie,
 						IdProyecto: proyecto,
 						ListaPrecio: listaPrecio,
-						IdEmpleado: empleado
+						IdEmpleado: empleado,
+						Inventario: "EntregaVenta"
 					},
 					success: function (response) {
 						$('#mdLoteArticulos').html(response);
