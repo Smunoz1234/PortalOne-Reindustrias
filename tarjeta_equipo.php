@@ -821,8 +821,8 @@ if($SQL_ValoresPropiedades) {
 			// Generar el código QR en el nuevo DIV
 			const qrcode = new QRCode(newDIV, {
                 text: currentURL,
-                width: 128,
-                height: 128
+                width: 320,
+                height: 320
             });
 			// Nota: La variable no se esta usando.
         }

@@ -1670,14 +1670,14 @@ function verAutorizacion() {
 						<!-- SMM, 30/05/2023 -->
 						<button <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || (!PermitirFuncion(702))) {
 							echo "disabled";
-						} ?> class="btn btn-success"
+						} ?> class="btn btn-success" id="addArticulos"
 							type="button" onclick="AgregarArticulos();"><i class="fa fa-plus"></i>
 							Agregar artículo</button>
 
 						<!-- SMM, 27/06/2023 -->
 						<button <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || (!PermitirFuncion(702))) {
 							echo "disabled";
-						} ?> class="btn btn-warning"
+						} ?> class="btn btn-warning" id="updArticulos"
 							style="margin-left: 20px;" type="button" onclick="ActualizarArticulos();"><i
 								class="fa fa-refresh"></i>
 							Actualización en lote</button>
@@ -1924,20 +1924,15 @@ function verAutorizacion() {
 
 		// SMM, 21/12/2022
 		<?php if ($BloquearDocumento) { ?>
-				$("input").prop("readonly", true);
-				$("select").attr("readonly", true);
-				$("textarea").prop("readonly", true);
+			$("input").prop("readonly", true);
+			$("select").attr("readonly", true);
+			$("textarea").prop("readonly", true);
 
-				$("#Actualizar").prop("disabled", true);
-
-				// Comentado porque de momento no es necesario.
-				// $('#Almacen option:not(:selected)').attr('disabled', true);
-				// $('#AlmacenDestino option:not(:selected)').attr('disabled', true);
-				// $('#SucursalDestino option:not(:selected)').attr('disabled', true);
-				// $('#SucursalFacturacion option:not(:selected)').attr('disabled', true);
-				// $('.Dim option:not(:selected)').attr('disabled', true);
-				// $('#PrjCode option:not(:selected)').attr('disabled', true);
-				// $('#Empleado option:not(:selected)').attr('disabled', true);
+			$("#Actualizar").prop("disabled", true);
+			$("#addArticulos").prop("disabled", true);
+			$("#updArticulos").prop("disabled", true);
+			
+			$('#PrjCode option:not(:selected)').attr('disabled', true);
 		<?php } ?>
 
 		$("#CrearSolicitudSalida").validate({
