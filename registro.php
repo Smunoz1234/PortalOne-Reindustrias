@@ -2301,6 +2301,7 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     "'" . $_REQUEST['prjcode'] . "'", // SMM, 01/12/2022
                     "'" . $_REQUEST['towhscode'] . "'", // SMM, 01/12/2022
                     "'" . $_REQUEST['concepto'] . "'", // SMM, 23/01/2023
+                    "'" . ($_REQUEST['empleado'] ?? "") . "'", // SMM, 12/04/2024
                 );
                 $SQL_Insert = EjecutarSP('sp_tbl_SolicitudSalidaDetalleCarritoInsert', $ParametrosInsert, 35);
                 if ($SQL_Insert) {
@@ -2334,6 +2335,7 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     "'" . $_REQUEST['prjcode'] . "'", // SMM, 01/12/2022
                     "'" . $_REQUEST['towhscode'] . "'", // SMM, 01/12/2022
                     "'" . $_REQUEST['concepto'] . "'", // SMM, 23/01/2023
+                    "'" . ($_REQUEST['empleado'] ?? "") . "'", // SMM, 12/04/2024
                 );
 
                 // SMM, 22/12/2022
@@ -2371,6 +2373,7 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     "'" . $_REQUEST['dim5'] . "'",
                     "'" . $_REQUEST['prjcode'] . "'", // SMM, 01/12/2022
                     "'" . $_REQUEST['concepto'] . "'", // SMM, 23/01/2023
+                    "'" . ($_REQUEST['empleado'] ?? "") . "'", // SMM, 12/04/2024
                 );
                 $SQL_Insert = EjecutarSP('sp_tbl_SalidaInventarioDetalleCarritoInsert', $ParametrosInsert, 35);
                 if ($SQL_Insert) {
@@ -2404,6 +2407,7 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     "'" . $_REQUEST['prjcode'] . "'",
                     "'" . $_REQUEST['towhscode'] . "'",
                     "'" . $_REQUEST['concepto'] . "'",
+                    "'" . ($_REQUEST['empleado'] ?? "") . "'", // SMM, 12/04/2024
                 );
                 $SQL_Insert = EjecutarSP('sp_tbl_SalidaInventarioDetalleInsert', $ParametrosInsert, 35);
                 if ($SQL_Insert) {
@@ -2435,6 +2439,7 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     "'$dim5'",
                     "'" . $_REQUEST['prjcode'] . "'", // SMM, 01/12/2022
                     "'" . $_REQUEST['concepto'] . "'", // SMM, 23/01/2023
+                    "'" . ($_REQUEST['empleado'] ?? "") . "'", // SMM, 12/04/2024
                 );
                 $SQL_Insert = EjecutarSP('sp_tbl_TrasladoInventarioDetalleCarritoInsert', $ParametrosInsert, 35);
                 if ($SQL_Insert) {
@@ -2468,6 +2473,7 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     "'$dim5'",
                     "'" . $_REQUEST['prjcode'] . "'", // SMM, 01/12/2022
                     "'" . $_REQUEST['concepto'] . "'", // SMM, 23/01/2023
+                    "'" . ($_REQUEST['empleado'] ?? "") . "'", // SMM, 12/04/2024
                 );
                 $SQL_Insert = EjecutarSP('sp_tbl_TrasladoInventarioDetalleInsert', $ParametrosInsert, 35);
                 if ($SQL_Insert) {

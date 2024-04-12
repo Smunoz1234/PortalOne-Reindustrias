@@ -28,6 +28,9 @@ $Proyecto = $_POST['IdProyecto'];
 $IdEmpleado = $_POST['IdEmpleado'];
 $ListaPrecio = $_POST['ListaPrecio'];
 
+// Solicitado para. SMM, 12/04/2024
+$CodEmpleado = $_POST['CodEmpleado'] ?? "";
+
 // SMM, 14/10/2023
 $Solicitud_OT = $_POST['Solicitud'] ?? "";
 
@@ -132,6 +135,9 @@ if (count($Conceptos) > 0 && ($edit == 0)) {
 
 $SQL_ConceptoSalida = Seleccionar('tbl_SalidaInventario_Conceptos', '*', $Filtro_Conceptos, 'id_concepto_salida');
 // Hasta aquí, 20/12/2023
+
+// Solicitado para. SMM, 12/04/2024
+$SQL_Empleado = Seleccionar('uvw_Sap_tbl_EmpleadosSN', '*', '', 'NombreEmpleado');
 ?>
 
 <style>
@@ -276,17 +282,16 @@ $SQL_ConceptoSalida = Seleccionar('tbl_SalidaInventario_Conceptos', '*', $Filtro
 						<div class="col-lg-4">
 							<div class="form-group">
 								<div class="col-xs-12" style="margin-bottom: 10px;">
-									<label class="control-label">Tipo OT (Origen Llamada) <span
-											class="text-danger">*</span></label>
+									<label class="control-label">Solicitado para</label>
 
-									<select name="IdTipoOT" id="IdTipoOT" class="form-control select2" required>
+									<select id="Empleado" name="Empleado" class="form-control select2">
 										<option value="">Seleccione...</option>
-
-										<?php while ($row_ORIGEN = sqlsrv_fetch_array($SQL_OT_ORIGEN)) { ?>
-											<option <?php if ($OrigenLlamada == $row_ORIGEN['IdTipoOT']) {
+										
+										<?php while ($row_Empleado = sqlsrv_fetch_array($SQL_Empleado)) { ?>
+											<option <?php if ($CodEmpleado == $row_Empleado['ID_Empleado']) {
 												echo "selected";
-											} ?> value="<?php echo $row_ORIGEN['IdTipoOT']; ?>">
-												<?php echo $row_ORIGEN['IdTipoOT'] . " - " . $row_ORIGEN['TipoOT']; ?>
+											} ?> value="<?php echo $row_Empleado['ID_Empleado']; ?>">
+												<?php echo $row_Empleado['ID_Empleado'] . " - " . $row_Empleado['NombreEmpleado']; ?>
 											</option>
 										<?php } ?>
 									</select>
@@ -646,6 +651,7 @@ $SQL_ConceptoSalida = Seleccionar('tbl_SalidaInventario_Conceptos', '*', $Filtro
 				let dim4 = $(this).find('.Dim4').length ? $(this).find('.Dim4').text() : "";
 				let dim5 = $(this).find('.Dim5').length ? $(this).find('.Dim5').text() : "";
 
+				let codEmpleado = $(this).find('.CodEmpleado').text();
 				let prjCode = $(this).find('.PrjCode').text();
 				let priceList = $(this).find('.PriceList').text();
 				let empVentas = $(this).find('.EmpVentas').text();
@@ -672,6 +678,7 @@ $SQL_ConceptoSalida = Seleccionar('tbl_SalidaInventario_Conceptos', '*', $Filtro
 					dim3: dim3.trim(),
 					dim4: dim4.trim(),
 					dim5: dim5.trim(),
+					empleado: codEmpleado.trim(),
 					prjcode: prjCode.trim(),
 					pricelist: priceList.trim(),
 					empventas: empVentas.trim(),

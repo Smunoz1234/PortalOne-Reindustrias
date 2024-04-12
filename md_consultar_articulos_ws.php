@@ -62,13 +62,16 @@ $SQL = EjecutarSP('sp_ConsultarArticulos_ListaPrecios', $Param);
             <th data-breakpoints="all">Maneja Lote</th>
             <th data-breakpoints="all">Stock General</th>
             <th data-breakpoints="all">Grupo Artículos</th>
+            
             <?php foreach ($array_Dimensiones as &$dim) { ?>
                 <th data-breakpoints="all">
                     <?php echo $dim['IdPortalOne']; ?>
                 </th>
             <?php } ?>
+            
             <th data-breakpoints="all">EmpVentas</th>
             <th data-breakpoints="all">PrjCode</th>
+            <th data-breakpoints="all">CodEmpleado</th>
 
             <th data-breakpoints="all">Tipo OT</th>
             <th data-breakpoints="all">Sede Empresa</th>
@@ -133,16 +136,21 @@ $SQL = EjecutarSP('sp_ConsultarArticulos_ListaPrecios', $Param);
                 <td>
                     <?php echo $row['ItmsGrpCod']; ?>
                 </td>
+
                 <?php foreach ($array_Dimensiones as &$dim) { ?>
                     <td class="<?php echo $dim['IdPortalOne']; ?>">
                         <?php echo $_POST[$dim['IdPortalOne']] ?? ""; ?>
                     </td>
                 <?php } ?>
+
                 <td class="EmpVentas">
                     <?php echo $_POST['EmpVentas'] ?? ""; ?>
                 </td>
                 <td class="PrjCode">
                     <?php echo $_POST['Proyecto'] ?? ""; ?>
+                </td>
+                <td class="CodEmpleado">
+                    <?php echo $_POST['Empleado'] ?? ""; ?>
                 </td>
 
                 <td class="IdTipoOT">

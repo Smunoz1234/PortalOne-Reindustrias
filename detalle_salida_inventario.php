@@ -483,7 +483,7 @@ if ($sw == 1) {
 							<?php if (isset($row['CodEmpleado']) && ($row['CodEmpleado'] == $row_Empleado['ID_Empleado'])) {
 								echo "selected";
 							}?>>
-							<?php echo $row_Empleado['ID_Empleado'] . "-" . $row_Empleado['NombreEmpleado']; ?>
+							<?php echo $row_Empleado['ID_Empleado'] . " - " . $row_Empleado['NombreEmpleado']; ?>
 						</option>
 					<?php }?>
 				</select>
