@@ -121,7 +121,8 @@ $ParamAlmacenDest = array(
 );
 $SQL_ToAlmacen = EjecutarSP('sp_ConsultarAlmacenesUsuario', $ParamAlmacenDest);
 
-// Se eliminaron las dimensiones, 31/08/2022
+// Solicitado para. SMM, 12/04/2024
+$SQL_Empleado = Seleccionar('uvw_Sap_tbl_EmpleadosSN', '*', '', 'NombreEmpleado');
 
 //Proyectos
 $SQL_Proyecto = Seleccionar('uvw_Sap_tbl_Proyectos', '*', '', 'DeProyecto');
@@ -532,8 +533,9 @@ function ConsultarArticulo(articulo){
 
 				<th>Proyecto</th>
 
-				<!-- SMM, 21/01/2023 -->
+				<!-- SMM, 12/04/2024 -->
 				<th>Concepto Salida</th>
+				<th>Solicitado para</th>
 
 				<th>Texto libre</th>
 				<th>Precio</th>
@@ -553,11 +555,13 @@ if ($sw == 1) {
         sqlsrv_fetch($SQL_Almacen, SQLSRV_SCROLL_ABSOLUTE, -1);
         sqlsrv_fetch($SQL_ToAlmacen, SQLSRV_SCROLL_ABSOLUTE, -1);
 
-        // Se eliminaron las dimensiones, 31/08/2022
-
         sqlsrv_fetch($SQL_Proyecto, SQLSRV_SCROLL_ABSOLUTE, -1);
         sqlsrv_fetch($SQL_ConceptoSalida, SQLSRV_SCROLL_ABSOLUTE, -1);
+
+		// Solicitado para. SMM, 12/04/2024
+		sqlsrv_fetch($SQL_Empleado, SQLSRV_SCROLL_ABSOLUTE, -1);
         ?>
+
 		<tr>
 			<!-- SMM, 25/11/2022 -->
 			<td class="text-center form-inline w-150">
@@ -630,6 +634,25 @@ if ($sw == 1) {
 					<?php }?>
 				</select>
 			</td> <!-- form-group -->
+
+			<td>
+				<!-- SMM, 12/04/2024 -->
+				<select id="Empleado<?php echo $i; ?>" name="Empleado[]" class="form-control select2" onchange="ActualizarDatos('Empleado',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" 
+					<?php if (($row['LineStatus'] == 'C') || ($type == 2) || ($Estado == 2)) {
+						echo "disabled";
+					}?>>
+					<option value="">(NINGUNO)</option>
+					
+					<?php while ($row_Empleado = sqlsrv_fetch_array($SQL_Empleado)) {?>
+						<option value="<?php echo $row_Empleado['ID_Empleado']; ?>" 
+							<?php if (isset($row['CodEmpleado']) && ($row['CodEmpleado'] == $row_Empleado['ID_Empleado'])) {
+								echo "selected";
+							}?>>
+							<?php echo $row_Empleado['ID_Empleado'] . "-" . $row_Empleado['NombreEmpleado']; ?>
+						</option>
+					<?php }?>
+				</select>
+			</td> <!-- /#Empleado -->
 
 			<td><input size="50" type="text" id="FreeTxt<?php echo $i; ?>" name="FreeTxt[]" class="form-control" value="<?php echo $row['FreeTxt']; ?>" onChange="ActualizarDatos('FreeTxt',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" maxlength="100" <?php if ($row['LineStatus'] == 'C' || $Estado == 2) {echo "readonly";}?>></td>
 			<td><input size="15" type="text" id="Price<?php echo $i; ?>" name="Price[]" class="form-control" value="<?php echo number_format($row['Price'], 2); ?>" onChange="ActualizarDatos('Price',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if ($row['LineStatus'] == 'C' || $Estado == 2) {echo "readonly";}?>></td>

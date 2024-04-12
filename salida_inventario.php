@@ -138,7 +138,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Salida de inventario
 			
 			"'" . ($_POST['Almacen'] ?? "") . "'",
 			
-			"'" . $_POST['Empleado'] . "'",
+			"''", // SMM, 12/04/2024
 			"'" . $_SESSION['CodUser'] . "'",
 			"'" . $_SESSION['CodUser'] . "'",
 			"$Type",
@@ -376,9 +376,6 @@ $SQL_CondicionPago = Seleccionar('uvw_Sap_tbl_CondicionPago', '*', '', 'IdCondic
 //Datos de dimensiones del usuario actual
 $SQL_DatosEmpleados = Seleccionar('uvw_tbl_Usuarios', 'CentroCosto1,CentroCosto2', "ID_Usuario='" . $_SESSION['CodUser'] . "'");
 $row_DatosEmpleados = sqlsrv_fetch_array($SQL_DatosEmpleados);
-
-//Empleados
-$SQL_Empleado = Seleccionar('uvw_Sap_tbl_EmpleadosSN', '*', '', 'NombreEmpleado');
 
 //Tipo entrega
 $SQL_TipoEntrega = Seleccionar('uvw_Sap_tbl_TipoEntrega', '*', '', 'DeTipoEntrega');
@@ -718,46 +715,6 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 						$('.ibox-content').toggleClass('sk-loading', false);
 					}
 				});
-			});
-
-			$("#TipoEntrega").change(function () {
-				$('.ibox-content').toggleClass('sk-loading', true);
-				var TipoEnt = document.getElementById('TipoEntrega').value;
-				var EntDesc = document.getElementById('EntregaDescont');
-				var VlrCuota = document.getElementById('ValorCuotaDesc');
-				if (TipoEnt == 2 || TipoEnt == 3 || TipoEnt == 4) {//Periodicas
-					document.getElementById('dv_AnioEnt').style.display = 'block';
-					document.getElementById('dv_Descont').style.display = 'none';
-					document.getElementById('dv_VlrCuota').style.display = 'none';
-					VlrCuota.value = "";
-					$("#ValorCuotaDesc").removeAttr("required");
-				} else if (TipoEnt == 6) {//Descontable
-					document.getElementById('dv_AnioEnt').style.display = 'none';
-					document.getElementById('dv_Descont').style.display = 'block';
-					$('#EntregaDescont').trigger('change');
-				} else {
-					document.getElementById('dv_AnioEnt').style.display = 'none';
-					document.getElementById('dv_Descont').style.display = 'none';
-					document.getElementById('dv_VlrCuota').style.display = 'none';
-					VlrCuota.value = "";
-					$("#ValorCuotaDesc").removeAttr("required");
-				}
-				$('.ibox-content').toggleClass('sk-loading', false);
-			});
-
-			$("#EntregaDescont").change(function () {
-				$('.ibox-content').toggleClass('sk-loading', true);
-				var EntDesc = document.getElementById('EntregaDescont');
-				var VlrCuota = document.getElementById('ValorCuotaDesc');
-				if (EntDesc.value == "SI") {
-					document.getElementById('dv_VlrCuota').style.display = 'block';
-					$("#ValorCuotaDesc").attr("required", "required");
-				} else {
-					$("#ValorCuotaDesc").removeAttr("required");
-					VlrCuota.value = "";
-					document.getElementById('dv_VlrCuota').style.display = 'none';
-				}
-				$('.ibox-content').toggleClass('sk-loading', false);
 			});
 		});
 	</script>
@@ -1277,6 +1234,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 											Salida</h3>
 									</label>
 								</div>
+								
 								<div class="form-group">
 									<label class="col-lg-1 control-label">Serie</label>
 									<div class="col-lg-3">
@@ -1303,10 +1261,86 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 											} ?>>
 									</div>
 
+									<!-- Inicio, TipoEntrega -->
+									<label class="col-lg-1 control-label">Tipo entrega</label>
+									<div class="col-lg-3">
+										<select name="TipoEntrega" class="form-control select2" id="TipoEntrega" <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || ($dt_TI == 1)) {
+											echo "readonly";
+										} ?>>
+											<option value="">Seleccione...</option>
+											
+											<?php while ($row_TipoEntrega = sqlsrv_fetch_array($SQL_TipoEntrega)) { ?>
+												<option value="<?php echo $row_TipoEntrega['IdTipoEntrega']; ?>" <?php if ((isset($row['IdTipoEntrega'])) && (strcmp($row_TipoEntrega['IdTipoEntrega'], $row['IdTipoEntrega']) == 0)) {
+													echo "selected";
+												} elseif (isset($_GET['TipoEntrega']) && (strcmp($row_TipoEntrega['IdTipoEntrega'], base64_decode($_GET['TipoEntrega'])) == 0)) {
+													echo "selected";
+												} ?>>
+													<?php echo $row_TipoEntrega['DeTipoEntrega']; ?>
+												</option>
+											<?php } ?>
+										</select>
+									</div>
+									<!-- Hasta aquí -->
+								</div> <!-- form-group -->
+
+								<div class="form-group">
+									<label class="col-lg-1 control-label">Año entrega</label>
+									<div class="col-lg-3">
+										<select name="AnioEntrega" class="form-control" id="AnioEntrega" <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || ($dt_TI == 1)) {
+											echo "readonly";
+										} ?>>
+											<?php while ($row_AnioEntrega = sqlsrv_fetch_array($SQL_AnioEntrega)) { ?>
+													<option value="<?php echo $row_AnioEntrega['IdAnioEntrega']; ?>" <?php if ((isset($row['IdAnioEntrega'])) && (strcmp($row_AnioEntrega['IdAnioEntrega'], $row['IdAnioEntrega']) == 0)) {
+															echo "selected";
+														} elseif (isset($_GET['AnioEntrega']) && (strcmp($row_AnioEntrega['IdAnioEntrega'], base64_decode($_GET['AnioEntrega'])) == 0)) {
+															echo "selected";
+														} elseif (date('Y') == $row_AnioEntrega['DeAnioEntrega']) {
+															echo "selected";
+														} ?>>
+														<?php echo $row_AnioEntrega['DeAnioEntrega']; ?>
+													</option>
+											<?php } ?>
+										</select>
+									</div>
+
+									<label class="col-lg-1 control-label">Entrega descontable</label>
+									<div class="col-lg-3">
+										<select name="EntregaDescont" class="form-control" id="EntregaDescont" <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || ($dt_TI == 1)) {
+											echo "readonly";
+										} ?>>
+											<option value="NO" <?php if (($edit == 1) && ($row['Descontable'] == "NO")) {
+											echo "selected";
+										} elseif (isset($_GET['EntregaDescont']) && (base64_decode($_GET['EntregaDescont']) == "NO")) {
+											echo "selected";
+										} ?>>NO</option>
+										<option value="SI" <?php if (($edit == 1) && ($row['Descontable'] == "SI")) {
+											echo "selected";
+										} elseif (isset($_GET['EntregaDescont']) && (base64_decode($_GET['EntregaDescont']) == "SI")) {
+											echo "selected";
+										} ?>>SI</option>
+										</select>
+									</div>
+
+									<label class="col-lg-1 control-label">Cant cuota</label>
+									<div class="col-lg-3">
+										<input type="text" class="form-control" name="ValorCuotaDesc"
+										id="ValorCuotaDesc" onKeyPress="return justNumbers(event,this.value);"
+										value="<?php if ($edit == 1 || $sw_error == 1) {
+											echo $row['ValorCuotaDesc'];
+										} elseif (isset($_GET['ValorCuotaDesc'])) {
+											echo base64_decode($_GET['ValorCuotaDesc']);
+										} ?>"
+										<?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || ($dt_TI == 1)) {
+											echo "readonly";
+										} ?>>
+									</div>
+								</div> <!-- form-group -->
+
+								<div class="form-group">
 									<!-- Inicio, Proyecto -->
 									<label class="col-lg-1 control-label">Proyecto <span class="text-danger">*</span></label>
 									<div class="col-lg-3">
-										<select id="PrjCode" name="PrjCode" class="form-control select2" required <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
+										<select id="PrjCode" name="PrjCode" class="form-control select2" required <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || ($dt_TI == 1)) {
 											echo "disabled";
 										} ?>>
 											<option value="">(NINGUNO)</option>
@@ -1325,102 +1359,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 										</select>
 									</div>
 									<!-- Fin, Proyecto -->
-								</div>
-
-								<div class="form-group">
-									<!-- Inicio, Empleado -->
-									<label class="col-lg-1 control-label">Solicitado para</label>
-									<div class="col-lg-3">
-										<select name="Empleado" class="form-control select2" id="Empleado" <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || ($dt_TI == 1)) {
-											echo "readonly";
-										} ?>>
-											<option value="">Seleccione...</option>
-
-											<?php while ($row_Empleado = sqlsrv_fetch_array($SQL_Empleado)) { ?>
-												<option value="<?php echo $row_Empleado['ID_Empleado']; ?>" <?php if ((isset($row['CodEmpleado'])) && (strcmp($row_Empleado['ID_Empleado'], $row['CodEmpleado']) == 0)) {
-														echo "selected";
-												   	} elseif (isset($_GET['Empleado']) && (strcmp($row_Empleado['ID_Empleado'], base64_decode($_GET['Empleado'])) == 0)) {
-													   	echo "selected";
-												   	} ?>>
-													<?php echo $row_Empleado['NombreEmpleado']; ?>
-												</option>
-											<?php } ?>
-										</select>
-									</div>
-									<!-- SMM, 31/03/2023 -->
-
-									<label class="col-lg-1 control-label">Tipo entrega</label>
-									<div class="col-lg-3">
-										<select name="TipoEntrega" class="form-control select2" id="TipoEntrega" <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || ($dt_TI == 1)) {
-											echo "readonly";
-										} ?>>
-											<option value="">Seleccione...</option>
-											<?php while ($row_TipoEntrega = sqlsrv_fetch_array($SQL_TipoEntrega)) { ?>
-												<option value="<?php echo $row_TipoEntrega['IdTipoEntrega']; ?>" <?php if ((isset($row['IdTipoEntrega'])) && (strcmp($row_TipoEntrega['IdTipoEntrega'], $row['IdTipoEntrega']) == 0)) {
-													   	echo "selected";
-												   	} elseif (isset($_GET['TipoEntrega']) && (strcmp($row_TipoEntrega['IdTipoEntrega'], base64_decode($_GET['TipoEntrega'])) == 0)) {
-													   	echo "selected";
-												   	} ?>>
-													<?php echo $row_TipoEntrega['DeTipoEntrega']; ?>
-												</option>
-											<?php } ?>
-										</select>
-									</div>
-									<div id="dv_AnioEnt" style="display: none;">
-										<label class="col-lg-1 control-label">Año entrega</label>
-										<div class="col-lg-2">
-											<select name="AnioEntrega" class="form-control" id="AnioEntrega" <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || ($dt_TI == 1)) {
-												echo "readonly";
-											} ?>>
-												<?php while ($row_AnioEntrega = sqlsrv_fetch_array($SQL_AnioEntrega)) { ?>
-													<option value="<?php echo $row_AnioEntrega['IdAnioEntrega']; ?>" <?php if ((isset($row['IdAnioEntrega'])) && (strcmp($row_AnioEntrega['IdAnioEntrega'], $row['IdAnioEntrega']) == 0)) {
-														   echo "selected";
-													   } elseif (isset($_GET['AnioEntrega']) && (strcmp($row_AnioEntrega['IdAnioEntrega'], base64_decode($_GET['AnioEntrega'])) == 0)) {
-														   echo "selected";
-													   } elseif (date('Y') == $row_AnioEntrega['DeAnioEntrega']) {
-														   echo "selected";
-													   } ?>>
-														<?php echo $row_AnioEntrega['DeAnioEntrega']; ?>
-													</option>
-												<?php } ?>
-											</select>
-										</div>
-									</div>
-									<div id="dv_Descont" style="display: none;">
-										<label class="col-lg-1 control-label">Entrega descontable</label>
-										<div class="col-lg-2">
-											<select name="EntregaDescont" class="form-control" id="EntregaDescont" <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || ($dt_TI == 1)) {
-												echo "readonly";
-											} ?>>
-												<option value="NO" <?php if (($edit == 1) && ($row['Descontable'] == "NO")) {
-													echo "selected";
-												} elseif (isset($_GET['EntregaDescont']) && (base64_decode($_GET['EntregaDescont']) == "NO")) {
-													echo "selected";
-												} ?>>NO</option>
-												<option value="SI" <?php if (($edit == 1) && ($row['Descontable'] == "SI")) {
-													echo "selected";
-												} elseif (isset($_GET['EntregaDescont']) && (base64_decode($_GET['EntregaDescont']) == "SI")) {
-													echo "selected";
-												} ?>>SI</option>
-											</select>
-										</div>
-									</div>
-									<div id="dv_VlrCuota" style="display: none;">
-										<label class="col-lg-1 control-label">Cant cuota</label>
-										<div class="col-lg-2">
-											<input type="text" class="form-control" name="ValorCuotaDesc"
-												id="ValorCuotaDesc" onKeyPress="return justNumbers(event,this.value);"
-												value="<?php if ($edit == 1 || $sw_error == 1) {
-													echo $row['ValorCuotaDesc'];
-												} elseif (isset($_GET['ValorCuotaDesc'])) {
-													echo base64_decode($_GET['ValorCuotaDesc']);
-												} ?>"
-												<?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || ($dt_TI == 1)) {
-													echo "readonly";
-												} ?>>
-										</div>
-									</div>
-								</div>
+								</div> <!-- form-group -->
 
 								<div class="form-group">
 									<label class="col-xs-12">
@@ -1428,6 +1367,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 											Salida</h3>
 									</label>
 								</div>
+
 								<div class="form-group">
 									<div class="col-lg-4">
 										<!-- SMM, 30/05/2023 -->
@@ -1773,7 +1713,6 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 			<?php if ($dt_TI == 1) { ?>
 				$('#TipoEntrega').trigger('change');
 				$('#TipoEntrega option:not(:selected)').attr('disabled', true);
-				$('#Empleado option:not(:selected)').attr('disabled', true);
 				$('#CondicionPago option:not(:selected)').attr('disabled', true);
 				$('#PrjCode option:not(:selected)').attr('disabled', true);
 				$('#Serie option:not(:selected)').attr('disabled', true);

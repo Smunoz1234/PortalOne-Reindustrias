@@ -107,6 +107,9 @@ if ((count($Proyectos) > 0) && ($type == 1)) {
 // Proyectos, SMM, 04/04/2023
 $SQL_Proyecto = Seleccionar('uvw_Sap_tbl_Proyectos', '*', $Filtro_Proyectos, 'DeProyecto');
 
+// Solicitado para. SMM, 12/04/2024
+$SQL_Empleado = Seleccionar('uvw_Sap_tbl_EmpleadosSN', '*', '', 'NombreEmpleado');
+
 // Filtrar conceptos de salida. SMM, 21/01/2023
 $Where_Conceptos = "ID_Usuario='" . $_SESSION['CodUser'] . "'";
 $SQL_Conceptos = Seleccionar('uvw_tbl_UsuariosConceptos', '*', $Where_Conceptos);
@@ -479,9 +482,10 @@ function ActualizarDatos(name,id,line){//Actualizar datos asincronicamente
 				<!-- SMM, 28/11/2022 -->
 				<th>Proyecto</th>
 
-				<!-- SMM, 21/01/2023 -->
+				<!-- SMM, 12/04/2024 -->
 				<th>Concepto Salida</th>
-
+				<th>Solicitado para</th>
+				
 				<th>Texto libre</th>
 				<th>Precio</th>
 				<th>Precio con IVA</th>
@@ -500,10 +504,14 @@ if ($sw == 1) {
 
         // SMM, 28/11/2022
         // $Almacen = $row['WhsCode'];
+
         sqlsrv_fetch($SQL_Almacen, SQLSRV_SCROLL_ABSOLUTE, -1);
         sqlsrv_fetch($SQL_ToAlmacen, SQLSRV_SCROLL_ABSOLUTE, -1);
         sqlsrv_fetch($SQL_Proyecto, SQLSRV_SCROLL_ABSOLUTE, -1);
         sqlsrv_fetch($SQL_ConceptoSalida, SQLSRV_SCROLL_ABSOLUTE, -1);
+		
+		// Solicitado para. SMM, 12/04/2024
+		sqlsrv_fetch($SQL_Empleado, SQLSRV_SCROLL_ABSOLUTE, -1);
         ?>
 
 		<tr class="trContenido">
@@ -586,6 +594,25 @@ if ($sw == 1) {
 					<?php }?>
 				</select>
 			</td> <!-- /#ConceptoSalida -->
+
+			<td>
+				<!-- SMM, 12/04/2024 -->
+				<select id="Empleado<?php echo $i; ?>" name="Empleado[]" class="form-control select2" onchange="ActualizarDatos('Empleado',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" 
+					<?php if ($row['LineStatus'] == 'C' || $Estado == 2 || (!PermitirFuncion(1201))) {
+						echo "disabled";
+					}?>>
+					<option value="">(NINGUNO)</option>
+					
+					<?php while ($row_Empleado = sqlsrv_fetch_array($SQL_Empleado)) {?>
+						<option value="<?php echo $row_Empleado['ID_Empleado']; ?>" 
+							<?php if (isset($row['CodEmpleado']) && ($row['CodEmpleado'] == $row_Empleado['ID_Empleado'])) {
+								echo "selected";
+							}?>>
+							<?php echo $row_Empleado['ID_Empleado'] . "-" . $row_Empleado['NombreEmpleado']; ?>
+						</option>
+					<?php }?>
+				</select>
+			</td> <!-- /#Empleado -->
 
 			<td><input size="50" type="text" id="FreeTxt<?php echo $i; ?>" name="FreeTxt[]" class="form-control" value="<?php echo $row['FreeTxt']; ?>" onChange="ActualizarDatos('FreeTxt',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" maxlength="100" <?php if ($row['LineStatus'] == 'C' || $Estado == 2 || (!PermitirFuncion(1201))) {echo "readonly";}?>></td>
 
