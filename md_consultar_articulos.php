@@ -291,6 +291,23 @@ $SQL_ConceptoSalida = Seleccionar('tbl_SalidaInventario_Conceptos', '*', $Filtro
 										<?php } ?>
 									</select>
 								</div> <!-- col-xs-12 -->
+							
+								<div class="col-xs-12" style="margin-bottom: 10px;">
+									<label class="control-label">Tipo OT (Origen Llamada) <span
+											class="text-danger">*</span></label>
+
+									<select name="IdTipoOT" id="IdTipoOT" class="form-control select2" required>
+										<option value="">Seleccione...</option>
+
+										<?php while ($row_ORIGEN = sqlsrv_fetch_array($SQL_OT_ORIGEN)) { ?>
+											<option <?php if ($OrigenLlamada == $row_ORIGEN['IdTipoOT']) {
+												echo "selected";
+											} ?> value="<?php echo $row_ORIGEN['IdTipoOT']; ?>">
+												<?php echo $row_ORIGEN['IdTipoOT'] . " - " . $row_ORIGEN['TipoOT']; ?>
+											</option>
+										<?php } ?>
+									</select>
+								</div> <!-- col-xs-12 -->
 
 								<div class="col-xs-12" style="margin-bottom: 10px;">
 									<label class="control-label">Tipo Problema <span

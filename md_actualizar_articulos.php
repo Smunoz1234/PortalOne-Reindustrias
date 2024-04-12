@@ -75,6 +75,9 @@ if (count($Conceptos) > 0 && ($edit == 0)) {
 
 $SQL_ConceptoSalida = Seleccionar('tbl_SalidaInventario_Conceptos', '*', $Filtro_Conceptos, 'id_concepto_salida');
 // Hasta aquí, 20/12/2023
+
+// Solicitado para. SMM, 12/04/2024
+$SQL_Empleado = Seleccionar('uvw_Sap_tbl_EmpleadosSN', '*', '', 'NombreEmpleado');
 ?>
 
 <style>
@@ -107,18 +110,20 @@ $SQL_ConceptoSalida = Seleccionar('tbl_SalidaInventario_Conceptos', '*', $Filtro
 						<div class="col-lg-4">
 							<div class="form-group">
 								<div class="col-xs-12" style="margin-bottom: 10px;">
-									<label class="control-label">Tipo Problema</label>
+									<label class="control-label">Solicitado para</label>
 
-									<select name="CDU_IdTipoProblemaUpd" id="CDU_IdTipoProblemaUpd"
+									<select id="CodEmpleadoUpd" name="CodEmpleadoUpd" 
 										class="form-control select2">
 										<option value="">Seleccione...</option>
-
-										<?php while ($row_TIPOPROBLEMA = sqlsrv_fetch_array($SQL_OT_TIPOPROBLEMA)) { ?>
-											<option value="<?php echo $row_TIPOPROBLEMA['IdTipoProblema']; ?>"><?php echo $row_TIPOPROBLEMA['IdTipoProblema'] . " - " . $row_TIPOPROBLEMA['TipoProblema']; ?></option>
-										<?php } ?>
+										
+										<?php while ($row_Empleado = sqlsrv_fetch_array($SQL_Empleado)) { ?>
+											<option value="<?php echo $row_Empleado['ID_Empleado']; ?>">
+												<?php echo $row_Empleado['ID_Empleado'] . " - " . $row_Empleado['NombreEmpleado']; ?>
+											</option>
+										<?php }?>
 									</select>
 								</div> <!-- col-xs-12 -->
-								
+
 								<div class="col-xs-12" style="margin-bottom: 10px;">
 									<label class="control-label">Tipo OT (Origen Llamada)</label>
 
