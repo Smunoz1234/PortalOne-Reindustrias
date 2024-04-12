@@ -107,6 +107,19 @@ $SQL_ConceptoSalida = Seleccionar('tbl_SalidaInventario_Conceptos', '*', $Filtro
 						<div class="col-lg-4">
 							<div class="form-group">
 								<div class="col-xs-12" style="margin-bottom: 10px;">
+									<label class="control-label">Tipo Problema</label>
+
+									<select name="CDU_IdTipoProblemaUpd" id="CDU_IdTipoProblemaUpd"
+										class="form-control select2">
+										<option value="">Seleccione...</option>
+
+										<?php while ($row_TIPOPROBLEMA = sqlsrv_fetch_array($SQL_OT_TIPOPROBLEMA)) { ?>
+											<option value="<?php echo $row_TIPOPROBLEMA['IdTipoProblema']; ?>"><?php echo $row_TIPOPROBLEMA['IdTipoProblema'] . " - " . $row_TIPOPROBLEMA['TipoProblema']; ?></option>
+										<?php } ?>
+									</select>
+								</div> <!-- col-xs-12 -->
+								
+								<div class="col-xs-12" style="margin-bottom: 10px;">
 									<label class="control-label">Tipo OT (Origen Llamada)</label>
 
 									<select name="CDU_IdTipoOTUpd" id="CDU_IdTipoOTUpd" class="form-control select2">
