@@ -1891,7 +1891,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 				<!-- /# DatosCliente -->
 
 				<!-- Inicio, ClienteSecundario -->
-				<div class="ibox">
+				<div class="ibox" <?php if(!PermitirFuncion(356)) { echo "style='display: none'"; } ?>>
 					<div class="ibox-title bg-success">
 						<h5 class="collapse-link"><i class="fa fa-group"></i> Información de cliente / Secundario</h5>
 						<a class="collapse-link pull-right">
@@ -1917,7 +1917,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 							<div class="col-lg-4">
 								<label class="control-label">Contacto</label>
 								
-								<select name="ContactoSecundario" class="form-control" id="ContactoSecundario">
+								<select name="IdContactoSecundario" class="form-control" id="IdContactoSecundario">
 									<?php if (($edit == 0) || ($sw_error == 1)) { ?>
 										<option value="">Seleccione...</option>
 									<?php } ?>
@@ -3292,6 +3292,121 @@ var options3 = {
 
 	// SMM, 18/10/2023
 	$('#SubTipoProblema[readonly] option:not(:selected)').attr('disabled', true);
+
+	// ClienteSecundario. SMM, 15/04/2024
+	let options4 = {
+		url: function (phrase) {
+			return `ajx_buscar_datos_json.php?type=7&id=${phrase}`;
+		},
+		getValue: "NombreBuscarCliente",
+		requestDelay: 400,
+		list: {
+			match: {
+				enabled: true
+			},
+			onClickEvent: function () {
+				var value = $("#NombreClienteSecundario").getSelectedItemData().CodigoCliente;
+				$("#IdClienteSecundario").val(value).trigger("change");
+			}
+		}
+	};
+	$("#NombreClienteSecundario").easyAutocomplete(options4);
+
+	$("#IdClienteSecundario").change(function () {
+		let cliente = document.getElementById('IdClienteSecundario').value;
+			
+		$.ajax({
+			type: "POST",
+			url: `ajx_cbo_select.php?type=2&id=${cliente}`,
+			success: function (response) {
+				$('#IdContactoSecundario').html(response).fadeIn();
+				$('#IdContactoSecundario').trigger('change');
+			},
+			error: function (error) {
+				console.error("ClienteSecundario", error.responseText);
+			}
+		});
+
+		$.ajax({
+			type: "POST",
+			url: `ajx_cbo_select.php?type=3&id=${cliente}`,
+			success: function (response) {
+				$('#IdSucursalSecundaria').html(response).fadeIn();
+				$('#IdSucursalSecundaria').trigger('change');
+			},
+			error: function (error) {
+				console.error("ClienteSecundario", error.responseText);
+			}
+		});
+	});
+
+	$("#ContactoCliente").change(function () {
+		let contacto = document.getElementById('IdContactoSecundaria').value;
+
+		$.ajax({
+			url: "ajx_buscar_datos_json.php",
+			data: { 
+				type: 5, 
+				Contacto: contacto 
+			},
+			dataType: 'json',
+			success: function (data) {
+				$('#TelefonoSecundario').val(data.Telefono);
+				$('#CorreoSecundario').val(data.Correo);
+			},
+			error: function (error) {
+				console.error("ClienteSecundario", error.responseText);
+			}
+		});
+	});
+
+	$("#IdSucursalSecundaria").change(function () {
+		let cliente = document.getElementById('IdClienteSecundario').value;
+		let sucursal = document.getElementById('IdSucursalSecundaria').value;
+
+		$.ajax({
+			url: "ajx_buscar_datos_json.php",
+			data: {
+				type: 39,
+				clt: cliente,
+				suc: sucursal
+			},
+			dataType: 'json',
+			success: function (data) {
+				$('#IdSucursalSecundaria').val(data.IdSucursal);
+				$('#IdSucursalSecundaria').trigger('change');
+			},
+			error: function (error) {
+				console.error("ClienteSecundario", error.responseText);
+			}
+		});
+
+		<?php if (PermitirFuncion(356)) { ?>
+			$.ajax({
+				url: "ajx_buscar_datos_json.php",
+				data: { 
+					type: 1, 
+					CardCode: cliente, 
+					Sucursal: sucursal 
+				},
+				dataType: 'json',
+				success: function (data) {
+					document.getElementById('DireccionLlamada').value = data.Direccion;
+					document.getElementById('BarrioDireccionLlamada').value = data.Barrio;
+					document.getElementById('CiudadLlamada').value = data.Ciudad;
+					document.getElementById('CDU_NombreContacto').value = data.NombreContacto;
+					document.getElementById('CDU_TelefonoContacto').value = data.TelefonoContacto;
+					document.getElementById('CDU_CargoContacto').value = data.CargoContacto;
+					document.getElementById('CDU_CorreoContacto').value = data.CorreoContacto;
+					document.getElementById('TelefonoLlamada').value = data.TelefonoContacto;
+				},
+				error: function (error) {
+					console.error("ClienteSecundario", error.responseText);
+				}
+			});
+		<?php } ?>
+	});
+	// Hasta aquí, 15/04/2024
 });
 
 // Validación de la llamada de servicio, se ejecuta al momento de crear o actualizar.
