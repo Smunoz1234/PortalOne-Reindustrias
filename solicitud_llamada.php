@@ -538,6 +538,11 @@ $IdTarjetaEquipo = ($_GET["IdTE"] ?? ($row['IdTarjetaEquipo'] ?? ""));
 $SQL_NumeroSerie = Seleccionar("uvw_Sap_tbl_TarjetasEquipos", "*", "IdTarjetaEquipo='$IdTarjetaEquipo'");
 $row_NumeroSerie = sqlsrv_fetch_array($SQL_NumeroSerie);
 
+// SMM, 15/04/2024
+$IdClienteSecundario = $row["IdClienteSecundario"] ?? "";
+$SQL_ContactoSecundario = Seleccionar('uvw_Sap_tbl_ClienteContactos', 'CodigoContacto, ID_Contacto', "CodigoCliente='$IdClienteSecundario'", 'NombreContacto');
+$SQL_SucursalSecundaria = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', 'NombreSucursal, NumeroLinea, TipoDireccion', "CodigoCliente='$IdClienteSecundario' AND TipoDireccion='S'", 'TipoDireccion, NombreSucursal');
+
 // SMM, 19/03/2024
 $IdTarjetaEquipo = $row["IdTarjetaEquipo"] ?? "";
 $SQL_TE_Componente = Seleccionar("uvw_tbl_TarjetaEquipo_Componentes", "*", "id_tarjeta_equipo_padre = $IdTarjetaEquipo");
@@ -1918,7 +1923,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								</label>
 								
 								<input name="IdClienteSecundario" type="hidden" id="IdClienteSecundario" value="<?php echo $row['IdClienteSecundario'] ?? ""; ?>">
-								<input name="NombreClienteSecundario" type="text" required class="form-control" id="NombreClienteSecundario" placeholder="Digite para buscar..." <?php if (($edit == 1) && ((!$ActualizarSolicitud) || ($row['IdEstadoSecundario'] == '-1') || ($row['TipoTarea'] == 'Interna')) || ($dt_LS == 1) || ($edit == 1)) {
+								<input name="NombreClienteSecundario" type="text" required class="form-control" id="NombreClienteSecundario" placeholder="Digite para buscar..." <?php if (($edit == 1) && ((!$ActualizarSolicitud) || ($row['IdEstadoLlamada'] == '-1') || ($row['TipoTarea'] == 'Interna')) || ($dt_LS == 1) || ($edit == 1)) {
 									echo "readonly";
 								} ?> value="<?php echo $row['NombreClienteSecundario'] ?? ""; ?>">
 							</div>

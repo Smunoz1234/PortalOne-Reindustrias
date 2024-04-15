@@ -234,6 +234,15 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { // Crear llamada de servicio
 			"'" . ($_POST["lngGPS"] ?? "") . "'",
 			"'" . ($_POST["IdCiudadCierre"] ?? "") . "'",
 			"'" . ($_POST["IdPaisCierre"] ?? "") . "'",
+			// SMM, 15/04/2024
+			"'" . ($_POST['IdClienteSecundario'] ?? "") . "'",
+			isset($_POST['IdContactoSecundario']) && ($_POST['IdContactoSecundario'] != "") ? $_POST['IdContactoSecundario'] : "NULL",
+			isset($_POST['IdSucursalSecundaria']) && ($_POST['IdSucursalSecundaria'] != "") ? $_POST['IdSucursalSecundaria'] : "NULL",
+			"'" . ($_POST['DireccionSecundaria'] ?? "") . "'",
+			"'" . ($_POST['BarrioDireccionSecundaria'] ?? "") . "'",
+			"'" . ($_POST['TelefonoSecundario'] ?? "") . "'",
+			"'" . ($_POST['CiudadSecundaria'] ?? "") . "'",
+			"'" . ($_POST['CorreoSecundario'] ?? "") . "'",
 		);
 
 		$SQL_InsLlamada = EjecutarSP('sp_tbl_LlamadaServicios', $ParamInsLlamada, 32);
@@ -491,6 +500,15 @@ if (isset($_POST['P']) && ($_POST['P'] == 33)) { //Actualizar llamada de servici
 			"'" . ($_POST["lngGPS"] ?? "") . "'",
 			"'" . ($_POST["IdCiudadCierre"] ?? "") . "'",
 			"'" . ($_POST["IdPaisCierre"] ?? "") . "'",
+			// SMM, 15/04/2024
+			"'" . ($_POST['IdClienteSecundario'] ?? "") . "'",
+			isset($_POST['IdContactoSecundario']) && ($_POST['IdContactoSecundario'] != "") ? $_POST['IdContactoSecundario'] : "NULL",
+			isset($_POST['IdSucursalSecundaria']) && ($_POST['IdSucursalSecundaria'] != "") ? $_POST['IdSucursalSecundaria'] : "NULL",
+			"'" . ($_POST['DireccionSecundaria'] ?? "") . "'",
+			"'" . ($_POST['BarrioDireccionSecundaria'] ?? "") . "'",
+			"'" . ($_POST['TelefonoSecundario'] ?? "") . "'",
+			"'" . ($_POST['CiudadSecundaria'] ?? "") . "'",
+			"'" . ($_POST['CorreoSecundario'] ?? "") . "'",
 		);
 
 		// Actualizar la llamada de servicio.
@@ -987,6 +1005,11 @@ $hasRowsCampanas = ($SQL_Campanas) ? sqlsrv_has_rows($SQL_Campanas) : false;
 $IdTarjetaEquipo = ($_GET["IdTE"] ?? ($row['IdTarjetaEquipo'] ?? ""));
 $SQL_NumeroSerie = Seleccionar("uvw_Sap_tbl_TarjetasEquipos", "*", "IdTarjetaEquipo='$IdTarjetaEquipo'");
 $row_NumeroSerie = sqlsrv_fetch_array($SQL_NumeroSerie);
+
+// SMM, 15/04/2024
+$IdClienteSecundario = $row["IdClienteSecundario"] ?? "";
+$SQL_ContactoSecundario = Seleccionar('uvw_Sap_tbl_ClienteContactos', 'CodigoContacto, ID_Contacto', "CodigoCliente='$IdClienteSecundario'", 'NombreContacto');
+$SQL_SucursalSecundaria = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', 'NombreSucursal, NumeroLinea, TipoDireccion', "CodigoCliente='$IdClienteSecundario' AND TipoDireccion='S'", 'TipoDireccion, NombreSucursal');
 
 // SMM, 01/02/2024
 $Cons_Marca_CA = "SELECT dbo.[FN_NDG_PARAMETRO_CARADVISOR]('id_marca') AS marca_ca";
@@ -2469,6 +2492,125 @@ function AgregarEsto(contenedorID, valorElemento) {
 					</div>	
 				</div>
 				<!-- /# DatosCliente -->
+
+				<!-- Inicio, ClienteSecundario -->
+				<div class="ibox" <?php if(!PermitirFuncion(356)) { echo "style='display: none'"; } ?>>
+					<div class="ibox-title bg-success">
+						<h5 class="collapse-link"><i class="fa fa-group"></i> Información de cliente / Secundario</h5>
+						<a class="collapse-link pull-right">
+							<i class="fa fa-chevron-up"></i>
+						</a>
+					</div>
+					<!-- /.ibox-title -->
+
+					<div class="ibox-content">
+						<div class="form-group">
+							<div class="col-lg-4">
+								<label class="control-label">
+									<i onclick="ConsultarCliente();" title="Consultar cliente" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> 
+									Cliente <span class="text-danger">*</span>
+								</label>
+								
+								<input name="IdClienteSecundario" type="hidden" id="IdClienteSecundario" value="<?php echo $row['IdClienteSecundario'] ?? ""; ?>">
+								<input name="NombreClienteSecundario" type="text" required class="form-control" id="NombreClienteSecundario" placeholder="Digite para buscar..." <?php if (($edit == 1) && ((!$ActualizarSolicitud) || ($row['IdEstadoLlamada'] == '-1') || ($row['TipoTarea'] == 'Interna')) || ($dt_LS == 1) || ($edit == 1)) {
+									echo "readonly";
+								} ?> value="<?php echo $row['NombreClienteSecundario'] ?? ""; ?>">
+							</div>
+
+							<div class="col-lg-4">
+								<label class="control-label">Contacto</label>
+								
+								<select name="IdContactoSecundario" class="form-control" id="IdContactoSecundario">
+									<?php if (($edit == 0) || ($sw_error == 1)) { ?>
+										<option value="">Seleccione...</option>
+									<?php } ?>
+									
+									<?php if (($edit == 1) || ($sw_error == 1)) { ?>
+										<?php while ($row_ContactoSecundario = sqlsrv_fetch_array($SQL_ContactoSecundario)) { ?>
+											<option value="<?php echo $row_ContactoSecundario['CodigoContacto'] ?? ""; ?>" 
+												<?php if (isset($row['IdContactoSecundario']) && ($row['IdContactoSecundario'] == $row_ContactoSecundario['CodigoContacto'])) {
+													echo "selected";
+												} ?>>
+												<?php echo $row_ContactoSecundario['ID_Contacto'] ?? ""; ?>
+											</option>
+										<?php } ?>
+									<?php } ?>
+								</select>
+							</div>
+
+							<div class="col-lg-4">
+								<label class="control-label">
+									Sucursal <span class="text-danger">*</span>
+								</label>
+								
+								<select name="IdSucursalSecundaria" class="form-control select2" id="IdSucursalSecundaria" required>
+									<?php if (($edit == 0) || ($sw_error == 1)) { ?>
+										<option value="">Seleccione...</option>
+									<?php } ?>
+									
+									<?php if (($edit == 1) || ($sw_error == 1)) { ?>
+										<?php while ($row_SucursalSecundaria = sqlsrv_fetch_array($SQL_SucursalSecundaria)) { ?>
+											<option value="<?php echo $row_SucursalSecundaria['NumeroLinea'] ?? ""; ?>" 
+												<?php if (isset($row['IdSucursalSecundaria']) && ($row['IdSucursalSecundaria'] == $row_SucursalSecundaria['NumeroLinea'])) {
+													echo "selected";
+												} ?>>
+													<?php echo $row_SucursalSecundaria['NombreSucursal'] ?? ""; ?>
+												</option>
+										<?php } ?>
+									<?php } ?>
+								</select>
+							</div>
+						</div>
+						<!-- /.form-group -->
+							
+						<div class="form-group">
+							<div class="col-lg-4">
+								<label class="control-label">
+									Dirección <span class="text-danger">*</span>
+								</label>
+								
+								<input name="DireccionSecundaria" type="text" required class="form-control" id="DireccionSecundaria" maxlength="100" 
+									value="<?php echo $row['DireccionSecundaria'] ?? ""; ?>">
+							</div>
+
+							<div class="col-lg-4">
+								<label class="control-label">Barrio</label>
+								
+								<input name="BarrioDireccionSecundaria" type="text" class="form-control" id="BarrioDireccionSecundaria" maxlength="50" 
+									value="<?php echo $row['BarrioDireccionSecundaria'] ?? ""; ?>">
+							</div>
+
+							<div class="col-lg-4">
+								<label class="control-label">
+									Teléfono <span class="text-danger">*</span>
+								</label>
+								
+								<input name="TelefonoSecundario" type="text" class="form-control" required id="TelefonoSecundario" maxlength="50" 
+									value="<?php echo $row['TelefonoSecundario'] ?? ""; ?>">
+							</div>
+						</div>
+						<!-- /.form-group -->
+
+						<div class="form-group">
+							<div class="col-lg-4">
+								<label class="control-label">Ciudad</label>
+								
+								<input name="CiudadSecundaria" type="text" class="form-control" id="CiudadSecundaria" maxlength="100" 
+									value="<?php echo $row['CiudadSecundaria'] ?? ""; ?>">
+							</div>
+
+							<div class="col-lg-4">
+								<label class="control-label">Correo</label>
+								
+								<input name="CorreoSecundario" type="email" class="form-control" id="CorreoSecundario" maxlength="100" 
+									value="<?php echo $row['CorreoSecundario'] ?? ""; ?>">
+							</div>
+						</div>
+						<!-- /.form-group -->
+					</div>
+					<!-- /.ibox-content -->
+				</div>
+				<!-- Fin, ClienteSecundario -->
 
 				<!-- INICIO, documentos referenciados -->
 				<div class="ibox">
@@ -4240,6 +4382,106 @@ var options3 = {
 		buttons: []
 
 	});
+
+	// ClienteSecundario. SMM, 15/04/2024
+	let options4 = {
+		url: function (phrase) {
+			return `ajx_buscar_datos_json.php?type=7&id=${phrase}`;
+		},
+		getValue: "NombreBuscarCliente",
+		requestDelay: 400,
+		list: {
+			match: {
+				enabled: true
+			},
+			onClickEvent: function () {
+				var value = $("#NombreClienteSecundario").getSelectedItemData().CodigoCliente;
+				$("#IdClienteSecundario").val(value).trigger("change");
+			}
+		}
+	};
+	$("#NombreClienteSecundario").easyAutocomplete(options4);
+
+	$("#IdClienteSecundario").change(function () {
+		let cliente = document.getElementById('IdClienteSecundario').value;
+			
+		$.ajax({
+			type: "POST",
+			url: `ajx_cbo_select.php?type=2&id=${cliente}`,
+			success: function (response) {
+				$('#IdContactoSecundario').html(response).fadeIn();
+				$('#IdContactoSecundario').trigger('change');
+			},
+			error: function (error) {
+				console.error("ClienteSecundario", error.responseText);
+			}
+		});
+
+		$.ajax({
+			type: "POST",
+			url: `ajx_cbo_select.php?type=3&id=${cliente}&sucline=1`,
+			success: function (response) {
+				$('#IdSucursalSecundaria').html(response).fadeIn();
+				$('#IdSucursalSecundaria').trigger('change');
+			},
+			error: function (error) {
+				console.error("ClienteSecundario", error.responseText);
+			}
+		});
+	});
+
+	$("#IdContactoSecundario").change(function () {
+		let contacto = document.getElementById('IdContactoSecundario').value;
+
+		$.ajax({
+			url: "ajx_buscar_datos_json.php",
+			data: { 
+				type: 5, 
+				Contacto: contacto 
+			},
+			dataType: 'json',
+			success: function (data) {
+				$('#TelefonoSecundario').val(data.Telefono);
+				$('#CorreoSecundario').val(data.Correo);
+			},
+			error: function (error) {
+				console.error("ClienteSecundario", error.responseText);
+			}
+		});
+	});
+
+	$("#IdSucursalSecundaria").change(function () {
+		let cliente = document.getElementById('IdClienteSecundario').value;
+		let sucursal = document.getElementById('IdSucursalSecundaria').value;
+
+	
+		$.ajax({
+			url: "ajx_buscar_datos_json.php",
+			data: { 
+				type: 1, 
+				CardCode: cliente, 
+				LineNumber: sucursal 
+			},
+			dataType: 'json',
+			success: function (data) {
+				document.getElementById('DireccionSecundaria').value = data.Direccion;
+				document.getElementById('BarrioDireccionSecundaria').value = data.Barrio;
+				document.getElementById('CiudadSecundaria').value = data.Ciudad;
+				document.getElementById('TelefonoSecundario').value = data.TelefonoContacto;
+
+				<?php if (PermitirFuncion(356)) { ?>
+					document.getElementById('CDU_NombreContacto').value = data.NombreContacto;
+					document.getElementById('CDU_TelefonoContacto').value = data.TelefonoContacto;
+					document.getElementById('CDU_CargoContacto').value = data.CargoContacto;
+					document.getElementById('CDU_CorreoContacto').value = data.CorreoContacto;
+				<?php } ?>
+			},
+			error: function (error) {
+				console.error("ClienteSecundario", error.responseText);
+			}
+		});
+	});
+	// Hasta aquí, 15/04/2024
 });
 
 // Validación de la llamada de servicio, se ejecuta al momento de crear o actualizar.
