@@ -216,6 +216,15 @@ if (isset($_POST['P'])) {
 			$Campanas, // SMM, 15/09/2023
 			"'" . ($_POST["IdArticuloComponente"] ?? "") . "'", // SMM, 19/03/2024
 			"'" . ($_POST["IdTarjetaEquipoComponente"] ?? "") . "'", // SMM, 19/03/2024
+			// SMM, 15/04/2024
+			"'" . ($_POST['IdClienteSecundario'] ?? "") . "'",
+			isset($_POST['IdContactoSecundario']) && ($_POST['IdContactoSecundario'] != "") ? $_POST['IdContactoSecundario'] : "NULL",
+			isset($_POST['IdSucursalSecundaria']) && ($_POST['IdSucursalSecundaria'] != "") ? $_POST['IdSucursalSecundaria'] : "NULL",
+			"'" . ($_POST['DireccionSecundaria'] ?? "") . "'",
+			"'" . ($_POST['BarrioDireccionSecundaria'] ?? "") . "'",
+			"'" . ($_POST['TelefonoSecundario'] ?? "") . "'",
+			"'" . ($_POST['CiudadSecundaria'] ?? "") . "'",
+			"'" . ($_POST['CorreoSecundario'] ?? "") . "'",
 		);
 
 		$SQL_Llamada = EjecutarSP('sp_tbl_SolicitudLlamadaServicios', $ParamLlamada, $_POST['P']);
