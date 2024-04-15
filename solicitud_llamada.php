@@ -1877,6 +1877,111 @@ function AgregarEsto(contenedorID, valorElemento) {
 				</div>
 				<!-- /# DatosCliente -->
 
+				<!-- Inicio, ClienteSecundario -->
+				<div class="ibox">
+					<div class="ibox-title bg-success">
+						<h5 class="collapse-link"><i class="fa fa-group"></i> Información de cliente</h5>
+						<a class="collapse-link pull-right">
+							<i class="fa fa-chevron-up"></i>
+						</a>
+					</div>
+					<!-- /.ibox-title -->
+
+					<div class="ibox-content">
+						<div class="form-group">
+							<div class="col-lg-4">
+								<label class="control-label"><i onClick="ConsultarDatosCliente();" title="Consultar cliente" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Cliente <span class="text-danger">*</span></label>
+								<input name="ClienteLlamada" type="hidden" id="ClienteLlamada" value="<?php if (($edit == 1) || ($sw_error == 1)) {
+									echo $row['ID_CodigoCliente'];
+								} elseif ($dt_LS == 1) {
+									echo $row_Cliente['CodigoCliente'];
+								} ?>">
+								<input name="NombreClienteLlamada" type="text" required class="form-control" id="NombreClienteLlamada" placeholder="Digite para buscar..." <?php if (($edit == 1) && ((!$ActualizarSolicitud) || ($row['IdEstadoLlamada'] == '-1') || ($row['TipoTarea'] == 'Interna')) || ($dt_LS == 1) || ($edit == 1)) {
+									echo "readonly";
+								} ?> value="<?php if (($edit == 1) || ($sw_error == 1)) {
+									echo $row['NombreClienteLlamada'];
+								} elseif ($dt_LS == 1) {
+									echo $row_Cliente['NombreCliente'];
+								} ?>">
+							</div>
+							<div class="col-lg-4">
+								<label class="control-label">Contacto</label>
+								<select name="ContactoCliente" class="form-control" id="ContactoCliente">
+									<?php if (($edit == 0) || ($sw_error == 1)) { ?>
+											<option value="">Seleccione...</option>
+									<?php } ?>
+									
+									<?php if (($edit == 1) || ($sw_error == 1)) { ?>
+											<?php while ($row_ContactoCliente = sqlsrv_fetch_array($SQL_ContactoCliente)) { ?>
+													<option value="<?php echo $row_ContactoCliente['CodigoContacto']; ?>" <?php if ((isset($row['IdContactoLLamada'])) && (strcmp($row_ContactoCliente['CodigoContacto'], $row['IdContactoLLamada']) == 0)) {
+														echo "selected";
+													} ?>><?php echo $row_ContactoCliente['ID_Contacto']; ?></option>
+											<?php } ?>
+									<?php } ?>
+								</select>
+							</div>
+							<div class="col-lg-4">
+								<label class="control-label">Sucursal <span class="text-danger">*</span></label>
+								<select name="SucursalCliente" class="form-control select2" id="SucursalCliente" required>
+									<?php if (($edit == 0) || ($sw_error == 1)) { ?><option value="">Seleccione...</option><?php } ?>
+									
+									<?php if (($edit == 1) || ($sw_error == 1)) { ?>
+											<?php while ($row_SucursalCliente = sqlsrv_fetch_array($SQL_SucursalCliente)) { ?>
+													<option value="<?php echo $row_SucursalCliente['NombreSucursal']; ?>" <?php if (isset($row['NombreSucursal']) && (strcmp($row_SucursalCliente['NombreSucursal'], $row['NombreSucursal']) == 0)) {
+														echo "selected";
+													} elseif (isset($row['NombreSucursal']) && (strcmp($row_SucursalCliente['NumeroLinea'], $row['IdNombreSucursal']) == 0)) {
+														echo "selected";
+														$sw_valDir = 1;
+													} ?>><?php echo $row_SucursalCliente['NombreSucursal']; ?></option>
+											<?php } ?>
+									<?php } ?>
+								</select>
+							</div>
+						</div>
+						<!-- /.form-group -->
+							
+						<div class="form-group">
+							<div class="col-lg-4">
+								<label class="control-label">Dirección <span class="text-danger">*</span></label>
+								<input name="DireccionLlamada" type="text" required class="form-control" id="DireccionLlamada" maxlength="100" value="<?php if (($edit == 1) || ($sw_error == 1)) {
+									echo $row['DireccionLlamada'];
+								} ?>">
+							</div>
+							<div class="col-lg-4">
+								<label class="control-label">Barrio</label>
+								<input name="BarrioDireccionLlamada" type="text" class="form-control" id="BarrioDireccionLlamada" maxlength="50" value="<?php if (($edit == 1) || ($sw_error == 1)) {
+									echo $row['BarrioDireccionLlamada'];
+								} ?>">
+							</div>
+							<div class="col-lg-4">
+								<label class="control-label">Teléfono <span class="text-danger">*</span></label>
+								<input name="TelefonoLlamada" type="text" class="form-control" required id="TelefonoLlamada" maxlength="50" value="<?php if (($edit == 1) || ($sw_error == 1)) {
+									echo $row['TelefonoContactoLlamada'];
+								} ?>">
+							</div>
+						</div>
+						<!-- /.form-group -->
+
+						<div class="form-group">
+							<div class="col-lg-4">
+								<label class="control-label">Ciudad</label>
+								<input name="CiudadLlamada" type="text" class="form-control" id="CiudadLlamada" maxlength="100" value="<?php if (($edit == 1) || ($sw_error == 1)) {
+									echo $row['CiudadLlamada'];
+								} ?>">
+							</div>
+							<div class="col-lg-4">
+								<label class="control-label">Correo</label>
+								<input name="CorreoLlamada" type="email" class="form-control" id="CorreoLlamada" maxlength="100" value="<?php if (($edit == 1) || ($sw_error == 1)) {
+									echo $row['CorreoContactoLlamada'];
+								} ?>">
+							</div>
+						</div>
+						<!-- /.form-group -->
+					</div>
+					<!-- /.ibox-content -->
+				</div>
+				<!-- Fin, ClienteSecundario -->
+
 				<div class="ibox">
 					<div class="ibox-title bg-success">
 						<h5 class="collapse-link"><i class="fa fa-info-circle"></i> Información de servicio</h5>
