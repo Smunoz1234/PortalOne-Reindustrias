@@ -3329,7 +3329,7 @@ var options3 = {
 
 		$.ajax({
 			type: "POST",
-			url: `ajx_cbo_select.php?type=3&id=${cliente}`,
+			url: `ajx_cbo_select.php?type=3&id=${cliente}&sucline=1`,
 			success: function (response) {
 				$('#IdSucursalSecundaria').html(response).fadeIn();
 				$('#IdSucursalSecundaria').trigger('change');
@@ -3340,8 +3340,8 @@ var options3 = {
 		});
 	});
 
-	$("#ContactoCliente").change(function () {
-		let contacto = document.getElementById('IdContactoSecundaria').value;
+	$("#IdContactoSecundario").change(function () {
+		let contacto = document.getElementById('IdContactoSecundario').value;
 
 		$.ajax({
 			url: "ajx_buscar_datos_json.php",
@@ -3364,47 +3364,32 @@ var options3 = {
 		let cliente = document.getElementById('IdClienteSecundario').value;
 		let sucursal = document.getElementById('IdSucursalSecundaria').value;
 
+	
 		$.ajax({
 			url: "ajx_buscar_datos_json.php",
-			data: {
-				type: 39,
-				clt: cliente,
-				suc: sucursal
+			data: { 
+				type: 1, 
+				CardCode: cliente, 
+				LineNumber: sucursal 
 			},
 			dataType: 'json',
 			success: function (data) {
-				$('#IdSucursalSecundaria').val(data.IdSucursal);
-				$('#IdSucursalSecundaria').trigger('change');
+				document.getElementById('DireccionSecundaria').value = data.Direccion;
+				document.getElementById('BarrioDireccionSecundaria').value = data.Barrio;
+				document.getElementById('CiudadSecundaria').value = data.Ciudad;
+				document.getElementById('TelefonoSecundario').value = data.TelefonoContacto;
+
+				<?php if (PermitirFuncion(356)) { ?>
+					document.getElementById('CDU_NombreContacto').value = data.NombreContacto;
+					document.getElementById('CDU_TelefonoContacto').value = data.TelefonoContacto;
+					document.getElementById('CDU_CargoContacto').value = data.CargoContacto;
+					document.getElementById('CDU_CorreoContacto').value = data.CorreoContacto;
+				<?php } ?>
 			},
 			error: function (error) {
 				console.error("ClienteSecundario", error.responseText);
 			}
 		});
-
-		<?php if (PermitirFuncion(356)) { ?>
-			$.ajax({
-				url: "ajx_buscar_datos_json.php",
-				data: { 
-					type: 1, 
-					CardCode: cliente, 
-					Sucursal: sucursal 
-				},
-				dataType: 'json',
-				success: function (data) {
-					document.getElementById('DireccionLlamada').value = data.Direccion;
-					document.getElementById('BarrioDireccionLlamada').value = data.Barrio;
-					document.getElementById('CiudadLlamada').value = data.Ciudad;
-					document.getElementById('CDU_NombreContacto').value = data.NombreContacto;
-					document.getElementById('CDU_TelefonoContacto').value = data.TelefonoContacto;
-					document.getElementById('CDU_CargoContacto').value = data.CargoContacto;
-					document.getElementById('CDU_CorreoContacto').value = data.CorreoContacto;
-					document.getElementById('TelefonoLlamada').value = data.TelefonoContacto;
-				},
-				error: function (error) {
-					console.error("ClienteSecundario", error.responseText);
-				}
-			});
-		<?php } ?>
 	});
 	// Hasta aquí, 15/04/2024
 });

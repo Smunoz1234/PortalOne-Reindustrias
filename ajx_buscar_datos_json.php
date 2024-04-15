@@ -15,11 +15,20 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
         }
 
         $CardCode = $_GET['CardCode'] ?? "";
-        $Sucursal = $_GET['Sucursal'] ?? "";
+        $Sucursal = $_GET['Sucursal'] ?? ($_GET['LineNumber'] ?? "");
         $Consulta = "SELECT * FROM $Vista WHERE TipoDireccion = 'S' AND CodigoCliente='$CardCode' AND NombreSucursal='$Sucursal'";
+
+        // SMM, 15/04/2024
+        if(isset($_GET['LineNumber'])) {
+            $Consulta = "SELECT * FROM $Vista WHERE TipoDireccion = 'S' AND CodigoCliente = '$CardCode' AND NumeroLinea = '$Sucursal'";
+        }
         // echo $Consulta;
 
         $SQL = sqlsrv_query($conexion, $Consulta);
+        if(!$SQL) {
+            echo $Consulta;
+        }
+
         $records = array();
         $row = sqlsrv_fetch_array($SQL);
         $records = array(
@@ -566,11 +575,11 @@ if ((isset($_GET['type']) && ($_GET['type'] != "")) || (isset($_POST['type']) &&
         );
         echo json_encode($records);
     } elseif ($type == 39) { //Consultar el ID de la sucursal del cliente
-        $SQL = Seleccionar("uvw_Sap_tbl_Clientes_Sucursales", "NumeroLinea", "CodigoCliente='" . $_GET['clt'] . "' and NombreSucursal='" . $_GET['suc'] . "'");
+        $SQL = Seleccionar("uvw_Sap_tbl_Clientes_Sucursales", "NumeroLinea", "CodigoCliente='" . $_GET['clt'] . "' AND NombreSucursal='" . $_GET['suc'] . "'");
         $records = array();
         $row = sqlsrv_fetch_array($SQL);
         $records = array(
-            'IdSucursal' => $row['NumeroLinea'],
+            'IdSucursal' => $row['NumeroLinea'] ?? "",
         );
         echo json_encode($records);
     } elseif ($type == 40) { //Consultar datos del cliente
