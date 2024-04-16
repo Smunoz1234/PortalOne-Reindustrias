@@ -222,7 +222,7 @@ $SQL_Perfiles = Seleccionar('uvw_tbl_PerfilesUsuarios', '*');
 					</ol>
 				</div>
 			</div>
-			<?php //echo $Cons;?>
+			<?php //echo $Cons; ?>
 			<div class="wrapper wrapper-content">
 				<div class="modal inmodal fade" id="myModal" tabindex="-1" role="dialog" aria-hidden="true">
 					<div class="modal-dialog modal-lg">
@@ -247,11 +247,6 @@ $SQL_Perfiles = Seleccionar('uvw_tbl_PerfilesUsuarios', '*');
 										class="<?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Consulta")) ? "active" : ""; ?>">
 										<a data-toggle="tab" href="#tab-2"><i class="fa fa-list"></i> Función de
 											Menú</a>
-									</li>
-									<li
-										class="<?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Consulta")) ? "active" : ""; ?>">
-										<a data-toggle="tab" href="#tab-3"><i class="fa fa-list"></i> Jerarquias
-											Equipos</a>
 									</li>
 								</ul>
 
@@ -480,13 +475,6 @@ $SQL_Perfiles = Seleccionar('uvw_tbl_PerfilesUsuarios', '*');
 										</form>
 									</div>
 									<!-- Fin, lista Funciones -->
-
-									<!-- Inicio, lista Consultas -->
-									<div id="tab-3"
-										class="tab-pane <?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Consulta")) ? "active" : ""; ?>">
-										<?php include_once "jerarquias_equipos.php"; ?>
-									</div>
-									<!-- Fin, lista Consultas -->
 
 								</div> <!-- tab-content -->
 							</div> <!-- tabs-container -->

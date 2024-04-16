@@ -299,13 +299,18 @@ if ($sw == 1) {
         if ($row_Actividad['IdEstadoActividad'] == 'Y') {
             $classAdd = "'event-striped'";
         }
-        if ($row_Actividad['IdEstadoLlamada'] == '-2') { //Llamada pendiente
+		if ($row_Actividad['IdEstadoLlamada'] == '-2') { //Llamada pendiente
             $classAdd .= ",'event-pend'";
         }
+		/*
+        if ($row_Actividad['IdEstadoLlamada'] != '-1') { // Llamada diferente a cerrada, (Abierta o Pendiente)
+            $classAdd .= ",'event-pend'";
+        }
+		*/
         ?>
 					{
 						id: '<?php echo $row_Actividad['ID_Actividad']; ?>',
-						title: '<?php echo $row_Actividad['EtiquetaActividad']; ?>',
+						title: '<?php if(PermitirFuncion(330)) { echo $row_Actividad['EtiquetaActividad_Automotriz'] ?? ""; } else { echo $row_Actividad['EtiquetaActividad'] ?? ""; } ?>',
 						start: '<?php echo $row_Actividad['FechaHoraInicioActividad']->format('Y-m-d H:i'); ?>',
 						end: '<?php echo $row_Actividad['FechaHoraFinActividad']->format('Y-m-d H:i'); ?>',
 						resourceId: '<?php echo $row_Actividad['ID_EmpleadoActividad']; ?>',
@@ -559,8 +564,8 @@ if ($sw == 1) {
 								}else{
 									$("#btnGuardar").prop('disabled', false);
 									$("#btnPendientes").prop('disabled', false);
-
-	//								info.event.setExtendedProp('id',response)
+									
+									// info.event.setExtendedProp('id',response)
 									info.event.setExtendedProp('estado','N')
 									info.event.setExtendedProp('llamadaServicio',info.draggedEl.dataset.docnum)
 									info.event.setExtendedProp('estadoLlamadaServ',info.draggedEl.dataset.estado)
@@ -569,7 +574,11 @@ if ($sw == 1) {
 
 									mostrarNotify('Se ha agregado una nueva actividad')
 								}
-	//							console.log(response)
+
+								// console.log(response);
+							},
+							error: function(error) {
+								console.log("Error:", error);
 							}
 						});
 					}else{

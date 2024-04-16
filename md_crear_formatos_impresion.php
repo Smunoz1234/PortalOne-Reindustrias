@@ -242,7 +242,6 @@ function Validar(){
 		}
 	}
 
-
 	return result;
 }
 
