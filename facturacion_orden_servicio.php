@@ -327,6 +327,7 @@ function SeleccionarTodos(){
 				</div>
 			</div>
 			<!-- Fin, myModal -->
+			
              <div class="row">
 				<div class="col-lg-12">
 			     <div class="ibox-content">

@@ -108,7 +108,7 @@ if (isset($_GET['id']) && $_GET['id'] != "") {
                     <thead>
                     <tr>
                         <th>Nombre del archivo</th>
-                        <th>Descripci&oacute;n</th>
+                        <th>Descripción</th>
                         <th>Fecha</th>
                         <th>Usuario cargue</th>
                         <th>Acciones</th>

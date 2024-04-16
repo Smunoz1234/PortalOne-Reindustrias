@@ -7,6 +7,10 @@ $sw=0;
 $CardCode="";
 $type=1;
 $Estado=1;//Abierto
+
+//Dimensiones de reparto
+$SQL_DimReparto=Seleccionar('uvw_Sap_tbl_NombresDimensionesReparto','*','',"CodDim");
+
 if(isset($_GET['id'])&&($_GET['id']!="")){
 	if($_GET['type']==1){
 		$type=1;
@@ -62,8 +66,7 @@ function BorrarLinea(LineNum, Todos=0){
 		});
 	}	
 }
-</script>
-<script>
+
 function Totalizar(num){
 	//alert(num);
 	var SubTotal=0;
@@ -107,8 +110,7 @@ function Totalizar(num){
 	//window.parent.document.getElementById('TotalOrden').value=number_format(parseFloat(Total),2);
 	window.parent.document.getElementById('TotalItems').value=num;
 }
-</script>
-<script>
+
 function ActualizarDatos(name,id,line){//Actualizar datos asincronicamente
 	$.ajax({
 		type: "GET",
@@ -141,10 +143,13 @@ function ActualizarDatos(name,id,line){//Actualizar datos asincronicamente
 				<th>Precio con IVA</th>
 				<th>% Desc.</th>
 				<th>Total</th>
-				<th>Centro costo</th>
-				<th>Área</th>
-				<th>Sucursal</th>
-				<th>Ciudad</th>
+				<?php $row_DimReparto=sqlsrv_fetch_array($SQL_DimReparto);?>
+				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 1 ?></th>
+				<?php $row_DimReparto=sqlsrv_fetch_array($SQL_DimReparto);?>
+				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 2 ?></th>
+				<?php $row_DimReparto=sqlsrv_fetch_array($SQL_DimReparto);?>
+				<th><?php echo $row_DimReparto['NombreDim']; //Dimension 3 ?></th>
+				<th>Proyecto</th>
 				<th>Texto libre</th>
 				<th>Almacén</th>				
 				<th><i class="fa fa-refresh"></i></th>
@@ -156,7 +161,7 @@ function ActualizarDatos(name,id,line){//Actualizar datos asincronicamente
 			$i=1;
 			while($row=sqlsrv_fetch_array($SQL)){
 				
-				$Almacen=$row['WhsCode'];
+				//$Almacen=$row['WhsCode'];
 		?>
 		<tr>
 			<td><?php if(($row['TreeType']!="T")&&($row['LineStatus']=="O")){?><button type="button" title="Borrar linea" class="btn btn-danger btn-xs" onClick="BorrarLinea(<?php echo $row['LineNum'];?>);"><i class="fa fa-trash"></i></button><?php }?></td>
@@ -176,8 +181,8 @@ function ActualizarDatos(name,id,line){//Actualizar datos asincronicamente
 			<td><input size="15" type="text" id="LineTotal<?php echo $i;?>" name="LineTotal[]" class="form-control" readonly value="<?php echo number_format($row['LineTotal'],2);?>"></td>
 			<td><input size="15" type="text" id="OcrCode<?php echo $i;?>" name="OcrCode[]" class="form-control" readonly value="<?php echo $row['OcrName'];?>"></td>
 			<td><input size="15" type="text" id="OcrCode2<?php echo $i;?>" name="OcrCode2[]" class="form-control" readonly value="<?php echo $row['OcrName2'];?>"></td>
-			<td><input size="15" type="text" id="OcrCode3<?php echo $i;?>" name="OcrCode3[]" class="form-control" readonly value="<?php echo $row['OcrName3'];?>"></td>
-			<td><input size="15" type="text" id="OcrCode4<?php echo $i;?>" name="OcrCode4[]" class="form-control" readonly value="<?php echo $row['OcrName4'];?>"></td>			
+			<td><input size="15" type="text" id="OcrCode3<?php echo $i;?>" name="OcrCode3[]" class="form-control" readonly value="<?php echo $row['OcrName3'];?>"></td>	
+			<td><input size="25" type="text" id="Proyecto<?php echo $i;?>" name="Proyecto[]" class="form-control" readonly value="<?php echo $row['DeProyecto'];?>"></td>	
 			<td><input size="50" type="text" id="FreeTxt<?php echo $i;?>" name="FreeTxt[]" class="form-control" value="<?php echo $row['FreeTxt'];?>" onChange="ActualizarDatos('FreeTxt',<?php echo $i;?>,<?php echo $row['LineNum'];?>);" maxlength="100" <?php if($row['LineStatus']=='C'||(!PermitirFuncion(402))){echo "readonly";}?>></td>
 			<td><input size="15" type="text" id="WhsCode<?php echo $i;?>" name="WhsCode[]" class="form-control" readonly value="<?php echo $row['WhsName'];?>"></td>
 			<td><?php if($row['Metodo']==0){?><i class="fa fa-check-circle text-info" title="Sincronizado con SAP"></i><?php }else{?><i class="fa fa-times-circle text-danger" title="Aún no enviado a SAP"></i><?php }?></td>
@@ -206,7 +211,7 @@ function ActualizarDatos(name,id,line){//Actualizar datos asincronicamente
 			<td><input size="15" type="text" id="OcrCodeNew" name="OcrCodeNew" class="form-control"></td>
 			<td><input size="15" type="text" id="OcrCode2New" name="OcrCode2New" class="form-control"></td>
 			<td><input size="15" type="text" id="OcrCode3New" name="OcrCode3New" class="form-control"></td>
-			<td><input size="15" type="text" id="OcrCode4New" name="OcrCode4New" class="form-control"></td>			
+			<td><input size="25" type="text" id="ProyectoNew" name="ProyectoNew" class="form-control"></td>
 			<td><input size="50" type="text" id="FreeTxtNew" name="FreeTxtNew" class="form-control"></td>
 			<td><input size="15" type="text" id="WhsCodeNew" name="WhsCodeNew" class="form-control"></td>
 			<td>&nbsp;</td>

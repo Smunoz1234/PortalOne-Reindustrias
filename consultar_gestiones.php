@@ -180,7 +180,7 @@ if ($sw == 1) {
                             <a href="index1.php">Inicio</a>
                         </li>
                         <li>
-                            <a href="#">Gesti&oacute;n de cartera</a>
+                            <a href="#">Gestión de cartera</a>
                         </li>
                         <li class="active">
                             <strong>Consultar gestiones</strong>
@@ -223,7 +223,7 @@ while ($row_UsuariosGestion = sqlsrv_fetch_array($SQL_UsuariosGestion)) {?>
 							</div>
 						</div>
 					  	<div class="form-group">
-							<label class="col-lg-1 control-label">Tipo gesti&oacute;n</label>
+							<label class="col-lg-1 control-label">Tipo gestión</label>
 							<div class="col-lg-3">
 								<select name="TipoGestion" class="form-control" id="TipoGestion">
 										<option value="">(Todos)</option>

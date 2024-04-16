@@ -84,7 +84,7 @@ if ($sw == 1) {
     $SQL_LMT = Seleccionar("uvw_Sap_tbl_ArticulosLlamadas", "*", "(CodigoCliente='" . $_GET['Cliente'] . "' and Estado='Y') OR IdTipoListaArticulo='2'", "IdTipoListaArticulo, ItemCode");
 }
 
-// SMM, 21/09/2023
+// SMM, 25/01/2023
 $SQL_Periodos = Seleccionar("tbl_Periodos", "*", "Estado = 'Y'", "Periodo"); 
 ?>
 
@@ -186,6 +186,10 @@ function Validar(Tipo){
 					}else if(data.Result==0){
 						EjecutarProceso(Tipo);
 					}
+				},
+				error: function(error){
+					$('.ibox-content').toggleClass('sk-loading', false);
+					console.error("Line 189", error.responseText);
 				}
 			});
 	  }
@@ -231,6 +235,10 @@ function EjecutarProceso(Tipo){
 				icon: data.Icon,
 			});
 			$('.ibox-content').toggleClass('sk-loading',false);
+		},
+		error: function(error){
+			$('.ibox-content').toggleClass('sk-loading', false);
+			console.error("Line 238", error.responseText);
 		}
 	});
 
@@ -309,37 +317,38 @@ function ConsultarCant(){
 								<input name="Cliente" type="hidden" id="Cliente" value="<?php if (isset($_GET['Cliente']) && ($_GET['Cliente'] != "")) {echo $_GET['Cliente'];}?>">
 								<input name="NombreCliente" type="text" class="form-control" id="NombreCliente" placeholder="Para TODOS, dejar vacio..." value="<?php if (isset($_GET['NombreCliente']) && ($_GET['NombreCliente'] != "")) {echo $_GET['NombreCliente'];}?>">
 							</div>
-							
+
+							<!-- Actualizado con la tabla de periodos -->
 							<label class="col-lg-1 control-label">Año <span class="text-danger">*</span></label>
-							<div class="col-lg-2">
+							<div class="col-lg-3">
 								<select name="Anno" required class="form-control" id="Anno">
 									<?php while ($row_Periodo = sqlsrv_fetch_array($SQL_Periodos)) {?>
 										<option value="<?php echo $row_Periodo['Periodo']; ?>" <?php if ((isset($Anno)) && (strcmp($row_Periodo['Periodo'], $Anno) == 0)) {echo "selected";}?>><?php echo $row_Periodo['Periodo']; ?></option>
 									<?php }?>
 								</select>
 							</div>
-							<!-- /#Anno -->
+							<!-- Hasta aquí. SMM, 25/01/2023 -->
 						</div>
-						
 					 	<div class="form-group">
 							<label class="col-lg-1 control-label">Sede <span class="text-danger">*</span></label>
 							<div class="col-lg-3">
 							<select name="Sucursal" class="form-control" id="Sucursal" required>
 								<option value="">Seleccione...</option>
 							  <?php while ($row_Sucursal = sqlsrv_fetch_array($SQL_Sucursal)) {?>
-									<option value="<?php echo $row_Sucursal['IdSucursal']; ?>" <?php if (isset($_GET['Sucursal']) && (strcmp($row_Sucursal['IdSucursal'], $_GET['Sucursal']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_Sucursal['DeSucursal']; ?></option>
+									<option value="<?php echo $row_Sucursal['IdSucursal']; ?>" <?php if (isset($_GET['Sucursal']) && (strcmp($row_Sucursal['IdSucursal'], $_GET['Sucursal']) == 0)) {echo "selected";}?>><?php echo $row_Sucursal['DeSucursal']; ?></option>
 								<?php }?>
 							</select>
 							</div>
 							<label class="col-lg-1 control-label">Serie OT <span class="text-danger">*</span></label>
 							<div class="col-lg-3">
 								<select name="SeriesOT" class="form-control" id="SeriesOT" required>
-										<option value="">Seleccione...</option>
-								  <?php if ($sw == 1) {
-    while ($row_SeriesOT = sqlsrv_fetch_array($SQL_SeriesOT)) {?>
-											<option value="<?php echo $row_SeriesOT['IdSeries']; ?>" <?php if ((isset($_GET['SeriesOT'])) && (strcmp($row_SeriesOT['IdSeries'], $_GET['SeriesOT']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_SeriesOT['DeSeries']; ?></option>
-								  <?php }
-}?>
+									<option value="">Seleccione...</option>
+								  	
+									<?php if ($sw == 1) {?>
+										<?php while ($row_SeriesOT = sqlsrv_fetch_array($SQL_SeriesOT)) {?>
+											<option value="<?php echo $row_SeriesOT['IdSeries']; ?>" <?php if ((isset($_GET['SeriesOT'])) && (strcmp($row_SeriesOT['IdSeries'], $_GET['SeriesOT']) == 0)) {echo "selected";}?>><?php echo $row_SeriesOT['DeSeries']; ?></option>
+								  		<?php }?>
+									<?php }?>
 								</select>
 							</div>
 							<label class="col-lg-1 control-label">Serie OV <span class="text-danger">*</span></label>
@@ -347,7 +356,7 @@ function ConsultarCant(){
 								<select name="SeriesOV" class="form-control" id="SeriesOV" required>
 										<option value="">Seleccione...</option>
 								  <?php while ($row_SeriesOV = sqlsrv_fetch_array($SQL_SeriesOV)) {?>
-										<option value="<?php echo $row_SeriesOV['IdSeries']; ?>" <?php if ((isset($_GET['SeriesOV'])) && (strcmp($row_SeriesOV['IdSeries'], $_GET['SeriesOV']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_SeriesOV['DeSeries']; ?></option>
+										<option value="<?php echo $row_SeriesOV['IdSeries']; ?>" <?php if ((isset($_GET['SeriesOV'])) && (strcmp($row_SeriesOV['IdSeries'], $_GET['SeriesOV']) == 0)) {echo "selected";}?>><?php echo $row_SeriesOV['DeSeries']; ?></option>
 								  <?php }?>
 								</select>
 							</div>
@@ -356,9 +365,9 @@ function ConsultarCant(){
 							<label class="col-lg-1 control-label">Validación de OT</label>
 							<div class="col-lg-3">
 								<select name="ValidarOT" class="form-control" id="ValidarOT">
-									<option value="0" <?php if ((isset($_GET['ValidarOT'])) && (strcmp(0, $_GET['ValidarOT']) == 0)) {echo "selected=\"selected\"";}?>>Mostrar todas</option>
-									<option value="1" <?php if ((isset($_GET['ValidarOT'])) && (strcmp(1, $_GET['ValidarOT']) == 0)) {echo "selected=\"selected\"";}?>>Mostrar registros sin OT</option>
-									<option value="2" <?php if ((isset($_GET['ValidarOT'])) && (strcmp(2, $_GET['ValidarOT']) == 0)) {echo "selected=\"selected\"";}?>>Mostrar registros con OT, pero sin OV</option>
+									<option value="0" <?php if ((isset($_GET['ValidarOT'])) && (strcmp(0, $_GET['ValidarOT']) == 0)) {echo "selected";}?>>Mostrar todas</option>
+									<option value="1" <?php if ((isset($_GET['ValidarOT'])) && (strcmp(1, $_GET['ValidarOT']) == 0)) {echo "selected";}?>>Mostrar registros sin OT</option>
+									<option value="2" <?php if ((isset($_GET['ValidarOT'])) && (strcmp(2, $_GET['ValidarOT']) == 0)) {echo "selected";}?>>Mostrar registros con OT, pero sin OV</option>
 								</select>
 							</div>
 							<label class="col-lg-1 control-label">Lista de materiales</label>
@@ -373,15 +382,15 @@ function ConsultarCant(){
         echo "<optgroup label='Genericas'></optgroup>";
         $sw_Std = 1;
     }?>
-										<option value="<?php echo $row_LMT['ItemCode']; ?>" <?php if ((isset($_GET['LMT'])) && (strcmp($row_LMT['ItemCode'], $_GET['LMT']) == 0)) {echo "selected=\"selected\"";}?>><?php echo $row_LMT['ItemCode'] . " - " . $row_LMT['ItemName']; ?></option>
+										<option value="<?php echo $row_LMT['ItemCode']; ?>" <?php if ((isset($_GET['LMT'])) && (strcmp($row_LMT['ItemCode'], $_GET['LMT']) == 0)) {echo "selected";}?>><?php echo $row_LMT['ItemCode'] . " - " . $row_LMT['ItemName']; ?></option>
 								  <?php }?>
 								</select>
 							</div>
 							<label class="col-lg-1 control-label">Tipo de LMT</label>
 							<div class="col-lg-2">
 								<select name="TipoLMT" class="form-control" id="TipoLMT">
-									<option value="1" <?php if ((isset($_GET['TipoLMT'])) && (strcmp(1, $_GET['TipoLMT']) == 0)) {echo "selected=\"selected\"";}?>>Clientes</option>
-									<option value="2" <?php if ((isset($_GET['TipoLMT'])) && (strcmp(2, $_GET['TipoLMT']) == 0)) {echo "selected=\"selected\"";}?>>Genericas</option>
+									<option value="1" <?php if ((isset($_GET['TipoLMT'])) && (strcmp(1, $_GET['TipoLMT']) == 0)) {echo "selected";}?>>Clientes</option>
+									<option value="2" <?php if ((isset($_GET['TipoLMT'])) && (strcmp(2, $_GET['TipoLMT']) == 0)) {echo "selected";}?>>Genericas</option>
 								</select>
 							</div>
 							<div class="col-lg-1">

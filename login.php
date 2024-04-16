@@ -119,7 +119,7 @@ if (isset($_POST['User']) || isset($_POST['Password'])) {
 <html lang="es">
 
 <head>
-  <title>Iniciar sesi&oacute;n |
+  <title>Iniciar sesión |
     <?php echo NOMBRE_PORTAL; ?>
   </title>
 
@@ -187,7 +187,9 @@ if (isset($_POST['User']) || isset($_POST['Password'])) {
             <div class="form-group">
               <label class="form-label">Base de datos</label>
               <select name="BaseDatos" id="BaseDatos" class="form-control">
-                <option value="<?php echo BDPRO; ?>">Pruebas</option>
+                <option value="<?php echo BDPRO; ?>">
+                  Pruebas <!-- ?php echo BDPRO; ? -->
+                </option>
                 <?php if (BDPRUEBAS != "") { ?>
                   <option value="<?php echo BDPRUEBAS; ?>">
                     <?php echo BDPRUEBAS; ?>
@@ -219,10 +221,9 @@ if (isset($_POST['User']) || isset($_POST['Password'])) {
             <div class="d-flex justify-content-between align-items-center m-0 mt-4">
               <button type="submit" class="btn btn-primary btn-block">Ingresar</button>
             </div>
-            <input type="hidden" id="return_url" name="return_url"
-              value="<?php if (isset($_GET['return_url'])) {
-                echo $_GET['return_url'];
-              } ?>" />
+            <input type="hidden" id="return_url" name="return_url" value="<?php if (isset($_GET['return_url'])) {
+              echo $_GET['return_url'];
+            } ?>" />
           </form>
           <!-- / Form -->
 
