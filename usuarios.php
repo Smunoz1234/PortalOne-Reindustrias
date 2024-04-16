@@ -708,7 +708,7 @@ function CopiarParam(){
                             <a href="index1.php">Inicio</a>
                         </li>
                         <li>
-                            <a href="#">Administraci&oacute;n</a>
+                            <a href="#">Administración</a>
                         </li>
                         <li>
                             <a href="gestionar_usuarios.php">Gestionar usuarios</a>
@@ -810,8 +810,8 @@ $return = QuitarParametrosURL($return, array("a"));
 												<div class="sk-rect5"></div>
 											</div>
 										</div>
-										<label class="col-lg-1 control-label">Contrase&ntilde;a</label>
-										<div class="col-lg-3"><input name="Password" type="password" class="form-control example1" id="Password" value=""><a href="#" id="aVerPass" onClick="javascript:Mostrar();" title="Mostrar contrase&ntilde;a" class="btn btn-default btn-xs"><span id="VerPass" class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a></div>
+										<label class="col-lg-1 control-label">Contraseña</label>
+										<div class="col-lg-3"><input name="Password" type="password" class="form-control example1" id="Password" value=""><a href="#" id="aVerPass" onClick="javascript:Mostrar();" title="Mostrar contraseña" class="btn btn-default btn-xs"><span id="VerPass" class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a></div>
 										<label class="col-lg-1 control-label">&nbsp;</label>
 										<div class="col-lg-3"><div id="lvlPass" class="pwstrength_viewport_progress"></div></div>
 									</div>
@@ -830,7 +830,7 @@ $return = QuitarParametrosURL($return, array("a"));
 											</div>
 										</div>
 										<div class="col-lg-3">
-											<p class="text-primary">Solicitar cambio de contrase&ntilde;a al primer inicio de sesi&oacute;n.</p>
+											<p class="text-primary">Solicitar cambio de contraseña al primer inicio de sesión.</p>
 										</div>
 									</div>
 									<div class="form-group">

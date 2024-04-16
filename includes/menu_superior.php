@@ -11,7 +11,7 @@
                     </li>
                     <li>
                         <a href="logout.php?msg=<?php echo base64_encode("Cerrando sesión..."); ?>">
-                            <i class="fa fa-sign-out"></i> Cerrar sesi&oacute;n
+                            <i class="fa fa-sign-out"></i> Cerrar sesión
                         </a>
                     </li>
                 </ul>

@@ -11,9 +11,9 @@ if (isset($_GET['id']) && $_GET['id'] != "") {
 $cons = "SELECT * FROM uvw_Sap_tbl_Clientes ORDER BY NombreCliente";
 $SQL_Cliente = sqlsrv_query($conexion, $cons);
 
-// $SQL_Cliente=Seleccionar('uvw_Sap_tbl_Clientes','*','','NombreCliente');
+// $SQL_Cliente = Seleccionar('uvw_Sap_tbl_Clientes','*','','NombreCliente');
 
-$SQL_ClienteUsuario = Seleccionar('uvw_tbl_ClienteUsuario', 'CodigoCliente, NombreCliente', "ID_Usuario='" . $IdUsuario . "'", 'NombreCliente');
+$SQL_ClienteUsuario = Seleccionar('uvw_tbl_ClienteUsuario', 'CodigoCliente, NombreCliente', "ID_Usuario='$IdUsuario'", 'NombreCliente');
 $Cont = 1;
 ?>
 
@@ -86,16 +86,20 @@ $Cont = 1;
             value="<?php echo $row_ClienteUsuario['CodigoCliente']; ?>" />
           <input type="hidden" name="Sucursal[]" id="Sucursal<?php echo $Cont; ?>"
             value="<?php echo $row_SucursalCliente['NombreSucursal']; ?>" />
-          <div class="col-lg-3"> <span class="text-primary">
+          <div class="col-lg-3">
+            <span class="text-primary">
               <?php echo $row_SucursalCliente['NombreSucursal']; ?>
-            </span> </div>
+            </span>
+          </div>
           <div class="col-lg-3">
             <button type="button" id="<?php echo $Cont; ?>" class="btn btn-warning btn-xs" onClick="delRow2(this);"><i
                 class="fa fa-minus"></i> Remover</button>
           </div>
-          <div class="col-lg-3"> <span class="text-primary">
+          <div class="col-lg-3">
+            <span class="text-primary">
               <?php echo $row_SucursalCliente['NombreUsuarioAct']; ?>
-            </span> </div>
+            </span>
+          </div>
           <div class="col-lg-3"> <span class="text-primary">
               <?php if ($row_SucursalCliente['FechaAct'] != "") {
                 echo $row_SucursalCliente['FechaAct']->format('Y-m-d H:i');

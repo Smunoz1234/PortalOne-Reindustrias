@@ -45,8 +45,11 @@ $Recurso = isset($_GET['Recursos']) ? implode(',', $_GET['Recursos']) : ""; // S
 $Cliente = isset($_GET['Cliente']) ? $_GET['Cliente'] : "";
 $NomSucursal = isset($_GET['Sucursal']) ? $_GET['Sucursal'] : "";
 
+// SMM, 14/06/2023
+$DimSeries = intval(ObtenerVariable("DimensionSeries"));
+
 //Lista de cargos de recursos (Tecnicos)
-$SQL_CargosRecursos = Seleccionar('uvw_Sap_tbl_Recursos', 'DISTINCT IdCargo, DeCargo', "CentroCosto2='" . $Sede . "'");
+$SQL_CargosRecursos = Seleccionar('uvw_Sap_tbl_Recursos', 'DISTINCT IdCargo, DeCargo', "CentroCosto$DimSeries='$Sede'");
 
 //Lista de recursos (Tecnicos)
 $ParamRec = array(
@@ -153,7 +156,13 @@ if ($sw == 1) {
     $SQL_Ciudad = Seleccionar("tbl_LlamadasServicios_Rutas", "DISTINCT CiudadLlamada", "Usuario='" . $_SESSION['CodUser'] . "' and IdEvento='" . $row_Evento['IdEvento'] . "'", "CiudadLlamada");
 }
 
+// Consultar DuracionActividad desde los Parámetros Asistentes. SMM, 17/06/2023
+$Cons_DuracionActividad = "SELECT dbo.FN_NDG_PARAMETRO_ASISTENTE('DuracionActividad', 1) AS DuracionActividad";
+$SQL_DuracionActividad = sqlsrv_query($conexion, $Cons_DuracionActividad);
+$row_DuracionActividad = sqlsrv_fetch_array($SQL_DuracionActividad);
+$DuracionActividad = $row_DuracionActividad["DuracionActividad"] ?? 120;
 ?>
+
 <!DOCTYPE html>
 <html class="light-style">
 
@@ -604,27 +613,59 @@ $j = 0;
 				</div>
 				<?php }?>
 				<div id="dvResult">
-				<?php if ($sw == 1) {
-    while ($row_OT = sqlsrv_fetch_array($SQL_OT)) {?>
-					<div class="card card-body mt-lg-3 bg-light border-primary <?php if ($row_OT['Validacion'] == "OK") {echo "item-drag";}?>" style="min-height: 14rem;" data-title="<?php echo $row_OT['Etiqueta']; ?>" data-docnum="<?php echo $row_OT['DocNum']; ?>" data-estado="<?php echo $row_OT['IdEstadoLlamada']; ?>" data-info="<?php echo $row_OT['DeTipoLlamada']; ?>" data-validacion="<?php echo $row_OT['Validacion']; ?>"
-					data-tiempo="<?php echo $row_OT['CDU_TiempoTarea']; ?>" data-comentario="<?php echo $row_OT['ComentarioLlamada']; ?>"> <!-- SMM, 03/05/2022 -->
+			<?php if ($sw == 1) { ?>
+    			<?php while ($row_OT = sqlsrv_fetch_array($SQL_OT)) {?>
+					<div class="card card-body mt-lg-3 bg-light border-primary <?php if ($row_OT['Validacion'] == "OK") {echo "item-drag";}?>" style="min-height: 14rem;" data-title="<?php if(PermitirFuncion(330)) { echo $row_OT['Etiqueta_Automotriz'] ?? ""; } else { echo $row_OT['Etiqueta'] ?? ""; } ?>" data-docnum="<?php echo $row_OT['DocNum']; ?>" data-estado="<?php echo $row_OT['IdEstadoLlamada']; ?>" data-info="<?php echo $row_OT['DeTipoLlamada'] ?? ""; ?>" data-validacion="<?php echo $row_OT['Validacion']; ?>"
+					data-tiempo="<?php echo (isset($row_OT['CDU_TiempoTarea']) && ($row_OT['CDU_TiempoTarea'] != 0)) ? $row_OT['CDU_TiempoTarea'] : $DuracionActividad; ?>" data-comentario="<?php echo $row_OT['ComentarioLlamada'] ?? ""; ?>">
 
 						<h5 class="card-title"><a href="llamada_servicio.php?id=<?php echo base64_encode($row_OT['ID_LlamadaServicio']); ?>&tl=1" target="_blank" title="Consultar Llamada de servicio" class="btn-xs btn-success fas fa-search"></a> <?php echo $row_OT['DocNum']; ?></h5>
 						<h6 class="card-subtitle mb-2 text-muted"><?php echo $row_OT['DeTipoLlamada']; ?></h6>
 						<p class="card-text mb-0 small text-primary"><?php echo $row_OT['DeArticuloLlamada']; ?></p>
 						<p class="card-text mb-0 small"><strong><?php echo $row_OT['NombreClienteLlamada']; ?></strong></p>
-						<p class="card-text mb-0 small"><span class="font-weight-bold">Serial Interno:</span> <?php echo $row_OT['SerialArticuloLlamada']; ?></p>
-						<p class="card-text mb-0 small"><span class="font-weight-bold">Marca:</span> <?php echo $row_OT['CDU_Marca']; ?></p>
-						<p class="card-text mb-0 small"><span class="font-weight-bold">Linea:</span> <?php echo $row_OT['CDU_Linea']; ?></p>
-						<p class="card-text mb-0 small"><span class="font-weight-bold">Sucursal:</span> <?php echo $row_OT['NombreSucursal']; ?></p>
-						<p class="card-text mb-0 small"><span class="font-weight-bold">Ciudad:</span> <?php echo $row_OT['CiudadLlamada']; ?></p>
-						<p class="card-text mb-0 small"><span class="font-weight-bold">Fecha:</span> <?php echo $row_OT['FechaLlamada']->format('Y-m-d'); ?></p>
-						<p class="card-text mb-0 small"><span class="font-weight-bold">Servicios:</span> <?php echo $row_OT['Servicios']; ?></p>
-						<p class="card-text mb-0 small"><span class="font-weight-bold">Áreas:</span> <?php echo substr($row_OT['Areas'], 0, 150); ?></p>
-						<p class="card-text mb-0 small"><span class="font-weight-bold">Validación:</span> <span class="<?php if ($row_OT['Validacion'] != "OK") {echo "text-danger";} else {echo "text-success";}?>"><?php echo $row_OT['Validacion']; ?></span></p>
+						
+						<?php if(isset($row_OT["SerialArticuloLlamada"]) && ($row_OT["SerialArticuloLlamada"] != "")) { ?>
+							<p class="card-text mb-0 small"><span class="font-weight-bold">Serial Interno:</span> <?php echo $row_OT['SerialArticuloLlamada']; ?></p>
+						<?php } ?>
+
+						<?php if(isset($row_OT["CDU_Marca"]) && ($row_OT["CDU_Marca"] != "")) { ?>
+							<p class="card-text mb-0 small"><span class="font-weight-bold">Marca:</span> <?php echo $row_OT['CDU_Marca']; ?></p>
+						<?php } ?>
+
+						<?php if(isset($row_OT["CDU_Linea"]) && ($row_OT["CDU_Linea"] != "")) { ?>
+							<p class="card-text mb-0 small"><span class="font-weight-bold">Linea:</span> <?php echo $row_OT['CDU_Linea']; ?></p>
+						<?php } ?>
+
+						<?php if(isset($row_OT["NombreSucursal"]) && ($row_OT["NombreSucursal"] != "")) { ?>
+							<p class="card-text mb-0 small"><span class="font-weight-bold">Sucursal:</span> <?php echo $row_OT['NombreSucursal']; ?></p>
+						<?php } ?>
+
+						<?php if(isset($row_OT["CiudadLlamada"]) && ($row_OT["CiudadLlamada"] != "")) { ?>
+							<p class="card-text mb-0 small"><span class="font-weight-bold">Ciudad:</span> <?php echo $row_OT['CiudadLlamada']; ?></p>
+						<?php } ?>
+
+						<?php if(isset($row_OT["FechaLlamada"]) && ($row_OT["FechaLlamada"] != "")) { ?>
+							<p class="card-text mb-0 small"><span class="font-weight-bold">Fecha:</span> <?php echo $row_OT['FechaLlamada']->format('Y-m-d'); ?></p>
+						<?php } ?>
+
+						<?php if(isset($row_OT["Servicios"]) && ($row_OT["Servicios"] != "")) { ?>
+							<p class="card-text mb-0 small"><span class="font-weight-bold">Servicios:</span> <?php echo $row_OT['Servicios']; ?></p>
+						<?php } ?>
+
+						<?php if(isset($row_OT["Areas"]) && ($row_OT["Areas"] != "")) { ?>
+							<p class="card-text mb-0 small"><span class="font-weight-bold">Áreas:</span> <?php echo substr($row_OT['Areas'], 0, 150); ?></p>
+						<?php } ?>
+
+						<?php if(isset($row_OT["MetodoAplicaLlamadas"]) && ($row_OT["MetodoAplicaLlamadas"] != "")) { ?>
+							<p class="card-text mb-0 small"><span class="font-weight-bold">Método Aplicación:</span> <?php echo substr($row_OT['MetodoAplicaLlamadas'], 0, 150); ?></p>
+						<?php } ?>
+
+						<?php if(isset($row_OT["Validacion"]) && ($row_OT["Validacion"] != "")) { ?>
+							<p class="card-text mb-0 small"><span class="font-weight-bold">Validación:</span> <span class="<?php if ($row_OT['Validacion'] != "OK") {echo "text-danger";} else {echo "text-success";}?>"><?php echo $row_OT['Validacion']; ?></span></p>
+						<?php } ?>
 					</div>
-				<?php }
-}?>
+				<?php } ?>
+			<?php }?>
+
 				</div>
 			</div>
 			<div id="dvCal" class="card card-body col-lg-10">

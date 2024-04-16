@@ -176,11 +176,11 @@ function ReturnCons($pVista, $pCampos, $pWhere = '', $pOrderBy = '', $pOrderType
     if ($pType == 1) { //Consulta a SQL SERVER
         $Consulta = "EXEC sp_ConsultarTablasSAP '" . $pVista . "', '" . $pCampos . "', '" . str_replace("'", "''", $pWhere) . "', '" . $pOrderBy . "', '" . $pOrderType . "'";
         return $Consulta;
-    }
-
+    } 
+    
     /*
     elseif ($pType == 2) { // Consulta a SAP HANA
-        $Consulta = "CALL " . $databaseHN . ".USP_NDG_CONSULTAR_TABLAS_SAP('NDG_ONE_" . $pVista . "','" . str_replace(']', '"', str_replace('[', '"', $pCampos)) . "','" . str_replace(']', '"', str_replace('[', '"', str_replace("'", "''", $pWhere))) . "','" . str_replace(']', '"', str_replace('[', '"', $pOrderBy)) . "','" . $pOrderType . "')";
+        $Consulta = "CALL $databaseHN" . USP_NDG_CONSULTAR_TABLAS_SAP('NDG_ONE_" . $pVista . "','" . str_replace(']', '"', str_replace('[', '"', $pCampos)) . "','" . str_replace(']', '"', str_replace('[', '"', str_replace("'", "''", $pWhere))) . "','" . str_replace(']', '"', str_replace('[', '"', $pOrderBy)) . "','" . $pOrderType . "')";
         return $Consulta;
     }
     */
@@ -314,8 +314,8 @@ function Eliminar($pVista, $pWhere = '', $pIdReg = 0, $pType = 1, $pDebugMode = 
             InsertarLog(1, $pIdReg, $Consulta);
         }
         return $SQL;
-    }
-
+    } 
+    
     /*
     elseif ($pType == 3) { //Consulta a MySQL (MariaDB)
         global $conexion_mysql;
@@ -770,6 +770,7 @@ function EnviarWebServiceSAP($pNombreWS, $pParametros, $pJSON = false, $pAPI = f
 
             // La respuesta la devuelve en JSON
             $json = curl_exec($curl);
+            // echo "json: $json";
 
             $cod_http = curl_getinfo($curl, CURLINFO_HTTP_CODE);
             if ($cod_http != 200) { //Ocurrio un error
@@ -835,7 +836,7 @@ function DescargarFileAPI($pNombreWS, $method = 'GET')
 
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
     $result = curl_exec($curl);
-
+    
     $cod_http = curl_getinfo($curl, CURLINFO_HTTP_CODE);
     $array_res = curl_getinfo($curl);
     //echo "Codigo HTTP:".$cod_http;
@@ -848,7 +849,7 @@ function DescargarFileAPI($pNombreWS, $method = 'GET')
     // echo "<pre>" . print_r($array_res, true) . "</pre>";
     // echo "result: $result";
     // exit();
-
+    
     return $result;
 }
 
@@ -1106,6 +1107,7 @@ function NormalizarNombreArchivo($NombreArchivo)
     return utf8_encode($NombreArchivo);
 }
 
+// SMM, 02/03/2023
 function NormalizarNombreImagen($IdImagen, $NombreImagen, $ExtImagen)
 {
     $NombreImagen = str_replace(" ", "_", $NombreImagen);
@@ -1275,7 +1277,62 @@ function QuitarParametrosURL($url, $keys = array())
     return $url;
 }
 
-function RedimensionarImagen(&$pNombreimg, $rutaimg, $xmax, $ymax, $nuevaRuta = "")
+function RedimensionarImagen(&$pNombreimg, $rutaimg, $xmax, $ymax)
+{
+    $nombreimg = $pNombreimg;
+    $expl = explode('.', $nombreimg);
+    $ext = end($expl);
+    $ext = strtolower($ext);
+
+    if ($ext == "jpg" || $ext == "jpeg") {
+        $imagen = imagecreatefromjpeg($rutaimg);
+    } elseif ($ext == "png") {
+        $imagen = imagecreatefrompng($rutaimg);
+    } elseif ($ext == "gif") {
+        $imagen = imagecreatefromgif($rutaimg);
+    }
+
+    $x = imagesx($imagen);
+    $y = imagesy($imagen);
+
+    /*if($x <= $xmax && $y <= $ymax){
+    //echo "<center>Esta imagen ya esta optimizada para los maximos que deseas.<center>";
+    return $imagen;
+    }*/
+
+    if ($x >= $y) {
+        $nuevax = $xmax;
+        $nuevay = $nuevax * $y / $x;
+    } else {
+        $nuevay = $ymax;
+        $nuevax = $x / $y * $nuevay;
+    }
+
+    //Agregar estampa de posición GPS
+    /*if($Lat!=""&&$Long!=""){
+    $estampa = imagecreatetruecolor($xmax, 70);
+    imagestring($estampa, 5, 20, 20, 'Latitud: '.$Lat, 0xFFFF2B);
+    imagestring($estampa, 5, 20, 40, 'Longitud: '.$Long,0xFFFF2B);
+    $margen_dcho = 10;
+    $margen_inf = 10;
+    $sx = imagesx($estampa);
+    $sy = imagesy($estampa);
+    }*/
+
+    $img2 = imagecreatetruecolor($nuevax, $nuevay);
+    imagecopyresized($img2, $imagen, 0, 0, 0, 0, floor($nuevax), floor($nuevay), $x, $y);
+
+    /*if($Lat!=""&&$Long!=""){
+    imagecopymerge($img2, $estampa, imagesx($img2) - $sx - $margen_dcho, imagesy($img2) - $sy - $margen_inf, 0, 0, imagesx($estampa), imagesy($estampa), 50);
+    }*/
+
+    imagejpeg($img2, $rutaimg);
+    //unlink($archivos_carpeta);
+    //echo "<center>La imagen se ha optimizado correctamente.</center>";
+    //return $img2;
+}
+
+function RedimensionarImagen2(&$pNombreimg, $rutaimg, $xmax, $ymax, $nuevaRuta = "")
 {
 
     $nombreimg = $pNombreimg;
@@ -1560,9 +1617,9 @@ function EnviarMail($email_destino, $nombre_destino = "", $tipo_email = 0, $asun
         $InsertLog = "Insert Into tbl_Log Values ('" . date('Y-m-d H:i:s') . "','" . $_SESSION['CodUser'] . "','Error',50,'" . $mail->ErrorInfo . "')";
         sqlsrv_query($conexion, $InsertLog);
     } /*else{
-$InsertLog="Insert Into tbl_Log Values ('".date('Y-m-d H:i:s')."','".$_SESSION['CodUser']."','Success',50,'Send Email: ".$email_destino."')";
-sqlsrv_query($conexion,$InsertLog);
-}*/
+     $InsertLog="Insert Into tbl_Log Values ('".date('Y-m-d H:i:s')."','".$_SESSION['CodUser']."','Success',50,'Send Email: ".$email_destino."')";
+     sqlsrv_query($conexion,$InsertLog);
+     }*/
 }
 
 // Stiven Muñoz Murillo, 01/02/2022

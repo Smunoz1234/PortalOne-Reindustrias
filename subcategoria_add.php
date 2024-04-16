@@ -5,7 +5,7 @@
 <head>
 <?php include("includes/cabecera.php"); ?>
 <!-- InstanceBeginEditable name="doctitle" -->
-<title><?php echo NOMBRE_PORTAL;?> | Agregar SubCategor&iacute;a</title>
+<title><?php echo NOMBRE_PORTAL;?> | Agregar SubCategoría</title>
 <!-- InstanceEndEditable -->
 <!-- InstanceBeginEditable name="head" -->
 <!-- InstanceEndEditable -->
@@ -22,19 +22,19 @@
         <!-- InstanceBeginEditable name="Contenido" -->
         <div class="row wrapper border-bottom white-bg page-heading">
                 <div class="col-sm-8">
-                    <h2>Agregar SubCategor&iacute;a</h2>
+                    <h2>Agregar SubCategoría</h2>
                     <ol class="breadcrumb">
                         <li>
                             <a href="index1.php">Inicio</a>
                         </li>
                         <li>
-                            <a href="#">Configuraci&oacute;n</a>
+                            <a href="#">Configuración</a>
                         </li>
                         <li>
-                            <a href="gestionar_categorias.php">Gestionar categor&iacute;as</a>
+                            <a href="gestionar_categorias.php">Gestionar categorías</a>
                         </li>
                         <li class="active">
-                            <strong>Agregar SubCategor&iacute;a</strong>
+                            <strong>Agregar SubCategoría</strong>
                         </li>
                     </ol>
                 </div>
@@ -51,7 +51,7 @@
            <div class="col-lg-6">
               <form action="registro.php" method="post" class="form-horizontal" id="AgregarCategoria">
 				<div class="form-group">
-					<label class="col-sm-3 control-label">Nombre categor&iacute;a</label>
+					<label class="col-sm-3 control-label">Nombre categoría</label>
 					<div class="col-sm-9"><input name="NombreCategoria" type="text" required="required" class="form-control" id="NombreCategoria"></div>
 				</div>
 				<div class="form-group">
