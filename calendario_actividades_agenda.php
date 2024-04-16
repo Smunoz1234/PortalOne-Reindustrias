@@ -55,7 +55,7 @@ $SQL=sqlsrv_query($conexion,$Cons);
                             <a href="index1.php">Inicio</a>
                         </li>
                         <li>
-                            <a href="#">Gesti&oacute;n de tareas</a>
+                            <a href="#">Gestión de tareas</a>
                         </li>
 						<li>
                             <a href="#">Calendarios</a>

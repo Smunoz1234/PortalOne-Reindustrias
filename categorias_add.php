@@ -11,7 +11,7 @@ $SQL_TipoCategoria=Seleccionar("uvw_tbl_TipoCategoria","ID_TipoCategoria, TipoCa
 <head>
 <?php include_once("includes/cabecera.php"); ?>
 <!-- InstanceBeginEditable name="doctitle" -->
-<title>Agregar categor&iacute;a | <?php echo NOMBRE_PORTAL;?></title>
+<title>Agregar categoría | <?php echo NOMBRE_PORTAL;?></title>
 <!-- InstanceEndEditable -->
 <!-- InstanceBeginEditable name="head" -->
 <script type="text/javascript">
@@ -43,19 +43,19 @@ $SQL_TipoCategoria=Seleccionar("uvw_tbl_TipoCategoria","ID_TipoCategoria, TipoCa
         <!-- InstanceBeginEditable name="Contenido" -->
         <div class="row wrapper border-bottom white-bg page-heading">
                 <div class="col-sm-8">
-                    <h2>Agregar categor&iacute;a</h2>
+                    <h2>Agregar categoría</h2>
                     <ol class="breadcrumb">
                         <li>
                             <a href="index1.php">Inicio</a>
                         </li>
                         <li>
-                            <a href="#">Administraci&oacute;n</a>
+                            <a href="#">Administración</a>
                         </li>
                         <li>
-                            <a href="gestionar_categorias.php">Gestionar categor&iacute;as</a>
+                            <a href="gestionar_categorias.php">Gestionar categorías</a>
                         </li>
                         <li class="active">
-                            <strong>Agregar categor&iacute;a</strong>
+                            <strong>Agregar categoría</strong>
                         </li>
                     </ol>
                 </div>
@@ -76,11 +76,11 @@ $SQL_TipoCategoria=Seleccionar("uvw_tbl_TipoCategoria","ID_TipoCategoria, TipoCa
 							 <div class="col-lg-6">
 							  <form action="registro.php" method="post" class="form-horizontal" id="AgregarCategoria">
 								<div class="form-group">
-									<label class="col-sm-3 control-label">Nombre categor&iacute;a</label>
+									<label class="col-sm-3 control-label">Nombre categoría</label>
 									<div class="col-sm-9"><input name="NombreCategoria" type="text" required="required" class="form-control" id="NombreCategoria"></div>
 								</div>
 								<div class="form-group">
-									<label class="col-sm-3 control-label">Men&uacute; padre</label>
+									<label class="col-sm-3 control-label">Menú padre</label>
 									<div class="col-sm-9">
 									 <?php 
 										$Cons_Menu="Select * From uvw_tbl_Categorias Where ID_Padre=0 and EstadoCategoria=1";
@@ -126,7 +126,7 @@ $SQL_TipoCategoria=Seleccionar("uvw_tbl_TipoCategoria","ID_TipoCategoria, TipoCa
 								  </div>
 								</div>
 								<div class="form-group">
-									<label class="col-sm-3 control-label">Tipo categor&iacute;a</label>
+									<label class="col-sm-3 control-label">Tipo categoría</label>
 									<div class="col-sm-9">
 										<select name="TipoCategoria" class="form-control m-b" id="TipoCategoria">
 										   <?php while($row_TipoCategoria=sqlsrv_fetch_array($SQL_TipoCategoria)){?>

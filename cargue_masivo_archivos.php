@@ -90,7 +90,7 @@ if(isset($_GET['b'])){
                             <a href="index1.php">Inicio</a>
                         </li>
                         <li>
-                            <a href="#">Administraci&oacute;n</a>
+                            <a href="#">Administración</a>
                         </li>
                         <li class="active">
                             <strong>Cargar archivos masivos</strong>

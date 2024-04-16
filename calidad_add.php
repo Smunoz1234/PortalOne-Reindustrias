@@ -83,7 +83,7 @@ if($Step==3){
                             <a href="index1.php">Inicio</a>
                         </li>
                         <li>
-                            <a href="#">Gesti&oacute;n de archivos</a>
+                            <a href="#">Gestión de archivos</a>
                         </li>
                          <li>
                             <a href="gestionar_calidad.php">Gestionar calidad</a>

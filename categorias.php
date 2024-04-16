@@ -205,10 +205,10 @@ function Eliminar(){
                             <a href="index1.php">Inicio</a>
                         </li>
                         <li>
-                            <a href="#">Administraci&oacute;n</a>
+                            <a href="#">Administración</a>
                         </li>
                         <li>
-                            <a href="gestionar_categorias.php">Gestionar categor&iacute;as</a>
+                            <a href="gestionar_categorias.php">Gestionar categorías</a>
                         </li>
                         <li class="active">
                             <strong><?php echo $Title;?></strong>
@@ -232,11 +232,11 @@ function Eliminar(){
 							 <div class="col-lg-6">
 							  <form action="categorias.php" method="post" class="form-horizontal" id="AgregarCategoria">
 								<div class="form-group">
-									<label class="col-sm-3 control-label">Nombre categor&iacute;a</label>
+									<label class="col-sm-3 control-label">Nombre categoría</label>
 									<div class="col-sm-9"><input name="NombreCategoria" type="text" required="required" class="form-control" id="NombreCategoria" value="<?php if($edit==1){echo $row['NombreCategoria'];}?>" autocomplete="off"></div>
 								</div>
 								<div class="form-group">
-									<label class="col-sm-3 control-label">Men&uacute; padre</label>
+									<label class="col-sm-3 control-label">Menú padre</label>
 									<div class="col-sm-9">
 									 <?php 
 										$SQL_Menu=Seleccionar("uvw_tbl_Categorias","*","ID_Padre=0 and EstadoCategoria=1");
@@ -291,7 +291,7 @@ function Eliminar(){
 								  </div>
 								</div>
 								<div class="form-group">
-									<label class="col-sm-3 control-label">Tipo categor&iacute;a</label>
+									<label class="col-sm-3 control-label">Tipo categoría</label>
 									<div class="col-sm-9">
 										<select name="TipoCategoria" class="form-control" id="TipoCategoria">
 										   <?php while($row_TipoCategoria=sqlsrv_fetch_array($SQL_TipoCategoria)){?>

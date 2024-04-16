@@ -37,7 +37,7 @@ if(isset($_POST['step'])&&$_POST['step']!=""){
                             <a href="index1.php">Inicio</a>
                         </li>
                         <li>
-                            <a href="#">Administraci&oacute;n</a>
+                            <a href="#">Administración</a>
                         </li>
                         <li>
                            <a href="cargue_masivo_archivos.php">Cargar archivos masivos</a>

@@ -57,7 +57,7 @@ if(isset($_GET['a'])&&($_GET['a']==base64_encode("OK_GtnCtr"))){
                             <a href="index1.php">Inicio</a>
                         </li>
                         <li>
-                            <a href="#">Gesti&oacute;n de cartera</a>
+                            <a href="#">Gestión de cartera</a>
                         </li>
                         <li class="active">
                             <strong>Consultar cliente</strong>
