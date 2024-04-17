@@ -292,18 +292,18 @@ if (isset($sw_error) && ($sw_error == 1)) {
 														<tbody>
 															 <?php while ($row_Marcas = sqlsrv_fetch_array($SQL_Marcas)) {?>
 															<tr>
-																<td><?php echo $row_Marcas['unidad_medida_equipo']; ?></td>
+																<td><?php echo $row_Marcas['marca_equipo']; ?></td>
 																<td><?php echo $row_Marcas['comentarios']; ?></td>
 																<td><?php echo isset($row_Marcas['fecha_actualizacion']) ? date_format($row_Marcas['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
 																<td><?php echo $row_Marcas['usuario_actualizacion'] ?? ""; ?></td>
 																<td>
-																	<span class="label <?php echo ($row_Marcas['estado_unidad_medida_equipo'] == "Y") ? "label-info" : "label-danger"; ?>">
-																		<?php echo ($row_Marcas['estado_unidad_medida_equipo'] == "Y") ? "Activo" : "Inactivo"; ?>
+																	<span class="label <?php echo ($row_Marcas['estado_marca_equipo'] == "Y") ? "label-info" : "label-danger"; ?>">
+																		<?php echo ($row_Marcas['estado_marca_equipo'] == "Y") ? "Activo" : "Inactivo"; ?>
 																	</span>
 																</td>
 																<td>
-																	<button type="button" id="btnEdit<?php echo $row_Marcas['id_unidad_medida_equipo']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Marcas['id_unidad_medida_equipo']; ?>','Marcas');"><i class="fa fa-pencil"></i> Editar</button>
-																	<button type="button" id="btnDelete<?php echo $row_Marcas['id_unidad_medida_equipo']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Marcas['id_unidad_medida_equipo']; ?>','Marcas');"><i class="fa fa-trash"></i> Eliminar</button>
+																	<button type="button" id="btnEdit<?php echo $row_Marcas['id_marca_equipo']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Marcas['id_marca_equipo']; ?>','Marcas');"><i class="fa fa-pencil"></i> Editar</button>
+																	<button type="button" id="btnDelete<?php echo $row_Marcas['id_marca_equipo']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Marcas['id_marca_equipo']; ?>','Marcas');"><i class="fa fa-trash"></i> Eliminar</button>
 																</td>
 															</tr>
 															 <?php }?>
@@ -347,18 +347,18 @@ if (isset($sw_error) && ($sw_error == 1)) {
 														<tbody>
 															 <?php while ($row_Lineas = sqlsrv_fetch_array($SQL_Lineas)) {?>
 															<tr>
-																<td><?php echo $row_Lineas['unidad_medida_equipo']; ?></td>
+																<td><?php echo $row_Lineas['linea_equipo']; ?></td>
 																<td><?php echo $row_Lineas['comentarios']; ?></td>
 																<td><?php echo isset($row_Lineas['fecha_actualizacion']) ? date_format($row_Lineas['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
 																<td><?php echo $row_Lineas['usuario_actualizacion'] ?? ""; ?></td>
 																<td>
-																	<span class="label <?php echo ($row_Lineas['estado_unidad_medida_equipo'] == "Y") ? "label-info" : "label-danger"; ?>">
-																		<?php echo ($row_Lineas['estado_unidad_medida_equipo'] == "Y") ? "Activo" : "Inactivo"; ?>
+																	<span class="label <?php echo ($row_Lineas['estado_linea_equipo'] == "Y") ? "label-info" : "label-danger"; ?>">
+																		<?php echo ($row_Lineas['estado_linea_equipo'] == "Y") ? "Activo" : "Inactivo"; ?>
 																	</span>
 																</td>
 																<td>
-																	<button type="button" id="btnEdit<?php echo $row_Lineas['id_unidad_medida_equipo']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Lineas['id_unidad_medida_equipo']; ?>','Lineas');"><i class="fa fa-pencil"></i> Editar</button>
-																	<button type="button" id="btnDelete<?php echo $row_Lineas['id_unidad_medida_equipo']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Lineas['id_unidad_medida_equipo']; ?>','Lineas');"><i class="fa fa-trash"></i> Eliminar</button>
+																	<button type="button" id="btnEdit<?php echo $row_Lineas['id_linea_equipo']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Lineas['id_linea_equipo']; ?>','Lineas');"><i class="fa fa-pencil"></i> Editar</button>
+																	<button type="button" id="btnDelete<?php echo $row_Lineas['id_linea_equipo']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Lineas['id_linea_equipo']; ?>','Lineas');"><i class="fa fa-trash"></i> Eliminar</button>
 																</td>
 															</tr>
 															 <?php }?>
@@ -402,18 +402,18 @@ if (isset($sw_error) && ($sw_error == 1)) {
 														<tbody>
 															 <?php while ($row_Fabricantes = sqlsrv_fetch_array($SQL_Fabricantes)) {?>
 															<tr>
-																<td><?php echo $row_Fabricantes['unidad_medida_equipo']; ?></td>
+																<td><?php echo $row_Fabricantes['fabricante_equipo']; ?></td>
 																<td><?php echo $row_Fabricantes['comentarios']; ?></td>
 																<td><?php echo isset($row_Fabricantes['fecha_actualizacion']) ? date_format($row_Fabricantes['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
 																<td><?php echo $row_Fabricantes['usuario_actualizacion'] ?? ""; ?></td>
 																<td>
-																	<span class="label <?php echo ($row_Fabricantes['estado_unidad_medida_equipo'] == "Y") ? "label-info" : "label-danger"; ?>">
-																		<?php echo ($row_Fabricantes['estado_unidad_medida_equipo'] == "Y") ? "Activo" : "Inactivo"; ?>
+																	<span class="label <?php echo ($row_Fabricantes['estado_fabricante_equipo'] == "Y") ? "label-info" : "label-danger"; ?>">
+																		<?php echo ($row_Fabricantes['estado_fabricante_equipo'] == "Y") ? "Activo" : "Inactivo"; ?>
 																	</span>
 																</td>
 																<td>
-																	<button type="button" id="btnEdit<?php echo $row_Fabricantes['id_unidad_medida_equipo']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Fabricantes['id_unidad_medida_equipo']; ?>','Fabricantes');"><i class="fa fa-pencil"></i> Editar</button>
-																	<button type="button" id="btnDelete<?php echo $row_Fabricantes['id_unidad_medida_equipo']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Fabricantes['id_unidad_medida_equipo']; ?>','Fabricantes');"><i class="fa fa-trash"></i> Eliminar</button>
+																	<button type="button" id="btnEdit<?php echo $row_Fabricantes['id_fabricante_equipo']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Fabricantes['id_fabricante_equipo']; ?>','Fabricantes');"><i class="fa fa-pencil"></i> Editar</button>
+																	<button type="button" id="btnDelete<?php echo $row_Fabricantes['id_fabricante_equipo']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Fabricantes['id_fabricante_equipo']; ?>','Fabricantes');"><i class="fa fa-trash"></i> Eliminar</button>
 																</td>
 															</tr>
 															 <?php }?>
@@ -457,18 +457,18 @@ if (isset($sw_error) && ($sw_error == 1)) {
 														<tbody>
 															 <?php while ($row_Annios = sqlsrv_fetch_array($SQL_Annios)) {?>
 															<tr>
-																<td><?php echo $row_Annios['unidad_medida_equipo']; ?></td>
+																<td><?php echo $row_Annios['annio_equipo']; ?></td>
 																<td><?php echo $row_Annios['comentarios']; ?></td>
 																<td><?php echo isset($row_Annios['fecha_actualizacion']) ? date_format($row_Annios['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
 																<td><?php echo $row_Annios['usuario_actualizacion'] ?? ""; ?></td>
 																<td>
-																	<span class="label <?php echo ($row_Annios['estado_unidad_medida_equipo'] == "Y") ? "label-info" : "label-danger"; ?>">
-																		<?php echo ($row_Annios['estado_unidad_medida_equipo'] == "Y") ? "Activo" : "Inactivo"; ?>
+																	<span class="label <?php echo ($row_Annios['estado_annio_equipo'] == "Y") ? "label-info" : "label-danger"; ?>">
+																		<?php echo ($row_Annios['estado_annio_equipo'] == "Y") ? "Activo" : "Inactivo"; ?>
 																	</span>
 																</td>
 																<td>
-																	<button type="button" id="btnEdit<?php echo $row_Annios['id_unidad_medida_equipo']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Annios['id_unidad_medida_equipo']; ?>','Annios');"><i class="fa fa-pencil"></i> Editar</button>
-																	<button type="button" id="btnDelete<?php echo $row_Annios['id_unidad_medida_equipo']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Annios['id_unidad_medida_equipo']; ?>','Annios');"><i class="fa fa-trash"></i> Eliminar</button>
+																	<button type="button" id="btnEdit<?php echo $row_Annios['id_annio_equipo']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Annios['id_annio_equipo']; ?>','Annios');"><i class="fa fa-pencil"></i> Editar</button>
+																	<button type="button" id="btnDelete<?php echo $row_Annios['id_annio_equipo']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Annios['id_annio_equipo']; ?>','Annios');"><i class="fa fa-trash"></i> Eliminar</button>
 																</td>
 															</tr>
 															 <?php }?>
@@ -502,28 +502,20 @@ if (isset($sw_error) && ($sw_error == 1)) {
 														<thead>
 															<tr>
 																<th>Ubicación</th>
-																<th>Comentarios</th>
 																<th>Fecha Actualizacion</th>
 																<th>Usuario Actualizacion</th>
-																<th>Estado</th>
 																<th>Acciones</th>
 															</tr>
 														</thead>
 														<tbody>
 															 <?php while ($row_Ubicaciones = sqlsrv_fetch_array($SQL_Ubicaciones)) {?>
 															<tr>
-																<td><?php echo $row_Ubicaciones['unidad_medida_equipo']; ?></td>
-																<td><?php echo $row_Ubicaciones['comentarios']; ?></td>
+																<td><?php echo $row_Ubicaciones['ubicacion_equipo']; ?></td>
 																<td><?php echo isset($row_Ubicaciones['fecha_actualizacion']) ? date_format($row_Ubicaciones['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
 																<td><?php echo $row_Ubicaciones['usuario_actualizacion'] ?? ""; ?></td>
 																<td>
-																	<span class="label <?php echo ($row_Ubicaciones['estado_unidad_medida_equipo'] == "Y") ? "label-info" : "label-danger"; ?>">
-																		<?php echo ($row_Ubicaciones['estado_unidad_medida_equipo'] == "Y") ? "Activo" : "Inactivo"; ?>
-																	</span>
-																</td>
-																<td>
-																	<button type="button" id="btnEdit<?php echo $row_Ubicaciones['id_unidad_medida_equipo']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Ubicaciones['id_unidad_medida_equipo']; ?>','Ubicaciones');"><i class="fa fa-pencil"></i> Editar</button>
-																	<button type="button" id="btnDelete<?php echo $row_Ubicaciones['id_unidad_medida_equipo']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Ubicaciones['id_unidad_medida_equipo']; ?>','Ubicaciones');"><i class="fa fa-trash"></i> Eliminar</button>
+																	<button type="button" id="btnEdit<?php echo $row_Ubicaciones['id_ubicacion_equipo']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Ubicaciones['id_ubicacion_equipo']; ?>','Ubicaciones');"><i class="fa fa-pencil"></i> Editar</button>
+																	<button type="button" id="btnDelete<?php echo $row_Ubicaciones['id_ubicacion_equipo']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Ubicaciones['id_ubicacion_equipo']; ?>','Ubicaciones');"><i class="fa fa-trash"></i> Eliminar</button>
 																</td>
 															</tr>
 															 <?php }?>
