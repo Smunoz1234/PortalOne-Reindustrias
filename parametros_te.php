@@ -310,6 +310,226 @@ if (isset($sw_error) && ($sw_error == 1)) {
 								</div>
 								<!-- Fin, lista Marcas -->
 
+								<!-- Inicio, lista Lineas -->
+								<div id="tab-3" class="tab-pane <?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Lineas")) ? "active" : ""; ?>">
+									<form class="form-horizontal">
+										<div class="ibox" id="Lineas">
+											<div class="ibox-title bg-success">
+												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista de Lineas</h5>
+												 <a class="collapse-link pull-right">
+													<i class="fa fa-chevron-up"></i>
+												</a>
+											</div>
+											<div class="ibox-content">
+												<div class="row m-b-md">
+													<div class="col-lg-12">
+														<button class="btn btn-primary pull-right" type="button" onClick="CrearCampo('Lineas');"><i class="fa fa-plus-circle"></i> Agregar nueva</button>
+													</div>
+												</div>
+												<div class="table-responsive">
+													<table class="table table-striped table-bordered table-hover dataTables-example">
+														<thead>
+															<tr>
+																<th>Unidad Medida Equipo</th>
+																<th>Comentarios</th>
+																<th>Fecha Actualizacion</th>
+																<th>Usuario Actualizacion</th>
+																<th>Estado</th>
+																<th>Acciones</th>
+															</tr>
+														</thead>
+														<tbody>
+															 <?php while ($row_TipoEquipo = sqlsrv_fetch_array($SQL_Lineas)) {?>
+															<tr>
+																<td><?php echo $row_TipoEquipo['unidad_medida_equipo']; ?></td>
+																<td><?php echo $row_TipoEquipo['comentarios']; ?></td>
+																<td><?php echo isset($row_TipoEquipo['fecha_actualizacion']) ? date_format($row_TipoEquipo['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
+																<td><?php echo $row_TipoEquipo['usuario_actualizacion'] ?? ""; ?></td>
+																<td>
+																	<span class="label <?php echo ($row_TipoEquipo['estado_unidad_medida_equipo'] == "Y") ? "label-info" : "label-danger"; ?>">
+																		<?php echo ($row_TipoEquipo['estado_unidad_medida_equipo'] == "Y") ? "Activo" : "Inactivo"; ?>
+																	</span>
+																</td>
+																<td>
+																	<button type="button" id="btnEdit<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>','Lineas');"><i class="fa fa-pencil"></i> Editar</button>
+																	<button type="button" id="btnDelete<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>','Lineas');"><i class="fa fa-trash"></i> Eliminar</button>
+																</td>
+															</tr>
+															 <?php }?>
+														</tbody>
+													</table>
+												</div>
+											</div> <!-- ibox-content -->
+										</div> <!-- ibox -->
+									</form>
+								</div>
+								<!-- Fin, lista Lineas -->
+
+								<!-- Inicio, lista Fabricantes -->
+								<div id="tab-4" class="tab-pane <?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Fabricantes")) ? "active" : ""; ?>">
+									<form class="form-horizontal">
+										<div class="ibox" id="Fabricantes">
+											<div class="ibox-title bg-success">
+												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista de Fabricantes</h5>
+												 <a class="collapse-link pull-right">
+													<i class="fa fa-chevron-up"></i>
+												</a>
+											</div>
+											<div class="ibox-content">
+												<div class="row m-b-md">
+													<div class="col-lg-12">
+														<button class="btn btn-primary pull-right" type="button" onClick="CrearCampo('Fabricantes');"><i class="fa fa-plus-circle"></i> Agregar nueva</button>
+													</div>
+												</div>
+												<div class="table-responsive">
+													<table class="table table-striped table-bordered table-hover dataTables-example">
+														<thead>
+															<tr>
+																<th>Unidad Medida Equipo</th>
+																<th>Comentarios</th>
+																<th>Fecha Actualizacion</th>
+																<th>Usuario Actualizacion</th>
+																<th>Estado</th>
+																<th>Acciones</th>
+															</tr>
+														</thead>
+														<tbody>
+															 <?php while ($row_TipoEquipo = sqlsrv_fetch_array($SQL_Fabricantes)) {?>
+															<tr>
+																<td><?php echo $row_TipoEquipo['unidad_medida_equipo']; ?></td>
+																<td><?php echo $row_TipoEquipo['comentarios']; ?></td>
+																<td><?php echo isset($row_TipoEquipo['fecha_actualizacion']) ? date_format($row_TipoEquipo['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
+																<td><?php echo $row_TipoEquipo['usuario_actualizacion'] ?? ""; ?></td>
+																<td>
+																	<span class="label <?php echo ($row_TipoEquipo['estado_unidad_medida_equipo'] == "Y") ? "label-info" : "label-danger"; ?>">
+																		<?php echo ($row_TipoEquipo['estado_unidad_medida_equipo'] == "Y") ? "Activo" : "Inactivo"; ?>
+																	</span>
+																</td>
+																<td>
+																	<button type="button" id="btnEdit<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>','Fabricantes');"><i class="fa fa-pencil"></i> Editar</button>
+																	<button type="button" id="btnDelete<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>','Fabricantes');"><i class="fa fa-trash"></i> Eliminar</button>
+																</td>
+															</tr>
+															 <?php }?>
+														</tbody>
+													</table>
+												</div>
+											</div> <!-- ibox-content -->
+										</div> <!-- ibox -->
+									</form>
+								</div>
+								<!-- Fin, lista Fabricantes -->
+
+								<!-- Inicio, lista Annios -->
+								<div id="tab-5" class="tab-pane <?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Annios")) ? "active" : ""; ?>">
+									<form class="form-horizontal">
+										<div class="ibox" id="Annios">
+											<div class="ibox-title bg-success">
+												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista de Annios</h5>
+												 <a class="collapse-link pull-right">
+													<i class="fa fa-chevron-up"></i>
+												</a>
+											</div>
+											<div class="ibox-content">
+												<div class="row m-b-md">
+													<div class="col-lg-12">
+														<button class="btn btn-primary pull-right" type="button" onClick="CrearCampo('Annios');"><i class="fa fa-plus-circle"></i> Agregar nueva</button>
+													</div>
+												</div>
+												<div class="table-responsive">
+													<table class="table table-striped table-bordered table-hover dataTables-example">
+														<thead>
+															<tr>
+																<th>Unidad Medida Equipo</th>
+																<th>Comentarios</th>
+																<th>Fecha Actualizacion</th>
+																<th>Usuario Actualizacion</th>
+																<th>Estado</th>
+																<th>Acciones</th>
+															</tr>
+														</thead>
+														<tbody>
+															 <?php while ($row_TipoEquipo = sqlsrv_fetch_array($SQL_Annios)) {?>
+															<tr>
+																<td><?php echo $row_TipoEquipo['unidad_medida_equipo']; ?></td>
+																<td><?php echo $row_TipoEquipo['comentarios']; ?></td>
+																<td><?php echo isset($row_TipoEquipo['fecha_actualizacion']) ? date_format($row_TipoEquipo['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
+																<td><?php echo $row_TipoEquipo['usuario_actualizacion'] ?? ""; ?></td>
+																<td>
+																	<span class="label <?php echo ($row_TipoEquipo['estado_unidad_medida_equipo'] == "Y") ? "label-info" : "label-danger"; ?>">
+																		<?php echo ($row_TipoEquipo['estado_unidad_medida_equipo'] == "Y") ? "Activo" : "Inactivo"; ?>
+																	</span>
+																</td>
+																<td>
+																	<button type="button" id="btnEdit<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>','Annios');"><i class="fa fa-pencil"></i> Editar</button>
+																	<button type="button" id="btnDelete<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>','Annios');"><i class="fa fa-trash"></i> Eliminar</button>
+																</td>
+															</tr>
+															 <?php }?>
+														</tbody>
+													</table>
+												</div>
+											</div> <!-- ibox-content -->
+										</div> <!-- ibox -->
+									</form>
+								</div>
+								<!-- Fin, lista Annios -->
+
+								<!-- Inicio, lista Ubicaciones -->
+								<div id="tab-6" class="tab-pane <?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Ubicaciones")) ? "active" : ""; ?>">
+									<form class="form-horizontal">
+										<div class="ibox" id="Ubicaciones">
+											<div class="ibox-title bg-success">
+												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista de Ubicaciones</h5>
+												 <a class="collapse-link pull-right">
+													<i class="fa fa-chevron-up"></i>
+												</a>
+											</div>
+											<div class="ibox-content">
+												<div class="row m-b-md">
+													<div class="col-lg-12">
+														<button class="btn btn-primary pull-right" type="button" onClick="CrearCampo('Ubicaciones');"><i class="fa fa-plus-circle"></i> Agregar nueva</button>
+													</div>
+												</div>
+												<div class="table-responsive">
+													<table class="table table-striped table-bordered table-hover dataTables-example">
+														<thead>
+															<tr>
+																<th>Unidad Medida Equipo</th>
+																<th>Comentarios</th>
+																<th>Fecha Actualizacion</th>
+																<th>Usuario Actualizacion</th>
+																<th>Estado</th>
+																<th>Acciones</th>
+															</tr>
+														</thead>
+														<tbody>
+															 <?php while ($row_TipoEquipo = sqlsrv_fetch_array($SQL_Ubicaciones)) {?>
+															<tr>
+																<td><?php echo $row_TipoEquipo['unidad_medida_equipo']; ?></td>
+																<td><?php echo $row_TipoEquipo['comentarios']; ?></td>
+																<td><?php echo isset($row_TipoEquipo['fecha_actualizacion']) ? date_format($row_TipoEquipo['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
+																<td><?php echo $row_TipoEquipo['usuario_actualizacion'] ?? ""; ?></td>
+																<td>
+																	<span class="label <?php echo ($row_TipoEquipo['estado_unidad_medida_equipo'] == "Y") ? "label-info" : "label-danger"; ?>">
+																		<?php echo ($row_TipoEquipo['estado_unidad_medida_equipo'] == "Y") ? "Activo" : "Inactivo"; ?>
+																	</span>
+																</td>
+																<td>
+																	<button type="button" id="btnEdit<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>','Ubicaciones');"><i class="fa fa-pencil"></i> Editar</button>
+																	<button type="button" id="btnDelete<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>','Ubicaciones');"><i class="fa fa-trash"></i> Eliminar</button>
+																</td>
+															</tr>
+															 <?php }?>
+														</tbody>
+													</table>
+												</div>
+											</div> <!-- ibox-content -->
+										</div> <!-- ibox -->
+									</form>
+								</div>
+								<!-- Fin, lista Ubicaciones -->
+
 							</div> <!-- tab-content -->
 						</div> <!-- tabs-container -->
 					</div>
