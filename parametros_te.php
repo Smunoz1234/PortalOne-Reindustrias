@@ -205,7 +205,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 									<form class="form-horizontal">
 										<div class="ibox" id="Unidades">
 											<div class="ibox-title bg-success">
-												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista de Unidades</h5>
+												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista de Unidades de Medida</h5>
 												 <a class="collapse-link pull-right">
 													<i class="fa fa-chevron-up"></i>
 												</a>
@@ -229,20 +229,20 @@ if (isset($sw_error) && ($sw_error == 1)) {
 															</tr>
 														</thead>
 														<tbody>
-															 <?php while ($row_TipoEquipo = sqlsrv_fetch_array($SQL_Unidades)) {?>
+															 <?php while ($row_Unidades = sqlsrv_fetch_array($SQL_Unidades)) {?>
 															<tr>
-																<td><?php echo $row_TipoEquipo['unidad_medida_equipo']; ?></td>
-																<td><?php echo $row_TipoEquipo['comentarios']; ?></td>
-																<td><?php echo isset($row_TipoEquipo['fecha_actualizacion']) ? date_format($row_TipoEquipo['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
-																<td><?php echo $row_TipoEquipo['usuario_actualizacion'] ?? ""; ?></td>
+																<td><?php echo $row_Unidades['unidad_medida_equipo']; ?></td>
+																<td><?php echo $row_Unidades['comentarios']; ?></td>
+																<td><?php echo isset($row_Unidades['fecha_actualizacion']) ? date_format($row_Unidades['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
+																<td><?php echo $row_Unidades['usuario_actualizacion'] ?? ""; ?></td>
 																<td>
-																	<span class="label <?php echo ($row_TipoEquipo['estado_unidad_medida_equipo'] == "Y") ? "label-info" : "label-danger"; ?>">
-																		<?php echo ($row_TipoEquipo['estado_unidad_medida_equipo'] == "Y") ? "Activo" : "Inactivo"; ?>
+																	<span class="label <?php echo ($row_Unidades['estado_unidad_medida_equipo'] == "Y") ? "label-info" : "label-danger"; ?>">
+																		<?php echo ($row_Unidades['estado_unidad_medida_equipo'] == "Y") ? "Activo" : "Inactivo"; ?>
 																	</span>
 																</td>
 																<td>
-																	<button type="button" id="btnEdit<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>','Unidades');"><i class="fa fa-pencil"></i> Editar</button>
-																	<button type="button" id="btnDelete<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>','Unidades');"><i class="fa fa-trash"></i> Eliminar</button>
+																	<button type="button" id="btnEdit<?php echo $row_Unidades['id_unidad_medida_equipo']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Unidades['id_unidad_medida_equipo']; ?>','Unidades');"><i class="fa fa-pencil"></i> Editar</button>
+																	<button type="button" id="btnDelete<?php echo $row_Unidades['id_unidad_medida_equipo']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Unidades['id_unidad_medida_equipo']; ?>','Unidades');"><i class="fa fa-trash"></i> Eliminar</button>
 																</td>
 															</tr>
 															 <?php }?>
@@ -260,7 +260,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 									<form class="form-horizontal">
 										<div class="ibox" id="Marcas">
 											<div class="ibox-title bg-success">
-												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista de Marcas</h5>
+												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista de Marcas de Equipo</h5>
 												 <a class="collapse-link pull-right">
 													<i class="fa fa-chevron-up"></i>
 												</a>
@@ -275,7 +275,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 													<table class="table table-striped table-bordered table-hover dataTables-example">
 														<thead>
 															<tr>
-																<th>Unidad Medida Equipo</th>
+																<th>Marca Equipo</th>
 																<th>Comentarios</th>
 																<th>Fecha Actualizacion</th>
 																<th>Usuario Actualizacion</th>
@@ -284,20 +284,20 @@ if (isset($sw_error) && ($sw_error == 1)) {
 															</tr>
 														</thead>
 														<tbody>
-															 <?php while ($row_TipoEquipo = sqlsrv_fetch_array($SQL_Marcas)) {?>
+															 <?php while ($row_Marcas = sqlsrv_fetch_array($SQL_Marcas)) {?>
 															<tr>
-																<td><?php echo $row_TipoEquipo['unidad_medida_equipo']; ?></td>
-																<td><?php echo $row_TipoEquipo['comentarios']; ?></td>
-																<td><?php echo isset($row_TipoEquipo['fecha_actualizacion']) ? date_format($row_TipoEquipo['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
-																<td><?php echo $row_TipoEquipo['usuario_actualizacion'] ?? ""; ?></td>
+																<td><?php echo $row_Marcas['unidad_medida_equipo']; ?></td>
+																<td><?php echo $row_Marcas['comentarios']; ?></td>
+																<td><?php echo isset($row_Marcas['fecha_actualizacion']) ? date_format($row_Marcas['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
+																<td><?php echo $row_Marcas['usuario_actualizacion'] ?? ""; ?></td>
 																<td>
-																	<span class="label <?php echo ($row_TipoEquipo['estado_unidad_medida_equipo'] == "Y") ? "label-info" : "label-danger"; ?>">
-																		<?php echo ($row_TipoEquipo['estado_unidad_medida_equipo'] == "Y") ? "Activo" : "Inactivo"; ?>
+																	<span class="label <?php echo ($row_Marcas['estado_unidad_medida_equipo'] == "Y") ? "label-info" : "label-danger"; ?>">
+																		<?php echo ($row_Marcas['estado_unidad_medida_equipo'] == "Y") ? "Activo" : "Inactivo"; ?>
 																	</span>
 																</td>
 																<td>
-																	<button type="button" id="btnEdit<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>','Marcas');"><i class="fa fa-pencil"></i> Editar</button>
-																	<button type="button" id="btnDelete<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>','Marcas');"><i class="fa fa-trash"></i> Eliminar</button>
+																	<button type="button" id="btnEdit<?php echo $row_Marcas['id_unidad_medida_equipo']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Marcas['id_unidad_medida_equipo']; ?>','Marcas');"><i class="fa fa-pencil"></i> Editar</button>
+																	<button type="button" id="btnDelete<?php echo $row_Marcas['id_unidad_medida_equipo']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Marcas['id_unidad_medida_equipo']; ?>','Marcas');"><i class="fa fa-trash"></i> Eliminar</button>
 																</td>
 															</tr>
 															 <?php }?>
@@ -315,7 +315,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 									<form class="form-horizontal">
 										<div class="ibox" id="Lineas">
 											<div class="ibox-title bg-success">
-												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista de Lineas</h5>
+												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista de Lineas de Equipo</h5>
 												 <a class="collapse-link pull-right">
 													<i class="fa fa-chevron-up"></i>
 												</a>
@@ -330,7 +330,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 													<table class="table table-striped table-bordered table-hover dataTables-example">
 														<thead>
 															<tr>
-																<th>Unidad Medida Equipo</th>
+																<th>Linea Equipo</th>
 																<th>Comentarios</th>
 																<th>Fecha Actualizacion</th>
 																<th>Usuario Actualizacion</th>
@@ -339,20 +339,20 @@ if (isset($sw_error) && ($sw_error == 1)) {
 															</tr>
 														</thead>
 														<tbody>
-															 <?php while ($row_TipoEquipo = sqlsrv_fetch_array($SQL_Lineas)) {?>
+															 <?php while ($row_Lineas = sqlsrv_fetch_array($SQL_Lineas)) {?>
 															<tr>
-																<td><?php echo $row_TipoEquipo['unidad_medida_equipo']; ?></td>
-																<td><?php echo $row_TipoEquipo['comentarios']; ?></td>
-																<td><?php echo isset($row_TipoEquipo['fecha_actualizacion']) ? date_format($row_TipoEquipo['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
-																<td><?php echo $row_TipoEquipo['usuario_actualizacion'] ?? ""; ?></td>
+																<td><?php echo $row_Lineas['unidad_medida_equipo']; ?></td>
+																<td><?php echo $row_Lineas['comentarios']; ?></td>
+																<td><?php echo isset($row_Lineas['fecha_actualizacion']) ? date_format($row_Lineas['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
+																<td><?php echo $row_Lineas['usuario_actualizacion'] ?? ""; ?></td>
 																<td>
-																	<span class="label <?php echo ($row_TipoEquipo['estado_unidad_medida_equipo'] == "Y") ? "label-info" : "label-danger"; ?>">
-																		<?php echo ($row_TipoEquipo['estado_unidad_medida_equipo'] == "Y") ? "Activo" : "Inactivo"; ?>
+																	<span class="label <?php echo ($row_Lineas['estado_unidad_medida_equipo'] == "Y") ? "label-info" : "label-danger"; ?>">
+																		<?php echo ($row_Lineas['estado_unidad_medida_equipo'] == "Y") ? "Activo" : "Inactivo"; ?>
 																	</span>
 																</td>
 																<td>
-																	<button type="button" id="btnEdit<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>','Lineas');"><i class="fa fa-pencil"></i> Editar</button>
-																	<button type="button" id="btnDelete<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>','Lineas');"><i class="fa fa-trash"></i> Eliminar</button>
+																	<button type="button" id="btnEdit<?php echo $row_Lineas['id_unidad_medida_equipo']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Lineas['id_unidad_medida_equipo']; ?>','Lineas');"><i class="fa fa-pencil"></i> Editar</button>
+																	<button type="button" id="btnDelete<?php echo $row_Lineas['id_unidad_medida_equipo']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Lineas['id_unidad_medida_equipo']; ?>','Lineas');"><i class="fa fa-trash"></i> Eliminar</button>
 																</td>
 															</tr>
 															 <?php }?>
@@ -370,7 +370,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 									<form class="form-horizontal">
 										<div class="ibox" id="Fabricantes">
 											<div class="ibox-title bg-success">
-												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista de Fabricantes</h5>
+												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista de Fabricantes de Equipo</h5>
 												 <a class="collapse-link pull-right">
 													<i class="fa fa-chevron-up"></i>
 												</a>
@@ -385,7 +385,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 													<table class="table table-striped table-bordered table-hover dataTables-example">
 														<thead>
 															<tr>
-																<th>Unidad Medida Equipo</th>
+																<th>Fabricante Equipo</th>
 																<th>Comentarios</th>
 																<th>Fecha Actualizacion</th>
 																<th>Usuario Actualizacion</th>
@@ -394,20 +394,20 @@ if (isset($sw_error) && ($sw_error == 1)) {
 															</tr>
 														</thead>
 														<tbody>
-															 <?php while ($row_TipoEquipo = sqlsrv_fetch_array($SQL_Fabricantes)) {?>
+															 <?php while ($row_Fabricantes = sqlsrv_fetch_array($SQL_Fabricantes)) {?>
 															<tr>
-																<td><?php echo $row_TipoEquipo['unidad_medida_equipo']; ?></td>
-																<td><?php echo $row_TipoEquipo['comentarios']; ?></td>
-																<td><?php echo isset($row_TipoEquipo['fecha_actualizacion']) ? date_format($row_TipoEquipo['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
-																<td><?php echo $row_TipoEquipo['usuario_actualizacion'] ?? ""; ?></td>
+																<td><?php echo $row_Fabricantes['unidad_medida_equipo']; ?></td>
+																<td><?php echo $row_Fabricantes['comentarios']; ?></td>
+																<td><?php echo isset($row_Fabricantes['fecha_actualizacion']) ? date_format($row_Fabricantes['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
+																<td><?php echo $row_Fabricantes['usuario_actualizacion'] ?? ""; ?></td>
 																<td>
-																	<span class="label <?php echo ($row_TipoEquipo['estado_unidad_medida_equipo'] == "Y") ? "label-info" : "label-danger"; ?>">
-																		<?php echo ($row_TipoEquipo['estado_unidad_medida_equipo'] == "Y") ? "Activo" : "Inactivo"; ?>
+																	<span class="label <?php echo ($row_Fabricantes['estado_unidad_medida_equipo'] == "Y") ? "label-info" : "label-danger"; ?>">
+																		<?php echo ($row_Fabricantes['estado_unidad_medida_equipo'] == "Y") ? "Activo" : "Inactivo"; ?>
 																	</span>
 																</td>
 																<td>
-																	<button type="button" id="btnEdit<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>','Fabricantes');"><i class="fa fa-pencil"></i> Editar</button>
-																	<button type="button" id="btnDelete<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>','Fabricantes');"><i class="fa fa-trash"></i> Eliminar</button>
+																	<button type="button" id="btnEdit<?php echo $row_Fabricantes['id_unidad_medida_equipo']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Fabricantes['id_unidad_medida_equipo']; ?>','Fabricantes');"><i class="fa fa-pencil"></i> Editar</button>
+																	<button type="button" id="btnDelete<?php echo $row_Fabricantes['id_unidad_medida_equipo']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Fabricantes['id_unidad_medida_equipo']; ?>','Fabricantes');"><i class="fa fa-trash"></i> Eliminar</button>
 																</td>
 															</tr>
 															 <?php }?>
@@ -425,7 +425,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 									<form class="form-horizontal">
 										<div class="ibox" id="Annios">
 											<div class="ibox-title bg-success">
-												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista de Annios</h5>
+												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista de Años de Equipo</h5>
 												 <a class="collapse-link pull-right">
 													<i class="fa fa-chevron-up"></i>
 												</a>
@@ -440,7 +440,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 													<table class="table table-striped table-bordered table-hover dataTables-example">
 														<thead>
 															<tr>
-																<th>Unidad Medida Equipo</th>
+																<th>Año Equipo</th>
 																<th>Comentarios</th>
 																<th>Fecha Actualizacion</th>
 																<th>Usuario Actualizacion</th>
@@ -449,20 +449,20 @@ if (isset($sw_error) && ($sw_error == 1)) {
 															</tr>
 														</thead>
 														<tbody>
-															 <?php while ($row_TipoEquipo = sqlsrv_fetch_array($SQL_Annios)) {?>
+															 <?php while ($row_Annios = sqlsrv_fetch_array($SQL_Annios)) {?>
 															<tr>
-																<td><?php echo $row_TipoEquipo['unidad_medida_equipo']; ?></td>
-																<td><?php echo $row_TipoEquipo['comentarios']; ?></td>
-																<td><?php echo isset($row_TipoEquipo['fecha_actualizacion']) ? date_format($row_TipoEquipo['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
-																<td><?php echo $row_TipoEquipo['usuario_actualizacion'] ?? ""; ?></td>
+																<td><?php echo $row_Annios['unidad_medida_equipo']; ?></td>
+																<td><?php echo $row_Annios['comentarios']; ?></td>
+																<td><?php echo isset($row_Annios['fecha_actualizacion']) ? date_format($row_Annios['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
+																<td><?php echo $row_Annios['usuario_actualizacion'] ?? ""; ?></td>
 																<td>
-																	<span class="label <?php echo ($row_TipoEquipo['estado_unidad_medida_equipo'] == "Y") ? "label-info" : "label-danger"; ?>">
-																		<?php echo ($row_TipoEquipo['estado_unidad_medida_equipo'] == "Y") ? "Activo" : "Inactivo"; ?>
+																	<span class="label <?php echo ($row_Annios['estado_unidad_medida_equipo'] == "Y") ? "label-info" : "label-danger"; ?>">
+																		<?php echo ($row_Annios['estado_unidad_medida_equipo'] == "Y") ? "Activo" : "Inactivo"; ?>
 																	</span>
 																</td>
 																<td>
-																	<button type="button" id="btnEdit<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>','Annios');"><i class="fa fa-pencil"></i> Editar</button>
-																	<button type="button" id="btnDelete<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>','Annios');"><i class="fa fa-trash"></i> Eliminar</button>
+																	<button type="button" id="btnEdit<?php echo $row_Annios['id_unidad_medida_equipo']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Annios['id_unidad_medida_equipo']; ?>','Annios');"><i class="fa fa-pencil"></i> Editar</button>
+																	<button type="button" id="btnDelete<?php echo $row_Annios['id_unidad_medida_equipo']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Annios['id_unidad_medida_equipo']; ?>','Annios');"><i class="fa fa-trash"></i> Eliminar</button>
 																</td>
 															</tr>
 															 <?php }?>
@@ -495,7 +495,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 													<table class="table table-striped table-bordered table-hover dataTables-example">
 														<thead>
 															<tr>
-																<th>Unidad Medida Equipo</th>
+																<th>Ubicación</th>
 																<th>Comentarios</th>
 																<th>Fecha Actualizacion</th>
 																<th>Usuario Actualizacion</th>
@@ -504,20 +504,20 @@ if (isset($sw_error) && ($sw_error == 1)) {
 															</tr>
 														</thead>
 														<tbody>
-															 <?php while ($row_TipoEquipo = sqlsrv_fetch_array($SQL_Ubicaciones)) {?>
+															 <?php while ($row_Ubicaciones = sqlsrv_fetch_array($SQL_Ubicaciones)) {?>
 															<tr>
-																<td><?php echo $row_TipoEquipo['unidad_medida_equipo']; ?></td>
-																<td><?php echo $row_TipoEquipo['comentarios']; ?></td>
-																<td><?php echo isset($row_TipoEquipo['fecha_actualizacion']) ? date_format($row_TipoEquipo['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
-																<td><?php echo $row_TipoEquipo['usuario_actualizacion'] ?? ""; ?></td>
+																<td><?php echo $row_Ubicaciones['unidad_medida_equipo']; ?></td>
+																<td><?php echo $row_Ubicaciones['comentarios']; ?></td>
+																<td><?php echo isset($row_Ubicaciones['fecha_actualizacion']) ? date_format($row_Ubicaciones['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
+																<td><?php echo $row_Ubicaciones['usuario_actualizacion'] ?? ""; ?></td>
 																<td>
-																	<span class="label <?php echo ($row_TipoEquipo['estado_unidad_medida_equipo'] == "Y") ? "label-info" : "label-danger"; ?>">
-																		<?php echo ($row_TipoEquipo['estado_unidad_medida_equipo'] == "Y") ? "Activo" : "Inactivo"; ?>
+																	<span class="label <?php echo ($row_Ubicaciones['estado_unidad_medida_equipo'] == "Y") ? "label-info" : "label-danger"; ?>">
+																		<?php echo ($row_Ubicaciones['estado_unidad_medida_equipo'] == "Y") ? "Activo" : "Inactivo"; ?>
 																	</span>
 																</td>
 																<td>
-																	<button type="button" id="btnEdit<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>','Ubicaciones');"><i class="fa fa-pencil"></i> Editar</button>
-																	<button type="button" id="btnDelete<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_TipoEquipo['id_unidad_medida_equipo']; ?>','Ubicaciones');"><i class="fa fa-trash"></i> Eliminar</button>
+																	<button type="button" id="btnEdit<?php echo $row_Ubicaciones['id_unidad_medida_equipo']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Ubicaciones['id_unidad_medida_equipo']; ?>','Ubicaciones');"><i class="fa fa-pencil"></i> Editar</button>
+																	<button type="button" id="btnDelete<?php echo $row_Ubicaciones['id_unidad_medida_equipo']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Ubicaciones['id_unidad_medida_equipo']; ?>','Ubicaciones');"><i class="fa fa-trash"></i> Eliminar</button>
 																</td>
 															</tr>
 															 <?php }?>
