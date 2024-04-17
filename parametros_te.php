@@ -64,7 +64,13 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
 
 }
 
+// SMM, 17/04/2024
 $SQL_Unidades = Seleccionar("uvw_tbl_TarjetaEquipo_UnidadMedidas", "*");
+$SQL_Marcas = Seleccionar("uvw_tbl_TarjetaEquipo_Marcas", "*");
+$SQL_Lineas = Seleccionar("uvw_tbl_TarjetaEquipo_Lineas", "*");
+$SQL_Fabricantes = Seleccionar("uvw_tbl_TarjetaEquipo_Fabricantes", "*");
+$SQL_Annios = Seleccionar("uvw_tbl_TarjetaEquipo_Annios", "*");
+$SQL_Ubicaciones = Seleccionar("uvw_tbl_TarjetaEquipo_Ubicaciones", "*");
 ?>
 
 <!DOCTYPE html>
