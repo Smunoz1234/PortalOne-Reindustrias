@@ -54,7 +54,7 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
         // OK
         if ($sw_error == 0) {
             $TipoDoc = $_POST['TipoDoc'];
-            header("Location:unidad_medida.php?doc=$TipoDoc&a=" . base64_encode("OK_PRUpd") . "#$TipoDoc");
+            header("Location:parametros_te.php?doc=$TipoDoc&a=" . base64_encode("OK_PRUpd") . "#$TipoDoc");
         }
 
     } catch (Exception $e) {
@@ -301,7 +301,7 @@ function CrearCampo(doc){
 
 	$.ajax({
 		type: "POST",
-		url: "md_unidad_medida.php",
+		url: "md_parametros_te.php",
 		data:{
 			doc:doc
 		},
@@ -318,7 +318,7 @@ function EditarCampo(id, doc){
 
 	$.ajax({
 		type: "POST",
-		url: "md_unidad_medida.php",
+		url: "md_parametros_te.php",
 		data:{
 			doc:doc,
 			id:id,
@@ -345,12 +345,12 @@ function EliminarCampo(id, doc){
 
 			$.ajax({
 				type: "post",
-				url: "unidad_medida.php",
+				url: "parametros_te.php",
 				data: { TipoDoc: doc, ID: id, Metodo: 3 },
 				async: false,
 				success: function(data){
 					// console.log(data);
-					location.href = `unidad_medida.php?doc=${doc}&a=<?php echo base64_encode("OK_PRDel"); ?>`;
+					location.href = `parametros_te.php?doc=${doc}&a=<?php echo base64_encode("OK_PRDel"); ?>`;
 				},
 				error: function(error) {
 					console.error("consulta erronea");

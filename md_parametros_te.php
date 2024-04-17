@@ -31,7 +31,7 @@ if ($edit == 1 && $id != "") {
 	}
 </style>
 
-<form id="frm_NewParam" method="post" action="unidad_medida.php" enctype="multipart/form-data">
+<form id="frm_NewParam" method="post" action="parametros_te.php" enctype="multipart/form-data">
 
 <div class="modal-header">
 	<h4 class="modal-title">

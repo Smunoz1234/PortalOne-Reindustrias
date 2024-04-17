@@ -745,7 +745,7 @@ if (!isset($_COOKIE["banderaMenu"])) {
 								<ul class='nav nav-third-level'>
 									<?php if (PermitirFuncion(1601)) {?><li><a class="alnk" href="consultar_tarjeta_equipo.php">Tarjetas de equipos</a></li><?php }?>
 									<?php if (PermitirFuncion(349)) {?><li><a class="alnk" href="tipos_equipos.php">Tipos de equipos</a></li><?php }?>
-									<?php if (PermitirFuncion(351)) {?><li><a class="alnk" href="unidad_medida.php">Configuración de parámetros</a></li><?php }?>
+									<?php if (PermitirFuncion(351)) {?><li><a class="alnk" href="parametros_te.php">Configuración de parámetros</a></li><?php }?>
 								</ul>
 							</li>
 							<?php }?>
