@@ -597,7 +597,7 @@ if ($sw == 1) {
 
 			<td>
 				<!-- SMM, 12/04/2024 -->
-				<select id="Empleado<?php echo $i; ?>" name="Empleado[]" class="form-control select2" onchange="ActualizarDatos('Empleado',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" 
+				<select id="CodEmpleado<?php echo $i; ?>" name="CodEmpleado[]" class="form-control select2" onchange="ActualizarDatos('CodEmpleado',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" 
 					<?php if ($row['LineStatus'] == 'C' || $Estado == 2 || (!PermitirFuncion(1201))) {
 						echo "disabled";
 					}?>>
