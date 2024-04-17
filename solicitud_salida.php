@@ -420,8 +420,9 @@ if ($edit == 1 && $sw_error == 0) {
 	//Contacto cliente
 	$SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', '*', "CodigoCliente='" . $row['CardCode'] . "'", 'NombreContacto');
 
-	//Orden de servicio, SMM, 29/08/2022
-	$SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . $row['ID_LlamadaServicio'] . "'");
+	//Orden de servicio. SMM, 17/04/2024
+	$Cons_OrdenServicioCliente = "SELECT * FROM uvw_Sap_tbl_LlamadasServicios WHERE ID_LlamadaServicio = '" . ($row['ID_LlamadaServicio'] ?? "") . "'";
+	$SQL_OrdenServicioCliente = sqlsrv_query($conexion, $Cons_OrdenServicioCliente);
 	$row_OrdenServicioCliente = sqlsrv_fetch_array($SQL_OrdenServicioCliente);
 
 	//Sucursal
