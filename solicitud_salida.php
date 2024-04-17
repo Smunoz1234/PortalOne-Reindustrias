@@ -172,10 +172,10 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Solicitud de salida
 			"'" . ($_POST['MensajeProceso'] ?? "") . "'",
 			// SMM, 14/12/2022
 			"'" . ($_POST['AutorizacionSAP'] ?? "") . "'",
-			$_POST['FechaAutorizacionPO'] ?? "NULL",
-			$_POST['HoraAutorizacionPO'] ?? "NULL",
+			isset($_POST['FechaAutorizacionPO']) ? ("'" . FormatoFecha($_POST['FechaAutorizacionPO']) . "'") : "NULL",
+			isset($_POST['HoraAutorizacionPO']) ? ("'" . $_POST['HoraAutorizacionPO'] . "'") : "NULL",
 			"'" . ($_POST['UsuarioAutorizacionPO'] ?? "") . "'",
-			"'" . ($_POST['ComentarioAutorizacionPO'] ?? "") . "'",
+			"'" . ($_POST['ComentariosAutorizacionPO'] ?? "") . "'",
 
 			// SMM, 23/12/2022
 			"''", // ConceptoSalida
