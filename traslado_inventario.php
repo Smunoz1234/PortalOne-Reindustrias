@@ -123,6 +123,18 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Salida de inventario
 			$AnioEntrega = "NULL";
 		}
 
+		if (isset($_POST['EntregaDescont']) && ($_POST['EntregaDescont'] != "")) {
+			$EntregaDescont = "'" . $_POST['EntregaDescont'] . "'";
+		} else {
+			$EntregaDescont = "NULL";
+		}
+
+		if (isset($_POST['ValorCuotaDesc']) && ($_POST['ValorCuotaDesc'] != "")) {
+			$ValorCuotaDesc = "'" . $_POST['ValorCuotaDesc'] . "'";
+		} else {
+			$ValorCuotaDesc = "NULL";
+		}
+
 		if ($Type == 4) {
 			$ParametrosCabTrasladoInv = array(
 				$IdTrasladoInv,
@@ -170,22 +182,29 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Salida de inventario
 				"'" . $_POST['DireccionDestino'] . "'",
 				"'" . $_POST['CondicionPago'] . "'",
 				
-				"'" . ($_POST['Almacen'] ?? "") . "'",
-				"'" . ($_POST['AlmacenDestino'] ?? "") . "'",
+				"''", // Almacen
+				"''", // AlmacenDestino
+
+				// Se eliminaron las dimensiones, SMM 29/08/2022
 
 				"'" . $_POST['PrjCode'] . "'", // SMM, 29/11/2022
-				"'" . $_POST['Autorizacion'] . "'",
-				"NULL",
-				"NULL",
-				"NULL",
-				"NULL",
-				"NULL",
+				"'" . $_POST['Autorizacion'] . "'", // SMM, 29/11/2022
+				
+				// SMM, 17/04/2024
+				"'" . ($_POST['TipoEntrega'] ?? "") . "'",
+				$AnioEntrega,
+				$EntregaDescont,
+				$ValorCuotaDesc,
+
+				"NULL", // @CodEmpleado
+				
 				// SMM, 30/11/2022
 				"'" . ($_POST['IdMotivoAutorizacion'] ?? "") . "'",
 				"'" . ($_POST['ComentariosAutor'] ?? "") . "'",
 				"'" . ($_POST['MensajeProceso'] ?? "") . "'",
+
 				// SMM, 23/12/2022
-				"'" . ($_POST['ConceptoSalida'] ?? "") . "'",
+				"''", // ConceptoSalida
 			);
 		}
 
