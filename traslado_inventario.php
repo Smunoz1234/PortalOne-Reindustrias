@@ -1627,12 +1627,16 @@ function verAutorizacion() {
 							echo "disabled";
 						} ?>>
 							<option value="">Seleccione...</option>
-						  <?php while ($row_CondicionPago = sqlsrv_fetch_array($SQL_CondicionPago)) { ?>
-									<option value="<?php echo $row_CondicionPago['IdCondicionPago']; ?>" <?php if ($edit == 1 || $sw_error) {
-										   if (isset($row['IdCondicionPago']) && ($row['IdCondicionPago'] != "") && (strcmp($row_CondicionPago['IdCondicionPago'], $row['IdCondicionPago']) == 0)) {
-											   echo "selected";
-										   }
-									   } ?>><?php echo $row_CondicionPago['NombreCondicion']; ?></option>
+						  	
+							<?php while ($row_CondicionPago = sqlsrv_fetch_array($SQL_CondicionPago)) { ?>
+								<option value="<?php echo $row_CondicionPago['IdCondicionPago']; ?>" 
+									<?php if (isset($row['IdCondicionPago']) && ($row['IdCondicionPago'] == $row_CondicionPago['IdCondicionPago'])) {
+										echo "selected";
+									} elseif (isset($_GET['CondicionPago']) && (base64_decode($_GET['CondicionPago']) == $row_CondicionPago['IdCondicionPago'])) {
+										echo "selected";
+									} ?>>
+									<?php echo $row_CondicionPago['NombreCondicion'] ?? ""; ?>
+								</option>
 						  <?php } ?>
 						</select>
 					  </div>
@@ -1647,9 +1651,10 @@ function verAutorizacion() {
 							<option value="">(NINGUNO)</option>
 							
 							<?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) { ?>
-								<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if (isset($row['PrjCode']) && ($row['PrjCode'] == $row_Proyecto['IdProyecto'])) {
+								<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" 
+									<?php if (isset($row['PrjCode']) && ($row['PrjCode'] == $row_Proyecto['IdProyecto'])) {
 										echo "selected";
-									} elseif ((isset($_GET['Proyecto'])) && ($row_Proyecto['IdProyecto'] == base64_decode($_GET['Proyecto']))) {
+									} elseif (isset($_GET['Proyecto']) && ($row_Proyecto['IdProyecto'] == base64_decode($_GET['Proyecto']))) {
 										echo "selected";
 									} elseif ($FiltroPrj == $row_Proyecto['IdProyecto']) {
 										echo "selected";
