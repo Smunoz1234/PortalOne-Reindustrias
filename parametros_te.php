@@ -5,7 +5,8 @@ PermitirAcceso(351);
 $sw_error = 0;
 
 if (isset($_POST['Metodo']) && ($_POST['Metodo'] == 3)) {
-    try {
+    
+	try {
         $Param = array(
             $_POST['Metodo'], // 3 - Eliminar
             isset($_POST['ID']) ? $_POST['ID'] : "NULL",
@@ -17,6 +18,36 @@ if (isset($_POST['Metodo']) && ($_POST['Metodo'] == 3)) {
                 $sw_error = 1;
                 $msg_error = "No se pudo eliminar la Unidad de Medida.";
             }
+        } elseif ($_POST['TipoDoc'] == "Marcas") {
+            $SQL = EjecutarSP('sp_tbl_TarjetaEquipo_Marcas', $Param);
+            if (!$SQL) {
+                $sw_error = 1;
+                $msg_error = "No se pudo eliminar la Marca.";
+            }
+        } elseif ($_POST['TipoDoc'] == "Lineas") {
+            $SQL = EjecutarSP('sp_tbl_TarjetaEquipo_Lineas', $Param);
+            if (!$SQL) {
+                $sw_error = 1;
+                $msg_error = "No se pudo eliminar la Linea.";
+            }
+        } elseif ($_POST['TipoDoc'] == "Fabricantes") {
+            $SQL = EjecutarSP('sp_tbl_TarjetaEquipo_Fabricantes', $Param);
+            if (!$SQL) {
+                $sw_error = 1;
+                $msg_error = "No se pudo eliminar el Fabricante.";
+            }
+        } elseif ($_POST['TipoDoc'] == "Annios") {
+            $SQL = EjecutarSP('sp_tbl_TarjetaEquipo_Annios', $Param);
+            if (!$SQL) {
+                $sw_error = 1;
+                $msg_error = "No se pudo eliminar el Año.";
+            }
+        } elseif ($_POST['TipoDoc'] == "Ubicaciones") {
+            $SQL = EjecutarSP('sp_tbl_TarjetaEquipo_Ubicaciones', $Param);
+            if (!$SQL) {
+                $sw_error = 1;
+                $msg_error = "No se pudo eliminar la Ubicación.";
+            }
         }
 
     } catch (Exception $e) {
@@ -25,16 +56,16 @@ if (isset($_POST['Metodo']) && ($_POST['Metodo'] == 3)) {
     }
 }
 
-//Insertar datos o actualizar datos
+//Insertar datos o actualizar datos. SMM, 18/04/2024
 if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Metodo']) && ($_POST['Metodo'] == 2))) {
-    try {
+    
+	try {
+		$ID = (isset($_POST['ID_Actual']) && ($_POST['ID_Actual'] != "")) ? $_POST['ID_Actual'] : "NULL";
+		$FechaHora = "'" . FormatoFecha(date('Y-m-d'), date('H:i:s')) . "'";
+        $Usuario = "'" . ($_SESSION['CodUser'] ?? "") . "'";
+		$TipoDoc = $_POST['TipoDoc'] ?? "";
 
-        if ($_POST['TipoDoc'] == "Unidades") {
-            $FechaHora = "'" . FormatoFecha(date('Y-m-d'), date('H:i:s')) . "'";
-            $Usuario = "'" . $_SESSION['CodUser'] . "'";
-
-            $ID = (isset($_POST['ID_Actual']) && ($_POST['ID_Actual'] != "")) ? $_POST['ID_Actual'] : "NULL";
-
+        if ($TipoDoc == "Unidades") {
             $Param = array(
                 $_POST['Metodo'] ?? 1, // 1 - Crear, 2 - Actualizar
                 $ID,
@@ -49,11 +80,85 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
                 $sw_error = 1;
                 $msg_error = "No se pudo insertar la Unidad de Medida.";
             }
+        } elseif ($TipoDoc == "Marcas") {
+            $Param = array(
+                $_POST['Metodo'] ?? 1, // 1 - Crear, 2 - Actualizar
+                $ID,
+                "'" . $_POST['NombreMarca'] . "'",
+                "'" . $_POST['Estado'] . "'",
+				"'" . $_POST['Comentarios'] . "'",
+                $Usuario, // Usuario de actualización y creación
+            );
+
+            $SQL = EjecutarSP('sp_tbl_TarjetaEquipo_Marcas', $Param);
+            if (!$SQL) {
+                $sw_error = 1;
+                $msg_error = "No se pudo insertar la Marca.";
+            }
+        } elseif ($TipoDoc == "Lineas") {
+            $Param = array(
+                $_POST['Metodo'] ?? 1, // 1 - Crear, 2 - Actualizar
+                $ID,
+                "'" . $_POST['NombreLinea'] . "'",
+                "'" . $_POST['Estado'] . "'",
+				"'" . $_POST['Comentarios'] . "'",
+                $Usuario, // Usuario de actualización y creación
+            );
+
+            $SQL = EjecutarSP('sp_tbl_TarjetaEquipo_Lineas', $Param);
+            if (!$SQL) {
+                $sw_error = 1;
+                $msg_error = "No se pudo insertar la Linea.";
+            }
+        } elseif ($TipoDoc == "Fabricantes") {
+            $Param = array(
+                $_POST['Metodo'] ?? 1, // 1 - Crear, 2 - Actualizar
+                $ID,
+                "'" . $_POST['NombreFabricante'] . "'",
+                "'" . $_POST['Estado'] . "'",
+				"'" . $_POST['Comentarios'] . "'",
+                $Usuario, // Usuario de actualización y creación
+            );
+
+            $SQL = EjecutarSP('sp_tbl_TarjetaEquipo_Fabricantes', $Param);
+            if (!$SQL) {
+                $sw_error = 1;
+                $msg_error = "No se pudo insertar el Fabricante.";
+            }
+        } elseif ($TipoDoc == "Annios") {
+            $Param = array(
+                $_POST['Metodo'] ?? 1, // 1 - Crear, 2 - Actualizar
+                $ID,
+                "'" . $_POST['NombreAnnio'] . "'",
+                "'" . $_POST['Estado'] . "'",
+				"'" . $_POST['Comentarios'] . "'",
+                $Usuario, // Usuario de actualización y creación
+            );
+
+            $SQL = EjecutarSP('sp_tbl_TarjetaEquipo_Annios', $Param);
+            if (!$SQL) {
+                $sw_error = 1;
+                $msg_error = "No se pudo insertar el Año.";
+            }
+        } elseif ($TipoDoc == "Ubicaciones") {
+            $Param = array(
+                $_POST['Metodo'] ?? 1, // 1 - Crear, 2 - Actualizar
+                $ID,
+                "'" . $_POST['NombreUbicacion'] . "'",
+                "'" . ($_POST['Estado'] ?? "") . "'",
+				"'" . ($_POST['Comentarios'] ?? "") . "'",
+                $Usuario, // Usuario de actualización y creación
+            );
+
+            $SQL = EjecutarSP('sp_tbl_TarjetaEquipo_Ubicaciones', $Param);
+            if (!$SQL) {
+                $sw_error = 1;
+                $msg_error = "No se pudo insertar la Ubicación.";
+            }
         }
 
-        // OK
+        // OK. SMM, 18/04/2024
         if ($sw_error == 0) {
-            $TipoDoc = $_POST['TipoDoc'];
             header("Location:parametros_te.php?doc=$TipoDoc&a=" . base64_encode("OK_PRUpd") . "#$TipoDoc");
         }
 
@@ -61,7 +166,6 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
         $sw_error = 1;
         $msg_error = $e->getMessage();
     }
-
 }
 
 // SMM, 17/04/2024

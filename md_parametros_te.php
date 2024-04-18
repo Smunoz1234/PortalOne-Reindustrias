@@ -25,7 +25,7 @@ if ($edit == 1 && $id != "") {
         $SQL = Seleccionar('tbl_TarjetaEquipo_Fabricantes', '*', "[id_fabricante_equipo]='$id'");
         $row = sqlsrv_fetch_array($SQL);
     } elseif ($doc == "Annios") {
-        $SQL = Seleccionar('tbl_TarjetaEquipo_Annios', '*', "[id_annio_equipo]='$id'");
+        $SQL = Seleccionar('tbl_TarjetaEquipo_Annio', '*', "[id_annio_equipo]='$id'");
         $row = sqlsrv_fetch_array($SQL);
     } elseif ($doc == "Ubicaciones") {
         $SQL = Seleccionar('tbl_TarjetaEquipo_Ubicaciones', '*', "[id_ubicacion_equipo]='$id'");
