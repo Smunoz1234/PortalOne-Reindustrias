@@ -1516,7 +1516,7 @@ if($SQL_ValoresPropiedades) {
 															<option value="<?php echo $row_Dim['OcrCode']; ?>" <?php if ((isset($row["IdDimension$DimCode"]) && ($row["IdDimension$DimCode"] != "")) && ($row_Dim['OcrCode'] == $row["IdDimension$DimCode"])) {
 																   echo "selected";
 															   } ?>>
-																<?php echo $row_Dim['OcrName']; ?>
+																<?php echo $row_Dim['OcrCode'] . " - " . $row_Dim['OcrName']; ?>
 															</option>
 														<?php } ?>
 													</select>
@@ -1539,7 +1539,7 @@ if($SQL_ValoresPropiedades) {
 														<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if ((isset($row['IdProyecto'])) && ($row_Proyecto['IdProyecto'] == $row['IdProyecto'])) {
 															   echo "selected";
 														   } ?>>
-															<?php echo $row_Proyecto['DeProyecto']; ?>
+															<?php echo $row_Proyecto['IdProyecto'] . " - " . $row_Proyecto['DeProyecto']; ?>
 														</option>
 													<?php } ?>
 												</select>
