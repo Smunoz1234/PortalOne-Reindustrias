@@ -15,7 +15,22 @@ if ($edit == 1 && $id != "") {
     if ($doc == "Unidades") {
         $SQL = Seleccionar('tbl_TarjetaEquipo_UnidadMedidas', '*', "[id_unidad_medida_equipo]='$id'");
         $row = sqlsrv_fetch_array($SQL);
-    } 
+    } elseif ($doc == "Marcas") {
+        $SQL = Seleccionar('tbl_TarjetaEquipo_Marcas', '*', "[id_marca_equipo]='$id'");
+        $row = sqlsrv_fetch_array($SQL);
+    } elseif ($doc == "Lineas") {
+        $SQL = Seleccionar('tbl_TarjetaEquipo_Lineas', '*', "[id_linea_equipo]='$id'");
+        $row = sqlsrv_fetch_array($SQL);
+    } elseif ($doc == "Fabricantes") {
+        $SQL = Seleccionar('tbl_TarjetaEquipo_Fabricantes', '*', "[id_fabricante_equipo]='$id'");
+        $row = sqlsrv_fetch_array($SQL);
+    } elseif ($doc == "Annios") {
+        $SQL = Seleccionar('tbl_TarjetaEquipo_Annios', '*', "[id_annio_equipo]='$id'");
+        $row = sqlsrv_fetch_array($SQL);
+    } elseif ($doc == "Ubicaciones") {
+        $SQL = Seleccionar('tbl_TarjetaEquipo_Ubicaciones', '*', "[id_ubicacion_equipo]='$id'");
+        $row = sqlsrv_fetch_array($SQL);
+    }
 }
 ?>
 
@@ -46,11 +61,11 @@ if ($edit == 1 && $id != "") {
 
 			<?php if ($doc == "Unidades") {?>
 
-				<!-- Inicio Unidad Medida -->
+				<!-- Inicio, Unidad Medida -->
 				<div class="form-group row">
 					<div class="col-md-6">
 						<label class="control-label">Nombre Unidad Medida <span class="text-danger">*</span></label>
-						<input type="text" class="form-control" autocomplete="off" required name="NombreUnidadMedida" id="NombreUnidadMedida" value="<?php if ($edit == 1) {echo $row['unidad_medida_equipo'];}?>">
+						<input type="text" class="form-control" autocomplete="off" required name="NombreUnidadMedida" id="NombreUnidadMedida" value="<?php echo $row['unidad_medida_equipo'] ?? ""; ?>">
 					</div>
 					<div class="col-md-6">
 						<label class="control-label">Estado <span class="text-danger">*</span></label>
@@ -64,10 +79,136 @@ if ($edit == 1 && $id != "") {
 				<div class="form-group row">
 					<div class="col-md-12">
 						<label class="control-label">Comentarios</label>
-						<textarea name="Comentarios" rows="3" maxlength="3000" class="form-control" id="Comentarios" type="text"><?php if ($edit == 1) {echo $row['comentarios'];}?></textarea>
+						<textarea name="Comentarios" rows="3" maxlength="3000" class="form-control" id="Comentarios" type="text"><?php echo $row['comentarios'] ?? ""; ?></textarea>
 					</div>
 				</div>
-				<!-- Fin Unidad Medida -->
+				<!-- Fin, Unidad Medida -->
+
+			<?php } elseif ($doc == "Marcas") {?>
+
+				<!-- Inicio, Marca -->
+				<div class="form-group row">
+					<div class="col-md-6">
+						<label class="control-label">Nombre Marca <span class="text-danger">*</span></label>
+						<input type="text" class="form-control" autocomplete="off" required name="NombreMarca" id="NombreMarca" value="<?php echo $row['marca_equipo'] ?? ""; ?>">
+					</div>
+					<div class="col-md-6">
+						<label class="control-label">Estado <span class="text-danger">*</span></label>
+						<select class="form-control" id="Estado" name="Estado">
+							<option value="Y" <?php if (($edit == 1) && ($row['estado_marca_equipo'] == "Y")) {echo "selected";}?>>ACTIVO</option>
+							<option value="N" <?php if (($edit == 1) && ($row['estado_marca_equipo'] == "N")) {echo "selected";}?>>INACTIVO</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="form-group row">
+					<div class="col-md-12">
+						<label class="control-label">Comentarios</label>
+						<textarea name="Comentarios" rows="3" maxlength="3000" class="form-control" id="Comentarios" type="text"><?php echo $row['comentarios'] ?? ""; ?></textarea>
+					</div>
+				</div>
+				<!-- Fin, Marca -->
+
+			<?php } elseif ($doc == "Lineas") {?>
+
+				<!-- Inicio, Linea -->
+				<div class="form-group row">
+					<div class="col-md-6">
+						<label class="control-label">Nombre Linea <span class="text-danger">*</span></label>
+						<input type="text" class="form-control" autocomplete="off" required name="NombreLinea" id="NombreLinea" value="<?php echo $row['linea_equipo'] ?? ""; ?>">
+					</div>
+					<div class="col-md-6">
+						<label class="control-label">Estado <span class="text-danger">*</span></label>
+						<select class="form-control" id="Estado" name="Estado">
+							<option value="Y" <?php if (($edit == 1) && ($row['estado_linea_equipo'] == "Y")) {echo "selected";}?>>ACTIVO</option>
+							<option value="N" <?php if (($edit == 1) && ($row['estado_linea_equipo'] == "N")) {echo "selected";}?>>INACTIVO</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="form-group row">
+					<div class="col-md-12">
+						<label class="control-label">Comentarios</label>
+						<textarea name="Comentarios" rows="3" maxlength="3000" class="form-control" id="Comentarios" type="text"><?php echo $row['comentarios'] ?? ""; ?></textarea>
+					</div>
+				</div>
+				<!-- Fin, Linea -->
+
+			<?php } elseif ($doc == "Fabricantes") {?>
+
+				<!-- Inicio, Fabricante -->
+				<div class="form-group row">
+					<div class="col-md-6">
+						<label class="control-label">Nombre Fabricante <span class="text-danger">*</span></label>
+						<input type="text" class="form-control" autocomplete="off" required name="NombreFabricante" id="NombreFabricante" value="<?php echo $row['fabricante_equipo'] ?? ""; ?>">
+					</div>
+					<div class="col-md-6">
+						<label class="control-label">Estado <span class="text-danger">*</span></label>
+						<select class="form-control" id="Estado" name="Estado">
+							<option value="Y" <?php if (($edit == 1) && ($row['estado_fabricante_equipo'] == "Y")) {echo "selected";}?>>ACTIVO</option>
+							<option value="N" <?php if (($edit == 1) && ($row['estado_fabricante_equipo'] == "N")) {echo "selected";}?>>INACTIVO</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="form-group row">
+					<div class="col-md-12">
+						<label class="control-label">Comentarios</label>
+						<textarea name="Comentarios" rows="3" maxlength="3000" class="form-control" id="Comentarios" type="text"><?php echo $row['comentarios'] ?? ""; ?></textarea>
+					</div>
+				</div>
+				<!-- Fin, Fabricante -->
+
+			<?php } elseif ($doc == "Annios") {?>
+
+				<!-- Inicio, Año -->
+				<div class="form-group row">
+					<div class="col-md-6">
+						<label class="control-label">Nombre Año <span class="text-danger">*</span></label>
+						<input type="text" class="form-control" autocomplete="off" required name="NombreAnnio" id="NombreAnnio" value="<?php echo $row['annio_equipo'] ?? ""; ?>">
+					</div>
+					<div class="col-md-6">
+						<label class="control-label">Estado <span class="text-danger">*</span></label>
+						<select class="form-control" id="Estado" name="Estado">
+							<option value="Y" <?php if (($edit == 1) && ($row['estado_annio_equipo'] == "Y")) {echo "selected";}?>>ACTIVO</option>
+							<option value="N" <?php if (($edit == 1) && ($row['estado_annio_equipo'] == "N")) {echo "selected";}?>>INACTIVO</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="form-group row">
+					<div class="col-md-12">
+						<label class="control-label">Comentarios</label>
+						<textarea name="Comentarios" rows="3" maxlength="3000" class="form-control" id="Comentarios" type="text"><?php echo $row['comentarios'] ?? ""; ?></textarea>
+					</div>
+				</div>
+				<!-- Fin, Año -->
+
+			<?php } elseif ($doc == "Ubicaciones") {?>
+
+				<!-- Inicio, Ubicacion -->
+				<div class="form-group row">
+					<div class="col-md-6">
+						<label class="control-label">Nombre Ubicacion <span class="text-danger">*</span></label>
+						<input type="text" class="form-control" autocomplete="off" required name="NombreUbicacion" id="NombreUbicacion" value="<?php echo $row['ubicacion_equipo'] ?? ""; ?>">
+					</div>
+					
+					<div class="col-md-6"  style="display: none;">
+						<label class="control-label">Estado <span class="text-danger">*</span></label>
+						<select class="form-control" id="Estado" name="Estado">
+							<option value="Y" <?php if (($edit == 1) && ($row['estado_ubicacion_equipo'] == "Y")) {echo "selected";}?>>ACTIVO</option>
+							<option value="N" <?php if (($edit == 1) && ($row['estado_ubicacion_equipo'] == "N")) {echo "selected";}?>>INACTIVO</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="form-group row" style="display: none;">
+					<div class="col-md-12">
+						<label class="control-label">Comentarios</label>
+						<textarea name="Comentarios" rows="3" maxlength="3000" class="form-control" id="Comentarios" type="text"><?php echo $row['comentarios'] ?? ""; ?></textarea>
+					</div>
+				</div>
+				<!-- Fin, Ubicacion -->
 
 			<?php } ?>
 
