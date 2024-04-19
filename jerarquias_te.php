@@ -96,7 +96,7 @@ $SQL_Dimensiones = Seleccionar("uvw_tbl_TarjetaEquipo_DimensionJerarquias", "*")
 <head>
 <?php include_once "includes/cabecera.php";?>
 <!-- InstanceBeginEditable name="doctitle" -->
-<title>Parámetros de Tarjeta de Equipo | <?php echo NOMBRE_PORTAL; ?></title>
+<title>Parámetros de Jerarquías de Equipo | <?php echo NOMBRE_PORTAL; ?></title>
 <!-- InstanceEndEditable -->
 <!-- InstanceBeginEditable name="head" -->
 
@@ -167,7 +167,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
         <!-- InstanceBeginEditable name="Contenido" -->
         <div class="row wrapper border-bottom white-bg page-heading">
                 <div class="col-sm-8">
-                    <h2>Parámetros de Tarjeta de Equipo</h2>
+                    <h2>Parámetros de Jerarquías de Equipo</h2>
                     <ol class="breadcrumb">
                         <li>
                             <a href="index1.php">Inicio</a>
@@ -179,7 +179,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
                             <a href="#">Equipos</a>
                         </li>
                         <li class="active">
-                            <strong>Parámetros de Tarjeta de Equipo</strong>
+                            <strong>Parámetros de Jerarquías de Equipo</strong>
                         </li>
                     </ol>
                 </div>
