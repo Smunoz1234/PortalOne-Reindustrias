@@ -41,7 +41,7 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
         $Usuario = "'" . ($_SESSION['CodUser'] ?? "") . "'";
 		$TipoDoc = $_POST['TipoDoc'] ?? "";
 
-        if ($TipoDoc == "Unidades") {
+        if ($TipoDoc == "Jerarquias") {
             $Param = array(
                 $_POST['Metodo'] ?? 1, // 1 - Crear, 2 - Actualizar
                 $ID,
@@ -56,7 +56,7 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
                 $sw_error = 1;
                 $msg_error = "No se pudo insertar la Unidad de Medida.";
             }
-        } elseif ($TipoDoc == "Marcas") {
+        } elseif ($TipoDoc == "Dimensiones") {
             $Param = array(
                 $_POST['Metodo'] ?? 1, // 1 - Crear, 2 - Actualizar
                 $ID,
@@ -66,76 +66,16 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
                 $Usuario, // Usuario de actualización y creación
             );
 
-            $SQL = EjecutarSP('sp_tbl_TarjetaEquipo_Marcas', $Param);
+            $SQL = EjecutarSP('sp_tbl_TarjetaEquipo_Dimensiones', $Param);
             if (!$SQL) {
                 $sw_error = 1;
                 $msg_error = "No se pudo insertar la Marca.";
-            }
-        } elseif ($TipoDoc == "Lineas") {
-            $Param = array(
-                $_POST['Metodo'] ?? 1, // 1 - Crear, 2 - Actualizar
-                $ID,
-                "'" . $_POST['NombreLinea'] . "'",
-                "'" . $_POST['Estado'] . "'",
-				"'" . $_POST['Comentarios'] . "'",
-                $Usuario, // Usuario de actualización y creación
-            );
-
-            $SQL = EjecutarSP('sp_tbl_TarjetaEquipo_Lineas', $Param);
-            if (!$SQL) {
-                $sw_error = 1;
-                $msg_error = "No se pudo insertar la Linea.";
-            }
-        } elseif ($TipoDoc == "Fabricantes") {
-            $Param = array(
-                $_POST['Metodo'] ?? 1, // 1 - Crear, 2 - Actualizar
-                $ID,
-                "'" . $_POST['NombreFabricante'] . "'",
-                "'" . $_POST['Estado'] . "'",
-				"'" . $_POST['Comentarios'] . "'",
-                $Usuario, // Usuario de actualización y creación
-            );
-
-            $SQL = EjecutarSP('sp_tbl_TarjetaEquipo_Fabricantes', $Param);
-            if (!$SQL) {
-                $sw_error = 1;
-                $msg_error = "No se pudo insertar el Fabricante.";
-            }
-        } elseif ($TipoDoc == "Annios") {
-            $Param = array(
-                $_POST['Metodo'] ?? 1, // 1 - Crear, 2 - Actualizar
-                $ID,
-                "'" . $_POST['NombreAnnio'] . "'",
-                "'" . $_POST['Estado'] . "'",
-				"'" . $_POST['Comentarios'] . "'",
-                $Usuario, // Usuario de actualización y creación
-            );
-
-            $SQL = EjecutarSP('sp_tbl_TarjetaEquipo_Annios', $Param);
-            if (!$SQL) {
-                $sw_error = 1;
-                $msg_error = "No se pudo insertar el Año.";
-            }
-        } elseif ($TipoDoc == "Ubicaciones") {
-            $Param = array(
-                $_POST['Metodo'] ?? 1, // 1 - Crear, 2 - Actualizar
-                $ID,
-                "'" . $_POST['NombreUbicacion'] . "'",
-                "'" . ($_POST['Estado'] ?? "") . "'",
-				"'" . ($_POST['Comentarios'] ?? "") . "'",
-                $Usuario, // Usuario de actualización y creación
-            );
-
-            $SQL = EjecutarSP('sp_tbl_TarjetaEquipo_Ubicaciones', $Param);
-            if (!$SQL) {
-                $sw_error = 1;
-                $msg_error = "No se pudo insertar la Ubicación.";
             }
         }
 
         // OK. SMM, 18/04/2024
         if ($sw_error == 0) {
-            header("Location:parametros_te.php?doc=$TipoDoc&a=" . base64_encode("OK_PRUpd") . "#$TipoDoc");
+            header("Location:jerarquias_te.php?doc=$TipoDoc&a=" . base64_encode("OK_PRUpd") . "#$TipoDoc");
         }
 
     } catch (Exception $e) {
@@ -145,12 +85,8 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
 }
 
 // SMM, 17/04/2024
-$SQL_Unidades = Seleccionar("uvw_tbl_TarjetaEquipo_UnidadMedidas", "*");
-$SQL_Marcas = Seleccionar("uvw_tbl_TarjetaEquipo_Marcas", "*");
-$SQL_Lineas = Seleccionar("uvw_tbl_TarjetaEquipo_Lineas", "*");
-$SQL_Fabricantes = Seleccionar("uvw_tbl_TarjetaEquipo_Fabricantes", "*");
-$SQL_Annios = Seleccionar("uvw_tbl_TarjetaEquipo_Annios", "*");
-$SQL_Ubicaciones = Seleccionar("uvw_tbl_TarjetaEquipo_Ubicaciones", "*");
+$SQL_Jerarquias = Seleccionar("uvw_tbl_TarjetaEquipo_Jerarquias", "*");
+$SQL_Dimensiones = Seleccionar("uvw_tbl_TarjetaEquipo_DimensionJerarquias", "*");
 ?>
 
 <!DOCTYPE html>
@@ -264,34 +200,22 @@ if (isset($sw_error) && ($sw_error == 1)) {
 						<div class="tabs-container">
 
 						 	<ul class="nav nav-tabs">
-								<li class="<?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Unidades") || !isset($_GET['doc'])) ? "active" : ""; ?>">
-									<a data-toggle="tab" href="#tab-1"><i class="fa fa-list"></i> Unidades</a>
+								<li class="<?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Jerarquias") || !isset($_GET['doc'])) ? "active" : ""; ?>">
+									<a data-toggle="tab" href="#tab-1"><i class="fa fa-list"></i> Jerarquias</a>
 								</li>
-								<li class="<?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Marcas")) ? "active" : ""; ?>">
-									<a data-toggle="tab" href="#tab-2"><i class="fa fa-list"></i> Marcas</a>
-								</li>
-								<li class="<?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Lineas")) ? "active" : ""; ?>">
-									<a data-toggle="tab" href="#tab-3"><i class="fa fa-list"></i> Lineas</a>
-								</li>
-								<li class="<?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Fabricantes")) ? "active" : ""; ?>">
-									<a data-toggle="tab" href="#tab-4"><i class="fa fa-list"></i> Fabricantes</a>
-								</li>
-								<li class="<?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Annios")) ? "active" : ""; ?>">
-									<a data-toggle="tab" href="#tab-5"><i class="fa fa-list"></i> Años</a>
-								</li>
-								<li class="<?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Ubicaciones")) ? "active" : ""; ?>">
-									<a data-toggle="tab" href="#tab-6"><i class="fa fa-list"></i> Ubicaciones</a>
+								<li class="<?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Dimensiones")) ? "active" : ""; ?>">
+									<a data-toggle="tab" href="#tab-2"><i class="fa fa-list"></i> Dimensiones</a>
 								</li>
 							</ul>
 
 							<div class="tab-content">
 								
-								<!-- Inicio, lista Unidades -->
-								<div id="tab-1" class="tab-pane <?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Unidades") || !isset($_GET['doc'])) ? "active" : ""; ?>">
+								<!-- Inicio, lista Jerarquias -->
+								<div id="tab-1" class="tab-pane <?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Jerarquias") || !isset($_GET['doc'])) ? "active" : ""; ?>">
 									<form class="form-horizontal">
-										<div class="ibox" id="Unidades">
+										<div class="ibox" id="Jerarquias">
 											<div class="ibox-title bg-success">
-												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista de Unidades de Medida</h5>
+												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista de Jerarquias de Equipo</h5>
 												 <a class="collapse-link pull-right">
 													<i class="fa fa-chevron-up"></i>
 												</a>
@@ -299,7 +223,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 											<div class="ibox-content">
 												<div class="row m-b-md">
 													<div class="col-lg-12">
-														<button class="btn btn-primary pull-right" type="button" onClick="CrearCampo('Unidades');"><i class="fa fa-plus-circle"></i> Agregar nueva</button>
+														<button class="btn btn-primary pull-right" type="button" onClick="CrearCampo('Jerarquias');"><i class="fa fa-plus-circle"></i> Agregar nueva</button>
 													</div>
 												</div>
 												<div class="table-responsive">
@@ -315,20 +239,20 @@ if (isset($sw_error) && ($sw_error == 1)) {
 															</tr>
 														</thead>
 														<tbody>
-															 <?php while ($row_Unidades = sqlsrv_fetch_array($SQL_Unidades)) {?>
+															 <?php while ($row_Jerarquias = sqlsrv_fetch_array($SQL_Jerarquias)) {?>
 															<tr>
-																<td><?php echo $row_Unidades['unidad_medida_equipo']; ?></td>
-																<td><?php echo $row_Unidades['comentarios']; ?></td>
-																<td><?php echo isset($row_Unidades['fecha_actualizacion']) ? date_format($row_Unidades['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
-																<td><?php echo $row_Unidades['usuario_actualizacion'] ?? ""; ?></td>
+																<td><?php echo $row_Jerarquias['unidad_medida_equipo']; ?></td>
+																<td><?php echo $row_Jerarquias['comentarios']; ?></td>
+																<td><?php echo isset($row_Jerarquias['fecha_actualizacion']) ? date_format($row_Jerarquias['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
+																<td><?php echo $row_Jerarquias['usuario_actualizacion'] ?? ""; ?></td>
 																<td>
-																	<span class="label <?php echo ($row_Unidades['estado_unidad_medida_equipo'] == "Y") ? "label-info" : "label-danger"; ?>">
-																		<?php echo ($row_Unidades['estado_unidad_medida_equipo'] == "Y") ? "Activo" : "Inactivo"; ?>
+																	<span class="label <?php echo ($row_Jerarquias['estado_unidad_medida_equipo'] == "Y") ? "label-info" : "label-danger"; ?>">
+																		<?php echo ($row_Jerarquias['estado_unidad_medida_equipo'] == "Y") ? "Activo" : "Inactivo"; ?>
 																	</span>
 																</td>
 																<td>
-																	<button type="button" id="btnEdit<?php echo $row_Unidades['id_unidad_medida_equipo']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Unidades['id_unidad_medida_equipo']; ?>','Unidades');"><i class="fa fa-pencil"></i> Editar</button>
-																	<button type="button" id="btnDelete<?php echo $row_Unidades['id_unidad_medida_equipo']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Unidades['id_unidad_medida_equipo']; ?>','Unidades');"><i class="fa fa-trash"></i> Eliminar</button>
+																	<button type="button" id="btnEdit<?php echo $row_Jerarquias['id_unidad_medida_equipo']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Jerarquias['id_unidad_medida_equipo']; ?>','Jerarquias');"><i class="fa fa-pencil"></i> Editar</button>
+																	<button type="button" id="btnDelete<?php echo $row_Jerarquias['id_unidad_medida_equipo']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Jerarquias['id_unidad_medida_equipo']; ?>','Jerarquias');"><i class="fa fa-trash"></i> Eliminar</button>
 																</td>
 															</tr>
 															 <?php }?>
@@ -339,14 +263,14 @@ if (isset($sw_error) && ($sw_error == 1)) {
 										</div> <!-- ibox -->
 									</form>
 								</div>
-								<!-- Fin, lista Unidades -->
+								<!-- Fin, lista Jerarquias -->
 
-								<!-- Inicio, lista Marcas -->
-								<div id="tab-2" class="tab-pane <?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Marcas")) ? "active" : ""; ?>">
+								<!-- Inicio, lista Dimensiones -->
+								<div id="tab-2" class="tab-pane <?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Dimensiones")) ? "active" : ""; ?>">
 									<form class="form-horizontal">
-										<div class="ibox" id="Marcas">
+										<div class="ibox" id="Dimensiones">
 											<div class="ibox-title bg-success">
-												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista de Marcas de Equipo</h5>
+												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista de Dimensiones de Jerarquía</h5>
 												 <a class="collapse-link pull-right">
 													<i class="fa fa-chevron-up"></i>
 												</a>
@@ -354,14 +278,14 @@ if (isset($sw_error) && ($sw_error == 1)) {
 											<div class="ibox-content">
 												<div class="row m-b-md">
 													<div class="col-lg-12">
-														<button class="btn btn-primary pull-right" type="button" onClick="CrearCampo('Marcas');"><i class="fa fa-plus-circle"></i> Agregar nueva</button>
+														<button class="btn btn-primary pull-right" type="button" onClick="CrearCampo('Dimensiones');"><i class="fa fa-plus-circle"></i> Agregar nueva</button>
 													</div>
 												</div>
 												<div class="table-responsive">
 													<table class="table table-striped table-bordered table-hover dataTables-example">
 														<thead>
 															<tr>
-																<th>Marca Equipo</th>
+																<th>Dimensión Jerarquía</th>
 																<th>Comentarios</th>
 																<th>Fecha Actualizacion</th>
 																<th>Usuario Actualizacion</th>
@@ -370,20 +294,20 @@ if (isset($sw_error) && ($sw_error == 1)) {
 															</tr>
 														</thead>
 														<tbody>
-															 <?php while ($row_Marcas = sqlsrv_fetch_array($SQL_Marcas)) {?>
+															 <?php while ($row_Dimensiones = sqlsrv_fetch_array($SQL_Dimensiones)) {?>
 															<tr>
-																<td><?php echo $row_Marcas['marca_equipo']; ?></td>
-																<td><?php echo $row_Marcas['comentarios']; ?></td>
-																<td><?php echo isset($row_Marcas['fecha_actualizacion']) ? date_format($row_Marcas['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
-																<td><?php echo $row_Marcas['usuario_actualizacion'] ?? ""; ?></td>
+																<td><?php echo $row_Dimensiones['marca_equipo']; ?></td>
+																<td><?php echo $row_Dimensiones['comentarios']; ?></td>
+																<td><?php echo isset($row_Dimensiones['fecha_actualizacion']) ? date_format($row_Dimensiones['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
+																<td><?php echo $row_Dimensiones['usuario_actualizacion'] ?? ""; ?></td>
 																<td>
-																	<span class="label <?php echo ($row_Marcas['estado_marca_equipo'] == "Y") ? "label-info" : "label-danger"; ?>">
-																		<?php echo ($row_Marcas['estado_marca_equipo'] == "Y") ? "Activo" : "Inactivo"; ?>
+																	<span class="label <?php echo ($row_Dimensiones['estado_marca_equipo'] == "Y") ? "label-info" : "label-danger"; ?>">
+																		<?php echo ($row_Dimensiones['estado_marca_equipo'] == "Y") ? "Activo" : "Inactivo"; ?>
 																	</span>
 																</td>
 																<td>
-																	<button type="button" id="btnEdit<?php echo $row_Marcas['id_marca_equipo']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Marcas['id_marca_equipo']; ?>','Marcas');"><i class="fa fa-pencil"></i> Editar</button>
-																	<button type="button" id="btnDelete<?php echo $row_Marcas['id_marca_equipo']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Marcas['id_marca_equipo']; ?>','Marcas');"><i class="fa fa-trash"></i> Eliminar</button>
+																	<button type="button" id="btnEdit<?php echo $row_Dimensiones['id_marca_equipo']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Dimensiones['id_marca_equipo']; ?>','Dimensiones');"><i class="fa fa-pencil"></i> Editar</button>
+																	<button type="button" id="btnDelete<?php echo $row_Dimensiones['id_marca_equipo']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Dimensiones['id_marca_equipo']; ?>','Dimensiones');"><i class="fa fa-trash"></i> Eliminar</button>
 																</td>
 															</tr>
 															 <?php }?>
@@ -394,219 +318,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 										</div> <!-- ibox -->
 									</form>
 								</div>
-								<!-- Fin, lista Marcas -->
-
-								<!-- Inicio, lista Lineas -->
-								<div id="tab-3" class="tab-pane <?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Lineas")) ? "active" : ""; ?>">
-									<form class="form-horizontal">
-										<div class="ibox" id="Lineas">
-											<div class="ibox-title bg-success">
-												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista de Lineas de Equipo</h5>
-												 <a class="collapse-link pull-right">
-													<i class="fa fa-chevron-up"></i>
-												</a>
-											</div>
-											<div class="ibox-content">
-												<div class="row m-b-md">
-													<div class="col-lg-12">
-														<button class="btn btn-primary pull-right" type="button" onClick="CrearCampo('Lineas');"><i class="fa fa-plus-circle"></i> Agregar nueva</button>
-													</div>
-												</div>
-												<div class="table-responsive">
-													<table class="table table-striped table-bordered table-hover dataTables-example">
-														<thead>
-															<tr>
-																<th>Linea Equipo</th>
-																<th>Comentarios</th>
-																<th>Fecha Actualizacion</th>
-																<th>Usuario Actualizacion</th>
-																<th>Estado</th>
-																<th>Acciones</th>
-															</tr>
-														</thead>
-														<tbody>
-															 <?php while ($row_Lineas = sqlsrv_fetch_array($SQL_Lineas)) {?>
-															<tr>
-																<td><?php echo $row_Lineas['linea_equipo']; ?></td>
-																<td><?php echo $row_Lineas['comentarios']; ?></td>
-																<td><?php echo isset($row_Lineas['fecha_actualizacion']) ? date_format($row_Lineas['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
-																<td><?php echo $row_Lineas['usuario_actualizacion'] ?? ""; ?></td>
-																<td>
-																	<span class="label <?php echo ($row_Lineas['estado_linea_equipo'] == "Y") ? "label-info" : "label-danger"; ?>">
-																		<?php echo ($row_Lineas['estado_linea_equipo'] == "Y") ? "Activo" : "Inactivo"; ?>
-																	</span>
-																</td>
-																<td>
-																	<button type="button" id="btnEdit<?php echo $row_Lineas['id_linea_equipo']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Lineas['id_linea_equipo']; ?>','Lineas');"><i class="fa fa-pencil"></i> Editar</button>
-																	<button type="button" id="btnDelete<?php echo $row_Lineas['id_linea_equipo']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Lineas['id_linea_equipo']; ?>','Lineas');"><i class="fa fa-trash"></i> Eliminar</button>
-																</td>
-															</tr>
-															 <?php }?>
-														</tbody>
-													</table>
-												</div>
-											</div> <!-- ibox-content -->
-										</div> <!-- ibox -->
-									</form>
-								</div>
-								<!-- Fin, lista Lineas -->
-
-								<!-- Inicio, lista Fabricantes -->
-								<div id="tab-4" class="tab-pane <?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Fabricantes")) ? "active" : ""; ?>">
-									<form class="form-horizontal">
-										<div class="ibox" id="Fabricantes">
-											<div class="ibox-title bg-success">
-												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista de Fabricantes de Equipo</h5>
-												 <a class="collapse-link pull-right">
-													<i class="fa fa-chevron-up"></i>
-												</a>
-											</div>
-											<div class="ibox-content">
-												<div class="row m-b-md">
-													<div class="col-lg-12">
-														<button class="btn btn-primary pull-right" type="button" onClick="CrearCampo('Fabricantes');"><i class="fa fa-plus-circle"></i> Agregar nueva</button>
-													</div>
-												</div>
-												<div class="table-responsive">
-													<table class="table table-striped table-bordered table-hover dataTables-example">
-														<thead>
-															<tr>
-																<th>Fabricante Equipo</th>
-																<th>Comentarios</th>
-																<th>Fecha Actualizacion</th>
-																<th>Usuario Actualizacion</th>
-																<th>Estado</th>
-																<th>Acciones</th>
-															</tr>
-														</thead>
-														<tbody>
-															 <?php while ($row_Fabricantes = sqlsrv_fetch_array($SQL_Fabricantes)) {?>
-															<tr>
-																<td><?php echo $row_Fabricantes['fabricante_equipo']; ?></td>
-																<td><?php echo $row_Fabricantes['comentarios']; ?></td>
-																<td><?php echo isset($row_Fabricantes['fecha_actualizacion']) ? date_format($row_Fabricantes['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
-																<td><?php echo $row_Fabricantes['usuario_actualizacion'] ?? ""; ?></td>
-																<td>
-																	<span class="label <?php echo ($row_Fabricantes['estado_fabricante_equipo'] == "Y") ? "label-info" : "label-danger"; ?>">
-																		<?php echo ($row_Fabricantes['estado_fabricante_equipo'] == "Y") ? "Activo" : "Inactivo"; ?>
-																	</span>
-																</td>
-																<td>
-																	<button type="button" id="btnEdit<?php echo $row_Fabricantes['id_fabricante_equipo']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Fabricantes['id_fabricante_equipo']; ?>','Fabricantes');"><i class="fa fa-pencil"></i> Editar</button>
-																	<button type="button" id="btnDelete<?php echo $row_Fabricantes['id_fabricante_equipo']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Fabricantes['id_fabricante_equipo']; ?>','Fabricantes');"><i class="fa fa-trash"></i> Eliminar</button>
-																</td>
-															</tr>
-															 <?php }?>
-														</tbody>
-													</table>
-												</div>
-											</div> <!-- ibox-content -->
-										</div> <!-- ibox -->
-									</form>
-								</div>
-								<!-- Fin, lista Fabricantes -->
-
-								<!-- Inicio, lista Annios -->
-								<div id="tab-5" class="tab-pane <?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Annios")) ? "active" : ""; ?>">
-									<form class="form-horizontal">
-										<div class="ibox" id="Annios">
-											<div class="ibox-title bg-success">
-												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista de Años de Equipo</h5>
-												 <a class="collapse-link pull-right">
-													<i class="fa fa-chevron-up"></i>
-												</a>
-											</div>
-											<div class="ibox-content">
-												<div class="row m-b-md">
-													<div class="col-lg-12">
-														<button class="btn btn-primary pull-right" type="button" onClick="CrearCampo('Annios');"><i class="fa fa-plus-circle"></i> Agregar nueva</button>
-													</div>
-												</div>
-												<div class="table-responsive">
-													<table class="table table-striped table-bordered table-hover dataTables-example">
-														<thead>
-															<tr>
-																<th>Año Equipo</th>
-																<th>Comentarios</th>
-																<th>Fecha Actualizacion</th>
-																<th>Usuario Actualizacion</th>
-																<th>Estado</th>
-																<th>Acciones</th>
-															</tr>
-														</thead>
-														<tbody>
-															 <?php while ($row_Annios = sqlsrv_fetch_array($SQL_Annios)) {?>
-															<tr>
-																<td><?php echo $row_Annios['annio_equipo']; ?></td>
-																<td><?php echo $row_Annios['comentarios']; ?></td>
-																<td><?php echo isset($row_Annios['fecha_actualizacion']) ? date_format($row_Annios['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
-																<td><?php echo $row_Annios['usuario_actualizacion'] ?? ""; ?></td>
-																<td>
-																	<span class="label <?php echo ($row_Annios['estado_annio_equipo'] == "Y") ? "label-info" : "label-danger"; ?>">
-																		<?php echo ($row_Annios['estado_annio_equipo'] == "Y") ? "Activo" : "Inactivo"; ?>
-																	</span>
-																</td>
-																<td>
-																	<button type="button" id="btnEdit<?php echo $row_Annios['id_annio_equipo']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Annios['id_annio_equipo']; ?>','Annios');"><i class="fa fa-pencil"></i> Editar</button>
-																	<button type="button" id="btnDelete<?php echo $row_Annios['id_annio_equipo']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Annios['id_annio_equipo']; ?>','Annios');"><i class="fa fa-trash"></i> Eliminar</button>
-																</td>
-															</tr>
-															 <?php }?>
-														</tbody>
-													</table>
-												</div>
-											</div> <!-- ibox-content -->
-										</div> <!-- ibox -->
-									</form>
-								</div>
-								<!-- Fin, lista Annios -->
-
-								<!-- Inicio, lista Ubicaciones -->
-								<div id="tab-6" class="tab-pane <?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Ubicaciones")) ? "active" : ""; ?>">
-									<form class="form-horizontal">
-										<div class="ibox" id="Ubicaciones">
-											<div class="ibox-title bg-success">
-												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista de Ubicaciones</h5>
-												 <a class="collapse-link pull-right">
-													<i class="fa fa-chevron-up"></i>
-												</a>
-											</div>
-											<div class="ibox-content">
-												<div class="row m-b-md">
-													<div class="col-lg-12">
-														<button class="btn btn-primary pull-right" type="button" onClick="CrearCampo('Ubicaciones');"><i class="fa fa-plus-circle"></i> Agregar nueva</button>
-													</div>
-												</div>
-												<div class="table-responsive">
-													<table class="table table-striped table-bordered table-hover dataTables-example">
-														<thead>
-															<tr>
-																<th>Ubicación</th>
-																<th>Fecha Actualizacion</th>
-																<th>Usuario Actualizacion</th>
-																<th>Acciones</th>
-															</tr>
-														</thead>
-														<tbody>
-															 <?php while ($row_Ubicaciones = sqlsrv_fetch_array($SQL_Ubicaciones)) {?>
-															<tr>
-																<td><?php echo $row_Ubicaciones['ubicacion_equipo']; ?></td>
-																<td><?php echo isset($row_Ubicaciones['fecha_actualizacion']) ? date_format($row_Ubicaciones['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
-																<td><?php echo $row_Ubicaciones['usuario_actualizacion'] ?? ""; ?></td>
-																<td>
-																	<button type="button" id="btnEdit<?php echo $row_Ubicaciones['id_ubicacion_equipo']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Ubicaciones['id_ubicacion_equipo']; ?>','Ubicaciones');"><i class="fa fa-pencil"></i> Editar</button>
-																	<button type="button" id="btnDelete<?php echo $row_Ubicaciones['id_ubicacion_equipo']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Ubicaciones['id_ubicacion_equipo']; ?>','Ubicaciones');"><i class="fa fa-trash"></i> Eliminar</button>
-																</td>
-															</tr>
-															 <?php }?>
-														</tbody>
-													</table>
-												</div>
-											</div> <!-- ibox-content -->
-										</div> <!-- ibox -->
-									</form>
-								</div>
-								<!-- Fin, lista Ubicaciones -->
+								<!-- Fin, lista Dimensiones -->
 
 							</div> <!-- tab-content -->
 						</div> <!-- tabs-container -->
@@ -669,7 +381,7 @@ function CrearCampo(doc){
 
 	$.ajax({
 		type: "POST",
-		url: "md_parametros_te.php",
+		url: "md_jerarquias_te.php",
 		data:{
 			doc:doc
 		},
@@ -686,7 +398,7 @@ function EditarCampo(id, doc){
 
 	$.ajax({
 		type: "POST",
-		url: "md_parametros_te.php",
+		url: "md_jerarquias_te.php",
 		data:{
 			doc:doc,
 			id:id,
@@ -713,12 +425,12 @@ function EliminarCampo(id, doc){
 
 			$.ajax({
 				type: "post",
-				url: "parametros_te.php",
+				url: "jerarquias_te.php",
 				data: { TipoDoc: doc, ID: id, Metodo: 3 },
 				async: false,
 				success: function(data){
 					// console.log(data);
-					location.href = `parametros_te.php?doc=${doc}&a=<?php echo base64_encode("OK_PRDel"); ?>`;
+					location.href = `jerarquias_te.php?doc=${doc}&a=<?php echo base64_encode("OK_PRDel"); ?>`;
 				},
 				error: function(error) {
 					console.error("consulta erronea");
