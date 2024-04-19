@@ -121,6 +121,13 @@ $dPorcentajes = $row_DatosBase["DecimalPorcentajes"] ?? 4;
 
 $sDecimal = $row_DatosBase["CaracterSeparadorDecimal"] ?? ".";
 $sMillares = $row_DatosBase["CaracterSeparadorMillares"] ?? ",";
+
+// SMM, 19/04/2024
+$SQL_OT_ORIGEN = Seleccionar('uvw_Sap_tbl_OT_Origen', 'IdOT_Origen "IdTipoOT", OT_Origen "TipoOT"', '', 'IdOT_Origen');
+$SQL_OT_SEDE_EMPRESA = Seleccionar('uvw_Sap_tbl_OT_SedeEmpresa', 'IdOT_SedeEmpresa "IdSedeEmpresa", OT_SedeEmpresa "SedeEmpresa"', '', 'IdOT_SedeEmpresa');
+$SQL_OT_TipoLlamada = Seleccionar('uvw_Sap_tbl_OT_TipoLlamada', 'IdOT_TipoLlamada "IdTipoCargo", OT_TipoLlamada "TipoCargo"', '', 'IdOT_TipoLlamada');
+$SQL_OT_TIPOPROBLEMA = Seleccionar('uvw_Sap_tbl_OT_TipoProblema', 'IdOT_TipoProblema "IdTipoProblema", OT_TipoProblema "TipoProblema"', '', 'IdOT_TipoProblema');
+$SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPreventivo "IdTipoPreventivo", OT_TipoPreventivo "TipoPreventivo"', '', 'IdOT_TipoPreventivo');
 ?>
 
 <!doctype html>
@@ -554,6 +561,14 @@ $sMillares = $row_DatosBase["CaracterSeparadorMillares"] ?? ",";
 						<th>Proyecto</th>
 						<th>Encargado de compras</th>
 
+						<!-- Nuevos campos basados en la OT -->
+						<th>Tipo OT</th>
+						<th>Sede Empresa</th>
+						<th>Tipo Cargo</th>
+						<th>Tipo Problema</th>
+						<th>Tipo Preventivo</th>
+						<!-- SMM, 19/04/2024 -->
+
 						<th>Texto libre</th>
 						<th>Precio</th>
 						<th>Precio con IVA</th>
@@ -831,6 +846,78 @@ $sMillares = $row_DatosBase["CaracterSeparadorMillares"] ?? ",";
 											<?php } ?>
 										</select>
 									</td>
+
+									<!-- Nuevos campos basados en la OT. SMM, 19/04/2024 -->
+									<td>
+										<select name="IdTipoOT" id="IdTipoOT" class="form-control select2" required>
+											<option value="">Seleccione...</option>
+
+											<?php while ($row_ORIGEN = sqlsrv_fetch_array($SQL_OT_ORIGEN)) { ?>
+												<option value="<?php echo $row_ORIGEN['IdTipoOT']; ?>" <?php if ((isset($row["CDU_IdTipoOT"])) && (strcmp($row_ORIGEN['IdTipoOT'], $row["CDU_IdTipoOT"]) == 0)) {
+													   echo "selected";
+												   } ?>>
+													<?php echo $row_ORIGEN['IdTipoOT'] . " - " . $row_ORIGEN['TipoOT']; ?>
+												</option>
+											<?php } ?>
+										</select>
+									</td>
+
+									<td>
+										<select name="IdSedeEmpresa" id="IdSedeEmpresa" class="form-control select2" required>
+											<option value="">Seleccione...</option>
+
+											<?php while ($row_SEDE_EMPRESA = sqlsrv_fetch_array($SQL_OT_SEDE_EMPRESA)) { ?>
+												<option value="<?php echo $row_SEDE_EMPRESA['IdSedeEmpresa']; ?>" <?php if ((isset($row["CDU_IdSedeEmpresa"])) && (strcmp($row_SEDE_EMPRESA['IdSedeEmpresa'], $row["CDU_IdSedeEmpresa"]) == 0)) {
+													   echo "selected";
+												   } ?>>
+													<?php echo $row_SEDE_EMPRESA['IdSedeEmpresa'] . " - " . $row_SEDE_EMPRESA['SedeEmpresa']; ?>
+												</option>
+											<?php } ?>
+										</select>
+									</td>
+
+									<td>
+										<select name="IdTipoCargo" id="IdTipoCargo" class="form-control select2" required>
+											<option value="">Seleccione...</option>
+
+											<?php while ($row_CLASES = sqlsrv_fetch_array($SQL_OT_TipoLlamada)) { ?>
+												<option value="<?php echo $row_CLASES['IdTipoCargo']; ?>" <?php if ((isset($row["CDU_IdTipoCargo"])) && (strcmp($row_CLASES['IdTipoCargo'], $row["CDU_IdTipoCargo"]) == 0)) {
+													   echo "selected";
+												   } ?>>
+													<?php echo $row_CLASES['IdTipoCargo'] . " - " . $row_CLASES['TipoCargo']; ?>
+												</option>
+											<?php } ?>
+										</select>
+									</td>
+
+									<td>
+										<select name="IdTipoProblema" id="IdTipoProblema" class="form-control select2" required>
+											<option value="">Seleccione...</option>
+
+											<?php while ($row_TIPOPROBLEMA = sqlsrv_fetch_array($SQL_OT_TIPOPROBLEMA)) { ?>
+												<option value="<?php echo $row_TIPOPROBLEMA['IdTipoProblema']; ?>" <?php if ((isset($row["CDU_IdTipoProblema"])) && (strcmp($row_TIPOPROBLEMA['IdTipoProblema'], $row["CDU_IdTipoProblema"]) == 0)) {
+													   echo "selected";
+												   } ?>>
+													<?php echo $row_TIPOPROBLEMA['IdTipoProblema'] . " - " . $row_TIPOPROBLEMA['TipoProblema']; ?>
+												</option>
+											<?php } ?>
+										</select>
+									</td>
+
+									<td>
+										<select name="IdTipoPreventivo" id="IdTipoPreventivo" class="form-control select2" required>
+											<option value="">Seleccione...</option>
+
+											<?php while ($row_TIPOPREVENTI = sqlsrv_fetch_array($SQL_OT_TIPOPREVENTI)) { ?>
+												<option value="<?php echo $row_TIPOPREVENTI['IdTipoPreventivo']; ?>" <?php if ((isset($row["CDU_IdTipoPreventivo"])) && (strcmp($row_TIPOPREVENTI['IdTipoPreventivo'], $row["CDU_IdTipoPreventivo"]) == 0)) {
+													   echo "selected";
+												   } ?>>
+													<?php echo $row_TIPOPREVENTI['IdTipoPreventivo'] . " - " . $row_TIPOPREVENTI['TipoPreventivo']; ?>
+												</option>
+											<?php } ?>
+										</select>
+									</td>
+									<!-- Hasta aquí. SMM, 19/04/2024 -->
 
 									<td><input size="50" type="text" id="FreeTxt<?php echo $i; ?>" name="FreeTxt[]"
 											class="form-control" value="<?php echo $row['FreeTxt']; ?>"
