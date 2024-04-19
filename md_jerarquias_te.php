@@ -47,19 +47,19 @@ if ($edit == 1 && $id != "") {
 		<div class="ibox-content">
 			<?php include "includes/spinner.php";?>
 
-			<?php if ($doc == "Unidades") {?>
+			<?php if ($doc == "Jerarquias") {?>
 
 				<!-- Inicio, Unidad Medida -->
 				<div class="form-group row">
 					<div class="col-md-6">
-						<label class="control-label">Nombre Unidad Medida <span class="text-danger">*</span></label>
-						<input type="text" class="form-control" autocomplete="off" required name="NombreUnidadMedida" id="NombreUnidadMedida" value="<?php echo $row['unidad_medida_equipo'] ?? ""; ?>">
+						<label class="control-label">Nombre Jerarquía <span class="text-danger">*</span></label>
+						<input type="text" class="form-control" autocomplete="off" required name="NombreJerarquia" id="NombreJerarquia" value="<?php echo $row['jerarquia'] ?? ""; ?>">
 					</div>
 					<div class="col-md-6">
 						<label class="control-label">Estado <span class="text-danger">*</span></label>
 						<select class="form-control" id="Estado" name="Estado">
-							<option value="Y" <?php if (($edit == 1) && ($row['estado_unidad_medida_equipo'] == "Y")) {echo "selected";}?>>ACTIVO</option>
-							<option value="N" <?php if (($edit == 1) && ($row['estado_unidad_medida_equipo'] == "N")) {echo "selected";}?>>INACTIVO</option>
+							<option value="Y" <?php if (($edit == 1) && ($row['estado_jerarquia'] == "Y")) {echo "selected";}?>>ACTIVO</option>
+							<option value="N" <?php if (($edit == 1) && ($row['estado_jerarquia'] == "N")) {echo "selected";}?>>INACTIVO</option>
 						</select>
 					</div>
 				</div>
@@ -72,19 +72,19 @@ if ($edit == 1 && $id != "") {
 				</div>
 				<!-- Fin, Unidad Medida -->
 
-			<?php } elseif ($doc == "Marcas") {?>
+			<?php } elseif ($doc == "Dimensiones") {?>
 
 				<!-- Inicio, Marca -->
 				<div class="form-group row">
 					<div class="col-md-6">
-						<label class="control-label">Nombre Marca <span class="text-danger">*</span></label>
-						<input type="text" class="form-control" autocomplete="off" required name="NombreMarca" id="NombreMarca" value="<?php echo $row['marca_equipo'] ?? ""; ?>">
+						<label class="control-label">Nombre Dimensión <span class="text-danger">*</span></label>
+						<input type="text" class="form-control" autocomplete="off" required name="NombreDimension" id="NombreDimension" value="<?php echo $row['dimension_jerarquia'] ?? ""; ?>">
 					</div>
 					<div class="col-md-6">
 						<label class="control-label">Estado <span class="text-danger">*</span></label>
 						<select class="form-control" id="Estado" name="Estado">
-							<option value="Y" <?php if (($edit == 1) && ($row['estado_marca_equipo'] == "Y")) {echo "selected";}?>>ACTIVO</option>
-							<option value="N" <?php if (($edit == 1) && ($row['estado_marca_equipo'] == "N")) {echo "selected";}?>>INACTIVO</option>
+							<option value="Y" <?php if (($edit == 1) && ($row['estado_dimension_jerarquia'] == "Y")) {echo "selected";}?>>ACTIVO</option>
+							<option value="N" <?php if (($edit == 1) && ($row['estado_dimension_jerarquia'] == "N")) {echo "selected";}?>>INACTIVO</option>
 						</select>
 					</div>
 				</div>
