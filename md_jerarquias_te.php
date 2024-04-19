@@ -77,7 +77,7 @@ if ($edit == 1 && $id != "") {
 							<option value="" disabled selected>Seleccione...</option>
 							
 							<?php while ($row_DimensionesModal = sqlsrv_fetch_array($SQL_DimensionesModal)) {?>
-								<option value="<?php echo $row_DimensionesModal['ID']; ?>" 
+								<option value="<?php echo $row_DimensionesModal['id_dimension_jerarquia']; ?>" 
 									<?php if (isset($row['id_dimension_jerarquia']) && ($row['id_dimension_jerarquia'] == $row_DimensionesModal['id_dimension_jerarquia'])) {
 										echo "selected";
 									} ?>>

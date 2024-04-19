@@ -45,6 +45,7 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
             $Param = array(
                 $_POST['Metodo'] ?? 1, // 1 - Crear, 2 - Actualizar
                 $ID,
+				$_POST['ID_Dimension'],
                 "'" . $_POST['NombreJerarquia'] . "'",
                 "'" . $_POST['Estado'] . "'",
 				"'" . $_POST['Comentarios'] . "'",
