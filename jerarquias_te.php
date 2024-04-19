@@ -230,6 +230,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 													<table class="table table-striped table-bordered table-hover dataTables-example">
 														<thead>
 															<tr>
+																<th>Dimensión</th>
 																<th>Jerarquía Equipo</th>
 																<th>Comentarios</th>
 																<th>Fecha Actualizacion</th>
@@ -241,6 +242,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 														<tbody>
 															 <?php while ($row_Jerarquias = sqlsrv_fetch_array($SQL_Jerarquias)) {?>
 															<tr>
+																<td><?php echo $row_Jerarquias['dimension_jerarquia'] ?? ""; ?></td>		
 																<td><?php echo $row_Jerarquias['jerarquia']; ?></td>
 																<td><?php echo $row_Jerarquias['comentarios']; ?></td>
 																<td><?php echo isset($row_Jerarquias['fecha_actualizacion']) ? date_format($row_Jerarquias['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
@@ -249,7 +251,7 @@ if (isset($sw_error) && ($sw_error == 1)) {
 																	<span class="label <?php echo ($row_Jerarquias['estado_jerarquia'] == "Y") ? "label-info" : "label-danger"; ?>">
 																		<?php echo ($row_Jerarquias['estado_jerarquia'] == "Y") ? "Activo" : "Inactivo"; ?>
 																	</span>
-																</td>
+																</td>	
 																<td>
 																	<button type="button" id="btnEdit<?php echo $row_Jerarquias['id_jerarquia']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Jerarquias['id_jerarquia']; ?>','Jerarquias');"><i class="fa fa-pencil"></i> Editar</button>
 																	<button type="button" id="btnDelete<?php echo $row_Jerarquias['id_jerarquia']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Jerarquias['id_jerarquia']; ?>','Jerarquias');"><i class="fa fa-trash"></i> Eliminar</button>

@@ -8,6 +8,9 @@ $edit = isset($_POST['edit']) ? $_POST['edit'] : 0;
 $doc = isset($_POST['doc']) ? $_POST['doc'] : "";
 $id = isset($_POST['id']) ? $_POST['id'] : "";
 
+// SMM, 19/04/2024
+$SQL_DimensionesModal = Seleccionar('tbl_TarjetaEquipo_DimensionJerarquias', '*');
+
 if ($edit == 1 && $id != "") {
     $Title = "Editar registro";
     $Metodo = 2;
@@ -60,6 +63,27 @@ if ($edit == 1 && $id != "") {
 						<select class="form-control" id="Estado" name="Estado">
 							<option value="Y" <?php if (($edit == 1) && ($row['estado_jerarquia'] == "Y")) {echo "selected";}?>>ACTIVO</option>
 							<option value="N" <?php if (($edit == 1) && ($row['estado_jerarquia'] == "N")) {echo "selected";}?>>INACTIVO</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="form-group row">
+					<div class="col-md-12">
+						<label class="control-label">
+							Dimensión Jerarquía <span class="text-danger">*</span>
+						</label>
+						
+						<select name="ID_Dimension" class="form-control select2" id="ID_Dimension" required>
+							<option value="" disabled selected>Seleccione...</option>
+							
+							<?php while ($row_DimensionesModal = sqlsrv_fetch_array($SQL_DimensionesModal)) {?>
+								<option value="<?php echo $row_DimensionesModal['ID']; ?>" 
+									<?php if (isset($row['id_dimension_jerarquia']) && ($row['id_dimension_jerarquia'] == $row_DimensionesModal['id_dimension_jerarquia'])) {
+										echo "selected";
+									} ?>>
+									<?php echo $row_DimensionesModal['id_dimension_jerarquia'] . " - " . $row_DimensionesModal['dimension_jerarquia']; ?>
+								</option>
+							<?php }?>
 						</select>
 					</div>
 				</div>
