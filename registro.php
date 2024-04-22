@@ -2579,11 +2579,12 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     "'$dim3'",
                     "'$dim4'",
                     "'$dim5'",
-                    "'" . $_REQUEST['prjcode'] . "'",
-                    "'" . ($_REQUEST['pricelist'] ?? "") . "'",
-                    "'" . ($_REQUEST['empventas'] ?? "") . "'",
                 );
+
+                // SMM, 22/04/2024
+                $ParametrosInsert = array_merge($ParametrosInsert, $ParametrosOthers);
                 $SQL_Insert = EjecutarSP('sp_tbl_OrdenCompraDetalleCarritoInsert', $ParametrosInsert, 35);
+                
                 if ($SQL_Insert) {
                     $ParametrosCount = array(
                         "'$WhsCode'",
@@ -2612,11 +2613,12 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     "'$dim3'",
                     "'$dim4'",
                     "'$dim5'",
-                    "'" . $_REQUEST['prjcode'] . "'",
-                    "'" . ($_REQUEST['pricelist'] ?? "") . "'",
-                    "'" . ($_REQUEST['empventas'] ?? "") . "'",
                 );
+
+                // SMM, 22/04/2024
+                $ParametrosInsert = array_merge($ParametrosInsert, $ParametrosOthers);
                 $SQL_Insert = EjecutarSP('sp_tbl_OrdenCompraDetalleInsert', $ParametrosInsert, 35);
+                
                 if ($SQL_Insert) {
                     $ParametrosCount = array(
                         "'$id'",
@@ -2643,11 +2645,12 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     "'$dim3'",
                     "'$dim4'",
                     "'$dim5'",
-                    "'" . $_REQUEST['prjcode'] . "'",
-                    "'" . ($_REQUEST['pricelist'] ?? "") . "'",
-                    "'" . ($_REQUEST['empventas'] ?? "") . "'",
                 );
+
+                // SMM, 22/04/2024
+                $ParametrosInsert = array_merge($ParametrosInsert, $ParametrosOthers);
                 $SQL_Insert = EjecutarSP('sp_tbl_EntradaCompraDetalleCarritoInsert', $ParametrosInsert, 35);
+                
                 if ($SQL_Insert) {
                     $ParametrosCount = array(
                         "'$WhsCode'",
@@ -2676,11 +2679,12 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     "'$dim3'",
                     "'$dim4'",
                     "'$dim5'",
-                    "'" . $_REQUEST['prjcode'] . "'",
-                    "'" . ($_REQUEST['pricelist'] ?? "") . "'",
-                    "'" . ($_REQUEST['empventas'] ?? "") . "'",
                 );
+
+                // SMM, 22/04/2024
+                $ParametrosInsert = array_merge($ParametrosInsert, $ParametrosOthers);
                 $SQL_Insert = EjecutarSP('sp_tbl_EntradaCompraDetalleInsert', $ParametrosInsert, 35);
+                
                 if ($SQL_Insert) {
                     $ParametrosCount = array(
                         "'$id'",
@@ -2707,12 +2711,13 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     "'$dim3'",
                     "'$dim4'",
                     "'$dim5'",
-                    "'" . $_REQUEST['prjcode'] . "'",
-                    "'" . $_REQUEST['reqdate'] . "'", // SMM, 13/02/2023
-                    "'" . ($_REQUEST['pricelist'] ?? "") . "'",
-                    "'" . ($_REQUEST['empventas'] ?? "") . "'",
+                    "'" . ($_REQUEST['reqdate'] ?? "") . "'", // SMM, 13/02/2023
                 );
+
+                // SMM, 22/04/2024
+                $ParametrosInsert = array_merge($ParametrosInsert, $ParametrosOthers);
                 $SQL_Insert = EjecutarSP('sp_tbl_SolicitudCompraDetalleCarritoInsert', $ParametrosInsert, 35);
+                
                 if ($SQL_Insert) {
                     $ParametrosCount = array(
                         "'$WhsCode'",
@@ -2742,9 +2747,6 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     "'$dim4'",
                     "'$dim5'",
                     "'" . $_REQUEST['reqdate'] . "'", // SMM, 13/02/2023
-                    "'" . $_REQUEST['prjcode'] . "'",
-                    "'" . ($_REQUEST['pricelist'] ?? "") . "'",
-                    "'" . ($_REQUEST['empventas'] ?? "") . "'",
                 );
 
                 // SMM, 03/02/2024
@@ -2753,7 +2755,10 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     $borrador = '_Borrador';
                 }
 
+                // SMM, 22/04/2024
+                $ParametrosInsert = array_merge($ParametrosInsert, $ParametrosOthers);
                 $SQL_Insert = EjecutarSP("sp_tbl_SolicitudCompraDetalleInsert$borrador", $ParametrosInsert, 35);
+
                 if ($SQL_Insert) {
                     $ParametrosCount = array(
                         "'$id'",
@@ -2840,11 +2845,12 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     "'$dim3'",
                     "'$dim4'",
                     "'$dim5'",
-                    "'" . $_REQUEST['prjcode'] . "'",
-                    "'" . ($_REQUEST['pricelist'] ?? "") . "'",
-                    "'" . ($_REQUEST['empventas'] ?? "") . "'",
                 );
+
+                // SMM, 22/04/2024
+                $ParametrosInsert = array_merge($ParametrosInsert, $ParametrosOthers);
                 $SQL_Insert = EjecutarSP('sp_tbl_DevolucionCompraDetalleCarritoInsert', $ParametrosInsert, 35);
+                
                 if ($SQL_Insert) {
                     $ParametrosCount = array(
                         "'$WhsCode'",
@@ -2873,11 +2879,12 @@ if (isset($_REQUEST['P']) && $_REQUEST['P'] != "") {
                     "'$dim3'",
                     "'$dim4'",
                     "'$dim5'",
-                    "'" . $_REQUEST['prjcode'] . "'",
-                    "'" . ($_REQUEST['pricelist'] ?? "") . "'",
-                    "'" . ($_REQUEST['empventas'] ?? "") . "'",
                 );
+
+                // SMM, 22/04/2024
+                $ParametrosInsert = array_merge($ParametrosInsert, $ParametrosOthers);
                 $SQL_Insert = EjecutarSP('sp_tbl_DevolucionCompraDetalleInsert', $ParametrosInsert, 35);
+                
                 if ($SQL_Insert) {
                     $ParametrosCount = array(
                         "'$id'",
