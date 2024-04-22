@@ -142,7 +142,7 @@ $sMillares = $row_DatosBase["CaracterSeparadorMillares"] ?? ",";
 // SMM, 19/04/2024
 $SQL_OT_ORIGEN = Seleccionar('uvw_Sap_tbl_OT_Origen', 'IdOT_Origen "IdTipoOT", OT_Origen "TipoOT"', '', 'IdOT_Origen');
 $SQL_OT_SEDE_EMPRESA = Seleccionar('uvw_Sap_tbl_OT_SedeEmpresa', 'IdOT_SedeEmpresa "IdSedeEmpresa", OT_SedeEmpresa "SedeEmpresa"', '', 'IdOT_SedeEmpresa');
-$SQL_OT_TipoLlamada = Seleccionar('uvw_Sap_tbl_OT_TipoLlamada', 'IdOT_TipoLlamada "IdTipoCargo", OT_TipoLlamada "TipoCargo"', '', 'IdOT_TipoLlamada');
+$SQL_OT_TIPOCARGO = Seleccionar('uvw_Sap_tbl_OT_TipoLlamada', 'IdOT_TipoLlamada "IdTipoCargo", OT_TipoLlamada "TipoCargo"', '', 'IdOT_TipoLlamada');
 $SQL_OT_TIPOPROBLEMA = Seleccionar('uvw_Sap_tbl_OT_TipoProblema', 'IdOT_TipoProblema "IdTipoProblema", OT_TipoProblema "TipoProblema"', '', 'IdOT_TipoProblema');
 $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPreventivo "IdTipoPreventivo", OT_TipoPreventivo "TipoPreventivo"', '', 'IdOT_TipoPreventivo');
 ?>
@@ -790,7 +790,7 @@ if ($sw == 1) {
 				<select name="IdTipoCargo" id="IdTipoCargo" class="form-control select2" required>
 					<option value="">Seleccione...</option>
 
-					<?php while ($row_CLASES = sqlsrv_fetch_array($SQL_OT_TipoLlamada)) { ?>
+					<?php while ($row_CLASES = sqlsrv_fetch_array($SQL_OT_TIPOCARGO)) { ?>
 						<option value="<?php echo $row_CLASES['IdTipoCargo']; ?>" <?php if ((isset($row["CDU_IdTipoCargo"])) && (strcmp($row_CLASES['IdTipoCargo'], $row["CDU_IdTipoCargo"]) == 0)) {
 								echo "selected";
 							} ?>>
