@@ -586,6 +586,13 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 					
 							sqlsrv_fetch($SQL_Proyecto, SQLSRV_SCROLL_ABSOLUTE, -1);
 							sqlsrv_fetch($SQL_EmpleadosVentas, SQLSRV_SCROLL_ABSOLUTE, -1); // SMM, 22/02/2022
+
+							// SMM, 19/04/2024
+							sqlsrv_fetch($SQL_OT_ORIGEN, SQLSRV_SCROLL_ABSOLUTE, -1);
+							sqlsrv_fetch($SQL_OT_SEDE_EMPRESA, SQLSRV_SCROLL_ABSOLUTE, -1);
+							sqlsrv_fetch($SQL_OT_TIPOCARGO, SQLSRV_SCROLL_ABSOLUTE, -1);
+							sqlsrv_fetch($SQL_OT_TIPOPROBLEMA, SQLSRV_SCROLL_ABSOLUTE, -1);
+							sqlsrv_fetch($SQL_OT_TIPOPREVENTI, SQLSRV_SCROLL_ABSOLUTE, -1);
 					
 							// Stiven Muñoz Murillo, 31/01/2022
 							$row_encode = isset($row) ? json_encode($row) : "";
