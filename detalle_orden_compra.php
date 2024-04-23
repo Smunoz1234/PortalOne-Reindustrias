@@ -612,7 +612,7 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 
 							sqlsrv_fetch($SQL_Proyecto, SQLSRV_SCROLL_ABSOLUTE, -1);
 							sqlsrv_fetch($SQL_ConceptoSalida, SQLSRV_SCROLL_ABSOLUTE, -1);
-							sqlsrv_fetch($SQL_EmpleadosCompras, SQLSRV_SCROLL_ABSOLUTE, -1);
+							sqlsrv_fetch($SQL_EmpleadosVentas, SQLSRV_SCROLL_ABSOLUTE, -1);
 
 							// SMM, 19/04/2024
 							sqlsrv_fetch($SQL_OT_ORIGEN, SQLSRV_SCROLL_ABSOLUTE, -1);
