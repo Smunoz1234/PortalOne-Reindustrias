@@ -546,7 +546,6 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 						<th>Cant. Pendiente</th>
 
 						<th>Almacén</th>
-						<th>Almacén destino</th> <!-- SMM, 11/04/2024 -->
 						<th>Stock almacén</th>
 
 						<?php if ($ControlPlagas) { ?>
@@ -567,7 +566,6 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 						<!-- Dimensiones dinámicas, hasta aquí -->
 
 						<th>Proyecto</th>
-						<th>Concepto Salida</th> <!-- SMM, 11/04/2024 -->
 						<th>Empleado de compras</th>
 
 						<!-- Campos basados en la OT -->
@@ -608,10 +606,8 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 							sqlsrv_fetch($SQL_TipoPlaga, SQLSRV_SCROLL_ABSOLUTE, -1);
 
 							sqlsrv_fetch($SQL_Almacen, SQLSRV_SCROLL_ABSOLUTE, -1);
-							sqlsrv_fetch($SQL_ToAlmacen, SQLSRV_SCROLL_ABSOLUTE, -1);
 
 							sqlsrv_fetch($SQL_Proyecto, SQLSRV_SCROLL_ABSOLUTE, -1);
-							sqlsrv_fetch($SQL_ConceptoSalida, SQLSRV_SCROLL_ABSOLUTE, -1);
 							sqlsrv_fetch($SQL_EmpleadosVentas, SQLSRV_SCROLL_ABSOLUTE, -1);
 
 							// SMM, 19/04/2024
@@ -696,17 +692,6 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 												   <?php echo $row_Almacen['WhsName']; ?>
 												</option>
 											<?php } ?>
-										</select>
-									</td>
-
-									<td>
-										<select id="ToWhsCode<?php echo $i; ?>" name="ToWhsCode[]" class="form-control select2" onChange="ActualizarDatos('ToWhsCode',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" 
-											<?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(702))) { echo "disabled"; } ?>>
-											<option value="">Seleccione...</option>
-											
-											<?php while ($row_ToAlmacen = sqlsrv_fetch_array($SQL_ToAlmacen)) {?>
-												<option value="<?php echo $row_ToAlmacen['ToWhsCode']; ?>" <?php if ((isset($row['ToWhsCode'])) && (strcmp($row_ToAlmacen['ToWhsCode'], $row['ToWhsCode']) == 0)) {echo "selected";}?>><?php echo $row_ToAlmacen['ToWhsName']; ?></option>
-											<?php }?>
 										</select>
 									</td>
 
@@ -853,18 +838,7 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 									</td>
 
 									<td>
-										<select id="ConceptoSalida<?php echo $i; ?>" name="ConceptoSalida[]" class="form-control select2" onChange="ActualizarDatos('ConceptoSalida',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);" 
-											<?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(702))) { echo "disabled"; } ?>>
-											<option value="">(NINGUNO)</option>
-											
-											<?php while ($row_ConceptoSalida = sqlsrv_fetch_array($SQL_ConceptoSalida)) {?>
-												<option value="<?php echo $row_ConceptoSalida['id_concepto_salida']; ?>" <?php if ((isset($row['ConceptoSalida'])) && (strcmp($row_ConceptoSalida['id_concepto_salida'], $row['ConceptoSalida']) == 0)) {echo "selected";}?>><?php echo $row_ConceptoSalida['id_concepto_salida'] . "-" . $row_ConceptoSalida['concepto_salida']; ?></option>
-											<?php }?>
-										</select>
-									</td>
-
-									<td>
-									<select id="EmpVentas<?php echo $i; ?>" name="EmpVentas[]" class="form-control select2"
+										<select id="EmpVentas<?php echo $i; ?>" name="EmpVentas[]" class="form-control select2"
 											onChange="ActualizarDatos('EmpCompras',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);"
 											<?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(702))) {
 												echo "disabled";

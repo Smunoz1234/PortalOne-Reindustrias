@@ -363,6 +363,11 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
                         "CDU_id_direccion_destino" => "",
                         "estado_linea" => $row_Det['LineStatus'],
                         "docentry_documento" => intval($row_Det['DocEntry']),
+						"CDU_IdTipoOT" => ($row_Det['CDU_IdTipoOT'] ?? ""),
+						"CDU_IdSedeEmpresa" => ($row_Det['CDU_IdSedeEmpresa'] ?? ""),
+						"CDU_IdTipoCargo" => ($row_Det['CDU_IdTipoCargo'] ?? ""),
+						"CDU_IdTipoProblema" => ($row_Det['CDU_IdTipoProblema'] ?? ""),
+						"CDU_IdTipoPreventivo" => ($row_Det['CDU_IdTipoPreventivo'] ?? ""),
                     ));
                 }
 

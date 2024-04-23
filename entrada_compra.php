@@ -288,6 +288,11 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Entrada de compras
 					"CDU_cant_litros" => intval($row_Det['CDU_CantLitros']),
 					"CDU_dosificacion" => intval($row_Det['CDU_Dosificacion']),
 					"id_empleado_ventas" => (($row_Det['EmpVentas'] === "") || (intval($row_Det['EmpVentas']) === 0)) ? null : intval($row_Det['EmpVentas']),
+					"CDU_IdTipoOT" => ($row_Det['CDU_IdTipoOT'] ?? ""),
+					"CDU_IdSedeEmpresa" => ($row_Det['CDU_IdSedeEmpresa'] ?? ""),
+					"CDU_IdTipoCargo" => ($row_Det['CDU_IdTipoCargo'] ?? ""),
+					"CDU_IdTipoProblema" => ($row_Det['CDU_IdTipoProblema'] ?? ""),
+					"CDU_IdTipoPreventivo" => ($row_Det['CDU_IdTipoPreventivo'] ?? ""),
 				));
 			}
 
