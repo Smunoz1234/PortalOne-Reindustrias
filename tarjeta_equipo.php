@@ -269,8 +269,8 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
 				"CDU_id_tipo_servicio" => ($_POST['CDU_TipoServicio'] ?? ""),
 				"CDU_no_motor" => ($_POST['CDU_No_Motor'] ?? ""),
 				"CDU_id_novedad" => ($_POST['CDU_Novedad'] ?? ""),
-				"CDU_IdTipoVehiculo" => ($_POST['CDU_IdTipoVehiculo'] ?? ""),
-				"CDU_IdTipoRin" => ($_POST['CDU_IdTipoRin'] ?? ""),
+				"CDU_id_tipo_vehiculo" => ($_POST['CDU_IdTipoVehiculo'] ?? ""),
+				"CDU_id_tipo_rin" => ($_POST['CDU_IdTipoRin'] ?? ""),
 				"anexos" => (count($Anexos) > 0) ? $Anexos : null,
 				// SMM, 27/02/2024
 				"id_tipo_equipo_propiedad" => ($_POST['IdTipoEquipoPropiedad'] ?? ""),
@@ -288,6 +288,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Guardar tarjeta de equipo
 				"id_fabricante_equipo" => ($_POST['IdFabricante'] ?? ""),
 				"latitud_gps_ubicacion" => ($_POST['latGPS'] ?? ""),
 				"longitud_gps_ubicacion" => ($_POST['lngGPS'] ?? ""),
+				"id_articulo_activo_fijo" => ($_POST['IdArticuloActivoFijo'] ?? ""),
 			);
 
 			// Agregar fechas, inicio.
@@ -934,27 +935,27 @@ if($SQL_ValoresPropiedades) {
 
 											</div>
 											<div class="col-lg-6">
-												
-												<button data-toggle="dropdown"
-													class="btn btn-success dropdown-toggle pull-right">
-													<i class="fa fa-qrcode"></i> 
-													Generar QR 
-													<i class="fa fa-caret-down"></i>
-												</button>
-												<ul class="dropdown-menu pull-right">
-													<li>
-														<a class="dropdown-item" target="_blank"
-															onclick="generarQR('TE')">
-															Hoja de vida
-														</a>
-													</li>
-													<li>
-														<a class="dropdown-item" target="_blank"
-															onclick="generarQR('TD')">
-															Tarjeta digital
-														</a>
-													</li>
-												</ul>
+
+													<button data-toggle="dropdown"
+														class="btn btn-success dropdown-toggle pull-right">
+														<i class="fa fa-qrcode"></i> 
+														Generar QR 
+														<i class="fa fa-caret-down"></i>
+													</button>
+													<ul class="dropdown-menu pull-right">
+														<li>
+															<a class="dropdown-item" target="_blank"
+																onclick="generarQR('TE')">
+																Hoja de vida
+															</a>
+														</li>
+														<li>
+															<a class="dropdown-item" target="_blank"
+																onclick="generarQR('TD')">
+																Tarjeta digital
+															</a>
+														</li>
+													</ul>
 
 											</div>
 										</div>
@@ -1409,13 +1410,13 @@ if($SQL_ValoresPropiedades) {
 												<select <?php if (!PermitirFuncion(1602)) {
 													echo "disabled";
 												} ?>
-													name="id_articulo_activo_fijo " class="form-control select2" required
-													id="id_articulo_activo_fijo ">
+													name="IdArticuloActivoFijo" class="form-control select2" required
+													id="IdArticuloActivoFijo">
 													<option value="" disabled selected>Seleccione...</option>
 													
 													<?php while ($row_ActivoFijo = sqlsrv_fetch_array($SQL_ActivoFijo)) { ?>
 														<option value="<?php echo $row_ActivoFijo['IdActivoFijo']; ?>"
-															<?php if (isset($row['id_articulo_activo_fijo ']) && ($row['id_articulo_activo_fijo '] == $row_ActivoFijo['IdActivoFijo'])) {
+															<?php if (isset($row['IdArticuloActivoFijo']) && ($row['IdArticuloActivoFijo'] == $row_ActivoFijo['IdActivoFijo'])) {
 																echo "selected";
 															} ?>>
 															<?php echo $row_ActivoFijo['DeActivoFijo']; ?>
