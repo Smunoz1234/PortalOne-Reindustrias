@@ -701,10 +701,11 @@ $row_NumeroSerie = sqlsrv_fetch_array($SQL_NumeroSerie);
 						<option value="" disabled selected>Seleccione...</option>
 						
 						<?php while ($row_Contrato = sqlsrv_fetch_array($SQL_ContratosLlamada)) { ?>
-							<option value="<?php echo $row_Contrato['NombreContrato']; ?>" <?php if (isset($row['CDU_Contrato']) && ($row_Contrato['NombreContrato'] == $row['CDU_Contrato'])) {
-								echo "selected";
-							} ?>>
-								<?php echo $row_Contrato['NombreContrato']; ?>
+							<option value="<?php echo $row_Contrato['NombreContrato']; ?>" 
+								<?php if (isset($row['CDU_Contrato']) && ($row['CDU_Contrato'] == $row_Contrato['NombreContrato'])) {
+									echo "selected";
+								} ?>>
+								<?php echo $row_Contrato['NombreContrato'] ?? ""; ?>
 							</option>
 						<?php } ?>
 					</select>

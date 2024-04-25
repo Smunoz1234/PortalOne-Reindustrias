@@ -254,25 +254,21 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
 						$sw_error = 1;
 						$msg_error = $Resultado->Mensaje;
 					} else {
-
-						// SMM, 16/08/2022
+						// SMM, 24/04/2024
 						if (isset($_POST['Autorizacion']) && ($_POST['Autorizacion'] == "P")) {
-
-							// SMM, 16/08/2022
 							header('Location:entrega_venta.php?a=' . base64_encode("OK_BorradorAdd"));
 						} else {
-							if ($_POST['tl'] == 0) { //Creando Entrega
-								//Consultar ID creado para cargar el documento
-								$SQL_ConsID = Seleccionar('uvw_Sap_tbl_EntregasVentas', 'ID_EntregaVenta', "IdDocPortal='" . $IdEntregaVenta . "'");
+							if ($_POST['tl'] == 0) { // Creando Entrega
+								// Consultar ID creado para cargar el documento
+								$SQL_ConsID = Seleccionar('uvw_Sap_tbl_EntregasVentas', 'ID_EntregaVenta', "IdDocPortal='$IdEntregaVenta'");
 								$row_ConsID = sqlsrv_fetch_array($SQL_ConsID);
 								sqlsrv_close($conexion);
 								header('Location:entrega_venta.php?id=' . base64_encode($row_ConsID['ID_EntregaVenta']) . '&id_portal=' . base64_encode($IdEntregaVenta) . '&tl=1&a=' . base64_encode("OK_EVenAdd"));
-							} else { //Actualizando Entrega
+							} else { // Actualizando Entrega
 								sqlsrv_close($conexion);
 								header('Location:' . base64_decode($_POST['return']) . '&a=' . base64_encode("OK_EVenUpd"));
 							}
 						}
-
 					}
 				} catch (Exception $e) {
 					echo 'Excepcion capturada: ', $e->getMessage(), "\n";
@@ -825,19 +821,22 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 					// En la llamada no hay condición de pago, por lo que se carga desde el cliente.
 				<?php } ?>
 
-				<?php if ($edit == 0) { ?>
-					if (carcode != "") {
-						frame.src = "detalle_entrega_venta.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode=" + carcode;
-					} else {
-						frame.src = "detalle_entrega_venta.php";
-					}
-				<?php } else { ?>
-					if (carcode != "") {
-						frame.src = "detalle_entrega_venta.php?id=<?php echo base64_encode($row['ID_EntregaVenta']); ?>&evento=<?php echo base64_encode($row['IdEvento']); ?>&docentry=<?php echo base64_encode($row['DocEntry']); ?>&type=2";
-					} else {
-						frame.src = "detalle_entrega_venta.php";
-					}
-				<?php } ?>
+				// Se debe esperar a que se elimine la información de la tabla temporal antes de cargar el detalle. 20/02/2024
+				setTimeout(() => {
+					<?php if ($edit == 0) { ?>
+						if (carcode != "") {
+							frame.src = "detalle_entrega_venta.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode=" + carcode;
+						} else {
+							frame.src = "detalle_entrega_venta.php";
+						}
+					<?php } else { ?>
+						if (carcode != "") {
+							frame.src = "detalle_entrega_venta.php?id=<?php echo base64_encode($row['ID_EntregaVenta']); ?>&evento=<?php echo base64_encode($row['IdEvento']); ?>&docentry=<?php echo base64_encode($row['DocEntry']); ?>&type=2";
+						} else {
+							frame.src = "detalle_entrega_venta.php";
+						}
+					<?php } ?>
+				}, 500);
 
 				$('.ibox-content').toggleClass('sk-loading', false);
 			});

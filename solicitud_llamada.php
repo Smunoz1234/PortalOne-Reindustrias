@@ -540,8 +540,11 @@ $row_NumeroSerie = sqlsrv_fetch_array($SQL_NumeroSerie);
 
 // SMM, 15/04/2024
 $IdClienteSecundario = $row["IdClienteSecundario"] ?? "";
-$SQL_ContactoSecundario = Seleccionar('uvw_Sap_tbl_ClienteContactos', 'CodigoContacto, ID_Contacto', "CodigoCliente='$IdClienteSecundario'", 'NombreContacto');
-$SQL_SucursalSecundaria = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', 'NombreSucursal, NumeroLinea, TipoDireccion', "CodigoCliente='$IdClienteSecundario' AND TipoDireccion='S'", 'TipoDireccion, NombreSucursal');
+$SQL_ContactoSecundario = Seleccionar('uvw_Sap_tbl_ClienteContactos', 'CodigoContacto, ID_Contacto', "CodigoCliente = '$IdClienteSecundario'", 'NombreContacto');
+$SQL_SucursalSecundaria = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', 'NombreSucursal, NumeroLinea, TipoDireccion', "CodigoCliente = '$IdClienteSecundario' AND TipoDireccion='S'", 'TipoDireccion, NombreSucursal');
+
+// SMM, 23/04/2024
+$ID_CodigoCliente = $row["ID_CodigoCliente"] ?? "";
 $ClienteMarketing = PermitirFuncion(356) ? $IdClienteSecundario : $ID_CodigoCliente;
 
 // SMM, 19/03/2024
@@ -2266,10 +2269,10 @@ function AgregarEsto(contenedorID, valorElemento) {
 									  
 									<?php while ($row_Contrato = sqlsrv_fetch_array($SQL_ContratosLlamada)) { ?>
 										<option value="<?php echo $row_Contrato['NombreContrato']; ?>"
-											<?php if ((isset($row['CDU_Contrato'])) && ($row_Contrato['NombreContrato'] == $row['CDU_Contrato'])) {
+											<?php if ((isset($row['CDU_Contrato'])) && ($row['CDU_Contrato'] == $row_Contrato['NombreContrato'])) {
 												echo "selected";
 											} ?>>
-											<?php echo $row_Contrato['NombreContrato']; ?>
+											<?php echo $row_Contrato['NombreContrato'] ?? ""; ?>
 										</option>
 									<?php } ?>
 								</select>
@@ -3815,7 +3818,7 @@ function ValidarFechas() {
 	if ((fechaAgenda >= fechaFinAgenda) || (fechaCreacion >= fechaFinCreacion)) {
 		Swal.fire({
 			title: '¡Advertencia!',
-			text: 'Tiempo no válido. Ingrese una duración positiva.',
+			text: 'Tiempo no válido. La fecha y hora fin de la solicitud y la actividad, deben ser mayores a las de inicio.',
 			icon: 'warning',
 		});
 		return false;

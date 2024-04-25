@@ -589,6 +589,8 @@ if (isset($_POST['P']) && ($_POST['P'] == 33)) { //Actualizar llamada de servici
 					if ($_POST['EstadoLlamada'] == '-1') {
 						$UpdEstado = "UPDATE tbl_LlamadasServicios SET Cod_Estado='-3' WHERE ID_LlamadaServicio='$IdLlamada'";
 						$SQL_UpdEstado = sqlsrv_query($conexion, $UpdEstado);
+
+						$msg_error .= " (Se regreso el estado de la llamada a Abierto)";
 					}
 				} else {
 					$msg = base64_encode($Resultado->Mensaje); // SMM, 14/09/2022
@@ -736,7 +738,7 @@ if ($sw_error == 1) {
 	$row_SolicitudLlamada = sqlsrv_fetch_array($SQL_SolicitudLlamada);
 
 	// Orden de servicio padre referencia. SMM, 18/01/2024
-	$SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . ($row['ID_LlamadaServicio'] ?? "") . "'");
+	$SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='" . ($row['IdLlamadaServicioPadre'] ?? "") . "'");
 	$row_OrdenServicioCliente = sqlsrv_fetch_array($SQL_OrdenServicioCliente);
 
 	// Clientes
@@ -814,7 +816,7 @@ if (isset($_GET['dt_SLS']) && ($_GET['dt_SLS']) == 1) {
 	}
 
 	// Consultar el ID más reciente en el copiar.
-	$Cons_ID = "SELECT MAX(ID_LlamadaServicio) AS ID FROM uvw_tbl_LlamadasServicios WHERE [ID_SolicitudLlamadaServicio] = '$SLS'";
+	$Cons_ID = "SELECT MAX(ID_LlamadaServicio) AS ID FROM uvw_tbl_LlamadasServicios WHERE [IdSolicitudLlamadaServicio] = '$SLS'";
 	$SQL_ID = sqlsrv_query($conexion, $Cons_ID);
 	$row_ID = sqlsrv_fetch_array($SQL_ID);
 	$ID_LlamadaServicio = $row_ID["ID"] ?? "";
@@ -857,16 +859,16 @@ if (isset($_GET['dt_SLS']) && ($_GET['dt_SLS']) == 1) {
 	}
 
 	// Clientes
-	$SQL_Cliente = Seleccionar("uvw_Sap_tbl_Clientes", "CodigoCliente, NombreCliente", "CodigoCliente='$ID_CodigoCliente'", 'NombreCliente');
+	$SQL_Cliente = Seleccionar("uvw_Sap_tbl_Clientes", "CodigoCliente, NombreCliente", "CodigoCliente = '$ID_CodigoCliente'", 'NombreCliente');
 
 	// Contactos clientes
-	$SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', 'CodigoContacto, ID_Contacto', "CodigoCliente='$ID_CodigoCliente'", 'NombreContacto');
+	$SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ClienteContactos', 'CodigoContacto, ID_Contacto', "CodigoCliente = '$ID_CodigoCliente'", 'NombreContacto');
 
 	// Sucursales
-	$SQL_SucursalCliente = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', 'NombreSucursal, NumeroLinea, TipoDireccion', "CodigoCliente='$ID_CodigoCliente' AND TipoDireccion='S'", 'TipoDireccion, NombreSucursal');
+	$SQL_SucursalCliente = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', 'NombreSucursal, NumeroLinea, TipoDireccion', "CodigoCliente = '$ID_CodigoCliente' AND TipoDireccion='S'", 'TipoDireccion, NombreSucursal');
 
 	// Contratos de servicio
-	$SQL_Contrato = Seleccionar('uvw_Sap_tbl_Contratos', '*', "CodigoCliente='$ID_CodigoCliente'", 'ID_Contrato');
+	$SQL_Contrato = Seleccionar('uvw_Sap_tbl_Contratos', '*', "CodigoCliente = '$ID_CodigoCliente'", 'ID_Contrato');
 
 	// DocEntry de la Llamada
 	$DocEntry = $row['DocEntry'] ?? "";
@@ -1008,8 +1010,11 @@ $row_NumeroSerie = sqlsrv_fetch_array($SQL_NumeroSerie);
 
 // SMM, 15/04/2024
 $IdClienteSecundario = $row["IdClienteSecundario"] ?? "";
-$SQL_ContactoSecundario = Seleccionar('uvw_Sap_tbl_ClienteContactos', 'CodigoContacto, ID_Contacto', "CodigoCliente='$IdClienteSecundario'", 'NombreContacto');
-$SQL_SucursalSecundaria = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', 'NombreSucursal, NumeroLinea, TipoDireccion', "CodigoCliente='$IdClienteSecundario' AND TipoDireccion='S'", 'TipoDireccion, NombreSucursal');
+$SQL_ContactoSecundario = Seleccionar('uvw_Sap_tbl_ClienteContactos', 'CodigoContacto, ID_Contacto', "CodigoCliente = '$IdClienteSecundario'", 'NombreContacto');
+$SQL_SucursalSecundaria = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', 'NombreSucursal, NumeroLinea, TipoDireccion', "CodigoCliente = '$IdClienteSecundario' AND TipoDireccion='S'", 'TipoDireccion, NombreSucursal');
+
+// SMM, 23/04/2024
+$ID_CodigoCliente = $row["ID_CodigoCliente"] ?? "";
 $ClienteMarketing = PermitirFuncion(356) ? $IdClienteSecundario : $ID_CodigoCliente;
 
 // SMM, 01/02/2024
@@ -2242,35 +2247,49 @@ function AgregarEsto(contenedorID, valorElemento) {
 								</div>
 								<div class="col-lg-4">
 									<label class="control-label">Contacto</label>
+									
 									<select name="ContactoCliente" class="form-control" id="ContactoCliente" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 										echo "disabled";
 									} ?>>
-									<?php if (($edit == 0) || ($sw_error == 1 || ($dt_SLS == 1))) { ?><option value="">Seleccione...</option><?php } ?>
-									<?php if (($edit == 1) || ($sw_error == 1 || ($dt_SLS == 1))) {
-										while ($row_ContactoCliente = sqlsrv_fetch_array($SQL_ContactoCliente)) { ?>
-																	<option value="<?php echo $row_ContactoCliente['CodigoContacto']; ?>" <?php if ((isset($row['IdContactoLLamada'])) && (strcmp($row_ContactoCliente['CodigoContacto'], $row['IdContactoLLamada']) == 0)) {
-																			echo "selected";
-																		} ?>><?php echo $row_ContactoCliente['ID_Contacto']; ?></option>
-												<?php }
-									} ?>
+										<?php if (($edit == 0) || ($sw_error == 1 || ($dt_SLS == 1))) { ?>
+											<option value="">Seleccione...</option>
+										<?php } ?>
+										
+										<?php if (($edit == 1) || ($sw_error == 1 || ($dt_SLS == 1))) { ?>
+											<?php while ($row_ContactoCliente = sqlsrv_fetch_array($SQL_ContactoCliente)) { ?>
+												<option value="<?php echo $row_ContactoCliente['CodigoContacto']; ?>" 
+													<?php if ((isset($row['IdContactoLLamada'])) && (strcmp($row_ContactoCliente['CodigoContacto'], $row['IdContactoLLamada']) == 0)) {
+														echo "selected";
+													} ?>>
+													<?php echo $row_ContactoCliente['ID_Contacto'] ?? ""; ?>
+												</option>
+											<?php } ?>
+										<?php } ?>
 									</select>
 								</div>
 								<div class="col-lg-4">
 									<label class="control-label">Sucursal <span class="text-danger">*</span></label>
+									
 									<select name="SucursalCliente" class="form-control select2" id="SucursalCliente" required <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 										echo "disabled";
 									} ?>>
-									<?php if (($edit == 0) || ($sw_error == 1 || ($dt_SLS == 1))) { ?><option value="">Seleccione...</option><?php } ?>
-									<?php if (($edit == 1) || ($sw_error == 1 || ($dt_SLS == 1))) {
-										while ($row_SucursalCliente = sqlsrv_fetch_array($SQL_SucursalCliente)) { ?>
-																	<option value="<?php echo $row_SucursalCliente['NombreSucursal']; ?>" <?php if (isset($row['NombreSucursal']) && (strcmp($row_SucursalCliente['NombreSucursal'], $row['NombreSucursal']) == 0)) {
-																			echo "selected";
-																		} elseif (isset($row['NombreSucursal']) && (strcmp($row_SucursalCliente['NumeroLinea'], $row['IdNombreSucursal']) == 0)) {
-																			echo "selected";
-																			$sw_valDir = 1;
-																		} ?>><?php echo $row_SucursalCliente['NombreSucursal']; ?></option>
-												<?php }
-									} ?>
+										<?php if (($edit == 0) || ($sw_error == 1 || ($dt_SLS == 1))) { ?>
+											<option value="">Seleccione...</option>
+										<?php } ?>
+										
+										<?php if (($edit == 1) || ($sw_error == 1 || ($dt_SLS == 1))) { ?>
+											<?php while ($row_SucursalCliente = sqlsrv_fetch_array($SQL_SucursalCliente)) { ?>
+												<option value="<?php echo $row_SucursalCliente['NombreSucursal']; ?>" 
+													<?php if (isset($row['NombreSucursal']) && (strcmp($row_SucursalCliente['NombreSucursal'], $row['NombreSucursal']) == 0)) {
+														echo "selected";
+													} elseif (isset($row['NombreSucursal']) && (strcmp($row_SucursalCliente['NumeroLinea'], $row['IdNombreSucursal']) == 0)) {
+														echo "selected";
+														$sw_valDir = 1;
+													} ?>>
+													<?php echo $row_SucursalCliente['NombreSucursal'] ?? ""; ?>
+												</option>
+											<?php } ?>
+										<?php } ?>
 									</select>
 								</div>
 							</div>
@@ -2512,7 +2531,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 									Cliente <span class="text-danger">*</span>
 								</label>
 								
-								<input name="IdClienteSecundario" type="hidden" id="IdClienteSecundario" value="<?php echo $row['IdClienteSecundario'] ?? ""; ?>">
+								<input name="IdClienteSecundario" type="hidden" id="IdClienteSecundario" value="<?php echo $IdClienteSecundario; ?>">
 								<input name="NombreClienteSecundario" type="text" required class="form-control" id="NombreClienteSecundario" placeholder="Digite para buscar..." <?php if (($edit == 1) && ((!$ActualizarSolicitud) || ($row['IdEstadoLlamada'] == '-1') || ($row['TipoTarea'] == 'Interna')) || ($dt_LS == 1) || ($edit == 1)) {
 									echo "readonly";
 								} ?> value="<?php echo $row['NombreClienteSecundario'] ?? ""; ?>">
@@ -2522,11 +2541,11 @@ function AgregarEsto(contenedorID, valorElemento) {
 								<label class="control-label">Contacto</label>
 								
 								<select name="IdContactoSecundario" class="form-control" id="IdContactoSecundario">
-									<?php if (($edit == 0) || ($sw_error == 1)) { ?>
+									<?php if (($edit == 0) || ($sw_error == 1) || ($dt_SLS == 1)) { ?>
 										<option value="">Seleccione...</option>
 									<?php } ?>
 									
-									<?php if (($edit == 1) || ($sw_error == 1)) { ?>
+									<?php if (($edit == 1) || ($sw_error == 1) || ($dt_SLS == 1)) { ?>
 										<?php while ($row_ContactoSecundario = sqlsrv_fetch_array($SQL_ContactoSecundario)) { ?>
 											<option value="<?php echo $row_ContactoSecundario['CodigoContacto'] ?? ""; ?>" 
 												<?php if (isset($row['IdContactoSecundario']) && ($row['IdContactoSecundario'] == $row_ContactoSecundario['CodigoContacto'])) {
@@ -2545,11 +2564,11 @@ function AgregarEsto(contenedorID, valorElemento) {
 								</label>
 								
 								<select name="IdSucursalSecundaria" class="form-control select2" id="IdSucursalSecundaria" required>
-									<?php if (($edit == 0) || ($sw_error == 1)) { ?>
+									<?php if (($edit == 0) || ($sw_error == 1) || ($dt_SLS == 1)) { ?>
 										<option value="">Seleccione...</option>
 									<?php } ?>
 									
-									<?php if (($edit == 1) || ($sw_error == 1)) { ?>
+									<?php if (($edit == 1) || ($sw_error == 1) || ($dt_SLS == 1)) { ?>
 										<?php while ($row_SucursalSecundaria = sqlsrv_fetch_array($SQL_SucursalSecundaria)) { ?>
 											<option value="<?php echo $row_SucursalSecundaria['NumeroLinea'] ?? ""; ?>" 
 												<?php if (isset($row['IdSucursalSecundaria']) && ($row['IdSucursalSecundaria'] == $row_SucursalSecundaria['NumeroLinea'])) {
@@ -2877,17 +2896,22 @@ function AgregarEsto(contenedorID, valorElemento) {
 						<div class="form-group">
 							<div class="col-lg-4" <?php if (!$IncluirCamposAdicionales) { ?> style="display: none;" <?php } ?>>
 								<label class="control-label"><i onClick="ConsultarContrato();" title="Consultar Contrato servicio" style="cursor: pointer" class="btn-xs btn-success fa fa-search"></i> Contrato servicio</label>
-								<select name="ContratoServicio" class="form-control" id="ContratoServicio" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
-									echo "disabled";
-								} ?>>
-										<option value="">Seleccione...</option>
-									<?php if (($edit == 1) || ($sw_error == 1 || ($dt_SLS == 1))) {
-										while ($row_Contrato = sqlsrv_fetch_array($SQL_Contrato)) { ?>
-																	<option value="<?php echo $row_Contrato['ID_Contrato']; ?>" <?php if ((isset($row_Contrato['ID_Contrato'])) && (strcmp($row_Contrato['ID_Contrato'], $row['IdContratoServicio']) == 0)) {
-																		   echo "selected";
-																	   } ?>><?php echo $row_Contrato['ID_Contrato'] . " - " . $row_Contrato['DE_Contrato']; ?></option>
-												<?php }
-									} ?>
+								<select name="ContratoServicio" class="form-control" id="ContratoServicio" 
+									<?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
+										echo "disabled";
+									} ?>>
+									<option value="">Seleccione...</option>
+
+									<?php if (($edit == 1) || ($sw_error == 1 || ($dt_SLS == 1))) { ?>
+										<?php while ($row_Contrato = sqlsrv_fetch_array($SQL_Contrato)) { ?>
+												<option value="<?php echo $row_Contrato['ID_Contrato']; ?>" 
+													<?php if ((isset($row_Contrato['ID_Contrato'])) && ($row['IdContratoServicio'] == $row_Contrato['ID_Contrato'])) {
+														echo "selected";
+													} ?>>
+													<?php echo $row_Contrato['ID_Contrato'] . " - " . $row_Contrato['DE_Contrato']; ?>
+												</option>
+										<?php } ?>
+									<?php } ?>
 								</select>
 							</div>
 
