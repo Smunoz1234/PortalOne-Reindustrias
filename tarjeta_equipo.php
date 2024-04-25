@@ -1002,22 +1002,28 @@ $IdDimension5 = ObtenerValorDefecto(176, "IdDimension5", false);
 									</div>
 									<div class="ibox-content">
 										<div class="form-group">
-											<label class="col-lg-1 control-label">Tipo de proceso <span
-													class="text-danger">*</span></label>
+											<label class="col-lg-1 control-label">
+												Tipo de proceso <span class="text-danger">*</span>
+											</label>
 											<div class="col-lg-3">
 												<select <?php if (!PermitirFuncion(1602)) {
 													echo "disabled";
 												} ?>
 													name="TipoEquipo" class="form-control" id="TipoEquipo" required>
 													<option value="">Seleccione...</option>
-													<option value="P" <?php if ((isset($row['TipoEquipo'])) && (strcmp("P", $row['TipoEquipo']) == 0)) {
-														echo "selected";
-													} ?>>
-														Compras</option>
-													<option value="R" <?php if ((isset($row['TipoEquipo'])) && (strcmp("R", $row['TipoEquipo']) == 0)) {
-														echo "selected";
-													} ?>>
-														Ventas</option>
+													
+													<option value="P" 
+														<?php if (isset($row['TipoEquipo']) && ("P" == $row['TipoEquipo'])) {
+															echo "selected";
+														} elseif (($edit == 0) && ("P" == $IdTipoProceso)) {
+															echo "selected";
+														} ?>>Compras</option>
+													<option value="R" 
+														<?php if (isset($row['TipoEquipo']) && ("R" == $row['TipoEquipo'])) {
+															echo "selected";
+														} elseif (($edit == 0) && ("R" == $IdTipoProceso)) {
+															echo "selected";
+														} ?>>Ventas</option>
 												</select>
 											</div>
 											<label class="col-lg-1 control-label">Serial Interno (Placa) <span
@@ -1276,6 +1282,8 @@ $IdDimension5 = ObtenerValorDefecto(176, "IdDimension5", false);
 														<option value="<?php echo $row_TipoEquipo['id_tipo_equipo']; ?>"
 															<?php if ($row_TipoEquipo['id_tipo_equipo'] == $id_tipo_equipo) {
 																echo "selected";
+															} elseif (($edit == 0) && ($row_TipoEquipo['id_tipo_equipo'] == $IdTipoEquipo)) {
+																echo "selected";
 															} ?>>
 															<?php echo $row_TipoEquipo['tipo_equipo']; ?>
 														</option>
@@ -1296,12 +1304,13 @@ $IdDimension5 = ObtenerValorDefecto(176, "IdDimension5", false);
 													<option value="" disabled selected>Seleccione...</option>
 
 													<?php while ($row_UnidadMedida = sqlsrv_fetch_array($SQL_UnidadMedida)) { ?>
-														<option
-															value="<?php echo $row_UnidadMedida['id_unidad_medida_equipo']; ?>"
+														<option value="<?php echo $row_UnidadMedida['id_unidad_medida_equipo']; ?>"
 															<?php if ((isset($row['IdUnidadMedidaEquipo'])) && ($row_UnidadMedida['id_unidad_medida_equipo'] == $row['IdUnidadMedidaEquipo'])) {
 																echo "selected";
+															} elseif (($edit == 0) && ($row_UnidadMedida['id_unidad_medida_equipo'] == $IdUnidadMedidaEquipo)) {
+																echo "selected";
 															} ?>>
-															<?php echo $row_UnidadMedida['unidad_medida_equipo']; ?>
+															<?php echo $row_UnidadMedida['unidad_medida_equipo'] ?? ""; ?>
 														</option>
 													<?php } ?>
 												</select>
@@ -1454,8 +1463,9 @@ $IdDimension5 = ObtenerValorDefecto(176, "IdDimension5", false);
 										<!-- Jerarquías dinámicas, SMM 22/02/2024 -->
 										<div class="form-group">
 											<div class="col-lg-6 border-bottom ">
-												<label class="control-label text-danger">Información de
-													jerarquías</label>
+												<label class="control-label text-danger">
+													Información de jerarquías
+												</label>
 											</div>
 										</div>
 										<div class="form-group">
@@ -1501,10 +1511,12 @@ $IdDimension5 = ObtenerValorDefecto(176, "IdDimension5", false);
 													<?php while ($row_UbicacionEquipo = sqlsrv_fetch_array($SQL_UbicacionEquipo)) { ?>
 														<option
 															value="<?php echo $row_UbicacionEquipo['id_ubicacion_equipo']; ?>"
-															<?php if ((isset($row['IdUbicacion'])) && ($row_UbicacionEquipo['id_ubicacion_equipo'] == $row['IdUbicacion'])) {
+															<?php if (isset($row['IdUbicacion']) && ($row_UbicacionEquipo['id_ubicacion_equipo'] == $row['IdUbicacion'])) {
+																echo "selected";
+															} elseif (($edit == 0) && ($row_UbicacionEquipo['id_ubicacion_equipo'] == $IdUbicacion)) {
 																echo "selected";
 															} ?>>
-															<?php echo $row_UbicacionEquipo['ubicacion_equipo']; ?>
+															<?php echo $row_UbicacionEquipo['ubicacion_equipo'] ?? ""; ?>
 														</option>
 													<?php } ?>
 												</select>
@@ -1561,9 +1573,12 @@ $IdDimension5 = ObtenerValorDefecto(176, "IdDimension5", false);
 													<option value="" disabled selected>Seleccione...</option>
 
 													<?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) { ?>
-														<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if ((isset($row['IdProyecto'])) && ($row_Proyecto['IdProyecto'] == $row['IdProyecto'])) {
-															   echo "selected";
-														   } ?>>
+														<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" 
+															<?php if (isset($row['IdProyecto']) && ($row_Proyecto['IdProyecto'] == $row['IdProyecto'])) {
+																echo "selected";
+														   	} elseif (($edit == 0) && ($row_Proyecto['IdProyecto'] == $IdProyecto)) {
+																echo "selected";
+															} ?>>
 															<?php echo $row_Proyecto['IdProyecto'] . " - " . $row_Proyecto['DeProyecto']; ?>
 														</option>
 													<?php } ?>
