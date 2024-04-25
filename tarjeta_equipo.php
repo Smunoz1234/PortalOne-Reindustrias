@@ -593,6 +593,25 @@ if($SQL_ValoresPropiedades) {
 
 // print_r($array_ValoresPropiedades);
 // exit();
+
+// Valores predeterminados del usuario para la TE. SMM, 25/04/2024
+$IdConcesionario = ObtenerValorDefecto(176, "IdConcesionario", false);
+$IdEstadoTarjetaEquipo = ObtenerValorDefecto(176, "IdEstadoTarjetaEquipo", false);
+$IdProyecto = ObtenerValorDefecto(176, "IdProyecto", false);
+$IdTipoEquipo = ObtenerValorDefecto(176, "IdTipoEquipo", false);
+$IdTipoProceso = ObtenerValorDefecto(176, "IdTipoProceso", false);
+$IdUbicacion = ObtenerValorDefecto(176, "IdUbicacion", false);
+$IdUnidadMedidaEquipo = ObtenerValorDefecto(176, "IdUnidadMedidaEquipo", false);
+
+$IdJerarquia1 = ObtenerValorDefecto(176, "IdJerarquia1", false);
+$IdJerarquia2 = ObtenerValorDefecto(176, "IdJerarquia2", false);
+$IdJerarquia3 = ObtenerValorDefecto(176, "IdJerarquia3", false);
+
+$IdDimension1 = ObtenerValorDefecto(176, "IdDimension1", false);
+$IdDimension2 = ObtenerValorDefecto(176, "IdDimension2", false);
+$IdDimension3 = ObtenerValorDefecto(176, "IdDimension3", false);
+$IdDimension4 = ObtenerValorDefecto(176, "IdDimension4", false);
+$IdDimension5 = ObtenerValorDefecto(176, "IdDimension5", false);
 ?>
 
 <!DOCTYPE html>
@@ -1050,34 +1069,39 @@ if($SQL_ValoresPropiedades) {
 														echo $row['ItemName'];
 													} ?>">
 											</div>
-											<label class="col-lg-1 control-label">Estado <span
-													class="text-danger">*</span></label>
+											
+											<label class="col-lg-1 control-label">
+												Estado <span class="text-danger">*</span>
+											</label>
 											<div class="col-lg-3">
 												<select <?php if (!PermitirFuncion(1602)) {
 													echo "disabled";
 												} ?>
 													name="CodEstado" class="form-control" id="CodEstado" required>
 													<option value="">Seleccione...</option>
-													<option value="A" <?php if ((isset($row['CodEstado'])) && (strcmp("A", $row['CodEstado']) == 0)) {
+													
+													<option value="A" <?php if ((isset($row['CodEstado']) && ("A" == $row['CodEstado'])) || ("A" == $IdEstadoTarjetaEquipo)) {
 														echo "selected";
 													} ?>>
 														Activo</option>
-													<option value="R" <?php if ((isset($row['CodEstado'])) && (strcmp("R", $row['CodEstado']) == 0)) {
+													<option value="R" <?php if ((isset($row['CodEstado']) && ("R" == $row['CodEstado'])) || ("R" == $IdEstadoTarjetaEquipo)) {
 														echo "selected";
 													} ?>>
 														Devuelto</option>
-													<option value="T" <?php if ((isset($row['CodEstado'])) && (strcmp("T", $row['CodEstado']) == 0)) {
+													<option value="T" <?php if ((isset($row['CodEstado']) && ("T" == $row['CodEstado'])) || ("T" == $IdEstadoTarjetaEquipo)) {
 														echo "selected";
 													} ?>>
 														Finalizado</option>
-													<option value="L" <?php if ((isset($row['CodEstado'])) && (strcmp("L", $row['CodEstado']) == 0)) {
+													<option value="L" <?php if ((isset($row['CodEstado']) && ("L" == $row['CodEstado'])) || ("L" == $IdEstadoTarjetaEquipo)) {
 														echo "selected";
 													} ?>>
-														Concedido en prestamo</option>
-													<option value="I" <?php if ((isset($row['CodEstado'])) && (strcmp("I", $row['CodEstado']) == 0)) {
+														Concedido en prestamo
+													</option>
+													<option value="I" <?php if ((isset($row['CodEstado']) && ("I" == $row['CodEstado'])) || ("I" == $IdEstadoTarjetaEquipo)) {
 														echo "selected";
-													} ?>>En
-														laboratorio de reparación</option>
+													} ?>>
+														En laboratorio de reparación
+													</option>
 												</select>
 											</div>
 										</div>
@@ -1597,9 +1621,9 @@ if($SQL_ValoresPropiedades) {
 															value="<?php echo $row_Concesionario['NombreConcesionario']; ?>"
 															<?php if (isset($row['CDU_Concesionario']) && (strcmp($row_Concesionario['NombreConcesionario'], $row['CDU_Concesionario']) == 0)) {
 																echo "selected";
-															} elseif (($edit == 0) && (strcmp($row_Concesionario['NombreConcesionario'], ObtenerValorDefecto(176, "IdConcesionario", false)) == 0)) {
+															} elseif (($edit == 0) && ($row_Concesionario['NombreConcesionario'] == $IdConcesionario)) {
 																echo "selected";
-															} elseif (($edit == 0) && (ObtenerValorDefecto(176, "IdConcesionario", false) == "") && (strcmp($row_Concesionario['NombreConcesionario'], "Otro") == 0)) {
+															} elseif (($edit == 0) && ($IdConcesionario == "") && ($row_Concesionario['NombreConcesionario'] == "Otro")) {
 																echo "selected";
 															} ?>>
 
