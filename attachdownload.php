@@ -12,6 +12,12 @@ if (isset($_REQUEST['file']) && $_REQUEST['file'] != "") {
 
     $NombreArchivo = "";
     $size = 0;
+    $type = $_REQUEST["type"] ?? 1;
+    $ZipMode = 0;
+
+    if (isset($_REQUEST['zip']) && ($_REQUEST['zip']) == base64_encode('1')) {
+        $ZipMode = 1;
+    }
     
     if ($type == 1) {
         $RutaAttachSAP = ObtenerDirAttach();
