@@ -1499,7 +1499,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 												} elseif ($edit == 0 && $sw_error == 1) {
 													echo "detalle_orden_venta_borrador.php?id=0&type=1&usr=" . $_SESSION['CodUser'] . "&cardcode=" . $row['CardCode'];
 												} else {
-													echo "detalle_orden_venta_borrador.php?id=" . base64_encode($row['ID_OrdenVenta']) . "&evento=" . base64_encode($row['IdEvento']) . "&docentry=" . base64_encode($row['DocEntry']) . "&type=2&status=" . base64_encode($row['Cod_Estado']);
+													echo "detalle_orden_venta_borrador.php?autoriza=1&id=" . base64_encode($row['ID_OrdenVenta']) . "&evento=" . base64_encode($row['IdEvento']) . "&docentry=" . base64_encode($row['DocEntry']) . "&type=2&status=" . base64_encode($row['Cod_Estado']);
 												} ?>"></iframe>
 										</div>
 										<?php if ($edit == 1) { ?>
