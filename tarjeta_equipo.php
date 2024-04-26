@@ -1486,9 +1486,16 @@ $IdDimension5 = ObtenerValorDefecto(176, "IdDimension5", false);
 
 														<?php $SQL_DimJ = Seleccionar("tbl_TarjetaEquipo_Jerarquias", "*", "id_dimension_jerarquia = $DimJCode"); ?>
 														<?php while ($row_DimJ = sqlsrv_fetch_array($SQL_DimJ)) { ?>
-															<option value="<?php echo $row_DimJ['id_jerarquia']; ?>" <?php if ((isset($row["IdJerarquia$DimJCode"]) && ($row["IdJerarquia$DimJCode"] != "")) && ($row_DimJ['id_jerarquia'] == $row["IdJerarquia$DimJCode"])) {
+															<option value="<?php echo $row_DimJ['id_jerarquia']; ?>" 
+																<?php if ((isset($row["IdJerarquia$DimJCode"]) && ($row["IdJerarquia$DimJCode"] != "")) && ($row_DimJ['id_jerarquia'] == $row["IdJerarquia$DimJCode"])) {
 																   echo "selected";
-															   } ?>>
+															   	} elseif (($edit == 0) && ($DimJCode == 1) && ($row_DimJ['id_jerarquia'] == $IdJerarquia1)) {
+																	echo "selected";
+																} elseif (($edit == 0) && ($DimJCode == 2) && ($row_DimJ['id_jerarquia'] == $IdJerarquia2)) {
+																	echo "selected";
+																} elseif (($edit == 0) && ($DimJCode == 3) && ($row_DimJ['id_jerarquia'] == $IdJerarquia3)) {
+																	echo "selected";
+																} ?>>
 																<?php echo $row_DimJ['jerarquia']; ?>
 															</option>
 														<?php } ?>
@@ -1550,9 +1557,20 @@ $IdDimension5 = ObtenerValorDefecto(176, "IdDimension5", false);
 														<?php $SQL_Dim = Seleccionar('uvw_Sap_tbl_DimensionesReparto', '*', 'DimCode=' . $dim['DimCode']); ?>
 														<?php while ($row_Dim = sqlsrv_fetch_array($SQL_Dim)) { ?>
 
-															<option value="<?php echo $row_Dim['OcrCode']; ?>" <?php if ((isset($row["IdDimension$DimCode"]) && ($row["IdDimension$DimCode"] != "")) && ($row_Dim['OcrCode'] == $row["IdDimension$DimCode"])) {
+															<option value="<?php echo $row_Dim['OcrCode']; ?>" 
+																<?php if ((isset($row["IdDimension$DimCode"]) && ($row["IdDimension$DimCode"] != "")) && ($row_Dim['OcrCode'] == $row["IdDimension$DimCode"])) {
 																   echo "selected";
-															   } ?>>
+															   	} elseif (($edit == 0) && ($DimCode == 1) && ($row_Dim['OcrCode'] == $IdDimension1)) {
+																	echo "selected";
+																} elseif (($edit == 0) && ($DimCode == 2) && ($row_Dim['OcrCode'] == $IdDimension2)) {
+																	echo "selected";
+																} elseif (($edit == 0) && ($DimCode == 3) && ($row_Dim['OcrCode'] == $IdDimension3)) {
+																	echo "selected";
+																} elseif (($edit == 0) && ($DimCode == 4) && ($row_Dim['OcrCode'] == $IdDimension4)) {
+																	echo "selected";
+																} elseif (($edit == 0) && ($DimCode == 5) && ($row_Dim['OcrCode'] == $IdDimension5)) {
+																	echo "selected";
+																} ?>>
 																<?php echo $row_Dim['OcrCode'] . " - " . $row_Dim['OcrName']; ?>
 															</option>
 														<?php } ?>

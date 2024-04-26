@@ -21,69 +21,72 @@ $textPadre = ($row_Padre["ItemCode"] ?? "") . " - " . ($row_Padre["ItemName"] ??
 			$(".ibox-content").toggleClass("sk-loading");
 		});
 
-		// SMM, 07/03/2024
-		var dataTree = [
-			{
-				"id": "ROOT",
-				"text": "<?php echo $textPadre; ?>",
-				"icon": "fa fa-sitemap",
-				"state": {
-					"opened": true
-				},
-				"children": [
-					<?php $SQL_Nivel_1 = Seleccionar("uvw_tbl_TarjetaEquipo_Componentes_Nivel_1", "*", "id_tarjeta_equipo_padre = $idPadre"); ?>
-					<?php while ($row_N1 = sqlsrv_fetch_array($SQL_Nivel_1)) { ?>
-						{
-							"id": "N1_<?php echo $row_N1["id_jerarquia_1_hijo"]; ?>",
-							"text": "<?php echo $row_N1["jerarquia_1_hijo"]; ?>",
-							"icon": "fa fa-cubes"
-						
-							, "children": [
-								<?php $idHijo = $row_N1["id_jerarquia_1_hijo"]; ?>
-								<?php $SQL_Nivel_2 = Seleccionar("uvw_tbl_TarjetaEquipo_Componentes_Nivel_2", "*", "id_tarjeta_equipo_padre = $idPadre AND id_jerarquia_1_hijo = $idHijo"); ?>
-								<?php while ($row_N2 = sqlsrv_fetch_array($SQL_Nivel_2)) { ?>
-									{
-										"id": "N2_<?php echo $row_N2["id_jerarquia_2_hijo"]; ?>",
-										"text": "<?php echo $row_N2["jerarquia_2_hijo"]; ?>",
-										"icon": "fa fa-cube"
+		// SMM, 25/04/2024
+		var dataTree = [];
+		<?php if($idPadre != "") { ?>
+			dataTree = [
+				{
+					"id": "ROOT",
+					"text": "<?php echo $textPadre; ?>",
+					"icon": "fa fa-sitemap",
+					"state": {
+						"opened": true
+					},
+					"children": [
+						<?php $SQL_Nivel_1 = Seleccionar("uvw_tbl_TarjetaEquipo_Componentes_Nivel_1", "*", "id_tarjeta_equipo_padre = $idPadre"); ?>
+						<?php while ($row_N1 = sqlsrv_fetch_array($SQL_Nivel_1)) { ?>
+							{
+								"id": "N1_<?php echo $row_N1["id_jerarquia_1_hijo"]; ?>",
+								"text": "<?php echo $row_N1["jerarquia_1_hijo"]; ?>",
+								"icon": "fa fa-cubes"
+							
+								, "children": [
+									<?php $idHijo = $row_N1["id_jerarquia_1_hijo"]; ?>
+									<?php $SQL_Nivel_2 = Seleccionar("uvw_tbl_TarjetaEquipo_Componentes_Nivel_2", "*", "id_tarjeta_equipo_padre = $idPadre AND id_jerarquia_1_hijo = $idHijo"); ?>
+									<?php while ($row_N2 = sqlsrv_fetch_array($SQL_Nivel_2)) { ?>
+										{
+											"id": "N2_<?php echo $row_N2["id_jerarquia_2_hijo"]; ?>",
+											"text": "<?php echo $row_N2["jerarquia_2_hijo"]; ?>",
+											"icon": "fa fa-cube"
 
-										, "children": [
-											<?php $idNieto = $row_N2["id_jerarquia_2_hijo"]; ?>
-											<?php $SQL_Nivel_3 = Seleccionar("uvw_tbl_TarjetaEquipo_Componentes_Nivel_3", "*", "id_tarjeta_equipo_padre = $idPadre AND id_jerarquia_1_hijo = $idHijo AND id_jerarquia_2_hijo = $idNieto"); ?>
-											<?php while ($row_N3 = sqlsrv_fetch_array($SQL_Nivel_3)) { ?>
-												{
-													"id": "<?php echo $row_N3["id_tarjeta_equipo_hijo"]; ?>",
-													"text": "<?php echo $row_N3["id_articulo_hijo"] . " - " . $row_N3["articulo_hijo"]; ?>",
-													"icon": "fa fa-rocket"
-												},
-											<?php } ?>
-										]
-									},
-								<?php } ?>
-							]
-						},
-					<?php } ?>
-				]
-			}
-		];
+											, "children": [
+												<?php $idNieto = $row_N2["id_jerarquia_2_hijo"]; ?>
+												<?php $SQL_Nivel_3 = Seleccionar("uvw_tbl_TarjetaEquipo_Componentes_Nivel_3", "*", "id_tarjeta_equipo_padre = $idPadre AND id_jerarquia_1_hijo = $idHijo AND id_jerarquia_2_hijo = $idNieto"); ?>
+												<?php while ($row_N3 = sqlsrv_fetch_array($SQL_Nivel_3)) { ?>
+													{
+														"id": "<?php echo $row_N3["id_tarjeta_equipo_hijo"]; ?>",
+														"text": "<?php echo $row_N3["id_articulo_hijo"] . " - " . $row_N3["articulo_hijo"]; ?>",
+														"icon": "fa fa-rocket"
+													},
+												<?php } ?>
+											]
+										},
+									<?php } ?>
+								]
+							},
+						<?php } ?>
+					]
+				}
+			];
+		
+			// Imprimiendo JSON del arbol.
+			console.log(dataTree);
 
-		// Imprimiendo JSON del arbol.
-		console.log(dataTree);
-
-		// Armando y mostrando el arbol.
-		$("#jstree_components").jstree({
-			"get_selected": true
-			, "plugins": ["themes", "icons"]
-			, "core": {
-				"strings": {
-					"Loading ...": "Cargando..."
-				},
-				"multiple": false,
-				"data": dataTree
-			}
-		}).bind("select_node.jstree", function (event, data) {
-			Seleccionar(data.node);
-		});
+			// Armando y mostrando el arbol.
+			$("#jstree_components").jstree({
+				"get_selected": true
+				, "plugins": ["themes", "icons"]
+				, "core": {
+					"strings": {
+						"Loading ...": "Cargando..."
+					},
+					"multiple": false,
+					"data": dataTree
+				}
+			}).bind("select_node.jstree", function (event, data) {
+				Seleccionar(data.node);
+			});	
+		<?php } ?>
 
 		// Función para expandir todo el árbol
 		$('#btnExpandir').on('click', function() {
@@ -99,7 +102,7 @@ $textPadre = ($row_Padre["ItemCode"] ?? "") . " - " . ($row_Padre["ItemName"] ??
 		});
 	});
 
-	// SMM, 06/03/2024
+	// SMM, 25/04/2024
 	function Seleccionar(node) {
 		console.log(`Has seleccionado el nodo "${node.id}"`);
 		
@@ -109,7 +112,7 @@ $textPadre = ($row_Padre["ItemCode"] ?? "") . " - " . ($row_Padre["ItemName"] ??
 
 			$.ajax({
 				url: "ajx_buscar_datos_json.php",
-				data: { type: 55, id: node.id, padre: <?php echo $idPadre; ?> },
+				data: { type: 55, id: node.id, padre: "<?php echo $idPadre; ?>" },
 				dataType: 'json',
 				success: function (data) {
 					console.log("Line 115", data);
