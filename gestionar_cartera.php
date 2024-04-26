@@ -742,7 +742,8 @@ if (isset($row_TE['CDU_Fecha_Tecno'])) {
 						<div class="ibox-content">
 							<?php include "includes/spinner.php"; ?>
 							<div class="form-group">
-								<h3 class="col-lg-8 bg-primary p-xs b-r-sm"><i onClick="ConsultarDatosCliente();"
+								<h3 class="col-lg-8 bg-primary p-xs b-r-sm">
+									<i onclick="ConsultarDatosCliente();"
 										title="Consultar cliente" style="cursor: pointer;display: initial;"
 										class="btn-xs btn-success fa fa-search"></i> Cliente:
 									<?php echo utf8_encode($row_Cliente['NombreCliente']) . " [" . $row_Cliente['LicTradNum'] . "]"; ?>
@@ -960,7 +961,11 @@ if (isset($row_TE['CDU_Fecha_Tecno'])) {
 													</div>
 												</div>
 												<div class="form-group">
-													<label class="col-lg-2 control-label">Destino</label>
+													<label class="col-lg-2 control-label">
+														<i onclick="ConsultarDatosCliente();" title="Consultar cliente" 
+														style="cursor: pointer;display: initial;" class="btn-xs btn-success fa fa-search"></i>
+														Destino
+													</label>
 													<div class="col-lg-5">
 														<select name="Destino" class="form-control select2" id="Destino"
 															required>
