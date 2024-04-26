@@ -1432,17 +1432,17 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 								</div>
 
 								<div class="form-group">
-
+									
 									<div class="col-lg-4">
 										<!-- SMM, 30/05/2023 -->
-										<button <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || (!PermitirFuncion(402))) {
+										<button <?php if ($edit == 1) {
 											echo "disabled";
 										} ?> class="btn btn-success"
 											type="button" onclick="AgregarArticulos();"><i class="fa fa-plus"></i>
 											Agregar artículo</button>
 
 										<!-- SMM, 27/06/2023 -->
-										<button <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || (!PermitirFuncion(402))) {
+										<button <?php if ($edit == 1) {
 											echo "disabled";
 										} ?> class="btn btn-warning"
 											style="margin-left: 20px;" type="button" onclick="ActualizarArticulos();"><i
