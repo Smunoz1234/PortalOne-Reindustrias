@@ -596,7 +596,9 @@ if($SQL_ValoresPropiedades) {
 
 // Valores predeterminados del usuario para la TE. SMM, 25/04/2024
 $IdConcesionario = ObtenerValorDefecto(176, "IdConcesionario", false);
+$IdActivoFijo = ObtenerValorDefecto(176, "IdActivoFijo", false);
 $IdEstadoTarjetaEquipo = ObtenerValorDefecto(176, "IdEstadoTarjetaEquipo", false);
+$IdFabricanteEquipo = ObtenerValorDefecto(176, "IdFabricanteEquipo", false);
 $IdProyecto = ObtenerValorDefecto(176, "IdProyecto", false);
 $IdTipoEquipo = ObtenerValorDefecto(176, "IdTipoEquipo", false);
 $IdTipoProceso = ObtenerValorDefecto(176, "IdTipoProceso", false);
@@ -1405,6 +1407,8 @@ $IdDimension5 = ObtenerValorDefecto(176, "IdDimension5", false);
 															value="<?php echo $row_Fabricante['IdFabricante']; ?>"
 															<?php if (isset($row['IdFabricante']) && ($row_Fabricante['IdFabricante'] ==  $row['IdFabricante'])) {
 																echo "selected";
+															} elseif (($edit == 0) && ($row_Fabricante['IdFabricante'] == $IdFabricanteEquipo)) {
+																echo "selected";
 															} ?>>
 															<?php echo $row_Fabricante['Fabricante']; ?>
 														</option>
@@ -1450,6 +1454,8 @@ $IdDimension5 = ObtenerValorDefecto(176, "IdDimension5", false);
 													<?php while ($row_ActivoFijo = sqlsrv_fetch_array($SQL_ActivoFijo)) { ?>
 														<option value="<?php echo $row_ActivoFijo['IdActivoFijo']; ?>"
 															<?php if (isset($row['IdArticuloActivoFijo']) && ($row['IdArticuloActivoFijo'] == $row_ActivoFijo['IdActivoFijo'])) {
+																echo "selected";
+															} elseif (($edit == 0) && ($row_ActivoFijo['IdActivoFijo'] == $IdActivoFijo)) {
 																echo "selected";
 															} ?>>
 															<?php echo $row_ActivoFijo['DeActivoFijo']; ?>
