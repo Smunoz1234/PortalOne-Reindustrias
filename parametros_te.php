@@ -48,6 +48,12 @@ if (isset($_POST['Metodo']) && ($_POST['Metodo'] == 3)) {
                 $sw_error = 1;
                 $msg_error = "No se pudo eliminar la Ubicación.";
             }
+        } elseif ($_POST['TipoDoc'] == "Motivos") {
+            $SQL = EjecutarSP('sp_tbl_Actividades_ParadaMotivo', $Param);
+            if (!$SQL) {
+                $sw_error = 1;
+                $msg_error = "No se pudo eliminar el Motivo.";
+            }
         }
 
     } catch (Exception $e) {
@@ -155,6 +161,20 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
                 $sw_error = 1;
                 $msg_error = "No se pudo insertar la Ubicación.";
             }
+        } elseif ($TipoDoc == "Motivos") {
+            $Param = array(
+                $_POST['Metodo'] ?? 1, // 1 - Crear, 2 - Actualizar
+                $ID,
+                "'" . $_POST['NombreMotivo'] . "'",
+                "'" . ($_POST['Estado'] ?? "") . "'",
+                $Usuario, // Usuario de actualización y creación
+            );
+
+            $SQL = EjecutarSP('sp_tbl_Actividades_ParadaMotivo', $Param);
+            if (!$SQL) {
+                $sw_error = 1;
+                $msg_error = "No se pudo insertar el Motivo.";
+            }
         }
 
         // OK. SMM, 18/04/2024
@@ -168,7 +188,8 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
     }
 }
 
-// SMM, 17/04/2024
+// SMM, 29/04/2024
+$SQL_Motivos = Seleccionar("tbl_Actividades_ParadaMotivo", "*");
 $SQL_Unidades = Seleccionar("uvw_tbl_TarjetaEquipo_UnidadMedidas", "*");
 $SQL_Marcas = Seleccionar("uvw_tbl_TarjetaEquipo_Marcas", "*");
 $SQL_Lineas = Seleccionar("uvw_tbl_TarjetaEquipo_Lineas", "*");
@@ -288,7 +309,10 @@ if (isset($sw_error) && ($sw_error == 1)) {
 						<div class="tabs-container">
 
 						 	<ul class="nav nav-tabs">
-								<li class="<?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Unidades") || !isset($_GET['doc'])) ? "active" : ""; ?>">
+							 	<li class="<?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Motivos") || !isset($_GET['doc'])) ? "active" : ""; ?>">
+									<a data-toggle="tab" href="#tab-7"><i class="fa fa-list"></i> Motivos Parada</a>
+								</li>
+								<li class="<?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Unidades")) ? "active" : ""; ?>">
 									<a data-toggle="tab" href="#tab-1"><i class="fa fa-list"></i> Unidades</a>
 								</li>
 								<li class="<?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Marcas")) ? "active" : ""; ?>">
@@ -310,8 +334,61 @@ if (isset($sw_error) && ($sw_error == 1)) {
 
 							<div class="tab-content">
 								
+								<!-- Inicio, lista Motivos -->
+								<div id="tab-7" class="tab-pane <?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Motivos") || !isset($_GET['doc'])) ? "active" : ""; ?>">
+									<form class="form-horizontal">
+										<div class="ibox" id="Motivos">
+											<div class="ibox-title bg-success">
+												<h5 class="collapse-link"><i class="fa fa-list"></i> Lista de Motivos de Parada</h5>
+												 <a class="collapse-link pull-right">
+													<i class="fa fa-chevron-up"></i>
+												</a>
+											</div>
+											<div class="ibox-content">
+												<div class="row m-b-md">
+													<div class="col-lg-12">
+														<button class="btn btn-primary pull-right" type="button" onClick="CrearCampo('Motivos');"><i class="fa fa-plus-circle"></i> Agregar nueva</button>
+													</div>
+												</div>
+												<div class="table-responsive">
+													<table class="table table-striped table-bordered table-hover dataTables-example">
+														<thead>
+															<tr>
+																<th>Motivo Parada</th>
+																<th>Fecha Actualizacion</th>
+																<th>Usuario Actualizacion</th>
+																<th>Estado</th>
+																<th>Acciones</th>
+															</tr>
+														</thead>
+														<tbody>
+															 <?php while ($row_Motivos = sqlsrv_fetch_array($SQL_Motivos)) {?>
+															<tr>
+																<td><?php echo $row_Motivos['motivo_parada']; ?></td>
+																<td><?php echo isset($row_Motivos['fecha_actualizacion']) ? date_format($row_Motivos['fecha_actualizacion'], 'Y-m-d H:i:s') : ""; ?></td>
+																<td><?php echo $row_Motivos['usuario_actualizacion'] ?? ""; ?></td>
+																<td>
+																	<span class="label <?php echo ($row_Motivos['estado'] == "Y") ? "label-info" : "label-danger"; ?>">
+																		<?php echo ($row_Motivos['estado'] == "Y") ? "Activo" : "Inactivo"; ?>
+																	</span>
+																</td>
+																<td>
+																	<button type="button" id="btnEdit<?php echo $row_Motivos['id_motivo_parada']; ?>" class="btn btn-success btn-xs" onClick="EditarCampo('<?php echo $row_Motivos['id_motivo_parada']; ?>','Motivos');"><i class="fa fa-pencil"></i> Editar</button>
+																	<button type="button" id="btnDelete<?php echo $row_Motivos['id_motivo_parada']; ?>" class="btn btn-danger btn-xs" onClick="EliminarCampo('<?php echo $row_Motivos['id_motivo_parada']; ?>','Motivos');"><i class="fa fa-trash"></i> Eliminar</button>
+																</td>
+															</tr>
+															 <?php }?>
+														</tbody>
+													</table>
+												</div>
+											</div> <!-- ibox-content -->
+										</div> <!-- ibox -->
+									</form>
+								</div>
+								<!-- Fin, lista Motivos -->
+
 								<!-- Inicio, lista Unidades -->
-								<div id="tab-1" class="tab-pane <?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Unidades") || !isset($_GET['doc'])) ? "active" : ""; ?>">
+								<div id="tab-1" class="tab-pane <?php echo (isset($_GET['doc']) && ($_GET['doc'] == "Unidades")) ? "active" : ""; ?>">
 									<form class="form-horizontal">
 										<div class="ibox" id="Unidades">
 											<div class="ibox-title bg-success">

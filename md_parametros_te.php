@@ -30,6 +30,9 @@ if ($edit == 1 && $id != "") {
     } elseif ($doc == "Ubicaciones") {
         $SQL = Seleccionar('tbl_TarjetaEquipo_Ubicaciones', '*', "[id_ubicacion_equipo]='$id'");
         $row = sqlsrv_fetch_array($SQL);
+    } elseif ($doc == "Motivos") {
+        $SQL = Seleccionar('tbl_Actividades_ParadaMotivo', '*', "[id_motivo_parada]='$id'");
+        $row = sqlsrv_fetch_array($SQL);
     }
 }
 ?>
@@ -189,7 +192,7 @@ if ($edit == 1 && $id != "") {
 				<!-- Inicio, Ubicacion -->
 				<div class="form-group row">
 					<div class="col-md-6">
-						<label class="control-label">Nombre Ubicacion <span class="text-danger">*</span></label>
+						<label class="control-label">Nombre Ubicación <span class="text-danger">*</span></label>
 						<input type="text" class="form-control" autocomplete="off" required name="NombreUbicacion" id="NombreUbicacion" value="<?php echo $row['ubicacion_equipo'] ?? ""; ?>">
 					</div>
 					
@@ -210,7 +213,33 @@ if ($edit == 1 && $id != "") {
 				</div>
 				<!-- Fin, Ubicacion -->
 
-			<?php } ?>
+				<?php } elseif ($doc == "Motivos") {?>
+
+					<!-- Inicio, Motivo -->
+					<div class="form-group row">
+						<div class="col-md-6">
+							<label class="control-label">Nombre Motivo Parada <span class="text-danger">*</span></label>
+							<input type="text" class="form-control" autocomplete="off" required name="NombreMotivo" id="NombreMotivo" value="<?php echo $row['motivo_parada'] ?? ""; ?>">
+						</div>
+						
+						<div class="col-md-6"  style="display: none;">
+							<label class="control-label">Estado <span class="text-danger">*</span></label>
+							<select class="form-control" id="Estado" name="Estado">
+								<option value="Y" <?php if (($edit == 1) && ($row['estado'] == "Y")) {echo "selected";}?>>ACTIVO</option>
+								<option value="N" <?php if (($edit == 1) && ($row['estado'] == "N")) {echo "selected";}?>>INACTIVO</option>
+							</select>
+						</div>
+					</div>
+
+					<div class="form-group row" style="display: none;">
+						<div class="col-md-12">
+							<label class="control-label">Comentarios</label>
+							<textarea name="Comentarios" rows="3" maxlength="3000" class="form-control" id="Comentarios" type="text"><?php echo $row['comentarios'] ?? ""; ?></textarea>
+						</div>
+					</div>
+					<!-- Fin, Motivo -->
+
+				<?php } ?>
 
 		</div> <!-- ibox-content -->
 	</div> <!-- form-group -->

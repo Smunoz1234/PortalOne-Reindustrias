@@ -312,6 +312,7 @@ if (!isset($_COOKIE["banderaMenu"])) {
 										<?php if (PermitirFuncion(334)) {?><li><a class="alnk" href="gestionar_solicitudes_llamadas.php">Solicitudes de llamadas (Agenda)</a></li><?php }?>
 										<?php if (PermitirFuncion(301)) {?><li><a class="alnk" href="gestionar_llamadas_servicios.php">Llamadas de servicio</a></li><?php }?>
 										<?php if (PermitirFuncion(303)) {?><li><a class="alnk" href="gestionar_actividades.php">Actividades</a></li><?php }?>
+										<?php if (PermitirFuncion(351)) {?><li><a class="alnk" href="parametros_te.php">Configuración de parámetros</a></li><?php }?>
 									</ul>
 								</li>
 							<?php }?>
