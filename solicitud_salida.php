@@ -954,7 +954,7 @@ function verAutorizacion() {
 										<input type="hidden" id="ClienteSN" name="ClienteSN">
 										<input type="text" class="form-control" id="NombreClienteSN"
 											name="NombreClienteSN" placeholder="Digite para buscar..."
-											required="required">
+											required>
 									</div>
 									<div class="col-lg-5">
 										<label class="control-label">Contacto</label>
@@ -1278,12 +1278,16 @@ function verAutorizacion() {
 						<div class="col-lg-9">
 							<input name="CardCode" type="hidden" id="CardCode" value="<?php if (($edit == 1) || ($sw_error == 1)) {
 								echo $row['CardCode'];
+							} elseif ($dt_OV == 1) {
+								echo $row_Cliente['CodigoCliente'] ?? "";
 							} elseif (($edit == 0) && ($ClienteDefault != "")) {
 								echo $ClienteDefault;
 							} ?>">
 
-							<input autocomplete="off" name="CardName" type="text" required="required" class="form-control" id="CardName" placeholder="Digite para buscar..." value="<?php if (($edit == 1) || ($sw_error == 1)) {
+							<input autocomplete="off" name="CardName" type="text" required class="form-control" id="CardName" placeholder="Digite para buscar..." value="<?php if (($edit == 1) || ($sw_error == 1)) {
 								echo $row['NombreCliente'];
+							} elseif ($dt_OV == 1) {
+								echo $row_Cliente['NombreCliente'] ?? "";
 							} elseif (($edit == 0) && ($ClienteDefault != "")) {
 								echo $NombreClienteDefault;
 							} ?>" <?php if ($edit == 1) {
@@ -1337,13 +1341,15 @@ function verAutorizacion() {
 						<label class="col-lg-1 control-label">Sucursal destino <span
 								class="text-danger">*</span></label>
 						<div class="col-lg-5">
-							<select class="form-control select2" name="SucursalDestino"
-								id="SucursalDestino" required="required" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
+						<select class="form-control select2" name="SucursalDestino"
+								id="SucursalDestino" required <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
 									echo "disabled";
 								} ?>>
-								<option value="">Seleccione...</option>
-								
-								<?php if (($edit == 1) || ($sw_error == 1)) { ?>
+								<?php if (($edit == 0) && ($dt_OV == 0)) { ?>
+									<option value="">Seleccione...</option>
+								<?php } ?>
+							  	
+								<?php if (($edit == 1) || ($sw_error == 1) || ($dt_OV == 1)) { ?>
 									<optgroup label='Dirección de destino'></optgroup>
 									<?php while ($row_SucursalDestino = sqlsrv_fetch_array($SQL_SucursalDestino)) { ?>
 										<option value="<?php echo $row_SucursalDestino['NombreSucursal']; ?>"
@@ -1371,9 +1377,11 @@ function verAutorizacion() {
 								id="SucursalFacturacion" required <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
 									echo "disabled";
 								} ?>>
-								<option value="">Seleccione...</option>
-								
-								<?php if (($edit == 1) || ($sw_error == 1)) { ?>
+								<?php if (($edit == 0) && ($dt_OV == 0)) { ?>
+									<option value="">Seleccione...</option>
+								<?php } ?>
+							  	
+								<?php if (($edit == 1) || ($sw_error == 1) || ($dt_OV == 1)) { ?>
 									<optgroup label='Dirección de facturas'></optgroup>
 									<?php while ($row_SucursalFacturacion = sqlsrv_fetch_array($SQL_SucursalFacturacion)) { ?>
 										<option
@@ -1402,6 +1410,8 @@ function verAutorizacion() {
 						<div class="col-lg-5">
 							<input type="text" class="form-control" name="DireccionDestino" id="DireccionDestino" value="<?php if ($edit == 1 || $sw_error == 1) {
 								echo $row['DireccionDestino'];
+							} elseif ($dt_OV == 1 && isset($_GET['Direccion'])) {
+								echo base64_decode($_GET['Direccion']);
 							} ?>" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
 								echo "readonly";
 							} ?>>
@@ -1449,7 +1459,7 @@ function verAutorizacion() {
 					<div class="form-group">
 						<label class="col-lg-5">Fecha de contabilización</label>
 						<div class="col-lg-7 input-group date">
-							 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="DocDate" id="DocDate" type="text" required="required" class="form-control" value="<?php if ($edit == 1 || $sw_error == 1) {
+							 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="DocDate" id="DocDate" type="text" required class="form-control" value="<?php if ($edit == 1 || $sw_error == 1) {
 								 echo $row['DocDate'];
 							 } else {
 								 echo date('Y-m-d');
@@ -1461,7 +1471,7 @@ function verAutorizacion() {
 					<div class="form-group">
 						<label class="col-lg-5">Fecha de requerida salida</label>
 						<div class="col-lg-7 input-group date">
-							 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="DocDueDate" id="DocDueDate" type="text" required="required" class="form-control" value="<?php if ($edit == 1 || $sw_error == 1) {
+							 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="DocDueDate" id="DocDueDate" type="text" required class="form-control" value="<?php if ($edit == 1 || $sw_error == 1) {
 								 echo $row['DocDueDate'];
 							 } else {
 								 echo date('Y-m-d');
@@ -1473,7 +1483,7 @@ function verAutorizacion() {
 					<div class="form-group">
 						<label class="col-lg-5">Fecha del documento</label>
 						<div class="col-lg-7 input-group date">
-							 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="TaxDate" id="TaxDate" type="text" required="required" class="form-control" value="<?php if ($edit == 1 || $sw_error == 1) {
+							 <span class="input-group-addon"><i class="fa fa-calendar"></i></span><input name="TaxDate" id="TaxDate" type="text" required class="form-control" value="<?php if ($edit == 1 || $sw_error == 1) {
 								 echo $row['TaxDate'];
 							 } else {
 								 echo date('Y-m-d');
@@ -1894,6 +1904,8 @@ function verAutorizacion() {
 				<input type="hidden" form="CrearSolicitudSalida" id="tl" name="tl" value="<?php echo $edit; ?>" />
 				<input type="hidden" form="CrearSolicitudSalida" id="swError" name="swError" value="<?php echo $sw_error; ?>" />
 				<input type="hidden" form="CrearSolicitudSalida" id="return" name="return" value="<?php echo base64_encode($return); ?>" />
+				
+				<input type="hidden" form="CrearSolicitudSalida" id="dt_OV" name="dt_OV" value="<?php echo $dt_OV; ?>">
 			 </form>
 		   </div>
 			</div>
@@ -2060,12 +2072,17 @@ function verAutorizacion() {
 		 };
 		
 		<?php if ($edit == 0) { ?>
-				$("#CardName").easyAutocomplete(options);
+			$("#CardName").easyAutocomplete(options);
 		 <?php } ?>
 		
 		<?php if ($edit == 0) { ?>
-				 $('#Serie').trigger('change');
+			$('#Serie').trigger('change');
 		 <?php } ?>
+
+		 <?php if ($dt_OV == 1) { ?>
+			$('#CardCode').trigger('change');
+			$('#SucursalFacturacion').trigger('change');
+		<?php } ?>
 	});
 </script>
 <script>
