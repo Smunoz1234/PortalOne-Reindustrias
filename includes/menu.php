@@ -305,14 +305,14 @@ if (!isset($_COOKIE["banderaMenu"])) {
 								</li>
 							<?php }?>
 							
-							<?php if (PermitirFuncion([334, 301, 303])) {?>
+							<?php if (PermitirFuncion([334, 301, 303, 352])) {?>
 								<li>
 									<a href="#">Ordenes de trabajo <span class="fa arrow"></span></a>
 									<ul class='nav nav-third-level'>
 										<?php if (PermitirFuncion(334)) {?><li><a class="alnk" href="gestionar_solicitudes_llamadas.php">Solicitudes de llamadas (Agenda)</a></li><?php }?>
 										<?php if (PermitirFuncion(301)) {?><li><a class="alnk" href="gestionar_llamadas_servicios.php">Llamadas de servicio</a></li><?php }?>
 										<?php if (PermitirFuncion(303)) {?><li><a class="alnk" href="gestionar_actividades.php">Actividades</a></li><?php }?>
-										<?php if (PermitirFuncion(351)) {?><li><a class="alnk" href="parametros_te.php">Configuración de parámetros</a></li><?php }?>
+										<?php if (PermitirFuncion(352)) {?><li><a class="alnk" href="parametros_servicios.php">Parámetros de servicios/mantenimiento</a></li><?php }?>
 									</ul>
 								</li>
 							<?php }?>
@@ -751,13 +751,14 @@ if (!isset($_COOKIE["banderaMenu"])) {
 								</ul>
 							</li>
 							<?php }?>
-							<?php if (PermitirFuncion([334, 301, 303])) {?>
+							<?php if (PermitirFuncion([334, 301, 303, 352])) {?>
 							<li>
 								<a href="#">Ordenes de trabajo <span class="fa arrow"></span></a>
 								<ul class='nav nav-third-level'>
 									<?php if (PermitirFuncion(334)) {?><li><a class="alnk" href="gestionar_solicitudes_llamadas.php">Solicitudes de llamadas (Agenda)</a></li><?php }?>
 									<?php if (PermitirFuncion(301)) {?><li><a class="alnk" href="gestionar_llamadas_servicios.php">Llamadas de servicio</a></li><?php }?>
 									<?php if (PermitirFuncion(303)) {?><li><a class="alnk" href="gestionar_actividades.php">Actividades</a></li><?php }?>
+									<?php if (PermitirFuncion(352)) {?><li><a class="alnk" href="parametros_servicios.php">Parámetros de servicios/mantenimiento</a></li><?php }?>
 								</ul>
 							</li>
 							<?php }?>
