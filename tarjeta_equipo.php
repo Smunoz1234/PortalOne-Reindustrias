@@ -839,12 +839,18 @@ $IdDimension5 = ObtenerValorDefecto(176, "IdDimension5", false);
 
             // Obtiene la URL actual
             const currentURL = window.location.href;
+
+			// SMM, 30/04/2024
+			const urlTD = "<?php echo ObtenerVariable("URLTarjetaDigital"); ?>";
+			const anchoQR = "<?php echo intval(ObtenerVariable("DimensionQRAncho")); ?>";
+			const altoQR = "<?php echo intval(ObtenerVariable("DimensionQRAlto")); ?>";
             
 			// Generar el código QR en el nuevo DIV
+			const urlQR = (tipo == "TD") ? urlTD : currentURL;
 			const qrcode = new QRCode(newDIV, {
-                text: currentURL,
-                width: 320,
-                height: 320
+                text: urlQR,
+                width: anchoQR,
+                height: altoQR
             });
 			// Nota: La variable no se esta usando.
         }
