@@ -107,6 +107,7 @@ $Campos = "
       ,[CardCode]
       ,[CardName]
       ,[TelefonoCliente]
+      ,[CelularCliente]
       ,[EmailCliente]
       ,[SerialFabricante]
       ,[SerialInterno]
@@ -294,6 +295,11 @@ $Cons2 = "SELECT $Campos FROM uvw_Sap_tbl_TarjetasEquipos WHERE $Filtro ORDER BY
                     <tr>
 						<th>Núm.</th>
 						<th>Cliente</th>
+                        
+                        <th>Teléfono</th>
+                        <th>Celular</th>
+                        <th>Correo</th>
+
 						<th>Serial fabricante</th>
                         <th>Serial interno</th>
                         <th>Código de artículo</th>
@@ -315,6 +321,10 @@ $Cons2 = "SELECT $Campos FROM uvw_Sap_tbl_TarjetasEquipos WHERE $Filtro ORDER BY
                                 <?php echo $row['CardCode'] . " (" . $row['CardName'] . ")"; ?>
                             </td>
 							
+                            <td><?php echo $row['TelefonoCliente'] ?? ""; ?></td>
+                            <td><?php echo $row['CelularCliente'] ?? ""; ?></td>
+                            <td><?php echo $row['EmailCliente'] ?? ""; ?></td>
+
                             <td><?php echo $row['SerialFabricante']; ?></td>
 							<td><?php echo $row['SerialInterno']; ?></td>
 							<td><?php echo $row['ItemCode']; ?></td>
