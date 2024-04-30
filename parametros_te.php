@@ -189,7 +189,7 @@ if ((isset($_POST['frmType']) && ($_POST['frmType'] != "")) || (isset($_POST['Me
 }
 
 // SMM, 29/04/2024
-$SQL_Motivos = Seleccionar("tbl_Actividades_ParadaMotivo", "*");
+$SQL_Motivos = Seleccionar("uvw_tbl_Actividades_ParadaMotivo", "*");
 $SQL_Unidades = Seleccionar("uvw_tbl_TarjetaEquipo_UnidadMedidas", "*");
 $SQL_Marcas = Seleccionar("uvw_tbl_TarjetaEquipo_Marcas", "*");
 $SQL_Lineas = Seleccionar("uvw_tbl_TarjetaEquipo_Lineas", "*");

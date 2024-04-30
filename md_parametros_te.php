@@ -196,7 +196,7 @@ if ($edit == 1 && $id != "") {
 						<input type="text" class="form-control" autocomplete="off" required name="NombreUbicacion" id="NombreUbicacion" value="<?php echo $row['ubicacion_equipo'] ?? ""; ?>">
 					</div>
 					
-					<div class="col-md-6"  style="display: none;">
+					<div class="col-md-6" style="display: none;">
 						<label class="control-label">Estado <span class="text-danger">*</span></label>
 						<select class="form-control" id="Estado" name="Estado">
 							<option value="Y" <?php if (($edit == 1) && ($row['estado_ubicacion_equipo'] == "Y")) {echo "selected";}?>>ACTIVO</option>
@@ -222,7 +222,7 @@ if ($edit == 1 && $id != "") {
 							<input type="text" class="form-control" autocomplete="off" required name="NombreMotivo" id="NombreMotivo" value="<?php echo $row['motivo_parada'] ?? ""; ?>">
 						</div>
 						
-						<div class="col-md-6"  style="display: none;">
+						<div class="col-md-6">
 							<label class="control-label">Estado <span class="text-danger">*</span></label>
 							<select class="form-control" id="Estado" name="Estado">
 								<option value="Y" <?php if (($edit == 1) && ($row['estado'] == "Y")) {echo "selected";}?>>ACTIVO</option>
