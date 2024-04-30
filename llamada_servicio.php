@@ -2532,7 +2532,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 								</label>
 								
 								<input name="IdClienteSecundario" type="hidden" id="IdClienteSecundario" value="<?php echo $IdClienteSecundario; ?>">
-								<input name="NombreClienteSecundario" type="text" required class="form-control" id="NombreClienteSecundario" placeholder="Digite para buscar..." <?php if (($edit == 1) && ((!$ActualizarSolicitud) || ($row['IdEstadoLlamada'] == '-1') || ($row['TipoTarea'] == 'Interna')) || ($dt_LS == 1) || ($edit == 1)) {
+								<input name="NombreClienteSecundario" type="text" required class="form-control" id="NombreClienteSecundario" placeholder="Digite para buscar..." <?php if (($edit == 1) && (($row['IdEstadoLlamada'] == '-1') || ($row['TipoTarea'] == 'Interna')) || ($dt_LS == 1) || ($edit == 1)) {
 									echo "readonly";
 								} ?> value="<?php echo $row['NombreClienteSecundario'] ?? ""; ?>">
 							</div>
