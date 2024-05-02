@@ -706,11 +706,11 @@ if (!isset($_COOKIE["banderaMenu"])) {
 					</li>
 				<?php } ?>
 
-				<?php if(PermitirFuncion(1901)){?>
+				<?php if(PermitirFuncion(1801)){?>
 					<li>
 						<a href="#"><i class="fa fa-bank"></i> <span class="nav-label">Gestión de bancos</span><span class="fa arrow"></span></a>
 						<ul class="nav nav-second-level">
-							<?php if(PermitirFuncion(1901)){?><li><a class="alnk" href="archivo_pago_banco.php">Archivo para pagos</a></li><?php }?>
+							<?php if(PermitirFuncion(1801)){?><li><a class="alnk" href="archivo_pago_banco.php">Archivo para pagos</a></li><?php }?>
 						</ul>
 					</li>
 				<?php }?>
