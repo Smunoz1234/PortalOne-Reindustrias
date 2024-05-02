@@ -24,8 +24,32 @@ $SQL=Seleccionar('uvw_Sap_tbl_AsistentePagosDetalle','*',"IdEntry='".$_POST['id'
 								<option value="BBVA">BBVA</option>
 							</select>
 						</div>
-						<div class="col-lg-1">
-							<a id="excelBanco" href="exportar_excel.php?exp=16&Cons=<?php echo base64_encode($_POST['id']);?>&sp=<?php echo base64_encode("sp_AsistentePagosDetalle_Bancolombia");?>" class="btn btn-outline btn-primary"><i class="fa fa-file-excel-o"></i> Descargar archivo</a>
+						
+						<div class="col-lg-2">
+							<!-- SMM, 02/05/2024 -->
+							<div class="btn-group">
+								<button data-toggle="dropdown"
+									class="btn btn-outline btn-primary dropdown-toggle">
+									<i class="fa fa-download"></i>
+									Descargar Archivo 
+									<i class="fa fa-caret-down"></i>
+								</button>
+								<ul class="dropdown-menu">
+									<li>
+										<a class="dropdown-item" target="_blank" id="excelBanco"
+											href="exportar_excel.php?exp=16&Cons=<?php echo base64_encode($_POST['id']);?>&sp=<?php echo base64_encode("sp_AsistentePagosDetalle_Bancolombia");?>">
+											Descargar Excel
+										</a>
+									</li>
+									<li>
+										<a class="dropdown-item" target="_blank" id="bancoTXT"
+											href="exportar_excel.php?exp=24&Cons=<?php echo base64_encode($_POST['id']);?>&sp=<?php echo base64_encode("sp_AsistentePagosDetalle_Bancolombia");?>">
+											Descargar TXT
+										</a>
+									</li>
+								</ul>
+							</div>
+							<!-- Hasta aquí, 02/05/2024 -->
 						</div>			
 					</div>
 				</div>
@@ -80,9 +104,18 @@ $SQL=Seleccionar('uvw_Sap_tbl_AsistentePagosDetalle','*',"IdEntry='".$_POST['id'
 		
 		let excelB1 = "exportar_excel.php?exp=16&Cons=<?php echo base64_encode($_POST['id']);?>&sp=<?php echo base64_encode("sp_AsistentePagosDetalle_Bancolombia");?>";
 		let excelB2 = "exportar_excel.php?exp=22&Cons=<?php echo base64_encode($_POST['id']);?>&sp=<?php echo base64_encode("sp_AsistentePagosDetalle_BBVA");?>";
-		
+
 		let hrefExcel = (banco === "Bancolombia") ? excelB1 : excelB2;
 		$("#excelBanco").attr("href", hrefExcel);
+
+		// SMM, 02/05/2024
+		// exp = 23
+		let txtB1 = "exportar_excel.php?exp=24&Cons=<?php echo base64_encode($_POST['id']);?>&sp=<?php echo base64_encode("sp_AsistentePagosDetalle_Bancolombia");?>";
+		let txtB2 = "exportar_excel.php?exp=24&Cons=<?php echo base64_encode($_POST['id']);?>&sp=<?php echo base64_encode("sp_AsistentePagosDetalle_BBVA");?>";
+		
+
+		let hrefTXT = (banco === "Bancolombia") ? txtB1 : txtB2;
+		$("#bancoTXT").attr("href", hrefTXT);
 	});
 	 
 	var table = $('.dataTables-Details').DataTable({

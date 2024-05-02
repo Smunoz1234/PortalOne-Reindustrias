@@ -1755,76 +1755,56 @@ if (isset($_GET['exp']) && $_GET['exp'] != "" && $_GET['Cons'] != "") {
         exit;
     }
 
-    //Exportar archivo de pagos Bancolombia
-    if ($_GET['exp'] == 16) {
-        $Cons = base64_decode($_GET['Cons']);
+    // Exportar archivo de pagos Bancolombia
+    if (isset($_GET['exp']) && (intval($_GET['exp']) === 16)) {
+        $Cons = isset($_GET['Cons']) ? base64_decode($_GET['Cons']) : '';
         $ParamCons = explode(",", $Cons);
-        $SQL = EjecutarSP(base64_decode($_GET['sp']), $ParamCons);
-//        $Num=sqlsrv_has_rows($SQL);
-        //echo $Cons;
 
-        if ($SQL) {
-            require 'Classes/PHPExcel.php';
-            $objExcel = new PHPExcel();
-            $objSheet = $objExcel->setActiveSheetIndex(0);
-            $objExcel->
-                getProperties()
-                ->setCreator(NOMBRE_PORTAL);
+        // Ejecutar la consulta y verificar si hay resultados
+        $sp = isset($_GET['sp']) ? base64_decode($_GET['sp']) : '';
+        $SQL = EjecutarSP($sp, $ParamCons);
+        if (!$SQL || !sqlsrv_has_rows($SQL)) {
+            // Manejar el caso de que no haya resultados
+            exit("Error: No se encontraron datos.");
+        }
 
-            $EstiloTitulo = array(
-                'font' => array(
-                    'bold' => true,
-                ),
-            );
+        // SMM, 02/05/2024
+        require 'Classes/PHPExcel.php';
+        $objExcel = new PHPExcel();
+        $objSheet = $objExcel->setActiveSheetIndex(0);
+        $objExcel->getProperties()->setCreator(NOMBRE_PORTAL);
 
-            //Colocar estilos
-            $objExcel->getActiveSheet()->getStyle('A1')->applyFromArray($EstiloTitulo);
-            $objExcel->getActiveSheet()->getStyle('B1')->applyFromArray($EstiloTitulo);
-            $objExcel->getActiveSheet()->getStyle('C1')->applyFromArray($EstiloTitulo);
-            $objExcel->getActiveSheet()->getStyle('D1')->applyFromArray($EstiloTitulo);
-            $objExcel->getActiveSheet()->getStyle('E1')->applyFromArray($EstiloTitulo);
-            $objExcel->getActiveSheet()->getStyle('F1')->applyFromArray($EstiloTitulo);
-            $objExcel->getActiveSheet()->getStyle('G1')->applyFromArray($EstiloTitulo);
+        // Crear estilos
+        $EstiloTitulo = [
+            'font' => ['bold' => true],
+        ];
 
-            $objExcel->getActiveSheet()->getStyle('A3')->applyFromArray($EstiloTitulo);
-            $objExcel->getActiveSheet()->getStyle('B3')->applyFromArray($EstiloTitulo);
-            $objExcel->getActiveSheet()->getStyle('C3')->applyFromArray($EstiloTitulo);
-            $objExcel->getActiveSheet()->getStyle('D3')->applyFromArray($EstiloTitulo);
-            $objExcel->getActiveSheet()->getStyle('E3')->applyFromArray($EstiloTitulo);
-            $objExcel->getActiveSheet()->getStyle('F3')->applyFromArray($EstiloTitulo);
-            $objExcel->getActiveSheet()->getStyle('G3')->applyFromArray($EstiloTitulo);
-            $objExcel->getActiveSheet()->getStyle('H3')->applyFromArray($EstiloTitulo);
-            $objExcel->getActiveSheet()->getStyle('I3')->applyFromArray($EstiloTitulo);
-            $objExcel->getActiveSheet()->getStyle('J3')->applyFromArray($EstiloTitulo);
-            $objExcel->getActiveSheet()->getStyle('K3')->applyFromArray($EstiloTitulo);
+        // Aplicar estilos a las celdas
+        $columnasTitulos = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'];
+        foreach ($columnasTitulos as $columna) {
+            $objExcel->getActiveSheet()->getStyle($columna . '1')->applyFromArray($EstiloTitulo);
+            $objExcel->getActiveSheet()->getStyle($columna . '3')->applyFromArray($EstiloTitulo);
+        }
 
-            //Ancho automatico
-            $objExcel->getActiveSheet()->getColumnDimension('A')->setAutoSize(true);
-            $objExcel->getActiveSheet()->getColumnDimension('B')->setAutoSize(true);
-            $objExcel->getActiveSheet()->getColumnDimension('C')->setAutoSize(true);
-            $objExcel->getActiveSheet()->getColumnDimension('D')->setAutoSize(true);
-            $objExcel->getActiveSheet()->getColumnDimension('E')->setAutoSize(true);
-            $objExcel->getActiveSheet()->getColumnDimension('F')->setAutoSize(true);
-            $objExcel->getActiveSheet()->getColumnDimension('G')->setAutoSize(true);
-            $objExcel->getActiveSheet()->getColumnDimension('H')->setAutoSize(true);
-            $objExcel->getActiveSheet()->getColumnDimension('I')->setAutoSize(true);
-            $objExcel->getActiveSheet()->getColumnDimension('J')->setAutoSize(true);
-            $objExcel->getActiveSheet()->getColumnDimension('K')->setAutoSize(true);
+        // Autoajuste de ancho de columnas
+        foreach ($columnasTitulos as $columna) {
+            $objExcel->getActiveSheet()->getColumnDimension($columna)->setAutoSize(true);
+        }
 
-            //Titulo de la hoja
-            $objExcel->getActiveSheet()->setTitle('Plantilla Bancolombia');
+        // Titulo de la hoja
+        $objExcel->getActiveSheet()->setTitle('Plantilla Bancolombia');
 
-            $objExcel->setActiveSheetIndex(0)
-                ->setCellValue('A1', 'NIT PAGADOR')
-                ->setCellValue('B1', 'EMPRESA')
-                ->setCellValue('C1', 'TIPO DE PAGO')
-                ->setCellValue('D1', 'SECUENCIA DE ENVIO')
-                ->setCellValue('E1', 'NRO CUENTA A DEBITAR')
-                ->setCellValue('F1', 'TIPO DE CUENTA A DEBITAR')
-                ->setCellValue('G1', 'DESCRIPCION DEL PAGO');
+        $objExcel->setActiveSheetIndex(0)
+            ->setCellValue('A1', 'NIT PAGADOR')
+            ->setCellValue('B1', 'EMPRESA')
+            ->setCellValue('C1', 'TIPO DE PAGO')
+            ->setCellValue('D1', 'SECUENCIA DE ENVIO')
+            ->setCellValue('E1', 'NRO CUENTA A DEBITAR')
+            ->setCellValue('F1', 'TIPO DE CUENTA A DEBITAR')
+            ->setCellValue('G1', 'DESCRIPCION DEL PAGO');
 
-            $registros = sqlsrv_fetch_array($SQL);
-
+        $registros = sqlsrv_fetch_array($SQL);
+        if ($registros) {
             $objExcel->setActiveSheetIndex(0)
                 ->setCellValue('A2', $registros['NIT'])
                 ->setCellValue('B2', $registros['EMPRESA'])
@@ -1833,37 +1813,37 @@ if (isset($_GET['exp']) && $_GET['exp'] != "" && $_GET['Cons'] != "") {
                 ->setCellValue('E2', $registros['CUENTADEBITAR'])
                 ->setCellValue('F2', $registros['TIPOCUENTA'])
                 ->setCellValue('G2', $registros['DESCRIPCIONPAGO']);
+        }
 
-            $objExcel->setActiveSheetIndex(0)
-                ->setCellValue('A3', 'Tipo documento beneficiario')
-                ->setCellValue('B3', 'Documento beneficiario')
-                ->setCellValue('C3', 'Nombre beneficiario')
-                ->setCellValue('D3', 'Tipo transaccion')
-                ->setCellValue('E3', 'Codigo banco')
-                ->setCellValue('F3', 'No cuenta beneficiario')
-                ->setCellValue('G3', 'Concepto')
-                ->setCellValue('H3', 'Oficina entrega')
-                ->setCellValue('I3', 'Documento autorizacion')
-                ->setCellValue('J3', 'Referencia')
-                ->setCellValue('K3', 'Valor transaccion');
+        $objExcel->setActiveSheetIndex(0)
+            ->setCellValue('A3', 'Tipo documento beneficiario')
+            ->setCellValue('B3', 'Documento beneficiario')
+            ->setCellValue('C3', 'Nombre beneficiario')
+            ->setCellValue('D3', 'Tipo transaccion')
+            ->setCellValue('E3', 'Codigo banco')
+            ->setCellValue('F3', 'No cuenta beneficiario')
+            ->setCellValue('G3', 'Concepto')
+            ->setCellValue('H3', 'Oficina entrega')
+            ->setCellValue('I3', 'Documento autorizacion')
+            ->setCellValue('J3', 'Referencia')
+            ->setCellValue('K3', 'Valor transaccion');
 
-            sqlsrv_next_result($SQL);
+        sqlsrv_next_result($SQL);
 
-            $i = 4;
-            while ($registros = sqlsrv_fetch_array($SQL)) {
-                $objSheet->setCellValue('A' . $i, $registros['TIPODOC']);
-                $objSheet->setCellValue('B' . $i, $registros['DOCUMENTO']);
-                $objSheet->setCellValue('C' . $i, $registros['BENEFICIARIO']);
-                $objSheet->setCellValue('D' . $i, $registros['TIPOTRANSACCION']);
-                $objSheet->setCellValue('E' . $i, $registros['CODIGOBANCO']);
-                $objSheet->setCellValueExplicit('F' . $i, $registros['CUENTABENEFICIARIO']);
-                $objSheet->setCellValue('G' . $i, $registros['CONCEPTO']);
-                $objSheet->setCellValue('H' . $i, $registros['OFICINAENTREGA']);
-                $objSheet->setCellValue('I' . $i, $registros['DOCAUTORIZADO']);
-                $objSheet->setCellValue('J' . $i, $registros['REFERENCIA']);
-                $objSheet->setCellValue('K' . $i, $registros['VALORTRANSACCION']);
-                $i++;
-            }
+        $i = 4;
+        while ($registros = sqlsrv_fetch_array($SQL)) {
+            $objSheet->setCellValue('A' . $i, $registros['TIPODOC']);
+            $objSheet->setCellValue('B' . $i, $registros['DOCUMENTO']);
+            $objSheet->setCellValue('C' . $i, $registros['BENEFICIARIO']);
+            $objSheet->setCellValue('D' . $i, $registros['TIPOTRANSACCION']);
+            $objSheet->setCellValue('E' . $i, $registros['CODIGOBANCO']);
+            $objSheet->setCellValueExplicit('F' . $i, $registros['CUENTABENEFICIARIO']);
+            $objSheet->setCellValue('G' . $i, $registros['CONCEPTO']);
+            $objSheet->setCellValue('H' . $i, $registros['OFICINAENTREGA']);
+            $objSheet->setCellValue('I' . $i, $registros['DOCAUTORIZADO']);
+            $objSheet->setCellValue('J' . $i, $registros['REFERENCIA']);
+            $objSheet->setCellValue('K' . $i, $registros['VALORTRANSACCION']);
+            $i++;
         }
 
         header('Content-Type: application/vnd.ms-excel');
@@ -3006,6 +2986,122 @@ if (isset($_GET['exp']) && $_GET['exp'] != "" && $_GET['Cons'] != "") {
         $objWriter = PHPExcel_IOFactory::createWriter($objExcel, 'Excel2007');
         $objWriter->save('php://output');
         exit;
+    }
+
+    // Exportar archivo de pagos Bancolombia en formato TXT. SMM, 02/05/2024
+    if (isset($_GET['exp']) && (intval($_GET['exp']) === 23)) {
+        $Cons = isset($_GET['Cons']) ? base64_decode($_GET['Cons']) : '';
+        $ParamCons = explode(",", $Cons);
+
+        // Ejecutar la consulta y verificar si hay resultados
+        $sp = isset($_GET['sp']) ? base64_decode($_GET['sp']) : '';
+        $SQL = EjecutarSP($sp, $ParamCons);
+        if (!$SQL || !sqlsrv_has_rows($SQL)) {
+            // Manejar el caso de que no haya resultados
+            exit("Error: No se encontraron datos.");
+        }
+
+        // Crear el archivo de texto
+        $file = fopen('PlantillaPagosBanco.txt', 'w');
+
+        // Escribir encabezados
+        $encabezados = "NIT PAGADOR|EMPRESA|TIPO DE PAGO|SECUENCIA DE ENVIO|NRO CUENTA A DEBITAR|TIPO DE CUENTA A DEBITAR|DESCRIPCION DEL PAGO\n";
+        fwrite($file, $encabezados);
+
+        // Escribir datos
+        while ($registros = sqlsrv_fetch_array($SQL)) {
+            $linea = "{$registros['NIT']}|{$registros['EMPRESA']}|{$registros['TIPOPAGO']}|{$registros['SECUENCIA']}|{$registros['CUENTADEBITAR']}|{$registros['TIPOCUENTA']}|{$registros['DESCRIPCIONPAGO']}\n";
+            fwrite($file, $linea);
+        }
+
+        // Cerrar el archivo
+        fclose($file);
+
+        // Descargar el archivo de texto
+        header('Content-Type: text/plain');
+        header('Content-Disposition: attachment;filename="PlantillaPagosBanco.txt"');
+        header('Cache-Control: max-age=0');
+        readfile('PlantillaPagosBanco.txt');
+
+        // Eliminar el archivo después de descargar
+        unlink($filename);
+
+        // Salir del script
+        exit;
+    }
+
+    // Exportar datos desde un SP, para Bancos. SMM, 02/05/2024
+    if ($_GET['exp'] == 24) {
+        $Cons = base64_decode($_GET['Cons']);
+        $ParamCons = explode(",", $Cons);
+        if (isset($_GET['hn']) && ($_GET['hn'] == 1)) {
+            $SQL = EjecutarSP(base64_decode($_GET['sp']), $ParamCons, 0, 2);
+        } else {
+            $SQL = EjecutarSP(base64_decode($_GET['sp']), $ParamCons);
+        }
+
+        $rawdata = array();
+        $i = 0;
+        if ($SQL) {
+            if (isset($_GET['hn']) && ($_GET['hn'] == 1)) {
+                while (odbc_fetch_into($SQL, $rawdata[$i])) {
+                    $i++;
+                }
+            } else {
+                while ($row = sql_fetch_array($SQL)) {
+                    $rawdata[$i] = $row;
+                    $i++;
+                }
+            }
+
+            // Nombre del archivo de texto
+            $filename = 'PlantillaPagosBanco_' . date('Ymd') . '.txt';
+
+            // Abrir archivo para escritura
+            $file = fopen($filename, 'w');
+
+            // SMM, 02/05/2024
+            $newArray = array();
+            $firstRow = reset($rawdata);
+            $keys = array_keys($firstRow);
+            foreach ($rawdata as &$dataArray) {
+                $nuevoArreglo = array();
+                $values = array_values($dataArray);
+                for ($i = 1; $i < count($values); $i += 2) {
+                    $nuevoArreglo[$keys[$i]] = $values[$i];
+                }
+                array_push($newArray, $nuevoArreglo);
+            }
+
+            // SMM, 02/05/2024
+            // echo "<pre>" . print_r($newArray, true) . "</pre>";
+            // echo "<pre>" . print_r($rawdata, true) . "</pre>";
+            // exit();
+
+            // Escribir encabezado (títulos de las columnas)
+            if (!empty($newArray)) {
+                $firstRow = reset($newArray);
+                fwrite($file, implode("\t", array_keys($firstRow)) . "\r\n");
+            }
+
+            // Escribir datos
+            foreach ($newArray as $row) {
+                fwrite($file, implode("\t", $row) . "\r\n");
+            }
+
+            // Cerrar archivo
+            fclose($file);
+
+            // Descargar archivo
+            header('Content-Type: application/octet-stream');
+            header('Content-Disposition: attachment; filename="' . $filename . '"');
+            readfile($filename);
+
+            // Eliminar el archivo después de descargar
+            unlink($filename);
+
+            exit;
+        }
     }
 
     // Cerrar la conexión a la BD.
