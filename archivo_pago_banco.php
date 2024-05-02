@@ -1,5 +1,5 @@
 <?php require_once("includes/conexion.php");
-PermitirAcceso(1901);
+PermitirAcceso(1801);
 $sw=0;
 
 $Filtro="";
