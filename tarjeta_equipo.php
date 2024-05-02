@@ -614,6 +614,9 @@ $IdDimension2 = ObtenerValorDefecto(176, "IdDimension2", false);
 $IdDimension3 = ObtenerValorDefecto(176, "IdDimension3", false);
 $IdDimension4 = ObtenerValorDefecto(176, "IdDimension4", false);
 $IdDimension5 = ObtenerValorDefecto(176, "IdDimension5", false);
+
+// SMM, 02/05/2024
+$urlTD = ObtenerVariable("URLTarjetaDigital") . ($row["SerialInterno"] ?? "");
 ?>
 
 <!DOCTYPE html>
@@ -841,7 +844,7 @@ $IdDimension5 = ObtenerValorDefecto(176, "IdDimension5", false);
             const currentURL = window.location.href;
 
 			// SMM, 30/04/2024
-			const urlTD = "<?php echo ObtenerVariable("URLTarjetaDigital"); ?>";
+			const urlTD = "<?php echo $urlTD; ?>";
 			const anchoQR = "<?php echo intval(ObtenerVariable("DimensionQRAncho")); ?>";
 			const altoQR = "<?php echo intval(ObtenerVariable("DimensionQRAlto")); ?>";
             
@@ -961,15 +964,21 @@ $IdDimension5 = ObtenerValorDefecto(176, "IdDimension5", false);
 												</div>
 
 											</div>
+											
 											<div class="col-lg-6">
+												<div class="pull-right">
+													<a style="margin-right: 10px;" class="btn btn-info"
+														href="<?php echo $urlTD ?>" target="_blank">
+														<i class="fa fa-plus-circle"></i> Consultar saldo
+													</a>
 
 													<button data-toggle="dropdown"
-														class="btn btn-success dropdown-toggle pull-right">
+														class="btn btn-success dropdown-toggle">
 														<i class="fa fa-qrcode"></i> 
 														Generar QR 
 														<i class="fa fa-caret-down"></i>
 													</button>
-													<ul class="dropdown-menu pull-right">
+													<ul class="dropdown-menu">
 														<li>
 															<a class="dropdown-item" target="_blank"
 																onclick="generarQR('TE')">
@@ -983,8 +992,9 @@ $IdDimension5 = ObtenerValorDefecto(176, "IdDimension5", false);
 															</a>
 														</li>
 													</ul>
-
+												</div>
 											</div>
+											<!-- /.clo-lg-6 -->
 										</div>
 									</div>
 								</div>
@@ -1042,9 +1052,7 @@ $IdDimension5 = ObtenerValorDefecto(176, "IdDimension5", false);
 												} ?>
 													autocomplete="off" onkeyup="mayus(this);" name="SerialInterno"
 													type="text" required class="form-control"
-													id="SerialInterno" maxlength="150" value="<?php if (isset($row['SerialInterno'])) {
-														echo $row['SerialInterno'];
-													} ?>">
+													id="SerialInterno" maxlength="150" value="<?php echo $row["SerialInterno"] ?? ""; ?>">
 											</div>
 											<label class="col-lg-1 control-label">Serial Fabricante (VIN) <span
 													class="text-danger">*</span></label>
