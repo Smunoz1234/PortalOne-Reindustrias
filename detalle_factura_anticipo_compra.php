@@ -1,6 +1,6 @@
 <?php
 require_once "includes/conexion.php";
-PermitirAcceso(706);
+PermitirAcceso(727);
 
 // Permiso para ver los campos de control de plagas. SMM, 20/03/2024
 $ControlPlagas = !PermitirFuncion(720);
@@ -595,7 +595,7 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 						$i = 1; // Totalizar
 					
 						// Stiven Muñoz Murillo, 27/01/2022
-						$flag = PermitirFuncion(717);
+						$flag = PermitirFuncion(728);
 						$main = false;
 
 						// Inicia el ciclo
@@ -651,7 +651,7 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 											name="ItemName[]" class="form-control" value="<?php echo $row['ItemName']; ?>"
 											maxlength="100"
 											onChange="ActualizarDatos('ItemName',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);"
-											<?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(702))) {
+											<?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(726))) {
 												echo "readonly";
 											} ?>></td>
 
@@ -664,7 +664,7 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 											value="<?php echo number_format($row['Quantity'], $dCantidades, $sDecimal, $sMillares); ?>"
 											onChange="ActualizarDatos('Quantity',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>, <?php echo $dCantidades; ?>);"
 											onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);"
-											onKeyPress="return justNumbers(event,this.value);" <?php if ($row['LineStatus'] == 'C' || $row['TrgetEntry'] != "" || (!PermitirFuncion(702))) {
+											onKeyPress="return justNumbers(event,this.value);" <?php if ($row['LineStatus'] == 'C' || $row['TrgetEntry'] != "" || (!PermitirFuncion(726))) {
 												echo "readonly";
 											} ?> onFocus="focalizarValores(this)">
 									</td>
@@ -681,7 +681,7 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 									<td>
 										<select id="WhsCode<?php echo $i; ?>" name="WhsCode[]" class="form-control select2"
 											onChange="ActualizarDatos('WhsCode',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);ActStockAlmacen('WhsCode',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);"
-											<?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(702))) {
+											<?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(726))) {
 												echo "disabled";
 											} ?>>
 											<option value="">(NINGUNO)</option>
@@ -710,7 +710,7 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 												name="CDU_CantLitros[]" class="form-control"
 												value="<?php echo number_format($row['CDU_CantLitros'], $dCantidades, $sDecimal, $sMillares); ?>"
 												onChange="ActualizarDatos('CDU_CantLitros',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);"
-												onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(702))) {
+												onKeyUp="revisaCadena(this);" onKeyPress="return justNumbers(event,this.value);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(726))) {
 													echo "readonly";
 												} ?>>
 										</td>
@@ -730,7 +730,7 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 												<select id="CDU_IdServicio<?php echo $i; ?>" name="CDU_IdServicio[]"
 													class="form-control select2"
 													onChange="ActualizarDatos('CDU_IdServicio',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);"
-													<?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(702))) {
+													<?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(726))) {
 														echo "disabled";
 													} ?>>
 													<option value="">(NINGUNO)</option>
@@ -748,7 +748,7 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 												<select id="CDU_IdMetodoAplicacion<?php echo $i; ?>" name="CDU_IdMetodoAplicacion[]"
 													class="form-control select2"
 													onChange="ActualizarDatos('CDU_IdMetodoAplicacion',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);"
-													<?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(702))) {
+													<?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(726))) {
 														echo "disabled";
 													} ?>>
 													<option value="">(NINGUNO)</option>
@@ -766,7 +766,7 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 												<select id="CDU_IdTipoPlagas<?php echo $i; ?>" name="CDU_IdTipoPlagas[]"
 													class="form-control select2"
 													onChange="ActualizarDatos('CDU_IdTipoPlagas',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);"
-													<?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(702))) {
+													<?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(726))) {
 														echo "disabled";
 													} ?>>
 													<option value="">(NINGUNO)</option>
@@ -785,7 +785,7 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 													name="CDU_AreasControladas[]" class="form-control"
 													value="<?php echo $row['CDU_AreasControladas']; ?>"
 													onChange="ActualizarDatos('CDU_AreasControladas',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);"
-													<?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(702))) {
+													<?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(726))) {
 														echo "readonly";
 													} ?>>
 											<?php } ?>
@@ -802,7 +802,7 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 											<select id="OcrCode<?php echo $OcrId . $i; ?>" name="OcrCode<?php echo $OcrId; ?>[]"
 												class="form-control select2"
 												onChange="ActualizarDatos('OcrCode<?php echo $OcrId; ?>',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);"
-												<?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(702))) {
+												<?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(726))) {
 													echo "disabled";
 												} ?>>
 												<option value="">(NINGUNO)</option>
@@ -823,7 +823,7 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 									<td>
 										<select id="PrjCode<?php echo $i; ?>" name="PrjCode[]" class="form-control select2"
 											onChange="ActualizarDatos('PrjCode',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);"
-											<?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(702))) {
+											<?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(726))) {
 												echo "disabled";
 											} ?>>
 											<option value="">(NINGUNO)</option>
@@ -840,7 +840,7 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 									<td>
 										<select id="EmpVentas<?php echo $i; ?>" name="EmpVentas[]" class="form-control select2"
 											onChange="ActualizarDatos('EmpCompras',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);"
-											<?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(702))) {
+											<?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(726))) {
 												echo "disabled";
 											} ?>>
 											<option value="">(NINGUNO)</option>
@@ -956,7 +956,7 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 										<input size="50" type="text" id="FreeTxt<?php echo $i; ?>" name="FreeTxt[]"
 											class="form-control" value="<?php echo $row['FreeTxt']; ?>"
 											onChange="ActualizarDatos('FreeTxt',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>);"
-											maxlength="100" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(702))) {
+											maxlength="100" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(726))) {
 												echo "readonly";
 											} ?>>
 									</td>
@@ -967,7 +967,7 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 											value="<?php echo number_format($row['Price'], $dPrecios, $sDecimal, $sMillares); ?>"
 											onChange="ActualizarDatos('Price',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>, <?php echo $dPrecios; ?>);"
 											onBlur="CalcularTotal(<?php echo $i; ?>);" onKeyUp="revisaCadena(this);"
-											onKeyPress="return justNumbers(event,this.value);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(702)) || !PermitirFuncion(711)) {
+											onKeyPress="return justNumbers(event,this.value);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(726)) || !PermitirFuncion(711)) {
 												echo "readonly";
 											} ?>
 											onFocus="focalizarValores(this)">
@@ -1000,7 +1000,7 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 											onChange="ActualizarDatos('DiscPrcnt',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>, <?php echo $dPorcentajes; ?>);"
 											onBlur="CalcularTotal(<?php echo $i; ?>);"
 											onKeyUp="revisaCadena(this, <?php echo $dPorcentajes; ?>)"
-											onKeyPress="return justNumbers(event,this.value);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(702))) {
+											onKeyPress="return justNumbers(event,this.value);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(726))) {
 												echo "readonly";
 											} ?> onFocus="focalizarValores(this)">
 									</td>
@@ -1011,7 +1011,7 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 											value="<?php echo number_format($row['LineTotal'], $dPrecios, $sDecimal, $sMillares); ?>"
 											onChange="ActualizarDatos('LineTotal',<?php echo $i; ?>,<?php echo $row['LineNum']; ?>, <?php echo $dPrecios; ?>);"
 											onBlur="CalcularTotal(<?php echo $i; ?>, false);" onKeyUp="revisaCadena(this);"
-											onKeyPress="return justNumbers(event,this.value);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(702))) {
+											onKeyPress="return justNumbers(event,this.value);" <?php if ($row['LineStatus'] == 'C' || (!PermitirFuncion(726))) {
 												echo "readonly";
 											} ?> autocomplete="off"
 											onFocus="focalizarValores(this)">
@@ -1225,7 +1225,7 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 					}
 				}
 			};
-			<?php if ($sw == 1 && $Estado == 1 && PermitirFuncion(702)) { ?>
+			<?php if ($sw == 1 && $Estado == 1 && PermitirFuncion(726)) { ?>
 				$("#ItemCodeNew").easyAutocomplete(options);
 
 				// Stiven Muñoz Murillo, 31/01/2022

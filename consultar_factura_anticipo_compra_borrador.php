@@ -1,5 +1,5 @@
 <?php require_once "includes/conexion.php";
-PermitirAcceso(717);
+PermitirAcceso(728);
 $sw = 0;
 
 // SMM, 24/01/2024

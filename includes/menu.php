@@ -612,7 +612,7 @@ if (!isset($_COOKIE["banderaMenu"])) {
 							<?php if (PermitirFuncion(702)) { ?>
 								<li><a class="alnk" href="orden_compra.php">Orden de compra</a></li>
 							<?php } ?>
-							<?php if (PermitirFuncion(702)) { ?>
+							<?php if (PermitirFuncion(726)) { ?>
 								<li><a class="alnk" href="factura_anticipo_compra.php">Factura anticipo de compras</a></li>
 							<?php } ?>
 							<?php if (PermitirFuncion(703)) { ?>
@@ -625,7 +625,7 @@ if (!isset($_COOKIE["banderaMenu"])) {
 								<li><a class="alnk" href="factura_compra.php">Factura de compras</a></li>
 							<?php } ?>
 							
-							<?php if (PermitirFuncion([705, 706, 707, 708])) { ?>
+							<?php if (PermitirFuncion([705, 706, 707, 708, 727])) { ?>
 								<li>
 									<a href="#">Consultas <span class="fa arrow"></span></a>
 									<ul class='nav nav-third-level'>
@@ -635,7 +635,7 @@ if (!isset($_COOKIE["banderaMenu"])) {
 										<?php if (PermitirFuncion(706)) { ?>
 											<li><a href="consultar_orden_compra.php">Consultar orden de compra</a></li>
 										<?php } ?>
-										<?php if (PermitirFuncion(706)) { ?>
+										<?php if (PermitirFuncion(727)) { ?>
 											<li><a href="consultar_factura_anticipo_compra.php">Consultar factura anticipo de compras</a></li>
 										<?php } ?>
 										<?php if (PermitirFuncion(707)) { ?>
@@ -651,7 +651,7 @@ if (!isset($_COOKIE["banderaMenu"])) {
 								</li>
 							<?php } ?>
 							
-							<?php if (PermitirFuncion([716, 717, 718, 719])) { ?>
+							<?php if (PermitirFuncion([716, 717, 718, 719, 728])) { ?>
 								<li>
 									<a href="#">Consultas borradores <span class="fa arrow"></span></a>
 									<ul class='nav nav-third-level'>
@@ -661,7 +661,7 @@ if (!isset($_COOKIE["banderaMenu"])) {
 										<?php if (PermitirFuncion(717)) {?>
 											<li><a class="alnk" href="consultar_orden_compra_borrador.php">Consultar orden de compra borrador</a></li>
 										<?php }?>
-										<?php if (PermitirFuncion(717)) {?>
+										<?php if (PermitirFuncion(728)) {?>
 											<li><a class="alnk" href="consultar_factura_anticipo_compra_borrador.php">Consultar factura anticipo de compras borrador</a></li>
 										<?php }?>
 										<?php if (PermitirFuncion(718)) {?>

@@ -1,5 +1,5 @@
 <?php require_once "includes/conexion.php";
-PermitirAcceso(717);
+PermitirAcceso(728);
 
 $success = 1; // Confirmación de autorización (1 - Autorizado / 0 - NO Autorizado). SMM, 10/12/2022
 $mensajeMotivo = ""; // Comentario motivo, mensaje de salida del procedimiento almacenado. SMM, 10/12/2022
@@ -452,7 +452,7 @@ if (isset($row['ID_PerfilUsuario']) && ($row['ID_PerfilUsuario'] != "")) {
 
 // Permiso para actualizar la orden de compra en borrador. SMM, 05/04/2024
 $BloquearDocumento = false;
-if (!PermitirFuncion(724)) {
+if (!PermitirFuncion(729)) {
 	$BloquearDocumento = true;
 }
 
@@ -1489,14 +1489,14 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 								<div class="form-group">
 									<div class="col-lg-4">
 										<!-- SMM, 30/05/2023 -->
-										<button <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || (!PermitirFuncion(702))) {
+										<button <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || (!PermitirFuncion(726))) {
 											echo "disabled";
 										} ?> class="btn btn-success" id="addArticulos"
 											type="button" onclick="AgregarArticulos();"><i class="fa fa-plus"></i>
 											Agregar artículo</button>
 
 										<!-- SMM, 27/06/2023 -->
-										<button <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || (!PermitirFuncion(702))) {
+										<button <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || (!PermitirFuncion(726))) {
 											echo "disabled";
 										} ?> class="btn btn-warning" id="updArticulos"
 											style="margin-left: 20px;" type="button" onclick="ActualizarArticulos();"><i
@@ -1732,9 +1732,9 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 						<div class="form-group">
 							<div class="col-lg-9">
 
-							<?php if ($edit == 0 && PermitirFuncion(717)) { ?>
+							<?php if ($edit == 0 && PermitirFuncion(728)) { ?>
 							<!-- button class="btn btn-primary" type="submit" form="CrearOrdenCompra" id="Crear"><i class="fa fa-check"></i> Crear Orden de compra</button -->
-							<?php } elseif ($row['Cod_Estado'] == "O" && PermitirFuncion(717)) { ?>
+							<?php } elseif ($row['Cod_Estado'] == "O" && PermitirFuncion(728)) { ?>
 
 								<!-- SMM, 20/12/2022 -->
 								<?php if ((strtoupper($_SESSION["User"]) != strtoupper($row['Usuario'])) || $serAutorizador) { ?>

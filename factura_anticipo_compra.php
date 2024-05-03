@@ -1,5 +1,5 @@
 <?php require_once "includes/conexion.php";
-PermitirAcceso(706);
+PermitirAcceso(727);
 
 $dt_LS = 0; //sw para saber si vienen datos de la llamada de servicio. 0 no vienen. 1 si vienen.
 $dt_OF = 0; //sw para saber si vienen datos de una Oferta de compra.
@@ -637,7 +637,7 @@ if (isset($row['IdMotivoAutorizacion']) && ($row['IdMotivoAutorizacion'] != "") 
 
 // Permiso para actualizar la orden de compra definitivo. SMM, 05/04/2024
 $BloquearDocumento = false;
-if (isset($row['AuthPortal']) && ($row['AuthPortal'] == "Y") && (!PermitirFuncion(725))) {
+if (isset($row['AuthPortal']) && ($row['AuthPortal'] == "Y") && (!PermitirFuncion(730))) {
 	$BloquearDocumento = true;
 }
 
@@ -1751,14 +1751,14 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 								<div class="form-group">
 									<div class="col-lg-4">
 										<!-- SMM, 30/05/2023 -->
-										<button <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || (!PermitirFuncion(702))) {
+										<button <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || (!PermitirFuncion(726))) {
 											echo "disabled";
 										} ?> class="btn btn-success" id="addArticulos"
 											type="button" onclick="AgregarArticulos();"><i class="fa fa-plus"></i>
 											Agregar artículo</button>
 
 										<!-- SMM, 27/06/2023 -->
-										<button <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || (!PermitirFuncion(702))) {
+										<button <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || (!PermitirFuncion(726))) {
 											echo "disabled";
 										} ?> class="btn btn-warning" id="updArticulos"
 											style="margin-left: 20px;" type="button" onclick="ActualizarArticulos();"><i
@@ -1990,10 +1990,10 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 						</div>
 						<div class="form-group">
 							<div class="col-lg-9">
-								<?php if ($edit == 0 && PermitirFuncion(702)) { ?>
+								<?php if ($edit == 0 && PermitirFuncion(726)) { ?>
 									<button class="btn btn-primary" type="submit" form="CrearOrdenCompra" id="Crear"><i
 											class="fa fa-check"></i> Crear Orden de compra</button>
-								<?php } elseif ($row['Cod_Estado'] == "O" && PermitirFuncion(702)) { ?>
+								<?php } elseif ($row['Cod_Estado'] == "O" && PermitirFuncion(726)) { ?>
 									<button class="btn btn-warning" type="submit" form="CrearOrdenCompra" id="Actualizar"><i
 											class="fa fa-refresh"></i> Actualizar Orden de compra</button>
 								<?php } ?>
