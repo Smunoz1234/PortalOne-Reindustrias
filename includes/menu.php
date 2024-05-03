@@ -612,6 +612,9 @@ if (!isset($_COOKIE["banderaMenu"])) {
 							<?php if (PermitirFuncion(702)) { ?>
 								<li><a class="alnk" href="orden_compra.php">Orden de compra</a></li>
 							<?php } ?>
+							<?php if (PermitirFuncion(702)) { ?>
+								<li><a class="alnk" href="factura_anticipo_compra.php">Factura anticipo de compras</a></li>
+							<?php } ?>
 							<?php if (PermitirFuncion(703)) { ?>
 								<li><a class="alnk" href="entrada_compra.php">Entrada de compras</a></li>
 							<?php } ?>
@@ -632,6 +635,9 @@ if (!isset($_COOKIE["banderaMenu"])) {
 										<?php if (PermitirFuncion(706)) { ?>
 											<li><a href="consultar_orden_compra.php">Consultar orden de compra</a></li>
 										<?php } ?>
+										<?php if (PermitirFuncion(706)) { ?>
+											<li><a href="consultar_factura_anticipo_compra.php">Consultar factura anticipo de compras</a></li>
+										<?php } ?>
 										<?php if (PermitirFuncion(707)) { ?>
 											<li><a href="consultar_entrada_compra.php">Consultar entrada de compras</a></li>
 										<?php } ?>
@@ -649,10 +655,21 @@ if (!isset($_COOKIE["banderaMenu"])) {
 								<li>
 									<a href="#">Consultas borradores <span class="fa arrow"></span></a>
 									<ul class='nav nav-third-level'>
-										<?php if (PermitirFuncion(716)) {?><li><a class="alnk" href="consultar_solicitud_compra_borrador.php">Consultar solicitud de compra borrador</a></li><?php }?>
-										<?php if (PermitirFuncion(717)) {?><li><a class="alnk" href="consultar_orden_compra_borrador.php">Consultar orden de compra borrador</a></li><?php }?>
-										<?php if (PermitirFuncion(718)) {?><li><a class="alnk" href="consultar_entrada_compra_borrador.php">Consultar entrada de compra borrador</a></li><?php }?>
-										<?php if (PermitirFuncion(719)) {?><li><a class="alnk" href="consultar_factura_compra_borrador.php">Consultar factura de compra borrador</a></li><?php }?>
+										<?php if (PermitirFuncion(716)) {?>
+											<li><a class="alnk" href="consultar_solicitud_compra_borrador.php">Consultar solicitud de compra borrador</a></li>
+										<?php }?>
+										<?php if (PermitirFuncion(717)) {?>
+											<li><a class="alnk" href="consultar_orden_compra_borrador.php">Consultar orden de compra borrador</a></li>
+										<?php }?>
+										<?php if (PermitirFuncion(717)) {?>
+											<li><a class="alnk" href="consultar_factura_anticipo_compra_borrador.php">Consultar factura anticipo de compras borrador</a></li>
+										<?php }?>
+										<?php if (PermitirFuncion(718)) {?>
+											<li><a class="alnk" href="consultar_entrada_compra_borrador.php">Consultar entrada de compra borrador</a></li>
+										<?php }?>
+										<?php if (PermitirFuncion(719)) {?>
+											<li><a class="alnk" href="consultar_factura_compra_borrador.php">Consultar factura de compra borrador</a></li>
+										<?php }?>
 									</ul>
 								</li>
 							<?php } ?>
