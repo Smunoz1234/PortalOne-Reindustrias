@@ -108,6 +108,12 @@ if (isset($_GET['TipoVenta']) && $_GET['TipoVenta'] != "") {
 	$Filtro .= " and IdTipoVenta='" . $_GET['TipoVenta'] . "'";
 }
 
+// SMM, 03/05/2024
+$IdSolicitante = $_GET["IdSolicitante"] ?? "";
+if ($IdSolicitante != "") {
+	$Filtro .= " AND ID_Solicitante = '$IdSolicitante'";
+}
+
 if (isset($_GET['Series']) && $_GET['Series'] != "") {
 	$Filtro .= " and [IdSeries]='" . $_GET['Series'] . "'";
 	$sw = 1;
@@ -183,6 +189,9 @@ if ($sw == 1) {
 	// echo $Cons;
 	$SQL = sqlsrv_query($conexion, $Cons);
 }
+
+// Empleados solicitantes. SMM, 03/05/2024
+$SQL_Solicitante = Seleccionar('uvw_Sap_tbl_Empleados', '*', '', 'NombreEmpleado');
 ?>
 
 <!DOCTYPE html>
@@ -334,15 +343,20 @@ if ($sw == 1) {
 								</div>
 
 								<div class="form-group">
-									<label class="col-lg-1 control-label">Socio de negocio</label>
+									<label class="col-lg-1 control-label">Solicitante</label>
 									<div class="col-lg-3">
-										<input name="Cliente" type="hidden" id="Cliente" value="<?php if (isset($_GET['Cliente']) && ($_GET['Cliente'] != "")) {
-											echo $_GET['Cliente'];
-										} ?>">
-										<input name="NombreCliente" type="text" class="form-control" id="NombreCliente"
-											placeholder="Para TODOS, dejar vacio..." value="<?php if (isset($_GET['NombreCliente']) && ($_GET['NombreCliente'] != "")) {
-												echo $_GET['NombreCliente'];
-											} ?>">
+										<select name="IdSolicitante" class="form-control select2" id="IdSolicitante">
+											<option value="">(Todos)</option>
+
+											<?php while ($row_Solicitante = sqlsrv_fetch_array($SQL_Solicitante)) { ?>
+												<option value="<?php echo $row_Solicitante['ID_Empleado']; ?>" 
+													<?php if (isset($_GET['IdSolicitante']) && ($_GET['IdSolicitante'] == $row_Solicitante['ID_Empleado'])) {
+													   echo "selected";
+												   	} ?>>
+													<?php echo $row_Solicitante['ID_Empleado'] . " - " . $row_Solicitante['NombreEmpleado']; ?>
+												</option>
+											<?php } ?>
+										</select>
 									</div>
 
 									<label class="col-lg-1 control-label">Buscar dato</label>

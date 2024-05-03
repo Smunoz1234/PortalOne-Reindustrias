@@ -62,6 +62,12 @@ if (isset($_GET['TipoVenta']) && $_GET['TipoVenta'] != "") {
 	$Filtro .= " and IdTipoVenta='" . $_GET['TipoVenta'] . "'";
 }
 
+// SMM, 03/05/2024
+$IdSolicitante = $_GET["IdSolicitante"] ?? "";
+if ($IdSolicitante != "") {
+	$Filtro .= " AND ID_Solicitante = '$IdSolicitante'";
+}
+
 if (isset($_GET['Series']) && $_GET['Series'] != "") {
 	$Filtro .= " and [IdSeries]='" . $_GET['Series'] . "'";
 	$sw = 1;
@@ -269,7 +275,7 @@ $SQL_Solicitante = Seleccionar('uvw_Sap_tbl_Empleados', '*', '', 'NombreEmpleado
 													<?php if (isset($_GET['IdSolicitante']) && ($_GET['IdSolicitante'] == $row_Solicitante['ID_Empleado'])) {
 													   echo "selected";
 												   	} ?>>
-													<?php echo $row_Solicitante['ID_Empleado'] . "-" . $row_Solicitante['NombreEmpleado']; ?>
+													<?php echo $row_Solicitante['ID_Empleado'] . " - " . $row_Solicitante['NombreEmpleado']; ?>
 												</option>
 											<?php } ?>
 										</select>
@@ -483,6 +489,7 @@ $SQL_Solicitante = Seleccionar('uvw_Sap_tbl_Empleados', '*', '', 'NombreEmpleado
 				todayHighlight: true,
 			});
 
+			$('.select2').select2();
 			$('.chosen-select').chosen({ width: "100%" });
 
 			var options = {
