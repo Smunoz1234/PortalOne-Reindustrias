@@ -29,6 +29,7 @@ if (isset($_POST['Metodo'])) {
 				$Param,
 				array(
 					"'" . $_POST['ID_Usuario'] . "'",
+					"'" . ($_POST['TipoDoc'] ?? "") . "'",
 					"'" . $_POST['IdGrupoArticulo'] . "'",
 					"'" . $_POST['GrupoArticulo'] . "'",
 					"'" . $_POST['Comentarios'] . "'",
@@ -160,6 +161,8 @@ if (isset($_POST['Metodo'])) {
 			<table class="table table-striped table-bordered table-hover dataTables-example">
 				<thead>
 					<tr>
+						<th>ID Tipo Documento</th>
+						<th>Tipo Documento</th>
 						<th>Código Grupo Artículo</th>
 						<th>Descripción Grupo Artículo</th>
 						<th>Comentarios</th>
@@ -171,12 +174,23 @@ if (isset($_POST['Metodo'])) {
 				<tbody>
 					<?php while ($row_GrupoArticulo = sqlsrv_fetch_array($SQL_GruposArticulos)) { ?>
 						<tr>
+							<td>
+								<?php echo $row_GrupoArticulo['IdTipoDocumento'] ?? ""; ?>
+							</td>						
+							<td>
+								<?php echo $row_GrupoArticulo['TipoDocumento'] ?? ""; ?>
+							</td>
+													
 							<td><?php echo $row_GrupoArticulo['IdGrupoArticulo']; ?></td>
 							<td><?php echo $row_GrupoArticulo['GrupoArticulo']; ?></td>
 							<td><?php echo $row_GrupoArticulo['Comentarios']; ?></td>
-							<td><?php echo isset($row_GrupoArticulo['fecha_creacion']) ? date_format($row_GrupoArticulo['fecha_creacion'], 'Y-m-d H:i:s') : ""; ?>
+							
+							<td>
+								<?php echo isset($row_GrupoArticulo['fecha_creacion']) ? date_format($row_GrupoArticulo['fecha_creacion'], 'Y-m-d H:i:s') : ""; ?>
 							</td>
+							
 							<td><?php echo $row_GrupoArticulo['usuario_creacion']; ?></td>
+							
 							<td>
 								<button type="button" class="btn btn-danger btn-xs"
 									onClick="EliminarFila('<?php echo $row_GrupoArticulo['ID']; ?>');"><i
@@ -260,6 +274,7 @@ if (isset($_POST['Metodo'])) {
 
 			$('.ibox-content').toggleClass('sk-loading', true);
 
+			let IdTipoDocumento = document.getElementById('TipoDoc').value;
 			let IdGrupoArticulo = document.getElementById('ItmsGrpCod').value;
 			let GrupoArticulo = $("#ItmsGrpCod").find(':selected').data('name');
 			let Comentarios = document.getElementById('Comentarios').value;
@@ -270,6 +285,7 @@ if (isset($_POST['Metodo'])) {
 				data: {
 					Metodo: 1
 					, ID_Usuario: <?php echo $IdUsuario; ?>
+					, TipoDoc: IdTipoDocumento
 					, IdGrupoArticulo: IdGrupoArticulo
 					, GrupoArticulo: GrupoArticulo
 					, Comentarios: Comentarios
@@ -323,6 +339,9 @@ if (isset($_POST['Metodo'])) {
 		$('.dataTables-example').DataTable({
 			pageLength: 10,
 			dom: '<"html5buttons"B>lTfgitp',
+			rowGroup: {
+				dataSrc: [1] // SMM, 03/05/2024
+			},
 			language: {
 				"decimal": "",
 				"emptyTable": "No se encontraron resultados.",
@@ -348,7 +367,8 @@ if (isset($_POST['Metodo'])) {
 				}
 			},
 			buttons: []
-
+			, order: [[1, "asc"]]
+			, ordering: false
 		});
 	});
 </script>

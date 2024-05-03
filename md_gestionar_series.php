@@ -10,21 +10,21 @@ $Type = 1;
 $SQL_TipoDoc = Seleccionar("uvw_tbl_ObjetosSAP", "*", '', 'CategoriaObjeto, DeTipoDocumento');
 
 if ($edit == 1) {
-    $SQL_Data = Seleccionar("uvw_tbl_SeriesSucursalesAlmacenes", "*", "ID='$id'");
-    $row_Data = sqlsrv_fetch_array($SQL_Data);
+	$SQL_Data = Seleccionar("uvw_tbl_SeriesSucursalesAlmacenes", "*", "ID='$id'");
+	$row_Data = sqlsrv_fetch_array($SQL_Data);
 
-    $IdTipoDocumento = $row_Data['IdTipoDocumento'] ?? "";
-    $IdSeries = $row_Data['IdSeries'] ?? "";
-    $IdSucursal = $row_Data['IdSucursal'] ?? "";
-    $WhsCode = $row_Data['WhsCode'] ?? "";
-    $ToWhsCode = $row_Data['ToWhsCode'] ?? "";
-    $IdBodegaDefecto = $row_Data['IdBodegaDefecto'] ?? "";
+	$IdTipoDocumento = $row_Data['IdTipoDocumento'] ?? "";
+	$IdSeries = $row_Data['IdSeries'] ?? "";
+	$IdSucursal = $row_Data['IdSucursal'] ?? "";
+	$WhsCode = $row_Data['WhsCode'] ?? "";
+	$ToWhsCode = $row_Data['ToWhsCode'] ?? "";
+	$IdBodegaDefecto = $row_Data['IdBodegaDefecto'] ?? "";
 
-    $Title = "Editar Serie";
-    $Type = 2;
+	$Title = "Editar Serie";
+	$Type = 2;
 
-    // Series
-    $SQL_Series = Seleccionar("uvw_Sap_tbl_SeriesDocumentos", "IdSeries, DeSeries", "IdTipoDocumento='$IdTipoDocumento'");
+	// Series
+	$SQL_Series = Seleccionar("uvw_Sap_tbl_SeriesDocumentos", "IdSeries, DeSeries", "IdTipoDocumento='$IdTipoDocumento'");
 }
 
 // Sucursal
@@ -45,9 +45,11 @@ $SQL_AlmDefecto = Seleccionar("uvw_Sap_tbl_Almacenes", "WhsCode, WhsName");
 	.select2-container {
 		z-index: 10000;
 	}
+
 	.select2-search--inline {
-    display: contents;
+		display: contents;
 	}
+
 	.select2-search__field:placeholder-shown {
 		width: 100% !important;
 	}
@@ -63,22 +65,25 @@ $SQL_AlmDefecto = Seleccionar("uvw_Sap_tbl_Almacenes", "WhsCode, WhsName");
 	<div class="modal-body">
 		<div class="form-group">
 			<div class="ibox-content">
-				<?php include "includes/spinner.php";?>
+				<?php include "includes/spinner.php"; ?>
 
 				<div class="form-group">
 					<label class="control-label">Tipo de documento <span class="text-danger">*</span></label>
 					<select name="TipoDoc" class="form-control" id="TipoDoc" required>
 						<option value="">Seleccione...</option>
 
-						<?php $CatActual = "";?>
-						<?php while ($row_TipoDoc = sqlsrv_fetch_array($SQL_TipoDoc)) {?>
-							<?php if ($CatActual != $row_TipoDoc['CategoriaObjeto']) {?>
+						<?php $CatActual = ""; ?>
+						<?php while ($row_TipoDoc = sqlsrv_fetch_array($SQL_TipoDoc)) { ?>
+							<?php if ($CatActual != $row_TipoDoc['CategoriaObjeto']) { ?>
 								<?php echo "<optgroup label='" . $row_TipoDoc['CategoriaObjeto'] . "'></optgroup>"; ?>
-								<?php $CatActual = $row_TipoDoc['CategoriaObjeto'];?>
-							<?php }?>
+								<?php $CatActual = $row_TipoDoc['CategoriaObjeto']; ?>
+							<?php } ?>
 
-							<option value="<?php echo $row_TipoDoc['IdTipoDocumento']; ?>" <?php if (($edit == 1) && ($row_TipoDoc['IdTipoDocumento'] == $IdTipoDocumento)) {echo "selected";}?>><?php echo $row_TipoDoc['DeTipoDocumento']; ?></option>
-						<?php }?>
+							<option value="<?php echo $row_TipoDoc['IdTipoDocumento']; ?>" <?php if (($edit == 1) && ($row_TipoDoc['IdTipoDocumento'] == $IdTipoDocumento)) {
+								   echo "selected";
+							   } ?>>
+								<?php echo $row_TipoDoc['DeTipoDocumento']; ?></option>
+						<?php } ?>
 					</select>
 				</div>
 
@@ -88,13 +93,15 @@ $SQL_AlmDefecto = Seleccionar("uvw_Sap_tbl_Almacenes", "WhsCode, WhsName");
 					<select name="SerieDoc" class="form-control select2" id="SerieDoc" required>
 						<option value="">Seleccione...</option>
 
-						<?php if ($edit == 1) {?>
-							<?php while ($row_Series = sqlsrv_fetch_array($SQL_Series)) {?>
-								<option value="<?php echo $row_Series['IdSeries']; ?>" <?php if (($edit == 1) && ($row_Series['IdSeries'] == $IdSeries)) {echo "selected";}?>>
+						<?php if ($edit == 1) { ?>
+							<?php while ($row_Series = sqlsrv_fetch_array($SQL_Series)) { ?>
+								<option value="<?php echo $row_Series['IdSeries']; ?>" <?php if (($edit == 1) && ($row_Series['IdSeries'] == $IdSeries)) {
+									   echo "selected";
+								   } ?>>
 									<?php echo $row_Series['IdSeries'] . " - " . $row_Series['DeSeries']; ?>
 								</option>
-							<?php }?>
-						<?php }?>
+							<?php } ?>
+						<?php } ?>
 					</select>
 				</div>
 
@@ -104,25 +111,29 @@ $SQL_AlmDefecto = Seleccionar("uvw_Sap_tbl_Almacenes", "WhsCode, WhsName");
 					<select name="IdSucursal" class="form-control select2" id="IdSucursal" required>
 						<option value="">Seleccione...</option>
 
-						<?php while ($row_Sucursal = sqlsrv_fetch_array($SQL_Sucursal)) {?>
-							<option value="<?php echo $row_Sucursal['OcrCode']; ?>" <?php if (($edit == 1) && ($row_Sucursal['OcrCode'] == $IdSucursal)) {echo "selected";}?>>
+						<?php while ($row_Sucursal = sqlsrv_fetch_array($SQL_Sucursal)) { ?>
+							<option value="<?php echo $row_Sucursal['OcrCode']; ?>" <?php if (($edit == 1) && ($row_Sucursal['OcrCode'] == $IdSucursal)) {
+								   echo "selected";
+							   } ?>>
 								<?php echo $row_Sucursal['OcrCode'] . " - " . $row_Sucursal['OcrName']; ?>
 							</option>
-						<?php }?>
+						<?php } ?>
 					</select>
 				</div>
 
 				<div class="form-group">
-					<label class="control-label">Almacén origen  <span class="text-danger">*</span></label>
+					<label class="control-label">Almacén origen <span class="text-danger">*</span></label>
 
 					<select name="WhsCode" class="form-control select2" id="WhsCode" required>
 						<option value="">Seleccione...</option>
 
-						<?php while ($row_AlmOrigen = sqlsrv_fetch_array($SQL_AlmOrigen)) {?>
-							<option value="<?php echo $row_AlmOrigen['WhsCode']; ?>" <?php if (($edit == 1) && ($row_AlmOrigen['WhsCode'] == $WhsCode)) {echo "selected";}?>>
+						<?php while ($row_AlmOrigen = sqlsrv_fetch_array($SQL_AlmOrigen)) { ?>
+							<option value="<?php echo $row_AlmOrigen['WhsCode']; ?>" <?php if (($edit == 1) && ($row_AlmOrigen['WhsCode'] == $WhsCode)) {
+								   echo "selected";
+							   } ?>>
 								<?php echo $row_AlmOrigen['WhsCode'] . " - " . $row_AlmOrigen['WhsName']; ?>
 							</option>
-						<?php }?>
+						<?php } ?>
 					</select>
 				</div>
 
@@ -130,13 +141,15 @@ $SQL_AlmDefecto = Seleccionar("uvw_Sap_tbl_Almacenes", "WhsCode, WhsName");
 					<label class="control-label">Almacén destino</label>
 
 					<select name="ToWhsCode" class="form-control select2" id="ToWhsCode">
-							<option value="">(Ninguno)</option>
+						<option value="">(Ninguno)</option>
 
-							<?php while ($row_AlmDestino = sqlsrv_fetch_array($SQL_AlmDestino)) {?>
-								<option value="<?php echo $row_AlmDestino['WhsCode']; ?>" <?php if (($edit == 1) && ($row_AlmDestino['WhsCode'] == $ToWhsCode)) {echo "selected";}?>>
-									<?php echo $row_AlmDestino['WhsCode'] . " - " . $row_AlmDestino['WhsName']; ?>
-								</option>
-							<?php }?>
+						<?php while ($row_AlmDestino = sqlsrv_fetch_array($SQL_AlmDestino)) { ?>
+							<option value="<?php echo $row_AlmDestino['WhsCode']; ?>" <?php if (($edit == 1) && ($row_AlmDestino['WhsCode'] == $ToWhsCode)) {
+								   echo "selected";
+							   } ?>>
+								<?php echo $row_AlmDestino['WhsCode'] . " - " . $row_AlmDestino['WhsName']; ?>
+							</option>
+						<?php } ?>
 					</select>
 				</div>
 
@@ -146,11 +159,13 @@ $SQL_AlmDefecto = Seleccionar("uvw_Sap_tbl_Almacenes", "WhsCode, WhsName");
 					<select name="IdBodegaDefecto" class="form-control select2" id="IdBodegaDefecto">
 						<option value="">(Ninguno)</option>
 
-						<?php while ($row_AlmDefecto = sqlsrv_fetch_array($SQL_AlmDefecto)) {?>
-							<option value="<?php echo $row_AlmDefecto['WhsCode']; ?>" <?php if (($edit == 1) && ($row_AlmDefecto['WhsCode'] == $IdBodegaDefecto)) {echo "selected";}?>>
+						<?php while ($row_AlmDefecto = sqlsrv_fetch_array($SQL_AlmDefecto)) { ?>
+							<option value="<?php echo $row_AlmDefecto['WhsCode']; ?>" <?php if (($edit == 1) && ($row_AlmDefecto['WhsCode'] == $IdBodegaDefecto)) {
+								   echo "selected";
+							   } ?>>
 								<?php echo $row_AlmDefecto['WhsCode'] . "-" . $row_AlmDefecto['WhsName']; ?>
 							</option>
-						<?php }?>
+						<?php } ?>
 					</select>
 				</div>
 
@@ -160,7 +175,8 @@ $SQL_AlmDefecto = Seleccionar("uvw_Sap_tbl_Almacenes", "WhsCode, WhsName");
 
 	<div class="modal-footer">
 		<button type="submit" class="btn btn-success m-t-md"><i class="fa fa-check"></i> Aceptar</button>
-		<button type="button" class="btn btn-danger m-t-md" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
+		<button type="button" class="btn btn-danger m-t-md" data-dismiss="modal"><i class="fa fa-times"></i>
+			Cerrar</button>
 	</div>
 
 	<input type="hidden" id="MM_Insert" name="MM_Insert" value="1" />
@@ -169,41 +185,41 @@ $SQL_AlmDefecto = Seleccionar("uvw_Sap_tbl_Almacenes", "WhsCode, WhsName");
 </form>
 
 <script>
-$(document).ready(function() {
-	$(".select2").select2();
+	$(document).ready(function () {
+		$(".select2").select2();
 
-	$("#frm_NewParam").validate({
-		submitHandler: function(form){
-			Swal.fire({
-				title: "¿Está seguro que desea guardar los datos?",
-				icon: "question",
-				showCancelButton: true,
-				confirmButtonText: "Si, confirmo",
-				cancelButtonText: "No"
-			}).then((result) => {
-				if (result.isConfirmed) {
-					$('.ibox-content').toggleClass('sk-loading',true);
-					form.submit();
-				}
-			});
-		}
-	});
-
-	$("#TipoDoc").change(function(){
-		$('.ibox-content').toggleClass('sk-loading',true);
-
-		var ar=document.getElementById('TipoDoc').value.split("__");
-		var TipoDoc=ar[0];
-
-		$.ajax({
-			type: "POST",
-			url: "ajx_cbo_select.php?type=25&id="+TipoDoc,
-			success: function(response){
-				$('#SerieDoc').html(response);
-
-				$('.ibox-content').toggleClass('sk-loading',false);
+		$("#frm_NewParam").validate({
+			submitHandler: function (form) {
+				Swal.fire({
+					title: "¿Está seguro que desea guardar los datos?",
+					icon: "question",
+					showCancelButton: true,
+					confirmButtonText: "Si, confirmo",
+					cancelButtonText: "No"
+				}).then((result) => {
+					if (result.isConfirmed) {
+						$('.ibox-content').toggleClass('sk-loading', true);
+						form.submit();
+					}
+				});
 			}
 		});
+
+		$("#TipoDoc").change(function () {
+			$('.ibox-content').toggleClass('sk-loading', true);
+
+			var ar = document.getElementById('TipoDoc').value.split("__");
+			var TipoDoc = ar[0];
+
+			$.ajax({
+				type: "POST",
+				url: "ajx_cbo_select.php?type=25&id=" + TipoDoc,
+				success: function (response) {
+					$('#SerieDoc').html(response);
+
+					$('.ibox-content').toggleClass('sk-loading', false);
+				}
+			});
+		});
 	});
-});
 </script>
