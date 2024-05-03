@@ -9,7 +9,7 @@ if (isset($_GET['id']) && $_GET['id'] != "") {
 
 $SQL_TipoDoc = Seleccionar("uvw_tbl_ObjetosSAP", "*", "", "CategoriaObjeto, DeTipoDocumento");
 $SQL_GA = Seleccionar("uvw_Sap_tbl_GruposArticulos", "*", "Locked = 'N'", "ItmsGrpNam");
-$SQL_GruposArticulos = Seleccionar("uvw_tbl_UsuariosGruposArticulos", "*", "ID_Usuario='$IdUsuario'");
+$SQL_GruposArticulos = Seleccionar("uvw_tbl_UsuariosGruposArticulos", "*", "ID_Usuario = '$IdUsuario'");
 
 // Insertar o eliminar un grupo de artículos
 if (isset($_POST['Metodo'])) {
@@ -25,15 +25,17 @@ if (isset($_POST['Metodo'])) {
 		);
 
 		if ($_POST['Metodo'] != 3) {
-			$Param = array_merge($Param, array(
-				"'" . $_POST['ID_Usuario'] . "'",
-				"'" . $_POST['IdGrupoArticulo'] . "'",
-				"'" . $_POST['GrupoArticulo'] . "'",
-				"'" . $_POST['Comentarios'] . "'",
-				$Usuario, // @id_usuario_creacion
-				$FechaHora, // @fecha_creacion
-				$FechaHora, // @hora_creacion
-			)
+			$Param = array_merge(
+				$Param,
+				array(
+					"'" . $_POST['ID_Usuario'] . "'",
+					"'" . $_POST['IdGrupoArticulo'] . "'",
+					"'" . $_POST['GrupoArticulo'] . "'",
+					"'" . $_POST['Comentarios'] . "'",
+					$Usuario, // @id_usuario_creacion
+					$FechaHora, // @fecha_creacion
+					$FechaHora, // @hora_creacion
+				)
 			);
 		}
 
@@ -73,8 +75,31 @@ if (isset($_POST['Metodo'])) {
 
 								<div class="form-group">
 									<div class="col-md-12">
-										<label class="control-label">Grupo de Articulo SAP <span
-												class="text-danger">*</span></label>
+										<label class="control-label">
+											Tipo de documento <span class="text-danger">*</span>
+										</label>
+										<select name="TipoDoc" class="form-control" id="TipoDoc" required>
+											<option value="">Seleccione...</option>
+
+											<?php $CatActual = ""; ?>
+											<?php while ($row_TipoDoc = sqlsrv_fetch_array($SQL_TipoDoc)) { ?>
+												<?php if ($CatActual != $row_TipoDoc['CategoriaObjeto']) { ?>
+													<?php echo "<optgroup label='" . ($row_TipoDoc['CategoriaObjeto'] ?? "") . "'></optgroup>"; ?>
+													<?php $CatActual = ($row_TipoDoc['CategoriaObjeto'] ?? ""); ?>
+												<?php } ?>
+												<option value="<?php echo $row_TipoDoc['IdTipoDocumento'] ?? ""; ?>">
+													<?php echo $row_TipoDoc['DeTipoDocumento'] ?? ""; ?>
+												</option>
+											<?php } ?>
+										</select>
+									</div>
+								</div>
+
+								<div class="form-group">
+									<div class="col-md-12">
+										<label class="control-label">
+											Grupo de Articulo SAP <span class="text-danger">*</span>
+										</label>
 										<select name="ItmsGrpCod" id="ItmsGrpCod" class="form-control select2" required>
 											<option value="" disabled selected>Seleccione...</option>
 											<?php while ($row_GA = sqlsrv_fetch_array($SQL_GA)) { ?>
@@ -100,10 +125,12 @@ if (isset($_POST['Metodo'])) {
 					</div> <!-- modal-body -->
 
 					<div class="modal-footer">
-						<button type="submit" class="btn btn-success m-t-md"><i class="fa fa-check"></i>
-							Aceptar</button>
-						<button type="button" class="btn btn-warning m-t-md" data-dismiss="modal"><i
-								class="fa fa-times"></i> Cerrar</button>
+						<button type="submit" class="btn btn-success m-t-md">
+							<i class="fa fa-check"></i> Aceptar
+						</button>
+						<button type="button" class="btn btn-warning m-t-md" data-dismiss="modal">
+							<i class="fa fa-times"></i> Cerrar
+						</button>
 					</div>
 
 				</form>
@@ -124,8 +151,9 @@ if (isset($_POST['Metodo'])) {
 		<div class="row m-b-md">
 			<div class="col-lg-12">
 				<button class="btn btn-primary pull-right" type="button" id="NewMotivo"
-					onClick="$('#modalGruposArticulos').modal('show');"><i class="fa fa-plus-circle"></i> Agregar
-					nuevo</button>
+					onclick="$('#modalGruposArticulos').modal('show');">
+					<i class="fa fa-plus-circle"></i> Agregar nuevo
+				</button>
 			</div>
 		</div>
 		<div class="table-responsive">
