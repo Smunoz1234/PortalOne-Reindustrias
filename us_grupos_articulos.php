@@ -2,56 +2,58 @@
 require_once "includes/conexion.php";
 
 if (isset($_GET['id']) && $_GET['id'] != "") {
-    $IdUsuario = base64_decode($_GET['id']);
+	$IdUsuario = base64_decode($_GET['id']);
 } else {
-    $IdUsuario = "";
+	$IdUsuario = "";
 }
 
+$SQL_TipoDoc = Seleccionar("uvw_tbl_ObjetosSAP", "*", "", "CategoriaObjeto, DeTipoDocumento");
 $SQL_GA = Seleccionar("uvw_Sap_tbl_GruposArticulos", "*", "Locked = 'N'", "ItmsGrpNam");
 $SQL_GruposArticulos = Seleccionar("uvw_tbl_UsuariosGruposArticulos", "*", "ID_Usuario='$IdUsuario'");
 
 // Insertar o eliminar un grupo de artículos
 if (isset($_POST['Metodo'])) {
-    $ID = ($_POST['Metodo'] == 3) ? $_POST['ID_Interno'] : "NULL"; // 3 - Eliminar
+	$ID = ($_POST['Metodo'] == 3) ? $_POST['ID_Interno'] : "NULL"; // 3 - Eliminar
 
-    $Usuario = "'" . $_SESSION['CodUser'] . "'";
-    $FechaHora = "'" . FormatoFecha(date('Y-m-d'), date('H:i:s')) . "'";
+	$Usuario = "'" . $_SESSION['CodUser'] . "'";
+	$FechaHora = "'" . FormatoFecha(date('Y-m-d'), date('H:i:s')) . "'";
 
-    try {
-        $Param = array(
-            $ID,
-            $_POST['Metodo'],
-        );
+	try {
+		$Param = array(
+			$ID,
+			$_POST['Metodo'],
+		);
 
-        if ($_POST['Metodo'] != 3) {
-            $Param = array_merge($Param, array(
-                "'" . $_POST['ID_Usuario'] . "'",
-                "'" . $_POST['IdGrupoArticulo'] . "'",
-                "'" . $_POST['GrupoArticulo'] . "'",
-                "'" . $_POST['Comentarios'] . "'",
-                $Usuario, // @id_usuario_creacion
-                $FechaHora, // @fecha_creacion
-                $FechaHora, // @hora_creacion
-            ));
-        }
+		if ($_POST['Metodo'] != 3) {
+			$Param = array_merge($Param, array(
+				"'" . $_POST['ID_Usuario'] . "'",
+				"'" . $_POST['IdGrupoArticulo'] . "'",
+				"'" . $_POST['GrupoArticulo'] . "'",
+				"'" . $_POST['Comentarios'] . "'",
+				$Usuario, // @id_usuario_creacion
+				$FechaHora, // @fecha_creacion
+				$FechaHora, // @hora_creacion
+			)
+			);
+		}
 
-        $SQL = EjecutarSP('sp_tbl_UsuariosGruposArticulos', $Param);
-        if ($SQL) {
-            exit("OK");
+		$SQL = EjecutarSP('sp_tbl_UsuariosGruposArticulos', $Param);
+		if ($SQL) {
+			exit("OK");
 
-        } else {
-            die(print_r(sqlsrv_errors(), true));
-        }
-    } catch (Exception $e) {
-        die(print_r($e->getMessage(), true));
-    }
+		} else {
+			die(print_r(sqlsrv_errors(), true));
+		}
+	} catch (Exception $e) {
+		die(print_r($e->getMessage(), true));
+	}
 }
 ?>
 
 <style>
-.select2-dropdown{
-    z-index: 9999;
-}
+	.select2-dropdown {
+		z-index: 9999;
+	}
 </style>
 
 <div class="wrapper wrapper-content">
@@ -67,18 +69,20 @@ if (isset($_POST['Metodo'])) {
 					<div class="modal-body">
 						<div class="form-group">
 							<div class="ibox-content">
-								<?php include "includes/spinner.php";?>
+								<?php include "includes/spinner.php"; ?>
 
 								<div class="form-group">
 									<div class="col-md-12">
-										<label class="control-label">Grupo de Articulo SAP <span class="text-danger">*</span></label>
+										<label class="control-label">Grupo de Articulo SAP <span
+												class="text-danger">*</span></label>
 										<select name="ItmsGrpCod" id="ItmsGrpCod" class="form-control select2" required>
 											<option value="" disabled selected>Seleccione...</option>
-											<?php while ($row_GA = sqlsrv_fetch_array($SQL_GA)) {?>
-												<option value="<?php echo $row_GA['ItmsGrpCod']; ?>" data-name="<?php echo $row_GA['ItmsGrpNam']; ?>">
+											<?php while ($row_GA = sqlsrv_fetch_array($SQL_GA)) { ?>
+												<option value="<?php echo $row_GA['ItmsGrpCod']; ?>"
+													data-name="<?php echo $row_GA['ItmsGrpNam']; ?>">
 													<?php echo $row_GA['ItmsGrpNam']; ?>
 												</option>
-											<?php }?>
+											<?php } ?>
 										</select>
 									</div>
 								</div>
@@ -86,7 +90,8 @@ if (isset($_POST['Metodo'])) {
 								<div class="form-group">
 									<div class="col-md-12">
 										<label class="control-label">Comentarios</label>
-										<textarea name="Comentarios" rows="3" maxlength="3000" class="form-control" id="Comentarios" type="text"></textarea>
+										<textarea name="Comentarios" rows="3" maxlength="3000" class="form-control"
+											id="Comentarios" type="text"></textarea>
 									</div>
 								</div>
 
@@ -95,8 +100,10 @@ if (isset($_POST['Metodo'])) {
 					</div> <!-- modal-body -->
 
 					<div class="modal-footer">
-						<button type="submit" class="btn btn-success m-t-md"><i class="fa fa-check"></i> Aceptar</button>
-						<button type="button" class="btn btn-warning m-t-md" data-dismiss="modal"><i class="fa fa-times"></i> Cerrar</button>
+						<button type="submit" class="btn btn-success m-t-md"><i class="fa fa-check"></i>
+							Aceptar</button>
+						<button type="button" class="btn btn-warning m-t-md" data-dismiss="modal"><i
+								class="fa fa-times"></i> Cerrar</button>
 					</div>
 
 				</form>
@@ -109,14 +116,16 @@ if (isset($_POST['Metodo'])) {
 <div class="ibox" id="GruposArticulos">
 	<div class="ibox-title bg-success">
 		<h5 class="collapse-link"><i class="fa fa-list"></i> Lista Grupos Articulos</h5>
-			<a class="collapse-link pull-right">
+		<a class="collapse-link pull-right">
 			<i class="fa fa-chevron-up"></i>
 		</a>
 	</div>
 	<div class="ibox-content">
 		<div class="row m-b-md">
 			<div class="col-lg-12">
-				<button class="btn btn-primary pull-right" type="button" id="NewMotivo" onClick="$('#modalGruposArticulos').modal('show');"><i class="fa fa-plus-circle"></i> Agregar nuevo</button>
+				<button class="btn btn-primary pull-right" type="button" id="NewMotivo"
+					onClick="$('#modalGruposArticulos').modal('show');"><i class="fa fa-plus-circle"></i> Agregar
+					nuevo</button>
 			</div>
 		</div>
 		<div class="table-responsive">
@@ -132,18 +141,21 @@ if (isset($_POST['Metodo'])) {
 					</tr>
 				</thead>
 				<tbody>
-					<?php while ($row_GrupoArticulo = sqlsrv_fetch_array($SQL_GruposArticulos)) {?>
+					<?php while ($row_GrupoArticulo = sqlsrv_fetch_array($SQL_GruposArticulos)) { ?>
 						<tr>
 							<td><?php echo $row_GrupoArticulo['IdGrupoArticulo']; ?></td>
 							<td><?php echo $row_GrupoArticulo['GrupoArticulo']; ?></td>
 							<td><?php echo $row_GrupoArticulo['Comentarios']; ?></td>
-							<td><?php echo isset($row_GrupoArticulo['fecha_creacion']) ? date_format($row_GrupoArticulo['fecha_creacion'], 'Y-m-d H:i:s') : ""; ?></td>
+							<td><?php echo isset($row_GrupoArticulo['fecha_creacion']) ? date_format($row_GrupoArticulo['fecha_creacion'], 'Y-m-d H:i:s') : ""; ?>
+							</td>
 							<td><?php echo $row_GrupoArticulo['usuario_creacion']; ?></td>
 							<td>
-								<button type="button" class="btn btn-danger btn-xs" onClick="EliminarFila('<?php echo $row_GrupoArticulo['ID']; ?>');"><i class="fa fa-trash"></i> Eliminar</button>
+								<button type="button" class="btn btn-danger btn-xs"
+									onClick="EliminarFila('<?php echo $row_GrupoArticulo['ID']; ?>');"><i
+										class="fa fa-trash"></i> Eliminar</button>
 							</td>
 						</tr>
-					<?php }?>
+					<?php } ?>
 				</tbody>
 			</table>
 		</div>
@@ -161,7 +173,7 @@ if (isset($_POST['Metodo'])) {
 			cancelButtonText: "No"
 		}).then((result) => {
 			if (result.isConfirmed) {
-				$('.ibox-content').toggleClass('sk-loading',true);
+				$('.ibox-content').toggleClass('sk-loading', true);
 
 				$.ajax({
 					type: "post",
@@ -169,11 +181,11 @@ if (isset($_POST['Metodo'])) {
 					data: {
 						Metodo: 3
 						, ID_Interno: ID
-						},
+					},
 					async: false,
-					success: function(data){
-						if(data == "OK") {
-							$(document).ready(function() {
+					success: function (data) {
+						if (data == "OK") {
+							$(document).ready(function () {
 								Swal.fire({
 									title: '¡Listo!',
 									text: 'Registro eliminado correctamente.',
@@ -183,7 +195,7 @@ if (isset($_POST['Metodo'])) {
 						} else {
 							console.log(data);
 
-							$(document).ready(function() {
+							$(document).ready(function () {
 								Swal.fire({
 									title: '¡Error!',
 									text: 'Ocurrio un error al momento de eliminar el registro.',
@@ -193,10 +205,10 @@ if (isset($_POST['Metodo'])) {
 						}
 
 						ConsultarTab('4');
-						$('.ibox-content').toggleClass('sk-loading',false);
+						$('.ibox-content').toggleClass('sk-loading', false);
 					},
-					error: function(error) {
-						$(document).ready(function() {
+					error: function (error) {
+						$(document).ready(function () {
 							Swal.fire({
 								title: '¡Error!',
 								text: 'Ocurrio un error al momento de consultar al servidor.',
@@ -205,20 +217,20 @@ if (isset($_POST['Metodo'])) {
 						});
 
 						console.log(error);
-						$('.ibox-content').toggleClass('sk-loading',false);
+						$('.ibox-content').toggleClass('sk-loading', false);
 					}
 				});
 			} // if
 		});
 	}
 
-	$(document).ready(function(){
+	$(document).ready(function () {
 		$(".select2").select2();
 
-		$("#formGruposArticulos").on("submit", function(event) {
+		$("#formGruposArticulos").on("submit", function (event) {
 			event.preventDefault(); // Evitar redirección del formulario
 
-			$('.ibox-content').toggleClass('sk-loading',true);
+			$('.ibox-content').toggleClass('sk-loading', true);
 
 			let IdGrupoArticulo = document.getElementById('ItmsGrpCod').value;
 			let GrupoArticulo = $("#ItmsGrpCod").find(':selected').data('name');
@@ -228,16 +240,16 @@ if (isset($_POST['Metodo'])) {
 				type: "post",
 				url: "us_grupos_articulos.php",
 				data: {
-					  Metodo: 1
+					Metodo: 1
 					, ID_Usuario: <?php echo $IdUsuario; ?>
 					, IdGrupoArticulo: IdGrupoArticulo
 					, GrupoArticulo: GrupoArticulo
 					, Comentarios: Comentarios
-					},
+				},
 				async: false,
-				success: function(data){
-					if(data == "OK") {
-						$(document).ready(function() {
+				success: function (data) {
+					if (data == "OK") {
+						$(document).ready(function () {
 							Swal.fire({
 								title: '¡Listo!',
 								text: 'Registro creado correctamente.',
@@ -247,7 +259,7 @@ if (isset($_POST['Metodo'])) {
 					} else {
 						console.log(data);
 
-						$(document).ready(function() {
+						$(document).ready(function () {
 							Swal.fire({
 								title: '¡Error!',
 								text: 'Ocurrio un error al momento de eliminar el registro.',
@@ -257,10 +269,10 @@ if (isset($_POST['Metodo'])) {
 					}
 
 					ConsultarTab('4');
-					$('.ibox-content').toggleClass('sk-loading',false);
+					$('.ibox-content').toggleClass('sk-loading', false);
 				},
-				error: function(error) {
-					$(document).ready(function() {
+				error: function (error) {
+					$(document).ready(function () {
 						Swal.fire({
 							title: '¡Error!',
 							text: 'Ocurrio un error al momento de consultar al servidor.',
@@ -269,7 +281,7 @@ if (isset($_POST['Metodo'])) {
 					});
 
 					console.log(error);
-					$('.ibox-content').toggleClass('sk-loading',false);
+					$('.ibox-content').toggleClass('sk-loading', false);
 				}
 			}); // ajax
 
@@ -284,26 +296,26 @@ if (isset($_POST['Metodo'])) {
 			pageLength: 10,
 			dom: '<"html5buttons"B>lTfgitp',
 			language: {
-				"decimal":        "",
-				"emptyTable":     "No se encontraron resultados.",
-				"info":           "Mostrando _START_ - _END_ de _TOTAL_ registros",
-				"infoEmpty":      "Mostrando 0 - 0 de 0 registros",
-				"infoFiltered":   "(filtrando de _MAX_ registros)",
-				"infoPostFix":    "",
-				"thousands":      ",",
-				"lengthMenu":     "Mostrar _MENU_ registros",
+				"decimal": "",
+				"emptyTable": "No se encontraron resultados.",
+				"info": "Mostrando _START_ - _END_ de _TOTAL_ registros",
+				"infoEmpty": "Mostrando 0 - 0 de 0 registros",
+				"infoFiltered": "(filtrando de _MAX_ registros)",
+				"infoPostFix": "",
+				"thousands": ",",
+				"lengthMenu": "Mostrar _MENU_ registros",
 				"loadingRecords": "Cargando...",
-				"processing":     "Procesando...",
-				"search":         "Filtrar:",
-				"zeroRecords":    "Ningún registro encontrado",
+				"processing": "Procesando...",
+				"search": "Filtrar:",
+				"zeroRecords": "Ningún registro encontrado",
 				"paginate": {
-					"first":      "Primero",
-					"last":       "Último",
-					"next":       "Siguiente",
-					"previous":   "Anterior"
+					"first": "Primero",
+					"last": "Último",
+					"next": "Siguiente",
+					"previous": "Anterior"
 				},
 				"aria": {
-					"sortAscending":  ": Activar para ordenar la columna ascendente",
+					"sortAscending": ": Activar para ordenar la columna ascendente",
 					"sortDescending": ": Activar para ordenar la columna descendente"
 				}
 			},
