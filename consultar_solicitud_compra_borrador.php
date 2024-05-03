@@ -208,7 +208,7 @@ if ($sw == 1) {
 		});
 		</script>";
 	} // useless
-
+	
 	if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_SolCompUpd"))) {
 		echo "<script>
 		$(document).ready(function() {
@@ -344,7 +344,7 @@ if ($sw == 1) {
 												echo $_GET['NombreCliente'];
 											} ?>">
 									</div>
-									
+
 									<label class="col-lg-1 control-label">Buscar dato</label>
 									<div class="col-lg-3">
 										<input name="BuscarDato" type="text" class="form-control" id="BuscarDato"
@@ -367,7 +367,7 @@ if ($sw == 1) {
 										</select>
 									</div>
 								</div>
-								
+
 								<div class="form-group">
 									<label class="col-lg-1 control-label">Encargado de compras</label>
 									<div class="col-lg-3">
@@ -460,7 +460,7 @@ if ($sw == 1) {
 										</select>
 									</div>
 									<!-- Hasta aquí, 24/01/2024 -->
-								
+
 									<div class="col-lg-8">
 										<button type="submit" class="btn btn-outline btn-success pull-right"><i
 												class="fa fa-search"></i> Buscar</button>
@@ -481,7 +481,7 @@ if ($sw == 1) {
 						</div>
 					</div>
 				</div>
-				
+
 				<br>
 				<?php //echo $Cons; ?>
 
@@ -508,7 +508,7 @@ if ($sw == 1) {
 											<th>No. Documento Definitivo</th>
 
 											<th>Usuario Creación/Autor</th>
-											
+
 											<th>Perfil Autor</th> <!-- SMM, 24/01/2024 -->
 											<th>Usuario Actualización</th> <!-- SMM, 24/01/2024 -->
 
@@ -548,11 +548,11 @@ if ($sw == 1) {
 													<td>
 														<?php echo $row['TipoVenta']; ?>
 													</td>
-													
+
 													<td>
 														<?php echo $row['UsuarioAutoriza']; ?>
 													</td>
-													
+
 													<td>
 														<?php if ($row['ID_LlamadaServicio'] != 0) { ?><a
 																href="llamada_servicio.php?id=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('consultar_solicitud_compra_borrador.php'); ?>&tl=1"
@@ -563,7 +563,7 @@ if ($sw == 1) {
 															echo "--";
 														} ?>
 													</td>
-													
+
 													<td>
 														<?php if (isset($row["DocEntryDocumentoDefinitivo"]) && isset($row["DocNumDocumentoDefinitivo"])) { ?>
 															<a target="_blank"
@@ -587,7 +587,7 @@ if ($sw == 1) {
 													<td>
 														<?php echo $row['UsuarioActualizacion']; ?>
 													</td>
-													
+
 													<td><span <?php if ($row['Cod_Estado'] == 'O') {
 														echo "class='label label-info'";
 													} else {
@@ -653,7 +653,7 @@ if ($sw == 1) {
 			$(".alkin").on('click', function () {
 				$('.ibox-content').toggleClass('sk-loading');
 			});
-			
+
 			$(".select2").select2();
 
 			$('#FechaInicial').datepicker({
