@@ -27,6 +27,7 @@ if (!sqlsrv_has_rows($SQL_GruposArticulos)) {
     $Usuario = "NULL";
 }
 
+$IdTipoDocumento = $_POST["objtype"] ?? "";
 $Param = array(
     "'$DatoBuscar'",
     "'$WhsCode'",
@@ -35,6 +36,7 @@ $Param = array(
     "'$TodosArticulos'",
     "'$IdListaPrecio'",
     $Usuario,
+    "'$IdTipoDocumento'"
 );
 
 $SQL = EjecutarSP('sp_ConsultarArticulos_ListaPrecios', $Param);
@@ -51,24 +53,24 @@ $SQL = EjecutarSP('sp_ConsultarArticulos_ListaPrecios', $Param);
             <th data-breakpoints="all">Lista Precios</th>
             <th data-breakpoints="all">Cod. Proveedor</th>
             <th data-breakpoints="all">Unidad Medida</th>
-            <th data-breakpoints="all">Precio Sin IVA</th> 
+            <th data-breakpoints="all">Precio Sin IVA</th>
             <th data-breakpoints="all">Cod. Almacen</th>
             <th data-breakpoints="all">Nombre Almacen</th>
 
             <th data-breakpoints="all">Almacen Destino</th>
             <th data-breakpoints="all">Concepto Salida</th>
-            
+
             <th data-breakpoints="all">Maneja Serial</th>
             <th data-breakpoints="all">Maneja Lote</th>
             <th data-breakpoints="all">Stock General</th>
             <th data-breakpoints="all">Grupo Artículos</th>
-            
+
             <?php foreach ($array_Dimensiones as &$dim) { ?>
                 <th data-breakpoints="all">
                     <?php echo $dim['IdPortalOne']; ?>
                 </th>
             <?php } ?>
-            
+
             <th data-breakpoints="all">EmpVentas</th>
             <th data-breakpoints="all">PrjCode</th>
             <th data-breakpoints="all">CodEmpleado</th>

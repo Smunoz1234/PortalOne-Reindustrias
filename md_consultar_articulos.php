@@ -48,7 +48,7 @@ $TipoLlamada = ObtenerValorDefecto($ObjType, "TipoLlamada", false);
 $SQL_OT = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "[ID_LlamadaServicio]='$OT'");
 
 $row_OT = array();
-if(sqlsrv_has_rows($SQL_OT)) {
+if (sqlsrv_has_rows($SQL_OT)) {
 	$row_OT = sqlsrv_fetch_array($SQL_OT);
 } else {
 	// Buscar parámetros en la solicitud. SMM, 14/10/2023
@@ -61,7 +61,7 @@ if (isset($row_OT["IdOrigenLlamada"]) && ($row_OT["IdOrigenLlamada"] != "")) {
 
 	$SQL_Origen = Seleccionar("uvw_Sap_tbl_LlamadasServiciosOrigen", '*', "IdOrigenLlamada='$IdOrigenLlamada'");
 	$row_Origen = sqlsrv_fetch_array($SQL_Origen);
-	
+
 	$OrigenLlamada = $row_Origen["IdRelacionMarketing"] ?? "";
 }
 
@@ -70,7 +70,7 @@ if (isset($row_OT["CDU_TipoPreventivo"]) && ($row_OT["CDU_TipoPreventivo"] != ""
 
 	$SQL_TipoPreventivo = Seleccionar("uvw_Sap_tbl_LlamadasServicios_TipoPreventivo", '*', "CodigoTipoPreventivo='$CDU_TipoPreventivo'");
 	$row_TipoPreventivo = sqlsrv_fetch_array($SQL_TipoPreventivo);
-	
+
 	$TipoPreventivo = $row_TipoPreventivo["IdRelacionMarketing"] ?? "";
 }
 
@@ -79,7 +79,7 @@ if (isset($row_OT["IdTipoProblemaLlamada"]) && ($row_OT["IdTipoProblemaLlamada"]
 
 	$SQL_TipoProblema = Seleccionar("uvw_Sap_tbl_TipoProblemasLlamadas", '*', "IdTipoProblemaLlamada='$IdTipoProblemaLlamada'");
 	$row_TipoProblema = sqlsrv_fetch_array($SQL_TipoProblema);
-	
+
 	$TipoProblemaLlamada = $row_TipoProblema["IdRelacionMarketing"] ?? "";
 }
 
@@ -88,7 +88,7 @@ if (isset($row_OT["IdTipoLlamada"]) && ($row_OT["IdTipoLlamada"] != "")) {
 
 	$SQL_TipoLlamada = Seleccionar("uvw_Sap_tbl_TipoLlamadas", '*', "IdTipoLlamada='$IdTipoLlamada'");
 	$row_TipoLlamada = sqlsrv_fetch_array($SQL_TipoLlamada);
-	
+
 	$TipoLlamada = $row_TipoLlamada["IdRelacionMarketing"] ?? "";
 }
 
@@ -186,7 +186,9 @@ $SQL_Empleado = Seleccionar('uvw_Sap_tbl_EmpleadosSN', '*', '', 'NombreEmpleado'
 										<?php while ($row_Almacen = sqlsrv_fetch_array($SQL_Almacen)) { ?>
 											<option <?php if ($row_DatosEmpleados["AlmacenOrigen"] == $row_Almacen['WhsCode']) {
 												echo "selected";
-											} ?> value="<?php echo $row_Almacen['WhsCode']; ?>"><?php echo $row_Almacen['WhsCode'] . " - " . $row_Almacen['WhsName']; ?></option>
+											} ?> value="<?php echo $row_Almacen['WhsCode']; ?>">
+												<?php echo $row_Almacen['WhsCode'] . " - " . $row_Almacen['WhsName']; ?>
+											</option>
 										<?php } ?>
 									</select>
 								</div> <!-- col-xs-12 -->
@@ -194,13 +196,13 @@ $SQL_Empleado = Seleccionar('uvw_Sap_tbl_EmpleadosSN', '*', '', 'NombreEmpleado'
 								<div class="col-xs-12" style="margin-bottom: 10px;">
 									<label class="control-label">Almacén destino</label>
 
-									<select name="AlmacenDestino" id="AlmacenDestino" class="form-control select2" <?php if(($Inventario == "") || ($Inventario == "Salida")) {
+									<select name="AlmacenDestino" id="AlmacenDestino" class="form-control select2" <?php if (($Inventario == "") || ($Inventario == "Salida")) {
 										echo "disabled";
 									} ?>>
 										<option value="">Seleccione...</option>
 
 										<?php while ($row_AlmacenDestino = sqlsrv_fetch_array($SQL_AlmacenDestino)) { ?>
-											<option  <?php if ($row_DatosEmpleados["AlmacenDestino"] == $row_AlmacenDestino['ToWhsCode']) {
+											<option <?php if ($row_DatosEmpleados["AlmacenDestino"] == $row_AlmacenDestino['ToWhsCode']) {
 												echo "selected";
 											} ?> value="<?php echo $row_AlmacenDestino['ToWhsCode']; ?>">
 												<?php echo $row_AlmacenDestino['ToWhsCode'] . " - " . $row_AlmacenDestino['ToWhsName']; ?>
@@ -254,7 +256,9 @@ $SQL_Empleado = Seleccionar('uvw_Sap_tbl_EmpleadosSN', '*', '', 'NombreEmpleado'
 										<?php while ($row_EmpleadosVentas = sqlsrv_fetch_array($SQL_EmpleadosVentas)) { ?>
 											<option <?php if ($IdEmpleado == $row_EmpleadosVentas['ID_EmpVentas']) {
 												echo "selected";
-											} ?> value="<?php echo $row_EmpleadosVentas['ID_EmpVentas']; ?>"><?php echo $row_EmpleadosVentas['ID_EmpVentas'] . " - " . $row_EmpleadosVentas['DE_EmpVentas']; ?></option>
+											} ?> value="<?php echo $row_EmpleadosVentas['ID_EmpVentas']; ?>">
+												<?php echo $row_EmpleadosVentas['ID_EmpVentas'] . " - " . $row_EmpleadosVentas['DE_EmpVentas']; ?>
+											</option>
 										<?php } ?>
 									</select>
 								</div> <!-- col-xs-12 -->
@@ -263,12 +267,12 @@ $SQL_Empleado = Seleccionar('uvw_Sap_tbl_EmpleadosSN', '*', '', 'NombreEmpleado'
 									<label class="control-label">
 										Concepto Salida
 									</label>
-									
-									<select name="ConceptoSalida" id="ConceptoSalida" class="form-control select2" <?php if($Inventario == "") {
+
+									<select name="ConceptoSalida" id="ConceptoSalida" class="form-control select2" <?php if ($Inventario == "") {
 										echo "disabled";
 									} ?>>
 										<option value="">Seleccione...</option>
-											
+
 										<?php while ($row_ConceptoSalida = sqlsrv_fetch_array($SQL_ConceptoSalida)) { ?>
 											<option value="<?php echo $row_ConceptoSalida['id_concepto_salida']; ?>">
 												<?php echo $row_ConceptoSalida['id_concepto_salida'] . "-" . $row_ConceptoSalida['concepto_salida']; ?>
@@ -286,7 +290,7 @@ $SQL_Empleado = Seleccionar('uvw_Sap_tbl_EmpleadosSN', '*', '', 'NombreEmpleado'
 
 									<select id="Empleado" name="Empleado" class="form-control select2">
 										<option value="">Seleccione...</option>
-										
+
 										<?php while ($row_Empleado = sqlsrv_fetch_array($SQL_Empleado)) { ?>
 											<option <?php if ($CodEmpleado == $row_Empleado['ID_Empleado']) {
 												echo "selected";
@@ -296,7 +300,7 @@ $SQL_Empleado = Seleccionar('uvw_Sap_tbl_EmpleadosSN', '*', '', 'NombreEmpleado'
 										<?php } ?>
 									</select>
 								</div> <!-- col-xs-12 -->
-							
+
 								<div class="col-xs-12" style="margin-bottom: 10px;">
 									<label class="control-label">Tipo OT (Origen Llamada) <span
 											class="text-danger">*</span></label>
@@ -556,7 +560,7 @@ $SQL_Empleado = Seleccionar('uvw_Sap_tbl_EmpleadosSN', '*', '', 'NombreEmpleado'
 		console.log("<?php echo $row_OT["CDU_TipoPreventivo"] ?? ""; ?>");
 		console.log("<?php echo $row_OT["IdTipoProblemaLlamada"] ?? ""; ?>");
 		console.log("<?php echo $row_OT["IdTipoLlamada"] ?? ""; ?>");
-		
+
 		$(".select2").select2();
 		$('#footableOne').footable();
 
@@ -591,6 +595,7 @@ $SQL_Empleado = Seleccionar('uvw_Sap_tbl_EmpleadosSN', '*', '', 'NombreEmpleado'
 				// formData.append("Dim1", $("#Dim1").val() || "");
 
 				formData.append("tipodoc", "<?php echo $_POST["TipoDoc"] ?? 2; ?>");
+				formData.append("objtype", "<?php echo $ObjType; ?>");
 
 				let json = Object.fromEntries(formData);
 				console.log("Line 340", json);
@@ -769,7 +774,7 @@ $SQL_Empleado = Seleccionar('uvw_Sap_tbl_EmpleadosSN', '*', '', 'NombreEmpleado'
 		});
 
 		// SMM, 30/08/2023
-		$(".select2").on("change", function() {
+		$(".select2").on("change", function () {
 			EliminarFilas();
 		});
 	});
