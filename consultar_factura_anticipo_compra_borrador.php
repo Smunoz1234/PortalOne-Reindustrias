@@ -134,7 +134,7 @@ if (isset($_GET['BuscarDato']) && $_GET['BuscarDato'] != "") {
 }
 
 // SMM, 24/01/2024
-$Cons = "SELECT * FROM uvw_Sap_tbl_OrdenesCompras_Borrador WHERE $WhereFecha $Filtro ORDER BY DocNum DESC";
+$Cons = "SELECT * FROM [uvw_Sap_tbl_FacturasAnticiposCompras_Borrador] WHERE $WhereFecha $Filtro ORDER BY DocNum DESC";
 
 if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
 	$Where = "DocNumLlamadaServicio LIKE '%" . $_GET['IDTicket'] . "%'";
@@ -152,7 +152,7 @@ if (isset($_GET['IDTicket']) && $_GET['IDTicket'] != "") {
 	$Where .= " and [IdSeries] IN (" . $FilSerie . ")";
 	$SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 
-	$Cons = "SELECT * FROM uvw_Sap_tbl_OrdenesCompras_Borrador WHERE $Where";
+	$Cons = "SELECT * FROM [uvw_Sap_tbl_FacturasAnticiposCompras_Borrador] WHERE $Where";
 }
 
 // SMM, 24/01/2024
@@ -175,7 +175,7 @@ if (isset($_GET['DocNum']) && $_GET['DocNum'] != "") {
 
 	$SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 
-	$Cons = "SELECT * FROM uvw_Sap_tbl_OrdenesCompras_Borrador WHERE $Where";
+	$Cons = "SELECT * FROM [uvw_Sap_tbl_FacturasAnticiposCompras_Borrador] WHERE $Where";
 }
 
 // SMM, 03/04/2023
@@ -191,7 +191,7 @@ if ($sw == 1) {
 <head>
 	<?php include_once "includes/cabecera.php"; ?>
 	<!-- InstanceBeginEditable name="doctitle" -->
-	<title>Consultar orden de compra borrador |
+	<title>Consultar Factura anticipo de Compras Borrador |
 		<?php echo NOMBRE_PORTAL; ?>
 	</title>
 	<!-- InstanceEndEditable -->
@@ -202,19 +202,19 @@ if ($sw == 1) {
 		$(document).ready(function() {
 			Swal.fire({
                 title: '¡Listo!',
-                text: 'La Orden de compra ha sido agregada exitosamente.',
+                text: 'La Factura anticipo de Compras Borrador ha sido agregada exitosamente.',
                 icon: 'success'
             });
 		});
 		</script>";
 	} // useless
-
+	
 	if (isset($_GET['a']) && ($_GET['a'] == base64_encode("OK_OCompUpd"))) {
 		echo "<script>
 		$(document).ready(function() {
 			Swal.fire({
                 title: '¡Listo!',
-                text: 'La Orden de compra borrador ha sido actualizada exitosamente.',
+                text: 'La Factura anticipo de Compras Borrador ha sido actualizada exitosamente.',
                 icon: 'success'
             });
 		});
@@ -259,7 +259,7 @@ if ($sw == 1) {
 			<!-- InstanceBeginEditable name="Contenido" -->
 			<div class="row wrapper border-bottom white-bg page-heading">
 				<div class="col-sm-8">
-					<h2>Consultar orden de compra borrador</h2>
+					<h2>Consultar Factura anticipo de Compras Borrador</h2>
 					<ol class="breadcrumb">
 						<li>
 							<a href="index1.php">Inicio</a>
@@ -271,7 +271,7 @@ if ($sw == 1) {
 							<a href="#">Consultas</a>
 						</li>
 						<li class="active">
-							<strong>Consultar orden de compra borrador</strong>
+							<strong>Consultar Factura anticipo de Compras Borrador</strong>
 						</li>
 					</ol>
 				</div>
@@ -281,7 +281,7 @@ if ($sw == 1) {
 					<div class="col-lg-12">
 						<div class="ibox-content">
 							<?php include "includes/spinner.php"; ?>
-							<form action="consultar_orden_compra_borrador.php" method="get" id="formBuscar"
+							<form action="consultar_factura_anticipo_compra_borrador.php" method="get" id="formBuscar"
 								class="form-horizontal">
 								<div class="form-group">
 									<label class="col-xs-12">
@@ -344,7 +344,7 @@ if ($sw == 1) {
 												echo $_GET['NombreCliente'];
 											} ?>">
 									</div>
-									
+
 									<label class="col-lg-1 control-label">Buscar dato</label>
 									<div class="col-lg-3">
 										<input name="BuscarDato" type="text" class="form-control" id="BuscarDato"
@@ -367,7 +367,7 @@ if ($sw == 1) {
 										</select>
 									</div>
 								</div>
-								
+
 								<div class="form-group">
 									<label class="col-lg-1 control-label">Encargado de compras</label>
 									<div class="col-lg-3">
@@ -460,7 +460,7 @@ if ($sw == 1) {
 										</select>
 									</div>
 									<!-- Hasta aquí, 24/01/2024 -->
-								
+
 									<div class="col-lg-8">
 										<button type="submit" class="btn btn-outline btn-success pull-right"><i
 												class="fa fa-search"></i> Buscar</button>
@@ -481,7 +481,7 @@ if ($sw == 1) {
 						</div>
 					</div>
 				</div>
-				
+
 				<br>
 				<?php //echo $Cons; ?>
 
@@ -497,7 +497,7 @@ if ($sw == 1) {
 
 											<th>Número</th>
 											<th>Serie</th>
-											<th>Fecha orden</th>
+											<th>Fecha Documento</th>
 											<th>Socio de negocio</th>
 											<th>Comentarios</th>
 											<th>Encargado de compras</th>
@@ -508,7 +508,7 @@ if ($sw == 1) {
 											<th>No. Documento Definitivo</th>
 
 											<th>Usuario Creación/Autor</th>
-											
+
 											<th>Perfil Autor</th> <!-- SMM, 24/01/2024 -->
 											<th>Usuario Actualización</th> <!-- SMM, 24/01/2024 -->
 
@@ -525,7 +525,7 @@ if ($sw == 1) {
 											<?php while ($row = sqlsrv_fetch_array($SQL)) { ?>
 												<tr class="gradeX">
 													<td>
-														<?php echo $row['ID_OrdenCompra']; ?>
+														<?php echo $row['ID_FacturaCompraAnticipo']; ?>
 													</td>
 													<td>
 														<?php echo $row['DocNum']; ?>
@@ -548,14 +548,14 @@ if ($sw == 1) {
 													<td>
 														<?php echo $row['TipoVenta']; ?>
 													</td>
-													
+
 													<td>
 														<?php echo $row['UsuarioAutoriza']; ?>
 													</td>
-													
+
 													<td>
 														<?php if ($row['ID_LlamadaServicio'] != 0) { ?><a
-																href="llamada_servicio.php?id=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('consultar_orden_compra_borrador.php'); ?>&tl=1"
+																href="llamada_servicio.php?id=<?php echo base64_encode($row['ID_LlamadaServicio']); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('consultar_factura_anticipo_compra_borrador.php'); ?>&tl=1"
 																target="_blank">
 																<?php echo $row['DocNumLlamadaServicio']; ?>
 															</a>
@@ -563,11 +563,11 @@ if ($sw == 1) {
 															echo "--";
 														} ?>
 													</td>
-													
+
 													<td>
 														<?php if (isset($row["DocEntryDocumentoDefinitivo"]) && isset($row["DocNumDocumentoDefinitivo"])) { ?>
 															<a target="_blank"
-																href="orden_compra.php?id=<?php echo base64_encode($row['DocEntryDocumentoDefinitivo']); ?>&id_portal=<?php echo base64_encode($row['DocNumDocumentoDefinitivo']); ?>&tl=1&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('consultar_orden_compra_borrador.php'); ?>"
+																href="factura_anticipo_compra.php?id=<?php echo base64_encode($row['DocEntryDocumentoDefinitivo']); ?>&id_portal=<?php echo base64_encode($row['DocNumDocumentoDefinitivo']); ?>&tl=1&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('consultar_factura_anticipo_compra_borrador.php'); ?>"
 																class="Xbtn Xbtn-success Xbtn-xs">
 																<?php echo $row["DocNumDocumentoDefinitivo"]; ?>
 															</a>
@@ -587,7 +587,7 @@ if ($sw == 1) {
 													<td>
 														<?php echo $row['UsuarioActualizacion']; ?>
 													</td>
-													
+
 													<td><span <?php if ($row['Cod_Estado'] == 'O') {
 														echo "class='label label-info'";
 													} else {
@@ -618,10 +618,10 @@ if ($sw == 1) {
 													</td>
 
 													<td>
-														<a href="orden_compra_borrador.php?id=<?php echo base64_encode($row['ID_OrdenCompra']); ?>&id_portal=<?php echo base64_encode($row['IdDocPortal']); ?>&tl=1&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('consultar_orden_compra_borrador.php'); ?>"
+														<a href="factura_anticipo_compra_borrador.php?id=<?php echo base64_encode($row['ID_FacturaCompraAnticipo']); ?>&id_portal=<?php echo base64_encode($row['IdDocPortal']); ?>&tl=1&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('consultar_factura_anticipo_compra_borrador.php'); ?>"
 															class="alkin btn btn-success btn-xs"><i
 																class="fa fa-folder-open-o"></i> Abrir</a>
-														<a href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row['ID_OrdenCompra']); ?>&ObType=<?php echo base64_encode('17'); ?>&IdFrm=<?php echo base64_encode($row['IdSeries']); ?>"
+														<a href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row['ID_FacturaCompraAnticipo']); ?>&ObType=<?php echo base64_encode('17'); ?>&IdFrm=<?php echo base64_encode($row['IdSeries']); ?>"
 															target="_blank" class="btn btn-warning btn-xs"><i
 																class="fa fa-download"></i> Descargar</a>
 													</td>
@@ -653,7 +653,7 @@ if ($sw == 1) {
 			$(".alkin").on('click', function () {
 				$('.ibox-content').toggleClass('sk-loading');
 			});
-			
+
 			$(".select2").select2();
 
 			$('#FechaInicial').datepicker({
