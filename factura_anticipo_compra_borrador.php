@@ -13,7 +13,7 @@ $autorizaSAP = ""; // SMM, 15/12/2022
 $serAutorizador = false; // SMM, 19/12/2022
 
 $msg_error = ""; //Mensaje del error
-$IdOrdenCompra = 0;
+$IdFacturaCompra = 0;
 $IdPortal = 0; //Id del portal para las solicitudes que fueron creadas en el portal, para eliminar el registro antes de cargar al editar
 
 // Motivos de autorización, SMM 10/12/2022
@@ -31,16 +31,16 @@ $mensajeProceso = ""; // Mensaje proceso, mensaje de salida del procedimiento al
 // Procesos de autorización, SMM 25/01/2024
 $SQL_Procesos = Seleccionar("uvw_tbl_Autorizaciones_Procesos", "*", "Estado = 'Y' AND IdTipoDocumento = $IdTipoDocumento");
 
-if (isset($_GET['id']) && ($_GET['id'] != "")) { //ID de la Orden de compra (DocEntry)
-	$IdOrden = base64_decode($_GET['id']);
+if (isset($_GET['id']) && ($_GET['id'] != "")) { //ID de la Factura anticipo de Compras (DocEntry)
+	$IdFactura = base64_decode($_GET['id']);
 }
 
 if (isset($_GET['id_portal']) && ($_GET['id_portal'] != "")) { //Id del portal de compra (ID interno)
 	$IdPortal = base64_decode($_GET['id_portal']);
 }
 
-if (isset($_POST['IdOrdenCompra']) && ($_POST['IdOrdenCompra'] != "")) { //Tambien el Id interno, pero lo envío cuando mando el formulario
-	$IdOrdenCompra = base64_decode($_POST['IdOrdenCompra']);
+if (isset($_POST['IdFacturaCompra']) && ($_POST['IdFacturaCompra'] != "")) { //Tambien el Id interno, pero lo envío cuando mando el formulario
+	$IdFacturaCompra = base64_decode($_POST['IdFacturaCompra']);
 	$IdEvento = base64_decode($_POST['IdEvento']);
 }
 
@@ -64,7 +64,7 @@ if (!isset($row['DocDestinoDocEntry']) || ($row['DocDestinoDocEntry'] == "")) {
 
 // Consulta decisión de autorización en la edición de documentos.
 if ($edit == 1) {
-	$DocEntry = "'$IdOrden'"; // Cambiar por el ID respectivo del documento.
+	$DocEntry = "'$IdFactura'"; // Cambiar por el ID respectivo del documento.
 
 	$EsBorrador = (true) ? "DocumentoBorrador" : "Documento";
 	$SQL_Autorizaciones = Seleccionar("uvw_Sap_tbl_Autorizaciones", "*", "IdTipoDocumento = $IdTipoDocumento AND DocEntry$EsBorrador = $DocEntry");
@@ -74,12 +74,12 @@ if ($edit == 1) {
 	$SQL_Procesos = Seleccionar("uvw_tbl_Autorizaciones_Procesos", "*", "IdTipoDocumento = $IdTipoDocumento");
 }
 
-if (isset($_POST['P']) && ($_POST['P'] != "")) { // Grabar Orden de compra
+if (isset($_POST['P']) && ($_POST['P'] != "")) { // Grabar Factura anticipo de Compras
 	//*** Carpeta temporal ***
 	$i = 0; //Archivos
 	$RutaAttachSAP = ObtenerDirAttach();
 	$dir = CrearObtenerDirTemp();
-	$dir_new = CrearObtenerDirAnx("ordencompra");
+	$dir_new = CrearObtenerDirAnx("facturacompraanticipo");
 	$route = opendir($dir);
 	$DocFiles = array();
 	while ($archivo = readdir($route)) { //obtenemos un archivo y luego otro sucesivamente
@@ -97,17 +97,17 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Grabar Orden de compra
 
 	try {
 		if ($_POST['P'] == 39) { // Actualizar
-			$IdOrdenCompra = base64_decode($_POST['IdOrdenCompra']);
+			$IdFacturaCompra = base64_decode($_POST['IdFacturaCompra']);
 			$IdEvento = base64_decode($_POST['IdEvento']);
 			$Type = 2;
 		} else { // Crear
-			$IdOrdenCompra = "NULL";
+			$IdFacturaCompra = "NULL";
 			$IdEvento = "0";
 			$Type = 1;
 		}
 
-		$ParametrosCabOrdenCompra = array(
-			$IdOrdenCompra,
+		$ParametrosCabFacturaCompra = array(
+			$IdFacturaCompra,
 			$IdEvento,
 			"NULL",
 			"NULL",
@@ -126,7 +126,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Grabar Orden de compra
 			"'" . str_replace(',', '', $_POST['Descuentos']) . "'",
 			"NULL",
 			"'" . str_replace(',', '', $_POST['Impuestos']) . "'",
-			"'" . str_replace(',', '', $_POST['TotalOrden']) . "'",
+			"'" . str_replace(',', '', $_POST['TotalFacturaAnticipo']) . "'",
 			"'" . LSiqmlObs($_POST['SucursalFacturacion']) . "'",
 			"'" . LSiqmlObs($_POST['DireccionFacturacion']) . "'",
 			"'" . LSiqmlObs($_POST['SucursalDestino']) . "'",
@@ -150,13 +150,13 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Grabar Orden de compra
 			"'" . ($_POST['ComentariosAutorizacionPO'] ?? "") . "'",
 		);
 
-		$SQL_CabeceraOrdenCompra = EjecutarSP('sp_tbl_OrdenCompra_Borrador', $ParametrosCabOrdenCompra, $_POST['P']);
-		if ($SQL_CabeceraOrdenCompra) {
+		$SQL_CabeceraFacturaCompra = EjecutarSP('sp_tbl_FacturaCompraAnticipo_Borrador', $ParametrosCabFacturaCompra, $_POST['P']);
+		if ($SQL_CabeceraFacturaCompra) {
 			if ($Type == 1) {
-				$row_CabeceraOrdenCompra = sqlsrv_fetch_array($SQL_CabeceraOrdenCompra);
+				$row_CabeceraFacturaCompra = sqlsrv_fetch_array($SQL_CabeceraFacturaCompra);
 
-				$IdOrdenCompra = $row_CabeceraOrdenCompra[0];
-				$IdEvento = $row_CabeceraOrdenCompra[1];
+				$IdFacturaCompra = $row_CabeceraFacturaCompra[0];
+				$IdEvento = $row_CabeceraFacturaCompra[1];
 
 				// Comprobar procesos de autorización en la creación, SMM 20/08/2022
 				while ($row_Proceso = sqlsrv_fetch_array($SQL_Procesos)) {
@@ -167,7 +167,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Grabar Orden de compra
 						$autorizaSAP = $row_Proceso['AutorizacionSAP'] ?? ''; // SMM, 25/01/2024
 
 						// Aquí se debe reemplazar por el ID del documento. SMM, 25/01/2024
-						$sql = str_replace("[IdDocumento]", $IdOrdenCompra, $sql);
+						$sql = str_replace("[IdDocumento]", $IdFacturaCompra, $sql);
 						$sql = str_replace("[IdEvento]", $IdEvento, $sql);
 
 						$stmt = sqlsrv_query($conexion, $sql);
@@ -206,7 +206,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Grabar Orden de compra
 				// Hasta aquí, 25/01/2024
 
 			} else {
-				$IdOrdenCompra = base64_decode($_POST['IdOrdenCompra']); //Lo coloco otra vez solo para saber que tiene ese valor
+				$IdFacturaCompra = base64_decode($_POST['IdFacturaCompra']); //Lo coloco otra vez solo para saber que tiene ese valor
 				$IdEvento = base64_decode($_POST['IdEvento']);
 			}
 
@@ -227,7 +227,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Grabar Orden de compra
 						//Registrar archivo en la BD
 						$ParamInsAnex = array(
 							"'$IdTipoDocumento'", // SMM, 25/01/2024
-							"'$IdOrdenCompra'",
+							"'$IdFacturaCompra'",
 							"'$OnlyName'",
 							"'$Ext'",
 							"1",
@@ -255,7 +255,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Grabar Orden de compra
 					// Inicio, Enviar datos al WebServices.
 				try {
 					$Parametros = array(
-						'id_documento' => intval($IdOrdenCompra),
+						'id_documento' => intval($IdFacturaCompra),
 						'id_evento' => intval($IdEvento),
 					);
 
@@ -268,7 +268,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Grabar Orden de compra
 					}
 
 					// SMM, 25/01/2024
-					$Metodo = "OrdenesCompras/$end_point";
+					$Metodo = "FacturasAnticiposCompras/$end_point";
 					$Resultado = EnviarWebServiceSAP($Metodo, $Parametros, true, true);
 
 					if ($Resultado->Success == 0) {
@@ -277,7 +277,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Grabar Orden de compra
 					} else {
 						// Inicio, redirección documento autorizado.
 						sqlsrv_close($conexion);
-						if ($_POST['P'] == 37) { // Creando orden
+						if ($_POST['P'] == 37) { // Creando Factura Anticipo
 							header('Location:' . base64_decode($_POST['return']) . '&a=' . base64_encode($msg_ok));
 						} else { //Actualizando solicitud
 							header('Location:' . base64_decode($_POST['return']) . '&a=' . base64_encode($msg_ok));
@@ -296,7 +296,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Grabar Orden de compra
 
 		} else {
 			$sw_error = 1;
-			$msg_error = "Ha ocurrido un error al crear la orden de compra";
+			$msg_error = "Ha ocurrido un error al crear la Factura anticipo de Compras";
 		}
 	} catch (Exception $e) {
 		echo 'Excepcion capturada: ', $e->getMessage(), "\n";
@@ -319,9 +319,9 @@ if (isset($_GET['dt_LS']) && ($_GET['dt_LS']) == 1) { //Verificar que viene de u
 			"'" . base64_decode($_GET['Cardcode']) . "'",
 			"'" . $_SESSION['CodUser'] . "'",
 		);
-		$SQL_AddLMT = EjecutarSP('sp_CargarLMT_OrdenCompraDetalleCarrito', $ParametrosAddLMT);
+		$SQL_AddLMT = EjecutarSP('sp_CargarLMT_FacturaCompraDetalleCarrito', $ParametrosAddLMT);
 	} else {
-		Eliminar('tbl_OrdenCompraDetalleCarrito_Borrador', "Usuario='" . $_SESSION['CodUser'] . "' AND CardCode='" . base64_decode($_GET['Cardcode']) . "'");
+		Eliminar('tbl_FacturaCompraAnticipoDetalleCarrito_Borrador', "Usuario='" . $_SESSION['CodUser'] . "' AND CardCode='" . base64_decode($_GET['Cardcode']) . "'");
 	}
 
 	// Clientes
@@ -347,20 +347,20 @@ $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', "Estado =
 if ($edit == 1 && $sw_error == 0) {
 
 	$ParametrosLimpiar = array(
-		"'$IdOrden'",
+		"'$IdFactura'",
 		"'$IdPortal'",
 		"'" . $_SESSION['CodUser'] . "'",
 	);
-	$LimpiarOrden = EjecutarSP('sp_EliminarDatosOrdenCompra_Borrador', $ParametrosLimpiar);
+	$LimpiarDocumento = EjecutarSP('sp_EliminarDatosFacturaCompraAnticipo_Borrador', $ParametrosLimpiar);
 
-	$SQL_IdEvento = sqlsrv_fetch_array($LimpiarOrden);
+	$SQL_IdEvento = sqlsrv_fetch_array($LimpiarDocumento);
 	$IdEvento = $SQL_IdEvento[0];
 
 	// Empleado de ventas. SMM, 29/05/2023 
 	$SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', '', 'DE_EmpVentas');
 
-	//Orden de compra
-	$Cons = "SELECT * FROM uvw_tbl_OrdenCompra_Borrador WHERE DocEntry='$IdOrden' AND IdEvento='$IdEvento'";
+	//Factura anticipo de Compras
+	$Cons = "SELECT * FROM uvw_tbl_FacturaCompraAnticipo_Borrador WHERE DocEntry='$IdFactura' AND IdEvento='$IdEvento'";
 	$SQL = sqlsrv_query($conexion, $Cons);
 	$row = sqlsrv_fetch_array($SQL);
 
@@ -386,7 +386,7 @@ if ($edit == 1 && $sw_error == 0) {
 }
 
 if ($sw_error == 1) {
-	$Cons = "SELECT * FROM uvw_tbl_OrdenCompra_Borrador WHERE ID_OrdenCompra='$IdOrdenCompra' AND IdEvento='$IdEvento'";
+	$Cons = "SELECT * FROM uvw_tbl_FacturaCompraAnticipo_Borrador WHERE ID_FacturaCompraAnticipo='$IdFacturaCompra' AND IdEvento='$IdEvento'";
 	// echo $Cons;
 
 	$SQL = sqlsrv_query($conexion, $Cons);
@@ -450,7 +450,7 @@ if (isset($row['ID_PerfilUsuario']) && ($row['ID_PerfilUsuario'] != "")) {
 	$autorAsignado = sqlsrv_has_rows($SQL_PerfilesAutorizador);
 }
 
-// Permiso para actualizar la orden de compra en borrador. SMM, 05/04/2024
+// Permiso para actualizar la Factura anticipo de Compras en borrador. SMM, 05/04/2024
 $BloquearDocumento = false;
 if (!PermitirFuncion(729)) {
 	$BloquearDocumento = true;
@@ -470,7 +470,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 	<!-- InstanceBeginEditable name="doctitle" -->
 	
 	<title>
-		Orden de compra borrador | <?php echo NOMBRE_PORTAL; ?>
+		Factura anticipo de Compras borrador | <?php echo NOMBRE_PORTAL; ?>
 	</title>
 
 	<?php
@@ -479,7 +479,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 		$(document).ready(function() {
 			Swal.fire({
 				title: '¡Listo!',
-				text: 'La Orden de compra ha sido creada exitosamente.',
+				text: 'La Factura anticipo de Compras ha sido creada exitosamente.',
 				icon: 'success'
 			});
 		});
@@ -490,7 +490,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 		$(document).ready(function() {
 			Swal.fire({
 				title: '¡Listo!',
-				text: 'La Orden de compra ha sido actualizada exitosamente.',
+				text: 'La Factura anticipo de Compras ha sido actualizada exitosamente.',
 				icon: 'success'
 			});
 		});
@@ -693,15 +693,15 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 				setTimeout(() => {
 					<?php if ($edit == 0) { ?>
 						if (carcode != "") {
-							frame.src = "detalle_orden_compra_borrador.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode=" + carcode;
+							frame.src = "detalle_factura_anticipo_compra_borrador.php?id=0&type=1&usr=<?php echo $_SESSION['CodUser']; ?>&cardcode=" + carcode;
 						} else {
-							frame.src = "detalle_orden_compra_borrador.php";
+							frame.src = "detalle_factura_anticipo_compra_borrador.php";
 						}
 					<?php } else { ?>
 						if (carcode != "") {
-							frame.src = "detalle_orden_compra_borrador.php?autoriza=1&id=<?php echo base64_encode($row['ID_OrdenCompra']); ?>&evento=<?php echo base64_encode($row['IdEvento']); ?>&type=2";
+							frame.src = "detalle_factura_anticipo_compra_borrador.php?autoriza=1&id=<?php echo base64_encode($row['ID_FacturaCompraAnticipo']); ?>&evento=<?php echo base64_encode($row['IdEvento']); ?>&type=2";
 						} else {
-							frame.src = "detalle_orden_compra_borrador.php";
+							frame.src = "detalle_factura_anticipo_compra_borrador.php";
 						}
 					<?php } ?>
 				}, 500);
@@ -768,7 +768,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 			<!-- InstanceBeginEditable name="Contenido" -->
 			<div class="row wrapper border-bottom white-bg page-heading">
 				<div class="col-sm-8">
-					<h2>Orden de compra borrador</h2>
+					<h2>Factura anticipo de Compras borrador</h2>
 					<ol class="breadcrumb">
 						<li>
 							<a href="index1.php">Inicio</a>
@@ -777,7 +777,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 							<a href="#">Compras - Proveedores</a>
 						</li>
 						<li class="active">
-							<strong>Orden de compra borrador</strong>
+							<strong>Factura anticipo de Compras borrador</strong>
 						</li>
 					</ol>
 				</div>
@@ -819,7 +819,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 												<div class="form-group">
 													<label class="control-label col-lg-2">Autorización <span class="text-danger">*</span></label>
 													<div class="col-lg-10">
-														<select readonly form="CrearOrdenCompra" class="form-control" id="AutorizacionSAP" name="AutorizacionSAP" style="color: black; font-weight: bold;">
+														<select readonly form="CrearFacturaCompra" class="form-control" id="AutorizacionSAP" name="AutorizacionSAP" style="color: black; font-weight: bold;">
 															<option value="" <?php if ($autorizaSAP == "") {
 																echo "selected";
 															} elseif (!isset($row['AutorizacionSAP']) || ($row['AutorizacionSAP'] == "")) {
@@ -843,7 +843,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 												<div class="form-group">
 													<label class="col-lg-2">Motivo <span class="text-danger">*</span></label>
 													<div class="col-lg-10">
-														<input required type="hidden" form="CrearOrdenCompra" class="form-control"
+														<input required type="hidden" form="CrearFacturaCompra" class="form-control"
 															name="IdMotivoAutorizacion" id="IdMotivoAutorizacion"
 															value="<?php echo $IdMotivo; ?>">
 														<input readonly type="text" style="color: black; font-weight: bold;"
@@ -856,7 +856,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 												<div class="form-group">
 													<label class="col-lg-2">Mensaje proceso</label>
 													<div class="col-lg-10">
-														<textarea readonly form="CrearOrdenCompra"
+														<textarea readonly form="CrearFacturaCompra"
 														style="color: black; font-weight: bold;" class="form-control"
 														name="MensajeProceso" id="MensajeProceso" type="text" maxlength="250"
 														rows="4"><?php if ($mensajeProceso != "") {
@@ -875,7 +875,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 													<div class="col-lg-10">
 														<textarea <?php if ($edit == 1) {
 															echo "readonly";
-														} ?> form="CrearOrdenCompra"
+														} ?> form="CrearFacturaCompra"
 															class="form-control required" name="ComentariosAutor"
 															id="ComentariosAutor" type="text" maxlength="250" rows="4"><?php if ($edit == 1 || $sw_error == 1) {
 																echo $row['ComentariosAutor'] ?? "";
@@ -902,7 +902,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 													</div>
 													<div class="row">
 														<div class="col-lg-6 input-group date">
-															<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input readonly form="CrearOrdenCompra" name="FechaAutorizacionPO" type="text" autocomplete="off" class="form-control" id="FechaAutorizacionPO" value="<?php if (isset($row_Autorizaciones['FechaAutorizacion_SAPB1']) && ($row_Autorizaciones['FechaAutorizacion_SAPB1']->format('Y-m-d') != "1900-01-01")) {
+															<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input readonly form="CrearFacturaCompra" name="FechaAutorizacionPO" type="text" autocomplete="off" class="form-control" id="FechaAutorizacionPO" value="<?php if (isset($row_Autorizaciones['FechaAutorizacion_SAPB1']) && ($row_Autorizaciones['FechaAutorizacion_SAPB1']->format('Y-m-d') != "1900-01-01")) {
 																echo $row_Autorizaciones['FechaAutorizacion_SAPB1']->format('Y-m-d');
 															} elseif (($row['AuthPortal'] != "P") && (isset($row['FechaAutorizacion_PortalOne']) && ($row['FechaAutorizacion_PortalOne']->format('Y-m-d') != "1900-01-01"))) {
 																echo $row['FechaAutorizacion_PortalOne']->format('Y-m-d');
@@ -911,7 +911,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 															} ?>" placeholder="YYYY-MM-DD">
 														</div>
 														<div class="col-lg-6 input-group clockpicker" data-autoclose="true">
-															<input readonly name="HoraAutorizacionPO" form="CrearOrdenCompra" id="HoraAutorizacionPO" type="text" autocomplete="off" class="form-control" value="<?php if (isset($row_Autorizaciones['HoraAutorizacion_SAPB1'])) {
+															<input readonly name="HoraAutorizacionPO" form="CrearFacturaCompra" id="HoraAutorizacionPO" type="text" autocomplete="off" class="form-control" value="<?php if (isset($row_Autorizaciones['HoraAutorizacion_SAPB1'])) {
 																echo $row_Autorizaciones['HoraAutorizacion_SAPB1'];
 															} elseif (($row['AuthPortal'] != "P") && (isset($row['HoraAutorizacion_PortalOne']) && ($row['HoraAutorizacion_PortalOne']->format('H:i') != "00:00"))) {
 																echo $row['HoraAutorizacion_PortalOne']->format('H:i');
@@ -949,7 +949,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 																<input type="text" class="form-control" name="IdUsuarioAutorizacion" id="IdUsuarioAutorizacion" readonly
 																value="<?php echo $row_Autorizaciones['NombreUsuarioAutorizacion_SAPB1']; ?>">
 														<?php } else { ?>
-															<input type="text" class="form-control" form="CrearOrdenCompra" name="UsuarioAutorizacionPO" id="UsuarioAutorizacionPO" value="<?php echo ($row["AuthPortal"] == "P") ? $_SESSION["User"] : $row["UsuarioAutorizacion_PortalOne"]; ?>" readonly>
+															<input type="text" class="form-control" form="CrearFacturaCompra" name="UsuarioAutorizacionPO" id="UsuarioAutorizacionPO" value="<?php echo ($row["AuthPortal"] == "P") ? $_SESSION["User"] : $row["UsuarioAutorizacion_PortalOne"]; ?>" readonly>
 														<?php } ?>
 													</div>
 												</div>
@@ -959,7 +959,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 													<div class="col-lg-10">
 														<textarea <?php if ($row["AuthPortal"] != "P") {
 															echo "readonly";
-														} ?> type="text" maxlength="200" rows="4" class="form-control" form="CrearOrdenCompra" name="ComentariosAutorizacionPO" id="ComentariosAutorizacionPO"><?php if (isset($row_Autorizaciones['ComentariosAutorizador_SAPB1'])) {
+														} ?> type="text" maxlength="200" rows="4" class="form-control" form="CrearFacturaCompra" name="ComentariosAutorizacionPO" id="ComentariosAutorizacionPO"><?php if (isset($row_Autorizaciones['ComentariosAutorizador_SAPB1'])) {
 															 echo $row_Autorizaciones['ComentariosAutorizador_SAPB1'];
 														 } elseif ($row["AuthPortal"] != "P") {
 															 echo $row["ComentarioAutorizacion_PortalOne"];
@@ -1081,8 +1081,8 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 					<?php include "includes/spinner.php"; ?>
 					<div class="row">
 						<div class="col-lg-12">
-							<form action="orden_compra_borrador.php" method="post" class="form-horizontal"
-								enctype="multipart/form-data" id="CrearOrdenCompra">
+							<form action="factura_anticipo_compra_borrador.php" method="post" class="form-horizontal"
+								enctype="multipart/form-data" id="CrearFacturaCompra">
 								
 								<?php
 								$_GET['obj'] = "$IdTipoDocumento";
@@ -1361,7 +1361,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 								<div class="form-group">
 									<label class="col-xs-12">
 										<h3 class="bg-success p-xs b-r-sm">
-											<i class="fa fa-info-circle"></i> Datos de la orden
+											<i class="fa fa-info-circle"></i> Datos de la Factura Anticipo
 										</h3>
 									</label>
 								</div>
@@ -1457,7 +1457,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 										class="text-danger">*</span></label>
 									<div class="col-lg-3">
 										<select id="PrjCode" name="PrjCode" class="form-control select2" 
-										form="CrearOrdenCompra" required <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
+										form="CrearFacturaCompra" required <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
 											echo "disabled";
 											} ?>>
 												<option value="">(NINGUNO)</option>
@@ -1481,7 +1481,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 								<div class="form-group">
 									<label class="col-xs-12">
 										<h3 class="bg-success p-xs b-r-sm">
-											<i class="fa fa-list"></i> Contenido de la orden
+											<i class="fa fa-list"></i> Contenido de la Factura Anticipo
 										</h3>
 									</label>
 								</div>
@@ -1512,13 +1512,13 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 
 									<?php $cookie_cardcode = 0; ?>
 									<?php if ($edit == 1) { ?>
-										<?php $ID_OrdenCompra = $row['ID_OrdenCompra']; ?>
+										<?php $ID_FacturaCompraAnticipo = $row['ID_FacturaCompraAnticipo']; ?>
 										<?php $Evento = $row['IdEvento']; ?>
-										<?php $consulta_detalle = "SELECT $filtro_consulta FROM uvw_tbl_OrdenCompraDetalle_Borrador WHERE ID_OrdenCompra='$ID_OrdenCompra' AND IdEvento='$Evento' AND Metodo <> 3"; ?>
+										<?php $consulta_detalle = "SELECT $filtro_consulta FROM uvw_tbl_FacturaCompraAnticipoDetalle_Borrador WHERE ID_FacturaCompraAnticipo='$ID_FacturaCompraAnticipo' AND IdEvento='$Evento' AND Metodo <> 3"; ?>
 									<?php } else { ?>
 										<?php $Usuario = $_SESSION['CodUser']; ?>
 										<?php $cookie_cardcode = 1; ?>
-										<?php $consulta_detalle = "SELECT $filtro_consulta FROM uvw_tbl_OrdenCompraDetalleCarrito_Borrador WHERE Usuario='$Usuario'"; ?>
+										<?php $consulta_detalle = "SELECT $filtro_consulta FROM uvw_tbl_FacturaCompraAnticipoDetalleCarrito_Borrador WHERE Usuario='$Usuario'"; ?>
 									<?php } ?>
 
 									<div class="col-lg-1 pull-right">
@@ -1550,11 +1550,11 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 										<div id="tab-1" class="tab-pane active">
 											<iframe id="DataGrid" name="DataGrid" style="border: 0;" width="100%"
 												height="300" src="<?php if ($edit == 0 && $sw_error == 0) {
-													echo "detalle_orden_compra_borrador.php";
+													echo "detalle_factura_anticipo_compra_borrador.php";
 												} elseif ($edit == 0 && $sw_error == 1) {
-													echo "detalle_orden_compra_borrador.php?id=0&type=1&usr=" . $_SESSION['CodUser'] . "&cardcode=" . $row['CardCode'];
+													echo "detalle_factura_anticipo_compra_borrador.php?id=0&type=1&usr=" . $_SESSION['CodUser'] . "&cardcode=" . $row['CardCode'];
 												} else {
-													echo "detalle_orden_compra_borrador.php?bloquear=$BloquearDocumento&id=" . base64_encode($row['ID_OrdenCompra']) . "&evento=" . base64_encode($row['IdEvento']) . "&docentry=" . base64_encode($row['DocEntry']) . "&type=2&status=" . base64_encode($EstadoReal);
+													echo "detalle_factura_anticipo_compra_borrador.php?bloquear=$BloquearDocumento&id=" . base64_encode($row['ID_FacturaCompraAnticipo']) . "&evento=" . base64_encode($row['IdEvento']) . "&docentry=" . base64_encode($row['DocEntry']) . "&type=2&status=" . base64_encode($EstadoReal);
 												} ?>"></iframe>
 										</div>
 										<?php if ($edit == 1) { ?>
@@ -1567,7 +1567,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 							</form>
 
 							<!-- Limpiar directorio temporal antes de copiar los anexos de SAP, 01/10/2022 -->
-							<!-- dt_OF, también hace referencia al duplicar orden de compra -->
+							<!-- dt_OF, también hace referencia al duplicar Factura anticipo de Compras -->
 							<?php if (($sw_error == 0) && ($dt_OF == 0)) {
 								LimpiarDirTemp();
 							} ?>
@@ -1625,7 +1625,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 								<label class="col-lg-2">Encargado de compras <span class="text-danger">*</span></label>
 								<div class="col-lg-5">
 									<select class="form-control select2" name="EmpleadoVentas" id="EmpleadoVentas"
-										form="CrearOrdenCompra" required <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
+										form="CrearFacturaCompra" required <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
 											echo "disabled";
 										} ?>>
 										<?php while ($row_EmpleadosVentas = sqlsrv_fetch_array($SQL_EmpleadosVentas)) { ?>
@@ -1648,7 +1648,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 							<div class="form-group">
 								<label class="col-lg-2">Comentarios</label>
 								<div class="col-lg-10">
-									<textarea type="text" maxlength="2000" name="Comentarios" form="CrearOrdenCompra"
+									<textarea type="text" maxlength="2000" name="Comentarios" form="CrearFacturaCompra"
 										rows="4" id="Comentarios" class="form-control" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
 											echo "readonly";
 										} ?>><?php if ($edit == 1 || $sw_error == 1) {
@@ -1676,7 +1676,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 							<div class="form-group">
 								<label class="col-lg-7"><strong class="pull-right">Subtotal</strong></label>
 								<div class="col-lg-5">
-									<input type="text" name="SubTotal" form="CrearOrdenCompra" id="SubTotal"
+									<input type="text" name="SubTotal" form="CrearFacturaCompra" id="SubTotal"
 										class="form-control" style="text-align: right; font-weight: bold;" value="<?php if ($edit == 1) {
 											echo number_format($row['SubTotal'], 0);
 										} else {
@@ -1687,7 +1687,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 							<div class="form-group">
 								<label class="col-lg-7"><strong class="pull-right">Descuentos</strong></label>
 								<div class="col-lg-5">
-									<input type="text" name="Descuentos" form="CrearOrdenCompra" id="Descuentos"
+									<input type="text" name="Descuentos" form="CrearFacturaCompra" id="Descuentos"
 										class="form-control" style="text-align: right; font-weight: bold;" value="<?php if ($edit == 1) {
 											echo number_format($row['DiscSum'], 0);
 										} else {
@@ -1698,7 +1698,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 							<div class="form-group">
 								<label class="col-lg-7"><strong class="pull-right">IVA</strong></label>
 								<div class="col-lg-5">
-									<input type="text" name="Impuestos" form="CrearOrdenCompra" id="Impuestos"
+									<input type="text" name="Impuestos" form="CrearFacturaCompra" id="Impuestos"
 										class="form-control" style="text-align: right; font-weight: bold;" value="<?php if ($edit == 1) {
 											echo number_format($row['VatSum'], 0);
 										} else {
@@ -1710,7 +1710,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 							<div class="form-group">
 								<label class="col-lg-7"><strong class="pull-right">Redondeo</strong></label>
 								<div class="col-lg-5">
-									<input type="text" name="Redondeo" form="CrearOrdenCompra" id="Redondeo"
+									<input type="text" name="Redondeo" form="CrearFacturaCompra" id="Redondeo"
 										class="form-control" style="text-align: right; font-weight: bold;" value="0.00"
 										readonly>
 								</div>
@@ -1719,7 +1719,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 							<div class="form-group">
 								<label class="col-lg-7"><strong class="pull-right">Total</strong></label>
 								<div class="col-lg-5">
-									<input type="text" name="TotalOrden" form="CrearOrdenCompra" id="TotalOrden"
+									<input type="text" name="TotalFacturaAnticipo" form="CrearFacturaCompra" id="TotalFacturaAnticipo"
 										class="form-control" style="text-align: right; font-weight: bold;" value="<?php if ($edit == 1) {
 											echo number_format($row['DocTotal'], 0);
 										} else {
@@ -1733,27 +1733,27 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 							<div class="col-lg-9">
 
 							<?php if ($edit == 0 && PermitirFuncion(728)) { ?>
-							<!-- button class="btn btn-primary" type="submit" form="CrearOrdenCompra" id="Crear"><i class="fa fa-check"></i> Crear Orden de compra</button -->
+							<!-- button class="btn btn-primary" type="submit" form="CrearFacturaCompra" id="Crear"><i class="fa fa-check"></i> Crear Factura anticipo de Compras</button -->
 							<?php } elseif ($row['Cod_Estado'] == "O" && PermitirFuncion(728)) { ?>
 
 								<!-- SMM, 20/12/2022 -->
 								<?php if ((strtoupper($_SESSION["User"]) != strtoupper($row['Usuario'])) || $serAutorizador) { ?>
 									<!-- Modificado para incluir la bandera de asignación. SMM, 25/01/2024 -->
-									<button class="btn btn-warning" type="submit" form="CrearOrdenCompra" id="Actualizar" <?php if (!$autorAsignado) {
+									<button class="btn btn-warning" type="submit" form="CrearFacturaCompra" id="Actualizar" <?php if (!$autorAsignado) {
 										echo "disabled";
 									} ?>>
-										<i class="fa fa-refresh"></i> Actualizar Orden de compra Borrador
+										<i class="fa fa-refresh"></i> Actualizar Factura anticipo de Compras Borrador
 									</button>
 								<?php } else { ?>
 									<?php if ($row["AuthPortal"] == "Y") { ?>
-										<button class="btn btn-primary" type="submit" form="CrearOrdenCompra" id="Actualizar">
-											<i class="fa fa-check"></i> Crear Orden de compra Definitiva
+										<button class="btn btn-primary" type="submit" form="CrearFacturaCompra" id="Actualizar">
+											<i class="fa fa-check"></i> Crear Factura anticipo de Compras Definitiva
 										</button>
 									<?php } ?>
 								<?php } ?>
 
 								<!-- Usuario de creación en el POST -->
-								<input type="hidden" form="CrearOrdenCompra" name="Usuario" id="Usuario" value="<?php echo $row['Usuario']; ?>">
+								<input type="hidden" form="CrearFacturaCompra" name="Usuario" id="Usuario" value="<?php echo $row['Usuario']; ?>">
 						<?php } ?>
 
 						<?php
@@ -1768,7 +1768,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 						} elseif (isset($_POST['return'])) {
 									$return = base64_decode($_POST['return']);
 								} else {
-									$return = "orden_compra_borrador.php?" . $_SERVER['QUERY_STRING'];
+									$return = "factura_anticipo_compra_borrador.php?" . $_SERVER['QUERY_STRING'];
 								}
 								$return = QuitarParametrosURL($return, array("a"));
 								?>
@@ -1780,29 +1780,29 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 						
 						</div>
 
-						<input type="hidden" form="CrearOrdenCompra" id="P" name="P" value="<?php if ($edit == 0) {
+						<input type="hidden" form="CrearFacturaCompra" id="P" name="P" value="<?php if ($edit == 0) {
 							echo "37";
 						} else {
 							echo "39";
 						} ?>" />
 
-						<input type="hidden" form="CrearOrdenCompra" id="IdOrdenCompra" name="IdOrdenCompra" value="<?php if ($edit == 1) {
-							echo base64_encode($row['ID_OrdenCompra']);
+						<input type="hidden" form="CrearFacturaCompra" id="IdFacturaCompra" name="IdFacturaCompra" value="<?php if ($edit == 1) {
+							echo base64_encode($row['ID_FacturaCompraAnticipo']);
 						} ?>" />
 						
-						<input type="hidden" form="CrearOrdenCompra" id="IdEvento" name="IdEvento" value="<?php if ($edit == 1) {
+						<input type="hidden" form="CrearFacturaCompra" id="IdEvento" name="IdEvento" value="<?php if ($edit == 1) {
 							echo base64_encode($IdEvento);
 						} ?>" />
 						
-						<input type="hidden" form="CrearOrdenCompra" id="d_LS" name="d_LS"
+						<input type="hidden" form="CrearFacturaCompra" id="d_LS" name="d_LS"
 							value="<?php echo $dt_LS; ?>" />
 						
-						<input type="hidden" form="CrearOrdenCompra" id="tl" name="tl" value="<?php echo $edit; ?>" />
+						<input type="hidden" form="CrearFacturaCompra" id="tl" name="tl" value="<?php echo $edit; ?>" />
 						
-						<input type="hidden" form="CrearOrdenCompra" id="swError" name="swError"
+						<input type="hidden" form="CrearFacturaCompra" id="swError" name="swError"
 							value="<?php echo $sw_error; ?>" />
 						
-						<input type="hidden" form="CrearOrdenCompra" id="return" name="return"
+						<input type="hidden" form="CrearFacturaCompra" id="return" name="return"
 							value="<?php echo base64_encode($return); ?>" />
 					</form>
 				</div>
@@ -1858,7 +1858,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 			});
 			*/
 				
-			$("#CrearOrdenCompra").validate({
+			$("#CrearFacturaCompra").validate({
 				submitHandler: function (form) {
 					if (Validar()) {
 						Swal.fire({
@@ -2107,7 +2107,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 						OT: ordenServicio,
 						Edit: <?php echo $edit; ?>,
 						DocType: "<?php echo ($edit == 0) ? 18 : 19; ?>",
-						DocId: "<?php echo $row['ID_OrdenCompra'] ?? 0; ?>",
+						DocId: "<?php echo $row['ID_FacturaCompraAnticipo'] ?? 0; ?>",
 						DocEvent: "<?php echo $row['IdEvento'] ?? 0; ?>",
 						CardCode: cardCode,
 						IdSeries: serie,
@@ -2149,7 +2149,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 					data: {
 						Edit: <?php echo $edit; ?>,
 						DocType: "<?php echo 16; ?>",
-						DocId: "<?php echo $row['ID_OrdenCompra'] ?? 0; ?>",
+						DocId: "<?php echo $row['ID_FacturaCompraAnticipo'] ?? 0; ?>",
 						DocEvent: "<?php echo $row['IdEvento'] ?? 0; ?>",
 						CardCode: cardCode,
 						IdSeries: serie,
