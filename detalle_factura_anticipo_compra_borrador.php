@@ -41,9 +41,9 @@ if (isset($_GET['id']) && ($_GET['id'] != "")) {
 	} else {
 		$type = $_GET['type'];
 	}
-	if ($type == 1) { //Creando Orden de compra
-		$where = "Usuario='" . $_GET['usr'] . "' and CardCode='" . $_GET['cardcode'] . "'";
-		$SQL = Seleccionar("uvw_tbl_OrdenCompraDetalleCarrito_Borrador", "*", $where);
+	if ($type == 1) { //Creando Factura Anticipo de Compras
+		$where = "Usuario='" . $_GET['usr'] . "' AND CardCode='" . $_GET['cardcode'] . "'";
+		$SQL = Seleccionar("uvw_tbl_FacturaCompraAnticipoDetalleCarrito_Borrador", "*", $where);
 		// echo $where;
 
 		if ($SQL) {
@@ -56,17 +56,17 @@ if (isset($_GET['id']) && ($_GET['id'] != "")) {
 			//$Proyecto="";
 			$Almacen = "";
 		}
-	} else { //Editando Orden de compra
+	} else { //Editando Factura Anticipo de Compras
 		if (isset($_GET['status']) && (base64_decode($_GET['status']) == "C")) {
 			$Estado = 2;
 		} else {
 			$Estado = 1;
 		}
 
-		$where = base64_decode($_GET['id']) . "' and IdEvento='" . base64_decode($_GET['evento']) . "' and Metodo <> 3";
-		$SQL = Seleccionar("uvw_tbl_OrdenCompraDetalle_Borrador", "*", "ID_OrdenCompra='" . $where);
+		$where = base64_decode($_GET['id']) . "' AND IdEvento='" . base64_decode($_GET['evento']) . "' AND Metodo <> 3";
+		$SQL = Seleccionar("uvw_tbl_FacturaCompraAnticipoDetalle_Borrador", "*", "ID_FacturaCompraAnticipo = '" . $where);
 
-		// Editando Orden de compra
+		// Editando Factura Anticipo de Compras
 		// echo $where;
 
 		if ($SQL) {
@@ -282,7 +282,7 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 			window.parent.document.getElementById('Impuestos').value = number_format(parseFloat(Iva), dPrecios);
 
 			window.parent.document.getElementById('Redondeo').value = number_format(Math.floor(Math.round(Total)) - parseFloat(parseFloat(Total).toFixed(dPrecios)), dPrecios);
-			window.parent.document.getElementById('TotalOrden').value = number_format(Math.floor(Math.round(Total)), dPrecios);
+			window.parent.document.getElementById('TotalFacturaAnticipo').value = number_format(Math.floor(Math.round(Total)), dPrecios);
 
 			window.parent.document.getElementById('TotalItems').value = num;
 		}
@@ -395,7 +395,7 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 						url: "includes/procedimientos.php?type=37&borrador=1&edit=<?php echo $type; ?>&linenum=" + json + "&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
 			<?php } ?>
 					success: function(response) {
-						window.location.href = "detalle_orden_compra_borrador.php?<?php echo $_SERVER['QUERY_STRING']; ?>";
+						window.location.href = "detalle_factura_anticipo_compra_borrador.php?<?php echo $_SERVER['QUERY_STRING']; ?>";
 						console.log(response);
 					},
 				error: function(error) {
@@ -416,7 +416,7 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 						url: "includes/procedimientos.php?type=62&borrador=1&edit=<?php echo $type; ?>&linenum=" + json + "&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
 			<?php } ?>
 					success: function(response) {
-						window.location.href = "detalle_orden_compra_borrador.php?<?php echo $_SERVER['QUERY_STRING']; ?>";
+						window.location.href = "detalle_factura_anticipo_compra_borrador.php?<?php echo $_SERVER['QUERY_STRING']; ?>";
 					},
 				error: function(error) {
 					console.log(error.responseText);
@@ -1178,7 +1178,7 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 							url: "registro.php?P=35&borrador=1&doctype=2&item=" + IdArticulo + "&whscode=" + CodAlmacen + "&cardcode=0&id=<?php echo base64_decode($_GET['id']); ?>&evento=<?php echo base64_decode($_GET['evento']); ?>",
 							<?php } ?>
 				success: function (response) {
-								window.location.href = "detalle_orden_compra_borrador.php?<?php echo $_SERVER['QUERY_STRING']; ?>";
+								window.location.href = "detalle_factura_anticipo_compra_borrador.php?<?php echo $_SERVER['QUERY_STRING']; ?>";
 							}
 						});
 					}
