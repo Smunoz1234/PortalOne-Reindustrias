@@ -1273,12 +1273,13 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 											<option value="">Seleccione...</option>
 											
 											<?php while ($row_TipoEntrega = sqlsrv_fetch_array($SQL_TipoEntrega)) { ?>
-												<option value="<?php echo $row_TipoEntrega['IdTipoEntrega']; ?>" <?php if ((isset($row['IdTipoEntrega'])) && (strcmp($row_TipoEntrega['IdTipoEntrega'], $row['IdTipoEntrega']) == 0)) {
-													echo "selected";
-												} elseif (isset($_GET['TipoEntrega']) && (strcmp($row_TipoEntrega['IdTipoEntrega'], base64_decode($_GET['TipoEntrega'])) == 0)) {
-													echo "selected";
-												} ?>>
-													<?php echo $row_TipoEntrega['DeTipoEntrega']; ?>
+												<option value="<?php echo $row_TipoEntrega['IdTipoEntrega']; ?>" 
+													<?php if (isset($row['IdTipoEntrega']) && ($row['IdTipoEntrega'] == $row_TipoEntrega['IdTipoEntrega'])) {
+														echo "selected";
+													} elseif (isset($_GET['IdTipoEntrega']) && ($_GET['IdTipoEntrega'] == $row_TipoEntrega['IdTipoEntrega'])) {
+														echo "selected";
+													} ?>>
+													<?php echo $row_TipoEntrega['DeTipoEntrega'] ?? ""; ?>
 												</option>
 											<?php } ?>
 										</select>
@@ -1293,14 +1294,15 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 											echo "readonly";
 										} ?>>
 											<?php while ($row_AnioEntrega = sqlsrv_fetch_array($SQL_AnioEntrega)) { ?>
-													<option value="<?php echo $row_AnioEntrega['IdAnioEntrega']; ?>" <?php if ((isset($row['IdAnioEntrega'])) && (strcmp($row_AnioEntrega['IdAnioEntrega'], $row['IdAnioEntrega']) == 0)) {
+													<option value="<?php echo $row_AnioEntrega['IdAnioEntrega']; ?>" 
+														<?php if (isset($row['IdAnioEntrega']) && ($row['IdAnioEntrega'] == $row_AnioEntrega['IdAnioEntrega'])) {
 															echo "selected";
-														} elseif (isset($_GET['AnioEntrega']) && (strcmp($row_AnioEntrega['IdAnioEntrega'], base64_decode($_GET['AnioEntrega'])) == 0)) {
+														} elseif (isset($_GET['IdAnioEntrega']) && ($_GET['IdAnioEntrega'] == $row_AnioEntrega['IdAnioEntrega'])) {
 															echo "selected";
 														} elseif (date('Y') == $row_AnioEntrega['DeAnioEntrega']) {
 															echo "selected";
 														} ?>>
-														<?php echo $row_AnioEntrega['DeAnioEntrega']; ?>
+														<?php echo $row_AnioEntrega['DeAnioEntrega'] ?? ""; ?>
 													</option>
 											<?php } ?>
 										</select>
@@ -1312,30 +1314,26 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 											echo "readonly";
 										} ?>>
 											<option value="NO" <?php if (isset($row['Descontable']) && ($row['Descontable'] == "NO")) {
-											echo "selected";
-										} elseif (isset($_GET['EntregaDescont']) && (base64_decode($_GET['EntregaDescont']) == "NO")) {
-											echo "selected";
-										} ?>>NO</option>
-										<option value="SI" <?php if (isset($row['Descontable']) && ($row['Descontable'] == "SI")) {
-											echo "selected";
-										} elseif (isset($_GET['EntregaDescont']) && (base64_decode($_GET['EntregaDescont']) == "SI")) {
-											echo "selected";
-										} ?>>SI</option>
+													echo "selected";
+												} elseif (isset($_GET['Descontable']) && ($_GET['Descontable'] == "NO")) {
+													echo "selected";
+												} ?>>NO</option>
+											<option value="SI" <?php if (isset($row['Descontable']) && ($row['Descontable'] == "SI")) {
+													echo "selected";
+												} elseif (isset($_GET['Descontable']) && ($_GET['Descontable'] == "SI")) {
+													echo "selected";
+												} ?>>SI</option>
 										</select>
 									</div>
 
 									<label class="col-lg-1 control-label">Cant cuota</label>
 									<div class="col-lg-3">
-										<input type="text" class="form-control" name="ValorCuotaDesc"
-										id="ValorCuotaDesc" onKeyPress="return justNumbers(event,this.value);"
-										value="<?php if ($edit == 1 || $sw_error == 1) {
-											echo $row['ValorCuotaDesc'];
-										} elseif (isset($_GET['ValorCuotaDesc'])) {
-											echo base64_decode($_GET['ValorCuotaDesc']);
-										} ?>"
-										<?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || ($dt_TI == 1)) {
-											echo "readonly";
-										} ?>>
+										<input type="text" class="form-control" name="ValorCuotaDesc" 
+											id="ValorCuotaDesc" onKeyPress="return justNumbers(event,this.value);" 
+											value="<?php echo $row['ValorCuotaDesc'] ?? ($_GET["ValorCuotaDesc"] ?? ""); ?>" 
+											<?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || ($dt_TI == 1)) {
+												echo "readonly";
+											} ?>>
 									</div>
 								</div> <!-- form-group -->
 

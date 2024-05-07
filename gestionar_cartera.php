@@ -97,15 +97,15 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar gestion
 
 					//Enviar datos al WebServices - Liquidacion de intereses
 					/*try{
-					require_once("includes/conect_ws.php");
-					$Parametros=array(
-					'pIdLiqInteres' => $row_NewIdLiqInt[0],
-					'pLogin'=>$_SESSION['User']
-					);
-					$Client->InsertarLiquidaInteresPortal($Parametros);
-					}catch (Exception $e) {
-					echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
-					}*/
+								   require_once("includes/conect_ws.php");
+								   $Parametros=array(
+								   'pIdLiqInteres' => $row_NewIdLiqInt[0],
+								   'pLogin'=>$_SESSION['User']
+								   );
+								   $Client->InsertarLiquidaInteresPortal($Parametros);
+								   }catch (Exception $e) {
+								   echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
+								   }*/
 
 					//Insertar tabla de intereses de facturas
 					if (isset($_POST['chkCobIntLiqInt']) && ($_POST['chkCobIntLiqInt'] == 1)) { //Traer la tabla de facturas vencidas con o sin intereses
@@ -175,15 +175,15 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar gestion
 
 					//Enviar datos al WebServices - Acuerdo de pago
 					/*try{
-					require_once("includes/conect_ws.php");
-					$Parametros=array(
-					'pIdAcpago' => $row_NewIdAcuerdo[0],
-					'pLogin'=>$_SESSION['User']
-					);
-					$Client->InsertarAcuerdoPagoPortal($Parametros);
-					}catch (Exception $e) {
-					echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
-					}*/
+								   require_once("includes/conect_ws.php");
+								   $Parametros=array(
+								   'pIdAcpago' => $row_NewIdAcuerdo[0],
+								   'pLogin'=>$_SESSION['User']
+								   );
+								   $Client->InsertarAcuerdoPagoPortal($Parametros);
+								   }catch (Exception $e) {
+								   echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
+								   }*/
 
 					//Insertar tabla de intereses de facturas
 					if (isset($_POST['chkCobInt']) && ($_POST['chkCobInt'] == 1)) { //Traer la tabla de facturas vencidas con o sin intereses
@@ -220,15 +220,15 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar gestion
 
 					//Enviar datos al WebServices - Intereses facturas
 					/*try{
-					require_once("includes/conect_ws.php");
-					$Parametros=array(
-					'pIdAcpago' => $row_NewIdAcuerdo[0],
-					'pLogin'=>$_SESSION['User']
-					);
-					$Client->InsertarAcuerdoPagoFvaPortal($Parametros);
-					}catch (Exception $e) {
-					echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
-					}*/
+								   require_once("includes/conect_ws.php");
+								   $Parametros=array(
+								   'pIdAcpago' => $row_NewIdAcuerdo[0],
+								   'pLogin'=>$_SESSION['User']
+								   );
+								   $Client->InsertarAcuerdoPagoFvaPortal($Parametros);
+								   }catch (Exception $e) {
+								   echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
+								   }*/
 
 					//Si hay mas de una cuota
 					if ($_POST['Cuotas'] >= 1) {
@@ -251,15 +251,15 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar gestion
 						}
 						//Enviar datos al WebServices - Cuotas acuerdos
 						/*try{
-					require_once("includes/conect_ws.php");
-					$Parametros=array(
-					'pIdAcpago' => $row_NewIdAcuerdo[0],
-					'pLogin'=>$_SESSION['User']
-					);
-					$Client->InsertarAcuerdoPagoCuotasPortal($Parametros);
-					}catch (Exception $e) {
-					echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
-					}*/
+									  require_once("includes/conect_ws.php");
+									  $Parametros=array(
+									  'pIdAcpago' => $row_NewIdAcuerdo[0],
+									  'pLogin'=>$_SESSION['User']
+									  );
+									  $Client->InsertarAcuerdoPagoCuotasPortal($Parametros);
+									  }catch (Exception $e) {
+									  echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
+									  }*/
 					}
 				} else {
 					$sw_error = 1;
@@ -269,15 +269,15 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar gestion
 
 			//Enviar datos al WebServices
 			/*try{
-			require_once("includes/conect_ws.php");
-			$Parametros=array(
-			'pIdGestion' => $row_NewIdGestion[0],
-			'pLogin'=>$_SESSION['User']
-			);
-			$Client->InsertarGescarPortal($Parametros);
-			}catch (Exception $e) {
-			echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
-			}*/
+					 require_once("includes/conect_ws.php");
+					 $Parametros=array(
+					 'pIdGestion' => $row_NewIdGestion[0],
+					 'pLogin'=>$_SESSION['User']
+					 );
+					 $Client->InsertarGescarPortal($Parametros);
+					 }catch (Exception $e) {
+					 echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
+					 }*/
 			sqlsrv_close($conexion);
 			header('Location:gestionar_cartera.php?Clt=' . $_POST['CardCode'] . '&a=' . base64_encode("OK_GtnCtr"));
 		} else {
@@ -722,7 +722,7 @@ if (isset($row_TE['CDU_Fecha_Tecno'])) {
 								<div class="form-group">
 									<label class="col-lg-1 control-label">Cliente</label>
 									<div class="col-lg-4">
-										<input autocomplete="off" name="Cliente" type="text" required="required"
+										<input autocomplete="off" name="Cliente" type="text" required
 											class="form-control" id="Cliente" maxlength="100"
 											placeholder="Consulte el ID o el nombre del cliente"
 											value="<?php echo utf8_encode($row_Cliente['NombreCliente']); ?>">
@@ -743,8 +743,8 @@ if (isset($row_TE['CDU_Fecha_Tecno'])) {
 							<?php include "includes/spinner.php"; ?>
 							<div class="form-group">
 								<h3 class="col-lg-8 bg-primary p-xs b-r-sm">
-									<i onclick="ConsultarDatosCliente();"
-										title="Consultar cliente" style="cursor: pointer;display: initial;"
+									<i onclick="ConsultarDatosCliente();" title="Consultar cliente"
+										style="cursor: pointer;display: initial;"
 										class="btn-xs btn-success fa fa-search"></i> Cliente:
 									<?php echo utf8_encode($row_Cliente['NombreCliente']) . " [" . $row_Cliente['LicTradNum'] . "]"; ?>
 								</h3>
@@ -962,8 +962,9 @@ if (isset($row_TE['CDU_Fecha_Tecno'])) {
 												</div>
 												<div class="form-group">
 													<label class="col-lg-2 control-label">
-														<i onclick="ConsultarDatosCliente();" title="Consultar cliente" 
-														style="cursor: pointer;display: initial;" class="btn-xs btn-success fa fa-search"></i>
+														<i onclick="ConsultarDatosCliente();" title="Consultar cliente"
+															style="cursor: pointer;display: initial;"
+															class="btn-xs btn-success fa fa-search"></i>
 														Destino
 													</label>
 													<div class="col-lg-5">
@@ -996,7 +997,8 @@ if (isset($row_TE['CDU_Fecha_Tecno'])) {
 															<?php
 															while ($row_Dirigido = sqlsrv_fetch_array($SQL_Dirigido)) { ?>
 																<option value="<?php echo $row_Dirigido['ID_Dirigido']; ?>">
-																	<?php echo $row_Dirigido['NombreDirigido']; ?></option>
+																	<?php echo $row_Dirigido['NombreDirigido']; ?>
+																</option>
 															<?php } ?>
 														</select>
 													</div>
@@ -1013,8 +1015,8 @@ if (isset($row_TE['CDU_Fecha_Tecno'])) {
 												<div class="form-group">
 													<label class="col-lg-2 control-label">Comentarios</label>
 													<div class="col-lg-6">
-														<textarea name="Comentarios" maxlength="1000" rows="7"
-															required="required" class="form-control" id="Comentarios"
+														<textarea name="Comentarios" maxlength="1000" rows="7" required
+															class="form-control" id="Comentarios"
 															type="text"></textarea>
 													</div>
 													<div id="dv_btnComents" class="col-lg-2">
@@ -1045,7 +1047,8 @@ if (isset($row_TE['CDU_Fecha_Tecno'])) {
 															while ($row_CausaNoPago = sqlsrv_fetch_array($SQL_CausaNoPago)) { ?>
 																<option
 																	value="<?php echo $row_CausaNoPago['ID_CausaNoPago']; ?>">
-																	<?php echo $row_CausaNoPago['CausaNoPago']; ?></option>
+																	<?php echo $row_CausaNoPago['CausaNoPago']; ?>
+																</option>
 															<?php } ?>
 														</select>
 													</div>
@@ -1071,7 +1074,7 @@ if (isset($row_TE['CDU_Fecha_Tecno'])) {
 														<div class="col-lg-2 input-group date">
 															<span class="input-group-addon"><i
 																	class="fa fa-calendar"></i></span><input
-																name="FechaLiquidacion" type="text" required="required"
+																name="FechaLiquidacion" type="text" required
 																class="form-control" id="FechaLiquidacion"
 																value="<?php echo date('Y-m-d'); ?>"
 																readonly="readonly">
@@ -1201,7 +1204,7 @@ if (isset($row_TE['CDU_Fecha_Tecno'])) {
 														<div class="col-lg-3 input-group date">
 															<span class="input-group-addon"><i
 																	class="fa fa-calendar"></i></span><input
-																name="FechaAcuerdo" type="text" required="required"
+																name="FechaAcuerdo" type="text" required
 																class="form-control" id="FechaAcuerdo"
 																value="<?php echo date('Y-m-d'); ?>"
 																readonly="readonly">
@@ -1340,17 +1343,17 @@ if (isset($row_TE['CDU_Fecha_Tecno'])) {
 												</div>
 												<br>
 												<?php /*?><div class="form-group">
-							   <div class="col-lg-6 col-md-12">
-							   <div class="panel-body" style="border: 1px solid #e7eaec;">
-							   <iframe scrolling="no" marginheight="0" frameborder="0" class="col-lg-12" id="dv_TagLlamada" src="frm1.php?type=1" style="border-style:solid; border-width:0; padding-left:0; padding-right:0; padding-top:0; padding-bottom:0" height="70"></iframe>
-							   </div>
-							   </div>
-							   <div class="col-lg-6 col-md-12">
-							   <div class="panel-body" style="border: 1px solid #e7eaec;">
-							   <iframe scrolling="no" marginheight="0" frameborder="0" class="col-lg-12" id="dv_ElastixLlamada" src="frm2.php?type=1" style="border-style:solid; border-width:0; padding-left:0; padding-right:0; padding-top:0; padding-bottom:0" height="70"></iframe>
-							   </div>
-							   </div>
-							   </div><?php */ ?>
+															  <div class="col-lg-6 col-md-12">
+															  <div class="panel-body" style="border: 1px solid #e7eaec;">
+															  <iframe scrolling="no" marginheight="0" frameborder="0" class="col-lg-12" id="dv_TagLlamada" src="frm1.php?type=1" style="border-style:solid; border-width:0; padding-left:0; padding-right:0; padding-top:0; padding-bottom:0" height="70"></iframe>
+															  </div>
+															  </div>
+															  <div class="col-lg-6 col-md-12">
+															  <div class="panel-body" style="border: 1px solid #e7eaec;">
+															  <iframe scrolling="no" marginheight="0" frameborder="0" class="col-lg-12" id="dv_ElastixLlamada" src="frm2.php?type=1" style="border-style:solid; border-width:0; padding-left:0; padding-right:0; padding-top:0; padding-bottom:0" height="70"></iframe>
+															  </div>
+															  </div>
+															  </div><?php */ ?>
 												<input type="hidden" id="P" name="P" value="43" />
 												<input type="hidden" id="CardCode" name="CardCode"
 													value="<?php echo base64_encode($Cliente); ?>" />

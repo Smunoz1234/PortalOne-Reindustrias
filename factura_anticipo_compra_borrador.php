@@ -304,43 +304,6 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { // Grabar Factura anticipo de C
 
 }
 
-if (isset($_GET['dt_LS']) && ($_GET['dt_LS']) == 1) { //Verificar que viene de una Llamada de servicio (Datos Llamada servicio).
-	$dt_LS = 1;
-
-	if (!isset($_GET['LMT']) && isset($_GET['ItemCode']) && $_GET['ItemCode'] != "") {
-		//Consultar datos de la LMT
-		$SQL_LMT = Seleccionar('uvw_Sap_tbl_ArticulosLlamadas', '*', "ItemCode='" . base64_decode($_GET['ItemCode']) . "'");
-		$row_LMT = sqlsrv_fetch_array($SQL_LMT);
-
-		//Cargar la LMT
-		$ParametrosAddLMT = array(
-			"'" . base64_decode($_GET['ItemCode']) . "'",
-			"'" . $row_LMT['WhsCode'] . "'",
-			"'" . base64_decode($_GET['Cardcode']) . "'",
-			"'" . $_SESSION['CodUser'] . "'",
-		);
-		$SQL_AddLMT = EjecutarSP('sp_CargarLMT_FacturaCompraDetalleCarrito', $ParametrosAddLMT);
-	} else {
-		Eliminar('tbl_FacturaCompraAnticipoDetalleCarrito_Borrador', "Usuario='" . $_SESSION['CodUser'] . "' AND CardCode='" . base64_decode($_GET['Cardcode']) . "'");
-	}
-
-	// Clientes
-	$SQL_Cliente = Seleccionar('uvw_Sap_tbl_Proveedores', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreCliente');
-	$row_Cliente = sqlsrv_fetch_array($SQL_Cliente);
-
-	//Contacto cliente
-	$SQL_ContactoCliente = Seleccionar('uvw_Sap_tbl_ProveedorContactos', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreContacto');
-
-	//Sucursales, SMM 06/05/2022
-	$SQL_SucursalDestino = Seleccionar('uvw_Sap_tbl_Proveedores_Sucursales', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "' AND TipoDireccion='S'", 'NombreSucursal');
-	$SQL_SucursalFacturacion = Seleccionar('uvw_Sap_tbl_Proveedores_Sucursales', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "' AND TipoDireccion='B'", 'NombreSucursal');
-
-	// Orden de servicio
-	$LS = isset($_GET['LS']) ? base64_decode($_GET['LS']) : "";
-	$SQL_OrdenServicioCliente = Seleccionar('uvw_Sap_tbl_LlamadasServicios', '*', "ID_LlamadaServicio='$LS'");
-	$row_OrdenServicioCliente = sqlsrv_fetch_array($SQL_OrdenServicioCliente);
-}
-
 // Empleado de compras. SMM, 29/05/2023 
 $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*', "Estado = 'Y'", 'DE_EmpVentas');
 
@@ -640,7 +603,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 					}
 				});
 
-				<?php if ($edit == 0 && $sw_error == 0 && $dt_LS == 0 && $dt_OF == 0) { // Limpiar carrito detalle. ?>
+				<?php if ($edit == 0 && $sw_error == 0) { // Limpiar carrito detalle. ?>
 					$.ajax({
 						type: "POST",
 						url: "includes/procedimientos.php?type=7&objtype=<?php echo $IdTipoDocumento; ?>&cardcode=" + carcode
@@ -673,7 +636,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 					});
 				<?php } ?>
 
-				<?php if ($edit == 0 && $sw_error == 0 && $dt_OF == 0) { // Recargar condición de pago. ?>
+				<?php if ($edit == 0 && $sw_error == 0) { // Recargar condición de pago. ?>
 					$.ajax({
 						type: "POST",
 						url: "ajx_cbo_select.php?type=7&id=" + carcode + "&pv=1",
@@ -1112,17 +1075,12 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 										<div class="col-lg-9">
 											<input name="CardCode" type="hidden" id="CardCode" value="<?php if (($edit == 1) || ($sw_error == 1)) {
 												echo $row['CardCode'];
-											} elseif ($dt_LS == 1 || $dt_OF == 1) {
-												echo $row_Cliente['CodigoCliente'];
 											} ?>">
 
 											<input name="CardName" type="text" class="form-control"
 												id="CardName" placeholder="Digite para buscar..." value="<?php if (($edit == 1) || ($sw_error == 1)) {
 													echo $row['NombreCliente'];
-												} elseif ($dt_LS == 1 || $dt_OF == 1) {
-													echo $row_Cliente['NombreCliente'];
-												} ?>" 
-												<?php if ($dt_LS == 1 || $dt_OF == 1 || $edit == 1) {
+												} ?>" <?php if ($edit == 1) {
 													echo "readonly";
 												} ?>>
 										</div>
@@ -1186,7 +1144,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 												} ?>>
 												<option value="">Seleccione...</option>
 												
-												<?php if ($edit == 1 || $sw_error == 1 || $dt_LS == 1 || $dt_OF == 1) { ?>
+												<?php if ($edit == 1 || $sw_error == 1) { ?>
 													<optgroup label='Dirección de destino'></optgroup>
 
 													<?php while ($row_SucursalDestino = sqlsrv_fetch_array($SQL_SucursalDestino)) { ?>
@@ -1214,7 +1172,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 												} ?>>
 												<option value="">Seleccione...</option>
 												
-												<?php if ($edit == 1 || $sw_error == 1 || $dt_LS == 1 || $dt_OF == 1) { ?>
+												<?php if ($edit == 1 || $sw_error == 1) { ?>
 													<optgroup label='Dirección de facturas'></optgroup>
 
 													<?php while ($row_SucursalFacturacion = sqlsrv_fetch_array($SQL_SucursalFacturacion)) { ?>
@@ -1240,11 +1198,9 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 											<input type="text" class="form-control" name="DireccionDestino"
 												id="DireccionDestino" value="<?php if ($edit == 1 || $sw_error == 1) {
 													echo $row['DireccionDestino'];
-												} elseif ($dt_LS == 1) {
-													echo base64_decode($_GET['Direccion']);
 												} ?>" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
-													 echo "readonly";
-												 } ?>>
+													echo "readonly";
+												} ?>>
 										</div>
 										<label class="col-lg-1 control-label">Dirección facturación</label>
 										<div class="col-lg-5">
@@ -1567,8 +1523,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 							</form>
 
 							<!-- Limpiar directorio temporal antes de copiar los anexos de SAP, 01/10/2022 -->
-							<!-- dt_OF, también hace referencia al duplicar Factura anticipo de Compras -->
-							<?php if (($sw_error == 0) && ($dt_OF == 0)) {
+							<?php if (($sw_error == 0)) {
 								LimpiarDirTemp();
 							} ?>
 
@@ -1794,9 +1749,6 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 							echo base64_encode($IdEvento);
 						} ?>" />
 						
-						<input type="hidden" form="CrearFacturaCompra" id="d_LS" name="d_LS"
-							value="<?php echo $dt_LS; ?>" />
-						
 						<input type="hidden" form="CrearFacturaCompra" id="tl" name="tl" value="<?php echo $edit; ?>" />
 						
 						<input type="hidden" form="CrearFacturaCompra" id="swError" name="swError"
@@ -1998,10 +1950,6 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 			
 			<?php if ($edit == 0) { ?>
 				$("#CardName").easyAutocomplete(options);
-			<?php } ?>
-
-			<?php if ($dt_LS == 1 || $dt_OF == 1) { ?>
-				$('#CardCode').trigger('change');
 			<?php } ?>
 
 			<?php if ($edit == 0) { ?>

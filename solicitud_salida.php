@@ -1574,10 +1574,10 @@ function verAutorizacion() {
 						<select name="EntregaDescont" class="form-control" id="EntregaDescont" <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
 							echo "disabled";
 						} ?>>
-							<option value="NO" <?php if (($edit == 1) && ($row['Descontable'] == "NO")) {
+							<option value="NO" <?php if (isset($row['Descontable']) && ($row['Descontable'] == "NO")) {
 								echo "selected";
 							} ?>>NO</option>
-							<option value="SI" <?php if (($edit == 1) && ($row['Descontable'] == "SI")) {
+							<option value="SI" <?php if (isset($row['Descontable']) && ($row['Descontable'] == "SI")) {
 								echo "selected";
 							} ?>>SI</option>
 						</select>
