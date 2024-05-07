@@ -237,11 +237,13 @@ if (isset($_GET['dt_TI']) && ($_GET['dt_TI']) == 1) { //Verificar que viene de u
 	$SQL_Cliente = Seleccionar('uvw_Sap_tbl_Clientes', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "'", 'NombreCliente');
 	$row_Cliente = sqlsrv_fetch_array($SQL_Cliente);
 
-	// Sucursales. SMM, 01/12/2022
-	$SQL_SucursalDestino = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "' AND NombreSucursal='" . base64_decode($_GET['Sucursal']) . "'");
+	// Sucursales. SMM, 07/05/2024
+	$SQL_SucursalDestino = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "' AND NombreSucursal='" . base64_decode($_GET['Sucursal']) . "' AND TipoDireccion='S'");
 
-	if (isset($_GET['SucursalFact'])) {
+	if (isset($_GET['SucursalFact']) && ($_GET['SucursalFact'] != "")) {
 		$SQL_SucursalFacturacion = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "' AND NombreSucursal='" . base64_decode($_GET['SucursalFact']) . "' AND TipoDireccion='B'", 'NombreSucursal');
+	} else {
+		$SQL_SucursalFacturacion = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', '*', "CodigoCliente='" . base64_decode($_GET['Cardcode']) . "' AND TipoDireccion='B'", 'NombreSucursal');
 	}
 
 	//Contacto cliente
@@ -282,8 +284,8 @@ if ($edit == 1 && $sw_error == 0) {
 	$SQL_IdEvento = sqlsrv_fetch_array($LimpiarSolSalida);
 	$IdEvento = $SQL_IdEvento[0];
 
-	//Salida inventario
-	$Cons = "Select * From uvw_tbl_SalidaInventario Where DocEntry='" . $IdSalidaInv . "' AND IdEvento='" . $IdEvento . "'";
+	// Salida inventario
+	$Cons = "SELECT * FROM uvw_tbl_SalidaInventario WHERE DocEntry='$IdSalidaInv' AND IdEvento='$IdEvento'";
 	$SQL = sqlsrv_query($conexion, $Cons);
 	$row = sqlsrv_fetch_array($SQL);
 
@@ -314,8 +316,8 @@ if ($edit == 1 && $sw_error == 0) {
 
 if ($sw_error == 1) {
 
-	//Salida de inventario
-	$Cons = "Select * From uvw_tbl_SalidaInventario Where ID_SalidaInv='" . $IdSalidaInv . "' AND IdEvento='" . $IdEvento . "'";
+	// Salida de inventario
+	$Cons = "SELECT * FROM uvw_tbl_SalidaInventario WHERE ID_SalidaInv='$IdSalidaInv' AND IdEvento='$IdEvento'";
 	$SQL = sqlsrv_query($conexion, $Cons);
 	$row = sqlsrv_fetch_array($SQL);
 
@@ -324,7 +326,6 @@ if ($sw_error == 1) {
 
 	//Sucursales
 	$SQL_SucursalFacturacion = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', '*', "CodigoCliente='" . $row['CardCode'] . "' and TipoDireccion='B'", 'NombreSucursal');
-
 	$SQL_SucursalDestino = Seleccionar('uvw_Sap_tbl_Clientes_Sucursales', '*', "CodigoCliente='" . $row['CardCode'] . "' and TipoDireccion='S'", 'NombreSucursal');
 
 	//Contacto cliente
@@ -1061,8 +1062,10 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 												<?php } ?>
 											</select>
 										</div>
-										<label class="col-lg-1 control-label">Sucursal facturación <span
-												class="text-danger">*</span></label>
+										
+										<label class="col-lg-1 control-label">
+											Sucursal facturación <span class="text-danger">*</span>
+										</label>
 										<div class="col-lg-5">
 											<select class="form-control select2" name="SucursalFacturacion"
 												id="SucursalFacturacion" required <?php if (($edit == 1) && ($row['Cod_Estado'] == 'C')) {
@@ -1077,7 +1080,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 													<?php while ($row_SucursalFacturacion = sqlsrv_fetch_array($SQL_SucursalFacturacion)) { ?>
 														<option
 															value="<?php echo $row_SucursalFacturacion['NombreSucursal']; ?>"
-															<?php if ((isset($row['SucursalFacturacion'])) && (strcmp($row_SucursalFacturacion['NombreSucursal'], $row['SucursalFacturacion']) == 0)) {
+															<?php if (isset($row['SucursalFacturacion']) && ($row['SucursalFacturacion'] == $row_SucursalFacturacion['NombreSucursal'])) {
 																echo "selected";
 															} elseif (isset($_GET['SucursalFact']) && (strcmp($row_SucursalFacturacion['NombreSucursal'], base64_decode($_GET['SucursalFact'])) == 0)) {
 																echo "selected";
@@ -1308,12 +1311,12 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 										<select name="EntregaDescont" class="form-control" id="EntregaDescont" <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || ($dt_TI == 1)) {
 											echo "readonly";
 										} ?>>
-											<option value="NO" <?php if (($edit == 1) && ($row['Descontable'] == "NO")) {
+											<option value="NO" <?php if (isset($row['Descontable']) && ($row['Descontable'] == "NO")) {
 											echo "selected";
 										} elseif (isset($_GET['EntregaDescont']) && (base64_decode($_GET['EntregaDescont']) == "NO")) {
 											echo "selected";
 										} ?>>NO</option>
-										<option value="SI" <?php if (($edit == 1) && ($row['Descontable'] == "SI")) {
+										<option value="SI" <?php if (isset($row['Descontable']) && ($row['Descontable'] == "SI")) {
 											echo "selected";
 										} elseif (isset($_GET['EntregaDescont']) && (base64_decode($_GET['EntregaDescont']) == "SI")) {
 											echo "selected";
