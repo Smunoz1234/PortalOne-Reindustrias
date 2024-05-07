@@ -24,7 +24,7 @@ $IdMotivo = "";
 $motivoAutorizacion = "";
 
 $debug_Condiciones = true; // Ocultar o mostrar modal y otras opciones de debug.
-$IdTipoDocumento = 22; // Cambiar por el ID respectivo.
+$IdTipoDocumento = 204; // Cambiar por el ID respectivo.
 $success = 1; // Confirmación de autorización (1 - Autorizado / 0 - NO Autorizado)
 $mensajeProceso = ""; // Mensaje proceso, mensaje de salida del procedimiento almacenado.
 

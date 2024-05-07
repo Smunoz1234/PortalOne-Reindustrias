@@ -20,7 +20,7 @@ $IdMotivo = "";
 $motivoAutorizacion = "";
 
 $debug_Condiciones = false; // Ocultar o mostrar modal y otras opciones de debug.
-$IdTipoDocumento = 22; // Cambiar por el ID respectivo.
+$IdTipoDocumento = 204; // Cambiar por el ID respectivo.
 $success = 1; // Confirmación de autorización (1 - Autorizado / 0 - NO Autorizado)
 $mensajeProceso = ""; // Mensaje proceso, mensaje de salida del procedimiento almacenado.
 
@@ -1338,7 +1338,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 										<?php } ?>
 										<?php if ($row['Cod_Estado'] != 'C') { ?>
 											<button type="button"
-												onClick="javascript:location.href='actividad.php?dt_DM=1&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&DM_type=<?php echo base64_encode('22'); ?>&DM=<?php echo base64_encode($row['DocEntry']); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('factura_anticipo_compra.php'); ?>'"
+												onClick="javascript:location.href='actividad.php?dt_DM=1&Cardcode=<?php echo base64_encode($row['CardCode']); ?>&Contacto=<?php echo base64_encode($row['CodigoContacto']); ?>&Sucursal=<?php echo base64_encode($row['SucursalDestino']); ?>&Direccion=<?php echo base64_encode($row['DireccionDestino']); ?>&DM_type=<?php echo base64_encode("$IdTipoDocumento"); ?>&DM=<?php echo base64_encode($row['DocEntry']); ?>&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('factura_anticipo_compra.php'); ?>'"
 												class="alkin btn btn-outline btn-primary pull-right m-l-xs"><i
 													class="fa fa-plus-circle"></i> Agregar actividad</button>
 										<?php } ?>
@@ -2411,7 +2411,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 						type: "POST",
 						url: "dm_actividades.php?id=<?php if ($edit == 1) {
 							echo base64_encode($row['DocEntry']);
-						} ?>&objtype=22",
+						} ?>&objtype=<?php echo $IdTipoDocumento; ?>",
 						success: function (response) {
 							$('#dv_actividades').html(response).fadeIn();
 							$('.ibox-content').toggleClass('sk-loading', false);

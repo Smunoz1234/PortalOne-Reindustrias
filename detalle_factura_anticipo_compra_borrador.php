@@ -89,10 +89,10 @@ $SQL_MetodoAplicacion = Seleccionar("uvw_Sap_tbl_OrdenesVentasDetalleMetodoAplic
 //Tipo de plagas
 $SQL_TipoPlaga = Seleccionar("uvw_Sap_tbl_OrdenesVentasDetalleTipoPlagas", "*", "", "DeTipoPlagas");
 
-//$Almacen=$row['WhsCode'];
+// $Almacen = $row['WhsCode'];
 $ParamSerie = array(
 	"'" . $_SESSION['CodUser'] . "'",
-	"'22'",
+	"'204'", // SMM, 07/05/2024
 );
 $SQL_Almacen = EjecutarSP('sp_ConsultarAlmacenesUsuario', $ParamSerie);
 
@@ -368,7 +368,7 @@ $SQL_OT_TIPOPREVENTI = Seleccionar('uvw_Sap_tbl_OT_TipoPreventivo', 'IdOT_TipoPr
 			if (false) { // Se desactivo esta función en los documentos en borrador. SMM, 03/10/2022
 				$.ajax({
 					type: "GET",
-					url: "includes/procedimientos.php?type=34&edit=<?php echo $type; ?>&whscode=" + document.getElementById(name + id).value + "&linenum=" + line + "&cardcode=<?php echo $CardCode; ?>&id=<?php echo $Id; ?>&evento=<?php echo $Evento; ?>&tdoc=22",
+					url: "includes/procedimientos.php?type=34&edit=<?php echo $type; ?>&whscode=" + document.getElementById(name + id).value + "&linenum=" + line + "&cardcode=<?php echo $CardCode; ?>&id=<?php echo $Id; ?>&evento=<?php echo $Evento; ?>&tdoc=204",
 					success: function (response) {
 						if (response != "Error") {
 							document.getElementById("OnHand" + id).value = number_format(response, dCantidades, sDecimal, sMillares);

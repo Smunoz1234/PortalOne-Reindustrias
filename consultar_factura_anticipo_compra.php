@@ -7,7 +7,7 @@ $SQL_Estado = Seleccionar('uvw_tbl_EstadoDocSAP', '*');
 //Series de documento
 $ParamSerie = array(
 	"'" . $_SESSION['CodUser'] . "'",
-	"'22'",
+	"'204'", // SMM, 07/05/2024
 );
 $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 
@@ -425,7 +425,7 @@ $SQL = sqlsrv_query($conexion, $Cons);
 													<td><a href="factura_anticipo_compra.php?id=<?php echo base64_encode($row['ID_FacturaCompraAnticipo']); ?>&id_portal=<?php echo base64_encode($row['IdDocPortal']); ?>&tl=1&return=<?php echo base64_encode($_SERVER['QUERY_STRING']); ?>&pag=<?php echo base64_encode('consultar_factura_anticipo_compra.php'); ?>"
 															class="alkin btn btn-success btn-xs"><i
 																class="fa fa-folder-open-o"></i> Abrir</a> <a
-															href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row['ID_FacturaCompraAnticipo']); ?>&ObType=<?php echo base64_encode('22'); ?>&IdFrm=<?php echo base64_encode($row['IdSeries']); ?>"
+															href="sapdownload.php?id=<?php echo base64_encode('15'); ?>&type=<?php echo base64_encode('2'); ?>&DocKey=<?php echo base64_encode($row['ID_FacturaCompraAnticipo']); ?>&ObType=<?php echo base64_encode('204'); ?>&IdFrm=<?php echo base64_encode($row['IdSeries']); ?>"
 															target="_blank" class="btn btn-warning btn-xs"><i
 																class="fa fa-download"></i> Descargar</a></td>
 												</tr>

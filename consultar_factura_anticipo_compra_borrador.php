@@ -18,7 +18,7 @@ $SQL_Estado = Seleccionar('uvw_tbl_EstadoDocSAP', '*');
 //Series de documento
 $ParamSerie = array(
 	"'" . $_SESSION['CodUser'] . "'",
-	"'22'",
+	"'204'", // SMM, 07/05/2024
 );
 $SQL_Series = EjecutarSP('sp_ConsultarSeriesDocumentos', $ParamSerie);
 
