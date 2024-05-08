@@ -273,33 +273,33 @@ $sMillares = $row_DatosBase["CaracterSeparadorMillares"] ?? ",";
 
 			let IvaLinea = NuevoValorIVA * CantDecimal; // Para, Totalizar()
 
-			/*
-			<?php if ($type != 1) { ?>
-				if (!totalizar) {
-					if (number_format(SubTotalDesc, dPrecios, sDecimal, sMillares) != number_format(TotalDecimal, dPrecios, sDecimal, sMillares)) {
-						console.log(`${number_format(SubTotalDesc, dPrecios, sDecimal, sMillares)} != ${number_format(TotalDecimal, dPrecios, sDecimal, sMillares)}`);
-						$(`#ControlDesc${line}`).prop("checked", true);
+			// /*
+			// <?php if ($type != 1) { ?>
+			// 	if (!totalizar) {
+			// 		if (number_format(SubTotalDesc, dPrecios, sDecimal, sMillares) != number_format(TotalDecimal, dPrecios, sDecimal, sMillares)) {
+			// 			console.log(`${number_format(SubTotalDesc, dPrecios, sDecimal, sMillares)} != ${number_format(TotalDecimal, dPrecios, sDecimal, sMillares)}`);
+			// 			$(`#ControlDesc${line}`).prop("checked", true);
 
-					} else {
-						console.log(`${number_format(SubTotalDesc, dPrecios, sDecimal, sMillares)} == ${number_format(TotalDecimal, dPrecios, sDecimal, sMillares)}`);
-						// $(`#ControlDesc${line}`).prop("checked", false);
-					}
-				}
-			<?php } ?>
+			// 		} else {
+			// 			console.log(`${number_format(SubTotalDesc, dPrecios, sDecimal, sMillares)} == ${number_format(TotalDecimal, dPrecios, sDecimal, sMillares)}`);
+			// 			// $(`#ControlDesc${line}`).prop("checked", false);
+			// 		}
+			// 	}
+			// <?php } ?>
 
-			ActualizarDatos('ControlDesc', line, Linea.value);
-	* /
+			// ActualizarDatos('ControlDesc', line, Linea.value);
+			// */
 
 			let NuevoSubTotal = SubTotalDesc;
 			let NuevoIVA = IvaLinea;
 
-			/*
-			ControlDesc = document.getElementById(`ControlDesc${line}`).checked;
-			if(ControlDesc == true) { // 14/04/2022
-				NuevoSubTotal = TotalDecimal;
-				NuevoIVA = TotalDecimal * (TarifaIVADecimal / 100);
-			}
-			*/
+			// /*
+			// ControlDesc = document.getElementById(`ControlDesc${line}`).checked;
+			// if(ControlDesc == true) { // 14/04/2022
+			// 	NuevoSubTotal = TotalDecimal;
+			// 	NuevoIVA = TotalDecimal * (TarifaIVADecimal / 100);
+			// }
+			// */
 
 			return [NuevoSubTotal, NuevoIVA, Linea, SubTotalLinea, CantLinea, PrcDescLinea, TotalLinea, TotalDecimal, PrecioDescDecimal];
 		}
