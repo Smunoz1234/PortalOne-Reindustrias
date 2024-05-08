@@ -463,11 +463,12 @@ $sMillares = $row_DatosBase["CaracterSeparadorMillares"] ?? ",";
 											echo "readonly";
 										} ?>>
 										<option value="">Seleccione...</option>
+										
 										<?php while ($row_Almacen = sqlsrv_fetch_array($SQL_Almacen)) { ?>
-											<?php $CodigoAlmacen = (($dt_TI == 0) && ($type == 1)) ? ($row_Almacen['WhsCode'] ?? "") : ($row_Almacen['ToWhsCode'] ?? ""); ?>
-											<?php $NombreAlmacen = (($dt_TI == 0) && ($type == 1)) ? ($row_Almacen['WhsName'] ?? "") : ($row_Almacen['ToWhsName'] ?? ""); ?>
+											<?php $CodigoAlmacen = ($row_Almacen['WhsCode'] ?? ($row_Almacen['ToWhsCode'] ?? "")); ?>
+											<?php $NombreAlmacen = ($row_Almacen['WhsName'] ?? ($row_Almacen['ToWhsName'] ?? "")); ?>
 											<!-- option><?php //print_r($row_Almacen); ?></option-->
-											<option value="<?php echo $CodigoAlmacen; ?>" <?php if ((isset($row['WhsCode'])) && (strcmp($CodigoAlmacen, $row['WhsCode']) == 0)) {
+											<option value="<?php echo $CodigoAlmacen; ?>" <?php if (isset($row['WhsCode']) && ($row['WhsCode'] == $CodigoAlmacen)) {
 												   echo "selected";
 											   } ?>>
 												<?php echo $NombreAlmacen; ?></option>

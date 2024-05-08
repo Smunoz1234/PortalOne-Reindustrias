@@ -1306,7 +1306,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 												documento destino <i class="fa fa-mail-forward"></i></a>
 										<?php } ?>
 										<?php if ($row['DocBaseDocEntry'] != "") { ?>
-											<a href="solicitud_traslado.php?id=<?php echo base64_encode($row['DocBaseDocEntry']); ?>&id_portal=<?php echo base64_encode($row['DocBaseIdPortal']); ?>&tl=1"
+											<a href="solicitud_salida.php?id=<?php echo base64_encode($row['DocBaseDocEntry']); ?>&id_portal=<?php echo base64_encode($row['DocBaseIdPortal']); ?>&tl=1"
 												target="_blank" class="btn btn-outline btn-success pull-right m-l-sm"><i
 													class="fa fa-mail-reply"></i> Ir a documento base</i></a>
 										<?php } ?>
