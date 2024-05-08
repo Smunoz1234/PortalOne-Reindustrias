@@ -126,7 +126,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Salida de inventario
 			"'" . $_POST['DireccionFacturacion'] . "'",
 			"'" . $_POST['SucursalDestino'] . "'",
 			"'" . $_POST['DireccionDestino'] . "'",
-			
+
 			"'" . ($_POST['CondicionPago'] ?? "") . "'",
 
 			"NULL",
@@ -135,9 +135,9 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) { //Grabar Salida de inventario
 			$AnioEntrega,
 			$EntregaDescont,
 			$ValorCuotaDesc,
-			
+
 			"'" . ($_POST['Almacen'] ?? "") . "'",
-			
+
 			"''", // SMM, 12/04/2024
 			"'" . $_SESSION['CodUser'] . "'",
 			"'" . $_SESSION['CodUser'] . "'",
@@ -503,13 +503,15 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 	<!-- InstanceEndEditable -->
 	<!-- InstanceBeginEditable name="head" -->
 	<style>
-		.panel-body{
+		.panel-body {
 			padding: 0px !important;
 		}
-		.tabs-container .panel-body{
+
+		.tabs-container .panel-body {
 			padding: 0px !important;
 		}
-		.nav-tabs > li > a{
+
+		.nav-tabs>li>a {
 			padding: 14px 20px 14px 25px !important;
 		}
 
@@ -517,6 +519,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 			background-color: black;
 			z-index: 9999999;
 		}
+
 		.swal2-container {
 			z-index: 9999999 !important;
 		}
@@ -555,33 +558,33 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 					}
 				});
 
-			// Inicio, buscar lista precio SN.
-			let cardcode = carcode;
-			document.cookie = `cardcode=${cardcode}`;
+				// Inicio, buscar lista precio SN.
+				let cardcode = carcode;
+				document.cookie = `cardcode=${cardcode}`;
 
-			$.ajax({
-				url: "ajx_buscar_datos_json.php",
-				data: {
-					type: 45,
-					id: cardcode
-				},
-				dataType: 'json',
-				success: function (data) {
-					console.log("Line 891", data);
+				$.ajax({
+					url: "ajx_buscar_datos_json.php",
+					data: {
+						type: 45,
+						id: cardcode
+					},
+					dataType: 'json',
+					success: function (data) {
+						console.log("Line 891", data);
 
-					document.getElementById('IdListaPrecio').value = data.IdListaPrecio;
-					$('#IdListaPrecio').trigger('change');
+						document.getElementById('IdListaPrecio').value = data.IdListaPrecio;
+						$('#IdListaPrecio').trigger('change');
 
-					// document.getElementById('Exento').value = data.SujetoImpuesto;
-				},
-				error: function (error) {
-					// console.log("Linea 693", error.responseText);
-					console.log("El cliente no tiene IdListaPrecio");
+						// document.getElementById('Exento').value = data.SujetoImpuesto;
+					},
+					error: function (error) {
+						// console.log("Linea 693", error.responseText);
+						console.log("El cliente no tiene IdListaPrecio");
 
-					$('.ibox-content').toggleClass('sk-loading', false);
-				}
-			});
-			// Fin, buscar lista precio SN.
+						$('.ibox-content').toggleClass('sk-loading', false);
+					}
+				});
+				// Fin, buscar lista precio SN.
 
 				<?php if ($edit == 0 && $sw_error == 0 && $dt_TI == 0) { // Limpiar carrito detalle. ?>
 					$.ajax({
@@ -590,7 +593,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 					});
 				<?php } ?>
 
-				<?php if ($dt_TI == 0) { //Para que no recargue las listas cuando vienen de una solicitud de salida.?>
+				<?php if ($dt_TI == 0) { //Para que no recargue las listas cuando vienen de una solicitud de salida. ?>
 					$.ajax({
 						type: "POST",
 						url: "ajx_cbo_select.php?type=3&tdir=S&id=" + carcode,
@@ -752,11 +755,11 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 				<!-- SMM, 27/06/2023 -->
 				<div class="modal inmodal fade" id="mdLoteArticulos" tabindex="1" role="dialog" aria-hidden="true"
 					data-backdrop="static" data-keyboard="false">
-					</div>
+				</div>
 
 				<!-- SMM, 24/05/2023 -->
 				<div class="modal inmodal fade" id="mdArticulos" tabindex="1" role="dialog" aria-hidden="true"
-				data-backdrop="static" data-keyboard="false">
+					data-backdrop="static" data-keyboard="false">
 				</div>
 
 				<!-- SMM, 31/08/2022 -->
@@ -963,14 +966,13 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 												title="Consultar cliente" style="cursor: pointer"
 												class="btn-xs btn-success fa fa-search"></i> Cliente</label>
 										<div class="col-lg-9">
-											<input name="CardCode" type="hidden" id="CardCode"
-												value="<?php if (($edit == 1) || ($sw_error == 1)) {
-													echo $row['CardCode'];
-												} elseif ($dt_TI == 1) {
-													echo $row_Cliente['CodigoCliente'];
-												} elseif (($edit == 0) && ($ClienteDefault != "")) {
-													echo $ClienteDefault;
-												} ?>">
+											<input name="CardCode" type="hidden" id="CardCode" value="<?php if (($edit == 1) || ($sw_error == 1)) {
+												echo $row['CardCode'];
+											} elseif ($dt_TI == 1) {
+												echo $row_Cliente['CodigoCliente'];
+											} elseif (($edit == 0) && ($ClienteDefault != "")) {
+												echo $ClienteDefault;
+											} ?>">
 
 											<input autocomplete="off" name="CardName" type="text" required="required"
 												class="form-control" id="CardName" placeholder="Digite para buscar..."
@@ -980,10 +982,9 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 													echo $row_Cliente['NombreCliente'];
 												} elseif (($edit == 0) && ($ClienteDefault != "")) {
 													echo $NombreClienteDefault;
-												} ?>"
-												<?php if (((($edit == 1) && ($row['Cod_Estado'] == 'C')) || ($dt_TI == 1)) || ($dt_TI == 1) || ($edit == 1)) {
-													echo "readonly";
-												} ?>>
+												} ?>" <?php if (((($edit == 1) && ($row['Cod_Estado'] == 'C')) || ($dt_TI == 1)) || ($dt_TI == 1) || ($edit == 1)) {
+													 echo "readonly";
+												 } ?>>
 										</div>
 									</div>
 
@@ -1040,7 +1041,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 												<?php if (($edit == 0) && ($dt_TI == 0)) { ?>
 													<option value="">Seleccione...</option>
 												<?php } ?>
-												
+
 												<?php if (($edit == 1) || ($sw_error == 1) || ($dt_TI == 1)) { ?>
 													<optgroup label='Dirección de destino'></optgroup>
 													<?php while ($row_SucursalDestino = sqlsrv_fetch_array($SQL_SucursalDestino)) { ?>
@@ -1053,16 +1054,16 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 																echo "selected";
 															} elseif ($ShipToDef == $row_SucursalDestino['NombreSucursal']) {
 																echo "selected";
-															} elseif ($FiltrarDest == 1) { 
-																echo "selected"; 
+															} elseif ($FiltrarDest == 1) {
+																echo "selected";
 															} ?>>
-																<?php echo $row_SucursalDestino['NombreSucursal']; ?>
-															</option>
+															<?php echo $row_SucursalDestino['NombreSucursal']; ?>
+														</option>
 													<?php } ?>
 												<?php } ?>
 											</select>
 										</div>
-										
+
 										<label class="col-lg-1 control-label">
 											Sucursal facturación <span class="text-danger">*</span>
 										</label>
@@ -1074,7 +1075,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 												<?php if (($edit == 0) && ($dt_TI == 0)) { ?>
 													<option value="">Seleccione...</option>
 												<?php } ?>
-												
+
 												<?php if (($edit == 1) || ($sw_error == 1) || ($dt_TI == 1)) { ?>
 													<optgroup label='Dirección de facturas'></optgroup>
 													<?php while ($row_SucursalFacturacion = sqlsrv_fetch_array($SQL_SucursalFacturacion)) { ?>
@@ -1088,11 +1089,11 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 																echo "selected";
 															} elseif ($BillToDef == $row_SucursalFacturacion['NombreSucursal']) {
 																echo "selected";
-															} elseif ($FiltrarFact == 1) { 
-																echo "selected"; 
+															} elseif ($FiltrarFact == 1) {
+																echo "selected";
 															} ?>>
-																<?php echo $row_SucursalFacturacion['NombreSucursal']; ?>
-															</option>
+															<?php echo $row_SucursalFacturacion['NombreSucursal']; ?>
+														</option>
 													<?php } ?>
 												<?php } ?>
 											</select>
@@ -1103,26 +1104,22 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 										<label class="col-lg-1 control-label">Dirección destino</label>
 										<div class="col-lg-5">
 											<input type="text" class="form-control" name="DireccionDestino"
-												id="DireccionDestino"
-												value="<?php if ($edit == 1 || $sw_error == 1) {
+												id="DireccionDestino" value="<?php if ($edit == 1 || $sw_error == 1) {
 													echo $row['DireccionDestino'];
 												} elseif ($dt_TI == 1) {
 													echo base64_decode($_GET['Direccion']);
-												} ?>"
-												<?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || ($dt_TI == 1)) {
-													echo "readonly";
-												} ?>>
+												} ?>" <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || ($dt_TI == 1)) {
+													 echo "readonly";
+												 } ?>>
 										</div>
 										<label class="col-lg-1 control-label">Dirección facturación</label>
 										<div class="col-lg-5">
 											<input type="text" class="form-control" name="DireccionFacturacion"
-												id="DireccionFacturacion"
-												value="<?php if ($edit == 1 || $sw_error == 1) {
+												id="DireccionFacturacion" value="<?php if ($edit == 1 || $sw_error == 1) {
 													echo $row['DireccionFacturacion'];
-												} ?>"
-												<?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || ($dt_TI == 1)) {
-													echo "readonly";
-												} ?>>
+												} ?>" <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || ($dt_TI == 1)) {
+													 echo "readonly";
+												 } ?>>
 										</div>
 									</div>
 
@@ -1137,14 +1134,12 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 										</label>
 										<div class="col-lg-7">
 											<input type="hidden" class="form-control" name="OrdenServicioCliente"
-												id="OrdenServicioCliente"
-												value="<?php if (isset($row_OrdenServicioCliente['ID_LlamadaServicio']) && ($row_OrdenServicioCliente['ID_LlamadaServicio'] != 0)) {
+												id="OrdenServicioCliente" value="<?php if (isset($row_OrdenServicioCliente['ID_LlamadaServicio']) && ($row_OrdenServicioCliente['ID_LlamadaServicio'] != 0)) {
 													echo $row_OrdenServicioCliente['ID_LlamadaServicio'];
 												} ?>">
 											<input readonly type="text" class="form-control"
 												name="Desc_OrdenServicioCliente" id="Desc_OrdenServicioCliente"
-												placeholder="Haga clic en el botón"
-												value="<?php if (isset($row_OrdenServicioCliente['ID_LlamadaServicio']) && ($row_OrdenServicioCliente['ID_LlamadaServicio'] != 0)) {
+												placeholder="Haga clic en el botón" value="<?php if (isset($row_OrdenServicioCliente['ID_LlamadaServicio']) && ($row_OrdenServicioCliente['ID_LlamadaServicio'] != 0)) {
 													echo $row_OrdenServicioCliente['DocNum'] . " - " . $row_OrdenServicioCliente['AsuntoLlamada'] . " (" . $row_OrdenServicioCliente['DeTipoLlamada'] . ")";
 												} ?>">
 										</div>
@@ -1160,10 +1155,9 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 									<div class="form-group">
 										<label class="col-lg-5">Número</label>
 										<div class="col-lg-7">
-											<input type="text" name="DocNum" id="DocNum" class="form-control"
-												value="<?php if ($edit == 1) {
-													echo $row['DocNum'];
-												} ?>" readonly>
+											<input type="text" name="DocNum" id="DocNum" class="form-control" value="<?php if ($edit == 1) {
+												echo $row['DocNum'];
+											} ?>" readonly>
 										</div>
 									</div>
 									<div class="form-group">
@@ -1171,15 +1165,13 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 										<div class="col-lg-7 input-group date">
 											<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input
 												name="DocDate" id="DocDate" type="text" required="required"
-												class="form-control"
-												value="<?php if ($edit == 1 || $sw_error == 1) {
+												class="form-control" value="<?php if ($edit == 1 || $sw_error == 1) {
 													echo $row['DocDate'];
 												} else {
 													echo date('Y-m-d');
-												} ?>"
-												<?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || ($dt_TI == 1)) {
-													echo "readonly";
-												} ?>>
+												} ?>" <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || ($dt_TI == 1)) {
+													 echo "readonly";
+												 } ?>>
 										</div>
 									</div>
 									<div class="form-group">
@@ -1187,15 +1179,13 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 										<div class="col-lg-7 input-group date">
 											<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input
 												name="DocDueDate" id="DocDueDate" type="text" required="required"
-												class="form-control"
-												value="<?php if ($edit == 1 || $sw_error == 1) {
+												class="form-control" value="<?php if ($edit == 1 || $sw_error == 1) {
 													echo $row['DocDueDate'];
 												} else {
 													echo date('Y-m-d');
-												} ?>"
-												<?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || ($dt_TI == 1)) {
-													echo "readonly";
-												} ?>>
+												} ?>" <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || ($dt_TI == 1)) {
+													 echo "readonly";
+												 } ?>>
 										</div>
 									</div>
 									<div class="form-group">
@@ -1203,15 +1193,13 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 										<div class="col-lg-7 input-group date">
 											<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input
 												name="TaxDate" id="TaxDate" type="text" required="required"
-												class="form-control"
-												value="<?php if ($edit == 1 || $sw_error == 1) {
+												class="form-control" value="<?php if ($edit == 1 || $sw_error == 1) {
 													echo $row['TaxDate'];
 												} else {
 													echo date('Y-m-d');
-												} ?>"
-												<?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || ($dt_TI == 1)) {
-													echo "readonly";
-												} ?>>
+												} ?>" <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || ($dt_TI == 1)) {
+													 echo "readonly";
+												 } ?>>
 										</div>
 									</div>
 									<div class="form-group">
@@ -1237,7 +1225,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 											Salida</h3>
 									</label>
 								</div>
-								
+
 								<div class="form-group">
 									<label class="col-lg-1 control-label">Serie</label>
 									<div class="col-lg-3">
@@ -1256,12 +1244,11 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 
 									<label class="col-lg-1 control-label">Referencia</label>
 									<div class="col-lg-3">
-										<input type="text" name="Referencia" id="Referencia" class="form-control"
-											value="<?php if ($edit == 1) {
-												echo $row['NumAtCard'];
-											} ?>" <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || ($dt_TI == 1)) {
-												echo "readonly";
-											} ?>>
+										<input type="text" name="Referencia" id="Referencia" class="form-control" value="<?php if ($edit == 1) {
+											echo $row['NumAtCard'];
+										} ?>" <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || ($dt_TI == 1)) {
+											 echo "readonly";
+										 } ?>>
 									</div>
 
 									<!-- Inicio, TipoEntrega -->
@@ -1271,14 +1258,13 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 											echo "readonly";
 										} ?>>
 											<option value="">Seleccione...</option>
-											
+
 											<?php while ($row_TipoEntrega = sqlsrv_fetch_array($SQL_TipoEntrega)) { ?>
-												<option value="<?php echo $row_TipoEntrega['IdTipoEntrega']; ?>" 
-													<?php if (isset($row['IdTipoEntrega']) && ($row['IdTipoEntrega'] == $row_TipoEntrega['IdTipoEntrega'])) {
-														echo "selected";
-													} elseif (isset($_GET['IdTipoEntrega']) && ($_GET['IdTipoEntrega'] == $row_TipoEntrega['IdTipoEntrega'])) {
-														echo "selected";
-													} ?>>
+												<option value="<?php echo $row_TipoEntrega['IdTipoEntrega']; ?>" <?php if (isset($row['IdTipoEntrega']) && ($row['IdTipoEntrega'] == $row_TipoEntrega['IdTipoEntrega'])) {
+													   echo "selected";
+												   } elseif (isset($_GET['IdTipoEntrega']) && ($_GET['IdTipoEntrega'] == $row_TipoEntrega['IdTipoEntrega'])) {
+													   echo "selected";
+												   } ?>>
 													<?php echo $row_TipoEntrega['DeTipoEntrega'] ?? ""; ?>
 												</option>
 											<?php } ?>
@@ -1294,16 +1280,15 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 											echo "readonly";
 										} ?>>
 											<?php while ($row_AnioEntrega = sqlsrv_fetch_array($SQL_AnioEntrega)) { ?>
-													<option value="<?php echo $row_AnioEntrega['IdAnioEntrega']; ?>" 
-														<?php if (isset($row['IdAnioEntrega']) && ($row['IdAnioEntrega'] == $row_AnioEntrega['IdAnioEntrega'])) {
-															echo "selected";
-														} elseif (isset($_GET['IdAnioEntrega']) && ($_GET['IdAnioEntrega'] == $row_AnioEntrega['IdAnioEntrega'])) {
-															echo "selected";
-														} elseif (date('Y') == $row_AnioEntrega['DeAnioEntrega']) {
-															echo "selected";
-														} ?>>
-														<?php echo $row_AnioEntrega['DeAnioEntrega'] ?? ""; ?>
-													</option>
+												<option value="<?php echo $row_AnioEntrega['IdAnioEntrega']; ?>" <?php if (isset($row['IdAnioEntrega']) && ($row['IdAnioEntrega'] == $row_AnioEntrega['IdAnioEntrega'])) {
+													   echo "selected";
+												   } elseif (isset($_GET['IdAnioEntrega']) && ($_GET['IdAnioEntrega'] == $row_AnioEntrega['IdAnioEntrega'])) {
+													   echo "selected";
+												   } elseif (date('Y') == $row_AnioEntrega['DeAnioEntrega']) {
+													   echo "selected";
+												   } ?>>
+													<?php echo $row_AnioEntrega['DeAnioEntrega'] ?? ""; ?>
+												</option>
 											<?php } ?>
 										</select>
 									</div>
@@ -1314,23 +1299,23 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 											echo "readonly";
 										} ?>>
 											<option value="NO" <?php if (isset($row['Descontable']) && ($row['Descontable'] == "NO")) {
-													echo "selected";
-												} elseif (isset($_GET['Descontable']) && ($_GET['Descontable'] == "NO")) {
-													echo "selected";
-												} ?>>NO</option>
+												echo "selected";
+											} elseif (isset($_GET['Descontable']) && ($_GET['Descontable'] == "NO")) {
+												echo "selected";
+											} ?>>NO</option>
 											<option value="SI" <?php if (isset($row['Descontable']) && ($row['Descontable'] == "SI")) {
-													echo "selected";
-												} elseif (isset($_GET['Descontable']) && ($_GET['Descontable'] == "SI")) {
-													echo "selected";
-												} ?>>SI</option>
+												echo "selected";
+											} elseif (isset($_GET['Descontable']) && ($_GET['Descontable'] == "SI")) {
+												echo "selected";
+											} ?>>SI</option>
 										</select>
 									</div>
 
 									<label class="col-lg-1 control-label">Cant cuota</label>
 									<div class="col-lg-3">
-										<input type="text" class="form-control" name="ValorCuotaDesc" 
-											id="ValorCuotaDesc" onKeyPress="return justNumbers(event,this.value);" 
-											value="<?php echo $row['ValorCuotaDesc'] ?? ($_GET["ValorCuotaDesc"] ?? ""); ?>" 
+										<input type="text" class="form-control" name="ValorCuotaDesc"
+											id="ValorCuotaDesc" onKeyPress="return justNumbers(event,this.value);"
+											value="<?php echo $row['ValorCuotaDesc'] ?? ($_GET["ValorCuotaDesc"] ?? ""); ?>"
 											<?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || ($dt_TI == 1)) {
 												echo "readonly";
 											} ?>>
@@ -1339,21 +1324,22 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 
 								<div class="form-group">
 									<!-- Inicio, Proyecto -->
-									<label class="col-lg-1 control-label">Proyecto <span class="text-danger">*</span></label>
+									<label class="col-lg-1 control-label">Proyecto <span
+											class="text-danger">*</span></label>
 									<div class="col-lg-3">
 										<select id="PrjCode" name="PrjCode" class="form-control select2" required <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || ($dt_TI == 1)) {
 											echo "disabled";
 										} ?>>
 											<option value="">(NINGUNO)</option>
-											
+
 											<?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) { ?>
 												<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if (isset($row['PrjCode']) && ($row['PrjCode'] == $row_Proyecto['IdProyecto'])) {
-														echo "selected";
-													} elseif ((isset($_GET['Proyecto'])) && ($row_Proyecto['IdProyecto'] == base64_decode($_GET['Proyecto']))) {
-														echo "selected";
-													} elseif ($FiltroPrj == $row_Proyecto['IdProyecto']) {
-														echo "selected";
-													} ?>>
+													   echo "selected";
+												   } elseif ((isset($_GET['Proyecto'])) && ($row_Proyecto['IdProyecto'] == base64_decode($_GET['Proyecto']))) {
+													   echo "selected";
+												   } elseif ($FiltroPrj == $row_Proyecto['IdProyecto']) {
+													   echo "selected";
+												   } ?>>
 													<?php echo $row_Proyecto['IdProyecto'] . "-" . $row_Proyecto['DeProyecto']; ?>
 												</option>
 											<?php } ?>
@@ -1395,13 +1381,13 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 
 									<?php $cookie_cardcode = 0; ?>
 									<?php if ($edit == 1) { ?>
-										<?php $ID_SolicitudCompra = $row['ID_SolicitudCompra']; ?>
+										<?php $ID_SalidaInv = $row['ID_SalidaInv']; ?>
 										<?php $Evento = $row['IdEvento']; ?>
-										<?php $consulta_detalle = "SELECT $filtro_consulta FROM uvw_tbl_SolicitudCompraDetalle WHERE ID_SolicitudCompra='$ID_SolicitudCompra' AND IdEvento='$Evento' AND Metodo <> 3"; ?>
+										<?php $consulta_detalle = "SELECT $filtro_consulta FROM uvw_tbl_SalidaInventarioDetalle WHERE ID_SalidaInv='$ID_SalidaInv' AND IdEvento='$Evento' AND Metodo <> 3"; ?>
 									<?php } else { ?>
 										<?php $Usuario = $_SESSION['CodUser']; ?>
 										<?php $cookie_cardcode = 1; ?>
-										<?php $consulta_detalle = "SELECT $filtro_consulta FROM uvw_tbl_SolicitudCompraDetalleCarrito WHERE Usuario='$Usuario'"; ?>
+										<?php $consulta_detalle = "SELECT $filtro_consulta FROM uvw_tbl_SalidaInventarioDetalleCarrito WHERE Usuario='$Usuario'"; ?>
 									<?php } ?>
 
 									<div class="col-lg-1 pull-right">
@@ -1433,8 +1419,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 									<div class="tab-content">
 										<div id="tab-1" class="tab-pane active">
 											<iframe id="DataGrid" name="DataGrid" style="border: 0;" width="100%"
-												height="300"
-												src="<?php if ($edit == 0) {
+												height="300" src="<?php if ($edit == 0) {
 													echo "detalle_salida_inventario.php";
 												} else {
 													echo "detalle_salida_inventario.php?id=" . base64_encode($row['ID_SalidaInv']) . "&evento=" . base64_encode($row['IdEvento']) . "&type=2&status=" . base64_encode($row['Cod_Estado']) . "&dt_TI=" . $dt_TI;
@@ -1497,16 +1482,17 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 										} ?>>
 										<?php while ($row_EmpleadosVentas = sqlsrv_fetch_array($SQL_EmpleadosVentas)) { ?>
 											<option value="<?php echo $row_EmpleadosVentas['ID_EmpVentas']; ?>" <?php if ($edit == 0 && $sw_error == 0) {
-													if (isset($_GET['Empleado']) && (strcmp($row_EmpleadosVentas['ID_EmpVentas'], base64_decode($_GET['Empleado'])) == 0)) {
-														echo "selected";
-													} elseif (($_SESSION['CodigoEmpVentas'] != "") && (!isset($_GET['Empleado'])) && (strcmp($row_EmpleadosVentas['ID_EmpVentas'], $_SESSION['CodigoEmpVentas']) == 0)) {
-														echo "selected";
-													}
-												} elseif ($edit == 1 || $sw_error == 1) {
-													if (($row['SlpCode'] != "") && (strcmp($row_EmpleadosVentas['ID_EmpVentas'], $row['SlpCode']) == 0)) {
-														echo "selected";
-													}
-												} ?>><?php echo $row_EmpleadosVentas['DE_EmpVentas']; ?></option>
+												   if (isset($_GET['Empleado']) && (strcmp($row_EmpleadosVentas['ID_EmpVentas'], base64_decode($_GET['Empleado'])) == 0)) {
+													   echo "selected";
+												   } elseif (($_SESSION['CodigoEmpVentas'] != "") && (!isset($_GET['Empleado'])) && (strcmp($row_EmpleadosVentas['ID_EmpVentas'], $_SESSION['CodigoEmpVentas']) == 0)) {
+													   echo "selected";
+												   }
+											   } elseif ($edit == 1 || $sw_error == 1) {
+												   if (($row['SlpCode'] != "") && (strcmp($row_EmpleadosVentas['ID_EmpVentas'], $row['SlpCode']) == 0)) {
+													   echo "selected";
+												   }
+											   } ?>><?php echo $row_EmpleadosVentas['DE_EmpVentas']; ?>
+											</option>
 										<?php } ?>
 									</select>
 								</div>
@@ -1518,8 +1504,8 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 										class="form-control" id="Comentarios" <?php if ((($edit == 1) && ($row['Cod_Estado'] == 'C')) || ($dt_TI == 1)) {
 											echo "readonly";
 										} ?>><?php if ($edit == 1) {
-											echo $row['Comentarios'];
-										} ?></textarea>
+											 echo $row['Comentarios'];
+										 } ?></textarea>
 								</div>
 							</div>
 						</div>
@@ -1528,39 +1514,33 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 								<label class="col-lg-7"><strong class="pull-right">Subtotal</strong></label>
 								<div class="col-lg-5">
 									<input type="text" name="SubTotal" form="CrearSalidaInventario" id="SubTotal"
-										class="form-control" style="text-align: right; font-weight: bold;"
-										value="<?php if ($edit == 1) {
+										class="form-control" style="text-align: right; font-weight: bold;" value="<?php if ($edit == 1) {
 											echo number_format($row['SubTotal'], 0);
 										} else {
 											echo "0.00";
-										} ?>"
-										readonly>
+										} ?>" readonly>
 								</div>
 							</div>
 							<div class="form-group">
 								<label class="col-lg-7"><strong class="pull-right">Descuentos</strong></label>
 								<div class="col-lg-5">
 									<input type="text" name="Descuentos" form="CrearSalidaInventario" id="Descuentos"
-										class="form-control" style="text-align: right; font-weight: bold;"
-										value="<?php if ($edit == 1) {
+										class="form-control" style="text-align: right; font-weight: bold;" value="<?php if ($edit == 1) {
 											echo number_format($row['DiscSum'], 0);
 										} else {
 											echo "0.00";
-										} ?>"
-										readonly>
+										} ?>" readonly>
 								</div>
 							</div>
 							<div class="form-group">
 								<label class="col-lg-7"><strong class="pull-right">IVA</strong></label>
 								<div class="col-lg-5">
 									<input type="text" name="Impuestos" form="CrearSalidaInventario" id="Impuestos"
-										class="form-control" style="text-align: right; font-weight: bold;"
-										value="<?php if ($edit == 1) {
+										class="form-control" style="text-align: right; font-weight: bold;" value="<?php if ($edit == 1) {
 											echo number_format($row['VatSum'], 0);
 										} else {
 											echo "0.00";
-										} ?>"
-										readonly>
+										} ?>" readonly>
 								</div>
 							</div>
 							<div class="form-group">
@@ -1575,13 +1555,11 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 								<label class="col-lg-7"><strong class="pull-right">Total</strong></label>
 								<div class="col-lg-5">
 									<input type="text" name="TotalSalida" form="CrearSalidaInventario" id="TotalSalida"
-										class="form-control" style="text-align: right; font-weight: bold;"
-										value="<?php if ($edit == 1) {
+										class="form-control" style="text-align: right; font-weight: bold;" value="<?php if ($edit == 1) {
 											echo number_format($row['DocTotal'], 0);
 										} else {
 											echo "0.00";
-										} ?>"
-										readonly>
+										} ?>" readonly>
 								</div>
 							</div>
 						</div>
@@ -1614,14 +1592,12 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 							</div>
 						</div>
 						<input type="hidden" form="CrearSalidaInventario" id="P" name="P" value="51" />
-						<input type="hidden" form="CrearSalidaInventario" id="IdSalidaInv" name="IdSalidaInv"
-							value="<?php if ($edit == 1) {
-								echo base64_encode($row['ID_SalidaInv']);
-							} ?>" />
-						<input type="hidden" form="CrearSalidaInventario" id="IdEvento" name="IdEvento"
-							value="<?php if ($edit == 1) {
-								echo base64_encode($IdEvento);
-							} ?>" />
+						<input type="hidden" form="CrearSalidaInventario" id="IdSalidaInv" name="IdSalidaInv" value="<?php if ($edit == 1) {
+							echo base64_encode($row['ID_SalidaInv']);
+						} ?>" />
+						<input type="hidden" form="CrearSalidaInventario" id="IdEvento" name="IdEvento" value="<?php if ($edit == 1) {
+							echo base64_encode($IdEvento);
+						} ?>" />
 						<input type="hidden" form="CrearSalidaInventario" id="tl" name="tl"
 							value="<?php echo $edit; ?>" />
 						<input type="hidden" form="CrearSalidaInventario" id="dt_TI" name="dt_TI"
@@ -1824,7 +1800,7 @@ $cadena = isset($row) ? "JSON.parse('$row_encode'.replace(/\\n|\\r/g, ''))" : "'
 			return result;
 		}
 
-		
+
 		// SMM, 24/05/2023
 		function AgregarArticulos() {
 			let probarModal = false;
