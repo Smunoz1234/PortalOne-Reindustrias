@@ -243,6 +243,9 @@ if (isset($_POST['P']) && ($_POST['P'] == 32)) { // Crear llamada de servicio
 			"'" . ($_POST['TelefonoSecundario'] ?? "") . "'",
 			"'" . ($_POST['CiudadSecundaria'] ?? "") . "'",
 			"'" . ($_POST['CorreoSecundario'] ?? "") . "'",
+			// SMM, 09/05/2024
+			"'" . ($_POST['IdContactar'] ?? "") . "'",
+			"'" . ($_POST['IdMotivoContactar'] ?? "") . "'",
 		);
 
 		$SQL_InsLlamada = EjecutarSP('sp_tbl_LlamadaServicios', $ParamInsLlamada, 32);
@@ -509,6 +512,9 @@ if (isset($_POST['P']) && ($_POST['P'] == 33)) { //Actualizar llamada de servici
 			"'" . ($_POST['TelefonoSecundario'] ?? "") . "'",
 			"'" . ($_POST['CiudadSecundaria'] ?? "") . "'",
 			"'" . ($_POST['CorreoSecundario'] ?? "") . "'",
+			// SMM, 09/05/2024
+			"'" . ($_POST['IdContactar'] ?? "") . "'",
+			"'" . ($_POST['IdMotivoContactar'] ?? "") . "'",
 		);
 
 		// Actualizar la llamada de servicio.
@@ -972,6 +978,9 @@ $SQL_TipoServicio = Seleccionar('uvw_Sap_tbl_LlamadasServicios_TipoServicio', '*
 
 // Contratos en la llamada de servicio
 $SQL_ContratosLlamada = Seleccionar('uvw_Sap_tbl_LlamadasServicios_Contratos_TBUsuario', '*');
+
+// SMM, 09/05/2024
+$SQL_MotivoContactar = Seleccionar('uvw_Sap_tbl_LlamadasServicios_MotivoContactar', '*');
 
 // Asesores (Empleados de venta) en la llamada de servicio
 // $SQL_EmpleadosVentas = Seleccionar('uvw_Sap_tbl_EmpleadosVentas', '*');
@@ -3272,13 +3281,14 @@ function AgregarEsto(contenedorID, valorElemento) {
 					</div>
 					<div class="ibox-content">
 						<div class="form-group">
-							<div class="col-lg-5 border-bottom m-r-sm">
+							<div class="col-lg-5 border-bottom m-r-md">
 								<label class="control-label text-danger">Información del contacto del cliente</label>
 							</div>
 							<div class="col-lg-6 border-bottom ">
 								<label class="control-label text-danger">Información del servicio</label>
 							</div>
 						</div>
+						
 						<div class="col-lg-5 m-r-md">
 							<div class="form-group">
 								<label class="control-label">Nombre de contacto <?php if (PermitirFuncion(324)) { ?><span class="text-danger">*</span><?php } ?></label>
@@ -3313,8 +3323,9 @@ function AgregarEsto(contenedorID, valorElemento) {
 										 } ?>">
 							</div>
 						</div>
-						<div class="col-lg-6">
-							<div class="form-group">
+
+						<div class="form-group">
+							<div class="col-lg-6">
 								<label class="control-label">Servicios</label>
 								<textarea name="CDU_Servicios" rows="5" maxlength="2000" class="form-control" id="CDU_Servicios" type="text" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "readonly";
@@ -3322,7 +3333,7 @@ function AgregarEsto(contenedorID, valorElemento) {
 									 echo $row['CDU_Servicios'];
 								 } ?></textarea>
 							</div>
-							<div class="form-group">
+							<div class="col-lg-6">
 								<label class="control-label">Áreas</label>
 								<textarea name="CDU_Areas" rows="5" maxlength="2000" class="form-control" id="CDU_Areas" type="text" <?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
 									echo "readonly";
@@ -3331,7 +3342,58 @@ function AgregarEsto(contenedorID, valorElemento) {
 								 } ?></textarea>
 							</div>
 						</div>
+
+						<div class="form-group">
+							<div class="col-lg-5 border-bottom m-r-md">
+								<label class="control-label text-danger">Información para contactar</label>
+							</div>
+						</div>
+
+						<div class="col-lg-5 m-r-md">
+							<div class="form-group">
+								<label class="control-label">Se puede contactar</label>
+								
+								<select name="IdContactar" id="IdContactar" class="form-control" 
+									<?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
+										echo "disabled";
+									} ?>>
+									<option value="">Seleccione...</option>
+
+								  	<option value="SI" <?php if (isset($row['IdContactar']) && ($row['IdContactar'] == "SI")) {
+											echo "selected";
+										} ?>>SI</option>
+									<option value="NO" <?php if (isset($row['IdContactar']) && ($row['IdContactar'] == "NO")) {
+											echo "selected";
+										} ?>>NO</option>
+								</select>
+							</div>
+
+							<div class="form-group">
+								<label class="control-label">Motivo de contactar</label>
+								
+								<select name="IdMotivoContactar" id="IdMotivoContactar" class="form-control" 
+									<?php if (($edit == 1) && (!PermitirFuncion(302) || ($row['IdEstadoLlamada'] == '-1'))) {
+										echo "disabled";
+									} ?>>
+									<option value="">Seleccione...</option>
+								  	
+									<?php while ($row_MotivoContactar = sqlsrv_fetch_array($SQL_MotivoContactar)) { ?>
+										<option value="<?php echo $row_MotivoContactar['MotivoContacta'] ?? ""; ?>"
+											<?php if (isset($row['IdMotivoContactar']) && ($row['IdMotivoContactar'] == $row_MotivoContactar['IdMotivoContacta'])) {
+												echo "selected";
+											} ?>>
+											<?php echo $row_MotivoContactar['MotivoContacta']; ?>
+										</option>
+								  	<?php } ?>
+								</select>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<div class="col-lg-6"></div>
+						</div>
 					</div>
+					<!-- /.ibox-content -->
 				</div>
 				<!-- Fin, información adicional -->
 
