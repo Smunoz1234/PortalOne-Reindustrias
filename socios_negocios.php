@@ -173,6 +173,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
 			//      "'".$_POST['Discapacidad']."'",
 			//      "'".$_POST['NivelEduca']."'",
 			$_POST['IdListaPrecio'] ?? -1, // SMM, 17/02/2022
+			$_POST["IdProteccionDatos"] ?? "", // SMM, 09/05/2025
 			isset($_POST['Estado']) ? ("'" . $_POST['Estado'] . "'") : "NULL",
 			// SMM, 15/11/2022
 			$CapacidadServ,
@@ -1144,11 +1145,11 @@ nombredir.value="<?php echo ObtenerVariable("DirDestino");?>";
 													<select name="CardType" class="form-control" id="CardType" required>
 														<?php while ($row_TipoSN = sqlsrv_fetch_array($SQL_TipoSN)) { ?>
 															<option value="<?php echo $row_TipoSN['CardType']; ?>" <?php if ((isset($row['CardType'])) && (strcmp($row_TipoSN['CardType'], $row['CardType']) == 0)) {
-																   echo "selected=\"selected\"";
+																   echo "selected";
 															   } elseif (PermitirFuncion(504) && ($row_TipoSN['CardType'] == "L")) {
-																   echo "selected=\"selected\"";
+																   echo "selected";
 															   } elseif ((isset($row_ValorDefault['IdTipoSN'])) && (strcmp($row_TipoSN['CardType'], $row_ValorDefault['IdTipoSN']) == 0)) {
-																   echo "selected=\"selected\"";
+																   echo "selected";
 															   } ?>>
 																<?php echo $row_TipoSN['DE_CardType']; ?></option>
 														<?php } ?>
@@ -1181,9 +1182,9 @@ nombredir.value="<?php echo ObtenerVariable("DirDestino");?>";
 															<option
 																value="<?php echo $row_TipoEntidad['ID_TipoEntidad']; ?>"
 																<?php if (($edit == 1 || $sw_error == 1) && (isset($row['U_HBT_TipEnt'])) && (strcmp($row_TipoEntidad['ID_TipoEntidad'], $row['U_HBT_TipEnt']) == 0)) {
-																	echo "selected=\"selected\"";
+																	echo "selected";
 																} elseif ((isset($row_ValorDefault['IdTipoEntidad'])) && (strcmp($row_TipoEntidad['ID_TipoEntidad'], $row_ValorDefault['IdTipoEntidad']) == 0)) {
-																	echo "selected=\"selected\"";
+																	echo "selected";
 																} ?>>
 																<?php echo $row_TipoEntidad['NombreEntidad']; ?></option>
 														<?php } ?>
@@ -1198,9 +1199,9 @@ nombredir.value="<?php echo ObtenerVariable("DirDestino");?>";
 														<?php while ($row_TipoDoc = sqlsrv_fetch_array($SQL_TipoDoc)) { ?>
 															<option value="<?php echo $row_TipoDoc['ID_TipoDocumento']; ?>"
 																<?php if (($edit == 1 || $sw_error == 1) && (isset($row['U_HBT_TipDoc'])) && (strcmp($row_TipoDoc['ID_TipoDocumento'], $row['U_HBT_TipDoc']) == 0)) {
-																	echo "selected=\"selected\"";
+																	echo "selected";
 																} elseif ((isset($row_ValorDefault['IdTipoDocumento'])) && (strcmp($row_TipoDoc['ID_TipoDocumento'], $row_ValorDefault['IdTipoDocumento']) == 0)) {
-																	echo "selected=\"selected\"";
+																	echo "selected";
 																} ?>>
 																<?php echo $row_TipoDoc['TipoDocumento']; ?></option>
 														<?php } ?>
@@ -1292,11 +1293,11 @@ nombredir.value="<?php echo ObtenerVariable("DirDestino");?>";
 																value="<?php echo $row_EmpleadosVentas['ID_EmpVentas']; ?>"
 																<?php if ($edit == 0) {
 																	if (($_SESSION['CodigoEmpVentas'] != "") && (strcmp($row_EmpleadosVentas['ID_EmpVentas'], $_SESSION['CodigoEmpVentas']) == 0)) {
-																		echo "selected=\"selected\"";
+																		echo "selected";
 																	}
 																} elseif ($edit == 1) {
 																	if (($row['IdEmpVentas'] != "") && (strcmp($row_EmpleadosVentas['ID_EmpVentas'], $row['IdEmpVentas']) == 0)) {
-																		echo "selected=\"selected\"";
+																		echo "selected";
 																	}
 																} ?>><?php echo $row_EmpleadosVentas['DE_EmpVentas']; ?>
 															</option>
@@ -1327,9 +1328,9 @@ nombredir.value="<?php echo ObtenerVariable("DirDestino");?>";
 														<?php while ($row_GruposClientes = sqlsrv_fetch_array($SQL_GruposClientes)) { ?>
 															<option value="<?php echo $row_GruposClientes['GroupCode']; ?>"
 																<?php if (($edit == 1 || $sw_error == 1) && (isset($row['GrupoCliente'])) && (strcmp($row_GruposClientes['GroupCode'], $row['GrupoCliente']) == 0)) {
-																	echo "selected=\"selected\"";
+																	echo "selected";
 																} elseif ((isset($row_ValorDefault['IdGrupoSN'])) && (strcmp($row_GruposClientes['GroupCode'], $row_ValorDefault['IdGrupoSN']) == 0)) {
-																	echo "selected=\"selected\"";
+																	echo "selected";
 																} ?>>
 																<?php echo $row_GruposClientes['GroupName']; ?></option>
 														<?php } ?>
@@ -1341,9 +1342,9 @@ nombredir.value="<?php echo ObtenerVariable("DirDestino");?>";
 														<option value="">(Ninguno)</option>
 														<?php while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyecto)) { ?>
 															<option value="<?php echo $row_Proyecto['IdProyecto']; ?>" <?php if (($edit == 1 || $sw_error == 1) && (isset($row['IdProyecto'])) && (strcmp($row_Proyecto['IdProyecto'], $row['IdProyecto']) == 0)) {
-																   echo "selected=\"selected\"";
+																   echo "selected";
 															   } elseif ((isset($row_ValorDefault['IdProyecto'])) && (strcmp($row_Proyecto['IdProyecto'], $row_ValorDefault['IdProyecto']) == 0)) {
-																   echo "selected=\"selected\"";
+																   echo "selected";
 															   } ?>>
 																<?php echo $row_Proyecto['DeProyecto']; ?></option>
 														<?php } ?>
@@ -1360,9 +1361,9 @@ nombredir.value="<?php echo ObtenerVariable("DirDestino");?>";
 															<option
 																value="<?php echo $row_CondicionPago['IdCondicionPago']; ?>"
 																<?php if (($edit == 1 || $sw_error == 1) && (isset($row['GroupNum'])) && (strcmp($row_CondicionPago['IdCondicionPago'], $row['GroupNum']) == 0)) {
-																	echo "selected=\"selected\"";
+																	echo "selected";
 																} elseif ((isset($row_ValorDefault['IdCondiPago'])) && (strcmp($row_CondicionPago['IdCondicionPago'], $row_ValorDefault['IdCondiPago']) == 0)) {
-																	echo "selected=\"selected\"";
+																	echo "selected";
 																} ?>>
 																<?php echo $row_CondicionPago['NombreCondicion']; ?>
 															</option>
@@ -1377,9 +1378,9 @@ nombredir.value="<?php echo ObtenerVariable("DirDestino");?>";
 														<?php while ($row_MedioPago = sqlsrv_fetch_array($SQL_MedioPago)) { ?>
 															<option value="<?php echo $row_MedioPago['IdMedioPago']; ?>"
 																<?php if (($edit == 1 || $sw_error == 1) && (isset($row['IdMedioPago'])) && (strcmp($row_MedioPago['IdMedioPago'], $row['IdMedioPago']) == 0)) {
-																	echo "selected=\"selected\"";
+																	echo "selected";
 																} elseif ((isset($row_ValorDefault['IdMedioPago'])) && (strcmp($row_MedioPago['IdMedioPago'], $row_ValorDefault['IdMedioPago']) == 0)) {
-																	echo "selected=\"selected\"";
+																	echo "selected";
 																} ?>>
 																<?php echo $row_MedioPago['DeMedioPago']; ?></option>
 														<?php } ?>
@@ -1394,9 +1395,9 @@ nombredir.value="<?php echo ObtenerVariable("DirDestino");?>";
 															<option
 																value="<?php echo $row_TipoNacionalidad['IdTipoNacionalidad']; ?>"
 																<?php if (($edit == 1 || $sw_error == 1) && (isset($row['IdTipoNacionalidad'])) && (strcmp($row_TipoNacionalidad['IdTipoNacionalidad'], $row['IdTipoNacionalidad']) == 0)) {
-																	echo "selected=\"selected\"";
+																	echo "selected";
 																} elseif ((isset($row_ValorDefault['IdTipoNacionalidad'])) && (strcmp($row_TipoNacionalidad['IdTipoNacionalidad'], $row_ValorDefault['IdTipoNacionalidad']) == 0)) {
-																	echo "selected=\"selected\"";
+																	echo "selected";
 																} ?>>
 																<?php echo $row_TipoNacionalidad['DeTipoNacionalidad']; ?>
 															</option>
@@ -1414,9 +1415,9 @@ nombredir.value="<?php echo ObtenerVariable("DirDestino");?>";
 															<option
 																value="<?php echo $row_TipoExtranjero['IdTipoExtranjero']; ?>"
 																<?php if (($edit == 1 || $sw_error == 1) && (isset($row['IdTipoExtranjero'])) && (strcmp($row_TipoExtranjero['IdTipoExtranjero'], $row['IdTipoExtranjero']) == 0)) {
-																	echo "selected=\"selected\"";
+																	echo "selected";
 																} elseif ((isset($row_ValorDefault['IdTipoExtranjero'])) && (strcmp($row_TipoExtranjero['IdTipoExtranjero'], $row_ValorDefault['IdTipoExtranjero']) == 0)) {
-																	echo "selected=\"selected\"";
+																	echo "selected";
 																} ?>>
 																<?php echo $row_TipoExtranjero['DeTipoExtranjero']; ?>
 															</option>
@@ -1432,9 +1433,9 @@ nombredir.value="<?php echo ObtenerVariable("DirDestino");?>";
 														<?php while ($row_Industria = sqlsrv_fetch_array($SQL_Industria)) { ?>
 															<option value="<?php echo $row_Industria['IdIndustria']; ?>"
 																<?php if (($edit == 1 || $sw_error == 1) && (isset($row['IdIndustria'])) && (strcmp($row_Industria['IdIndustria'], $row['IdIndustria']) == 0)) {
-																	echo "selected=\"selected\"";
+																	echo "selected";
 																} elseif ((isset($row_ValorDefault['IdIndustria'])) && (strcmp($row_Industria['IdIndustria'], $row_ValorDefault['IdIndustria']) == 0)) {
-																	echo "selected=\"selected\"";
+																	echo "selected";
 																} ?>>
 																<?php echo $row_Industria['DeIndustria']; ?></option>
 														<?php } ?>
@@ -1448,35 +1449,53 @@ nombredir.value="<?php echo ObtenerVariable("DirDestino");?>";
 														<?php while ($row_Territorio = sqlsrv_fetch_array($SQL_Territorio)) { ?>
 															<option value="<?php echo $row_Territorio['IdTerritorio']; ?>"
 																<?php if (($edit == 1 || $sw_error == 1) && (isset($row['IdTerritorio'])) && (strcmp($row_Territorio['IdTerritorio'], $row['IdTerritorio']) == 0)) {
-																	echo "selected=\"selected\"";
+																	echo "selected";
 																} elseif ((isset($row_ValorDefault['IdTerritorio'])) && (strcmp($row_Territorio['IdTerritorio'], $row_ValorDefault['IdTerritorio']) == 0)) {
-																	echo "selected=\"selected\"";
+																	echo "selected";
 																} ?>>
 																<?php echo $row_Territorio['DeTerritorio']; ?></option>
 														<?php } ?>
 													</select>
 												</div>
 											</div>
+
 											<div class="form-group">
-												<label class="col-lg-1 control-label">Lista de precios
-													<!--span class="text-danger">*</span--></label>
+												<label class="col-lg-1 control-label">
+													Lista de precios <!--span class="text-danger">*</span-->
+												</label>
 												<div class="col-lg-3">
 													<select name="IdListaPrecio" class="form-control"
 														id="IdListaPrecio">
 														<?php while ($row_ListaPrecio = sqlsrv_fetch_array($SQL_ListaPrecios)) { ?>
 															<option value="<?php echo $row_ListaPrecio['IdListaPrecio']; ?>"
 																<?php if (isset($row['IdListaPrecio']) && (strcmp($row_ListaPrecio['IdListaPrecio'], $row['IdListaPrecio']) == 0)) {
-																	echo "selected=\"selected\"";
+																	echo "selected";
 																} elseif ($edit == 0 && (ObtenerValorDefecto(2, 'IdListaPrecio') !== null) && (strcmp($row_ListaPrecio['IdListaPrecio'], ObtenerValorDefecto(2, 'IdListaPrecio')) == 0)) {
-																	echo "selected=\"selected\"";
+																	echo "selected";
 																} elseif (!PermitirFuncion(511)) {
-																	echo "disabled='disabled'";
+																	echo "disabled";
 																} ?>>
 																<?php echo $row_ListaPrecio['DeListaPrecio']; ?>
 															</option>
 														<?php } ?>
 													</select>
 												</div>
+
+												<!-- SMM, 09/05/2024 -->
+												<label class="col-lg-1 control-label">Protección de datos</label>
+												<div class="col-lg-3">
+													<select name="IdProteccionDatos" id="IdProteccionDatos" class="form-control">
+														<option value="">Seleccione...</option>
+
+														<option value="SI" <?php if (isset($row['IdProteccionDatos']) && ($row['IdProteccionDatos'] == "SI")) {
+																echo "selected";
+															} ?>>SI</option>
+														<option value="NO" <?php if (isset($row['IdProteccionDatos']) && ($row['IdProteccionDatos'] == "NO")) {
+																echo "selected";
+															} ?>>NO</option>
+													</select>
+												</div>
+												<!-- SMM, 09/05/2024 -->
 											</div>
 
 											<div class="form-group">
@@ -1496,9 +1515,9 @@ nombredir.value="<?php echo ObtenerVariable("DirDestino");?>";
 															<option
 																value="<?php echo $row_RegimenT['ID_RegimenTributario']; ?>"
 																<?php if (($edit == 1 || $sw_error == 1) && (isset($row['U_HBT_RegTrib'])) && (strcmp($row_RegimenT['ID_RegimenTributario'], $row['U_HBT_RegTrib']) == 0)) {
-																	echo "selected=\"selected\"";
+																	echo "selected";
 																} elseif ((isset($row_ValorDefault['IdRegTributario'])) && (strcmp($row_RegimenT['ID_RegimenTributario'], $row_ValorDefault['IdRegTributario']) == 0)) {
-																	echo "selected=\"selected\"";
+																	echo "selected";
 																} ?>>
 																<?php echo $row_RegimenT['RegimenTributario']; ?></option>
 														<?php } ?>
@@ -1514,9 +1533,9 @@ nombredir.value="<?php echo ObtenerVariable("DirDestino");?>";
 															<option
 																value="<?php echo $row_RegimenFiscal['IdRegimenFiscal']; ?>"
 																<?php if (($edit == 1 || $sw_error == 1) && (isset($row['IdRegimenFiscal'])) && (strcmp($row_RegimenFiscal['IdRegimenFiscal'], $row['IdRegimenFiscal']) == 0)) {
-																	echo "selected=\"selected\"";
+																	echo "selected";
 																} elseif ((isset($row_ValorDefault['IdRegimenFiscal'])) && (strcmp($row_RegimenFiscal['IdRegimenFiscal'], $row_ValorDefault['IdRegimenFiscal']) == 0)) {
-																	echo "selected=\"selected\"";
+																	echo "selected";
 																} ?>>
 																<?php echo $row_RegimenFiscal['DeRegimenFiscal']; ?>
 															</option>
@@ -1533,9 +1552,9 @@ nombredir.value="<?php echo ObtenerVariable("DirDestino");?>";
 															<option
 																value="<?php echo $row_ResponsabilidadFiscal['IdResponsabilidadFiscal']; ?>"
 																<?php if (($edit == 1 || $sw_error == 1) && (isset($row['IdResponsabilidadFiscal'])) && (strcmp($row_ResponsabilidadFiscal['IdResponsabilidadFiscal'], $row['IdResponsabilidadFiscal']) == 0)) {
-																	echo "selected=\"selected\"";
+																	echo "selected";
 																} elseif ((isset($row_ValorDefault['IdResponsabilidadFiscal'])) && (strcmp($row_ResponsabilidadFiscal['IdResponsabilidadFiscal'], $row_ValorDefault['IdResponsabilidadFiscal']) == 0)) {
-																	echo "selected=\"selected\"";
+																	echo "selected";
 																} ?>>
 																<?php echo $row_ResponsabilidadFiscal['DeResponsabilidadFiscal']; ?>
 															</option>

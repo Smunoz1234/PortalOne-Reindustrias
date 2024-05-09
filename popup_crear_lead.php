@@ -109,6 +109,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
 		// Fin, tabla de retenciones.
 
 		$Cabecera = array(
+			"id_proteccion_datos " => ($_POST["IdProteccionDatos"] ?? ""), // SMM, 09/05/2024
 			"id_series" => null,
 			"id_socio_negocio" => $IdSN,
 			"socio_negocio" => $_POST['CardName'],
@@ -654,9 +655,11 @@ $SQL_ListaPrecios = Seleccionar('uvw_Sap_tbl_ListaPrecios', '*');
 										</select>
 									</div>
 								</div>
+								
 								<div class="form-group">
-									<label class="col-lg-1 control-label">Lista de precios
-										<!--span class="text-danger">*</span--></label>
+									<label class="col-lg-1 control-label">
+										Lista de precios <!--span class="text-danger">*</span-->
+									</label>
 									<div class="col-lg-3">
 										<select name="IdListaPrecio" class="form-control" id="IdListaPrecio" <?php if (!PermitirFuncion(511)) {
 											echo "disabled";
@@ -670,7 +673,26 @@ $SQL_ListaPrecios = Seleccionar('uvw_Sap_tbl_ListaPrecios', '*');
 											<?php } ?>
 										</select>
 									</div>
+
+									<!-- SMM, 09/05/2024 -->
+									<label class="col-lg-1 control-label">Protección de datos</label>
+									<div class="col-lg-3">
+										<select name="IdProteccionDatos" id="IdProteccionDatos" class="form-control" <?php if (!PermitirFuncion(511)) {
+											echo "disabled";
+										} ?>>
+											<option value="">Seleccione...</option>
+
+											<option value="SI" <?php if (isset($_POST["IdProteccionDatos"]) && ($_POST["IdProteccionDatos"] == "SI")) {
+													echo "selected";
+												} ?>>SI</option>
+											<option value="NO" <?php if (isset($_POST["IdProteccionDatos"]) && ($_POST["IdProteccionDatos"] == "NO")) {
+													echo "selected";
+												} ?>>NO</option>
+										</select>
+									</div>
+									<!-- SMM, 09/05/2024 -->
 								</div>
+
 								<div class="form-group">
 									<div class="col-lg-9">
 										<button class="btn btn-primary" type="submit" id="Crear"><i
