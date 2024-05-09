@@ -50,17 +50,19 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
 				copy($dir_new . $NuevoNombre, $RutaAttachSAP[0] . $NuevoNombre);
 
 				//Anexos
-				array_push($Anexos, array(
-					"id_anexo" => $j,
-					"tipo_documento" => 2, //ObjType de Socios de negocios
-					"id_documento" => 0, //se necesita cero porque no tiene registro en la bd
-					"archivo" => $OnlyName,
-					"ext_archivo" => $Ext,
-					"metodo" => 1,
-					"fecha" => FormatoFechaToSAP(date('Y-m-d')),
-					"id_usuario" => intval($_SESSION['CodUser']),
-					"comentarios" => "",
-				)
+				array_push(
+					$Anexos,
+					array(
+						"id_anexo" => $j,
+						"tipo_documento" => 2, //ObjType de Socios de negocios
+						"id_documento" => 0, //se necesita cero porque no tiene registro en la bd
+						"archivo" => $OnlyName,
+						"ext_archivo" => $Ext,
+						"metodo" => 1,
+						"fecha" => FormatoFechaToSAP(date('Y-m-d')),
+						"id_usuario" => intval($_SESSION['CodUser']),
+						"comentarios" => "",
+					)
 				);
 			}
 			$j++;
@@ -95,11 +97,13 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
 
 		$Retenciones = array();
 		while ($row_Retenciones = sqlsrv_fetch_array($SQL_Retenciones)) {
-			array_push($Retenciones, array(
-				"metodo" => 1,
-				"id_retencion" => $row_Retenciones["id_retencion"],
-				"id_socio_negocio" => $IdSN,
-			)
+			array_push(
+				$Retenciones,
+				array(
+					"metodo" => 1,
+					"id_retencion" => $row_Retenciones["id_retencion"],
+					"id_socio_negocio" => $IdSN,
+				)
 			);
 		}
 		// Fin, tabla de retenciones.
@@ -222,7 +226,7 @@ if (isset($_POST['P']) && ($_POST['P'] != "")) {
 
 		// Para probar, en caso contrario comentar
 		/*$Cabecera_json = json_encode($Cabecera);
-		echo $Cabecera_json;*/
+			  echo $Cabecera_json;*/
 		// Comentar esto
 		$Metodo = "SociosNegocios/Asistente";
 		$Resultado = EnviarWebServiceSAP($Metodo, $Cabecera, true, true);
@@ -366,7 +370,8 @@ $SQL_ListaPrecios = Seleccionar('uvw_Sap_tbl_ListaPrecios', '*');
 												<option value="<?php echo $row_TipoSN['CardType']; ?>" <?php if (($sw_error == 1) && (strcmp($row_TipoSN['CardType'], $_POST['CardType']) == 0)) {
 													   echo "selected";
 												   } ?>>
-													<?php echo $row_TipoSN['DE_CardType']; ?></option>
+													<?php echo $row_TipoSN['DE_CardType']; ?>
+												</option>
 											<?php } ?>
 										</select>
 									</div>
@@ -394,7 +399,8 @@ $SQL_ListaPrecios = Seleccionar('uvw_Sap_tbl_ListaPrecios', '*');
 												   } elseif (strcmp($row_TipoEntidad['ID_TipoEntidad'], ObtenerValorDefecto(2, "IdTipoEntidad")) == 0) {
 													   echo "selected";
 												   } ?>>
-													<?php echo $row_TipoEntidad['NombreEntidad']; ?></option>
+													<?php echo $row_TipoEntidad['NombreEntidad']; ?>
+												</option>
 											<?php } ?>
 										</select>
 									</div>
@@ -409,7 +415,8 @@ $SQL_ListaPrecios = Seleccionar('uvw_Sap_tbl_ListaPrecios', '*');
 												   } elseif (strcmp($row_TipoDoc['ID_TipoDocumento'], ObtenerValorDefecto(2, "IdTipoDocumento")) == 0) {
 													   echo "selected";
 												   } ?>>
-													<?php echo $row_TipoDoc['TipoDocumento']; ?></option>
+													<?php echo $row_TipoDoc['TipoDocumento']; ?>
+												</option>
 											<?php } ?>
 										</select>
 									</div>
@@ -417,12 +424,10 @@ $SQL_ListaPrecios = Seleccionar('uvw_Sap_tbl_ListaPrecios', '*');
 											class="text-danger">*</span></label>
 									<div class="col-lg-3">
 										<input name="LicTradNum" type="text" required class="form-control"
-											id="LicTradNum"
-											value="<?php if ($sw_error == 1) {
+											id="LicTradNum" value="<?php if ($sw_error == 1) {
 												echo $_POST['LicTradNum'];
-											} ?>"
-											maxlength="15" onKeyPress="return justNumbers(event,this.value);"
-											onChange="ValidarSN(this.value);" autocomplete="off">
+											} ?>" maxlength="15" onKeyPress="return justNumbers(event,this.value);" onChange="ValidarSN(this.value);"
+											autocomplete="off">
 									</div>
 								</div>
 								<div class="form-group">
@@ -431,33 +436,27 @@ $SQL_ListaPrecios = Seleccionar('uvw_Sap_tbl_ListaPrecios', '*');
 										<input name="PNNombres" type="text" class="form-control" id="PNNombres"
 											onkeyup="mayus(this);" <?php if (($sw_error == 0) || ($sw_error == 1 && $_POST['TipoEntidad'] == 2)) {
 												echo "readonly='readonly'";
-											} ?>
-											value="<?php if ($sw_error == 1) {
-												echo $_POST['PNNombres'];
-											} ?>"
-											onChange="CrearNombre();" autocomplete="off">
+											} ?> value="<?php if ($sw_error == 1) {
+												  echo $_POST['PNNombres'];
+											  } ?>" onChange="CrearNombre();" autocomplete="off">
 									</div>
 									<label class="col-lg-1 control-label">Primer apellido</label>
 									<div class="col-lg-3">
 										<input name="PNApellido1" type="text" class="form-control" id="PNApellido1"
 											onkeyup="mayus(this);" <?php if (($sw_error == 0) || ($sw_error == 1 && $_POST['TipoEntidad'] == 2)) {
 												echo "readonly='readonly'";
-											} ?>
-											value="<?php if ($sw_error == 1) {
-												echo $_POST['PNApellido1'];
-											} ?>"
-											onChange="CrearNombre();" autocomplete="off">
+											} ?> value="<?php if ($sw_error == 1) {
+												  echo $_POST['PNApellido1'];
+											  } ?>" onChange="CrearNombre();" autocomplete="off">
 									</div>
 									<label class="col-lg-1 control-label">Segundo apellido</label>
 									<div class="col-lg-3">
 										<input name="PNApellido2" type="text" class="form-control" id="PNApellido2"
 											onkeyup="mayus(this);" <?php if (($sw_error == 0) || ($sw_error == 1 && $_POST['TipoEntidad'] == 2)) {
 												echo "readonly='readonly'";
-											} ?>
-											value="<?php if ($sw_error == 1) {
-												echo $_POST['PNApellido2'];
-											} ?>"
-											onChange="CrearNombre();" autocomplete="off">
+											} ?> value="<?php if ($sw_error == 1) {
+												  echo $_POST['PNApellido2'];
+											  } ?>" onChange="CrearNombre();" autocomplete="off">
 									</div>
 								</div>
 								<div class="form-group">
@@ -465,13 +464,11 @@ $SQL_ListaPrecios = Seleccionar('uvw_Sap_tbl_ListaPrecios', '*');
 											class="text-danger">*</span></label>
 									<div class="col-lg-3">
 										<input type="text" class="form-control" name="CardName" id="CardName"
-											onkeyup="mayus(this);" required
-											value="<?php if ($sw_error == 1) {
+											onkeyup="mayus(this);" required value="<?php if ($sw_error == 1) {
 												echo $_POST['CardName'];
-											} ?>"
-											autocomplete="off" <?php if ($sw_error == 1 && $_POST['TipoEntidad'] == 1) {
-												echo "readonly='readonly'";
-											} ?>>
+											} ?>" autocomplete="off" <?php if ($sw_error == 1 && $_POST['TipoEntidad'] == 1) {
+												 echo "readonly='readonly'";
+											 } ?>>
 									</div>
 									<label class="col-lg-1 control-label">Correo eléctronico <span
 											class="text-danger">*</span></label>
@@ -479,8 +476,7 @@ $SQL_ListaPrecios = Seleccionar('uvw_Sap_tbl_ListaPrecios', '*');
 										<input type="email" class="form-control" name="CorreoCliente" id="CorreoCliente"
 											required value="<?php if ($sw_error == 1) {
 												echo $_POST['CorreoCliente'];
-											} ?>"
-											autocomplete="off">
+											} ?>" autocomplete="off">
 									</div>
 									<label class="col-lg-1 control-label">Grupo <span
 											class="text-danger">*</span></label>
@@ -494,7 +490,8 @@ $SQL_ListaPrecios = Seleccionar('uvw_Sap_tbl_ListaPrecios', '*');
 												   } elseif (strcmp($row_GruposClientes['GroupCode'], ObtenerValorDefecto(2, "IdGrupoCliente")) == 0) {
 													   echo "selected";
 												   } ?>>
-													<?php echo $row_GruposClientes['GroupName']; ?></option>
+													<?php echo $row_GruposClientes['GroupName']; ?>
+												</option>
 											<?php } ?>
 										</select>
 									</div>
@@ -504,28 +501,23 @@ $SQL_ListaPrecios = Seleccionar('uvw_Sap_tbl_ListaPrecios', '*');
 											class="text-danger">*</span></label>
 									<div class="col-lg-3">
 										<input type="text" class="form-control" name="TelefonoCliente"
-											id="TelefonoCliente" onkeyup="mayus(this);" required
-											value="<?php if ($sw_error == 1) {
+											id="TelefonoCliente" onkeyup="mayus(this);" required value="<?php if ($sw_error == 1) {
 												echo $_POST['TelefonoCliente'];
-											} ?>"
-											autocomplete="off">
+											} ?>" autocomplete="off">
 									</div>
 									<label class="col-lg-1 control-label">Celular <span
 											class="text-danger">*</span></label>
 									<div class="col-lg-3">
 										<input type="text" class="form-control" name="CelularCliente"
-											id="CelularCliente" onkeyup="mayus(this);" required
-											value="<?php if ($sw_error == 1) {
+											id="CelularCliente" onkeyup="mayus(this);" required value="<?php if ($sw_error == 1) {
 												echo $_POST['CelularCliente'];
-											} ?>"
-											autocomplete="off">
+											} ?>" autocomplete="off">
 									</div>
 									<label class="col-lg-1 control-label">Dirección <span
 											class="text-danger">*</span></label>
 									<div class="col-lg-3">
 										<input name="Street" type="text" required class="form-control" id="Street"
-											maxlength="100" onkeyup="mayus(this);" autocomplete="off"
-											value="<?php if ($sw_error == 1) {
+											maxlength="100" onkeyup="mayus(this);" autocomplete="off" value="<?php if ($sw_error == 1) {
 												echo $_POST['Street'];
 											} ?>">
 									</div>
@@ -543,7 +535,8 @@ $SQL_ListaPrecios = Seleccionar('uvw_Sap_tbl_ListaPrecios', '*');
 												   } elseif (strcmp($row_Dptos['IdDepartamento'], ObtenerValorDefecto(2, "IdDepartamento")) == 0) {
 													   echo "selected";
 												   } ?>>
-													<?php echo $row_Dptos['DeDepartamento']; ?></option>
+													<?php echo $row_Dptos['DeDepartamento']; ?>
+												</option>
 											<?php } ?>
 										</select>
 									</div>
@@ -558,7 +551,8 @@ $SQL_ListaPrecios = Seleccionar('uvw_Sap_tbl_ListaPrecios', '*');
 													<option value="<?php echo $row_Ciudad['ID_Municipio']; ?>" <?php if (($sw_error == 1) && (strcmp($row_Ciudad['ID_Municipio'], $_POST['City']) == 0)) {
 														   echo "selected";
 													   } ?>>
-														<?php echo $row_Ciudad['DE_Municipio']; ?></option>
+														<?php echo $row_Ciudad['DE_Municipio']; ?>
+													</option>
 												<?php } ?>
 											<?php } ?>
 										</select>
@@ -573,7 +567,8 @@ $SQL_ListaPrecios = Seleccionar('uvw_Sap_tbl_ListaPrecios', '*');
 													<option value="<?php echo $row_Barrio['IdBarrio']; ?>" <?php if (($sw_error == 1) && (strcmp($row_Barrio['IdBarrio'], $_POST['Block']) == 0)) {
 														   echo "selected";
 													   } ?>>
-														<?php echo $row_Barrio['DeBarrio']; ?></option>
+														<?php echo $row_Barrio['DeBarrio']; ?>
+													</option>
 												<?php } ?>
 											<?php } ?>
 										</select>
@@ -591,18 +586,15 @@ $SQL_ListaPrecios = Seleccionar('uvw_Sap_tbl_ListaPrecios', '*');
 												class="text-danger">*</span></label>
 										<div class="col-lg-3">
 											<input type="text" class="form-control" name="CodProyecto" id="CodProyecto"
-												onChange="ValidarPrj();" required
-												value="<?php if ($sw_error == 1) {
+												onChange="ValidarPrj();" required value="<?php if ($sw_error == 1) {
 													echo $_POST['CodProyecto'];
-												} ?>"
-												autocomplete="off">
+												} ?>" autocomplete="off">
 										</div>
 										<label class="col-lg-1 control-label">Nombre proyecto <span
 												class="text-danger">*</span></label>
 										<div class="col-lg-3">
 											<input name="NomProyecto" type="text" required class="form-control"
-												id="NomProyecto" maxlength="100" autocomplete="off"
-												value="<?php if ($sw_error == 1) {
+												id="NomProyecto" maxlength="100" autocomplete="off" value="<?php if ($sw_error == 1) {
 													echo $_POST['NomProyecto'];
 												} ?>">
 										</div>
@@ -625,7 +617,8 @@ $SQL_ListaPrecios = Seleccionar('uvw_Sap_tbl_ListaPrecios', '*');
 												   } elseif (strcmp($row_Industria['IdIndustria'], ObtenerValorDefecto(2, "IdIndustria")) == 0) {
 													   echo "selected";
 												   } ?>>
-													<?php echo $row_Industria['DeIndustria']; ?></option>
+													<?php echo $row_Industria['DeIndustria']; ?>
+												</option>
 											<?php } ?>
 										</select>
 									</div>
@@ -640,7 +633,8 @@ $SQL_ListaPrecios = Seleccionar('uvw_Sap_tbl_ListaPrecios', '*');
 												   } elseif (strcmp($row_CondicionPago['IdCondicionPago'], ObtenerValorDefecto(2, "IdCondicionPago")) == 0) {
 													   echo "selected";
 												   } ?>>
-													<?php echo $row_CondicionPago['NombreCondicion']; ?></option>
+													<?php echo $row_CondicionPago['NombreCondicion']; ?>
+												</option>
 											<?php } ?>
 										</select>
 									</div>
@@ -654,7 +648,8 @@ $SQL_ListaPrecios = Seleccionar('uvw_Sap_tbl_ListaPrecios', '*');
 												   } elseif (strcmp($row_MedioPago['IdMedioPago'], ObtenerValorDefecto(2, "IdMedioPago")) == 0) {
 													   echo "selected";
 												   } ?>>
-													<?php echo $row_MedioPago['DeMedioPago']; ?></option>
+													<?php echo $row_MedioPago['DeMedioPago']; ?>
+												</option>
 											<?php } ?>
 										</select>
 									</div>
