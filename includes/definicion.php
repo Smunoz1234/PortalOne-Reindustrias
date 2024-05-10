@@ -1,4 +1,11 @@
 <?php
+// SMM, 10/05/2024
+if (file_exists("includes/entorno.php")) {
+	require_once "includes/entorno.php";
+} else {
+	require_once "entorno.php";
+}
+
 //Datos del portal
 if (!isset($_SESSION)) {
 	define("NOMBRE_PORTAL", 'PortalOne');
@@ -21,9 +28,7 @@ if (!isset($_SESSION)) {
 	define("SO", php_uname('s'));
 }
 
-// SMM, 16/04/2024
-$NombreBD = "PortalOneReindustrias_Pruebas";
-
+// SMM, 10/05/2024
 define("VERSION", "2.1.0");
-define("BDPRO", "PortalOneReindustrias_Pruebas");
+define("BDPRO", $nombre_bd);
 define("BDPRUEBAS", "");

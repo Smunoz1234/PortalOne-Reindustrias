@@ -1,10 +1,9 @@
 <?php
-
-// SMM, 27/08/2022
-if (file_exists("includes/configuracion.php")) {
-    require_once "includes/configuracion.php";
+// SMM, 10/05/2024
+if (file_exists("includes/entorno.php")) {
+    require_once "includes/entorno.php";
 } else {
-    require_once "configuracion.php";
+    require_once "entorno.php";
 }
 
 if ($tipo_base_datos == 1) {

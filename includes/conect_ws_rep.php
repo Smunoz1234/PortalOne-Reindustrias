@@ -1,7 +1,6 @@
 <?php
 $Url = ObtenerVariable('DireccionWSRept') . '?wsdl';
-//echo $Url."<br>";
+// echo $Url . "<br>";
 $Client = new SoapClient($Url, array('trace' => 1, 'cache_wsdl' => WSDL_CACHE_NONE, 'exceptions' => 0));
-//$functions = $Client->__getFunctions ();
-//print_r($functions);
-?>
+// $functions = $Client->__getFunctions ();
+// print_r($functions);
