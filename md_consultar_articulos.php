@@ -16,8 +16,8 @@ $cadena_Dimensiones = "JSON.parse('$encode_Dimensiones'.replace(/\\n|\\r/g, ''))
 // Hasta aquí, SMM 24/05/2023
 
 $OT = $_POST['OT'] ?? "";
-$ObjType = $_POST['ObjType'];
-$Edit = $_POST['Edit'];
+$ObjType = $_POST['ObjType'] ?? "";
+$Edit = $_POST['Edit'] ?? "";
 $Borrador = $_POST['Borrador'] ?? "0";
 $DocType = $_POST['DocType'];
 $DocId = $_POST['DocId'];
@@ -36,6 +36,9 @@ $Solicitud_OT = $_POST['Solicitud'] ?? "";
 
 // SMM, 20/12/2023
 $Inventario = $_POST['Inventario'] ?? "";
+
+// SMM, 10/05/2024
+$TipoDoc = $_POST["TipoDoc"] ?? 2; // Ventas por defecto. 1-Compras & 3-Inventario.
 
 // Valores predeterminados en los campos de documentos del usuario según el tipo.
 $OrigenLlamada = ObtenerValorDefecto($ObjType, "OrigenLlamada", false);
@@ -92,8 +95,30 @@ if (isset($row_OT["IdTipoLlamada"]) && ($row_OT["IdTipoLlamada"] != "")) {
 	$TipoLlamada = $row_TipoLlamada["IdRelacionMarketing"] ?? "";
 }
 
-// Proyectos. SMM, 24/05/2023
-$SQL_Proyecto = Seleccionar('uvw_Sap_tbl_Proyectos', '*', '', 'DeProyecto');
+// SMM, 10/05/2024
+$FiltrarCompras = PermitirFuncion(731) && ($TipoDoc == 1);
+$FiltrarVentas = PermitirFuncion(428) && ($TipoDoc == 2);
+$FiltrarInventario = PermitirFuncion(1218) && ($TipoDoc == 3);
+
+// Sin filtro. SMM, 10/05/2024
+$SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*", "", "DeProyecto");
+
+// Con filtro. SMM, 10/05/2024
+if($FiltrarCompras || $FiltrarVentas || $FiltrarInventario) {
+	$Where_Proyectos = "ID_Usuario = '" . ($_SESSION['CodUser'] ?? "") . "'";
+	$SQL_Proyectos = Seleccionar("uvw_tbl_UsuariosProyectos", "*", $Where_Proyectos);
+	$Proyectos = array();
+	while ($row_Proyecto = sqlsrv_fetch_array($SQL_Proyectos)) {
+		$Proyectos[] = ("'" . ($row_Proyecto["IdProyecto"] ?? "") . "'");
+	}
+	$Filtro_Proyectos = "";
+	if (count($Proyectos) > 0) {
+		$Filtro_Proyectos .= "IdProyecto IN (";
+		$Filtro_Proyectos .= implode(",", $Proyectos);
+		$Filtro_Proyectos .= ")";
+	}
+	$SQL_Proyecto = Seleccionar("uvw_Sap_tbl_Proyectos", "*", $Filtro_Proyectos, "DeProyecto");
+}
 
 // Almacenes. SMM, 24/05/2023
 $SQL_Almacen = SeleccionarGroupBy('uvw_tbl_SeriesSucursalesAlmacenes', 'WhsCode, WhsName', "IdSeries='$IdSeries'", "WhsCode, WhsName", 'WhsName');
@@ -594,7 +619,7 @@ $SQL_Empleado = Seleccionar('uvw_Sap_tbl_EmpleadosSN', '*', '', 'NombreEmpleado'
 				// Ejemplo de como agregar nuevos campos.
 				// formData.append("Dim1", $("#Dim1").val() || "");
 
-				formData.append("tipodoc", "<?php echo $_POST["TipoDoc"] ?? 2; ?>");
+				formData.append("tipodoc", "<?php echo $TipoDoc; ?>");
 				formData.append("objtype", "<?php echo $ObjType; ?>");
 
 				let json = Object.fromEntries(formData);
